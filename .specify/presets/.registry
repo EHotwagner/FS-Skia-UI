@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "presets": {
+    "fsharp-opinionated": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:26e5e03b5aad9c8559bdc493baa1003529296198c809dcb80840108989b570ff",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "agy": [
+          "speckit.constitution",
+          "speckit.tasks",
+          "speckit.implement"
+        ],
+        "codex": [
+          "speckit.constitution",
+          "speckit.tasks",
+          "speckit.implement"
+        ]
+      },
+      "registered_skills": [
+        "speckit-constitution",
+        "speckit-tasks",
+        "speckit-implement"
+      ],
+      "installed_at": "2026-05-12T09:53:38.687227+00:00"
+    }
+  }
+}
