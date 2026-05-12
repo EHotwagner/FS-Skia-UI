@@ -1,0 +1,21 @@
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/001-vulkan-elmish-viewer
+
+[1/2] Computing task graph...
+task-graph: 57 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/001-vulkan-elmish-viewer/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/001-vulkan-elmish-viewer/readiness/task-graph.md
+  status: 22[X], 7[S], 28[S*]
+
+[2/2] Diff scan against feature base...
+  diff-scan: 0 blocking, 89 advisory
+
+=== Verdict ===
+✗ NEEDS-EVIDENCE
+  synthetic tasks (declared):     7
+  auto-synthetic tasks (computed): 28
+  advisory diff-scan hits:         89 (printed, not blocking)
+
+  --accept-synthetic recorded: Synthetic evidence is declared for missing Windows live Vulkan smoke, controlled unavailable-Vulkan fixtures, and live interactive walkthrough gaps; tracking issues are listed in tasks.md.
+  logged to /home/developer/projects/FS-Skia-UI/specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json
+  audit still reports failure; merge is a human decision.

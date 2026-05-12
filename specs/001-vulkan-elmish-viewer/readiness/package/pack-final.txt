@@ -1,0 +1,5 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/Lib.dll
+  The package FS.Skia.UI.0.1.0-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.0.1.0-preview.1.nupkg'.

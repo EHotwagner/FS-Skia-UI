@@ -1,0 +1,43 @@
+Foundation command summary
+==========================
+
+Command:
+
+    dotnet restore
+
+Result:
+
+    exit code: 0
+      Determining projects to restore...
+      All projects are up-to-date for restore.
+
+Command:
+
+    dotnet build --no-restore
+
+Result:
+
+    exit code: 0
+      Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/Lib.dll
+      BasicViewer -> /home/developer/projects/FS-Skia-UI/samples/BasicViewer/bin/Debug/net10.0/BasicViewer.dll
+      Lib.Tests -> /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll
+    
+    Build succeeded.
+        0 Warning(s)
+        0 Error(s)
+    
+    Time Elapsed 00:00:00.88
+
+Command:
+
+    dotnet test --no-restore
+
+Result:
+
+    exit code: 0
+      Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/Lib.dll
+      Lib.Tests -> /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll
+    Test run for /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll (.NETCoreApp,Version=v10.0)
+    A total of 1 test files matched the specified pattern.
+    
+    Passed!  - Failed:     0, Passed:     9, Skipped:     0, Total:     9, Duration: 21 ms - Lib.Tests.dll (net10.0)

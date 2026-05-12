@@ -1,0 +1,24 @@
+status=ok
+sample=BasicViewer
+scene={ Nodes =
+   [Group
+      [{ Nodes = [Rectangle ((0.0, 0.0, 640.0, 480.0), { Red = 18uy
+                                                         Green = 24uy
+                                                         Blue = 32uy
+                                                         Alpha = 255uy })] };
+       { Nodes = [Rectangle ((32.0, 32.0, 220.0, 96.0), { Red = 36uy
+                                                          Green = 118uy
+                                                          Blue = 160uy
+                                                          Alpha = 255uy })] };
+       { Nodes = [Text ((48.0, 88.0), "Basic Vulkan Viewer", { Red = 255uy
+                                                               Green = 255uy
+                                                               Blue = 255uy
+                                                               Alpha = 255uy })] };
+       { Nodes = [Image ((280.0, 40.0, 96.0, 96.0), "assets/sample.png")] };
+       { Nodes = [Chart [2.0; 4.0; 3.0; 8.0; 5.0]] }]] }
+contains-shapes=true
+contains-text=true
+contains-image=true
+contains-chart=true
+screenshot-destination=specs/001-vulkan-elmish-viewer/readiness/screenshots/basic-viewer.png
+screenshot-format=Png

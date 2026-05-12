@@ -1,0 +1,10 @@
+Final sample evidence
+
+Basic packed contract smoke: specs/001-vulkan-elmish-viewer/readiness/basic-packed-contract-smoke.txt
+Interactive packed contract smoke: specs/001-vulkan-elmish-viewer/readiness/interactive-packed-contract-smoke.txt
+Linux BasicViewer Vulkan smoke: specs/001-vulkan-elmish-viewer/readiness/basic-vulkan-smoke-linux.txt
+PNG screenshot smoke: specs/001-vulkan-elmish-viewer/readiness/basic-screenshot-png-smoke.txt
+JPEG screenshot smoke: specs/001-vulkan-elmish-viewer/readiness/basic-screenshot-jpeg-smoke.txt
+Screenshot artifacts: specs/001-vulkan-elmish-viewer/readiness/screenshots/basic-viewer.png and basic-viewer.jpg
+
+Windows live sample evidence and live InteractiveViewer walkthrough remain disclosed under T048.

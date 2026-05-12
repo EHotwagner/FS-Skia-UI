@@ -1,0 +1,4 @@
+key=Some (Input (KeyDown "Space"))
+resize=Some (Input (Resized { Width = 800
+                       Height = 600 }))
+loaded=Some (Input Loaded)

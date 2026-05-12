@@ -1,0 +1,39 @@
+T001 prerequisite check
+=======================
+
+Required command:
+
+    .specify/scripts/bash/check-prerequisites.sh --json --require-plan
+
+Result:
+
+    exit code: 1
+    stderr: ERROR: Unknown option '--require-plan'. Use --help for usage information.
+
+Resolution:
+
+    Patched .specify/scripts/bash/check-prerequisites.sh to accept
+    --require-plan as a compatibility flag. plan.md remains required by the
+    consolidated script.
+
+Final required command result:
+
+    .specify/scripts/bash/check-prerequisites.sh --json --require-plan
+    {"FEATURE_DIR":"/home/developer/projects/FS-Skia-UI/specs/001-vulkan-elmish-viewer","AVAILABLE_DOCS":["research.md","data-model.md","contracts/","quickstart.md"]}
+
+Current branch confirmation:
+
+    git status --short --branch
+    ## 001-vulkan-elmish-viewer
+     M .specify/memory/constitution.md
+     M AGENTS.md
+    ?? .specify/feature.json
+    ?? specs/
+
+Local script help shows implementation prerequisites use:
+
+    .specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks
+
+Equivalent local command result:
+
+    {"FEATURE_DIR":"/home/developer/projects/FS-Skia-UI/specs/001-vulkan-elmish-viewer","AVAILABLE_DOCS":["research.md","data-model.md","contracts/","quickstart.md","tasks.md"]}

@@ -1,0 +1,4 @@
+Final package artifacts
+-rw-r--r-- 1 developer developer 69231 May 12 17:12 /home/developer/.local/share/nuget-local/FS.Skia.UI.0.1.0-preview.1.nupkg
+-rw-r--r-- 1 developer developer 69227 May 12 17:09 specs/001-vulkan-elmish-viewer/readiness/package/FS.Skia.UI.0.1.0-local.1.nupkg
+-rw-r--r-- 1 developer developer 69232 May 12 17:07 specs/001-vulkan-elmish-viewer/readiness/package/FS.Skia.UI.0.1.0-preview.1.nupkg

@@ -1,0 +1,2 @@
+prelude: Prelude Viewer Png CaptureScreenshot { Destination = "prelude.png"
+                    Format = Png }

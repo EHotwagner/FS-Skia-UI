@@ -4,6 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors>FS0025;FS0026;FS0052;FS0064</WarningsAsErrors>
     <!-- Principle II: visibility lives in .fsi, not in .fs.
@@ -13,9 +14,14 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Package">
-    <Version>0.1.0</Version>
-    <Authors>$(USER)</Authors>
+    <Version>0.1.0-preview.1</Version>
+    <Authors>FS-Skia-UI Contributors</Authors>
+    <Company>FS-Skia-UI Contributors</Company>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/FS-Skia-UI/FS-Skia-UI</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
 </Project>

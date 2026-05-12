@@ -1,0 +1,19 @@
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/001-vulkan-elmish-viewer
+
+[1/2] Computing task graph...
+task-graph: 57 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/001-vulkan-elmish-viewer/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/001-vulkan-elmish-viewer/readiness/task-graph.md
+  status: 22[X], 7[S], 28[S*]
+
+[2/2] Diff scan against feature base...
+  diff-scan: 0 blocking, 89 advisory
+
+=== Verdict ===
+✗ NEEDS-EVIDENCE
+  synthetic tasks (declared):     7
+  auto-synthetic tasks (computed): 28
+  advisory diff-scan hits:         89 (printed, not blocking)
+
+  To override, rerun with:  --accept-synthetic "justification"

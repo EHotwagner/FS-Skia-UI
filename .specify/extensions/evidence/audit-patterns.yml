@@ -83,6 +83,11 @@ whitelist:
   - pattern_id: skipped-tests
     file_glob: "**/.claude/**"
 
+  # F# process helpers legitimately call WaitForExit(); this otherwise
+  # contains the JavaScript skipped-test token xit( as a substring.
+  - pattern_id: skipped-tests
+    line_regex: '\bWaitForExit\('
+
 # Severity escalation rules.
 #
 # The audit produces a verdict per the strictness configured here:

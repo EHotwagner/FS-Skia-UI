@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <GenerateProgramFile>false</GenerateProgramFile>
+    <FsSkiaUiPackageVersion Condition="'$(FsSkiaUiPackageVersion)' == ''">0.1.0-preview.1</FsSkiaUiPackageVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UsePackedPackage)' != 'true'">
+    <ProjectReference Include="..\..\src\Lib\Lib.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UsePackedPackage)' == 'true'">
+    <PackageReference Include="FS.Skia.UI" Version="$(FsSkiaUiPackageVersion)" />
+  </ItemGroup>
+
+</Project>

@@ -1,20 +1,47 @@
-// prelude.fsx — load the packed library from your local NuGet cache.
+// prelude.fsx - public API construction smoke for the packed library.
 //
-// Principle I: every non-trivial change starts in FSI against the public
-// surface. This prelude gives you that surface in one #load.
-//
-// Usage from FSI (dotnet fsi or VS Code Ionide):
-//   dotnet fsi
-//   > #load "scripts/prelude.fsx" ;;
-//   > open FS_Skia_UI ;;
-//   > Library.add 2 3 ;;
+// Usage:
+//   dotnet fsi scripts/prelude.fsx
 
-// Resolve the latest locally-packed version from ~/.local/share/nuget-local/.
-// After `dotnet pack`, the patch version bumps; the #r below pulls the
-// highest SemVer.
 #i "nuget: file:///home/developer/.local/share/nuget-local/"
-#r "nuget: FS_Skia_UI"
+#r "nuget: FS.Skia.UI, 0.1.0-preview.1"
 
-open FS_Skia_UI
+open Elmish
+open FS.Skia.UI
 
-printfn "prelude: FS_Skia_UI loaded. Try: Library.add 2 3"
+type Msg =
+    | Tick
+
+let configuration =
+    Viewer.defaultConfiguration "Prelude Viewer" { Width = 640; Height = 480 }
+
+let scene =
+    Scene.group [
+        Scene.rectangle (0.0, 0.0, 180.0, 80.0) (Colors.rgba 28uy 88uy 140uy 255uy)
+        Scene.text (16.0, 42.0) "FS.Skia.UI" Colors.white
+        Scene.chart [ 2.0; 4.0; 3.0; 8.0 ]
+    ]
+
+let init () = 0, Cmd.none
+
+let update msg model =
+    match msg with
+    | Tick -> model + 1, Cmd.none
+
+let view _ = scene
+
+let subscriptions _ =
+    [ [ "prelude"; "timer" ],
+      fun _ -> { new System.IDisposable with member _.Dispose() = () } ]
+
+let program =
+    Viewer.create configuration init update view
+    |> Viewer.withSubscription subscriptions
+
+let screenshot =
+    { Destination = "prelude.png"
+      Format = Png }
+
+let effect = CaptureScreenshot screenshot
+
+printfn "prelude: %s %A %A" program.Configuration.Title screenshot.Format effect

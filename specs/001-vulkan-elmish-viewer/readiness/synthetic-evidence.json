@@ -1,0 +1,729 @@
+{
+  "schema_version": "1.0",
+  "accept_synthetic": {
+    "timestamp": "2026-05-12T15:24:03.108430+00:00",
+    "justification": "Synthetic evidence is declared for missing Windows live Vulkan smoke, controlled unavailable-Vulkan fixtures, and live interactive walkthrough gaps; tracking issues are listed in tasks.md."
+  },
+  "graph_summary": {
+    "synthetic": 7,
+    "auto_synthetic": 28
+  },
+  "diff_scan": {
+    "base_ref": null,
+    "blocking": [],
+    "advisory": [
+      {
+        "file": ".specify/memory/constitution.md",
+        "line": 131,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "### V. Synthetic Evidence Requires Loud, Repeated Disclosure"
+      },
+      {
+        "file": ".specify/memory/constitution.md",
+        "line": 133,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "Synthetic evidence \u2014 mocks, stubs, fakes, hardcoded fixtures, in-memory"
+      },
+      {
+        "file": ".specify/memory/constitution.md",
+        "line": 145,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "e.g. `// SYNTHETIC: no staging DB yet; replaced once US-17 lands`."
+      },
+      {
+        "file": ".specify/memory/constitution.md",
+        "line": 148,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "`(* SYNTHETIC FIXTURE: ... *)`."
+      },
+      {
+        "file": ".specify/memory/constitution.md",
+        "line": 155,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "Duplication is deliberate. Synthetic evidence tends to hide; repeating its"
+      },
+      {
+        "file": ".specify/memory/constitution.md",
+        "line": 171,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "Rationale: Synthetic evidence is the quiet failure mode of \"passing\" tests."
+      },
+      {
+        "file": "samples/InteractiveViewer/Program.fs",
+        "line": 157,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "// SYNTHETIC: smoke mode drives sample messages without a live Vulkan window or wall-clock timer; real evidence is the i"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/plan.md",
+        "line": 31,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "- **Principle V - Synthetic Evidence Disclosure**: PASS with constraint. Headless CI may need synthetic Vulkan-unavailab"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 11,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"### V. Synthetic Evidence Requires Loud, Repeated Disclosure\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 19,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"Synthetic evidence \\u2014 mocks, stubs, fakes, hardcoded fixtures, in-memory\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 27,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"e.g. `// SYNTHETIC: no staging DB yet; replaced once US-17 lands`.\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 35,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"`(* SYNTHETIC FIXTURE: ... *)`.\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 43,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"Duplication is deliberate. Synthetic evidence tends to hide; repeating its\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 51,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"Rationale: Synthetic evidence is the quiet failure mode of \\\"passing\\\" tests.\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 59,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"// SYNTHETIC: smoke mode drives sample messages without a live Vulkan window or wall-clock timer; real evidenc"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 67,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"- **Principle V - Synthetic Evidence Disclosure**: PASS with constraint. Headless CI may need synthetic Vulkan"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 75,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"### V. Synthetic Evidence Requires Loud, Repeated Disclosure\\\"\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 83,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"Synthetic evidence \\\\u2014 mocks, stubs, fakes, hardcoded fixtures, in-memory\\\"\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 91,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"e.g. `// SYNTHETIC: no staging DB yet; replaced once US-17 lands`.\\\"\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 99,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"`(* SYNTHETIC FIXTURE: ... *)`.\\\"\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 107,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"Duplication is deliberate. Synthetic evidence tends to hide; repeating its\\\"\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 115,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"Rationale: Synthetic evidence is the quiet failure mode of \\\\\\\"passing\\\\\\\" tests.\\\"\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 123,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"- **Principle V - Synthetic Evidence Disclosure**: PASS with constraint. Headless CI may need syn"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 131,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"- Interpreter evidence must exercise real dependencies where safe. Synthetic fixtures require `[S"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 139,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3\\\"\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 147,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"- Interpreter evidence must exercise real dependencies where safe. Synthetic fixtures require `[S]` status and"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 267,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 283,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"fixture-test=missing Vulkan startup stages Synthetic produce stage-specific diagnostics without GPU resources\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 291,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"test \\\"missing Vulkan startup stages Synthetic produce stage-specific diagnostics without GPU resources\\\" {\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/diff-scan-hits.json",
+        "line": 299,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"// SYNTHETIC: this fixture models native startup failures without mutating the workstation Vulkan driver; real"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/evidence-obligations.md",
+        "line": 18,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "- Interpreter evidence must exercise real dependencies where safe. Synthetic fixtures require `[S]` status and Principle"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/evidence-obligations.md",
+        "line": 23,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "Any mock, fake, in-memory substitute, canned response, unconnected interpreter, hardcoded future data source, or placeho"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/final-evidence-audit-accepted.txt",
+        "line": 56,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "--accept-synthetic recorded: Synthetic evidence is declared for missing Windows live Vulkan smoke, controlled unavailabl"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 5,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"justification\": \"Synthetic evidence is declared for missing Windows live Vulkan smoke, controlled unavailable-Vulkan fi"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 21,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"### V. Synthetic Evidence Requires Loud, Repeated Disclosure\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 29,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"Synthetic evidence \\u2014 mocks, stubs, fakes, hardcoded fixtures, in-memory\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 37,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"e.g. `// SYNTHETIC: no staging DB yet; replaced once US-17 lands`.\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 45,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"`(* SYNTHETIC FIXTURE: ... *)`.\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 53,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"Duplication is deliberate. Synthetic evidence tends to hide; repeating its\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 61,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"Rationale: Synthetic evidence is the quiet failure mode of \\\"passing\\\" tests.\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 69,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"// SYNTHETIC: smoke mode drives sample messages without a live Vulkan window or wall-clock timer; real evidenc"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 77,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"- **Principle V - Synthetic Evidence Disclosure**: PASS with constraint. Headless CI may need synthetic Vulkan"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 85,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"### V. Synthetic Evidence Requires Loud, Repeated Disclosure\\\"\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 93,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"Synthetic evidence \\\\u2014 mocks, stubs, fakes, hardcoded fixtures, in-memory\\\"\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 101,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"e.g. `// SYNTHETIC: no staging DB yet; replaced once US-17 lands`.\\\"\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 109,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"`(* SYNTHETIC FIXTURE: ... *)`.\\\"\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 117,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"Duplication is deliberate. Synthetic evidence tends to hide; repeating its\\\"\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 125,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"Rationale: Synthetic evidence is the quiet failure mode of \\\\\\\"passing\\\\\\\" tests.\\\"\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 133,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"- **Principle V - Synthetic Evidence Disclosure**: PASS with constraint. Headless CI may need syn"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 141,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"- Interpreter evidence must exercise real dependencies where safe. Synthetic fixtures require `[S"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 149,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"\\\"match\\\": \\\"classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3\\\"\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 157,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"- Interpreter evidence must exercise real dependencies where safe. Synthetic fixtures require `[S]` status and"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 277,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 293,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"fixture-test=missing Vulkan startup stages Synthetic produce stage-specific diagnostics without GPU resources\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 301,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"test \\\"missing Vulkan startup stages Synthetic produce stage-specific diagnostics without GPU resources\\\" {\""
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/synthetic-evidence.json",
+        "line": 309,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "\"match\": \"// SYNTHETIC: this fixture models native startup failures without mutating the workstation Vulkan driver; real"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 40,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T024[\"T024 Document the US1 independent validation path in `s\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 41,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T025[\"T025 Add semantic tests for unsupported platform and un\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 42,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T026[\"T026 Add tests that validate diagnostic messages identi\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 45,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T029[\"T029 Ensure `Viewer.run` returns `Result<unit, RenderDi\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 47,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T031[\"T031 Document unsupported environment diagnostics and s\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 48,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T032[\"T032 Add pure transition tests for application model up\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 49,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T033[\"T033 Add emitted-effect assertions for initialize, rend\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 50,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T034[\"T034 Add subscription tests that verify a timer-style s\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 51,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T035[\"T035 Implement viewer event mapping from Silk.NET keybo\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 52,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T036[\"T036 Implement command/effect interpretation for Elmish\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 53,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T037[\"T037 Add input-driven visible scene updates to `samples\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 54,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T038[\"T038 Add subscription-driven scene updates that run for\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 56,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T040[\"T040 Document the US3 independent validation path in `s\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 57,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T041[\"T041 Add compile and smoke-test coverage for `samples/B\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 58,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T042[\"T042 Add screenshot capture tests for successful captur\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 59,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T043[\"T043 Add representative example verification for simple\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 60,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T044[\"T044 Create `samples/BasicViewer` with a declarative sc\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 61,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T045[\"T045 Create `samples/InteractiveViewer` with Elmish mod\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 62,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T046[\"T046 Implement screenshot capture through the Vulkan/Sk\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 63,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T047[\"T047 Add documentation for SkiaSharp 4 preview dependen\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 65,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T049[\"T049 Refresh the Tier 1 public surface baseline and com\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 66,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T050[\"T050 Run `dotnet format` or the repository's formatting\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 67,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T051[\"T051 Run `dotnet test` and capture final automated test\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 68,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T052[\"T052 Run `dotnet pack src/Lib/Lib.fsproj -c Release -o \"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 69,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T053[\"T053 Run the packed library through `scripts/prelude.fs\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 70,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T054[\"T054 Run documented sample commands from a clean checko\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 71,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T055[\"T055 Run `.specify/extensions/evidence/scripts/bash/run\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 73,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "T057[\"T057 Update the Synthetic-Evidence Inventory if any Vul\"]:::autoSynthetic"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/task-graph.md",
+        "line": 194,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/us2-vulkan-unavailable.txt",
+        "line": 10,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "controlled-fixture=SYNTHETIC"
+      },
+      {
+        "file": "specs/001-vulkan-elmish-viewer/readiness/us2-vulkan-unavailable.txt",
+        "line": 11,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "fixture-test=missing Vulkan startup stages Synthetic produce stage-specific diagnostics without GPU resources"
+      },
+      {
+        "file": "tests/Lib.Tests/Tests.fs",
+        "line": 378,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "test \"missing Vulkan startup stages Synthetic produce stage-specific diagnostics without GPU resources\" {"
+      },
+      {
+        "file": "tests/Lib.Tests/Tests.fs",
+        "line": 379,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "// SYNTHETIC: this fixture models native startup failures without mutating the workstation Vulkan driver; real evidence "
+      }
+    ]
+  }
+}

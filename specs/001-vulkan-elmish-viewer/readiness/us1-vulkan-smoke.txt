@@ -1,0 +1,35 @@
+FS.Skia.UI VulkanHost: creating Silk.NET window
+FS.Skia.UI VulkanHost: initializing Silk.NET window
+FS.Skia.UI VulkanHost: querying Vulkan surface source
+FS.Skia.UI VulkanHost: querying required Vulkan extensions
+FS.Skia.UI VulkanHost: creating Vulkan instance extensionCount=2
+FS.Skia.UI VulkanHost: creating Vulkan presentation surface
+FS.Skia.UI VulkanHost: enumerating physical devices
+FS.Skia.UI VulkanHost: choosing physical device count=1
+FS.Skia.UI VulkanHost: creating logical device physicalDevice=94443946430272 queueFamily=0
+FS.Skia.UI VulkanHost: creating swapchain
+FS.Skia.UI VulkanHost: surface capabilities supportedUsage=ImageUsageTransferSrcBit, TransferDstBit, SampledBit, StorageBit, ColorAttachmentBit, InputAttachmentBit, ImageUsageAttachmentFeedbackLoopBitExt minImages=3 maxImages=0
+FS.Skia.UI VulkanHost: surface formats=B8G8R8A8Srgb/SpaceSrgbNonlinearKhr, B8G8R8A8Unorm/SpaceSrgbNonlinearKhr
+FS.Skia.UI VulkanHost: selected swapchain format=B8G8R8A8Unorm colorSpace=SpaceSrgbNonlinearKhr
+FS.Skia.UI VulkanHost: creating device queue
+FS.Skia.UI VulkanHost: device queue handle=94443944179008
+FS.Skia.UI VulkanHost: creating Skia Vulkan extension table instance=94443945699088 physicalDevice=94443946430272 device=94443946654960
+FS.Skia.UI VulkanHost: creating Skia Vulkan backend context
+FS.Skia.UI VulkanHost: creating Skia GRContext
+FS.Skia.UI VulkanHost: querying swapchain images
+FS.Skia.UI VulkanHost: rendering Skia scene for swapchain image index=0 format=B8G8R8A8Unorm colorType=Bgra8888
+FS.Skia.UI VulkanHost: skia maxSampleCount colorType=Bgra8888 count=8
+FS.Skia.UI VulkanHost: skia context abandoned=False maxRenderTargetSize=16384
+FS.Skia.UI VulkanHost: drawing model-derived scene into Skia Vulkan surface
+status=ok
+renderer=Vulkan
+fallback-used=false
+startup-ms=260
+first-frame-ms=260
+screenshot-effect=CaptureScreenshot { Destination = "basic-viewer.png"
+                    Format = Png }
+
+linux-evidence=real
+linux-command=scripts/us1-vulkan-smoke.sh specs/001-vulkan-elmish-viewer/readiness/us1-vulkan-smoke.txt
+windows-evidence=missing
+windows-deferral=Run the same smoke command on a Windows Vulkan-capable workstation before merge readiness.
