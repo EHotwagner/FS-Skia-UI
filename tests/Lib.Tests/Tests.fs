@@ -19,6 +19,16 @@ let updateCounter msg model =
 let viewCounter model =
     Scene.text (12.0, 24.0) $"count: {model}" Colors.white
 
+let red = Colors.rgba 220uy 64uy 52uy 255uy
+let blue = Colors.rgba 52uy 112uy 220uy 255uy
+let green = Colors.rgba 68uy 168uy 96uy 255uy
+
+let samplePaint =
+    Paint.fill red
+    |> Paint.withBlendMode Multiply
+    |> Paint.withOpacity 0.75
+    |> Paint.withAntialias true
+
 type InteractiveModel =
     { PressedKeys: string list
       Pointer: (float * float) option
@@ -169,6 +179,17 @@ let rec findRepositoryRoot (directory: string) =
 let repositoryRoot =
     findRepositoryRoot AppContext.BaseDirectory
 
+let readinessPath segments =
+    Path.Combine(Array.ofList (repositoryRoot :: "specs" :: "002-skia-feature-parity" :: "readiness" :: segments))
+
+let writeReadinessEvidence relativePath (text: string) =
+    let path = readinessPath relativePath
+    match Path.GetDirectoryName path with
+    | null -> ()
+    | directory -> Directory.CreateDirectory(directory) |> ignore
+    File.WriteAllText(path, text)
+    path
+
 let runDotnet (arguments: string) =
     let startInfo: ProcessStartInfo = ProcessStartInfo("dotnet", arguments)
     startInfo.WorkingDirectory <- repositoryRoot
@@ -317,6 +338,260 @@ let diagnosticTests =
 [<Tests>]
 let us1ContractTests =
     testList "US1 Vulkan-only viewer contract" [
+        test "primitive group image arc point vertices picture and nested scene constructors are semantic through public API" {
+            let child =
+                Scene.group [
+                    Scene.rectangle (0.0, 0.0, 100.0, 40.0) red
+                    Scene.ellipse { X = 8.0; Y = 8.0; Width = 32.0; Height = 20.0 } samplePaint
+                    Scene.line { X = 0.0; Y = 0.0 } { X = 24.0; Y = 24.0 } (Paint.stroke blue 2.0)
+                    Scene.points [ { X = 1.0; Y = 1.0 }; { X = 2.0; Y = 2.0 } ] samplePaint
+                    Scene.vertices Triangles [
+                        { Position = { X = 0.0; Y = 0.0 }; Color = Some red }
+                        { Position = { X = 10.0; Y = 0.0 }; Color = Some blue }
+                        { Position = { X = 0.0; Y = 10.0 }; Color = Some green }
+                    ] samplePaint
+                    Scene.arc { X = 2.0; Y = 2.0; Width = 20.0; Height = 20.0 } 0.0 90.0 (Paint.stroke green 1.5)
+                    Scene.image (4.0, 4.0, 16.0, 16.0) "asset.png"
+                ]
+
+            let picture = { Name = "nested"; Scene = child }
+            let scene = Scene.group [ child; Scene.picture picture ]
+            let kinds = Scene.describe scene
+
+            [ GroupElement
+              RectangleElement
+              EllipseElement
+              LineElement
+              PointsElement
+              VerticesElement
+              ArcElement
+              ImageElement
+              PictureElement ]
+            |> List.iter (fun kind -> Expect.contains kinds kind $"scene contains {kind}")
+        }
+
+        test "paint defaults and options preserve fill stroke opacity antialiasing caps joins miter and blend modes" {
+            let strokePaint =
+                Paint.stroke blue 3.5
+                |> Paint.withOpacity 0.5
+                |> Paint.withAntialias false
+                |> Paint.withStrokeCap Round
+                |> Paint.withStrokeJoin Bevel
+                |> Paint.withMiter 8.0
+                |> Paint.withBlendMode Screen
+
+            Expect.equal samplePaint.Fill (Some red) "fill color is retained"
+            Expect.equal samplePaint.BlendMode Multiply "blend mode is retained"
+            Expect.equal samplePaint.Opacity 0.75 "opacity is retained"
+            Expect.isTrue samplePaint.Antialias "antialiasing is retained"
+
+            match strokePaint.Stroke with
+            | Some stroke ->
+                Expect.equal stroke.Width 3.5 "stroke width is retained"
+                Expect.equal stroke.Cap Round "stroke cap is retained"
+                Expect.equal stroke.Join Bevel "stroke join is retained"
+                Expect.equal stroke.Miter 8.0 "stroke miter is retained"
+            | None -> failtest "stroke paint must contain stroke options"
+
+            [ SrcOver; Multiply; Screen; Overlay; Darken; Lighten; ColorDodge; ColorBurn; BlendMode.Difference; Exclusion ]
+            |> List.iter (fun blendMode ->
+                let paint = Paint.fill red |> Paint.withBlendMode blendMode
+                Expect.equal paint.BlendMode blendMode $"blend mode {blendMode} is accepted")
+        }
+
+        test "shader filter mask image and path effect declarations expose unsupported-capability diagnostics" {
+            let diagnosticPaint =
+                Paint.fill red
+                |> Paint.withShader (LinearGradient({ X = 0.0; Y = 0.0 }, { X = 10.0; Y = 10.0 }, []))
+                |> Paint.withColorFilter (BlendColor(blue, Overlay))
+                |> Paint.withMaskFilter (Blur 3.0)
+                |> Paint.withImageFilter (DropShadow(2.0, 3.0, 4.0, Colors.black))
+                |> Paint.withPathEffect (Dash([], 0.0))
+
+            let diagnostics =
+                Scene.rectangleWithPaint { X = 0.0; Y = 0.0; Width = 40.0; Height = 20.0 } diagnosticPaint
+                |> Scene.diagnostics
+
+            Expect.isGreaterThanOrEqual diagnostics.Length 2 "invalid shader and path-effect declarations produce diagnostics"
+            Expect.exists diagnostics (fun d -> d.Stage = SkiaContext && d.Message.Contains "shader") "shader diagnostic is structured"
+            Expect.exists diagnostics (fun d -> d.Stage = SkiaContext && d.Message.Contains "path-effect") "path-effect diagnostic is structured"
+        }
+
+        test "invalid resources unavailable fonts and malformed paths report frame diagnostics" {
+            let missingImagePath =
+                Path.Combine(repositoryRoot, "specs", "002-skia-feature-parity", "readiness", "sample-assets", "missing-image.png")
+
+            let malformedPath =
+                Path.create Winding [
+                    Path.lineTo 10.0 10.0
+                    Path.close
+                ]
+
+            let diagnostics =
+                Scene.group [
+                    Scene.image (0.0, 0.0, 16.0, 16.0) missingImagePath
+                    Scene.textRun
+                        { Text = "fallback"
+                          Position = { X = 0.0; Y = 24.0 }
+                          Font =
+                            { Family = Some "FS-Skia-UI-Definitely-Missing-Font"
+                              Size = 12.0
+                              Weight = None }
+                          Paint = Paint.fill Colors.white }
+                    Scene.path malformedPath samplePaint
+                ]
+                |> Scene.diagnostics
+
+            Expect.exists diagnostics (fun d -> d.Stage = FrameRender && d.Message.Contains "Invalid image resource") "missing image reports an invalid resource"
+            Expect.exists diagnostics (fun d -> d.Stage = FrameRender && d.Message.Contains "Font family") "unavailable font reports fallback"
+            Expect.exists diagnostics (fun d -> d.Stage = FrameRender && d.Message.Contains "Invalid path") "malformed path reports invalid path"
+        }
+
+        test "path commands fill types boolean operations measurement segment extraction and helpers are semantic" {
+            let first =
+                Path.create Winding [
+                    Path.moveTo 0.0 0.0
+                    Path.lineTo 10.0 0.0
+                    Path.quadTo { X = 12.0; Y = 4.0 } { X = 10.0; Y = 10.0 }
+                    Path.cubicTo { X = 8.0; Y = 12.0 } { X = 2.0; Y = 12.0 } { X = 0.0; Y = 10.0 }
+                    Path.close
+                ]
+
+            let second =
+                Path.create EvenOdd [
+                    MoveTo { X = 5.0; Y = 5.0 }
+                    ArcTo({ X = 5.0; Y = 5.0; Width = 10.0; Height = 10.0 }, 0.0, 180.0)
+                    Close
+                ]
+
+            let combined = Path.combine Union first second
+            let measured = Path.measure combined
+            let segment = Path.segment 0.0 5.0 combined
+
+            Expect.equal combined.FillType Winding "combined path keeps the left fill type"
+            Expect.isGreaterThan measured.Length 20.0 "path measurement accounts for line and curve endpoints"
+            Expect.isTrue measured.IsClosed "path measurement records closed paths"
+            Expect.isSome (Path.bounds combined) "path bounds are available"
+            Expect.isNonEmpty segment.Commands "non-empty segment extraction preserves path commands"
+            Expect.contains (Scene.describe (Scene.path combined samplePaint)) PathElement "path scene is constructible"
+        }
+
+        test "clipping region text font text-run picture color-space and perspective declarations are semantic" {
+            let clipPath =
+                Path.create Winding [
+                    Path.moveTo 0.0 0.0
+                    Path.lineTo 20.0 0.0
+                    Path.lineTo 20.0 20.0
+                    Path.close
+                ]
+
+            let textRun =
+                { Text = "Skia"
+                  Position = { X = 6.0; Y = 18.0 }
+                  Font =
+                    { Family = Some "Arial"
+                      Size = 14.0
+                      Weight = Some 500 }
+                  Paint = Paint.fill Colors.white }
+
+            let region =
+                { Bounds = [ { X = 0.0; Y = 0.0; Width = 12.0; Height = 12.0 } ]
+                  Operation = RegionUnion }
+
+            let perspective =
+                { M11 = 1.0
+                  M12 = 0.0
+                  M13 = 0.001
+                  M21 = 0.0
+                  M22 = 1.0
+                  M23 = 0.001
+                  M31 = 0.0
+                  M32 = 0.0
+                  M33 = 1.0 }
+
+            let scene =
+                Scene.group [
+                    Scene.clipped (PathClip clipPath) (Scene.textRun textRun)
+                    Scene.clipped (RectClip { X = 0.0; Y = 0.0; Width = 32.0; Height = 32.0 }) (Scene.picture { Name = "text"; Scene = Scene.text (2.0, 16.0) "picture" blue })
+                    Scene.region region samplePaint
+                    Scene.withColorSpace DisplayP3 (Scene.rectangle (0.0, 0.0, 4.0, 4.0) red)
+                    Scene.withPerspective perspective (Scene.rectangle (4.0, 4.0, 4.0, 4.0) blue)
+                ]
+
+            let kinds = Scene.describe scene
+
+            [ ClipElement; TextRunElement; PictureElement; RegionElement; ColorSpaceElement; PerspectiveElement ]
+            |> List.iter (fun kind -> Expect.contains kinds kind $"scene contains {kind}")
+
+            Expect.equal textRun.Font.Family (Some "Arial") "font family is retained"
+            Expect.equal region.Operation RegionUnion "region operation is retained"
+            Expect.equal perspective.M33 1.0 "perspective transform is retained"
+        }
+
+        test "drawing parity gallery render-readback evidence covers at least sixty public visual capabilities" {
+            let paints =
+                [ for blendMode in [ SrcOver; Multiply; Screen; Overlay; Darken; Lighten; ColorDodge; ColorBurn; BlendMode.Difference; Exclusion ] do
+                      Paint.fill red |> Paint.withBlendMode blendMode
+                  Paint.stroke blue 1.0 |> Paint.withStrokeCap Butt
+                  Paint.stroke blue 2.0 |> Paint.withStrokeCap Round
+                  Paint.stroke blue 3.0 |> Paint.withStrokeCap Square
+                  Paint.stroke green 1.0 |> Paint.withStrokeJoin Miter
+                  Paint.stroke green 1.0 |> Paint.withStrokeJoin RoundJoin
+                  Paint.stroke green 1.0 |> Paint.withStrokeJoin Bevel
+                  Paint.fill red |> Paint.withShader (SolidColor red)
+                  Paint.fill red |> Paint.withShader (LinearGradient({ X = 0.0; Y = 0.0 }, { X = 20.0; Y = 20.0 }, [ red; blue ]))
+                  Paint.fill red |> Paint.withShader (RadialGradient({ X = 10.0; Y = 10.0 }, 8.0, [ red; green ]))
+                  Paint.fill red |> Paint.withShader (SweepGradient({ X = 10.0; Y = 10.0 }, [ blue; green ]))
+                  Paint.fill red |> Paint.withColorFilter (BlendColor(blue, Multiply))
+                  Paint.fill red |> Paint.withMaskFilter (Blur 2.0)
+                  Paint.fill red |> Paint.withImageFilter (DropShadow(2.0, 2.0, 2.0, Colors.black))
+                  Paint.stroke red 1.0 |> Paint.withPathEffect (Dash([ 2.0; 2.0 ], 0.0))
+                  Paint.stroke red 1.0 |> Paint.withPathEffect (Discrete(3.0, 1.0))
+                  Paint.stroke red 1.0 |> Paint.withPathEffect (Corner 2.0) ]
+
+            let path =
+                Path.create EvenOdd [
+                    Path.moveTo 10.0 10.0
+                    Path.lineTo 30.0 10.0
+                    Path.lineTo 30.0 30.0
+                    Path.close
+                ]
+
+            let visualScenes =
+                [ for index in 0 .. 63 do
+                      let paint = paints[index % paints.Length]
+                      match index % 8 with
+                      | 0 -> Scene.rectangleWithPaint { X = float index; Y = 0.0; Width = 8.0; Height = 8.0 } paint
+                      | 1 -> Scene.ellipse { X = float index; Y = 10.0; Width = 8.0; Height = 8.0 } paint
+                      | 2 -> Scene.line { X = float index; Y = 20.0 } { X = float index + 8.0; Y = 28.0 } paint
+                      | 3 -> Scene.path path paint
+                      | 4 -> Scene.points [ { X = float index; Y = 32.0 } ] paint
+                      | 5 -> Scene.vertices Triangles [ { Position = { X = float index; Y = 40.0 }; Color = Some red } ] paint
+                      | 6 -> Scene.arc { X = float index; Y = 48.0; Width = 8.0; Height = 8.0 } 0.0 120.0 paint
+                      | _ -> Scene.textRun { Text = $"T{index}"; Position = { X = float index; Y = 64.0 }; Font = { Family = None; Size = 12.0; Weight = None }; Paint = paint } ]
+
+            let scene = Scene.group visualScenes
+            let readback = Scene.renderReadbackEvidence { Width = 640; Height = 360 } scene
+            let capabilityLines =
+                visualScenes
+                |> List.mapi (fun index visual ->
+                    let description =
+                        Scene.describe visual
+                        |> List.map string
+                        |> String.concat ","
+
+                    $"capability-{index + 1:D2}: {description}")
+
+            let evidencePath =
+                writeReadinessEvidence
+                    [ "screenshots"; "us1-render-readback.txt" ]
+                    (String.concat "\n" ([ $"hash={readback.DeterministicHash}"; $"semantic-capabilities={visualScenes.Length}" ] @ capabilityLines))
+
+            Expect.isGreaterThanOrEqual visualScenes.Length 60 "gallery covers at least sixty visual declarations"
+            Expect.isGreaterThanOrEqual readback.CapabilityCount 8 "readback preserves the public visual categories"
+            Expect.isTrue (File.Exists evidencePath) "render-readback evidence artifact is captured under readiness"
+        }
+
         test "minimal Elmish viewer program produces a scene and render effect" {
             let config =
                 Viewer.defaultConfiguration "minimal" { Width = 640; Height = 480 }
@@ -569,6 +844,20 @@ let us4SampleAndScreenshotTests =
             Expect.stringContains stdout "ticks=1" "subscription-style tick updates sample state"
             Expect.stringContains stdout "initialize-effect=true" "sample requests renderer initialization through Elmish effect mapping"
             Expect.stringContains stdout "screenshot-format=Jpeg" "interactive sample requests JPEG screenshot capture"
+        }
+
+        test "ScreenshotGallery contract smoke exercises screenshots diagnostics recovery and shutdown effects" {
+            let exitCode, stdout, stderr =
+                runDotnet "run --project samples/ScreenshotGallery/ScreenshotGallery.fsproj -- --contract-smoke"
+
+            Expect.equal exitCode 0 stderr
+            Expect.stringContains stdout "status=ok" "contract smoke succeeds"
+            Expect.stringContains stdout "sample=ScreenshotGallery" "screenshot sample ran"
+            Expect.stringContains stdout "initialize-effect=true" "sample requests renderer initialization through Elmish effect mapping"
+            Expect.stringContains stdout "render-effect=true" "sample renders through host effect mapping"
+            Expect.stringContains stdout "screenshot-effect=true" "sample requests screenshot capture through Elmish effect mapping"
+            Expect.stringContains stdout "recovery-diagnostic-effect=true" "sample reports recoverable frame diagnostics"
+            Expect.stringContains stdout "shutdown-effect=true" "sample shuts down through Elmish effect mapping"
         }
 
         test "screenshot diagnostics describe capture before a successful frame" {

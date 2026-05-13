@@ -1,0 +1,37 @@
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Lib.Tests -> /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Passed Public surface.viewer withEffectMapping identifies messages for host-side effect interpretation [6 ms]
+  Passed Public surface.viewer withEventMapping maps viewer events to application messages [7 ms]
+  Passed Diagnostics.fallback renderer language is absent from configuration surface [3 ms]
+  Passed Public surface.viewer withSubscription replaces subscription source [7 ms]
+  Passed Public surface.scene constructors create stable values [5 ms]
+  Passed Diagnostics.invalid size fails before Vulkan startup [6 ms]
+  Passed Public surface.viewer create preserves pure Elmish functions and default subscriptions [11 ms]
+  Passed Public surface.configuration can be constructed without renderer selection [18 ms]
+  Passed Diagnostics.diagnostic helpers preserve severity stage message and cause [18 ms]
+  Passed Diagnostics.frame render diagnostics identify Vulkan path without fallback switching
+  Passed US1 Vulkan-only viewer contract.minimal Elmish viewer program produces a scene and render effect [1 ms]
+  Passed US1 Vulkan-only viewer contract.public API exposes no fallback renderer vocabulary [1 ms]
+  Passed US2 Vulkan-unavailable diagnostics.unsupported platform diagnostic is fatal before rendering
+  Passed US2 Vulkan-unavailable diagnostics.vulkan unavailable diagnostic identifies Vulkan without fallback language
+  Passed US2 Vulkan-unavailable diagnostics.missing Vulkan startup stages Synthetic produce stage-specific diagnostics without GPU resources [2 ms]
+  Passed US1 Vulkan-only viewer contract.shader filter mask image and path effect declarations expose unsupported-capability diagnostics [5 ms]
+  Passed US3 Elmish-driven viewer flow.application update handles keyboard pointer resize close lifecycle diagnostic frame screenshot and subscription messages [5 ms]
+  Passed US1 Vulkan-only viewer contract.path commands fill types boolean operations measurement segment extraction and helpers are semantic [8 ms]
+  Passed US4 complete Elmish viewer examples.screenshot diagnostics describe capture before a successful frame
+  Passed US1 Vulkan-only viewer contract.clipping region text font text-run picture color-space and perspective declarations are semantic [12 ms]
+  Passed US1 Vulkan-only viewer contract.paint defaults and options preserve fill stroke opacity antialiasing caps joins miter and blend modes [26 ms]
+  Passed US1 Vulkan-only viewer contract.primitive group image arc point vertices picture and nested scene constructors are semantic through public API [26 ms]
+  Passed US4 complete Elmish viewer examples.interactive update emits screenshot effect through public Elmish boundary [1 ms]
+  Passed US3 Elmish-driven viewer flow.timer subscription dispatches messages without direct mutable scene pushes [2 ms]
+  Passed US3 Elmish-driven viewer flow.update emits initialize render screenshot shutdown diagnostic and dispatch effects [4 ms]
+  Passed US1 Vulkan-only viewer contract.drawing parity gallery render-readback evidence covers at least sixty public visual capabilities [31 ms]
+  Passed US4 complete Elmish viewer examples.BasicViewer contract smoke compiles and exercises scene and screenshot command [3 s]
+  Passed US4 complete Elmish viewer examples.InteractiveViewer contract smoke compiles and exercises input state and screenshot command [3 s]
+
+Test Run Successful.
+Total tests: 28
+     Passed: 28
+ Total time: 4.3123 Seconds

@@ -1,0 +1,33 @@
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Smoke.Tests -> /home/developer/projects/FS-Skia-UI/tests/Smoke.Tests/bin/Debug/net10.0/Smoke.Tests.dll
+  Parity.Tests -> /home/developer/projects/FS-Skia-UI/tests/Parity.Tests/bin/Debug/net10.0/Parity.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Smoke.Tests/bin/Debug/net10.0/Smoke.Tests.dll (.NETCoreApp,Version=v10.0)
+Test run for /home/developer/projects/FS-Skia-UI/tests/Parity.Tests/bin/Debug/net10.0/Parity.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+  Charts -> /home/developer/projects/FS-Skia-UI/src/Charts/bin/Debug/net10.0/FS.Skia.UI.Charts.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 19 ms - Smoke.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 22 ms - Parity.Tests.dll (net10.0)
+  Lib.Tests -> /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Layout.Tests -> /home/developer/projects/FS-Skia-UI/tests/Layout.Tests/bin/Debug/net10.0/Layout.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Layout.Tests/bin/Debug/net10.0/Layout.Tests.dll (.NETCoreApp,Version=v10.0)
+  Charts.Tests -> /home/developer/projects/FS-Skia-UI/tests/Charts.Tests/bin/Debug/net10.0/Charts.Tests.dll
+A total of 1 test files matched the specified pattern.
+Test run for /home/developer/projects/FS-Skia-UI/tests/Charts.Tests/bin/Debug/net10.0/Charts.Tests.dll (.NETCoreApp,Version=v10.0)
+  Package.Tests -> /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 23 ms - Layout.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:     4, Skipped:     0, Total:     4, Duration: 19 ms - Package.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 23 ms - Charts.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:    28, Skipped:     0, Total:    28, Duration: 4 s - Lib.Tests.dll (net10.0)

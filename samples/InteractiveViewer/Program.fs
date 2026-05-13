@@ -178,7 +178,7 @@ let runSmoke seconds =
 
 let runContractSmoke () =
     let screenshot =
-        { Destination = "specs/001-vulkan-elmish-viewer/readiness/screenshots/interactive-viewer.jpg"
+        { Destination = "specs/002-skia-feature-parity/readiness/screenshots/interactive-viewer.jpg"
           Format = Jpeg }
 
     let model, initCmd = init ()

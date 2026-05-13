@@ -1,0 +1,2 @@
+wrote /home/developer/projects/FS-Skia-UI/scripts/../specs/002-skia-feature-parity/readiness/parity-evidence.json
+exit=0

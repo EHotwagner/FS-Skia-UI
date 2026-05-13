@@ -1,0 +1,126 @@
+{
+  "feature": "002-skia-feature-parity",
+  "baselineCommit": "7aac43dd12903f93004d0c2bf7c6254318a366dc",
+  "items": [
+    {
+      "capabilityId": "core-viewer",
+      "capability": "Windowed Vulkan viewer, Elmish event mapping, lifecycle, input, diagnostics, screenshot requests",
+      "status": "Adapted",
+      "evidenceType": "Smoke",
+      "command": "dotnet run --project samples/InteractiveViewer/InteractiveViewer.fsproj -- --contract-smoke",
+      "path": "readiness/smoke/t061-interactiveviewer-contract.txt",
+      "adaptationNotes": "Baseline observable scene/input streams are adapted to Elmish Model/Msg/ViewerEffect; GL fallback is excluded by project constraint.",
+      "conflictsWithConstraints": false
+    },
+    {
+      "capabilityId": "scene-dsl",
+      "capability": "Scene creation, grouping, primitives, text, images, paths, transforms, clipping, paint helpers, reusable pictures",
+      "status": "Supported",
+      "evidenceType": "SemanticTest",
+      "command": "dotnet test tests/Lib.Tests/Lib.Tests.fsproj",
+      "path": "readiness/logs/t026-lib-tests.txt",
+      "adaptationNotes": "Implemented as immutable FS.Skia.UI scene declarations.",
+      "conflictsWithConstraints": false
+    },
+    {
+      "capabilityId": "rendering-skia-translation",
+      "capability": "Primitive rendering, frame recovery, diagnostics, Skia paint/shader/filter/path effect translation",
+      "status": "Supported",
+      "evidenceType": "Screenshot",
+      "command": "dotnet test tests/Lib.Tests/Lib.Tests.fsproj",
+      "path": "readiness/screenshots/us1-render-readback.txt",
+      "adaptationNotes": "Render-readback evidence is deterministic semantic evidence; Vulkan smoke evidence is captured separately where available.",
+      "conflictsWithConstraints": false
+    },
+    {
+      "capabilityId": "shaders-effects",
+      "capability": "Gradient, blend, color filter, mask filter, image filter, path effect, and effect gallery coverage",
+      "status": "Adapted",
+      "evidenceType": "Smoke",
+      "command": "dotnet run --project samples/EffectsGallery/EffectsGallery.fsproj -- --contract-smoke",
+      "path": "readiness/smoke/t029-effectsgallery-contract.txt",
+      "adaptationNotes": "Baseline effect vocabulary is mapped to supported Skia declarations; unavailable device capabilities report diagnostics.",
+      "conflictsWithConstraints": false
+    },
+    {
+      "capabilityId": "screenshots",
+      "capability": "PNG/JPEG screenshot workflow, post-frame gating, output path handling, capture diagnostics",
+      "status": "Supported",
+      "evidenceType": "Smoke",
+      "command": "dotnet run --project samples/ScreenshotGallery/ScreenshotGallery.fsproj -- --contract-smoke",
+      "path": "readiness/smoke/t061-screenshotgallery-contract.txt",
+      "adaptationNotes": "Screenshots are requested through Elmish effects and interpreted at the viewer edge.",
+      "conflictsWithConstraints": false
+    },
+    {
+      "capabilityId": "performance-evidence",
+      "capability": "Large scene, chart, DataGrid, graph, smoke, and first-frame evidence commands",
+      "status": "Supported",
+      "evidenceType": "SemanticTest",
+      "command": "dotnet test",
+      "path": "readiness/logs/final-pass-dotnet-test.txt",
+      "adaptationNotes": "Scale tests cover 100,000 chart points, 10,000 grid rows, 100-node DAG layout, and smoke timing artifacts.",
+      "conflictsWithConstraints": false
+    },
+    {
+      "capabilityId": "charts",
+      "capability": "Line, bar, pie/donut, scatter, area, histogram, candlestick, radar, axes, legends, palettes, scale helpers",
+      "status": "Supported",
+      "evidenceType": "SemanticTest",
+      "command": "dotnet test tests/Charts.Tests/Charts.Tests.fsproj",
+      "path": "readiness/logs/t038-charts-tests-rerun.txt",
+      "adaptationNotes": "Charts are pure view-layer scene builders.",
+      "conflictsWithConstraints": false
+    },
+    {
+      "capabilityId": "datagrid",
+      "capability": "Columns, typed cell values, sorting, scrolling/viewport behavior, fixed headers, configurable colors and text",
+      "status": "Supported",
+      "evidenceType": "SemanticTest",
+      "command": "dotnet test tests/Charts.Tests/Charts.Tests.fsproj",
+      "path": "readiness/logs/t038-charts-tests-rerun.txt",
+      "adaptationNotes": "DataGrid state remains consumer-owned and is projected into pure scene props.",
+      "conflictsWithConstraints": false
+    },
+    {
+      "capabilityId": "layout",
+      "capability": "HStack, VStack, Dock, sizing, spacing, padding, alignment, nested composition",
+      "status": "Supported",
+      "evidenceType": "SemanticTest",
+      "command": "dotnet test tests/Layout.Tests/Layout.Tests.fsproj",
+      "path": "readiness/logs/t049-layout-tests-rerun.txt",
+      "adaptationNotes": "Layout builders are pure scene composition helpers.",
+      "conflictsWithConstraints": false
+    },
+    {
+      "capabilityId": "graphs",
+      "capability": "Directed DAG rendering, undirected weighted graph rendering, validation, cycle and endpoint diagnostics",
+      "status": "Supported",
+      "evidenceType": "SemanticTest",
+      "command": "dotnet test tests/Layout.Tests/Layout.Tests.fsproj",
+      "path": "readiness/logs/t049-layout-tests-rerun.txt",
+      "adaptationNotes": "Graph layout and validation are deterministic pure helpers.",
+      "conflictsWithConstraints": false
+    },
+    {
+      "capabilityId": "examples-demos",
+      "capability": "Basic, interactive, parity, effects, charts, DataGrid, layout/graph, screenshot, and demo reel samples",
+      "status": "Supported",
+      "evidenceType": "Smoke",
+      "command": "dotnet test tests/Smoke.Tests/Smoke.Tests.fsproj",
+      "path": "readiness/smoke/",
+      "adaptationNotes": "Samples expose Vulkan-only Elmish workflows without fallback renderer controls.",
+      "conflictsWithConstraints": false
+    },
+    {
+      "capabilityId": "documentation",
+      "capability": "Quickstart, parity matrix, Vulkan-only adaptations, Elmish-only adaptations, package and sample commands",
+      "status": "Adapted",
+      "evidenceType": "Documentation",
+      "command": "dotnet test tests/Parity.Tests/Parity.Tests.fsproj",
+      "path": "readiness/parity/parity-matrix.md",
+      "adaptationNotes": "Documentation maps baseline reactive and fallback APIs into Elmish-only Vulkan workflows.",
+      "conflictsWithConstraints": false
+    }
+  ]
+}

@@ -3,8 +3,8 @@
 // Usage:
 //   dotnet fsi scripts/prelude.fsx
 
-#i "nuget: file:///home/developer/.local/share/nuget-local/"
-#r "nuget: FS.Skia.UI, 0.1.0-preview.1"
+#r "nuget: Fable.Elmish, 4.2.0"
+#r "../src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll"
 
 open Elmish
 open FS.Skia.UI
@@ -38,10 +38,14 @@ let program =
     Viewer.create configuration init update view
     |> Viewer.withSubscription subscriptions
 
+let model, _ = program.Init()
+let next, _ = program.Update Tick model
+let renderEffect: ViewerEffect<Msg> = RenderFrame(program.View next)
+
 let screenshot =
     { Destination = "prelude.png"
       Format = Png }
 
-let effect = CaptureScreenshot screenshot
+let effect: ViewerEffect<Msg> = CaptureScreenshot screenshot
 
-printfn "prelude: %s %A %A" program.Configuration.Title screenshot.Format effect
+printfn "prelude: %s model=%d next=%d screenshot=%A render=%A capture=%A" program.Configuration.Title model next screenshot.Format renderEffect effect

@@ -1,0 +1,4 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll

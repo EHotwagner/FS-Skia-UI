@@ -27,16 +27,61 @@ let update msg model =
         Cmd.ofMsg
             (HostEffect(
                 CaptureScreenshot
-                    { Destination = "specs/001-vulkan-elmish-viewer/readiness/screenshots/basic-viewer.png"
+                    { Destination = "specs/002-skia-feature-parity/readiness/screenshots/basic-viewer.png"
                       Format = Png }
             ))
     | HostEffect _ -> model, Cmd.none
 
 let view model =
+    let red = Colors.rgba 220uy 64uy 52uy 230uy
+    let blue = Colors.rgba 52uy 112uy 220uy 255uy
+    let green = Colors.rgba 68uy 168uy 96uy 255uy
+
+    let effectPaint =
+        Paint.fill red
+        |> Paint.withShader (LinearGradient({ X = 32.0; Y = 150.0 }, { X = 260.0; Y = 230.0 }, [ red; blue; green ]))
+        |> Paint.withColorFilter (BlendColor(Colors.rgba 255uy 255uy 255uy 48uy, Screen))
+        |> Paint.withMaskFilter (Blur 0.5)
+        |> Paint.withImageFilter (DropShadow(4.0, 4.0, 3.0, Colors.rgba 0uy 0uy 0uy 120uy))
+        |> Paint.withPathEffect (Corner 6.0)
+
+    let strokePaint =
+        Paint.stroke (Colors.rgba 248uy 220uy 92uy 255uy) 3.0
+        |> Paint.withStrokeCap Round
+        |> Paint.withStrokeJoin RoundJoin
+        |> Paint.withPathEffect (Dash([ 8.0; 4.0 ], 0.0))
+
+    let samplePath =
+        Path.create EvenOdd [
+            Path.moveTo 42.0 168.0
+            Path.lineTo 148.0 150.0
+            Path.quadTo { X = 230.0; Y = 178.0 } { X = 190.0; Y = 232.0 }
+            Path.lineTo 64.0 232.0
+            Path.close
+        ]
+
+    let perspective =
+        { M11 = 1.0
+          M12 = 0.08
+          M13 = 0.0
+          M21 = -0.04
+          M22 = 1.0
+          M23 = 0.0
+          M31 = 0.0002
+          M32 = 0.0002
+          M33 = 1.0 }
+
     Scene.group [
         Scene.rectangle (0.0, 0.0, 640.0, 480.0) (Colors.rgba 18uy 24uy 32uy 255uy)
         Scene.rectangle (32.0, 32.0, 220.0, 96.0) (Colors.rgba 36uy 118uy 160uy 255uy)
         Scene.text (48.0, 88.0) model.Title Colors.white
+        Scene.clipped
+            (RectClip { X = 28.0; Y = 146.0; Width = 240.0; Height = 112.0 })
+            (Scene.group [
+                Scene.path samplePath effectPaint
+                Scene.line { X = 44.0; Y = 244.0 } { X = 250.0; Y = 158.0 } strokePaint
+                Scene.withPerspective perspective (Scene.rectangleWithPaint { X = 184.0; Y = 174.0; Width = 42.0; Height = 42.0 } effectPaint)
+            ])
         Scene.image (280.0, 40.0, 96.0, 96.0) "assets/sample.png"
         Scene.chart model.Values
     ]
@@ -184,8 +229,8 @@ let main argv =
             |> Option.map (fun arg -> arg.Substring("--output=".Length))
             |> Option.defaultValue (
                 match format with
-                | Png -> "specs/001-vulkan-elmish-viewer/readiness/screenshots/basic-viewer.png"
-                | Jpeg -> "specs/001-vulkan-elmish-viewer/readiness/screenshots/basic-viewer.jpg"
+                | Png -> "specs/002-skia-feature-parity/readiness/screenshots/basic-viewer.png"
+                | Jpeg -> "specs/002-skia-feature-parity/readiness/screenshots/basic-viewer.jpg"
             )
 
         runScreenshotSmoke format destination

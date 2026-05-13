@@ -1,0 +1,18 @@
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  Layout.Tests -> /home/developer/projects/FS-Skia-UI/tests/Layout.Tests/bin/Debug/net10.0/Layout.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Layout.Tests/bin/Debug/net10.0/Layout.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Passed Layout contract.default stack config is constructible [6 ms]
+  Passed Layout contract.zero and negative stack bounds clamp measured child sizes to non-negative values [7 ms]
+  Passed Layout contract.graph validation reports disconnected components and accepts dense edge sets [11 ms]
+  Passed Layout contract.dock config and child sizing records retain public layout props [9 ms]
+  Passed Layout contract.horizontal and vertical stack measurement honors padding spacing and child count [8 ms]
+  Passed Layout contract.layout resize keeps at least ten vertical children non-overlapping at three sizes [14 ms]
+  Passed Layout contract.layout resize keeps at least ten horizontal children non-overlapping at three sizes [14 ms]
+  Passed Layout contract.graph validation reports duplicates missing endpoints self-loops and cycles [15 ms]
+
+Test Run Successful.
+Total tests: 8
+     Passed: 8
+ Total time: 0.6299 Seconds

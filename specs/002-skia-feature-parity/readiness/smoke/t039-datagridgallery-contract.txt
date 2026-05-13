@@ -1,0 +1,5 @@
+status=ok
+sample=DataGridGallery
+state-owned-by-model=true
+hit-test=Some (Cell (128, "account"))
+kinds=[GroupElement; RectangleElement; TextElement; ChartElement; TextElement]

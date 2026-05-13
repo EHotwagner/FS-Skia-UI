@@ -1,0 +1,8 @@
+FSI evidence for T015 is captured in:
+
+- `readiness/transcripts/core-prelude.txt`
+- `readiness/transcripts/charts-prelude.txt`
+- `readiness/transcripts/layout-prelude.txt`
+- `readiness/transcripts/parity-prelude.txt`
+
+All four scripts exited with code 0 on 2026-05-13 after `dotnet build FS-Skia-UI.sln`.

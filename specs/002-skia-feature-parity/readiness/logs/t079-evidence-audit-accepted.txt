@@ -1,0 +1,22 @@
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/002-skia-feature-parity
+
+[1/2] Computing task graph...
+task-graph: 84 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/002-skia-feature-parity/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/002-skia-feature-parity/readiness/task-graph.md
+  status: 15[X], 2[S], 67[S*]
+
+[2/2] Diff scan against feature base...
+  warning: neither main nor master exists; using HEAD~1
+  diff-scan: 0 blocking, 2 advisory
+
+=== Verdict ===
+✗ NEEDS-EVIDENCE
+  synthetic tasks (declared):     2
+  auto-synthetic tasks (computed): 67
+  advisory diff-scan hits:         2 (printed, not blocking)
+
+  --accept-synthetic recorded: Accepted synthetic propagation: T014 uses simulated native Vulkan startup-stage failures to avoid mutating GPU/driver state; T077 has Linux Vulkan smoke evidence but Windows smoke must be captured on a Windows Vulkan-capable workstation before merge without caveat.
+  logged to /home/developer/projects/FS-Skia-UI/specs/002-skia-feature-parity/readiness/synthetic-evidence.json
+  audit still reports failure; merge is a human decision.

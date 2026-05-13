@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "accept_synthetic": {
+    "timestamp": "2026-05-13T09:14:21.718177+00:00",
+    "justification": "Accepted synthetic propagation: T014 uses simulated native Vulkan startup-stage failures to avoid mutating GPU/driver state; T077 has Linux Vulkan smoke evidence but Windows smoke must be captured on a Windows Vulkan-capable workstation before merge without caveat."
+  },
+  "graph_summary": {
+    "synthetic": 2,
+    "auto_synthetic": 67
+  },
+  "diff_scan": {
+    "base_ref": null,
+    "blocking": [],
+    "advisory": [
+      {
+        "file": "specs/002-skia-feature-parity/plan.md",
+        "line": 38,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "- **Principle V - Synthetic Evidence Disclosure**: PASS with constraint. Headless or driver-limited environments may pro"
+      },
+      {
+        "file": "specs/002-skia-feature-parity/readiness/task-graph.md",
+        "line": 320,
+        "pattern": "synthetic-banner",
+        "severity": "advisory",
+        "reason": "Synthetic-evidence disclosure (Principle V)",
+        "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+      }
+    ]
+  }
+}

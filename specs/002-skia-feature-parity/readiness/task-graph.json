@@ -1,0 +1,1725 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm the pinned upstream baseline commit and record the inspected capability-area inventory in `readiness/baseline-capabilities.md`",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Create feature readiness scaffolding under `readiness/` for transcripts, screenshots, parity reports, surface baselines, package logs, and smoke logs",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add the local NuGet output, sample, and evidence command conventions to the feature readiness notes",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record feature Tier 1 obligations: public API impact, required `.fsi` files, Elmish/MVU applicability, Vulkan-only constraint, and real-vs-synthetic evidence rules",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Capture current repository surface and sample/test inventory as the starting implementation baseline",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft `src/Lib` public `.fsi` contracts for scene, paint, shader, filter, path, clipping, text, picture, diagnostics, screenshots, parity reporting, and viewer MVU host APIs",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Scaffold `src/Charts` and `src/Layout` packable projects with pinned dependencies and solution entries",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft `src/Charts` public `.fsi` contracts for shared chart props, every chart module, DataGrid props, pure helpers, and hit-test projections",
+      "explicit_deps": [
+        "T007"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft `src/Layout` public `.fsi` contracts for layout types, stack/dock layout, graph validation, graph layout, graph builders, and hit-test projections",
+      "explicit_deps": [
+        "T007"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Create test projects `Charts.Tests`, `Layout.Tests`, `Parity.Tests`, `Package.Tests`, and `Smoke.Tests` and add them to the solution",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Create or update FSI prelude scripts for core, charts, layout, and parity evidence workflows",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Add surface-area baseline generation and comparison tests for all public modules in the three packages",
+      "explicit_deps": [
+        "T006",
+        "T008",
+        "T009"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Add shared deterministic rendering fixtures, screenshot tolerance metadata, large-data generators, and sample asset fixtures",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T014",
+      "declared": "synthetic",
+      "effective": "synthetic",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Add diagnostics test fixtures for unsupported Vulkan, missing capability, screenshot failure, frame recovery, and shutdown failure scenarios",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Exercise the draft `.fsi` surface from FSI and capture `readiness/fsi-session.txt`, including core `init`/`update`/effect paths and pure component construction",
+      "explicit_deps": [
+        "T006",
+        "T008",
+        "T009",
+        "T011"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Document unsupported-scope handling for fallback renderer and non-Elmish integration baseline behaviors",
+      "explicit_deps": [
+        "T001",
+        "T004"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run foundation verification (`dotnet restore`, `dotnet build`, surface baseline tests, and FSI scripts) and store logs under `readiness/`",
+      "explicit_deps": [
+        "T012",
+        "T013",
+        "T014",
+        "T015",
+        "T016"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": [
+        "T014"
+      ]
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add packed-library/prelude semantic tests for primitive, group, image, arc, point, vertices, picture, and nested scene constructors",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [
+        "T017"
+      ]
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic tests for paint defaults and options: fill, stroke, opacity, antialiasing, caps, joins, miter, and blend modes",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [
+        "T017"
+      ]
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic tests for shader, color filter, mask filter, image filter, and path effect declarations with unsupported-capability diagnostics",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [
+        "T017"
+      ]
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic tests for path commands, fill types, boolean operations, path measurement, segment extraction, and construction helpers",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [
+        "T017"
+      ]
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add screenshot or render-readback verification for the drawing parity gallery covering at least 60 visual capabilities",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [
+        "T017"
+      ]
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement immutable scene, element, bounds, color, matrix, metadata, and composition data structures in `FS.Skia.UI`",
+      "explicit_deps": [
+        "T018"
+      ],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [
+        "T017",
+        "T018"
+      ]
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement paint, blend mode, stroke, shader, color filter, mask filter, image filter, and path effect declarations",
+      "explicit_deps": [
+        "T019"
+      ],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [
+        "T017",
+        "T019"
+      ]
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement path, clipping, region, text, font, text-run, picture, color-space, and perspective transform declarations",
+      "explicit_deps": [
+        "T020",
+        "T021"
+      ],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [
+        "T017",
+        "T020",
+        "T021"
+      ]
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement Skia translation/rendering for primitive elements, groups, images, points, vertices, arcs, reusable pictures, and nested scenes",
+      "explicit_deps": [
+        "T018",
+        "T023"
+      ],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [
+        "T017",
+        "T018",
+        "T023"
+      ]
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement Skia translation/rendering for paint options, blend modes, shaders, filters, path effects, clipping, regions, color handling, and transforms",
+      "explicit_deps": [
+        "T019",
+        "T020",
+        "T021",
+        "T024",
+        "T025",
+        "T026"
+      ],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [
+        "T017",
+        "T019",
+        "T020",
+        "T021",
+        "T024",
+        "T025",
+        "T026"
+      ]
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Add diagnostics for invalid resources, unavailable fonts, unsupported effects, invalid paths, and device-specific rendering capability gaps",
+      "explicit_deps": [
+        "T020",
+        "T024",
+        "T025",
+        "T027"
+      ],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [
+        "T017",
+        "T020",
+        "T024",
+        "T025",
+        "T027"
+      ]
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Build `samples/ParityGallery` and `samples/EffectsGallery` with representative drawing, styling, shader, filter, path, text, image, clipping, region, picture, color-space, and transform scenes",
+      "explicit_deps": [
+        "T022",
+        "T026",
+        "T027",
+        "T028"
+      ],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [
+        "T017",
+        "T022",
+        "T026",
+        "T027",
+        "T028"
+      ]
+    },
+    {
+      "id": "T030",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Document the US1 independent validation path and record gallery screenshots or render evidence under `readiness/screenshots/`",
+      "explicit_deps": [
+        "T022",
+        "T029"
+      ],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [
+        "T017",
+        "T022",
+        "T029"
+      ]
+    },
+    {
+      "id": "T031",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add packed-library/prelude tests for chart props, axis/legend/palette config, pure scaling helpers, and empty/invalid data behavior",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": [
+        "T030"
+      ]
+    },
+    {
+      "id": "T032",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic and scale tests for line, bar, pie/donut, scatter, area, histogram, candlestick, and radar charts, including 100,000-point datasets",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": [
+        "T030"
+      ]
+    },
+    {
+      "id": "T033",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic and scale tests for DataGrid columns, cells, fixed headers, vertical viewport math, sorting, width management, and 10,000-row datasets",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": [
+        "T030"
+      ]
+    },
+    {
+      "id": "T034",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add composition tests proving charts and DataGrid are pure scene elements embedded in larger core scenes",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": [
+        "T030"
+      ]
+    },
+    {
+      "id": "T035",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement shared chart/DataGrid types, defaults, palettes, labels, legends, axes, viewport records, sort records, and projection helpers",
+      "explicit_deps": [
+        "T031"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": [
+        "T030",
+        "T031"
+      ]
+    },
+    {
+      "id": "T036",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement chart scaling, invalid-value filtering, empty-state output, label layout, legend layout, and pure hit-test projection helpers",
+      "explicit_deps": [
+        "T031",
+        "T032"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": [
+        "T030",
+        "T031",
+        "T032"
+      ]
+    },
+    {
+      "id": "T037",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement line, bar, pie/donut, scatter, area, histogram, candlestick, and radar chart builders returning core scene elements",
+      "explicit_deps": [
+        "T032",
+        "T035",
+        "T036"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": [
+        "T030",
+        "T032",
+        "T035",
+        "T036"
+      ]
+    },
+    {
+      "id": "T038",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement DataGrid builder, visible-row calculation, sorting helper, fixed header rendering, cell formatting, width management, and hit-test projection helpers",
+      "explicit_deps": [
+        "T033",
+        "T035"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": [
+        "T030",
+        "T033",
+        "T035"
+      ]
+    },
+    {
+      "id": "T039",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Build `samples/ChartsGallery` and `samples/DataGridGallery` with realistic datasets, resizing behavior, and Elmish-owned selection/sort/scroll state",
+      "explicit_deps": [
+        "T034",
+        "T037",
+        "T038"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": [
+        "T030",
+        "T034",
+        "T037",
+        "T038"
+      ]
+    },
+    {
+      "id": "T040",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Document US2 validation and capture chart/DataGrid FSI transcripts, screenshots, and scale-test logs under `readiness/`",
+      "explicit_deps": [
+        "T032",
+        "T033",
+        "T039"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": [
+        "T030",
+        "T032",
+        "T033",
+        "T039"
+      ]
+    },
+    {
+      "id": "T041",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add packed-library/prelude tests for layout props, horizontal stack, vertical stack, dock config, child sizing, padding, spacing, and zero/negative bounds",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T040"
+      ],
+      "root_cause": [
+        "T040"
+      ]
+    },
+    {
+      "id": "T042",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add layout resize tests for nested layouts with at least 10 child elements at three window sizes and no overlap of required content",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T040"
+      ],
+      "root_cause": [
+        "T040"
+      ]
+    },
+    {
+      "id": "T043",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add graph validation tests for cycles, duplicate identifiers, missing endpoints, disconnected components, self-loops, and dense edge sets",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T040"
+      ],
+      "root_cause": [
+        "T040"
+      ]
+    },
+    {
+      "id": "T044",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add graph layout/render tests for a 100-node DAG within 2 seconds and a 50-node weighted undirected graph with visible components",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T040"
+      ],
+      "root_cause": [
+        "T040"
+      ]
+    },
+    {
+      "id": "T045",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement layout shared types, sizing, measurement, allocation, bounds handling, and deterministic child placement helpers",
+      "explicit_deps": [
+        "T041",
+        "T042"
+      ],
+      "phase_deps": [
+        "T040"
+      ],
+      "root_cause": [
+        "T040",
+        "T041",
+        "T042"
+      ]
+    },
+    {
+      "id": "T046",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement horizontal stack, vertical stack, and dock builders returning core scene elements",
+      "explicit_deps": [
+        "T041",
+        "T042",
+        "T045"
+      ],
+      "phase_deps": [
+        "T040"
+      ],
+      "root_cause": [
+        "T040",
+        "T041",
+        "T042",
+        "T045"
+      ]
+    },
+    {
+      "id": "T047",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement graph shared types, style records, validation results, cycle detection, missing endpoint checks, duplicate checks, and component reporting",
+      "explicit_deps": [
+        "T043"
+      ],
+      "phase_deps": [
+        "T040"
+      ],
+      "root_cause": [
+        "T040",
+        "T043"
+      ]
+    },
+    {
+      "id": "T048",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement DAG layering and undirected weighted graph layout helpers with deterministic bounds and scale behavior",
+      "explicit_deps": [
+        "T043",
+        "T044",
+        "T047"
+      ],
+      "phase_deps": [
+        "T040"
+      ],
+      "root_cause": [
+        "T040",
+        "T043",
+        "T044",
+        "T047"
+      ]
+    },
+    {
+      "id": "T049",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement directed and undirected graph scene builders with node, edge, label, weight, validation diagnostic, and hit-test output",
+      "explicit_deps": [
+        "T043",
+        "T044",
+        "T047",
+        "T048"
+      ],
+      "phase_deps": [
+        "T040"
+      ],
+      "root_cause": [
+        "T040",
+        "T043",
+        "T044",
+        "T047",
+        "T048"
+      ]
+    },
+    {
+      "id": "T050",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Build `samples/LayoutGraphGallery` with nested layouts, chart/grid composition, directed graph, invalid DAG diagnostic, and weighted undirected graph views",
+      "explicit_deps": [
+        "T042",
+        "T046",
+        "T049"
+      ],
+      "phase_deps": [
+        "T040"
+      ],
+      "root_cause": [
+        "T040",
+        "T042",
+        "T046",
+        "T049"
+      ]
+    },
+    {
+      "id": "T051",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Document US3 validation and capture layout/graph FSI transcripts, screenshots, validation reports, and performance logs under `readiness/`",
+      "explicit_deps": [
+        "T042",
+        "T044",
+        "T050"
+      ],
+      "phase_deps": [
+        "T040"
+      ],
+      "root_cause": [
+        "T040",
+        "T042",
+        "T044",
+        "T050"
+      ]
+    },
+    {
+      "id": "T052",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add `.fsi` contract tests for `ViewerProgram`, `ViewerEvent`, `ViewerEffect`, screenshot request/result types, diagnostics, `init`, `update`, and interpreter boundary",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T051"
+      ],
+      "root_cause": [
+        "T051"
+      ]
+    },
+    {
+      "id": "T053",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add pure Elmish transition tests for keyboard, pointer, scroll, resize, close, lifecycle, frame tick, diagnostic, screenshot, and recoverable frame-error messages",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T051"
+      ],
+      "root_cause": [
+        "T051"
+      ]
+    },
+    {
+      "id": "T054",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add emitted-effect assertion tests for initialize renderer, render frame, capture screenshot, report diagnostic, dispatch message, and shutdown commands",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T051"
+      ],
+      "root_cause": [
+        "T051"
+      ]
+    },
+    {
+      "id": "T055",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add real interpreter evidence tests where safe for screenshot output, lifecycle disposal, recoverable frame errors, and Vulkan-unavailable startup diagnostics",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T051"
+      ],
+      "root_cause": [
+        "T051"
+      ]
+    },
+    {
+      "id": "T056",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Extend viewer contracts and implementation for keyboard, pointer, scroll, resize, close, lifecycle, frame tick, diagnostic, and recoverable frame-error events",
+      "explicit_deps": [
+        "T052",
+        "T053"
+      ],
+      "phase_deps": [
+        "T051"
+      ],
+      "root_cause": [
+        "T051",
+        "T052",
+        "T053"
+      ]
+    },
+    {
+      "id": "T057",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement screenshot capture as Elmish edge effects with PNG/JPEG output, post-frame gating, file failure diagnostics, and current-frame verification hooks",
+      "explicit_deps": [
+        "T052",
+        "T054",
+        "T055"
+      ],
+      "phase_deps": [
+        "T051"
+      ],
+      "root_cause": [
+        "T051",
+        "T052",
+        "T054",
+        "T055"
+      ]
+    },
+    {
+      "id": "T058",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement Vulkan-only startup capability checks and structured diagnostics for unsupported hardware, driver, surface, swapchain, Skia context, and effect capabilities",
+      "explicit_deps": [
+        "T052",
+        "T055"
+      ],
+      "phase_deps": [
+        "T051"
+      ],
+      "root_cause": [
+        "T051",
+        "T052",
+        "T055"
+      ]
+    },
+    {
+      "id": "T059",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement frame-level recovery flow that reports recoverable errors and renders the next valid frame without crashing the application",
+      "explicit_deps": [
+        "T053",
+        "T054",
+        "T055",
+        "T056",
+        "T058"
+      ],
+      "phase_deps": [
+        "T051"
+      ],
+      "root_cause": [
+        "T051",
+        "T053",
+        "T054",
+        "T055",
+        "T056",
+        "T058"
+      ]
+    },
+    {
+      "id": "T060",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement thread-safe lifecycle shutdown and disposal with documented timeout behavior and failure diagnostics",
+      "explicit_deps": [
+        "T053",
+        "T054",
+        "T055",
+        "T056"
+      ],
+      "phase_deps": [
+        "T051"
+      ],
+      "root_cause": [
+        "T051",
+        "T053",
+        "T054",
+        "T055",
+        "T056"
+      ]
+    },
+    {
+      "id": "T061",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Build or update `samples/InteractiveViewer` and `samples/ScreenshotGallery` to exercise input, lifecycle, screenshots, diagnostics, recovery, and shutdown from Elmish state",
+      "explicit_deps": [
+        "T056",
+        "T057",
+        "T058",
+        "T059",
+        "T060"
+      ],
+      "phase_deps": [
+        "T051"
+      ],
+      "root_cause": [
+        "T051",
+        "T056",
+        "T057",
+        "T058",
+        "T059",
+        "T060"
+      ]
+    },
+    {
+      "id": "T062",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Document US4 validation and capture MVU transition logs, emitted-effect assertions, screenshot files, and interpreter evidence under `readiness/`",
+      "explicit_deps": [
+        "T053",
+        "T054",
+        "T055",
+        "T061"
+      ],
+      "phase_deps": [
+        "T051"
+      ],
+      "root_cause": [
+        "T051",
+        "T053",
+        "T054",
+        "T055",
+        "T061"
+      ]
+    },
+    {
+      "id": "T063",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": true,
+      "title": "Add parity evidence report tests requiring one item per pinned-baseline capability with normalized status, evidence type, command, path, and adaptation notes",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T062"
+      ],
+      "root_cause": [
+        "T062"
+      ]
+    },
+    {
+      "id": "T064",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": true,
+      "title": "Add clean-checkout package tests proving `FS.Skia.UI`, `FS.Skia.UI.Charts`, and `FS.Skia.UI.Layout` restore, pack, and reference independently",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T062"
+      ],
+      "root_cause": [
+        "T062"
+      ]
+    },
+    {
+      "id": "T065",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": true,
+      "title": "Add sample smoke tests for BasicViewer, InteractiveViewer, ParityGallery, EffectsGallery, ChartsGallery, DataGridGallery, LayoutGraphGallery, ScreenshotGallery, and DemoReel",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T062"
+      ],
+      "root_cause": [
+        "T062"
+      ]
+    },
+    {
+      "id": "T066",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": true,
+      "title": "Add documentation checks for the parity matrix, Vulkan-only adaptations, Elmish-only adaptations, excluded baseline behaviors, and quickstart commands",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T062"
+      ],
+      "root_cause": [
+        "T062"
+      ]
+    },
+    {
+      "id": "T067",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `FS.Skia.UI.Parity` report types, serialization helpers, baseline capability IDs, and merge-ready validation rules",
+      "explicit_deps": [
+        "T063"
+      ],
+      "phase_deps": [
+        "T062"
+      ],
+      "root_cause": [
+        "T062",
+        "T063"
+      ]
+    },
+    {
+      "id": "T068",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `scripts/parity-evidence.fsx` to generate `readiness/parity-evidence.json` from semantic, screenshot, smoke, package, and documentation evidence",
+      "explicit_deps": [
+        "T063",
+        "T067"
+      ],
+      "phase_deps": [
+        "T062"
+      ],
+      "root_cause": [
+        "T062",
+        "T063",
+        "T067"
+      ]
+    },
+    {
+      "id": "T069",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": false,
+      "title": "Add package metadata, project references, versioning, readme/package notes, and pack verification for all three packages",
+      "explicit_deps": [
+        "T064"
+      ],
+      "phase_deps": [
+        "T062"
+      ],
+      "root_cause": [
+        "T062",
+        "T064"
+      ]
+    },
+    {
+      "id": "T070",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": false,
+      "title": "Build `samples/DemoReel` and refresh BasicViewer to demonstrate the combined parity workflow without fallback renderer controls",
+      "explicit_deps": [
+        "T065"
+      ],
+      "phase_deps": [
+        "T062"
+      ],
+      "root_cause": [
+        "T062",
+        "T065"
+      ]
+    },
+    {
+      "id": "T071",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": false,
+      "title": "Write consumer documentation and parity matrix mapping baseline capabilities into Vulkan-only Elmish workflows with supported/adapted/excluded rationale",
+      "explicit_deps": [
+        "T066",
+        "T067"
+      ],
+      "phase_deps": [
+        "T062"
+      ],
+      "root_cause": [
+        "T062",
+        "T066",
+        "T067"
+      ]
+    },
+    {
+      "id": "T072",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": false,
+      "title": "Run all documented sample and quickstart commands from a clean checkout or clean working directory and capture logs under `readiness/smoke/`",
+      "explicit_deps": [
+        "T064",
+        "T065",
+        "T069",
+        "T070",
+        "T071"
+      ],
+      "phase_deps": [
+        "T062"
+      ],
+      "root_cause": [
+        "T062",
+        "T064",
+        "T065",
+        "T069",
+        "T070",
+        "T071"
+      ]
+    },
+    {
+      "id": "T073",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": false,
+      "title": "Generate the final parity evidence report and confirm every non-conflicting baseline capability is `Supported` or `Adapted`",
+      "explicit_deps": [
+        "T063",
+        "T068",
+        "T071",
+        "T072"
+      ],
+      "phase_deps": [
+        "T062"
+      ],
+      "root_cause": [
+        "T062",
+        "T063",
+        "T068",
+        "T071",
+        "T072"
+      ]
+    },
+    {
+      "id": "T074",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Refresh public surface-area baselines for Tier 1 modules and verify no accidental public APIs leak through `.fsi`",
+      "explicit_deps": [
+        "T006",
+        "T008",
+        "T009",
+        "T012"
+      ],
+      "phase_deps": [
+        "T073"
+      ],
+      "root_cause": [
+        "T073"
+      ]
+    },
+    {
+      "id": "T075",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `dotnet restore`, `dotnet build`, `dotnet test`, all FSI preludes, package verification, and parity evidence generation; store consolidated logs under `readiness/`",
+      "explicit_deps": [
+        "T017",
+        "T030",
+        "T040",
+        "T051",
+        "T062",
+        "T073",
+        "T074"
+      ],
+      "phase_deps": [
+        "T073"
+      ],
+      "root_cause": [
+        "T017",
+        "T030",
+        "T040",
+        "T051",
+        "T062",
+        "T073",
+        "T074"
+      ]
+    },
+    {
+      "id": "T076",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run visual/screenshot verification across deterministic galleries and document any manual visual review entries with rationale and reviewer evidence",
+      "explicit_deps": [
+        "T022",
+        "T030",
+        "T040",
+        "T051",
+        "T075"
+      ],
+      "phase_deps": [
+        "T073"
+      ],
+      "root_cause": [
+        "T022",
+        "T030",
+        "T040",
+        "T051",
+        "T073",
+        "T075"
+      ]
+    },
+    {
+      "id": "T077",
+      "declared": "synthetic",
+      "effective": "synthetic",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run Windows and Linux smoke evidence where available, or mark platform-limited tasks `[S]` with Principle V disclosures and real-evidence follow-up paths",
+      "explicit_deps": [
+        "T055",
+        "T061",
+        "T072",
+        "T075"
+      ],
+      "phase_deps": [
+        "T073"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T078",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `speckit.evidence.graph` and confirm no cycles, dangling refs, or unexpected propagated synthetic markers",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T073"
+      ],
+      "root_cause": [
+        "T073"
+      ]
+    },
+    {
+      "id": "T079",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `speckit.evidence.audit` and confirm PASS, or document every accepted synthetic override with a tracking issue",
+      "explicit_deps": [
+        "T073",
+        "T075",
+        "T076",
+        "T077",
+        "T078",
+        "T083",
+        "T084"
+      ],
+      "phase_deps": [
+        "T073"
+      ],
+      "root_cause": [
+        "T073",
+        "T075",
+        "T076",
+        "T077",
+        "T078",
+        "T083",
+        "T084"
+      ]
+    },
+    {
+      "id": "T080",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Update quickstart, docs, package notes, and sample commands to match the final implemented paths and project names",
+      "explicit_deps": [
+        "T071",
+        "T075"
+      ],
+      "phase_deps": [
+        "T073"
+      ],
+      "root_cause": [
+        "T071",
+        "T073",
+        "T075"
+      ]
+    },
+    {
+      "id": "T081",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Final readiness review: verify the hard parity gate, three package boundaries, Vulkan-only constraint, Elmish-only constraint, and at least eight runnable samples",
+      "explicit_deps": [
+        "T073",
+        "T079",
+        "T080",
+        "T083",
+        "T084"
+      ],
+      "phase_deps": [
+        "T073"
+      ],
+      "root_cause": [
+        "T073",
+        "T079",
+        "T080",
+        "T083",
+        "T084"
+      ]
+    },
+    {
+      "id": "T082",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Prepare merge summary with test commands, evidence paths, synthetic-evidence inventory, and known platform caveats",
+      "explicit_deps": [
+        "T079",
+        "T081"
+      ],
+      "phase_deps": [
+        "T073"
+      ],
+      "root_cause": [
+        "T073",
+        "T079",
+        "T081"
+      ]
+    },
+    {
+      "id": "T083",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Capture first visible frame timing evidence for BasicViewer, requiring under 2 seconds in at least 95% of supported-workstation smoke runs",
+      "explicit_deps": [
+        "T065",
+        "T070",
+        "T075"
+      ],
+      "phase_deps": [
+        "T073"
+      ],
+      "root_cause": [
+        "T065",
+        "T070",
+        "T073",
+        "T075"
+      ]
+    },
+    {
+      "id": "T084",
+      "declared": "done",
+      "effective": "auto-synthetic",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Write public API compatibility notes and migration guidance for changed or expanded `FS.Skia.UI`, `FS.Skia.UI.Charts`, and `FS.Skia.UI.Layout` surfaces, including package references, revised core viewer APIs, and `.fsi` baseline impact",
+      "explicit_deps": [
+        "T069",
+        "T071",
+        "T080"
+      ],
+      "phase_deps": [
+        "T073"
+      ],
+      "root_cause": [
+        "T069",
+        "T071",
+        "T073",
+        "T080"
+      ]
+    }
+  ]
+}
