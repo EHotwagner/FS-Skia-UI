@@ -1,0 +1,26 @@
+version: 1
+defaultLayout: qwerty
+defaultMode: selection
+layouts:
+  - id: qwerty
+    displayName: QWERTY
+    labels:
+      Digit1: "1"
+    positions:
+      - id: Digit1
+        hand: left
+        finger: pinky
+        row: 0
+        column: 0
+modes:
+  - id: selection
+    displayName: Selection
+    kind: stateful
+    states: [character]
+    defaultState: character
+bindings:
+  - mode: selection
+    key: Digit1
+    outcome: set-state
+    targetMode: selection
+    state: block

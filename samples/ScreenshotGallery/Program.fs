@@ -81,19 +81,19 @@ let rec update msg model =
         | DiagnosticReported diagnostic ->
             { model with Diagnostics = diagnostic :: model.Diagnostics },
             Cmd.ofMsg (HostEffect(ReportDiagnostic diagnostic))
-        | KeyDown "Space" ->
+        | ViewerEvent.KeyDown "Space" ->
             let next = { model with Frame = model.Frame + 1; Recovering = false }
             next, render next
-        | KeyDown "P" ->
+        | ViewerEvent.KeyDown "P" ->
             update (RequestScreenshot Png) model
-        | KeyDown "J" ->
+        | ViewerEvent.KeyDown "J" ->
             update (RequestScreenshot Jpeg) model
-        | KeyDown "R" ->
+        | ViewerEvent.KeyDown "R" ->
             update SimulateRecoverableFrameError model
-        | KeyDown "Escape" ->
+        | ViewerEvent.KeyDown "Escape" ->
             update ShutdownRequested model
-        | KeyDown _
-        | KeyUp _
+        | ViewerEvent.KeyDown _
+        | ViewerEvent.KeyUp _
         | PointerMoved _
         | PointerPressed _
         | PointerReleased _ -> model, Cmd.none

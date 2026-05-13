@@ -103,10 +103,10 @@ let updateInteractive msg model =
         | RenderTick _ ->
             model,
             emit (RenderFrame(interactiveView model))
-        | KeyDown key ->
+        | ViewerEvent.KeyDown key ->
             { model with PressedKeys = key :: (model.PressedKeys |> List.filter ((<>) key)) },
             emit (Dispatch FrameRequested)
-        | KeyUp key ->
+        | ViewerEvent.KeyUp key ->
             { model with PressedKeys = model.PressedKeys |> List.filter ((<>) key) },
             Cmd.none
         | PointerMoved(x, y) ->
@@ -264,11 +264,11 @@ let publicSurfaceTests =
             let program =
                 Viewer.create config initCounter updateCounter viewCounter
                 |> Viewer.withEventMapping (function
-                    | KeyDown "Add" -> Some Increment
+                    | ViewerEvent.KeyDown "Add" -> Some Increment
                     | _ -> None)
 
-            Expect.equal (program.EventMapper (KeyDown "Add")) (Some Increment) "matching viewer event maps to app message"
-            Expect.equal (program.EventMapper (KeyUp "Add")) None "non-matching viewer event is ignored"
+            Expect.equal (program.EventMapper (ViewerEvent.KeyDown "Add")) (Some Increment) "matching viewer event maps to app message"
+            Expect.equal (program.EventMapper (ViewerEvent.KeyUp "Add")) None "non-matching viewer event is ignored"
         }
 
         test "viewer withEffectMapping identifies messages for host-side effect interpretation" {
@@ -682,10 +682,10 @@ let us3ElmishFlowTests =
             let screenshot = { Destination = "interactive.png"; Format = Png }
 
             let afterKeyDown, _ =
-                updateInteractive (ViewerInput(KeyDown "Space")) initialInteractiveModel
+                updateInteractive (ViewerInput(ViewerEvent.KeyDown "Space")) initialInteractiveModel
 
             let afterKeyUp, _ =
-                updateInteractive (ViewerInput(KeyUp "Space")) afterKeyDown
+                updateInteractive (ViewerInput(ViewerEvent.KeyUp "Space")) afterKeyDown
 
             let afterPointerMove, _ =
                 updateInteractive (ViewerInput(PointerMoved(15.0, 24.0))) initialInteractiveModel
@@ -768,7 +768,7 @@ let us3ElmishFlowTests =
             | ReportDiagnostic reported -> Expect.equal reported diagnostic "diagnostic report effect carries structured diagnostic data"
             | effect -> failtestf "expected ReportDiagnostic, got %A" effect
 
-            match updateInteractive (ViewerInput(KeyDown "Enter")) initialInteractiveModel |> snd |> onlyEffect with
+            match updateInteractive (ViewerInput(ViewerEvent.KeyDown "Enter")) initialInteractiveModel |> snd |> onlyEffect with
             | Dispatch FrameRequested -> ()
             | effect -> failtestf "expected Dispatch FrameRequested, got %A" effect
 
@@ -865,7 +865,7 @@ let us4SampleAndScreenshotTests =
                 Diagnostics.screenshotFailed "Screenshot capture was requested before the first successful Vulkan/Skia frame."
 
             Expect.equal diagnostic.Stage ScreenshotCapture "diagnostic is reported at screenshot stage"
-            Expect.equal diagnostic.Severity Error "pre-frame screenshot capture is an error"
+            Expect.equal diagnostic.Severity DiagnosticSeverity.Error "pre-frame screenshot capture is an error"
             Expect.stringContains diagnostic.Message "Screenshot capture failed" "message identifies screenshot failure"
             Expect.stringContains (diagnostic.Cause |> Option.defaultValue "") "before the first successful Vulkan/Skia frame" "cause identifies missing frame"
         }

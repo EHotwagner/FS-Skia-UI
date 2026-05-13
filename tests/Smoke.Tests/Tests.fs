@@ -26,7 +26,8 @@ let smokeContractTests =
               "DataGridGallery", "samples/DataGridGallery/DataGridGallery.fsproj"
               "LayoutGraphGallery", "samples/LayoutGraphGallery/LayoutGraphGallery.fsproj"
               "ScreenshotGallery", "samples/ScreenshotGallery/ScreenshotGallery.fsproj"
-              "DemoReel", "samples/DemoReel/DemoReel.fsproj" ]
+              "DemoReel", "samples/DemoReel/DemoReel.fsproj"
+              "KeyboardInputGallery", "samples/KeyboardInputGallery/KeyboardInputGallery.fsproj" ]
             |> List.iter (fun (sample, project) ->
                 let projectPath = Path.Combine(repositoryRoot, project)
                 let programPath = Path.Combine(Path.GetDirectoryName projectPath |> Option.ofObj |> Option.defaultValue repositoryRoot, "Program.fs")

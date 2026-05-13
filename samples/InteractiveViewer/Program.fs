@@ -2,6 +2,7 @@ module InteractiveViewer.Program
 
 open System
 open System.Diagnostics
+open System.IO
 open System.Threading
 open Elmish
 open FS.Skia.UI
@@ -11,6 +12,9 @@ type Model =
       Pointer: (float * float) option
       PointerDown: bool
       ActiveKey: string option
+      Keyboard: InputRuntime option
+      KeyboardEffects: InputEffect list
+      ShowKeyboardLayout: bool
       Ticks: int
       Diagnostics: RenderDiagnostic list
       Closing: bool }
@@ -23,11 +27,51 @@ type Msg =
 
 let initialSize = { Width = 800; Height = 520 }
 
+let rec findRepositoryRoot directory =
+    if File.Exists(Path.Combine(directory, "FS-Skia-UI.sln")) then
+        directory
+    else
+        match Directory.GetParent directory |> Option.ofObj with
+        | Some parent -> findRepositoryRoot parent.FullName
+        | None -> failwithf "Could not locate repository root from %s" directory
+
+let keyboardRegistry =
+    [ { Id = "move.left"; DisplayName = "Move left"; Category = Some "movement" }
+      { Id = "move.right"; DisplayName = "Move right"; Category = Some "movement" }
+      { Id = "copy.selection"; DisplayName = "Copy selection"; Category = Some "editing" }
+      { Id = "delete.selection"; DisplayName = "Delete selection"; Category = Some "editing" }
+      { Id = "open.palette"; DisplayName = "Open palette"; Category = Some "popup" } ]
+    |> KeyboardInput.commandRegistry
+    |> function
+        | Result.Ok registry -> registry
+        | Result.Error diagnostics -> failwithf "keyboard registry failed: %A" diagnostics
+
+let createKeyboardRuntime () =
+    let root = findRepositoryRoot AppContext.BaseDirectory
+    let yaml =
+        Path.Combine(root, "specs", "003-keyboard-input-framework", "readiness", "sample-configs", "modal-input.yaml")
+        |> File.ReadAllText
+
+    match KeyboardInput.parseYaml yaml with
+    | Result.Error diagnostics -> failwithf "keyboard YAML parse failed: %A" diagnostics
+    | Result.Ok config ->
+        match KeyboardInput.validate keyboardRegistry config with
+        | Result.Error diagnostics -> failwithf "keyboard validation failed: %A" diagnostics
+        | Result.Ok model ->
+            match KeyboardInput.init "colemacs-dh" model with
+            | Result.Ok(runtime, effects) -> Some runtime, effects
+            | Result.Error diagnostics -> failwithf "keyboard init failed: %A" diagnostics
+
 let init () =
+    let keyboard, keyboardEffects = createKeyboardRuntime ()
+
     { Size = initialSize
       Pointer = None
       PointerDown = false
       ActiveKey = None
+      Keyboard = keyboard
+      KeyboardEffects = keyboardEffects
+      ShowKeyboardLayout = true
       Ticks = 0
       Diagnostics = []
       Closing = false },
@@ -57,6 +101,10 @@ let view model =
 
     let pulse = float (model.Ticks % 90)
     let activeKey = model.ActiveKey |> Option.defaultValue "none"
+    let keyboardScene =
+        match model.ShowKeyboardLayout, model.Keyboard with
+        | true, Some runtime -> KeyboardInput.renderLayoutStateAt (56.0, 252.0) runtime
+        | _ -> Scene.empty
 
     Scene.group [
         Scene.rectangle (0.0, 0.0, width, height) (backgroundColor model)
@@ -65,6 +113,8 @@ let view model =
         Scene.text (56.0, 112.0) "Interactive Vulkan Viewer" Colors.white
         Scene.text (56.0, 176.0) $"key: {activeKey}" Colors.white
         Scene.text (56.0, 216.0) $"ticks: {model.Ticks}" Colors.white
+        Scene.text (56.0, 244.0) "F2 toggles keyboard layout overlay. Press H/L/Space/C/D/1 to drive input." Colors.white
+        keyboardScene
         Scene.chart [ 2.0 + float (model.Ticks % 5); 4.0; 3.0 + float (model.Ticks % 7); 7.0 ]
     ]
 
@@ -81,15 +131,42 @@ let update msg model =
             model, Cmd.none
         | RenderTick _ ->
             model, Cmd.none
-        | KeyDown key ->
-            let next = { model with ActiveKey = Some key }
+        | ViewerEvent.KeyDown key ->
+            let keyboard, effects =
+                model.Keyboard
+                |> Option.map (KeyboardInput.updateFromViewerEvent event)
+                |> Option.map (fun (runtime, effects) -> Some runtime, effects)
+                |> Option.defaultValue (None, [])
+
+            let next =
+                { model with
+                    ActiveKey = Some key
+                    Keyboard = keyboard
+                    KeyboardEffects = effects
+                    ShowKeyboardLayout =
+                        if key = "F2" then
+                            not model.ShowKeyboardLayout
+                        else
+                            model.ShowKeyboardLayout }
+
             next, requestRender next
-        | KeyUp key ->
+        | ViewerEvent.KeyUp key ->
+            let keyboard, effects =
+                model.Keyboard
+                |> Option.map (KeyboardInput.updateFromViewerEvent event)
+                |> Option.map (fun (runtime, effects) -> Some runtime, effects)
+                |> Option.defaultValue (None, [])
+
             let next =
                 if model.ActiveKey = Some key then
-                    { model with ActiveKey = None }
+                    { model with
+                        ActiveKey = None
+                        Keyboard = keyboard
+                        KeyboardEffects = effects }
                 else
-                    model
+                    { model with
+                        Keyboard = keyboard
+                        KeyboardEffects = effects }
 
             next, requestRender next
         | PointerMoved(x, y) ->
@@ -157,7 +234,7 @@ let runSmoke seconds =
     // SYNTHETIC: smoke mode drives sample messages without a live Vulkan window or wall-clock timer; real evidence is the interactive window smoke in T039 follow-up.
     let stopwatch = Stopwatch.StartNew()
     let model, _ = init ()
-    let afterKey, _ = update (ViewerInput(KeyDown "Space")) model
+    let afterKey, _ = update (ViewerInput(ViewerEvent.KeyDown "Space")) model
     let afterPointer, _ = update (ViewerInput(PointerPressed(240.0, 180.0))) afterKey
     let rec tick count state =
         if count <= 0 then
@@ -173,6 +250,8 @@ let runSmoke seconds =
     printfn "subscription-seconds=%d" seconds
     printfn "subscription-ticks=%d" ticked.Ticks
     printfn "active-key=%A" ticked.ActiveKey
+    printfn "keyboard-layout=%A" (ticked.Keyboard |> Option.map _.ActiveLayout)
+    printfn "keyboard-overlay=%b" ticked.ShowKeyboardLayout
     printfn "pointer=%A" ticked.Pointer
     0
 
@@ -182,7 +261,7 @@ let runContractSmoke () =
           Format = Jpeg }
 
     let model, initCmd = init ()
-    let afterKey, _ = update (ViewerInput(KeyDown "Space")) model
+    let afterKey, _ = update (ViewerInput(ViewerEvent.KeyDown "Space")) model
     let afterPointer, _ = update (ViewerInput(PointerPressed(320.0, 210.0))) afterKey
     let afterResize, _ = update (ViewerInput(Resized { Width = 1024; Height = 640 })) afterPointer
     let afterTick, _ = update Tick afterResize
@@ -196,6 +275,9 @@ let runContractSmoke () =
     printfn "status=ok"
     printfn "sample=InteractiveViewer"
     printfn "active-key=%A" afterTick.ActiveKey
+    printfn "keyboard-layout=%A" (afterTick.Keyboard |> Option.map _.ActiveLayout)
+    printfn "keyboard-overlay=%b" afterTick.ShowKeyboardLayout
+    printfn "keyboard-effects=%d" afterTick.KeyboardEffects.Length
     printfn "pointer=%A" afterTick.Pointer
     printfn "ticks=%d" afterTick.Ticks
     printfn "size=%dx%d" afterTick.Size.Width afterTick.Size.Height

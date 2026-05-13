@@ -440,17 +440,17 @@ let rec update msg model =
         | Resized size ->
             let next = { model with Size = size }
             next, render next
-        | KeyDown "Right"
-        | KeyDown "Space" -> update NextSlide model
-        | KeyDown "Left" -> update PreviousSlide model
-        | KeyDown "R" -> update Restart model
-        | KeyDown "Escape" -> model, Cmd.ofMsg (HostEffect Shutdown)
+        | ViewerEvent.KeyDown "Right"
+        | ViewerEvent.KeyDown "Space" -> update NextSlide model
+        | ViewerEvent.KeyDown "Left" -> update PreviousSlide model
+        | ViewerEvent.KeyDown "R" -> update Restart model
+        | ViewerEvent.KeyDown "Escape" -> model, Cmd.ofMsg (HostEffect Shutdown)
         | CloseRequested -> model, Cmd.ofMsg (HostEffect Shutdown)
         | DiagnosticReported diagnostic ->
             { model with Diagnostics = diagnostic :: model.Diagnostics },
             Cmd.ofMsg (HostEffect(ReportDiagnostic diagnostic))
-        | KeyDown _
-        | KeyUp _
+        | ViewerEvent.KeyDown _
+        | ViewerEvent.KeyUp _
         | PointerMoved _
         | PointerPressed _
         | PointerReleased _ -> model, Cmd.none

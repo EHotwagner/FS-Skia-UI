@@ -1,0 +1,2 @@
+events=10000 replay-ms=2326 avg-event-ms=0.2326 under-16ms=true effects=24000
+bigram-runs=500 total-ms=5 under-1000ms=true

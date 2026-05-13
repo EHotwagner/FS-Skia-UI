@@ -7,19 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="KeyboardInputTests.fs" />
-    <Compile Include="Tests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Lib\Lib.fsproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Expecto" Version="10.2.2" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
-    <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.15.3" />
   </ItemGroup>
 
 </Project>

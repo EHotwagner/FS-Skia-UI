@@ -1,0 +1,2 @@
+status=ok sample=KeyboardInputGallery active-layout=colemacs-dh available-layouts=qwerty,dvorak,colemacs-dh,workman,symbols mode-stack=["selection"] held=[] top-pairs=2 effects=16 scene-kinds=[GroupElement; RectangleElement; TextRunElement; TextRunElement; TextRunElement;
+ TextRunElement; TextRunElement]

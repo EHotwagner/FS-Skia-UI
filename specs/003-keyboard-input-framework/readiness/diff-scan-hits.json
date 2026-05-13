@@ -1,0 +1,30 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "specs/003-keyboard-input-framework/plan.md",
+      "line": 38,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Principle V - Synthetic Evidence Disclosure**: PASS. No synthetic evidence is planned. Sample fixtures are real YAML"
+    },
+    {
+      "file": "specs/003-keyboard-input-framework/readiness/adoption-notes.md",
+      "line": 6,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- Synthetic evidence: none planned or used. Checked-in YAML and replay fixtures are real repository fixtures."
+    },
+    {
+      "file": "specs/003-keyboard-input-framework/readiness/task-graph.md",
+      "line": 262,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    }
+  ]
+}
