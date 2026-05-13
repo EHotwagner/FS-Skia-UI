@@ -49,6 +49,16 @@ let replayed, replayEffects =
 
 let report = KeyboardInput.analyzeBigrams model "qwerty"
 let view = KeyboardInput.layoutState replayed
+let compactDisplay = KeyboardInput.keyboardStateDisplay KeyboardInput.compactStateDisplayOptions replayEffects replayed
+let expandedDisplay = KeyboardInput.keyboardStateDisplay KeyboardInput.expandedStateDisplayOptions replayEffects replayed
+let hiddenDisplay =
+    KeyboardInput.keyboardStateDisplay
+        { KeyboardInput.compactStateDisplayOptions with Visibility = KeyboardStateDisplayHidden }
+        replayEffects
+        replayed
+let displaySceneKinds =
+    KeyboardInput.renderKeyboardStateDisplay KeyboardInput.compactStateDisplayOptions replayEffects replayed
+    |> Scene.describe
 
 printfn "init-effects=%d" initEffects.Length
 printfn "replay-effects=%d" replayEffects.Length
@@ -56,3 +66,7 @@ printfn "mode-stack=%A" (view.ActiveModeStack |> List.map _.ModeId)
 printfn "held-modes=%A" (view.HeldModes |> List.map _.ModeId)
 printfn "active-layout=%s" view.ActiveLayout.Id
 printfn "top-pairs=%d risks=%d suggestions=%d" report.TopPairs.Length report.Risks.Length report.Suggestions.Length
+printfn "compact-display layout=%A labels=%d recent=%A diagnostic=%A" (compactDisplay.Layout |> Option.map _.Id) compactDisplay.Labels.Length (compactDisplay.RecentCommand |> Option.map _.CommandId) (compactDisplay.Diagnostic |> Option.map _.Code)
+printfn "expanded-display stack=%d top=%A partial=%b" expandedDisplay.Stack.Length (expandedDisplay.TopContext |> Option.map _.ModeId) expandedDisplay.IsPartial
+printfn "hidden-display visibility=%A stack=%d labels=%d" hiddenDisplay.Visibility hiddenDisplay.Stack.Length hiddenDisplay.Labels.Length
+printfn "display-scene=%A" displaySceneKinds

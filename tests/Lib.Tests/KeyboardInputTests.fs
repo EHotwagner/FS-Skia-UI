@@ -172,6 +172,9 @@ let commandIds effects =
         | CommandResolved resolved -> Some resolved.CommandId
         | _ -> None)
 
+let display options effects runtime =
+    KeyboardInput.keyboardStateDisplay options effects runtime
+
 [<Tests>]
 let keyboardInputTests =
     testList "Keyboard input framework" [
@@ -274,6 +277,156 @@ let keyboardInputTests =
             let kinds = Scene.describe overlay
             Expect.contains kinds RectangleElement "layout overlay includes a panel"
             Expect.contains kinds TextRunElement "layout overlay includes visible small text"
+        }
+
+        test "keyboard state display options expose compact, expanded, and hidden public models" {
+            let runtime, effects = initialized ()
+
+            let compact = display KeyboardInput.compactStateDisplayOptions effects runtime
+            Expect.equal compact.Visibility KeyboardStateDisplayVisible "compact display is visible"
+            Expect.equal compact.Density KeyboardStateDisplayCompact "compact density is selected"
+            Expect.equal (compact.Layout |> Option.map _.Id) (Some "qwerty") "active layout id is projected"
+            Expect.equal (compact.Layout |> Option.bind _.DisplayName) (Some "QWERTY") "active layout display name is projected"
+            Expect.equal (compact.TopContext |> Option.map _.ModeId) (Some "selection") "top context is projected"
+            Expect.equal compact.ActiveState (Some "character") "active state is projected"
+
+            let expanded = display KeyboardInput.expandedStateDisplayOptions effects runtime
+            Expect.equal expanded.Density KeyboardStateDisplayExpanded "expanded density is selected"
+            Expect.isGreaterThanOrEqual expanded.Labels.Length compact.Labels.Length "expanded keeps at least as many labels as compact"
+
+            let hiddenOptions =
+                { KeyboardInput.defaultStateDisplayOptions with
+                    Visibility = KeyboardStateDisplayHidden }
+
+            let hidden = display hiddenOptions effects runtime
+            Expect.equal hidden.Visibility KeyboardStateDisplayHidden "hidden model records hidden visibility"
+            Expect.isNone hidden.Layout "hidden model omits layout"
+            Expect.isEmpty hidden.Stack "hidden model omits stack"
+            Expect.isEmpty hidden.Labels "hidden model omits labels"
+            Expect.equal (KeyboardInput.renderKeyboardStateDisplay hiddenOptions effects runtime |> Scene.describe) [ EmptyElement ] "hidden display renders an empty scene"
+        }
+
+        test "keyboard state display follows public update effects for layout, state, command, and scene rendering" {
+            let runtime, initEffects = initialized ()
+            let compact = display KeyboardInput.compactStateDisplayOptions initEffects runtime
+            Expect.equal (compact.Layout |> Option.map _.Id) (Some "qwerty") "initial display reflects init layout"
+
+            let afterState, stateEffects = KeyboardInput.update (InputMsg.KeyDown "Digit1") runtime
+            let stateDisplay = display KeyboardInput.compactStateDisplayOptions stateEffects afterState
+            Expect.equal stateDisplay.ActiveState (Some "line") "display reflects update-driven state change"
+            Expect.isTrue (stateEffects |> List.exists (function LayoutStateChanged _ -> true | _ -> false)) "state update emits display-relevant layout state"
+
+            let afterMove, moveEffects = KeyboardInput.update (InputMsg.KeyDown "KeyH") afterState
+            let commandDisplay = display KeyboardInput.compactStateDisplayOptions moveEffects afterMove
+            Expect.equal (commandDisplay.RecentCommand |> Option.map _.CommandId) (Some "move.left") "most recent command comes from effects"
+
+            let afterLayout, layoutEffects = KeyboardInput.update (InputMsg.SetLayout "dvorak") afterMove
+            let layoutDisplay = display KeyboardInput.compactStateDisplayOptions layoutEffects afterLayout
+            Expect.equal (layoutDisplay.Layout |> Option.map _.Id) (Some "dvorak") "display reflects update-driven layout change"
+
+            let rendered = KeyboardInput.renderKeyboardStateDisplayAt (32.0, 44.0) KeyboardInput.compactStateDisplayOptions moveEffects afterMove
+            let kinds = Scene.describe rendered
+            Expect.contains kinds RectangleElement "state display scene includes a panel"
+            Expect.contains kinds TextRunElement "state display scene includes text primitives"
+        }
+
+        test "keyboard state display distinguishes popup, held, stateful, persistent, unknown, and condensed stack entries" {
+            let runtime, _ = initialized ()
+            let afterPopup, _ = KeyboardInput.update (InputMsg.KeyDown "Space") runtime
+            let popupDisplay = display KeyboardInput.expandedStateDisplayOptions [] afterPopup
+            Expect.equal (popupDisplay.TopContext |> Option.map _.Kind) (Some DisplayPopupContext) "popup context is identified"
+            Expect.equal (popupDisplay.TopContext |> Option.map _.IsPersistent) (Some false) "popup is not persistent"
+
+            let afterHold, _ = KeyboardInput.update (InputMsg.KeyDown "KeyC") runtime
+            let heldDisplay = display KeyboardInput.expandedStateDisplayOptions [] afterHold
+            Expect.equal (heldDisplay.TopContext |> Option.map _.Kind) (Some DisplayTemporaryHeldContext) "temporary held context is identified"
+            Expect.equal (heldDisplay.TopContext |> Option.bind _.EnteredBy) (Some "KeyC") "held entry records source key"
+
+            let baseEntry = heldDisplay.Stack |> List.head
+            Expect.equal baseEntry.Kind DisplayStatefulContext "base stateful context is identified"
+            Expect.isTrue baseEntry.IsPersistent "stateful context is persistent"
+
+            let unknownRuntime =
+                { runtime with
+                    ModeStack = runtime.ModeStack @ [ { ModeId = "missing-mode"; State = None; EnteredBy = None } ] }
+
+            let unknownDisplay = display KeyboardInput.expandedStateDisplayOptions [] unknownRuntime
+            Expect.equal (unknownDisplay.TopContext |> Option.map _.Kind) (Some DisplayUnknownContext) "unknown context is explicit"
+            Expect.isTrue unknownDisplay.IsPartial "unknown context makes display partial"
+
+            let deepRuntime =
+                { runtime with
+                    ModeStack =
+                        [ { ModeId = "selection"; State = Some "character"; EnteredBy = None }
+                          { ModeId = "space"; State = None; EnteredBy = Some "Space" }
+                          { ModeId = "copy"; State = None; EnteredBy = Some "KeyC" }
+                          { ModeId = "delete"; State = None; EnteredBy = Some "KeyD" }
+                          { ModeId = "missing-mode"; State = None; EnteredBy = None } ] }
+
+            let condensed = display KeyboardInput.compactStateDisplayOptions [] deepRuntime
+            Expect.equal condensed.Stack.Length 4 "compact display condenses deep stacks"
+            Expect.contains condensed.Omitted (OmittedStackEntries 1) "compact display records omitted stack entries"
+        }
+
+        test "keyboard state display derives current-context labels, caps, pending sequence, diagnostics, and invalid-layout partial state" {
+            let runtime, _ = initialized ()
+            let afterPopup, _ = KeyboardInput.update (InputMsg.KeyDown "Space") runtime
+            let popupDisplay = display KeyboardInput.expandedStateDisplayOptions [] afterPopup
+            Expect.equal (popupDisplay.Labels |> List.map _.CommandId) [ Some "open.palette" ] "labels come only from active top context"
+            Expect.equal (popupDisplay.Labels |> List.map _.KeyPositionId) [ "KeyH" ] "top context label uses active layout key"
+
+            let cappedOptions =
+                { KeyboardInput.compactStateDisplayOptions with
+                    MaxCompactLabels = 1 }
+
+            let capped = display cappedOptions [] runtime
+            Expect.equal capped.Labels.Length 1 "compact label cap is applied"
+            Expect.isTrue (capped.Omitted |> List.exists (function OmittedLabels count when count > 0 -> true | _ -> false)) "omitted labels are recorded"
+
+            let pendingRuntime =
+                { runtime with
+                    PendingSequence =
+                        Some
+                            { StartedAt = System.DateTimeOffset.UnixEpoch
+                              Chords = [ { Position = "Space"; RequiredHeld = [] } ] } }
+
+            let pendingDisplay = display KeyboardInput.expandedStateDisplayOptions [] pendingRuntime
+            Expect.equal (pendingDisplay.PendingSequence |> Option.map _.TimeoutMilliseconds) (Some(Some 175)) "pending sequence includes timeout policy"
+
+            let noPendingOptions =
+                { KeyboardInput.expandedStateDisplayOptions with
+                    ShowPendingSequence = false }
+
+            let omittedPending = display noPendingOptions [] pendingRuntime
+            Expect.isNone omittedPending.PendingSequence "option can omit pending sequence"
+            Expect.contains omittedPending.Omitted OmittedPendingSequence "pending omission is recorded"
+
+            let invalidRuntime = { runtime with ActiveLayout = "missing-layout" }
+            let invalidDisplay = display KeyboardInput.expandedStateDisplayOptions [] invalidRuntime
+            Expect.isTrue invalidDisplay.IsPartial "invalid active layout creates partial display"
+            Expect.equal (invalidDisplay.Layout |> Option.map _.IsAvailable) (Some false) "invalid layout is still represented"
+            Expect.equal (invalidDisplay.Diagnostic |> Option.map _.Code) (Some UnknownLayout) "invalid layout produces actionable diagnostic"
+
+            let _, infoEffects = KeyboardInput.update (InputMsg.KeyDown "Escape") runtime
+            let infoDisplay = display KeyboardInput.expandedStateDisplayOptions infoEffects runtime
+            Expect.isNone infoDisplay.Diagnostic "non-actionable info diagnostics are filtered"
+        }
+
+        test "keyboard state display handles held-layer release recovery through public update" {
+            let runtime, _ = initialized ()
+            let stacked =
+                { runtime with
+                    PressedKeys = Set.ofList [ "KeyC"; "KeyD" ]
+                    ModeStack =
+                        runtime.ModeStack
+                        @ [ { ModeId = "copy"; State = None; EnteredBy = Some "KeyC" }
+                            { ModeId = "delete"; State = None; EnteredBy = Some "KeyD" } ] }
+
+            let afterRelease, effects = KeyboardInput.update (InputMsg.KeyUp "KeyC") stacked
+            let recovered = display KeyboardInput.expandedStateDisplayOptions effects afterRelease
+            Expect.isFalse (recovered.Stack |> List.exists (fun entry -> entry.ModeId = "copy")) "released held layer is removed"
+            Expect.isTrue (recovered.Stack |> List.exists (fun entry -> entry.ModeId = "delete")) "other held layer remains active"
+            Expect.equal (recovered.TopContext |> Option.map _.ModeId) (Some "delete") "top context recovers after out-of-order release"
         }
 
         test "standard input works when command intent is absent and invalid intent data is diagnosed" {

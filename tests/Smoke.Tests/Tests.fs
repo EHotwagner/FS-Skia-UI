@@ -1,6 +1,7 @@
 module SmokeTests
 
 open System
+open System.Diagnostics
 open System.IO
 open Expecto
 
@@ -13,6 +14,23 @@ let rec findRepositoryRoot (directory: string) =
         | None -> failwithf "Could not locate repository root from %s" directory
 
 let repositoryRoot = findRepositoryRoot AppContext.BaseDirectory
+
+let runProcess (fileName: string) (arguments: string) =
+    let startInfo = ProcessStartInfo(fileName, arguments)
+    startInfo.WorkingDirectory <- repositoryRoot
+    startInfo.RedirectStandardOutput <- true
+    startInfo.RedirectStandardError <- true
+    startInfo.UseShellExecute <- false
+
+    use proc =
+        match Process.Start startInfo |> Option.ofObj with
+        | Some proc -> proc
+        | None -> failwithf "Could not start %s %s" fileName arguments
+
+    let stdout: string = proc.StandardOutput.ReadToEnd()
+    let stderr: string = proc.StandardError.ReadToEnd()
+    proc.WaitForExit()
+    proc.ExitCode, stdout, stderr
 
 [<Tests>]
 let smokeContractTests =
@@ -37,5 +55,34 @@ let smokeContractTests =
                 Expect.stringContains source "--contract-smoke" $"{sample} has a contract smoke argument"
                 Expect.stringContains source "status=ok" $"{sample} reports smoke success"
                 Expect.stringContains source $"sample={sample}" $"{sample} identifies itself")
+        }
+
+        test "KeyboardInputGallery contract smoke captures keyboard state display evidence" {
+            let exitCode, stdout, stderr =
+                runProcess "dotnet" "run --project samples/KeyboardInputGallery/KeyboardInputGallery.fsproj -- --contract-smoke"
+
+            let evidencePath =
+                Path.Combine(
+                    repositoryRoot,
+                    "specs",
+                    "004-keyboard-state-display",
+                    "readiness",
+                    "sample-smoke",
+                    "keyboard-input-gallery-state-display.txt")
+
+            Path.GetDirectoryName evidencePath
+            |> Option.ofObj
+            |> Option.iter (Directory.CreateDirectory >> ignore)
+
+            let evidence = stdout + stderr
+            File.WriteAllText(evidencePath, evidence)
+
+            Expect.equal exitCode 0 "KeyboardInputGallery contract smoke exits successfully"
+            Expect.stringContains stdout "status=ok" "sample reports success"
+            Expect.stringContains stdout "sample=KeyboardInputGallery" "sample identifies itself"
+            Expect.stringContains stdout "compact-labels=" "smoke includes compact display model evidence"
+            Expect.stringContains stdout "expanded-stack=" "smoke includes expanded display model evidence"
+            Expect.stringContains stdout "hidden=KeyboardStateDisplayHidden" "smoke includes hidden display evidence"
+            Expect.stringContains stdout "TextRunElement" "smoke includes rendered scene text primitive"
         }
     ]

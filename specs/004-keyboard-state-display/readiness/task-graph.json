@@ -1,0 +1,699 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm feature artifact set is present (`spec.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/public-api.md`)",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Create readiness directories for FSI transcripts, sample smoke output, and surface baselines under `specs/004-keyboard-state-display/readiness/`",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Identify existing keyboard input implementation, test, sample, prelude, smoke, and package baseline files affected by the feature",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record Tier 1 classification, affected public module, no-new-dependency constraint, and evidence obligations for pure display model plus Skia scene renderer",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft `KeyboardInput.fsi` public contracts for display visibility, density, options, model records, omissions, and render/model functions",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record Elmish/MVU applicability: no new library `Model`/`Msg`/`Effect` contract is introduced, but tests must exercise existing `InputRuntime`, `InputMsg`, and `InputEffect` transitions through the public boundary",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add or update FSI/prelude coverage in `scripts/input-prelude.fsx` for compact, expanded, and hidden display construction through the public surface",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Add semantic test scaffolding in `tests/Lib.Tests/KeyboardInputTests.fs` for reusable display fixtures, recent-effect capture, diagnostics, invalid layouts, and scene descriptions",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Add or reserve surface-area baseline artifact path `specs/004-keyboard-state-display/readiness/surface-baselines/FS.Skia.UI.txt`",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Define failure-diagnostic expectations for missing/invalid layout and non-actionable diagnostic filtering",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Exercise the drafted `.fsi` with FSI and capture the transcript to `specs/004-keyboard-state-display/readiness/fsi/keyboard-state-display-prelude.txt`",
+      "explicit_deps": [
+        "T005",
+        "T007"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add public-surface tests for default, compact, expanded, and hidden display options",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic tests that assert active layout id/display name, active top context, active state, and hidden-mode empty model/scene",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add tests that drive `KeyboardInput.update` layout/state changes and assert state display updates from emitted runtime/effects",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add `Scene.describe` tests for `renderKeyboardStateDisplay` and `renderKeyboardStateDisplayAt` returning stable text/shape primitives without custom app drawing",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement display option defaults and the pure `keyboardStateDisplay` projection for visible/hidden orientation fields in `src/Lib/KeyboardInput.fs`",
+      "explicit_deps": [
+        "T005",
+        "T012",
+        "T013",
+        "T014"
+      ],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement standard scene rendering for compact/expanded orientation and hidden empty scene behavior using existing `Scene` primitives",
+      "explicit_deps": [
+        "T015",
+        "T016"
+      ],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Preserve compatibility for `layoutState`, `renderLayoutState`, and `renderLayoutStateAt`, delegating only where behavior remains compatible",
+      "explicit_deps": [
+        "T016",
+        "T017"
+      ],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Document and capture US1 independent validation through FSI transcript and focused `dotnet test` output",
+      "explicit_deps": [
+        "T011",
+        "T016",
+        "T017",
+        "T018"
+      ],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add tests for stack entry kind mapping: permanent/stateful, popup, temporary held, and unknown contexts",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add tests for ordered full stack, exactly one top context, persistent flags, entered-by keys, and stateful mode state retention",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add compact-mode tests for stack condensation and omission metadata when stack depth exceeds compact display limits",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add update-path tests for popup push/pop, held-layer push/release, nested layers, and focus-loss cleanup diagnostics",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement stack entry derivation from `InputRuntime.ModeStack`, mode definitions, held frames, and current state",
+      "explicit_deps": [
+        "T020",
+        "T021",
+        "T023",
+        "T041"
+      ],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement compact stack condensation and expanded full-stack preservation with `KeyboardStateDisplayOmission` metadata",
+      "explicit_deps": [
+        "T022",
+        "T024"
+      ],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Render permanent/stateful, popup, held, active-top, and partial/unknown context distinctions without text overlap for representative stack depth",
+      "explicit_deps": [
+        "T024",
+        "T025"
+      ],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add tests that label hints include only bindings available in the active top context and matching state",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add tests for compact/expanded label caps and omitted-label counts",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add tests for pending sequence display, timeout/disambiguation fields, and option-controlled omission",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T030",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add tests for most recent resolved command selection from `InputEffect list`",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T031",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add tests for most recent actionable diagnostic selection and invalid-layout partial rendering",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T032",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement current-top-context label extraction, outcome text, state filtering, layout-label fallback, and label caps",
+      "explicit_deps": [
+        "T027",
+        "T028"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T033",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement pending sequence, recent command, diagnostic, omission, and `IsPartial` display-model behavior",
+      "explicit_deps": [
+        "T029",
+        "T030",
+        "T031"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T034",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Render optional hints in compact and expanded density while preserving orientation fields ahead of lower-priority hints",
+      "explicit_deps": [
+        "T032",
+        "T033"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T035",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Update `samples/KeyboardInputGallery/Program.fs` to consume `renderKeyboardStateDisplayAt` and demonstrate compact/expanded/hidden behavior without custom state visualization logic",
+      "explicit_deps": [
+        "T017",
+        "T026",
+        "T034"
+      ],
+      "phase_deps": [
+        "T034"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T036",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Update smoke evidence so `tests/Smoke.Tests/Tests.fs` captures `specs/004-keyboard-state-display/readiness/sample-smoke/keyboard-input-gallery-state-display.txt`",
+      "explicit_deps": [
+        "T035"
+      ],
+      "phase_deps": [
+        "T034"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T037",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Refresh package surface baseline evidence for `FS.Skia.UI.KeyboardInput`",
+      "explicit_deps": [
+        "T005",
+        "T016",
+        "T024",
+        "T032",
+        "T033"
+      ],
+      "phase_deps": [
+        "T034"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T038",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `dotnet test` and record the relevant passing output for semantic, package, and smoke coverage",
+      "explicit_deps": [
+        "T019",
+        "T026",
+        "T034",
+        "T036",
+        "T037"
+      ],
+      "phase_deps": [
+        "T034"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T039",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `dotnet fsi scripts/input-prelude.fsx` and confirm the public API transcript includes keyboard state display construction",
+      "explicit_deps": [
+        "T011",
+        "T019",
+        "T034"
+      ],
+      "phase_deps": [
+        "T034"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T040",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh specs/004-keyboard-state-display --graph-only` and then the full evidence audit before implementation is declared ready",
+      "explicit_deps": [
+        "T038",
+        "T039",
+        "T042"
+      ],
+      "phase_deps": [
+        "T034"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T041",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add tests for multiple active held layers where one key is released out of order, including expected stack recovery and displayed diagnostic/context",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T042",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Measure representative `keyboardStateDisplay` model creation time and record evidence that it stays under 1 ms for compact, expanded, nested stack, 12-label, pending-sequence, recent-command, diagnostic, and partial-layout snapshots",
+      "explicit_deps": [
+        "T034"
+      ],
+      "phase_deps": [
+        "T034"
+      ],
+      "root_cause": []
+    }
+  ]
+}

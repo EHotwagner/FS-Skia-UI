@@ -1,0 +1,8 @@
+compact average-ms=0.009238 pass-under-1ms=true
+expanded average-ms=0.017895 pass-under-1ms=true
+nested-stack average-ms=0.011308 pass-under-1ms=true
+twelve-label average-ms=0.019784 pass-under-1ms=true
+pending-sequence average-ms=0.009179 pass-under-1ms=true
+recent-command average-ms=0.009536 pass-under-1ms=true
+diagnostic average-ms=0.009451 pass-under-1ms=true
+partial-layout average-ms=0.003226 pass-under-1ms=true

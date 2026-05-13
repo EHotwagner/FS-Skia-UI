@@ -9,10 +9,15 @@ type Model =
     { Size: Size
       Input: InputRuntime
       LastEffects: InputEffect list
-      ShowLayout: bool
+      StateDisplay: StateDisplayMode
       LastViewerKey: string option
       Diagnostics: RenderDiagnostic list
       Closing: bool }
+
+and StateDisplayMode =
+    | CompactDisplay
+    | ExpandedDisplay
+    | HiddenDisplay
 
 type Msg =
     | ViewerInput of ViewerEvent
@@ -29,11 +34,11 @@ let rec findRepositoryRoot directory =
         | None -> failwithf "Could not locate repository root from %s" directory
 
 let registry =
-    [ { Id = "move.left"; DisplayName = "Move left"; Category = Some "movement" }
-      { Id = "move.right"; DisplayName = "Move right"; Category = Some "movement" }
-      { Id = "copy.selection"; DisplayName = "Copy selection"; Category = Some "editing" }
-      { Id = "delete.selection"; DisplayName = "Delete selection"; Category = Some "editing" }
-      { Id = "open.palette"; DisplayName = "Open palette"; Category = Some "popup" } ]
+    [ { Id = "move.left"; DisplayName = "move-left"; Category = Some "movement" }
+      { Id = "move.right"; DisplayName = "move-right"; Category = Some "movement" }
+      { Id = "copy.selection"; DisplayName = "copy-left"; Category = Some "editing" }
+      { Id = "delete.selection"; DisplayName = "delete-left"; Category = Some "editing" }
+      { Id = "open.palette"; DisplayName = "open-palette"; Category = Some "popup" } ]
     |> KeyboardInput.commandRegistry
     |> function
         | Result.Ok registry -> registry
@@ -44,9 +49,68 @@ let loadModel root =
         Path.Combine(root, "specs", "003-keyboard-input-framework", "readiness", "sample-configs", "modal-input.yaml")
         |> File.ReadAllText
 
+    let keyId label =
+        match label with
+        | ";" -> "Semicolon"
+        | "," -> "Comma"
+        | "." -> "Period"
+        | "/" -> "Slash"
+        | value -> $"Key{value.ToUpperInvariant()}"
+
+    let position row column label =
+        { Id = keyId label
+          Hand = if column < 5 then LeftHand else RightHand
+          Finger =
+            match column with
+            | 0 | 9 -> Pinky
+            | 1 | 8 -> Ring
+            | 2 | 7 -> Middle
+            | 3 | 4 | 5 | 6 -> Index
+            | _ -> UnknownFinger
+          Row = row
+          Column = column }
+
+    let qwertyRows =
+        [ [ "q"; "w"; "e"; "r"; "t"; "y"; "u"; "i"; "o"; "p" ]
+          [ "a"; "s"; "d"; "f"; "g"; "h"; "j"; "k"; "l"; ";" ]
+          [ "z"; "x"; "c"; "v"; "b"; "n"; "m"; ","; "."; "/" ] ]
+
+    let letterPositions =
+        qwertyRows
+        |> List.mapi (fun row labels -> labels |> List.mapi (position row))
+        |> List.concat
+
+    let labeledLayout layoutId displayName labels =
+        let labelMap =
+            List.zip qwertyRows labels
+            |> List.collect (fun (physicalRow, activeRow) ->
+                List.zip physicalRow activeRow
+                |> List.map (fun (physicalLabel, activeLabel) -> keyId physicalLabel, activeLabel))
+            |> Map.ofList
+
+        { Id = layoutId
+          DisplayName = displayName
+          Positions =
+            letterPositions
+            @ [ { Id = "Digit1"; Hand = LeftHand; Finger = Pinky; Row = -1; Column = 0 }
+                { Id = "Space"; Hand = EitherHand; Finger = Thumb; Row = 4; Column = 4 } ]
+          Labels = labelMap |> Map.add "Digit1" "1" |> Map.add "Space" "space" }
+
+    let demoLayouts =
+        [ labeledLayout "qwerty" "QWERTY" [ [ "q"; "w"; "e"; "r"; "t"; "y"; "u"; "i"; "o"; "p" ]; [ "a"; "s"; "d"; "f"; "g"; "h"; "j"; "k"; "l"; ";" ]; [ "z"; "x"; "c"; "v"; "b"; "n"; "m"; ","; "."; "/" ] ]
+          labeledLayout "dvorak" "Dvorak" [ [ "'"; ","; "."; "p"; "y"; "f"; "g"; "c"; "r"; "l" ]; [ "a"; "o"; "e"; "u"; "i"; "d"; "h"; "t"; "n"; "s" ]; [ ";"; "q"; "j"; "k"; "x"; "b"; "m"; "w"; "v"; "z" ] ]
+          labeledLayout "colemacs-dh" "Colemak-DH" [ [ "q"; "w"; "f"; "p"; "b"; "j"; "l"; "u"; "y"; ";" ]; [ "a"; "r"; "s"; "t"; "g"; "m"; "n"; "e"; "i"; "o" ]; [ "z"; "x"; "c"; "d"; "v"; "k"; "h"; ","; "."; "/" ] ]
+          labeledLayout "workman" "Workman" [ [ "q"; "d"; "r"; "w"; "b"; "j"; "f"; "u"; "p"; ";" ]; [ "a"; "s"; "h"; "t"; "g"; "y"; "n"; "e"; "o"; "i" ]; [ "z"; "x"; "m"; "c"; "v"; "k"; "l"; ","; "."; "/" ] ]
+          labeledLayout "symbols" "Custom Symbols" [ [ "!"; "@"; "#"; "$"; "%"; "^"; "&"; "*"; "("; ")" ]; [ "<"; ">"; "{"; "}"; "["; "]"; "-"; "_"; "="; "+" ]; [ "copy"; "cut"; "paste"; "undo"; "redo"; "layer"; "menu"; ","; "."; "/" ] ] ]
+
     match KeyboardInput.parseYaml yaml with
     | Result.Error diagnostics -> failwithf "parse failed: %A" diagnostics
     | Result.Ok config ->
+        let config =
+            { config with
+                DefaultLayout = "qwerty"
+                Layouts = demoLayouts }
+
         match KeyboardInput.validate registry config with
         | Result.Ok model -> model
         | Result.Error diagnostics -> failwithf "validate failed: %A" diagnostics
@@ -55,7 +119,7 @@ let createRuntime () =
     let root = findRepositoryRoot AppContext.BaseDirectory
     let model = loadModel root
 
-    match KeyboardInput.init "colemacs-dh" model with
+    match KeyboardInput.init "qwerty" model with
     | Result.Ok(runtime, effects) -> model, runtime, effects
     | Result.Error diagnostics -> failwithf "init failed: %A" diagnostics
 
@@ -65,25 +129,25 @@ let commandNames effects =
         | CommandResolved resolved -> Some resolved.CommandId
         | _ -> None)
 
-let layoutIds (model: CanonicalInputModel) =
-    model.Configuration.Layouts
-    |> List.map (fun layout -> $"{layout.Id} ({layout.DisplayName})")
-    |> String.concat ", "
+let stateDisplayOptions mode =
+    match mode with
+    | CompactDisplay -> KeyboardInput.compactStateDisplayOptions
+    | ExpandedDisplay -> KeyboardInput.expandedStateDisplayOptions
+    | HiddenDisplay ->
+        { KeyboardInput.compactStateDisplayOptions with
+            Visibility = KeyboardStateDisplayHidden }
 
-let heldText view =
-    view.HeldModes
-    |> List.map _.ModeId
-    |> String.concat ", "
-    |> function
-        | "" -> "none"
-        | value -> value
+let nextStateDisplay mode =
+    match mode with
+    | CompactDisplay -> ExpandedDisplay
+    | ExpandedDisplay -> HiddenDisplay
+    | HiddenDisplay -> CompactDisplay
 
-let labelsText view =
-    [ "KeyH"; "KeyL"; "Space"; "KeyC"; "KeyD"; "Digit1" ]
-    |> List.map (fun key ->
-        let label = view.ActiveLabels |> Map.tryFind key |> Option.defaultValue "?"
-        $"{key}={label}")
-    |> String.concat "   "
+let stateDisplayName mode =
+    match mode with
+    | CompactDisplay -> "compact"
+    | ExpandedDisplay -> "expanded"
+    | HiddenDisplay -> "hidden"
 
 let textBlock x y lineHeight lines =
     lines
@@ -102,17 +166,7 @@ let textRunAt size x y text =
           Paint = Paint.fill Colors.white |> Paint.withAntialias true }
 
 let view model =
-    let layout = KeyboardInput.layoutState model.Input
-    let canonical = model.Input.Model
     let lastCommands = commandNames model.LastEffects
-
-    let modeStack =
-        layout.ActiveModeStack
-        |> List.map (fun frame ->
-            match frame.State with
-            | Some state -> $"{frame.ModeId}:{state}"
-            | None -> frame.ModeId)
-        |> String.concat " > "
     let lastViewerKey = model.LastViewerKey |> Option.defaultValue "none"
     let lastCommandText =
         if lastCommands.IsEmpty then
@@ -122,35 +176,30 @@ let view model =
 
     let docs =
         [ "Window keypresses are captured through ViewerEvent.KeyDown / KeyUp."
-          "Keys resolve through FS.Skia.UI.KeyboardInput; app/domain state stays outside the input runtime."
           ""
-          "Try: H/L movement, 1 selection-state change, Space then H popup command."
-          "Try: hold C then H then release C for copy mode; hold D then H then release D for delete mode."
-          "Layouts: Q=QWERTY, V=Dvorak, K=Colemak-DH, W=Workman, S=Custom Symbols. F2 toggles this overlay."
+          "Selection layer labels: H move-left, L move-right, 1 line-state, Space space-menu."
+          "Held layer labels: hold C for copy-layer, hold D for delete-layer, then press H for the layer action."
+          "Layouts: Q=QWERTY, V=Dvorak, K=Colemak-DH, W=Workman, S=Custom Symbols. F2 cycles state display."
           ""
-          $"active layout: {layout.ActiveLayout.DisplayName} ({layout.ActiveLayout.Id})"
-          $"available layouts: {layoutIds canonical}"
-          $"mode stack: {modeStack}"
-          $"held temporary modes: {heldText layout}"
-          $"visible labels: {labelsText layout}"
+          $"state display: {stateDisplayName model.StateDisplay}"
           $"last viewer key: {lastViewerKey}"
           $"last commands: {lastCommandText}" ]
 
     let margin = 48.0
     let contentWidth = Math.Max(320.0, float model.Size.Width - margin * 2.0)
-    let overlayY = 152.0
-    let docsY = 316.0
+    let overlayY = 136.0
+    let docsY = 568.0
+    let docsHeight = Math.Max(132.0, float model.Size.Height - docsY - 32.0)
 
     Scene.group [
         Scene.rectangle (0.0, 0.0, float model.Size.Width, float model.Size.Height) (Colors.rgba 17uy 24uy 32uy 255uy)
         Scene.rectangle (margin, 36.0, contentWidth, 84.0) (Colors.rgba 38uy 86uy 116uy 255uy)
         textRunAt 20.0 (margin + 24.0) 74.0 "Keyboard input as a Skia UI framework input option"
-        textRunAt 13.0 (margin + 24.0) 98.0 "Colemak-DH active by default. The layout overlay is drawn by the Skia scene."
+        textRunAt 13.0 (margin + 24.0) 98.0 "QWERTY active by default. The state display draws physical key positions with active-layout labels."
 
-        if model.ShowLayout then
-            KeyboardInput.renderLayoutStateAt (margin, overlayY) model.Input
+        KeyboardInput.renderKeyboardStateDisplayAt (margin, overlayY) (stateDisplayOptions model.StateDisplay) model.LastEffects model.Input
 
-        Scene.rectangle (margin, docsY - 26.0, contentWidth, 318.0) (Colors.rgba 24uy 32uy 42uy 210uy)
+        Scene.rectangle (margin, docsY - 26.0, contentWidth, docsHeight) (Colors.rgba 24uy 32uy 42uy 210uy)
         yield! textBlock (margin + 24.0) docsY 20.0 docs
     ]
 
@@ -173,7 +222,7 @@ let init () =
         { Size = initialSize
           Input = runtime
           LastEffects = effects
-          ShowLayout = true
+          StateDisplay = CompactDisplay
           LastViewerKey = None
           Diagnostics = []
           Closing = false }
@@ -201,7 +250,7 @@ let update msg model =
                     Input = nextInput
                     LastEffects = effects
                     LastViewerKey = Some key
-                    ShowLayout = if key = "F2" then not model.ShowLayout else model.ShowLayout }
+                    StateDisplay = if key = "F2" then nextStateDisplay model.StateDisplay else model.StateDisplay }
 
             next, requestRender next
         | ViewerEvent.KeyUp key ->
@@ -251,19 +300,29 @@ let runContractSmoke () =
               InputMsg.KeyDown "KeyH"
               InputMsg.KeyUp "KeyC"
               InputMsg.SetLayout "symbols"
-              InputMsg.SetLayout "colemacs-dh" ]
+              InputMsg.SetLayout "qwerty" ]
 
-    let report = KeyboardInput.analyzeBigrams canonical "colemacs-dh"
+    let report = KeyboardInput.analyzeBigrams canonical "qwerty"
     let layout = KeyboardInput.layoutState replayed
-    let sceneKinds = KeyboardInput.renderLayoutState replayed |> Scene.describe
+    let compact = KeyboardInput.keyboardStateDisplay KeyboardInput.compactStateDisplayOptions effects replayed
+    let expanded = KeyboardInput.keyboardStateDisplay KeyboardInput.expandedStateDisplayOptions effects replayed
+    let hidden =
+        KeyboardInput.keyboardStateDisplay
+            { KeyboardInput.compactStateDisplayOptions with Visibility = KeyboardStateDisplayHidden }
+            effects
+            replayed
+    let sceneKinds = KeyboardInput.renderKeyboardStateDisplay KeyboardInput.compactStateDisplayOptions effects replayed |> Scene.describe
 
-    printfn "status=ok sample=KeyboardInputGallery active-layout=%s available-layouts=%s mode-stack=%A held=%A top-pairs=%d effects=%d scene-kinds=%A"
+    printfn "status=ok sample=KeyboardInputGallery active-layout=%s available-layouts=%s mode-stack=%A held=%A top-pairs=%d effects=%d compact-labels=%d expanded-stack=%d hidden=%A scene-kinds=%A"
         layout.ActiveLayout.Id
         (canonical.Configuration.Layouts |> List.map _.Id |> String.concat ",")
         (layout.ActiveModeStack |> List.map _.ModeId)
         (layout.HeldModes |> List.map _.ModeId)
         report.TopPairs.Length
         effects.Length
+        compact.Labels.Length
+        expanded.Stack.Length
+        hidden.Visibility
         sceneKinds
     0
 

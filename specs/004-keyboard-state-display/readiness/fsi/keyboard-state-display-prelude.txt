@@ -1,0 +1,11 @@
+init-effects=2
+replay-effects=15
+mode-stack=["selection"]
+held-modes=[]
+active-layout=qwerty
+top-pairs=2 risks=5 suggestions=5
+compact-display layout=Some "qwerty" labels=6 recent=Some "copy.selection" diagnostic=Some LostKeyReleaseRecovered
+expanded-display stack=1 top=Some "selection" partial=false
+hidden-display visibility=KeyboardStateDisplayHidden stack=0 labels=0
+display-scene=[GroupElement; RectangleElement; TextRunElement; TextRunElement; TextRunElement;
+ TextRunElement; TextRunElement; TextRunElement]

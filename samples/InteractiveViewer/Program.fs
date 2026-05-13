@@ -14,7 +14,7 @@ type Model =
       ActiveKey: string option
       Keyboard: InputRuntime option
       KeyboardEffects: InputEffect list
-      ShowKeyboardLayout: bool
+      ShowKeyboardStateDisplay: bool
       Ticks: int
       Diagnostics: RenderDiagnostic list
       Closing: bool }
@@ -71,7 +71,7 @@ let init () =
       ActiveKey = None
       Keyboard = keyboard
       KeyboardEffects = keyboardEffects
-      ShowKeyboardLayout = true
+      ShowKeyboardStateDisplay = true
       Ticks = 0
       Diagnostics = []
       Closing = false },
@@ -102,8 +102,13 @@ let view model =
     let pulse = float (model.Ticks % 90)
     let activeKey = model.ActiveKey |> Option.defaultValue "none"
     let keyboardScene =
-        match model.ShowKeyboardLayout, model.Keyboard with
-        | true, Some runtime -> KeyboardInput.renderLayoutStateAt (56.0, 252.0) runtime
+        match model.ShowKeyboardStateDisplay, model.Keyboard with
+        | true, Some runtime ->
+            KeyboardInput.renderKeyboardStateDisplayAt
+                (56.0, 252.0)
+                KeyboardInput.compactStateDisplayOptions
+                model.KeyboardEffects
+                runtime
         | _ -> Scene.empty
 
     Scene.group [
@@ -113,7 +118,7 @@ let view model =
         Scene.text (56.0, 112.0) "Interactive Vulkan Viewer" Colors.white
         Scene.text (56.0, 176.0) $"key: {activeKey}" Colors.white
         Scene.text (56.0, 216.0) $"ticks: {model.Ticks}" Colors.white
-        Scene.text (56.0, 244.0) "F2 toggles keyboard layout overlay. Press H/L/Space/C/D/1 to drive input." Colors.white
+        Scene.text (56.0, 244.0) "F2 toggles keyboard state display. Press H/L/Space/C/D/1 to drive input." Colors.white
         keyboardScene
         Scene.chart [ 2.0 + float (model.Ticks % 5); 4.0; 3.0 + float (model.Ticks % 7); 7.0 ]
     ]
@@ -143,11 +148,11 @@ let update msg model =
                     ActiveKey = Some key
                     Keyboard = keyboard
                     KeyboardEffects = effects
-                    ShowKeyboardLayout =
+                    ShowKeyboardStateDisplay =
                         if key = "F2" then
-                            not model.ShowKeyboardLayout
+                            not model.ShowKeyboardStateDisplay
                         else
-                            model.ShowKeyboardLayout }
+                            model.ShowKeyboardStateDisplay }
 
             next, requestRender next
         | ViewerEvent.KeyUp key ->
@@ -251,7 +256,7 @@ let runSmoke seconds =
     printfn "subscription-ticks=%d" ticked.Ticks
     printfn "active-key=%A" ticked.ActiveKey
     printfn "keyboard-layout=%A" (ticked.Keyboard |> Option.map _.ActiveLayout)
-    printfn "keyboard-overlay=%b" ticked.ShowKeyboardLayout
+    printfn "keyboard-state-display=%b" ticked.ShowKeyboardStateDisplay
     printfn "pointer=%A" ticked.Pointer
     0
 
@@ -276,8 +281,18 @@ let runContractSmoke () =
     printfn "sample=InteractiveViewer"
     printfn "active-key=%A" afterTick.ActiveKey
     printfn "keyboard-layout=%A" (afterTick.Keyboard |> Option.map _.ActiveLayout)
-    printfn "keyboard-overlay=%b" afterTick.ShowKeyboardLayout
+    printfn "keyboard-state-display=%b" afterTick.ShowKeyboardStateDisplay
     printfn "keyboard-effects=%d" afterTick.KeyboardEffects.Length
+    match afterTick.Keyboard with
+    | Some runtime ->
+        let display = KeyboardInput.keyboardStateDisplay KeyboardInput.compactStateDisplayOptions afterTick.KeyboardEffects runtime
+        printfn "keyboard-display-layout=%A" (display.Layout |> Option.map _.Id)
+        printfn "keyboard-display-labels=%d" display.Labels.Length
+        printfn "keyboard-display-scene=%A" (KeyboardInput.renderKeyboardStateDisplay KeyboardInput.compactStateDisplayOptions afterTick.KeyboardEffects runtime |> Scene.describe)
+    | None ->
+        printfn "keyboard-display-layout=None"
+        printfn "keyboard-display-labels=0"
+        printfn "keyboard-display-scene=[]"
     printfn "pointer=%A" afterTick.Pointer
     printfn "ticks=%d" afterTick.Ticks
     printfn "size=%dx%d" afterTick.Size.Width afterTick.Size.Height

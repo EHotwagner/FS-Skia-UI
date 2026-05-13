@@ -193,6 +193,91 @@ type InputEffect =
     | InputDiagnosticEmitted of InputDiagnostic
     | InputEventRecorded of InputEvent
 
+type KeyboardStateDisplayVisibility =
+    | KeyboardStateDisplayHidden
+    | KeyboardStateDisplayVisible
+
+type KeyboardStateDisplayDensity =
+    | KeyboardStateDisplayCompact
+    | KeyboardStateDisplayExpanded
+
+type KeyboardStateDisplayOptions =
+    { Visibility: KeyboardStateDisplayVisibility
+      Density: KeyboardStateDisplayDensity
+      ShowKeyLabels: bool
+      ShowPendingSequence: bool
+      ShowRecentCommand: bool
+      ShowDiagnostic: bool
+      MaxCompactLabels: int
+      MaxExpandedLabels: int }
+
+type KeyboardStateDisplayLayout =
+    { Id: LayoutId
+      DisplayName: string option
+      IsAvailable: bool }
+
+type KeyboardStateDisplayContextKind =
+    | DisplayPermanentContext
+    | DisplayStatefulContext
+    | DisplayPopupContext
+    | DisplayTemporaryHeldContext
+    | DisplayUnknownContext
+
+type KeyboardStateDisplayStackEntry =
+    { ModeId: ModeId
+      DisplayName: string option
+      Kind: KeyboardStateDisplayContextKind
+      State: StateId option
+      EnteredBy: KeyPositionId option
+      IsTop: bool
+      IsPersistent: bool }
+
+type KeyboardStateDisplayLabel =
+    { KeyPositionId: KeyPositionId
+      Label: string
+      CommandId: CommandId option
+      Outcome: string }
+
+type KeyboardStateDisplayPendingSequence =
+    { Chords: KeyChord list
+      StartedAt: DateTimeOffset
+      IsTimed: bool
+      TimeoutMilliseconds: int option }
+
+type KeyboardStateDisplayRecentCommand =
+    { CommandId: CommandId
+      DisplayName: string option
+      SourceKey: KeyPositionId }
+
+type KeyboardStateDisplayDiagnostic =
+    { Severity: InputSeverity
+      Code: InputDiagnosticCode
+      Message: string
+      ModeId: ModeId option
+      CommandId: CommandId option
+      KeyPositionId: KeyPositionId option }
+
+type KeyboardStateDisplayOmission =
+    | OmittedLabels of omittedCount: int
+    | OmittedPendingSequence
+    | OmittedRecentCommand
+    | OmittedDiagnostic
+    | OmittedStackEntries of omittedCount: int
+
+type KeyboardStateDisplayModel =
+    { Visibility: KeyboardStateDisplayVisibility
+      Density: KeyboardStateDisplayDensity
+      Layout: KeyboardStateDisplayLayout option
+      Stack: KeyboardStateDisplayStackEntry list
+      TopContext: KeyboardStateDisplayStackEntry option
+      ActiveState: StateId option
+      Labels: KeyboardStateDisplayLabel list
+      PendingSequence: KeyboardStateDisplayPendingSequence option
+      RecentCommand: KeyboardStateDisplayRecentCommand option
+      Diagnostic: KeyboardStateDisplayDiagnostic option
+      Omitted: KeyboardStateDisplayOmission list
+      IsPartial: bool }
+
 type BigramRiskKind =
     | SameFinger
     | LongTravel
@@ -255,6 +340,31 @@ module KeyboardInput =
     val updateFromViewerEvent : event: ViewerEvent -> runtime: InputRuntime -> InputRuntime * InputEffect list
 
     val layoutState : runtime: InputRuntime -> LayoutStateView
+
+    val defaultStateDisplayOptions : KeyboardStateDisplayOptions
+
+    val compactStateDisplayOptions : KeyboardStateDisplayOptions
+
+    val expandedStateDisplayOptions : KeyboardStateDisplayOptions
+
+    val keyboardStateDisplay :
+        options: KeyboardStateDisplayOptions ->
+        recentEffects: InputEffect list ->
+        runtime: InputRuntime ->
+            KeyboardStateDisplayModel
+
+    val renderKeyboardStateDisplay :
+        options: KeyboardStateDisplayOptions ->
+        recentEffects: InputEffect list ->
+        runtime: InputRuntime ->
+            Scene
+
+    val renderKeyboardStateDisplayAt :
+        position: float * float ->
+        options: KeyboardStateDisplayOptions ->
+        recentEffects: InputEffect list ->
+        runtime: InputRuntime ->
+            Scene
 
     val renderLayoutState : runtime: InputRuntime -> Scene
 
