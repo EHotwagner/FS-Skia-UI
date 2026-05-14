@@ -1,0 +1,505 @@
+# FS-Skia-UI Template Framework Analysis
+
+Date: 2026-05-14
+
+This document analyzes how FS-Skia-UI can become an opinionated template framework for new F# / Elmish / Skia projects, with deterministic Speckit, build, test, and scaffolding processes.
+
+The short version: this repository already contains most of the right constraints. The next step is to make those constraints executable and reusable: a `dotnet new` template for structure, a FAKE build graph for deterministic commands, a stronger Speckit preset for generated specs/plans/tasks, and a small set of project-local Speckit skills/extensions for UI-specific evidence.
+
+## Current Project Shape
+
+Observed local structure:
+
+- `src/Lib`, `src/Layout`, `src/Charts` are packable F# libraries with matching `.fsi` files.
+- `samples/*` are user-facing smoke and gallery hosts.
+- `tests/*` include semantic tests, smoke tests, package tests, layout tests, parity tests, and chart tests.
+- `scripts/*.fsx` already capture public-API preload and evidence workflows.
+- `.specify/memory/constitution.md` already defines FSI-first, visibility-in-FSI, Elmish/MVU boundary, synthetic evidence disclosure, mandatory tests, and safe diagnostics.
+- `.specify/presets/fsharp-opinionated` and `.specify/extensions/evidence` already prove this repo can override Speckit behavior and add gates.
+- `specs/*/readiness` already models a useful evidence directory for transcripts, baselines, smoke output, and review artifacts.
+
+This makes FS-Skia-UI less like a normal application template and more like a seed for a governed product family: every new project should inherit build graph, API boundaries, evidence obligations, test layering, samples, and Speckit behavior.
+
+## Online Research Notes
+
+Spec Kit supports exactly the customization mechanism needed here. Extensions add commands, integrations, quality gates, and new development phases, while presets override templates, commands, scripts, terminology, and organizational standards. Official docs also state that preset/template resolution is layered: project-local overrides, installed presets, installed extensions, then Spec Kit core. Sources: https://github.github.com/spec-kit/reference/extensions.html, https://github.github.com/spec-kit/reference/presets.html, https://github.com/github/spec-kit
+
+Spec Kit's SDD model treats specs as the primary artifact and code as the expression of those specs. Its own description emphasizes constitution-driven constraints, research-driven context, generated plans, task derivation, parallelization, and traceable decisions. Source: https://github.com/github/spec-kit/blob/main/spec-driven.md
+
+FAKE is a good fit for deterministic build orchestration because it is an F# build DSL with typed, declarative, extensible scripts, target dependencies, globbing, and module integration. Its own guidance says it is useful for reproducible/testable automation and for reducing CI-specific behavior, but should not replace MSBuild itself. Source: https://fake.build/guide/what-is-fake.html and https://fake.build/
+
+FAKE has a bootstrap template that creates `build.fsx`, `fake.sh`, and `fake.cmd`, with local-tool bootstrapping and inline/file dependency modes. Source: https://fake.build/guide/fake-template.html
+
+Elmish officially defines the core architectural boundary used by this repo: immutable `Model`, discriminated-union `Message`, `Command`, pure `init`, pure `update`, pure `view`, and a `Program` dispatch loop. It also emphasizes that the core does not depend on a particular UI technology and can run without a UI. Source: https://elmish.github.io/elmish/
+
+SkiaSharp's API shape reinforces a clean rendering boundary: `SKCanvas` encapsulates drawing state, `SKPaint` holds style state, and the recommended raster/GPU path gets a canvas from an `SKSurface`. SkiaSharp also has multiple backends, including GPU surfaces, but does not create the graphics context for the host. Sources: https://learn.microsoft.com/en-us/dotnet/api/skiasharp.skcanvas?view=skiasharp-3.119 and https://learn.microsoft.com/en-us/dotnet/api/skiasharp?view=skiasharp-3.119
+
+Yoga is a strong choice for automatic layout because it is a portable, cross-platform, high-performance Flexbox layout engine, designed for speed, small size, and use outside web browsers. Source: https://chronesdev.github.io/Yoga/
+
+`dotnet new` custom templates can replace a configured `sourceName` in file names and file contents, can be installed from a directory or package, and can be packed as a NuGet package. This is the right mechanism for deterministic project creation. Source: https://learn.microsoft.com/en-us/dotnet/core/tools/custom-templates
+
+Paket remains worth considering for template-family dependency determinism because a committed `paket.lock` records concrete direct and transitive dependency resolution and makes restore reliable across machines and time. Source: https://fsprojects.github.io/Paket/lock-file.html
+
+Expecto is a good match for this repository's existing test style because tests are values, composable, async/parallel by default, and can be run from console apps or `dotnet` integration. Source: https://github.com/haf/expecto
+
+## Recommended Template Boundary
+
+The template should not try to regenerate the full project-specific feature history. It should freeze the framework shape and let specs drive feature growth.
+
+Template-owned:
+
+- Solution layout: `src/`, `tests/`, `samples/`, `scripts/`, `specs/`, `docs/`, `.specify/`, `.agents/skills/`.
+- `Directory.Build.props` with `TargetFramework`, `LangVersion`, warnings-as-errors, package metadata placeholders, and FSI visibility enforcement.
+- Canonical public API projects:
+  - `src/Lib` for viewer/runtime/kernel API.
+  - `src/Layout` for layout primitives and Yoga adapter boundary.
+  - Optional `src/Charts` or `src/Widgets` depending on template flavor.
+- Canonical test projects:
+  - `tests/Lib.Tests`
+  - `tests/Layout.Tests`
+  - `tests/Smoke.Tests`
+  - `tests/Package.Tests`
+  - optional `tests/Parity.Tests`
+- Canonical sample projects:
+  - `samples/BasicViewer`
+  - `samples/InteractiveViewer`
+  - `samples/ScreenshotGallery`
+  - optional feature galleries.
+- Build and evidence scripts:
+  - `build.fsx`
+  - `fake.sh` / `fake.cmd`
+  - `scripts/prelude.fsx`
+  - `scripts/refresh-surface-baselines.fsx`
+  - smoke scripts and capture scripts.
+- Speckit constitution, templates, preset, evidence extension, and custom skills.
+
+Project-owned after instantiation:
+
+- Product feature specs under `specs/`.
+- Actual product modules and widgets.
+- Concrete branding/package metadata.
+- Concrete platform support claims.
+- Product-specific samples.
+- Feature-specific readiness evidence.
+
+Avoid putting generated product-specific feature specs into the template. Instead, include a `specs/000-template-profile/` or `docs/template-profile.md` that explains the inherited process.
+
+## Framework Design Boundaries
+
+The core design should make the rendering pipeline explicit:
+
+```text
+Model
+  -> update Msg Model
+  -> view Model dispatch
+  -> declarative scene/layout tree
+  -> layout evaluation
+  -> render commands
+  -> Skia host draws via SKCanvas/SKSurface
+```
+
+The key boundary is that `view` creates FS-Skia-UI scene data, not direct Skia calls. Direct `SKCanvas` use should be an edge implementation detail or a deliberate escape hatch with tests.
+
+Recommended layers:
+
+- **Application/MVU layer**: owns `Model`, `Msg`, `init`, `update`, subscriptions, and effects.
+- **View declaration layer**: pure functions that turn `Model` into scene/layout/widget descriptions.
+- **Layout layer**: pure or deterministic evaluation of logical bounds, Yoga interop hidden behind F# records/unions.
+- **Render planning layer**: converts computed logical tree into render commands or draw operations.
+- **Skia host layer**: owns GPU/Vulkan/window lifecycle, `SKSurface`, `SKCanvas`, native resources, screenshots, frame loop, and diagnostics.
+- **Evidence layer**: FSI transcripts, surface baselines, smoke output, screenshots, and performance reports.
+
+This boundary prevents two common AI failure modes:
+
+- Recreating a mini UI framework inside a feature.
+- Bypassing MVU and layout contracts by drawing directly in a sample or callback.
+
+## Speckit Constitution Improvements
+
+The existing constitution is strong. For template use, add principles that capture the assumptions now known to be stable across projects.
+
+Recommended additions:
+
+1. **Template Contract Is Source-Controlled**
+
+   New projects inherit a versioned template profile. Any deviation from the template-owned layout, build graph, or evidence graph must be recorded in `docs/template-deviations.md`.
+
+2. **View Functions Produce Declarative UI Data**
+
+   `view` must return framework scene/layout/widget data. It must not perform I/O, mutate host state, allocate long-lived native resources, or draw directly to `SKCanvas`, except through a documented custom-render escape hatch.
+
+3. **Skia Resources Live at the Host Edge**
+
+   `SKSurface`, `SKCanvas`, Vulkan contexts, images, fonts, and native handles are owned/disposed by host or renderer modules. Domain, layout, widget, and MVU modules may describe resources but not own backend lifetimes.
+
+4. **Layout Is Logical Before Physical**
+
+   Layout operates in logical coordinates. Pixel snapping, DPI scaling, and backend-specific rounding happen at render and hit-test boundaries and must be deterministic.
+
+5. **Build Graph Is Canonical**
+
+   `build.fsx` targets are the authoritative local and CI workflow. CI may call FAKE targets but must not reimplement restore/build/test/pack/smoke sequencing in YAML.
+
+6. **Template Drift Is a Defect**
+
+   If a feature adds a new test category, public module type, sample pattern, readiness artifact, or build target, the corresponding Speckit templates/preset and FAKE build graph must be updated or an explicit deferral recorded.
+
+7. **Golden Evidence Has Owners**
+
+   Surface baselines, screenshots, FSI transcripts, performance files, and generated task graphs must be reproducible by named build targets. Hand-edited evidence is allowed only when explicitly marked.
+
+8. **Dependency Policy Is Locked**
+
+   Every dependency must have a pinning policy, owner, upgrade command, and evidence target. Preview dependencies must have preview-risk notes in package documentation.
+
+These should be added to `.specify/memory/constitution.md` and propagated into `.specify/presets/fsharp-opinionated/templates/constitution-template.md`.
+
+## Speckit Preset Improvements
+
+Keep the existing `fsharp-opinionated` preset but split it conceptually into:
+
+- `fsharp-library-opinionated`: FSI-first, package baselines, Expecto, scripts, docs.
+- `elmish-skia-ui-opinionated`: MVU, view returns scene data, Skia host edge, samples, screenshots, layout evidence.
+- `template-framework-governance`: template drift, FAKE build graph, scaffold verification.
+
+If Spec Kit preset stacking is used, these can become separate presets with priorities. If this remains project-local, keep one preset but organize templates with those sections.
+
+Template changes to make now:
+
+- Replace generic plan project-structure examples with FS-Skia-UI structure.
+- Make tests mandatory for behavior-changing code, matching the constitution.
+- Add required plan fields:
+  - `Affected package(s)`
+  - `Public FSI impact`
+  - `View/MVU impact`
+  - `Skia/native-resource impact`
+  - `Layout impact`
+  - `Sample/screenshot impact`
+  - `Build target impact`
+  - `Evidence target impact`
+- Add required tasks:
+  - draft/update `.fsi`
+  - write semantic tests against public API
+  - refresh surface baselines for Tier 1
+  - run FSI transcript
+  - run sample smoke
+  - run screenshot capture when visual behavior changes
+  - update FAKE targets if workflow changes
+  - run evidence graph/audit
+- Add a generated `tasks.deps.yml` requirement for every task.
+- Add a `Template Drift` section to generated `tasks.md`.
+
+## Speckit Custom Stages and Skills
+
+Current core flow:
+
+```text
+specify -> clarify/checklist -> plan -> tasks -> implement -> evidence graph/audit
+```
+
+Recommended project-local stages:
+
+1. `speckit.scaffold`
+
+   Verifies project shape and creates deterministic missing pieces:
+   - `.sln`
+   - `src/*`
+   - `tests/*`
+   - `samples/*`
+   - `Directory.Build.props`
+   - `build.fsx`
+   - `scripts/prelude.fsx`
+   - `Package.Tests` baseline test
+
+   This should be conservative: it creates only known canonical files and refuses to overwrite non-template user code.
+
+2. `speckit.contract`
+
+   Runs before implementation for Tier 1 work:
+   - verifies every public `.fs` has matching `.fsi`
+   - extracts public surface
+   - compares baseline
+   - confirms `contracts/public-api.md` exists and names affected modules
+   - captures an initial FSI transcript if possible
+
+3. `speckit.visual-evidence`
+
+   Runs for visual/layout/rendering changes:
+   - builds samples
+   - runs `--contract-smoke`
+   - captures screenshots where supported
+   - writes metadata: OS, GPU mode, renderer, fallback flag, dimensions, DPI, seed, timestamp
+   - optionally compares pixel hashes or perceptual hashes
+
+4. `speckit.layout-evidence`
+
+   Runs for layout changes:
+   - fixed input layout trees
+   - byte-for-byte logical bounds report
+   - invalidation locality report
+   - hit-test/pixel-snap report
+   - Yoga version report
+
+5. `speckit.build-health`
+
+   Runs the canonical FAKE verification target and writes `readiness/build-health.md`.
+
+6. `speckit.template-drift`
+
+   Checks whether changes touched:
+   - public modules without baselines
+   - new sample projects without smoke target
+   - new packages without pack target
+   - new dependencies without pin/owner notes
+   - new scripts not wired into FAKE
+   - specs/tasks that bypass required template sections
+
+7. `speckit.release-pack`
+
+   Prepares local package validation:
+   - bumps preview version if requested
+   - packs to `~/.local/share/nuget-local/`
+   - runs sample consumers against packed packages
+   - records package notes.
+
+These are better as extensions when they add commands and gates. They are better as preset/template updates when they only change generated artifact shape.
+
+## FAKE Build Graph
+
+FAKE should become the one stable command surface for humans, agents, and CI. That avoids each AI-created project inventing a new command order.
+
+Recommended target graph:
+
+```text
+Clean
+  ==> Restore
+  ==> Build
+  ==> Test
+  ==> Pack
+  ==> SurfaceBaselines
+  ==> FsiTranscripts
+  ==> SampleContractSmoke
+  ==> ScreenshotSmoke
+  ==> LayoutEvidence
+  ==> EvidenceGraph
+  ==> EvidenceAudit
+  ==> Verify
+```
+
+Additional targets:
+
+- `FormatCheck` if Fantomas is adopted.
+- `Docs` if FSDocs is adopted.
+- `DependencyReport` for package pinning and preview-risk notes.
+- `TemplateCheck` for `dotnet new` template installation and instantiation smoke.
+- `Ci` as a non-interactive alias for `Verify`.
+- `Dev` for fast local build/test without GPU-dependent smoke.
+- `Visual` for GPU/screenshot evidence.
+- `PackLocal` to write to `~/.local/share/nuget-local/`.
+
+Recommended command surface:
+
+```bash
+./fake.sh build -t Verify
+./fake.sh build -t Dev
+./fake.sh build -t Visual
+./fake.sh build -t PackLocal
+./fake.sh build -t TemplateCheck
+```
+
+The important design choice: CI YAML calls `./fake.sh build -t Ci`. It does not duplicate target ordering. The build graph is the project contract.
+
+## Deterministic Scaffolding Options
+
+Use two levels of scaffolding:
+
+1. **`dotnet new` project template**
+
+   This creates a new repo with stable paths, project names, package IDs, build scripts, Speckit files, and baseline tests. Use `.template.config/template.json` with `sourceName` replacement for namespaces, package IDs, solution names, and docs text. Pack it as a NuGet template package.
+
+2. **FAKE scaffold targets**
+
+   These add known components to an existing template-derived repo:
+   - `ScaffoldPackage`
+   - `ScaffoldSample`
+   - `ScaffoldTestProject`
+   - `ScaffoldFeatureReadiness`
+   - `ScaffoldSurfaceBaseline`
+
+`dotnet new` should create the initial project. FAKE should evolve a project without forcing a full template re-run.
+
+Avoid ad-hoc AI scaffolding for:
+
+- new package projects
+- test project wiring
+- sample project wiring
+- solution file changes
+- baseline file paths
+- local package validation
+- CI workflow generation
+
+Those operations are cheap to encode and expensive to rediscover.
+
+## Testing Strategy
+
+Keep test categories explicit and template-owned:
+
+- **Pure domain tests**: public functions, no renderer, no filesystem unless intentional.
+- **MVU transition tests**: `Model + Msg -> Model + Effect`, no interpreter.
+- **Effect interpreter tests**: real filesystem/process/window dependencies where safe.
+- **Layout tests**: deterministic logical bounds, diagnostics, invalidation, snapping.
+- **Render command tests**: scene-to-command planning without GPU where possible.
+- **Smoke tests**: sample entry points and contract smoke.
+- **Visual evidence tests**: screenshot capture and metadata.
+- **Package tests**: packed-library/public-surface validation.
+- **Performance checks**: bounded, deterministic micro-scenarios, not broad benchmark claims.
+
+For Expecto specifically:
+
+- Prefer generated `testList` categories matching the above.
+- Mark GPU/visual tests with clear filters.
+- Do not let default parallelism break tests that share output files; isolate output paths or mark sequential where needed.
+- Keep FSI scripts as first-class validation artifacts because the constitution treats FSI as the honest API consumer.
+
+## Layout and Rendering Policy
+
+For Yoga-backed layout:
+
+- Hide Yoga.Net behind `src/Layout` implementation internals.
+- Expose F# records/unions/options/results, not Yoga objects.
+- Treat layout input as immutable data.
+- Make measurement callbacks deterministic and bounded.
+- Return diagnostics as data.
+- Keep logical bounds stable across repeated runs.
+- Perform pixel snapping only at render and hit-test edges.
+- Record Yoga version and adapter behavior in readiness evidence.
+
+For Skia rendering:
+
+- Host owns `SKSurface`, `SKCanvas`, GPU/Vulkan context, and disposal.
+- View functions create declarative scene values.
+- Custom drawing must be opt-in and constrained:
+  - receives a short-lived drawing context
+  - cannot store `SKCanvas`
+  - returns diagnostics or requested resources through declared effects
+  - has sample and smoke evidence
+
+This preserves a clean MVU mental model while allowing advanced rendering escape hatches.
+
+## Package and Dependency Policy
+
+Current `Directory.Build.props` already centralizes many constraints. For a reusable template, add:
+
+- central package version management or Paket, but choose one.
+- dependency owner metadata in `docs/dependencies.md`.
+- preview dependency risk notes.
+- FAKE target to print package graph and outdated packages.
+- lockfile strategy:
+  - If staying with NuGet only, use central versions and locked restore where practical.
+  - If adopting Paket, commit `paket.lock` and make Paket restore part of FAKE.
+
+Do not let individual feature specs add dependencies without:
+
+- version pin
+- reason
+- affected package
+- license
+- owner
+- upgrade policy
+- test/evidence impact
+
+## Documentation Structure
+
+Create and maintain this `docs/` shape in the template:
+
+```text
+docs/
+├── template-framework-analysis.me
+├── template-profile.md
+├── architecture.md
+├── build.md
+├── testing.md
+├── speckit.md
+├── dependencies.md
+├── rendering-boundaries.md
+├── layout-boundaries.md
+├── evidence.md
+└── adr/
+    ├── 0001-template-governance.md
+    ├── 0002-fake-build-graph.md
+    ├── 0003-elmish-view-boundary.md
+    └── 0004-yoga-layout-boundary.md
+```
+
+This keeps the template reusable without hiding rules only in prompts or agent instructions.
+
+## Concrete Implementation Roadmap
+
+Phase 1: Codify current practice
+
+- Add the constitution principles listed above.
+- Add `docs/template-profile.md`, `docs/build.md`, `docs/testing.md`, and `docs/speckit.md`.
+- Add `build.fsx` with `Restore`, `Build`, `Test`, `PackLocal`, `SurfaceBaselines`, `EvidenceGraph`, `EvidenceAudit`, `Verify`.
+- Wire existing scripts into FAKE.
+- Ensure every generated Speckit task list includes build/evidence targets.
+
+Phase 2: Make scaffolding deterministic
+
+- Add `.template.config/template.json`.
+- Parameterize solution name, namespace root, package prefix, authors, repository URL, target framework, optional charts/widgets package.
+- Add `TemplateCheck` target that instantiates the template into a temp directory and runs `Verify` or at least `Dev`.
+- Add FAKE scaffold targets for package/test/sample/readiness additions.
+
+Phase 3: Strengthen Speckit
+
+- Update `.specify/presets/fsharp-opinionated/templates/*`.
+- Add project-local commands/skills for:
+  - contract audit
+  - visual evidence
+  - layout evidence
+  - template drift
+  - release pack
+- Add hooks so `after_implement` runs graph/audit/template-drift.
+
+Phase 4: Make UI evidence first-class
+
+- Define screenshot metadata schema.
+- Define layout bounds report schema.
+- Add stable sample contract smoke flags to every sample.
+- Add visual smoke target that can skip with explicit environment diagnostic when GPU/Vulkan is unavailable.
+
+Phase 5: Publish internally
+
+- Pack the template as a local NuGet package.
+- Add an install/test doc:
+
+```bash
+dotnet new install ./artifacts/templates/FS.Skia.UI.Template.*.nupkg
+dotnet new fs-skia-ui -n MyProduct
+cd MyProduct
+./fake.sh build -t Verify
+```
+
+## Key Design Decisions
+
+1. Use Speckit presets for artifact shape, extensions for new commands/gates, and skills for agent workflows.
+
+2. Use FAKE as the canonical deterministic workflow surface. Do not spread command order across README, CI YAML, specs, and agent memory.
+
+3. Use `dotnet new` for initial project creation, FAKE scaffold targets for incremental additions.
+
+4. Keep Elmish pure at the application boundary: `update` returns state/effects, `view` returns declarative UI, render host owns native resources.
+
+5. Keep Yoga.Net internal. Public layout APIs should be idiomatic F# and deterministic.
+
+6. Treat evidence as generated build output with source-controlled summaries, not informal notes.
+
+7. Make template drift auditable. New patterns must update the template, or the project must explicitly declare why they are one-off.
+
+## Highest-Value Next Step
+
+The most valuable immediate change is to add a FAKE build graph and wire it into Speckit tasks. That creates one deterministic command language for humans, agents, and CI. Once that exists, custom Speckit stages can call stable targets instead of recreating process knowledge in every feature.
+
+Second priority is a stronger template constitution and preset. It will stop AI-generated specs from rediscovering the same boundaries: FSI first, MVU first, declarative view, Skia at the edge, Yoga behind layout, evidence mandatory.
+
+Third priority is `dotnet new` packaging. It is important, but it becomes much more useful after the build graph and Speckit behavior are already stable.
