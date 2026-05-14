@@ -4,8 +4,6 @@ Date: 2026-05-14
 
 Status: proposal for turning this repository into a governed template framework for new F# / Elmish / Skia products.
 
-Publishing note: this file currently uses the `.me` extension. If it should be rendered by an FSharp.Formatting documentation build, rename it to `template-framework-analysis.md` and add normal FsDocs frontmatter.
-
 ## Executive Recommendation
 
 FS-Skia-UI should become a template framework, but not by turning the runtime library into a broad application framework or by asking agents to copy patterns manually. The strongest shape is a governed project family with four explicit mechanisms:
@@ -118,7 +116,7 @@ The proposal should explicitly close these gaps:
 
 8. Documentation is not yet a maintained docs set.
 
-   `docs/` currently contains this analysis file only, with a non-standard `.me` extension. A template framework needs persistent docs for profile, architecture, build, testing, Speckit, dependencies, evidence, rendering boundaries, layout boundaries, and ADRs.
+   `docs/` currently contains this analysis file only. A template framework needs persistent docs for profile, architecture, build, testing, Speckit, dependencies, evidence, rendering boundaries, layout boundaries, and ADRs.
 
 ## Design Decision Summary
 
