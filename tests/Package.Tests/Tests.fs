@@ -38,7 +38,7 @@ let runDotnet (workingDirectory: string) (arguments: string) =
 let packageOutput name =
     Path.Combine(repositoryRoot, "specs", "006-template-framework-governance", "readiness", "package", name)
 
-let packageVersion = "0.1.5-preview.1"
+let packageVersion = "0.1.6-preview.1"
 
 [<Tests>]
 let packageContractTests =
