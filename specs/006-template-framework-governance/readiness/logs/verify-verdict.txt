@@ -1,0 +1,1 @@
+Verify target completed with all required v1 artifact classes present.

@@ -46,6 +46,25 @@ Every task must have a matching entry in `tasks.deps.yml` even if its
 dependency list is empty. The `speckit.evidence.graph` command refuses to
 proceed with dangling references.
 
+## Canonical Verification Targets
+
+Generated tasks should call repository targets instead of duplicating raw
+restore/build/test/package/evidence command order:
+
+- `./fake.sh build -t Dev` for fast local verification.
+- `./fake.sh build -t Verify` for the full governed workflow.
+- `./fake.sh build -t PackLocal` for local package output.
+- `./fake.sh build -t RefreshSurfaceBaselines` for intentional current surface
+  baseline refreshes.
+- `./fake.sh build -t PackageSurfaceCheck` for package surface review.
+- `./fake.sh build -t FsiTranscripts` for public FSI evidence.
+- `./fake.sh build -t SampleContractSmoke` for sample smoke evidence.
+- `./fake.sh build -t EvidenceGraph` and `./fake.sh build -t EvidenceAudit`
+  for graph and synthetic-evidence gates.
+
+Keep `tasks.deps.yml` and the `speckit.evidence.graph` status refresh
+requirements in generated task lists.
+
 ---
 
 ## Phase 1: Setup

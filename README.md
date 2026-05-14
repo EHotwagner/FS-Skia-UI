@@ -14,10 +14,14 @@ macOS, mobile, browser, and headless production targets are out of scope for thi
 ## Build And Test
 
 ```bash
-dotnet restore
-dotnet build
-dotnet test
+./fake.sh build -t Dev
+./fake.sh build -t Verify
 ```
+
+Use `fake.cmd build -t Dev` or `fake.cmd build -t Verify` from Windows command
+prompts. See [docs/build.md](docs/build.md), [docs/testing.md](docs/testing.md),
+and [docs/evidence.md](docs/evidence.md) for target responsibilities, evidence
+paths, and deferred roadmap items.
 
 ## Run The Basic Viewer Smoke Test
 

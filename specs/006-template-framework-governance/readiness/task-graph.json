@@ -1,0 +1,876 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Create feature readiness scaffolding under `specs/006-template-framework-governance/readiness/` for logs, FSI transcripts, sample smoke output, package notes, graph output, and audit output",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record the FAKE local-tool and wrapper adoption baseline for `.config/dotnet-tools.json`, `fake.sh`, and `fake.cmd`",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Inventory existing duplicated restore/build/test/pack/evidence command order in README, docs, scripts, tests, and `.specify/workflows/speckit/workflow.yml`",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record Tier 1 governance obligations in `readiness/evidence-obligations.md`, including no runtime `.fsi` API impact, `BuildModel` / `BuildMsg` / `BuildEffect`, required v1 artifacts, and deferred roadmap categories",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Create a command-target traceability matrix mapping `contracts/canonical-workflow.md` targets to planned implementation files, docs, tests, and readiness artifacts",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing command-contract checks for wrapper availability, required target names, target dependencies, `BuildModel` / `BuildMsg` / `BuildEffect`, pure `update` behavior, emitted effects, and documented pass/fail behavior",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing package-surface checks proving current baselines must be read from `readiness/surface-baselines/*.txt` instead of historical feature readiness folders",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing guidance checks proving touched docs, workflows, and generated task guidance reference canonical targets instead of duplicating raw command order",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing verification checks for required v1 artifact classes and actionable diagnostics when `Verify` is missing build, test, package, FSI, sample-smoke, task-graph, or audit output",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Add the repo-local FAKE tool manifest and thin Bash/Windows wrappers that invoke the same target graph",
+      "explicit_deps": [
+        "T006"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `build.fsx` foundation helpers and local `BuildModel` / `BuildMsg` / `BuildEffect` workflow effect algebra for repository paths, process execution, log capture, output directories, `Clean`, `Restore`, `Build`, `Test`, and target discovery",
+      "explicit_deps": [
+        "T006",
+        "T010"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Implement the `Dev` target as the fast restore/build/default non-visual test path, keeping deferred package consumer smoke outside the default test set",
+      "explicit_deps": [
+        "T006",
+        "T011"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Isolate existing package consumer smoke behavior behind a deferred path or explicit non-v1 target so `Dev`, `Verify`, and `Ci` do not require it",
+      "explicit_deps": [
+        "T007",
+        "T012"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run foundation verification for wrapper discovery, command-contract checks, stable-baseline checks, guidance checks, and artifact-diagnostic checks; store logs under `readiness/logs/`",
+      "explicit_deps": [
+        "T006",
+        "T007",
+        "T008",
+        "T009",
+        "T010",
+        "T011",
+        "T012",
+        "T013"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add command availability tests for `Dev`, `Verify`, `Ci`, `PackLocal`, `RefreshSurfaceBaselines`, `PackageSurfaceCheck`, `FsiTranscripts`, `SampleContractSmoke`, `EvidenceGraph`, and `EvidenceAudit`",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T014"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add target behavior tests or fixtures for workflow transition outputs, emitted process/file effects, log capture, required artifact detection, and missing-artifact diagnostics in the full verification path",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T014"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add a real-interpreter evidence plan for running `./fake.sh build -t Dev` and focused evidence targets with output captured under feature readiness",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T014"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `PackLocal` to pack `src/Lib`, `src/Charts`, and `src/Layout` into `~/.local/share/nuget-local/` and capture a package log",
+      "explicit_deps": [
+        "T015",
+        "T016"
+      ],
+      "phase_deps": [
+        "T014"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `RefreshSurfaceBaselines`, `PackageSurfaceCheck`, `FsiTranscripts`, `SampleContractSmoke`, `EvidenceGraph`, and `EvidenceAudit` targets by wrapping existing tests, scripts, sample smoke commands, and the Spec Kit evidence extension through the build workflow interpreter",
+      "explicit_deps": [
+        "T015",
+        "T016",
+        "T017"
+      ],
+      "phase_deps": [
+        "T014"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `Verify` as the full v1 workflow requiring `Dev`, package surface checks, public contract transcripts, sample smoke output, task graph validation, evidence audit output, and build/test/package logs",
+      "explicit_deps": [
+        "T015",
+        "T016",
+        "T018",
+        "T019"
+      ],
+      "phase_deps": [
+        "T014"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `Ci` as the non-interactive automation entry that delegates to `Verify` without duplicating command order",
+      "explicit_deps": [
+        "T015",
+        "T020"
+      ],
+      "phase_deps": [
+        "T014"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture independent US1 validation evidence by running `Dev` and focused graph/surface targets, then store logs and artifact paths under `readiness/`",
+      "explicit_deps": [
+        "T017",
+        "T020",
+        "T021"
+      ],
+      "phase_deps": [
+        "T014"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add docs checks for `docs/build.md`, `docs/testing.md`, and `docs/evidence.md` covering delivered target names, artifact paths, pass/fail behavior, and stable baseline location",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add docs checks proving template packaging, dependency governance, generated spec/plan hardening, layout evidence, visual evidence, package consumer smoke, and release validation are named as deferred and excluded from v1 `Dev`, `Verify`, and `Ci`",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Write `docs/build.md` with canonical wrapper usage, target responsibilities, output locations, future CI guidance, and no duplicated raw command sequence",
+      "explicit_deps": [
+        "T023",
+        "T024"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Write `docs/testing.md` with target-to-test mapping, default non-visual test scope, sample smoke expectations, and package consumer smoke deferral",
+      "explicit_deps": [
+        "T023",
+        "T024"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Write `docs/evidence.md` with v1 artifact classes, stable paths, historical-vs-current evidence rules, synthetic evidence policy, and roadmap extension points",
+      "explicit_deps": [
+        "T023",
+        "T024"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Update README or existing workflow documentation to point to the canonical docs and targets without reimplementing the command order",
+      "explicit_deps": [
+        "T023",
+        "T024",
+        "T025",
+        "T026",
+        "T027"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add package surface tests proving `tests/Package.Tests/SurfaceAreaTests.fs` reads root-level `readiness/surface-baselines/*.txt` and fails when expected public names are missing",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T028"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T030",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add refresh-path tests proving `RefreshSurfaceBaselines`, `scripts/refresh-surface-baselines.fsx`, and `PackageSurfaceCheck` write and read the same stable current baseline location",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T028"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T031",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add artifact-path checks for build/test/package logs, FSI transcripts, sample smoke output, task graph output, and evidence audit output under the feature readiness directory",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T028"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T032",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Create root `readiness/surface-baselines/` and seed `FS.Skia.UI.txt`, `FS.Skia.UI.Charts.txt`, and `FS.Skia.UI.Layout.txt` from the current validated public surface",
+      "explicit_deps": [
+        "T029",
+        "T030"
+      ],
+      "phase_deps": [
+        "T028"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T033",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Update `scripts/refresh-surface-baselines.fsx` and `tests/Package.Tests/SurfaceAreaTests.fs` to use the stable current baseline path",
+      "explicit_deps": [
+        "T029",
+        "T030",
+        "T032"
+      ],
+      "phase_deps": [
+        "T028"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T034",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Route build/test/package logs, FSI transcripts, sample smoke output, task graph output, and audit output to the documented feature readiness paths",
+      "explicit_deps": [
+        "T031",
+        "T033"
+      ],
+      "phase_deps": [
+        "T028"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T035",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Remove v1 checks' dependence on historical readiness folders while preserving those folders as historical repository evidence",
+      "explicit_deps": [
+        "T029",
+        "T032",
+        "T033"
+      ],
+      "phase_deps": [
+        "T028"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T036",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture stable-baseline and evidence-location validation by running `PackageSurfaceCheck`, `FsiTranscripts`, `SampleContractSmoke`, and `EvidenceGraph`",
+      "explicit_deps": [
+        "T019",
+        "T020",
+        "T030",
+        "T031",
+        "T034",
+        "T035"
+      ],
+      "phase_deps": [
+        "T028"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T037",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add automation inspection checks for `.specify/workflows/speckit/workflow.yml` and any touched automation so verification delegates to `Ci`, `Verify`, or named canonical targets",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T036"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T038",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add generated task guidance checks for `.specify/presets/fsharp-opinionated/templates/tasks-template.md`, requiring canonical workflow entries and preserving `tasks.deps.yml` plus evidence graph requirements",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T036"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T039",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Update `.specify/workflows/speckit/workflow.yml` if needed so repository automation invokes the canonical verification entry instead of duplicating command order",
+      "explicit_deps": [
+        "T021",
+        "T037"
+      ],
+      "phase_deps": [
+        "T036"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T040",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Update `.specify/presets/fsharp-opinionated/templates/tasks-template.md` so future generated tasks call canonical targets such as `Dev`, `Verify`, `PackLocal`, `RefreshSurfaceBaselines`, `PackageSurfaceCheck`, `EvidenceGraph`, and `EvidenceAudit`",
+      "explicit_deps": [
+        "T020",
+        "T038"
+      ],
+      "phase_deps": [
+        "T036"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T041",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Review `.agents/skills/speckit-tasks/SKILL.md` and either align it with canonical-target guidance or record why no skill change is needed",
+      "explicit_deps": [
+        "T038",
+        "T040"
+      ],
+      "phase_deps": [
+        "T036"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T042",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture automation and generated-guidance alignment evidence under `readiness/logs/` or `readiness/guidance-alignment.md`",
+      "explicit_deps": [
+        "T037",
+        "T038",
+        "T039",
+        "T040",
+        "T041"
+      ],
+      "phase_deps": [
+        "T036"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T043",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t RefreshSurfaceBaselines` and `./fake.sh build -t PackageSurfaceCheck`; store both logs under `readiness/logs/`",
+      "explicit_deps": [
+        "T033",
+        "T036"
+      ],
+      "phase_deps": [
+        "T042"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T044",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t Dev`; store the log and record whether it completes within the 10 minute target on the current supported machine",
+      "explicit_deps": [
+        "T012",
+        "T020",
+        "T021",
+        "T034"
+      ],
+      "phase_deps": [
+        "T042"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T045",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t Verify` from a clean checkout or freshly cloned working directory; confirm every required v1 artifact class exists and store build/test/package/evidence logs and machine/runtime assumptions under `readiness/`",
+      "explicit_deps": [
+        "T020",
+        "T021",
+        "T034",
+        "T036",
+        "T039",
+        "T040",
+        "T043",
+        "T044"
+      ],
+      "phase_deps": [
+        "T042"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T046",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t PackLocal`; confirm local `.nupkg` outputs under `~/.local/share/nuget-local/` and store package evidence",
+      "explicit_deps": [
+        "T018",
+        "T043"
+      ],
+      "phase_deps": [
+        "T042"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T047",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh specs/006-template-framework-governance --graph-only` and confirm no cycles or dangling references",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T042"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T048",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh specs/006-template-framework-governance` and confirm PASS, or document every unresolved synthetic or diff-scan blocker",
+      "explicit_deps": [
+        "T045",
+        "T047"
+      ],
+      "phase_deps": [
+        "T042"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T049",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Update quickstart, contract, and plan references only if final target names or artifact paths changed, then record the final readiness review",
+      "explicit_deps": [
+        "T025",
+        "T026",
+        "T027",
+        "T028",
+        "T035",
+        "T042",
+        "T045",
+        "T048"
+      ],
+      "phase_deps": [
+        "T042"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T050",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Prepare the merge summary with command results, evidence paths, synthetic-evidence inventory, and deferred roadmap boundaries",
+      "explicit_deps": [
+        "T045",
+        "T046",
+        "T048",
+        "T049"
+      ],
+      "phase_deps": [
+        "T042"
+      ],
+      "root_cause": []
+    }
+  ]
+}

@@ -18,8 +18,9 @@ let names (assembly: Assembly) =
 
 let write packageName values =
     let path =
-        Path.Combine(__SOURCE_DIRECTORY__, "..", "specs", "002-skia-feature-parity", "readiness", "surface-baselines", packageName + ".txt")
+        Path.Combine(__SOURCE_DIRECTORY__, "..", "readiness", "surface-baselines", packageName + ".txt")
 
+    Directory.CreateDirectory(Path.GetDirectoryName path) |> ignore
     File.WriteAllLines(path, values)
     printfn "wrote %s" path
 

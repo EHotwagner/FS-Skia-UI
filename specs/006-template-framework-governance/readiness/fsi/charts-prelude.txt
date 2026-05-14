@@ -1,0 +1,36 @@
+
+## dotnet fsi scripts/charts-prelude.fsx
+$ dotnet fsi scripts/charts-prelude.fsx
+charts-prelude scene=true
+
+exit-code=0
+
+## dotnet fsi scripts/charts-prelude.fsx
+$ dotnet fsi scripts/charts-prelude.fsx
+charts-prelude scene=true
+
+exit-code=0
+
+## dotnet fsi scripts/charts-prelude.fsx
+$ dotnet fsi scripts/charts-prelude.fsx
+charts-prelude scene=true
+
+exit-code=0
+
+## dotnet fsi scripts/charts-prelude.fsx
+$ dotnet fsi scripts/charts-prelude.fsx
+charts-prelude scene=true
+
+exit-code=0
+
+## dotnet fsi scripts/charts-prelude.fsx
+$ dotnet fsi scripts/charts-prelude.fsx
+charts-prelude scene=true
+
+exit-code=0
+
+## dotnet fsi scripts/charts-prelude.fsx
+$ dotnet fsi scripts/charts-prelude.fsx
+charts-prelude scene=true
+
+exit-code=0

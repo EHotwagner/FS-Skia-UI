@@ -36,15 +36,21 @@ let runDotnet (workingDirectory: string) (arguments: string) =
             -1, stdoutTask.GetAwaiter().GetResult(), stderrTask.GetAwaiter().GetResult()
 
 let packageOutput name =
-    Path.Combine(repositoryRoot, "specs", "002-skia-feature-parity", "readiness", "package", name)
+    Path.Combine(repositoryRoot, "specs", "006-template-framework-governance", "readiness", "package", name)
 
 let packageVersion = "0.1.5-preview.1"
 
 [<Tests>]
 let packageContractTests =
-    testList "Package contract" [
-        test "all three packages pack into local readiness output" {
-            let packageOutput = packageOutput "nuget"
+    let v1PackageTests = [
+        test "all three packages pack into local package output" {
+            let packageOutput =
+                Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    ".local",
+                    "share",
+                    "nuget-local")
+
             Directory.CreateDirectory packageOutput |> ignore
 
             [ "src/Lib/Lib.fsproj", "FS.Skia.UI"
@@ -58,25 +64,38 @@ let packageContractTests =
                 Expect.isNonEmpty (Directory.GetFiles(packageOutput, packageId + $".{packageVersion}.nupkg")) $"{packageId} package is produced")
         }
 
-        test "clean consumer can restore each package independently from local output" {
-            let packageOutput = packageOutput "consumer-nuget"
-            Directory.CreateDirectory packageOutput |> ignore
+        test "package consumer smoke is deferred outside v1 verification" {
+            let enabled =
+                Environment.GetEnvironmentVariable("FS_SKIA_RUN_PACKAGE_CONSUMER_SMOKE") = "1"
 
-            [ "src/Lib/Lib.fsproj"
-              "src/Charts/Charts.fsproj"
-              "src/Layout/Layout.fsproj" ]
-            |> List.iter (fun project ->
-                let exitCode, _, stderr =
-                    runDotnet repositoryRoot $"pack {project} --output {packageOutput}"
+            if enabled then
+                Expect.isTrue enabled "explicit PackageSmoke target opted in to package consumer smoke"
+            else
+                Expect.isFalse enabled "v1 Dev, Verify, and Ci must not require package consumer smoke"
+        }
+    ]
 
-                Expect.equal exitCode 0 stderr)
+    let deferredPackageSmokeTests =
+        if Environment.GetEnvironmentVariable("FS_SKIA_RUN_PACKAGE_CONSUMER_SMOKE") = "1" then
+            [ test "explicit package consumer smoke can restore each package independently from local output" {
+                  let packageOutput = packageOutput "consumer-nuget"
+                  Directory.CreateDirectory packageOutput |> ignore
 
-            let consumerRoot = Path.Combine(Path.GetTempPath(), "fs-skia-ui-package-consumer-" + Guid.NewGuid().ToString("N"))
-            Directory.CreateDirectory consumerRoot |> ignore
+                  [ "src/Lib/Lib.fsproj"
+                    "src/Charts/Charts.fsproj"
+                    "src/Layout/Layout.fsproj" ]
+                  |> List.iter (fun project ->
+                      let exitCode, _, stderr =
+                          runDotnet repositoryRoot $"pack {project} --output {packageOutput}"
 
-            File.WriteAllText(
-                Path.Combine(consumerRoot, "NuGet.config"),
-                $"""<?xml version="1.0" encoding="utf-8"?>
+                      Expect.equal exitCode 0 stderr)
+
+                  let consumerRoot = Path.Combine(Path.GetTempPath(), "fs-skia-ui-package-consumer-" + Guid.NewGuid().ToString("N"))
+                  Directory.CreateDirectory consumerRoot |> ignore
+
+                  File.WriteAllText(
+                      Path.Combine(consumerRoot, "NuGet.config"),
+                      $"""<?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <packageSources>
     <clear />
@@ -85,17 +104,17 @@ let packageContractTests =
   </packageSources>
 </configuration>
 """
-            )
+                  )
 
-            [ "CoreConsumer", "FS.Skia.UI"
-              "ChartsConsumer", "FS.Skia.UI.Charts"
-              "LayoutConsumer", "FS.Skia.UI.Layout" ]
-            |> List.iter (fun (name, packageId) ->
-                let projectDir = Path.Combine(consumerRoot, name)
-                Directory.CreateDirectory projectDir |> ignore
-                File.WriteAllText(
-                    Path.Combine(projectDir, $"{name}.fsproj"),
-                    $"""<Project Sdk="Microsoft.NET.Sdk">
+                  [ "CoreConsumer", "FS.Skia.UI"
+                    "ChartsConsumer", "FS.Skia.UI.Charts"
+                    "LayoutConsumer", "FS.Skia.UI.Layout" ]
+                  |> List.iter (fun (name, packageId) ->
+                      let projectDir = Path.Combine(consumerRoot, name)
+                      Directory.CreateDirectory projectDir |> ignore
+                      File.WriteAllText(
+                          Path.Combine(projectDir, $"{name}.fsproj"),
+                          $"""<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
@@ -107,12 +126,15 @@ let packageContractTests =
   </ItemGroup>
 </Project>
 """
-                )
-                File.WriteAllText(Path.Combine(projectDir, "Library.fs"), $"module {name}\nlet value = 1\n")
+                      )
+                      File.WriteAllText(Path.Combine(projectDir, "Library.fs"), $"module {name}\nlet value = 1\n")
 
-                let exitCode, _, stderr =
-                    runDotnet projectDir "restore"
+                      let exitCode, _, stderr =
+                          runDotnet projectDir "restore"
 
-                Expect.equal exitCode 0 stderr)
-        }
-    ]
+                      Expect.equal exitCode 0 stderr)
+              } ]
+        else
+            []
+
+    testList "Package contract" (v1PackageTests @ deferredPackageSmokeTests)

@@ -21,6 +21,7 @@ coverage/
 
 # FSI
 .fsi-cache/
+*.fsx.lock
 
 # macOS / Linux cruft
 .DS_Store

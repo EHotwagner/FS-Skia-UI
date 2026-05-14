@@ -16,7 +16,7 @@ let rec findRepositoryRoot (directory: string) =
 let repositoryRoot = findRepositoryRoot AppContext.BaseDirectory
 
 let baseline packageName =
-    Path.Combine(repositoryRoot, "specs", "002-skia-feature-parity", "readiness", "surface-baselines", packageName + ".txt")
+    Path.Combine(repositoryRoot, "readiness", "surface-baselines", packageName + ".txt")
     |> File.ReadAllLines
     |> Array.filter (fun line -> line.Trim() <> "")
     |> Set.ofArray
@@ -44,6 +44,14 @@ let assertBaseline packageName (assembly: Assembly) =
 [<Tests>]
 let surfaceAreaTests =
     testList "Surface baselines" [
+        test "surface baselines use stable root readiness path" {
+            let baselinePath =
+                Path.Combine(repositoryRoot, "readiness", "surface-baselines", "FS.Skia.UI.txt")
+
+            Expect.isTrue (File.Exists baselinePath) "stable FS.Skia.UI package surface baseline exists"
+            Expect.isFalse (baselinePath.Contains("specs/002-skia-feature-parity", StringComparison.Ordinal)) "baseline path is not historical feature readiness"
+        }
+
         test "FS.Skia.UI baseline exports expected contract names" {
             assertBaseline "FS.Skia.UI" typeof<FS.Skia.UI.ViewerProgram<int, int>>.Assembly
         }

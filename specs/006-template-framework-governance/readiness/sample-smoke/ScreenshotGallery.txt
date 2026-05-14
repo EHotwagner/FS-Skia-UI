@@ -1,0 +1,300 @@
+
+## ScreenshotGallery contract smoke
+$ dotnet run --no-build --project samples/ScreenshotGallery/ScreenshotGallery.fsproj -- --contract-smoke
+status=ok
+sample=ScreenshotGallery
+frame=0
+closing=true
+recovering=true
+diagnostics=1
+scene={ Nodes =
+   [Group
+      [{ Nodes = [Rectangle ((0.0, 0.0, 760.0, 460.0), { Red = 18uy
+                                                         Green = 22uy
+                                                         Blue = 30uy
+                                                         Alpha = 255uy })] };
+       { Nodes = [Rectangle ((36.0, 42.0, 688.0, 92.0), { Red = 42uy
+                                                          Green = 78uy
+                                                          Blue = 118uy
+                                                          Alpha = 255uy })] };
+       { Nodes = [Rectangle ((64.0, 172.0, 180.0, 72.0), { Red = 224uy
+                                                           Green = 96uy
+                                                           Blue = 72uy
+                                                           Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 96.0), "Screenshot Gallery", { Red = 255uy
+                                                              Green = 255uy
+                                                              Blue = 255uy
+                                                              Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 286.0), "frame: 0", { Red = 255uy
+                                                     Green = 255uy
+                                                     Blue = 255uy
+                                                     Alpha = 255uy })] };
+       { Nodes =
+          [Text
+             ((56.0, 326.0),
+              "last screenshot: Png: specs/002-skia-feature-parity/readiness/screenshots/screenshot-gallery.png",
+              { Red = 255uy
+                Green = 255uy
+                Blue = 255uy
+                Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 366.0), "diagnostics: 1", { Red = 255uy
+                                                           Green = 255uy
+                                                           Blue = 255uy
+                                                           Alpha = 255uy })] }]] }
+initialize-effect=true
+render-effect=true
+screenshot-effect=true
+recovery-diagnostic-effect=true
+shutdown-effect=true
+
+exit-code=0
+
+## ScreenshotGallery contract smoke
+$ dotnet run --no-build --project samples/ScreenshotGallery/ScreenshotGallery.fsproj -- --contract-smoke
+status=ok
+sample=ScreenshotGallery
+frame=0
+closing=true
+recovering=true
+diagnostics=1
+scene={ Nodes =
+   [Group
+      [{ Nodes = [Rectangle ((0.0, 0.0, 760.0, 460.0), { Red = 18uy
+                                                         Green = 22uy
+                                                         Blue = 30uy
+                                                         Alpha = 255uy })] };
+       { Nodes = [Rectangle ((36.0, 42.0, 688.0, 92.0), { Red = 42uy
+                                                          Green = 78uy
+                                                          Blue = 118uy
+                                                          Alpha = 255uy })] };
+       { Nodes = [Rectangle ((64.0, 172.0, 180.0, 72.0), { Red = 224uy
+                                                           Green = 96uy
+                                                           Blue = 72uy
+                                                           Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 96.0), "Screenshot Gallery", { Red = 255uy
+                                                              Green = 255uy
+                                                              Blue = 255uy
+                                                              Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 286.0), "frame: 0", { Red = 255uy
+                                                     Green = 255uy
+                                                     Blue = 255uy
+                                                     Alpha = 255uy })] };
+       { Nodes =
+          [Text
+             ((56.0, 326.0),
+              "last screenshot: Png: specs/002-skia-feature-parity/readiness/screenshots/screenshot-gallery.png",
+              { Red = 255uy
+                Green = 255uy
+                Blue = 255uy
+                Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 366.0), "diagnostics: 1", { Red = 255uy
+                                                           Green = 255uy
+                                                           Blue = 255uy
+                                                           Alpha = 255uy })] }]] }
+initialize-effect=true
+render-effect=true
+screenshot-effect=true
+recovery-diagnostic-effect=true
+shutdown-effect=true
+
+exit-code=0
+
+## ScreenshotGallery contract smoke
+$ dotnet run --no-build --project samples/ScreenshotGallery/ScreenshotGallery.fsproj -- --contract-smoke
+status=ok
+sample=ScreenshotGallery
+frame=0
+closing=true
+recovering=true
+diagnostics=1
+scene={ Nodes =
+   [Group
+      [{ Nodes = [Rectangle ((0.0, 0.0, 760.0, 460.0), { Red = 18uy
+                                                         Green = 22uy
+                                                         Blue = 30uy
+                                                         Alpha = 255uy })] };
+       { Nodes = [Rectangle ((36.0, 42.0, 688.0, 92.0), { Red = 42uy
+                                                          Green = 78uy
+                                                          Blue = 118uy
+                                                          Alpha = 255uy })] };
+       { Nodes = [Rectangle ((64.0, 172.0, 180.0, 72.0), { Red = 224uy
+                                                           Green = 96uy
+                                                           Blue = 72uy
+                                                           Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 96.0), "Screenshot Gallery", { Red = 255uy
+                                                              Green = 255uy
+                                                              Blue = 255uy
+                                                              Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 286.0), "frame: 0", { Red = 255uy
+                                                     Green = 255uy
+                                                     Blue = 255uy
+                                                     Alpha = 255uy })] };
+       { Nodes =
+          [Text
+             ((56.0, 326.0),
+              "last screenshot: Png: specs/002-skia-feature-parity/readiness/screenshots/screenshot-gallery.png",
+              { Red = 255uy
+                Green = 255uy
+                Blue = 255uy
+                Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 366.0), "diagnostics: 1", { Red = 255uy
+                                                           Green = 255uy
+                                                           Blue = 255uy
+                                                           Alpha = 255uy })] }]] }
+initialize-effect=true
+render-effect=true
+screenshot-effect=true
+recovery-diagnostic-effect=true
+shutdown-effect=true
+
+exit-code=0
+
+## ScreenshotGallery contract smoke
+$ dotnet run --no-build --project samples/ScreenshotGallery/ScreenshotGallery.fsproj -- --contract-smoke
+status=ok
+sample=ScreenshotGallery
+frame=0
+closing=true
+recovering=true
+diagnostics=1
+scene={ Nodes =
+   [Group
+      [{ Nodes = [Rectangle ((0.0, 0.0, 760.0, 460.0), { Red = 18uy
+                                                         Green = 22uy
+                                                         Blue = 30uy
+                                                         Alpha = 255uy })] };
+       { Nodes = [Rectangle ((36.0, 42.0, 688.0, 92.0), { Red = 42uy
+                                                          Green = 78uy
+                                                          Blue = 118uy
+                                                          Alpha = 255uy })] };
+       { Nodes = [Rectangle ((64.0, 172.0, 180.0, 72.0), { Red = 224uy
+                                                           Green = 96uy
+                                                           Blue = 72uy
+                                                           Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 96.0), "Screenshot Gallery", { Red = 255uy
+                                                              Green = 255uy
+                                                              Blue = 255uy
+                                                              Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 286.0), "frame: 0", { Red = 255uy
+                                                     Green = 255uy
+                                                     Blue = 255uy
+                                                     Alpha = 255uy })] };
+       { Nodes =
+          [Text
+             ((56.0, 326.0),
+              "last screenshot: Png: specs/002-skia-feature-parity/readiness/screenshots/screenshot-gallery.png",
+              { Red = 255uy
+                Green = 255uy
+                Blue = 255uy
+                Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 366.0), "diagnostics: 1", { Red = 255uy
+                                                           Green = 255uy
+                                                           Blue = 255uy
+                                                           Alpha = 255uy })] }]] }
+initialize-effect=true
+render-effect=true
+screenshot-effect=true
+recovery-diagnostic-effect=true
+shutdown-effect=true
+
+exit-code=0
+
+## ScreenshotGallery contract smoke
+$ dotnet run --no-build --project samples/ScreenshotGallery/ScreenshotGallery.fsproj -- --contract-smoke
+status=ok
+sample=ScreenshotGallery
+frame=0
+closing=true
+recovering=true
+diagnostics=1
+scene={ Nodes =
+   [Group
+      [{ Nodes = [Rectangle ((0.0, 0.0, 760.0, 460.0), { Red = 18uy
+                                                         Green = 22uy
+                                                         Blue = 30uy
+                                                         Alpha = 255uy })] };
+       { Nodes = [Rectangle ((36.0, 42.0, 688.0, 92.0), { Red = 42uy
+                                                          Green = 78uy
+                                                          Blue = 118uy
+                                                          Alpha = 255uy })] };
+       { Nodes = [Rectangle ((64.0, 172.0, 180.0, 72.0), { Red = 224uy
+                                                           Green = 96uy
+                                                           Blue = 72uy
+                                                           Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 96.0), "Screenshot Gallery", { Red = 255uy
+                                                              Green = 255uy
+                                                              Blue = 255uy
+                                                              Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 286.0), "frame: 0", { Red = 255uy
+                                                     Green = 255uy
+                                                     Blue = 255uy
+                                                     Alpha = 255uy })] };
+       { Nodes =
+          [Text
+             ((56.0, 326.0),
+              "last screenshot: Png: specs/002-skia-feature-parity/readiness/screenshots/screenshot-gallery.png",
+              { Red = 255uy
+                Green = 255uy
+                Blue = 255uy
+                Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 366.0), "diagnostics: 1", { Red = 255uy
+                                                           Green = 255uy
+                                                           Blue = 255uy
+                                                           Alpha = 255uy })] }]] }
+initialize-effect=true
+render-effect=true
+screenshot-effect=true
+recovery-diagnostic-effect=true
+shutdown-effect=true
+
+exit-code=0
+
+## ScreenshotGallery contract smoke
+$ dotnet run --no-build --project samples/ScreenshotGallery/ScreenshotGallery.fsproj -- --contract-smoke
+status=ok
+sample=ScreenshotGallery
+frame=0
+closing=true
+recovering=true
+diagnostics=1
+scene={ Nodes =
+   [Group
+      [{ Nodes = [Rectangle ((0.0, 0.0, 760.0, 460.0), { Red = 18uy
+                                                         Green = 22uy
+                                                         Blue = 30uy
+                                                         Alpha = 255uy })] };
+       { Nodes = [Rectangle ((36.0, 42.0, 688.0, 92.0), { Red = 42uy
+                                                          Green = 78uy
+                                                          Blue = 118uy
+                                                          Alpha = 255uy })] };
+       { Nodes = [Rectangle ((64.0, 172.0, 180.0, 72.0), { Red = 224uy
+                                                           Green = 96uy
+                                                           Blue = 72uy
+                                                           Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 96.0), "Screenshot Gallery", { Red = 255uy
+                                                              Green = 255uy
+                                                              Blue = 255uy
+                                                              Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 286.0), "frame: 0", { Red = 255uy
+                                                     Green = 255uy
+                                                     Blue = 255uy
+                                                     Alpha = 255uy })] };
+       { Nodes =
+          [Text
+             ((56.0, 326.0),
+              "last screenshot: Png: specs/002-skia-feature-parity/readiness/screenshots/screenshot-gallery.png",
+              { Red = 255uy
+                Green = 255uy
+                Blue = 255uy
+                Alpha = 255uy })] };
+       { Nodes = [Text ((56.0, 366.0), "diagnostics: 1", { Red = 255uy
+                                                           Green = 255uy
+                                                           Blue = 255uy
+                                                           Alpha = 255uy })] }]] }
+initialize-effect=true
+render-effect=true
+screenshot-effect=true
+recovery-diagnostic-effect=true
+shutdown-effect=true
+
+exit-code=0

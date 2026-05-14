@@ -61,3 +61,8 @@ steps:
     integration: "{{ inputs.integration }}"
     input:
       args: "{{ inputs.spec }}"
+
+  - id: canonical-verify
+    type: shell
+    command: ./fake.sh build -t Ci
+    description: "Run the repository canonical verification entry after implementation."

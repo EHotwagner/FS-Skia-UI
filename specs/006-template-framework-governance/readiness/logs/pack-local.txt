@@ -1,0 +1,156 @@
+
+## dotnet pack FS.Skia.UI
+$ dotnet pack src/Lib/Lib.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Charts
+$ dotnet pack src/Charts/Charts.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Charts -> /home/developer/projects/FS-Skia-UI/src/Charts/bin/Release/net10.0/FS.Skia.UI.Charts.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Layout
+$ dotnet pack src/Layout/Layout.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI
+$ dotnet pack src/Lib/Lib.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Charts
+$ dotnet pack src/Charts/Charts.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Charts -> /home/developer/projects/FS-Skia-UI/src/Charts/bin/Release/net10.0/FS.Skia.UI.Charts.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Layout
+$ dotnet pack src/Layout/Layout.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI
+$ dotnet pack src/Lib/Lib.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Charts
+$ dotnet pack src/Charts/Charts.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Charts -> /home/developer/projects/FS-Skia-UI/src/Charts/bin/Release/net10.0/FS.Skia.UI.Charts.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Layout
+$ dotnet pack src/Layout/Layout.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI
+$ dotnet pack src/Lib/Lib.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Charts
+$ dotnet pack src/Charts/Charts.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Charts -> /home/developer/projects/FS-Skia-UI/src/Charts/bin/Release/net10.0/FS.Skia.UI.Charts.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Layout
+$ dotnet pack src/Layout/Layout.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI
+$ dotnet pack src/Lib/Lib.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Charts
+$ dotnet pack src/Charts/Charts.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Charts -> /home/developer/projects/FS-Skia-UI/src/Charts/bin/Release/net10.0/FS.Skia.UI.Charts.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Layout
+$ dotnet pack src/Layout/Layout.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI
+$ dotnet pack src/Lib/Lib.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Charts
+$ dotnet pack src/Charts/Charts.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Charts -> /home/developer/projects/FS-Skia-UI/src/Charts/bin/Release/net10.0/FS.Skia.UI.Charts.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Layout
+$ dotnet pack src/Layout/Layout.fsproj -c Release -o /home/developer/.local/share/nuget-local
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+
+exit-code=0
