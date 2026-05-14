@@ -30,6 +30,37 @@ let graph kind nodes edges =
       Nodes = nodes
       Edges = edges }
 
+let measure width height =
+    fun _ ->
+        { Width = width
+          Height = height
+          Diagnostics = [] }
+
+let layoutLeaf id width height =
+    { Defaults.layoutNode id with
+        Intent =
+            { Defaults.layoutIntent with
+                Size = { Width = Some width; Height = Some height } }
+        Content = Some(Scene.rectangle (0.0, 0.0, width, height) Colors.white) }
+
+let layoutMeasured id width height =
+    { Defaults.layoutNode id with
+        Measure = Some(measure width height)
+        Content = Some(Scene.text (0.0, 0.0) id Colors.white) }
+
+let boundsOf id (result: LayoutResult) =
+    result.Bounds |> List.find (fun item -> item.NodeId = id) |> fun item -> item.Bounds
+
+let visibleBounds (result: LayoutResult) =
+    result.Bounds
+    |> List.filter (fun item -> item.Visibility = Visible)
+    |> List.map _.Bounds
+
+let assertNoOverlap message (bounds: LayoutBounds list) =
+    for leftIndex in 0 .. bounds.Length - 1 do
+        for rightIndex in leftIndex + 1 .. bounds.Length - 1 do
+            Expect.isFalse (overlaps bounds[leftIndex] bounds[rightIndex]) $"{message}: {leftIndex} and {rightIndex}"
+
 [<Tests>]
 let contractTests =
     testList "Layout contract" [
@@ -70,13 +101,13 @@ let contractTests =
                   Sizing =
                     { DesiredWidth = Some 120.0
                       DesiredHeight = Some 48.0
-                      HorizontalAlignment = Center
-                      VerticalAlignment = Middle }
+                      HorizontalAlignment = HorizontalAlignment.Center
+                      VerticalAlignment = VerticalAlignment.Middle }
                   Dock = Some Left }
 
             let scene = Layout.dock dockConfig [ sized ]
             Expect.equal sized.Sizing.DesiredWidth (Some 120.0) "desired width is retained"
-            Expect.equal sized.Sizing.HorizontalAlignment Center "horizontal alignment is retained"
+            Expect.equal sized.Sizing.HorizontalAlignment HorizontalAlignment.Center "horizontal alignment is retained"
             Expect.equal sized.Dock (Some Left) "dock position is retained"
             Expect.contains (Scene.describe scene) RectangleElement "dock returns child scene content"
         }
@@ -237,5 +268,237 @@ let contractTests =
                 Expect.equal (Graph.hitTest layout edgeX edgeY) (Some(Edge 0)) "edge hit-test returns edge target"
             | Result.Error issues, _ -> failtestf "expected graph layout, got %A" issues
             | _, Result.Error issues -> failtestf "expected graph scene, got %A" issues
+        }
+
+        test "automatic layout arranges row column and wrap containers with non-overlapping child bounds" {
+            let rowRoot =
+                { Defaults.layoutNode "row-root" with
+                    Intent = { Defaults.layoutIntent with Direction = Row; Gap = { Row = 0.0; Column = 8.0 } }
+                    Children = [ layoutLeaf "a" 40.0 30.0; layoutLeaf "b" 50.0 30.0; layoutLeaf "c" 60.0 30.0 ] }
+
+            let columnRoot =
+                { Defaults.layoutNode "column-root" with
+                    Intent = { Defaults.layoutIntent with Direction = Column; Gap = { Row = 6.0; Column = 0.0 } }
+                    Children = [ layoutLeaf "r1" 40.0 24.0; layoutLeaf "r2" 50.0 28.0; layoutLeaf "r3" 60.0 32.0 ] }
+
+            let wrapRoot =
+                { Defaults.layoutNode "wrap-root" with
+                    Intent = { Defaults.layoutIntent with Direction = Row; Wrap = Wrap; Gap = { Row = 4.0; Column = 4.0 } }
+                    Children = [ for index in 0 .. 5 -> layoutLeaf $"w{index}" 50.0 20.0 ] }
+
+            let row = Layout.evaluate (Defaults.availableSpace 240.0 80.0) rowRoot
+            let column = Layout.evaluate (Defaults.availableSpace 100.0 160.0) columnRoot
+            let wrap = Layout.evaluate (Defaults.availableSpace 120.0 120.0) wrapRoot
+
+            Expect.isEmpty row.Diagnostics "row layout has no diagnostics"
+            Expect.isEmpty column.Diagnostics "column layout has no diagnostics"
+            Expect.equal row.Bounds.Length 4 "row includes root and children"
+            Expect.equal column.Bounds.Length 4 "column includes root and children"
+            assertNoOverlap "row children do not overlap" (visibleBounds row |> List.tail)
+            assertNoOverlap "column children do not overlap" (visibleBounds column |> List.tail)
+            assertNoOverlap "wrapped children do not overlap" (visibleBounds wrap |> List.tail)
+            Expect.isGreaterThan (boundsOf "w2" wrap).Y (boundsOf "w0" wrap).Y "wrapped items flow onto later rows"
+        }
+
+        test "automatic layout honors padding margin gaps and alignment" {
+            let root =
+                { Defaults.layoutNode "root" with
+                    Intent =
+                        { Defaults.layoutIntent with
+                            Direction = Row
+                            AlignItems = Center
+                            JustifyContent = Center
+                            Padding = { Left = 10.0; Top = 8.0; Right = 10.0; Bottom = 8.0 }
+                            Gap = { Row = 0.0; Column = 5.0 } }
+                    Children =
+                        [ { layoutLeaf "left" 40.0 20.0 with Intent = { (layoutLeaf "left" 40.0 20.0).Intent with Margin = { Left = 3.0; Top = 0.0; Right = 3.0; Bottom = 0.0 } } }
+                          layoutLeaf "right" 40.0 20.0 ] }
+
+            let result = Layout.evaluate (Defaults.availableSpace 140.0 60.0) root
+            let left = boundsOf "left" result
+            let right = boundsOf "right" result
+
+            Expect.isEmpty result.Diagnostics "valid spacing and alignment has no diagnostics"
+            Expect.isGreaterThan left.X 10.0 "left child is inside horizontal padding"
+            Expect.isGreaterThan left.Y 8.0 "center alignment moves child inside vertical padding"
+            Expect.floatClose Accuracy.medium right.X (left.X + left.Width + 5.0 + 3.0) "gap and margin separate children"
+        }
+
+        test "automatic layout applies fixed min max flex grow shrink basis and deterministic repeated evaluation" {
+            let flexible id grow shrink basis =
+                { Defaults.layoutNode id with
+                    Intent =
+                        { Defaults.layoutIntent with
+                            Size = { Width = None; Height = Some 20.0 }
+                            MinSize = { Width = Some 20.0; Height = None }
+                            MaxSize = { Width = Some 140.0; Height = None }
+                            FlexGrow = grow
+                            FlexShrink = shrink
+                            FlexBasis = Some basis } }
+
+            let root =
+                { Defaults.layoutNode "root" with
+                    Intent = { Defaults.layoutIntent with Direction = Row; Gap = { Row = 0.0; Column = 0.0 } }
+                    Children = [ flexible "one" 1.0 1.0 30.0; flexible "two" 2.0 1.0 30.0 ] }
+
+            let first = Layout.evaluate (Defaults.availableSpace 180.0 40.0) root
+            let second = Layout.evaluate (Defaults.availableSpace 180.0 40.0) root
+
+            Expect.equal first.Bounds second.Bounds "repeated evaluation is deterministic"
+            Expect.isGreaterThan (boundsOf "two" first).Width (boundsOf "one" first).Width "larger flex grow receives more space"
+            Expect.isLessThanOrEqual (boundsOf "two" first).Width 140.0 "max width constrains flexible child"
+        }
+
+        test "automatic layout custom measurement callbacks influence preferred size and diagnostics" {
+            let measurementDiagnostic =
+                { NodeId = Some "measured"
+                  Code = LayoutDiagnosticCode.UnmeasurableContent
+                  Severity = FS.Skia.UI.Layout.DiagnosticSeverity.Warning
+                  Message = "sample measurement warning"
+                  Constraint = Some "text"
+                  FallbackApplied = false }
+
+            let measured =
+                { Defaults.layoutNode "measured" with
+                    Measure =
+                        Some(fun _ ->
+                            { Width = 72.0
+                              Height = 18.0
+                              Diagnostics = [ measurementDiagnostic ] }) }
+
+            let root = { Defaults.layoutNode "root" with Children = [ measured ] }
+            let result = Layout.evaluate (Defaults.availableSpace 160.0 60.0) root
+
+            Expect.equal (boundsOf "measured" result).Width 72.0 "measured width is used"
+            Expect.contains result.Diagnostics measurementDiagnostic "measurement diagnostics are propagated"
+        }
+
+        test "automatic layout incremental evaluation reports changed ids and keeps unchanged sibling bounds stable" {
+            let root size =
+                { Defaults.layoutNode "root" with
+                    Children =
+                        [ layoutLeaf "stable" 40.0 20.0
+                          { layoutLeaf "changed" size 20.0 with Intent = { (layoutLeaf "changed" size 20.0).Intent with FlexGrow = 1.0 } } ] }
+
+            let first = Layout.evaluate (Defaults.availableSpace 180.0 40.0) (root 40.0)
+            let second = Layout.evaluateIncremental first [ "changed" ] (Defaults.availableSpace 180.0 40.0) (root 80.0)
+
+            Expect.equal second.Invalidated [ "changed" ] "incremental result reports requested changed node"
+            Expect.equal second.Revision (first.Revision + 1L) "incremental revision advances"
+            Expect.equal (boundsOf "stable" first) (boundsOf "stable" second) "unchanged sibling bounds are stable"
+        }
+
+        test "automatic layout render and hit-test consume computed bounds with shared pixel snapping" {
+            let root =
+                { Defaults.layoutNode "root" with
+                    Children = [ layoutLeaf "button" 40.0 20.0; { layoutLeaf "label" 30.0 20.0 with Visibility = Hidden } ] }
+
+            let result = Layout.evaluate (Defaults.availableSpace 120.0 40.0) root
+            let scene = Layout.renderComputed result root
+            let policy = { Defaults.pixelSnapPolicy 1.5 with Mode = Round }
+            let button = boundsOf "button" result
+
+            Expect.contains (Scene.describe scene) RectangleElement "renderComputed includes visible content"
+            Expect.equal (Layout.hitTestComputed policy result (button.X + 1.0) (button.Y + 1.0)) (Some "button") "hit testing returns visible node"
+            Expect.notEqual (Layout.hitTestComputed policy result ((boundsOf "label" result).X + 1.0) ((boundsOf "label" result).Y + 1.0)) (Some "label") "hidden nodes are not hit-testable"
+            Expect.isTrue ((Layout.snapBounds policy { button with X = 0.2; Y = 0.2 }).X >= 0.0) "snap bounds returns deterministic logical coordinates"
+        }
+
+        test "automatic layout workflow update is pure and emits resize visibility intent and measurement effects" {
+            let root =
+                { Defaults.layoutNode "root" with
+                    Children = [ layoutMeasured "title" 52.0 18.0; layoutLeaf "action" 40.0 20.0 ] }
+
+            let model, startupEffects = Layout.initWorkflow (Defaults.availableSpace 160.0 48.0) root
+            Expect.equal model.Result None "workflow init does not evaluate layout directly"
+            Expect.equal startupEffects [ EvaluateLayout ] "workflow init requests evaluation as an effect"
+
+            let resized, resizeEffects = Layout.updateWorkflow (LayoutHostResized(Defaults.availableSpace 220.0 48.0)) model
+            Expect.equal resized.Available.Width 220.0 "resize updates owned available space"
+            Expect.equal resizeEffects [ EvaluateIncrementalLayout [ "root" ] ] "resize requests incremental layout from root constraints"
+
+            let hidden, visibilityEffects = Layout.updateWorkflow (LayoutVisibilityChanged("action", Hidden)) resized
+            let hiddenAction = hidden.Root.Children |> List.find (fun child -> child.Id = "action")
+            Expect.equal hiddenAction.Visibility Hidden "visibility message updates the layout tree"
+            Expect.equal visibilityEffects [ EvaluateIncrementalLayout [ "action" ] ] "visibility change emits node invalidation"
+
+            let nextIntent = { Defaults.layoutIntent with FlexGrow = 2.0 }
+            let intentChanged, intentEffects = Layout.updateWorkflow (LayoutIntentChanged("title", nextIntent)) hidden
+            let changedTitle = intentChanged.Root.Children |> List.find (fun child -> child.Id = "title")
+            Expect.equal changedTitle.Intent.FlexGrow 2.0 "intent message updates the target node"
+            Expect.equal intentEffects [ EvaluateIncrementalLayout [ "title" ] ] "intent change emits target invalidation"
+
+            let measured, measurementEffects = Layout.updateWorkflow (LayoutMeasurementChanged "title") intentChanged
+            Expect.equal measured.LastChangedNodeIds [ "title" ] "measurement change records the measured node"
+            Expect.equal measurementEffects [ EvaluateIncrementalLayout [ "title" ] ] "measurement change emits incremental evaluation"
+        }
+
+        test "automatic layout workflow interpreter uses the public evaluator and reports completed results" {
+            let root =
+                { Defaults.layoutNode "root" with
+                    Children = [ layoutMeasured "title" 52.0 18.0; layoutLeaf "action" 40.0 20.0 ] }
+
+            let model, startupEffects = Layout.initWorkflow (Defaults.availableSpace 160.0 48.0) root
+            let completed = Layout.interpretWorkflowEffect startupEffects.Head model
+
+            match completed with
+            | LayoutEvaluationCompleted result ->
+                Expect.equal result.Bounds.Length 3 "interpreter evaluates root and children through public layout"
+                Expect.equal result.Invalidated [ "root" ] "initial interpreter result records root invalidation"
+                let evaluated, effects = Layout.updateWorkflow completed model
+                Expect.isSome evaluated.Result "evaluation completion stores the result in the workflow model"
+                Expect.isEmpty effects "completion does not request another effect"
+            | other -> failtestf "expected evaluation completion, got %A" other
+        }
+
+        test "automatic layout keyboard focus region aligns with visual bounds and pointer hit-test after snapping" {
+            let root =
+                { Defaults.layoutNode "root" with
+                    Children = [ layoutLeaf "focusable" 40.25 20.25; layoutLeaf "secondary" 32.0 20.0 ] }
+
+            let result = Layout.evaluate (Defaults.availableSpace 120.0 42.0) root
+            let policy = { Defaults.pixelSnapPolicy 2.0 with Mode = Expand }
+            let visualBounds = boundsOf "focusable" result
+            let focusRegion = Layout.snapBounds policy visualBounds
+            let focusX = focusRegion.X + focusRegion.Width - 0.25
+            let focusY = focusRegion.Y + focusRegion.Height - 0.25
+
+            Expect.equal (Layout.hitTestComputed policy result focusX focusY) (Some "focusable") "pointer hit-test uses the same snapped bounds as the keyboard focus region"
+            Expect.equal focusRegion (Layout.snapBounds policy visualBounds) "focus region is derived from computed visual bounds with the shared snap policy"
+        }
+
+        test "automatic layout diagnostics report invalid available space values duplicate ids and min max conflicts" {
+            let conflicted =
+                { Defaults.layoutNode "dup" with
+                    Intent =
+                        { Defaults.layoutIntent with
+                            MinSize = { Width = Some 100.0; Height = None }
+                            MaxSize = { Width = Some 20.0; Height = None } } }
+
+            let root = { Defaults.layoutNode "root" with Children = [ conflicted; layoutLeaf "dup" -10.0 20.0 ] }
+            let result = Layout.evaluate { Width = -1.0; WidthMode = Exactly; Height = nan; HeightMode = Exactly } root
+
+            Expect.exists result.Diagnostics (fun item -> item.Code = InvalidAvailableSpace) "invalid available space is diagnosed"
+            Expect.exists result.Diagnostics (fun item -> item.Code = DuplicateLayoutNodeId) "duplicate node ids are diagnosed"
+            Expect.exists result.Diagnostics (fun item -> item.Code = UnsatisfiedConstraint) "min/max conflict is diagnosed"
+            Expect.exists result.Diagnostics (fun item -> item.Code = FallbackBoundsApplied) "fallback geometry is summarized"
+            Expect.all result.Bounds (fun item -> item.Bounds.Width >= 0.0 && item.Bounds.Height >= 0.0) "fallback bounds remain bounded"
+        }
+
+        test "automatic layout hidden and collapsed nodes are distinguishable and visible siblings remain stable" {
+            let root visibility =
+                { Defaults.layoutNode "root" with
+                    Children =
+                        [ layoutLeaf "before" 30.0 20.0
+                          { layoutLeaf "toggle" 30.0 20.0 with Visibility = visibility }
+                          layoutLeaf "after" 30.0 20.0 ] }
+
+            let hidden = Layout.evaluate (Defaults.availableSpace 160.0 40.0) (root Hidden)
+            let collapsed = Layout.evaluate (Defaults.availableSpace 160.0 40.0) (root Collapsed)
+
+            Expect.equal (hidden.Bounds |> List.find (fun item -> item.NodeId = "toggle")).Visibility Hidden "hidden node is retained as hidden"
+            Expect.equal (collapsed.Bounds |> List.find (fun item -> item.NodeId = "toggle")).Visibility Collapsed "collapsed node is retained as collapsed"
+            Expect.equal (boundsOf "toggle" collapsed).Width 0.0 "collapsed node has zero width"
+            Expect.equal (boundsOf "before" hidden) (boundsOf "before" collapsed) "preceding sibling remains stable"
         }
     ]

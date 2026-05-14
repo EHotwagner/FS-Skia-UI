@@ -74,6 +74,41 @@ let gridRows =
             "score", NumericValue(float (index * 11 % 19)) ]
           |> Map.ofList ]
 
+let automaticMeasure text =
+    fun request ->
+        { Width = min request.AvailableWidth (float (String.length text) * 8.0)
+          Height = 18.0
+          Diagnostics = [] }
+
+let automaticNode id label grow =
+    { Defaults.layoutNode id with
+        Intent = { Defaults.layoutIntent with FlexGrow = grow }
+        Measure = Some(automaticMeasure label)
+        Content = Some(Scene.text (0.0, 0.0) label Colors.white) }
+
+let automaticLayoutRoot width statusVisibility =
+    { Defaults.layoutNode "gallery-auto-root" with
+        Intent =
+            { Defaults.layoutIntent with
+                Direction = Row
+                Wrap = Wrap
+                Padding = { Left = 8.0; Top = 8.0; Right = 8.0; Bottom = 8.0 }
+                Gap = { Row = 6.0; Column = 8.0 } }
+        Children =
+            [ automaticNode "gallery-auto-title" "Auto Layout" 1.0
+              { Defaults.layoutNode "gallery-auto-widget-row" with
+                    Intent =
+                        { Defaults.layoutIntent with
+                            Direction = Row
+                            Wrap = Wrap
+                            Size = { Width = Some(max 120.0 (width * 0.42)); Height = None }
+                            Gap = { Row = 4.0; Column = 6.0 } }
+                    Children =
+                        [ automaticNode "gallery-auto-chart-chip" "chart" 1.0
+                          automaticNode "gallery-auto-grid-chip" "grid" 1.0 ] }
+              { automaticNode "gallery-auto-status" "Mixed widgets" 0.0 with Visibility = statusVisibility }
+              automaticNode "gallery-auto-action" "Resize ready" 0.0 ] }
+
 let view model =
     let selectedText = model.Focus |> Option.map string |> Option.defaultValue "none"
     let chartConfig =
@@ -106,10 +141,14 @@ let view model =
                 Spacing = 12.0 }
             [ Defaults.child directedScene; Defaults.child weightedScene ]
 
+    let automaticRoot = automaticLayoutRoot 584.0 Visible
+    let automaticLayout = Layout.evaluate (Defaults.availableSpace 584.0 72.0) automaticRoot
+
     Scene.group [
         Scene.rectangle (0.0, 0.0, 640.0, 480.0) (Colors.rgba 18uy 24uy 32uy 255uy)
         Scene.text (32.0, 54.0) "Layout Graph Gallery" Colors.white
         layoutShell
+        Layout.renderComputed automaticLayout automaticRoot
         LineChart.lineChart chartConfig chartSeries
         DataGrid.dataGrid gridConfig gridData { FirstRow = 0; RowCount = 6 }
         Scene.text (32.0, 436.0) invalidText Colors.white
@@ -139,11 +178,22 @@ let runContractSmoke () =
     let model, _ = init ()
     let scene = view model
     let directedLayout = Graph.layout directedGraph
+    let automaticRoot = automaticLayoutRoot 584.0 Visible
+    let resizedRoot = automaticLayoutRoot 340.0 Hidden
+    let automaticLayout = Layout.evaluate (Defaults.availableSpace 584.0 72.0) automaticRoot
+    let resizedLayout = Layout.evaluate (Defaults.availableSpace 340.0 100.0) resizedRoot
+    let hiddenStatus = resizedLayout.Bounds |> List.find (fun item -> item.NodeId = "gallery-auto-status")
     printfn "status=ok"
     printfn "sample=LayoutGraphGallery"
     printfn "model-owns-focus=%b" model.Focus.IsNone
     printfn "invalid-dag-issues=%d" (GraphValidation.validate invalidDag).Length
     printfn "directed-layout=%A" (directedLayout |> Result.map (fun layout -> layout.Nodes.Length, layout.Edges.Length))
+    printfn "automatic-layout-bounds=%d" automaticLayout.Bounds.Length
+    printfn "automatic-layout-diagnostics=%d" automaticLayout.Diagnostics.Length
+    printfn "automatic-layout-resized-bounds=%d" resizedLayout.Bounds.Length
+    printfn "automatic-layout-hidden-status=%A" hiddenStatus.Visibility
+    printfn "automatic-layout-nested=%b" (automaticLayout.Bounds |> List.exists (fun item -> item.NodeId = "gallery-auto-widget-row"))
+    printfn "automatic-layout-hit=%A" (Layout.hitTestComputed (Defaults.pixelSnapPolicy 1.0) automaticLayout 12.0 12.0)
     printfn "kinds=%A" (Scene.describe scene)
     0
 

@@ -24,7 +24,7 @@ type Msg =
 
 let width = 1280.0
 let height = 720.0
-let initialSize = { Width = int width; Height = int height }
+let initialSize: Size = { Width = int width; Height = int height }
 let totalDuration = 60.0
 
 let init () =
@@ -141,7 +141,7 @@ let geometryBurst t =
                   (t * 35.0 + float i * 23.0)
                   (245.0 - float i * 22.0)
                   (Paint.stroke (rgba 170.0 208.0 255.0 (160.0 - float i * 22.0)) (2.0 + float i * 0.4)
-                   |> Paint.withStrokeCap Round
+                   |> Paint.withStrokeCap StrokeCap.Round
                    |> Paint.withPathEffect (Dash([ 12.0; 8.0 ], t * 10.0))) ]
 
     Scene.group [
@@ -238,6 +238,173 @@ let configAt x y w h =
         YAxis = { Defaults.axis with Minimum = Some 0.0; ShowGrid = true }
         Legend = { Defaults.legend with Visible = true; Position = "bottom" } }
 
+let autoLayoutMeasure text =
+    fun request ->
+        { Width = min request.AvailableWidth (float (String.length text) * 8.0)
+          Height = 18.0
+          Diagnostics = [] }
+
+let autoLayoutChip id label grow visibility =
+    { Defaults.layoutNode id with
+        Intent = { Defaults.layoutIntent with FlexGrow = grow }
+        Visibility = visibility
+        Measure = Some(autoLayoutMeasure label)
+        Content = Some(Scene.text (0.0, 0.0) label Colors.white) }
+
+let autoLayoutStrip t =
+    let availableWidth = 270.0 + wave t 0.0 80.0
+    let root =
+        { Defaults.layoutNode "demo-auto-root" with
+            Intent =
+                { Defaults.layoutIntent with
+                    Direction = Row
+                    Wrap = Wrap
+                    Padding = { Left = 10.0; Top = 10.0; Right = 10.0; Bottom = 10.0 }
+                    Gap = { Row = 6.0; Column = 8.0 } }
+            Children =
+                [ autoLayoutChip "demo-auto-title" "Yoga.Net layout" 1.0 Visible
+                  { Defaults.layoutNode "demo-auto-nested" with
+                        Intent =
+                            { Defaults.layoutIntent with
+                                Direction = Row
+                                Wrap = Wrap
+                                Size = { Width = Some 126.0; Height = None }
+                                Gap = { Row = 4.0; Column = 5.0 } }
+                        Children =
+                            [ autoLayoutChip "demo-auto-chart" "chart" 1.0 Visible
+                              autoLayoutChip "demo-auto-grid" "grid" 1.0 Visible ] }
+                  autoLayoutChip "demo-auto-hidden" "hidden" 0.0 Hidden
+                  autoLayoutChip "demo-auto-flex" "flex" 1.0 Visible ] }
+
+    let result = Layout.evaluate (Defaults.availableSpace availableWidth 76.0) root
+    Scene.group [
+        Scene.rectangle (940.0, 588.0, availableWidth, 78.0) (rgba 34.0 40.0 58.0 255.0)
+        Layout.renderComputed result root
+    ]
+
+let layoutChip id width height grow visibility =
+    { Defaults.layoutNode id with
+        Intent =
+            { Defaults.layoutIntent with
+                Size = { Width = width; Height = height }
+                FlexGrow = grow
+                MinSize = { Width = Some 42.0; Height = Some 24.0 } }
+        Visibility = visibility
+        Measure = Some(autoLayoutMeasure id) }
+
+let drawLayoutExample originX originY title available root labels accent =
+    let result = Layout.evaluate available root
+    let byId = labels |> Map.ofList
+
+    let visuals =
+        result.Bounds
+        |> List.choose (fun item ->
+            if item.NodeId = root.Id || item.Visibility <> Visible then
+                None
+            else
+                let bounds = item.Bounds
+                let x = originX + bounds.X
+                let y = originY + bounds.Y
+                let label = byId |> Map.tryFind item.NodeId |> Option.defaultValue item.NodeId
+
+                Some
+                    (Scene.group [
+                        Scene.rectangleWithPaint
+                            { X = x
+                              Y = y
+                              Width = bounds.Width
+                              Height = bounds.Height }
+                            (Paint.fill accent |> Paint.withOpacity 0.78)
+                        Scene.rectangleWithPaint
+                            { X = x
+                              Y = y
+                              Width = bounds.Width
+                              Height = bounds.Height }
+                            (Paint.stroke (rgba 230.0 238.0 255.0 160.0) 1.2)
+                        subtitleText (x + 10.0) (y + 22.0) label
+                    ]))
+
+    Scene.group [
+        Scene.rectangle (originX - 14.0, originY - 44.0, available.Width + 28.0, available.Height + 62.0) (rgba 25.0 31.0 48.0 255.0)
+        subtitleText originX (originY - 18.0) title
+        yield! visuals
+        if not result.Diagnostics.IsEmpty then
+            subtitleText originX (originY + available.Height + 28.0) $"diagnostics={result.Diagnostics.Length}"
+    ]
+
+let layoutShowcase t =
+    let rowRoot =
+        { Defaults.layoutNode "row-root" with
+            Intent =
+                { Defaults.layoutIntent with
+                    Direction = Row
+                    Padding = { Left = 14.0; Top = 14.0; Right = 14.0; Bottom = 14.0 }
+                    Gap = { Row = 0.0; Column = 10.0 } }
+            Children =
+                [ layoutChip "row-nav" (Some 72.0) (Some 34.0) 0.0 Visible
+                  layoutChip "row-search" None (Some 34.0) 1.0 Visible
+                  layoutChip "row-action" (Some 92.0) (Some 34.0) 0.0 Visible ] }
+
+    let wrapRoot =
+        { Defaults.layoutNode "wrap-root" with
+            Intent =
+                { Defaults.layoutIntent with
+                    Direction = Row
+                    Wrap = Wrap
+                    Padding = { Left = 14.0; Top = 14.0; Right = 14.0; Bottom = 14.0 }
+                    Gap = { Row = 10.0; Column = 10.0 } }
+            Children =
+                [ layoutChip "wrap-one" (Some 92.0) (Some 32.0) 0.0 Visible
+                  layoutChip "wrap-two" (Some 112.0) (Some 32.0) 0.0 Visible
+                  layoutChip "wrap-three" (Some 98.0) (Some 32.0) 0.0 Visible
+                  layoutChip "wrap-four" (Some 120.0) (Some 32.0) 0.0 Visible
+                  layoutChip "wrap-hidden" (Some 86.0) (Some 32.0) 0.0 Hidden
+                  layoutChip "wrap-five" (Some 104.0) (Some 32.0) 0.0 Visible ] }
+
+    let columnRoot =
+        { Defaults.layoutNode "column-root" with
+            Intent =
+                { Defaults.layoutIntent with
+                    Direction = Column
+                    Padding = { Left = 14.0; Top = 14.0; Right = 14.0; Bottom = 14.0 }
+                    Gap = { Row = 10.0; Column = 0.0 } }
+            Children =
+                [ layoutChip "column-header" None (Some 42.0) 0.0 Visible
+                  layoutChip "column-body" None None 1.0 Visible
+                  layoutChip "column-collapsed" None (Some 34.0) 0.0 Collapsed
+                  layoutChip "column-footer" None (Some 38.0) 0.0 Visible ] }
+
+    Scene.group [
+        Scene.rectangle (0.0, 0.0, width, height) (rgba 10.0 12.0 24.0 255.0)
+        header "Automatic Layout" "Yoga.Net-backed row, wrap, column, flex, hidden and collapsed examples"
+        drawLayoutExample
+            62.0
+            150.0
+            "row + flex grow"
+            (Defaults.availableSpace 520.0 92.0)
+            rowRoot
+            [ "row-nav", "Nav"; "row-search", "Search grows"; "row-action", "Action" ]
+            (rgba 68.0 160.0 235.0 255.0)
+        drawLayoutExample
+            62.0
+            336.0
+            "wrap + hidden participant"
+            (Defaults.availableSpace (420.0 + wave t 0.0 110.0) 132.0)
+            wrapRoot
+            [ "wrap-one", "One"; "wrap-two", "Two"; "wrap-three", "Three"; "wrap-four", "Four"; "wrap-five", "Five" ]
+            (rgba 88.0 194.0 139.0 255.0)
+        drawLayoutExample
+            720.0
+            150.0
+            "column + collapsed row"
+            (Defaults.availableSpace 430.0 318.0)
+            columnRoot
+            [ "column-header", "Header"; "column-body", "Flexible body"; "column-footer", "Footer" ]
+            (rgba 224.0 142.0 84.0 255.0)
+        subtitleText 720.0 526.0 "The wrapped panel width animates; the collapsed row has zero size."
+        titleOverlay "Automatic Layout" "computed bounds driving visible UI regions" t
+    ]
+
 let dashboard t model =
     let series = liveSeries t
     let bars =
@@ -265,6 +432,7 @@ let dashboard t model =
         titleText 968.0 410.0 "Slide" 32.0
         subtitleText 970.0 444.0 $"manual={model.ManualSlide.IsSome}  diagnostics={model.Diagnostics.Length}"
         subtitleText 970.0 476.0 "Right/Space: next  Left: previous  R: restart"
+        autoLayoutStrip t
         titleOverlay "Charts" "live dashboard segment" t
     ]
 
@@ -400,7 +568,7 @@ let finale t =
         subtitleText 486.0 414.0 "Space: next  Left/Right: navigate  R: restart"
     ]
 
-let slideCount = 7
+let slideCount = 8
 
 let sceneFor model =
     let automaticSlide =
@@ -418,9 +586,10 @@ let sceneFor model =
         | 0 -> geometryBurst localT
         | 1 -> shaderShowcase localT
         | 2 -> plasmaPanel localT
-        | 3 -> dashboard localT model
-        | 4 -> finance localT model
-        | 5 -> graphEffects localT
+        | 3 -> layoutShowcase localT
+        | 4 -> dashboard localT model
+        | 5 -> finance localT model
+        | 6 -> graphEffects localT
         | _ -> finale localT
 
     Scene.group [ scene; progress model.Time ]
@@ -499,6 +668,8 @@ let runContractSmoke () =
     let afterTick, tickCmd = update (ViewerInput(RenderTick 1.0)) model
     let afterNext, nextCmd = update NextSlide afterTick
     let afterRestart, restartCmd = update Restart afterNext
+    let layoutModel = { afterTick with ManualSlide = Some 3 }
+    let layoutKinds = Scene.describe (view layoutModel)
     let effects = [ initCmd; tickCmd; nextCmd; restartCmd ] |> List.collect collect
     let hasInitialize = effects |> List.exists ((=) (HostEffect InitializeRenderer))
     let renderCount =
@@ -514,9 +685,11 @@ let runContractSmoke () =
     printfn "manual-slide=%A" afterRestart.ManualSlide
     printfn "initialize-effect=%b" hasInitialize
     printfn "render-effects=%d" renderCount
+    printfn "layout-slide-rectangles=%d" (layoutKinds |> List.filter ((=) RectangleElement) |> List.length)
+    printfn "layout-slide-text=%d" (layoutKinds |> List.filter ((=) TextRunElement) |> List.length)
     printfn "kinds=%A" (Scene.describe (view afterNext))
 
-    if hasInitialize && renderCount >= 3 then 0 else 4
+    if hasInitialize && renderCount >= 3 && layoutKinds |> List.contains RectangleElement then 0 else 4
 
 let runSmoke () =
     let stopwatch = Stopwatch.StartNew()

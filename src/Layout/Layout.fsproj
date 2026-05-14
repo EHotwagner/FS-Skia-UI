@@ -26,4 +26,8 @@
     <ProjectReference Include="..\Lib\Lib.fsproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Yoga.Net" Version="3.2.3" />
+  </ItemGroup>
+
 </Project>

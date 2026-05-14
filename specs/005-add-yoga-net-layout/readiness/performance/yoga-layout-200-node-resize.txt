@@ -1,0 +1,7 @@
+command=dotnet fsi performance heredoc
+runtime=.NET 10.0.8
+os=Arch Linux
+nodes=200 iterations=100
+median-ms=2.2857
+p95-ms=3.0474
+pass-under-frame-budget=true

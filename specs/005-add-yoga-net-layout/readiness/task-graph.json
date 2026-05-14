@@ -1,0 +1,974 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm the current `src/Layout` compile order, public `.fsi` boundaries, test projects, and sample entry points affected by automatic layout.",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add the pinned `Yoga.Net` `3.2.3` package reference to `src/Layout/Layout.fsproj` without exposing Yoga.Net types in public signatures.",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Create readiness scaffolding under `specs/005-add-yoga-net-layout/readiness/` for FSI, logs, performance, sample smoke, and surface baselines.",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record Tier 1 evidence obligations, dependency pinning rationale, MVU applicability, and unsupported v1 scope in `specs/005-add-yoga-net-layout/readiness/evidence-obligations.md`.",
+      "explicit_deps": [
+        "T001",
+        "T002",
+        "T003"
+      ],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft automatic layout geometry, sizing, visibility, measurement, diagnostics, result, and pixel snapping types in `src/Layout/Types.fsi`.",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft default constructors and public evaluator functions in `src/Layout/Layout.fsi` or `src/Layout/YogaLayout.fsi`, including `evaluate`, `evaluateIncremental`, `renderComputed`, `snapBounds`, and `hitTestComputed`.",
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add matching implementation placeholders and compile-order entries in `src/Layout/Types.fs`, `src/Layout/Layout.fs`, and any new Yoga layout implementation files.",
+      "explicit_deps": [
+        "T005",
+        "T006"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic test helpers in `tests/Layout.Tests/Tests.fs` for reading computed bounds, asserting non-overlap, deterministic results, diagnostics, and visibility.",
+      "explicit_deps": [
+        "T005",
+        "T006"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add `scripts/layout-prelude.fsx` coverage for the intended public automatic layout API and expected readiness transcript path.",
+      "explicit_deps": [
+        "T005",
+        "T006"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add or update package surface baseline generation notes for `FS.Skia.UI.Layout` under `specs/005-add-yoga-net-layout/readiness/surface-baselines/`.",
+      "explicit_deps": [
+        "T005",
+        "T006"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Define validation rules for duplicate node ids, invalid available space, invalid numeric style values, invalid measurement output, min/max conflicts, and v1 rejection of absolute or overlay intent.",
+      "explicit_deps": [
+        "T005",
+        "T006"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Define the Yoga.Net adapter boundary so Yoga nodes are allocated, styled, measured, evaluated, read back, and disposed without leaking Yoga.Net types through `.fsi`.",
+      "explicit_deps": [
+        "T005",
+        "T006",
+        "T007"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Define the deterministic fallback geometry policy for recoverable failures, including bounded root and child rectangles plus `LayoutDiagnostic` records.",
+      "explicit_deps": [
+        "T011",
+        "T012"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Define the invalidation model for node intent, visibility, child structure, parent size, and content measurement changes, including stable unchanged sibling bounds.",
+      "explicit_deps": [
+        "T005",
+        "T006"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Build the foundation surface and capture an initial FSI or build transcript proving the public signatures are reachable from the package.",
+      "explicit_deps": [
+        "T007",
+        "T009",
+        "T012",
+        "T013",
+        "T014"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic tests for row, column, and wrap containers with non-overlapping child bounds inside the parent.",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic tests for parent padding, child margin, row and column gaps, and main/cross-axis alignment.",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic tests for fixed, min, max, flex grow, flex shrink, flex basis, and deterministic repeated evaluation.",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add public API tests for custom content measurement callbacks that return preferred logical sizes and diagnostics.",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Implement default automatic layout records and helper constructors for layout intents, nodes, available space, and pixel snap policies.",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement Yoga.Net style mapping for direction, wrap, alignment, justification, padding, margin, gap, fixed/min/max size, grow, shrink, and basis.",
+      "explicit_deps": [
+        "T016",
+        "T017",
+        "T018",
+        "T020"
+      ],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement recursive layout tree evaluation through Yoga.Net and read back one logical `ComputedBounds` entry per participating node.",
+      "explicit_deps": [
+        "T016",
+        "T017",
+        "T018",
+        "T021"
+      ],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement custom leaf measurement callback bridging between public `MeasureRequest` / `MeasureResponse` and Yoga.Net measure callbacks.",
+      "explicit_deps": [
+        "T019",
+        "T021",
+        "T022"
+      ],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement deterministic result ordering, finite logical bounds normalization, and valid-layout non-overlap guarantees.",
+      "explicit_deps": [
+        "T016",
+        "T017",
+        "T018",
+        "T022",
+        "T023"
+      ],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US1 readiness evidence through `dotnet test --filter` or equivalent and the FSI prelude transcript for nested element layout.",
+      "explicit_deps": [
+        "T016",
+        "T017",
+        "T018",
+        "T019",
+        "T022",
+        "T023",
+        "T024"
+      ],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic tests for mixed standard widgets and custom elements participating in one automatic layout tree.",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T025"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add resize and incremental evaluation tests proving changed parent size or child measurement updates bounds without stale overlap.",
+      "explicit_deps": [
+        "T052",
+        "T053"
+      ],
+      "phase_deps": [
+        "T025"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add invalidation locality tests proving unaffected sibling subtrees keep byte-for-byte equivalent computed bounds after unrelated changes.",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T025"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add render and hit-test tests proving computed logical bounds are consumed without independent layout recalculation.",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T025"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T030",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add fixtures or adapters that let existing element/widget scene content attach to `LayoutNode.Content` while keeping automatic layout opt-in.",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T025"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T031",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `evaluateIncremental` revision handling, invalidated node reporting, and changed-node ancestor propagation.",
+      "explicit_deps": [
+        "T027",
+        "T028",
+        "T030",
+        "T052",
+        "T053",
+        "T054"
+      ],
+      "phase_deps": [
+        "T025"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T032",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `renderComputed` so scene content is positioned from computed bounds while existing manual stack, dock, graph, absolute, and overlay composition keep working.",
+      "explicit_deps": [
+        "T026",
+        "T029",
+        "T030",
+        "T031"
+      ],
+      "phase_deps": [
+        "T025"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T033",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `snapBounds` and `hitTestComputed` with one deterministic `PixelSnapPolicy` shared by rendering and hit testing.",
+      "explicit_deps": [
+        "T029",
+        "T032"
+      ],
+      "phase_deps": [
+        "T025"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T034",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Add or update `samples/LayoutGraphGallery` and `samples/DemoReel` automatic layout examples for nested elements, mixed widgets, resizing, flexible sizing, and hidden elements.",
+      "explicit_deps": [
+        "T030",
+        "T032",
+        "T033",
+        "T055"
+      ],
+      "phase_deps": [
+        "T025"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T035",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US2 readiness evidence through widget/invalidation tests and sample smoke transcript under `readiness/sample-smoke/`.",
+      "explicit_deps": [
+        "T026",
+        "T027",
+        "T028",
+        "T029",
+        "T031",
+        "T032",
+        "T033",
+        "T034",
+        "T052",
+        "T053",
+        "T054",
+        "T055"
+      ],
+      "phase_deps": [
+        "T025"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T036",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic tests for invalid available space, invalid style values, min/max conflicts, and size requests larger than the parent.",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T037",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic tests for unmeasurable content, invalid measurement callback output, hidden nodes, and collapsed nodes.",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T038",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add tests proving recoverable failures return structured diagnostics and bounded fallback geometry without terminating render flow.",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T039",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Implement structured diagnostic creation with node id, code, severity, message, constraint, and fallback flags.",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T040",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement validation and normalization for available space, layout intent values, measurement output, and unsupported automatic-layout scope.",
+      "explicit_deps": [
+        "T036",
+        "T039"
+      ],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T041",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement safe fallback bounds for recoverable constraints and propagate diagnostics through `LayoutResult.Diagnostics`.",
+      "explicit_deps": [
+        "T036",
+        "T038",
+        "T039",
+        "T040"
+      ],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T042",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement hidden and collapsed node behavior so visibility diagnostics are distinguishable from layout failures and visible siblings stay stable.",
+      "explicit_deps": [
+        "T037",
+        "T039",
+        "T040",
+        "T041"
+      ],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T043",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US3 readiness evidence for invalid/conflicting layouts and diagnostic samples.",
+      "explicit_deps": [
+        "T036",
+        "T037",
+        "T038",
+        "T040",
+        "T041",
+        "T042"
+      ],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T044",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Refresh `FS.Skia.UI.Layout` surface-area baseline and package tests for the new public contract.",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T043"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T045",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Update `specs/005-add-yoga-net-layout/quickstart.md` and layout interaction docs for final public names, pointer hit testing, keyboard focus regions, visual bounds, and pixel snapping behavior.",
+      "explicit_deps": [
+        "T055"
+      ],
+      "phase_deps": [
+        "T043"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T046",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add performance evidence for representative 200-node resize/re-layout under `readiness/performance/yoga-layout-200-node-resize.txt`, including command, hardware/runtime profile, iteration count, median/p95 timing, and pass/fail against the SC-004 threshold.",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T043"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T047",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `dotnet restore`, `dotnet build`, and `dotnet test`, saving final logs under `readiness/logs/`.",
+      "explicit_deps": [
+        "T044"
+      ],
+      "phase_deps": [
+        "T043"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T048",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run the layout FSI prelude and save `readiness/fsi/yoga-layout-prelude.txt`.",
+      "explicit_deps": [
+        "T045",
+        "T047"
+      ],
+      "phase_deps": [
+        "T043"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T049",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run automatic layout sample smoke checks and save `readiness/sample-smoke/automatic-layout-gallery.txt`.",
+      "explicit_deps": [
+        "T034",
+        "T047"
+      ],
+      "phase_deps": [
+        "T043"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T050",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh specs/005-add-yoga-net-layout --graph-only` and confirm no dangling refs, cycles, or unexpected `[S*]` propagation.",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T043"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T051",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh specs/005-add-yoga-net-layout` and document PASS or every explicit synthetic-evidence override.",
+      "explicit_deps": [
+        "T047",
+        "T048",
+        "T049",
+        "T050"
+      ],
+      "phase_deps": [
+        "T043"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T052",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft the stateful host/sample layout workflow contract for resize, widget updates, and content-measurement invalidation, including `Model`, `Msg`, `Effect` or `Cmd<Msg>`, `init`, `update`, and interpreter boundary.",
+      "explicit_deps": [
+        "T005",
+        "T006",
+        "T014"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T053",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Add pure transition tests for the host/sample layout workflow covering resize, visibility changes, layout-intent changes, and content-measurement changes.",
+      "explicit_deps": [
+        "T052"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T054",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Add emitted-effect assertions and real interpreter evidence for the host/sample layout workflow where safe, saving transcript output under `readiness/fsi/`.",
+      "explicit_deps": [
+        "T052",
+        "T053"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T055",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Document and test keyboard focus region alignment with computed visual bounds and pointer hit-test bounds after pixel snapping.",
+      "explicit_deps": [
+        "T029",
+        "T033"
+      ],
+      "phase_deps": [
+        "T025"
+      ],
+      "root_cause": []
+    }
+  ]
+}

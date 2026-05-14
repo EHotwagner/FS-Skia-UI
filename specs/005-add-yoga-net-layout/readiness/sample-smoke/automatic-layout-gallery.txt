@@ -1,0 +1,30 @@
+status=ok
+sample=LayoutGraphGallery
+model-owns-focus=true
+invalid-dag-issues=1
+directed-layout=Ok (4, 3)
+automatic-layout-bounds=7
+automatic-layout-diagnostics=0
+automatic-layout-resized-bounds=7
+automatic-layout-hidden-status=Hidden
+automatic-layout-nested=true
+automatic-layout-hit=Some "gallery-auto-title"
+kinds=[GroupElement; RectangleElement; TextElement; GroupElement; GroupElement;
+ GroupElement; LineElement; EmptyElement; GroupElement; LineElement;
+ EmptyElement; GroupElement; LineElement; EmptyElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement; GroupElement; GroupElement; LineElement; TextElement; GroupElement;
+ LineElement; TextElement; GroupElement; LineElement; TextElement; GroupElement;
+ LineElement; TextElement; GroupElement; LineElement; TextElement; GroupElement;
+ LineElement; TextElement; GroupElement; LineElement; TextElement; GroupElement;
+ LineElement; TextElement; GroupElement; LineElement; TextElement; GroupElement;
+ LineElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; TextElement; TextElement;
+ TextElement; TextElement; TextElement; ChartElement; ChartElement; TextElement;
+ TextElement]
