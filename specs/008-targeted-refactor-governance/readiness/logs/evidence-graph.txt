@@ -1,0 +1,10 @@
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/008-targeted-refactor-governance
+
+[1/2] Computing task graph...
+task-graph: 59 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/008-targeted-refactor-governance/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/008-targeted-refactor-governance/readiness/task-graph.md
+  status: 59[X]
+
+graph-only mode; skipping diff scan.

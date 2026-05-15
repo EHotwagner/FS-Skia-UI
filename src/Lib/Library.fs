@@ -1717,6 +1717,14 @@ module VulkanHost =
         | Ok value -> next value
         | Result.Error diagnostic -> Result.Error diagnostic
 
+    type ResultBuilder() =
+        member _.Bind(result, next) = bind result next
+        member _.Return value = Ok value
+        member _.ReturnFrom result = result
+        member _.Zero() = Ok()
+
+    let result = ResultBuilder()
+
     let findMemoryType (vk: Vk) physicalDevice typeFilter requiredFlags =
         let mutable properties = PhysicalDeviceMemoryProperties()
         vk.GetPhysicalDeviceMemoryProperties(physicalDevice, &properties)
@@ -2199,61 +2207,68 @@ module VulkanHost =
                 initialCmd |> List.iter (fun effect -> effect dispatch)
                 startSubscriptions ()
 
-                trace program.Configuration "creating Silk.NET window"
-                bind (createWindow program.Configuration) (fun createdWindow ->
+                result {
+                    trace program.Configuration "creating Silk.NET window"
+                    let! createdWindow = createWindow program.Configuration
                     window <- Some createdWindow
                     windowEventMapping <- Some(attachWindowEventMapping program createdWindow (fun () -> requestShutdown false) dispatch)
 
                     trace program.Configuration "initializing Silk.NET window"
-                    bind (initializeWindow createdWindow) (fun () ->
-                        trace program.Configuration "attaching Silk.NET input event mapping"
-                        bind (attachInputEventMapping program createdWindow dispatch) (fun inputMapping ->
-                            inputEventMapping <- Some inputMapping
+                    do! initializeWindow createdWindow
 
-                            trace program.Configuration "querying Vulkan surface source"
-                            bind (getSurfaceSource createdWindow) (fun (surfaceSource: IVkSurface) ->
-                            trace program.Configuration "querying required Vulkan extensions"
-                            bind (copyRequiredExtensions surfaceSource) (fun (extensionNames, extensionCount) ->
-                                trace program.Configuration $"creating Vulkan instance extensionCount={extensionCount}"
-                                bind (createInstance vk extensionNames extensionCount) (fun createdInstance ->
-                                    instance <- createdInstance
+                    trace program.Configuration "attaching Silk.NET input event mapping"
+                    let! inputMapping = attachInputEventMapping program createdWindow dispatch
+                    inputEventMapping <- Some inputMapping
 
-                                    let createdSurfaceExt = new KhrSurface(vk.Context)
-                                    let createdSwapchainExt = new KhrSwapchain(vk.Context)
-                                    surfaceExt <- Some createdSurfaceExt
-                                    swapchainExt <- Some createdSwapchainExt
+                    trace program.Configuration "querying Vulkan surface source"
+                    let! surfaceSource = getSurfaceSource createdWindow
 
-                                    trace program.Configuration "creating Vulkan presentation surface"
-                                    bind (createSurface surfaceSource instance) (fun createdSurface ->
-                                        surface <- createdSurface
+                    trace program.Configuration "querying required Vulkan extensions"
+                    let! (extensionNames, extensionCount) = copyRequiredExtensions surfaceSource
 
-                                        trace program.Configuration "enumerating physical devices"
-                                        bind (enumeratePhysicalDevices vk instance) (fun physicalDevices ->
-                                            trace program.Configuration $"choosing physical device count={physicalDevices.Length}"
-                                            bind (choosePhysicalDevice vk createdSurfaceExt surface physicalDevices) (fun (physicalDevice, queueFamily) ->
-                                                trace program.Configuration $"creating logical device physicalDevice={physicalDevice.Handle} queueFamily={queueFamily}"
-                                                bind (createDevice vk physicalDevice queueFamily) (fun createdDevice ->
-                                                    device <- createdDevice
+                    trace program.Configuration $"creating Vulkan instance extensionCount={extensionCount}"
+                    let! createdInstance = createInstance vk extensionNames extensionCount
+                    instance <- createdInstance
 
-                                                    trace program.Configuration "creating swapchain"
-                                                    bind (createSwapchain program.Configuration createdSurfaceExt createdSwapchainExt physicalDevice device surface) (fun createdSwapchain ->
-                                                        swapchainState <- Some createdSwapchain
+                    let createdSurfaceExt = new KhrSurface(vk.Context)
+                    let createdSwapchainExt = new KhrSwapchain(vk.Context)
+                    surfaceExt <- Some createdSurfaceExt
+                    swapchainExt <- Some createdSwapchainExt
 
-                                                        bind (createSkiaContext program.Configuration vk instance physicalDevice device queueFamily) (fun skia ->
-                                                            skiaContext <- Some skia.Context
-                                                            skiaExtensions <- Some skia.Extensions
+                    trace program.Configuration "creating Vulkan presentation surface"
+                    let! createdSurface = createSurface surfaceSource instance
+                    surface <- createdSurface
 
-                                                            renderScene <-
-                                                                Some(renderFrame program.Configuration vk createdSwapchainExt physicalDevice device createdSwapchain skia queueFamily)
+                    trace program.Configuration "enumerating physical devices"
+                    let! physicalDevices = enumeratePhysicalDevices vk instance
 
-                                                            let scene =
-                                                                pendingScene
-                                                                |> Option.defaultValue (program.View currentModel)
+                    trace program.Configuration $"choosing physical device count={physicalDevices.Length}"
+                    let! (physicalDevice, queueFamily) = choosePhysicalDevice vk createdSurfaceExt surface physicalDevices
 
-                                                            pendingScene <- None
-                                                            bind (interpretEffect (RenderFrame scene)) (fun () ->
-                                                                runEventLoop createdWindow
-                                                                Ok())))))))))))))
+                    trace program.Configuration $"creating logical device physicalDevice={physicalDevice.Handle} queueFamily={queueFamily}"
+                    let! createdDevice = createDevice vk physicalDevice queueFamily
+                    device <- createdDevice
+
+                    trace program.Configuration "creating swapchain"
+                    let! createdSwapchain = createSwapchain program.Configuration createdSurfaceExt createdSwapchainExt physicalDevice device surface
+                    swapchainState <- Some createdSwapchain
+
+                    let! skia = createSkiaContext program.Configuration vk instance physicalDevice device queueFamily
+                    skiaContext <- Some skia.Context
+                    skiaExtensions <- Some skia.Extensions
+
+                    renderScene <-
+                        Some(renderFrame program.Configuration vk createdSwapchainExt physicalDevice device createdSwapchain skia queueFamily)
+
+                    let scene =
+                        pendingScene
+                        |> Option.defaultValue (program.View currentModel)
+
+                    pendingScene <- None
+                    do! interpretEffect (RenderFrame scene)
+                    runEventLoop createdWindow
+                    return ()
+                }
             with ex ->
                 Result.Error(Diagnostics.frameRenderFailed ex.Message)
 

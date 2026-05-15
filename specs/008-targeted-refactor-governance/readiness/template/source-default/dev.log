@@ -1,0 +1,114 @@
+
+## source/default generated Dev
+$ bash ./fake.sh build -t Dev
+Starting full restore process.
+Starting target 'Restore'
+Finished target 'Restore'
+Starting target 'Build'
+Finished target 'Build'
+Starting target 'Test'
+Hint: To further diagnose the problem you can run fake in verbose mode `fake -v run ...` or set the 'FAKE_DETAILED_ERRORS' environment variable to 'true'
+Performance:
+ - Cli parsing: 75 milliseconds
+ - Packages: 118 milliseconds
+   - Creating Runtime Graph: 1 millisecond
+   - Retrieve Assembly List: 82 milliseconds
+ - Script compiling: 1 second
+ - Script analyzing: 109 milliseconds
+ - Script running: 33 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 35 seconds
+Could not load types of compiled script:
+ - Could not load file or assembly 'netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'. General Exception (0x80131500)
+Script reported an error:
+-> dotnet test tests/Governance.Tests/Governance.Tests.fsproj failed with exit code 1. See /home/developer/projects/FS-Skia-UI/artifacts/template-check/008-targeted-refactor-governance/source-default/readiness/workflow/logs/test.txt
+Warning: The fake-runner has not been updated for at least 12 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+
+exit-code=1
+
+## source/default generated Dev
+$ bash ./fake.sh build -t Dev
+Starting full restore process.
+Starting target 'Restore'
+Finished target 'Restore'
+Starting target 'Build'
+Finished target 'Build'
+Starting target 'Test'
+Finished target 'Test'
+Starting target 'Dev'
+Finished target 'Dev'
+Performance:
+ - Cli parsing: 75 milliseconds
+ - Packages: 120 milliseconds
+   - Creating Runtime Graph: 1 millisecond
+   - Retrieve Assembly List: 82 milliseconds
+ - Script compiling: 1 second
+ - Script analyzing: 111 milliseconds
+ - Script running: 33 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 35 seconds
+Could not load types of compiled script:
+ - Could not load file or assembly 'netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'. General Exception (0x80131500)
+/home/developer/projects/FS-Skia-UI/artifacts/template-check/008-targeted-refactor-governance/source-default/build.fsx (743,25)-(743,55): Warning FS0052: The value has been copied to ensure the original is not mutated by this operation or because the copy is implicit when returning a struct from a member and another member is then accessed
+/home/developer/projects/FS-Skia-UI/artifacts/template-check/008-targeted-refactor-governance/source-default/build.fsx (907,35)-(907,47): Warning FS1182: The value 'templatePath' is unused
+Warning: The fake-runner has not been updated for at least 12 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+
+exit-code=0
+
+## source/default generated Dev
+$ bash ./fake.sh build -t Dev
+Starting full restore process.
+Starting target 'Restore'
+Finished target 'Restore'
+Starting target 'Build'
+Finished target 'Build'
+Starting target 'Test'
+Finished target 'Test'
+Starting target 'Dev'
+Finished target 'Dev'
+Performance:
+ - Cli parsing: 76 milliseconds
+ - Packages: 118 milliseconds
+   - Creating Runtime Graph: 1 millisecond
+   - Retrieve Assembly List: 81 milliseconds
+ - Script compiling: 1 second
+ - Script analyzing: 106 milliseconds
+ - Script running: 33 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 35 seconds
+Could not load types of compiled script:
+ - Could not load file or assembly 'netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'. General Exception (0x80131500)
+/home/developer/projects/FS-Skia-UI/artifacts/template-check/008-targeted-refactor-governance/source-default/build.fsx (743,25)-(743,55): Warning FS0052: The value has been copied to ensure the original is not mutated by this operation or because the copy is implicit when returning a struct from a member and another member is then accessed
+/home/developer/projects/FS-Skia-UI/artifacts/template-check/008-targeted-refactor-governance/source-default/build.fsx (907,35)-(907,47): Warning FS1182: The value 'templatePath' is unused
+Warning: The fake-runner has not been updated for at least 12 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+
+exit-code=0
+
+## source/default generated Dev
+$ bash ./fake.sh build -t Dev
+Starting full restore process.
+Starting target 'Restore'
+Finished target 'Restore'
+Starting target 'Build'
+Finished target 'Build'
+Starting target 'Test'
+Finished target 'Test'
+Starting target 'Dev'
+Finished target 'Dev'
+Performance:
+ - Cli parsing: 80 milliseconds
+ - Packages: 118 milliseconds
+   - Creating Runtime Graph: 1 millisecond
+   - Retrieve Assembly List: 80 milliseconds
+ - Script compiling: 1 second
+ - Script analyzing: 105 milliseconds
+ - Script running: 33 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 35 seconds
+Could not load types of compiled script:
+ - Could not load file or assembly 'netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'. General Exception (0x80131500)
+/home/developer/projects/FS-Skia-UI/artifacts/template-check/008-targeted-refactor-governance/source-default/build.fsx (743,25)-(743,55): Warning FS0052: The value has been copied to ensure the original is not mutated by this operation or because the copy is implicit when returning a struct from a member and another member is then accessed
+/home/developer/projects/FS-Skia-UI/artifacts/template-check/008-targeted-refactor-governance/source-default/build.fsx (907,35)-(907,47): Warning FS1182: The value 'templatePath' is unused
+Warning: The fake-runner has not been updated for at least 12 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+
+exit-code=0

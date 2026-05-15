@@ -7,6 +7,8 @@ open System.Diagnostics
 open System.IO
 open System.IO.Compression
 
+// BUILD SECTION: path model
+
 type TemplateInstallSource =
     | SourceDirectory
     | PackageArtifact
@@ -17,6 +19,8 @@ type TemplateRow =
       ProjectName: string
       Root: string
       EvidenceDir: string }
+
+// BUILD SECTION: workflow model
 
 type BuildModel =
     { RepositoryRoot: string
@@ -59,10 +63,49 @@ type BuildEffect =
     | WorkflowSelfCheck
 
 let repositoryRoot = __SOURCE_DIRECTORY__
-let featureId = "007-v2-template-packaging"
 
 let path segments =
     segments |> Array.ofList |> Path.Combine
+
+let activeFeatureId root =
+    let featureJson = path [ root; ".specify"; "feature.json" ]
+
+    if File.Exists featureJson then
+        let content = File.ReadAllText featureJson
+        let marker = "\"feature_directory\""
+        let markerIndex = content.IndexOf(marker, StringComparison.Ordinal)
+
+        if markerIndex < 0 then
+            "007-v2-template-packaging"
+        else
+            let afterMarker = content.Substring(markerIndex + marker.Length)
+            let colonIndex = afterMarker.IndexOf(':')
+
+            if colonIndex < 0 then
+                "007-v2-template-packaging"
+            else
+                let afterColon = afterMarker.Substring(colonIndex + 1)
+                let firstQuote = afterColon.IndexOf('"')
+
+                if firstQuote < 0 then
+                    "007-v2-template-packaging"
+                else
+                    let afterFirstQuote = afterColon.Substring(firstQuote + 1)
+                    let secondQuote = afterFirstQuote.IndexOf('"')
+
+                    if secondQuote < 0 then
+                        "007-v2-template-packaging"
+                    else
+                        let featureDirectory = afterFirstQuote.Substring(0, secondQuote)
+
+                        if String.IsNullOrWhiteSpace featureDirectory then
+                            "007-v2-template-packaging"
+                        else
+                            Path.GetFileName(featureDirectory.TrimEnd('/', '\\'))
+    else
+        "007-v2-template-packaging"
+
+let featureId = activeFeatureId repositoryRoot
 
 let quote (value: string) =
     "\"" + value.Replace("\"", "\\\"") + "\""
@@ -212,6 +255,8 @@ let templateRows model =
         ProjectName = "V2PackageMinimal"
         Root = path [ model.TemplateWorkDir; "package-minimal" ]
         EvidenceDir = path [ model.TemplateEvidenceDir; "package-minimal" ] } ]
+
+// BUILD SECTION: target update
 
 let update msg model =
     match msg with
@@ -743,65 +788,190 @@ let scanGeneratedProjects model outputPath =
     ensureParent outputPath
     File.WriteAllText(outputPath, summary + Environment.NewLine)
 
+// BUILD SECTION: guidance validation
+
+type GuidanceArtifact =
+    | SpecTemplate
+    | PlanTemplate
+
+type GuidancePrompt =
+    { Class: string
+      Section: string
+      Prompt: string }
+
+type GuidanceTemplate =
+    { Path: string
+      Artifact: GuidanceArtifact
+      Prompts: GuidancePrompt list }
+
+type MarkdownSection =
+    { Heading: string
+      Level: int
+      Content: string }
+
+let specGuidancePrompts =
+    [ "package impact"
+      "public contract impact"
+      "state workflow impact"
+      "layout/rendering impact"
+      "evidence obligations"
+      "unsupported scope"
+      "build-target impact" ]
+    |> List.map (fun prompt ->
+        { Class = prompt
+          Section = "Framework Governance Prompts"
+          Prompt = prompt })
+
+let planGuidancePrompts =
+    [ "template ownership"
+      "dependency impact"
+      "command-surface impact"
+      "generated project impact"
+      "evidence paths"
+      ".fsi"
+      "MVU/effect boundary"
+      "synthetic evidence"
+      "test evidence"
+      "observability"
+      "deferred scope" ]
+    |> List.map (fun prompt ->
+        { Class = prompt
+          Section = "Repository Governance Decisions"
+          Prompt = prompt })
+
 let generatedGuidanceRequirements =
-    [ ".specify/templates/spec-template.md",
-      [ "package impact"
-        "public contract impact"
-        "state workflow impact"
-        "layout/rendering impact"
-        "evidence obligations"
-        "unsupported scope"
-        "build-target impact" ]
-      ".specify/presets/fsharp-opinionated/templates/spec-template.md",
-      [ "package impact"
-        "public contract impact"
-        "state workflow impact"
-        "layout/rendering impact"
-        "evidence obligations"
-        "unsupported scope"
-        "build-target impact" ]
-      ".specify/templates/plan-template.md",
-      [ "template ownership"
-        "dependency impact"
-        "command-surface impact"
-        "generated project impact"
-        "evidence paths"
-        ".fsi"
-        "MVU/effect boundary"
-        "synthetic evidence"
-        "test evidence"
-        "observability"
-        "deferred scope" ]
-      ".specify/presets/fsharp-opinionated/templates/plan-template.md",
-      [ "template ownership"
-        "dependency impact"
-        "command-surface impact"
-        "generated project impact"
-        "evidence paths"
-        ".fsi"
-        "MVU/effect boundary"
-        "synthetic evidence"
-        "test evidence"
-        "observability"
-        "deferred scope" ] ]
+    [ { Path = ".specify/templates/spec-template.md"
+        Artifact = SpecTemplate
+        Prompts = specGuidancePrompts }
+      { Path = ".specify/presets/fsharp-opinionated/templates/spec-template.md"
+        Artifact = SpecTemplate
+        Prompts = specGuidancePrompts }
+      { Path = ".specify/templates/plan-template.md"
+        Artifact = PlanTemplate
+        Prompts = planGuidancePrompts }
+      { Path = ".specify/presets/fsharp-opinionated/templates/plan-template.md"
+        Artifact = PlanTemplate
+        Prompts = planGuidancePrompts } ]
+
+let containsText (needle: string) (haystack: string) =
+    haystack.IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0
+
+let tryHeading (line: string) =
+    let trimmed = line.TrimStart()
+
+    if trimmed.StartsWith("#") then
+        let level = trimmed |> Seq.takeWhile ((=) '#') |> Seq.length
+
+        if level > 0 && trimmed.Length > level && trimmed.[level] = ' ' then
+            Some(level, trimmed.Substring(level).Trim())
+        else
+            None
+    else
+        None
+
+let markdownSections (content: string) =
+    let lines = content.Replace("\r\n", "\n").Split('\n')
+
+    let headings =
+        lines
+        |> Array.mapi (fun index line -> index, tryHeading line)
+        |> Array.choose (function
+            | index, Some(level, heading) -> Some(index, level, heading)
+            | _ -> None)
+
+    headings
+    |> Array.mapi (fun headingIndex (startIndex, level, heading) ->
+        let endIndex =
+            headings
+            |> Array.skip (headingIndex + 1)
+            |> Array.tryPick (fun (nextIndex, nextLevel, _) ->
+                if nextLevel <= level then
+                    Some(nextIndex - 1)
+                else
+                    None)
+            |> Option.defaultValue (lines.Length - 1)
+
+        { Heading = heading
+          Level = level
+          Content = lines.[startIndex..endIndex] |> String.concat Environment.NewLine })
+    |> Array.toList
+
+let trySection (sectionName: string) (sections: MarkdownSection list) =
+    sections
+    |> List.tryFind (fun section -> containsText sectionName section.Heading)
+
+let deferredSections sections =
+    sections
+    |> List.filter (fun section -> containsText "deferred" section.Heading || containsText "roadmap" section.Heading)
+
+let promptClassesInCorrectSections templatePath prompts content =
+    let sections = markdownSections content
+
+    prompts
+    |> List.choose (fun prompt ->
+        match trySection prompt.Section sections with
+        | Some section when containsText prompt.Prompt section.Content -> Some prompt.Class
+        | _ -> None)
+    |> Set.ofList
+
+let validateGuidanceTemplate model template =
+    let filePath = path [ model.RepositoryRoot; template.Path ]
+
+    if not (File.Exists filePath) then
+        [ $"{template.Path}: missing file [missing-template]" ], Set.empty
+    else
+        let content = File.ReadAllText filePath
+        let sections = markdownSections content
+
+        let findings =
+            template.Prompts
+            |> List.collect (fun prompt ->
+                match trySection prompt.Section sections with
+                | None ->
+                    [ $"{template.Path}: missing section `{prompt.Section}` for prompt `{prompt.Prompt}` [missing-section]" ]
+                | Some section when containsText prompt.Prompt section.Content -> []
+                | Some _ ->
+                    let mismatch =
+                        if deferredSections sections |> List.exists (fun section -> containsText prompt.Prompt section.Content) then
+                            "deferred-scope-placement"
+                        elif containsText prompt.Prompt content then
+                            "wrong-section-prompt"
+                        else
+                            "missing-prompt"
+
+                    [ $"{template.Path}: prompt `{prompt.Prompt}` missing from section `{prompt.Section}` [{mismatch}]" ])
+
+        findings, promptClassesInCorrectSections template.Path template.Prompts content
+
+let validateGuidanceParity validationRows =
+    validationRows
+    |> List.groupBy (fun (template: GuidanceTemplate, _, _) -> template.Artifact)
+    |> List.collect (fun (artifact, rows) ->
+        match rows with
+        | [ (active, _, activeClasses); (preset, _, presetClasses) ] ->
+            let missingInPreset = Set.difference activeClasses presetClasses
+            let missingInActive = Set.difference presetClasses activeClasses
+
+            [ yield!
+                  missingInPreset
+                  |> Set.toList
+                  |> List.map (fun prompt -> $"{preset.Path}: parity mismatch for `{prompt}` against {active.Path} [active-preset-parity]")
+              yield!
+                  missingInActive
+                  |> Set.toList
+                  |> List.map (fun prompt -> $"{active.Path}: parity mismatch for `{prompt}` against {preset.Path} [active-preset-parity]") ]
+        | _ -> [ $"{artifact}: expected active and preset templates for parity comparison [active-preset-parity]" ])
 
 let runGeneratedGuidanceScan model outputPath =
-    let findings =
+    let validationRows =
         generatedGuidanceRequirements
-        |> List.collect (fun (relativePath, needles) ->
-            let filePath = path [ model.RepositoryRoot; relativePath ]
+        |> List.map (fun template ->
+            let findings, classes = validateGuidanceTemplate model template
+            template, findings, classes)
 
-            if not (File.Exists filePath) then
-                [ $"{relativePath}: missing file" ]
-            else
-                let content = File.ReadAllText(filePath).ToLowerInvariant()
-
-                needles
-                |> List.choose (fun needle ->
-                    if content.IndexOf(needle.ToLowerInvariant(), StringComparison.Ordinal) >= 0 then
-                        None
-                    else
-                        Some $"{relativePath}: missing `{needle}`"))
+    let findings =
+        (validationRows |> List.collect (fun (_, findings, _) -> findings))
+        @ validateGuidanceParity validationRows
 
     if not (List.isEmpty findings) then
         failwithf "Generated guidance check failed:%s%s" Environment.NewLine (String.Join(Environment.NewLine, findings))
@@ -809,7 +979,14 @@ let runGeneratedGuidanceScan model outputPath =
     let report =
         [ "# Generated Guidance Check"
           ""
-          "PASS: active and preset-owned spec/plan templates include V2 governance prompts."
+          "PASS: active and preset-owned spec/plan templates include required governance prompts in the expected Markdown sections."
+          ""
+          "Validated prompt classes:"
+          yield!
+              generatedGuidanceRequirements
+              |> List.collect (fun template ->
+                  template.Prompts
+                  |> List.map (fun prompt -> $"- `{template.Path}` section `{prompt.Section}` prompt `{prompt.Prompt}`"))
           ""
           "Deferred roadmap boundaries checked: visual evidence, release validation, external repository split, and distribution automation remain outside V2 pass/fail scope." ]
         |> String.concat Environment.NewLine
@@ -844,6 +1021,8 @@ let workflowSelfCheck (root: string) =
     if completedEffects <> [] then
         failwith "TargetCompleted must be a pure state transition with no effects"
 
+// BUILD SECTION: interpreter
+
 let interpret root effect =
     let model, _ = init root
 
@@ -877,6 +1056,8 @@ let runTarget targetName =
 
 let allTargets =
     requiredTargets @ [ "PackageSmoke"; "BuildWorkflowCheck" ]
+
+// BUILD SECTION: target graph
 
 let targetDependencies =
     Map.ofList

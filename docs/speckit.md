@@ -25,6 +25,10 @@ copying from historical feature directories.
 
 ## Deferred Roadmap
 
+Generated guidance validation is section-aware: prompts must appear in the
+expected governance section, cannot be satisfied solely by deferred roadmap
+text, and active templates must remain aligned with the F# preset templates.
+
 Generated artifacts distinguish current V2 obligations from deferred visual
 evidence, release validation, an external repository split, and distribution
 automation.

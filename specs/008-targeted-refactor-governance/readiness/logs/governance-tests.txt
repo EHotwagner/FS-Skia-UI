@@ -1,0 +1,55 @@
+  Governance.Tests -> /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Passed Dependency governance.dependency docs include metadata fields and validation-only policy
+  Passed Template workflow contract.TemplateCheck requires package install generation smoke and verdict artifacts
+  Passed Template workflow contract.template package project declares local NuGet template metadata
+  Passed Template drift governance.template ownership and deferral rules are documented [2 ms]
+  Passed Public record invariant inventory.every public record in signature files has an inventory row [8 ms]
+  Passed Template drift governance.drift script reports path diagnostics and alignment classes [2 ms]
+  Passed Template drift governance.root deferral file exists with required schema comments [2 ms]
+  Passed Public record invariant inventory.helper or validation-first recommendations carry a stable follow-up id [3 ms]
+  Passed Template workflow contract.US1 real interpreter evidence plan is recorded
+  Passed Generated guidance hardening.active and preset spec templates include prompts in the governance section [7 ms]
+  Passed Generated guidance hardening.Spec Kit docs distinguish V2 obligations from deferred roadmap work
+  Passed Generated guidance hardening.section parser rejects prompts that appear only in deferred scope [5 ms]
+  Passed Generated project validation contract.minimal required contents are enforced
+  Passed Generated project validation contract.TemplateSmoke scans placeholders excluded history minimal scope and generated Dev
+  Passed Template profile metadata.template identity and profile choices are declared
+  Passed Generated guidance hardening.active and preset prompt classes remain semantically aligned [2 ms]
+  Passed Dependency governance.Central Package Management declares direct external versions [2 ms]
+  Passed V2 safe operations and diagnostics.Clean is target-owned and source-preserving
+  Passed Generated guidance hardening.active and preset plan templates include decisions in the repository governance section [5 ms]
+  Passed Template profile metadata.source and minimal modifiers exclude source-only history and optional scope
+  Passed V2 artifact paths.feature readiness inventories document setup obligations
+  Passed V2 command contract.Verify and Ci compose V1 plus V2 gates
+  Passed Canonical command contract.repo-local FAKE manifest and wrappers are available
+  Passed V2 artifact paths.build graph names all required V2 readiness artifact classes
+  Passed Docs and generated guidance.build testing and evidence docs cover canonical targets and artifact paths
+  Passed Docs and generated guidance.task-skill review rationale is captured
+  Passed V2 command contract.V2 workflow preserves MVU effect boundary and emitted effect assertions
+  Passed V2 command contract.build workflow exposes V2 target names and feature paths
+  Passed Runtime organization guardrails.runtime responsibility map records helper split and named-section fallback
+  Passed Docs and generated guidance.README and workflow delegate to canonical command surface
+  Passed Docs and generated guidance.generated task guidance names canonical targets and preserves evidence graph requirements
+  Passed Canonical command contract.build workflow exposes required MVU-style effect algebra
+  Passed Governance artifact paths.surface baselines live at stable root readiness path
+  Passed Docs and generated guidance.docs name deferred roadmap categories outside v1 verification
+  Passed Governance artifact paths.consumer package smoke is explicitly deferred from v1 targets
+  Passed Governance artifact paths.build graph documents and requires every v1 plus v2 artifact class
+  Passed Runtime organization guardrails.accepted internal helper files have paired signatures and compile before Library.fs
+  Passed Runtime organization guardrails.runtime implementation files do not use top-level visibility modifiers in fs files [1 ms]
+  Passed Canonical command contract.canonical build script is organized by named concern sections
+  Passed Canonical command contract.required targets are declared exactly once through the target graph
+  Passed Dependency governance.repo-owned external PackageReference entries are versionless [51 ms]
+  Passed V2 command contract.workflow self-check exercises V2 transition assertions [583 ms]
+  Passed Canonical command contract.workflow self-check exercises pure transition and emitted effect assertions [581 ms]
+  Passed V2 safe operations and diagnostics.dependency report negative fixture names remediation [1 s]
+  Passed Template drift governance.template drift fixture fails when template-owned path lacks required alignment [1 s]
+  Passed V2 safe operations and diagnostics.template drift negative fixture rejects invalid deferrals [1 s]
+  Passed Template drift governance.template drift fixture fails invalid deferrals with schema fields named [1 s]
+
+Test Run Successful.
+Total tests: 47
+     Passed: 47
+ Total time: 1.5301 Seconds

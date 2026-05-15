@@ -1,0 +1,22 @@
+Focused commands:
+
+```bash
+dotnet test tests/Lib.Tests/Lib.Tests.fsproj --no-restore
+dotnet test tests/Layout.Tests/Layout.Tests.fsproj --no-restore
+dotnet test tests/Governance.Tests/Governance.Tests.fsproj --no-restore
+dotnet test tests/Package.Tests/Package.Tests.fsproj --no-restore
+```
+
+Results:
+
+- Lib.Tests: PASS, 42 tests.
+- Layout.Tests: PASS, 23 tests.
+- Governance.Tests: PASS, 47 tests.
+- Package.Tests: PASS, 7 tests.
+
+Evidence:
+
+- `specs/008-targeted-refactor-governance/readiness/logs/lib-tests.txt`
+- `specs/008-targeted-refactor-governance/readiness/logs/layout-tests.txt`
+- `specs/008-targeted-refactor-governance/readiness/logs/governance-tests.txt`
+- `specs/008-targeted-refactor-governance/readiness/logs/package-tests.txt`

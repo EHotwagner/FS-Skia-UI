@@ -1,0 +1,28 @@
+
+## package/minimal instantiate
+$ dotnet new fs-skia-ui --name V2PackageMinimal --output "/home/developer/projects/FS-Skia-UI/artifacts/template-check/008-targeted-refactor-governance/package-minimal" --profile minimal --rootNamespace V2PackageMinimal --packagePrefix V2PackageMinimal --authors TemplateValidation --repositoryUrl "https://example.invalid/package/minimal/V2PackageMinimal" --targetFramework net10.0
+The template "FS Skia UI Governed Project" was created successfully.
+
+
+exit-code=0
+
+## package/minimal instantiate
+$ dotnet new fs-skia-ui --name V2PackageMinimal --output "/home/developer/projects/FS-Skia-UI/artifacts/template-check/008-targeted-refactor-governance/package-minimal" --profile minimal --rootNamespace V2PackageMinimal --packagePrefix V2PackageMinimal --authors TemplateValidation --repositoryUrl "https://example.invalid/package/minimal/V2PackageMinimal" --targetFramework net10.0
+The template "FS Skia UI Governed Project" was created successfully.
+
+
+exit-code=0
+
+## package/minimal instantiate
+$ dotnet new fs-skia-ui --name V2PackageMinimal --output "/home/developer/projects/FS-Skia-UI/artifacts/template-check/008-targeted-refactor-governance/package-minimal" --profile minimal --rootNamespace V2PackageMinimal --packagePrefix V2PackageMinimal --authors TemplateValidation --repositoryUrl "https://example.invalid/package/minimal/V2PackageMinimal" --targetFramework net10.0
+The template "FS Skia UI Governed Project" was created successfully.
+
+
+exit-code=0
+
+## package/minimal instantiate
+$ dotnet new fs-skia-ui --name V2PackageMinimal --output "/home/developer/projects/FS-Skia-UI/artifacts/template-check/008-targeted-refactor-governance/package-minimal" --profile minimal --rootNamespace V2PackageMinimal --packagePrefix V2PackageMinimal --authors TemplateValidation --repositoryUrl "https://example.invalid/package/minimal/V2PackageMinimal" --targetFramework net10.0
+The template "FS Skia UI Governed Project" was created successfully.
+
+
+exit-code=0

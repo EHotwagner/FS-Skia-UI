@@ -18,6 +18,11 @@ The full testing and evidence target set is `Dev`, `Verify`, `Ci`,
 `DependencyReport`, `GeneratedGuidanceCheck`, `TemplateDrift`,
 `EvidenceGraph`, and `EvidenceAudit`.
 
+Governance tests include section-aware generated guidance checks, semantic
+template drift fixtures, public record invariant inventory coverage, and build
+workflow command-contract checks. Layout tests include recoverable Yoga
+execution fallback diagnostics through the existing `LayoutDiagnostic` surface.
+
 `PackageSurfaceCheck` runs `tests/Package.Tests/Package.Tests.fsproj` against
 the stable package surface baselines in `readiness/surface-baselines/*.txt`.
 The target verifies that the current exported public names still satisfy the

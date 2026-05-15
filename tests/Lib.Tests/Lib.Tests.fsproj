@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Include="KeyboardInputTests.fs" />
+    <Compile Include="NativeStartupCleanupTests.fs" />
     <Compile Include="Tests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

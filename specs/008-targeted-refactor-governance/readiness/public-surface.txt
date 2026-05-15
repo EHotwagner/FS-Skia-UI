@@ -1,0 +1,16 @@
+Command:
+
+```bash
+./fake.sh build -t PackageSurfaceCheck
+```
+
+Result: PASS.
+
+Evidence:
+
+- `specs/008-targeted-refactor-governance/readiness/logs/package-surface-check.txt`
+- `tests/Package.Tests/SurfaceAreaTests.fs`
+
+Verdict: `src/Lib/Library.fsi` remains unchanged for this feature, stable root
+surface baselines were used, and internal helper modules are not exported from
+the package surface.

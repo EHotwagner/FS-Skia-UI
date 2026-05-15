@@ -12,6 +12,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="InternalsVisibleTo.fs" />
+    <Compile Include="VulkanResources.fsi" />
+    <Compile Include="VulkanResources.fs" />
+    <Compile Include="VulkanStartup.fsi" />
+    <Compile Include="VulkanStartup.fs" />
     <Compile Include="Library.fsi" />
     <Compile Include="Library.fs" />
     <Compile Include="KeyboardInput.fsi" />

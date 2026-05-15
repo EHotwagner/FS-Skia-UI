@@ -7,15 +7,15 @@ under the active feature readiness directory.
 | Artifact Class | Stable Path |
 |----------------|-------------|
 | Package surface baselines | `readiness/surface-baselines/*.txt` |
-| Build/test/package logs | `specs/007-v2-template-packaging/readiness/logs/*.txt` |
-| Public contract FSI transcripts | `specs/007-v2-template-packaging/readiness/fsi/*.txt` |
-| Sample smoke output | `specs/007-v2-template-packaging/readiness/sample-smoke/*.txt` |
-| Template validation output | `specs/007-v2-template-packaging/readiness/template/**` |
-| Dependency governance output | `specs/007-v2-template-packaging/readiness/dependencies.md` |
-| Generated guidance output | `specs/007-v2-template-packaging/readiness/generated-guidance.md` |
-| Template drift output | `specs/007-v2-template-packaging/readiness/template-drift.md` |
-| Task graph output | `specs/007-v2-template-packaging/readiness/task-graph.json` and `.md` |
-| Evidence audit output | `specs/007-v2-template-packaging/readiness/logs/evidence-audit.txt` and `diff-scan-hits.json` |
+| Build/test/package logs | Active feature `readiness/logs/*.txt` |
+| Public contract FSI transcripts | Active feature `readiness/fsi/*.txt` |
+| Sample smoke output | Active feature `readiness/sample-smoke/*.txt` |
+| Template validation output | Active feature `readiness/template/**` |
+| Dependency governance output | Active feature `readiness/dependencies.md` |
+| Generated guidance output | Active feature `readiness/generated-guidance.md` |
+| Template drift output | Active feature `readiness/template-drift.md` |
+| Task graph output | Active feature `readiness/task-graph.json` and `.md` |
+| Evidence audit output | Active feature `readiness/logs/evidence-audit.txt` and `diff-scan-hits.json` |
 | Local packages | `~/.local/share/nuget-local/*.nupkg` |
 
 Historical feature readiness folders remain repository evidence. They are not
@@ -33,9 +33,10 @@ make current package checks pass.
 ## Synthetic Evidence
 
 Tasks marked `[S]` must disclose the synthetic reason in code, tests, and the
-Synthetic-Evidence Inventory in `tasks.md`. This v1 slice is expected to use
-real process and filesystem evidence. Any future synthetic fixture must name
-the real-evidence path before it can be accepted.
+Synthetic-Evidence Inventory in `tasks.md`. Synthetic native acquisition
+fixtures must name the real-evidence path before they can be accepted, and the
+task inventory must identify any task whose pass depends directly on symbolic
+handles or canned failures.
 
 ## Roadmap Boundary
 

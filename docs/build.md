@@ -26,10 +26,10 @@ and run the shared `build.fsx` target graph. Automation should call
 | Target | Responsibility | Output |
 |--------|----------------|--------|
 | `Clean` | Removes target-owned generated readiness outputs. | Clean logs, FSI transcripts, smoke output, and package notes. |
-| `Restore` | Restores local tools and `FS-Skia-UI.sln`. | `specs/006-template-framework-governance/readiness/logs/restore.txt` |
-| `Build` | Builds the solution with the repository warning policy. | `specs/006-template-framework-governance/readiness/logs/build.txt` |
-| `Test` | Runs the default non-visual test set. | `specs/006-template-framework-governance/readiness/logs/test.txt` |
-| `Dev` | Fast local verification: `Restore`, `Build`, `Test`. | `specs/006-template-framework-governance/readiness/logs/dev-verdict.txt` |
+| `Restore` | Restores local tools and `FS-Skia-UI.sln`. | Active feature `readiness/logs/restore.txt` |
+| `Build` | Builds the solution with the repository warning policy. | Active feature `readiness/logs/build.txt` |
+| `Test` | Runs the default non-visual test set. | Active feature `readiness/logs/test.txt` |
+| `Dev` | Fast local verification: `Restore`, `Build`, `Test`. | Active feature `readiness/logs/dev-verdict.txt` |
 | `PackLocal` | Packs `FS.Skia.UI`, `FS.Skia.UI.Charts`, and `FS.Skia.UI.Layout`. | `~/.local/share/nuget-local/*.nupkg` and `readiness/logs/pack-local.txt` |
 | `RefreshSurfaceBaselines` | Regenerates current package surface baselines. | `readiness/surface-baselines/*.txt` |
 | `PackageSurfaceCheck` | Checks the current package surface against stable baselines. | `readiness/logs/package-surface-check.txt` |
@@ -44,15 +44,15 @@ and run the shared `build.fsx` target graph. Automation should call
 
 | Target | Responsibility | Output |
 |--------|----------------|--------|
-| `TemplatePack` | Builds `FS.Skia.UI.Template.*.nupkg` from `.template.package/FS.Skia.UI.Template.fsproj`. | `artifacts/templates/` and `specs/007-v2-template-packaging/readiness/template/template-pack.log` |
-| `TemplateInstallSource` | Installs the template from the source directory. | `specs/007-v2-template-packaging/readiness/template/source-install.log` |
-| `TemplateInstallPackage` | Installs the local packaged template artifact. | `specs/007-v2-template-packaging/readiness/template/package-install.log` |
-| `TemplateInstantiate` | Creates source/default, source/minimal, package/default, and package/minimal generated projects. | `artifacts/template-check/007-v2-template-packaging/` |
-| `TemplateSmoke` | Scans generated projects and runs their `./fake.sh build -t Dev` workflow. | `specs/007-v2-template-packaging/readiness/template/generated-project-scans.md` |
-| `TemplateCheck` | Requires the full template validation artifact class. | `specs/007-v2-template-packaging/readiness/template/verdict.md` |
-| `DependencyReport` | Verifies Central Package Management and dependency metadata. | `specs/007-v2-template-packaging/readiness/dependencies.md` |
-| `GeneratedGuidanceCheck` | Verifies active and preset-owned spec/plan prompts. | `specs/007-v2-template-packaging/readiness/generated-guidance.md` |
-| `TemplateDrift` | Checks template-owned drift and deferral records. | `specs/007-v2-template-packaging/readiness/template-drift.md` |
+| `TemplatePack` | Builds `FS.Skia.UI.Template.*.nupkg` from `.template.package/FS.Skia.UI.Template.fsproj`. | `artifacts/templates/` and active feature `readiness/template/template-pack.log` |
+| `TemplateInstallSource` | Installs the template from the source directory. | Active feature `readiness/template/source-install.log` |
+| `TemplateInstallPackage` | Installs the local packaged template artifact. | Active feature `readiness/template/package-install.log` |
+| `TemplateInstantiate` | Creates source/default, source/minimal, package/default, and package/minimal generated projects. | `artifacts/template-check/<active-feature>/` |
+| `TemplateSmoke` | Scans generated projects and runs their `./fake.sh build -t Dev` workflow. | Active feature `readiness/template/generated-project-scans.md` |
+| `TemplateCheck` | Requires the full template validation artifact class. | Active feature `readiness/template/verdict.md` |
+| `DependencyReport` | Verifies Central Package Management and dependency metadata. | Active feature `readiness/dependencies.md` |
+| `GeneratedGuidanceCheck` | Verifies active and preset-owned spec/plan prompts by Markdown section, prompt placement, deferred-scope boundaries, and active/preset parity. | Active feature `readiness/generated-guidance.md` |
+| `TemplateDrift` | Classifies template-owned path changes and checks required alignment classes plus active feature evidence or accepted deferrals. | Active feature `readiness/template-drift.md` |
 
 `Dev` remains the fast local restore/build/test path and is independent of
 template packaging. `Verify` includes V1 checks plus `TemplateCheck`,

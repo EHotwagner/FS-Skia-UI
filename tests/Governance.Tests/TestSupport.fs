@@ -44,6 +44,79 @@ let expectFileContains (relativePath: string) (needles: string list) =
     needles
     |> List.iter (fun needle -> expectContains content needle $"{relativePath} contains {needle}")
 
+type MarkdownSection =
+    { Heading: string
+      Level: int
+      StartLine: int
+      EndLine: int
+      Content: string }
+
+let headingLevel (line: string) =
+    let trimmed = line.TrimStart()
+
+    if trimmed.StartsWith("#") then
+        let level = trimmed |> Seq.takeWhile ((=) '#') |> Seq.length
+        if level > 0 && trimmed.Length > level && trimmed[level] = ' ' then
+            Some(level, trimmed.Substring(level).Trim())
+        else
+            None
+    else
+        None
+
+let markdownSections (content: string) =
+    let lines = content.Replace("\r\n", "\n").Split('\n')
+
+    lines
+    |> Array.mapi (fun index line -> index, line, headingLevel line)
+    |> Array.choose (function
+        | index, _, Some(level, heading) -> Some(index, level, heading)
+        | _ -> None)
+    |> Array.mapi (fun headingIndex (startIndex, level, heading) ->
+        let endIndex =
+            lines
+            |> Array.mapi (fun index line -> index, headingLevel line)
+            |> Array.skip (startIndex + 1)
+            |> Array.tryPick (function
+                | index, Some(nextLevel, _) when nextLevel <= level -> Some(index - 1)
+                | _ -> None)
+            |> Option.defaultValue (lines.Length - 1)
+
+        let sectionContent =
+            lines[startIndex..endIndex]
+            |> String.concat "\n"
+
+        { Heading = heading
+          Level = level
+          StartLine = startIndex + 1
+          EndLine = endIndex + 1
+          Content = sectionContent })
+    |> Array.toList
+
+let trySection (heading: string) (content: string) =
+    markdownSections content
+    |> List.tryFind (fun section -> section.Heading.Contains(heading, StringComparison.OrdinalIgnoreCase))
+
+let requireSection (heading: string) (content: string) context =
+    match trySection heading content with
+    | Some section -> section
+    | None -> failtestf "%s is missing Markdown section containing '%s'" context heading
+
+let expectPromptInSection relativePath sectionHeading (prompt: string) =
+    let section = requireSection sectionHeading (read relativePath) relativePath
+    Expect.stringContains (section.Content.ToLowerInvariant()) (prompt.ToLowerInvariant()) $"{relativePath} has {prompt} in {sectionHeading}"
+
+let markdownTableRows relativePath =
+    read relativePath
+    |> fun content -> content.Replace("\r\n", "\n").Split('\n')
+    |> Array.choose (fun line ->
+        let trimmed = line.Trim()
+
+        if trimmed.StartsWith("|") && trimmed.EndsWith("|") && not (trimmed.Contains("---")) then
+            Some(trimmed.Trim('|').Split('|') |> Array.map (fun cell -> cell.Trim()) |> Array.toList)
+        else
+            None)
+    |> Array.toList
+
 let runProcess (fileName: string) (arguments: string) =
     let executable, processArguments =
         if fileName = "./fake.sh" || fileName = "fake.sh" then

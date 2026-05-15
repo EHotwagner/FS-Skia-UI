@@ -39,7 +39,9 @@ let assertBaseline packageName (assembly: Assembly) =
     let expected = baseline packageName
     let actual = exportedNames assembly
     let missing = Set.difference expected actual
+    let unexpected = Set.difference actual expected
     Expect.isEmpty missing $"expected public surface for {packageName} is exported"
+    Expect.isEmpty unexpected $"no unapproved public exports were added to {packageName}"
 
 [<Tests>]
 let surfaceAreaTests =
@@ -54,6 +56,14 @@ let surfaceAreaTests =
 
         test "FS.Skia.UI baseline exports expected contract names" {
             assertBaseline "FS.Skia.UI" typeof<FS.Skia.UI.ViewerProgram<int, int>>.Assembly
+        }
+
+        test "internal runtime helper modules are not package-visible exports" {
+            let actual = exportedNames typeof<FS.Skia.UI.ViewerProgram<int, int>>.Assembly
+
+            [ "FS.Skia.UI.VulkanResources"
+              "FS.Skia.UI.VulkanStartup" ]
+            |> List.iter (fun helper -> Expect.isFalse (actual.Contains helper) $"{helper} is not package-visible")
         }
 
         test "FS.Skia.UI.Charts baseline exports expected contract names" {

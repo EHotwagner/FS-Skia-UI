@@ -9,6 +9,7 @@
   <ItemGroup>
     <Compile Include="TestSupport.fs" />
     <Compile Include="CommandContractTests.fs" />
+    <Compile Include="RuntimeOrganizationTests.fs" />
     <Compile Include="ArtifactPathTests.fs" />
     <Compile Include="DocsGuidanceTests.fs" />
     <Compile Include="V2CommandContractTests.fs" />
@@ -20,6 +21,7 @@
     <Compile Include="DependencyGovernanceTests.fs" />
     <Compile Include="GeneratedGuidanceTests.fs" />
     <Compile Include="TemplateDriftTests.fs" />
+    <Compile Include="PublicRecordInvariantTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

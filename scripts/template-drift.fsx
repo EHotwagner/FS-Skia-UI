@@ -1,6 +1,7 @@
 open System
 open System.Diagnostics
 open System.IO
+open System.Text.Json
 
 let scriptDir = __SOURCE_DIRECTORY__
 let repositoryRoot = Directory.GetParent(scriptDir).FullName
@@ -29,17 +30,21 @@ let outputPath, fixture =
     match args with
     | "--fixture" :: name :: output :: _ -> output, Some name
     | output :: _ -> output, None
-    | [] -> path [ repositoryRoot; "specs"; "007-v2-template-packaging"; "readiness"; "template-drift.md" ], None
+    | [] -> path [ repositoryRoot; "specs"; "008-targeted-refactor-governance"; "readiness"; "template-drift.md" ], None
 
-match fixture with
-| Some "invalid-deferral" ->
-    let report =
-        "# Template Drift Report\n\nFAIL: deferral `fixture-invalid` is missing owner and target_phase."
+let featureDirectory () =
+    let featureJson = path [ repositoryRoot; ".specify"; "feature.json" ]
 
-    writeOutput outputPath report
-    failwith "invalid deferral record: missing owner and target_phase"
-| Some other -> failwithf "Unknown template-drift fixture: %s" other
-| None -> ()
+    if File.Exists featureJson then
+        use document = JsonDocument.Parse(File.ReadAllText featureJson)
+
+        match document.RootElement.TryGetProperty("feature_directory") with
+        | true, value when not (String.IsNullOrWhiteSpace(value.GetString())) -> value.GetString().Replace('\\', '/')
+        | _ -> "specs/008-targeted-refactor-governance"
+    else
+        "specs/008-targeted-refactor-governance"
+
+let activeFeatureDir = featureDirectory ()
 
 let runGit (arguments: string) =
     let startInfo = ProcessStartInfo("git", arguments)
@@ -62,7 +67,7 @@ let runGit (arguments: string) =
 
     stdout
 
-let changedPaths =
+let changedPathsFromGit () =
     runGit "status --short --untracked-files=all"
     |> fun text -> text.Split([| '\n'; '\r' |], StringSplitOptions.RemoveEmptyEntries)
     |> Array.choose (fun line ->
@@ -70,6 +75,7 @@ let changedPaths =
             None
         else
             let pathText = line.Substring(3).Trim()
+
             let pathText =
                 if pathText.Contains(" -> ", StringComparison.Ordinal) then
                     pathText.Split([| " -> " |], StringSplitOptions.None) |> Array.last
@@ -79,56 +85,145 @@ let changedPaths =
             Some(pathText.Replace('\\', '/')))
     |> Array.toList
 
+let changedPaths =
+    match fixture with
+    | Some "missing-alignment" -> [ "src/Lib/Library.fs" ]
+    | Some "invalid-deferral" -> [ "scripts/template-drift.fsx"; "readiness/template-deferrals.yml" ]
+    | Some other -> failwithf "Unknown template-drift fixture: %s" other
+    | None -> changedPathsFromGit ()
+
 let startsWithAny (prefixes: string list) (value: string) =
     prefixes |> List.exists (fun prefix -> value.StartsWith(prefix, StringComparison.Ordinal))
 
-let templateOwnedPrefixes =
-    [ ".template.config/"
-      ".template.package/"
-      ".specify/templates/"
-      ".specify/presets/fsharp-opinionated/"
-      ".specify/workflows/"
-      "src/"
-      "tests/"
-      "samples/"
-      "docs/"
-      "scripts/dependency-report.fsx"
-      "scripts/template-drift.fsx"
-      "Directory.Build.props"
-      "Directory.Packages.props"
-      "build.fsx"
-      "fake.sh"
-      "fake.cmd"
-      "README.md" ]
+type PathClass =
+    { Name: string
+      Prefixes: string list
+      RequiredAlignmentClasses: string list
+      FeatureEvidenceTerms: string list }
 
-let alignmentPrefixes =
-    [ ".template.config/template.json"
-      "docs/template-profile.md"
-      "docs/dependencies.md"
-      "docs/speckit.md"
-      "docs/build.md"
-      "docs/testing.md"
-      "docs/evidence.md"
-      ".specify/templates/"
-      ".specify/presets/fsharp-opinionated/templates/"
-      ".specify/workflows/"
-      "Directory.Packages.props"
-      "build.fsx"
-      "scripts/dependency-report.fsx"
-      "scripts/template-drift.fsx"
-      "readiness/template-deferrals.yml" ]
+type AlignmentClass =
+    { Name: string
+      Prefixes: string list }
+
+let pathClasses =
+    [ { Name = "template-manifest"
+        Prefixes = [ ".template.config/"; ".template.package/" ]
+        RequiredAlignmentClasses = [ "template-profile"; "active-feature-evidence" ]
+        FeatureEvidenceTerms = [ "template"; ".template.config"; ".template.package" ] }
+      { Name = "spec-kit-guidance"
+        Prefixes = [ ".specify/templates/"; ".specify/presets/fsharp-opinionated/templates/" ]
+        RequiredAlignmentClasses = [ "generated-guidance"; "active-feature-evidence" ]
+        FeatureEvidenceTerms = [ ".specify/templates"; "generated guidance"; "spec-template"; "plan-template" ] }
+      { Name = "spec-kit-workflow"
+        Prefixes = [ ".specify/workflows/" ]
+        RequiredAlignmentClasses = [ "speckit-docs"; "active-feature-evidence" ]
+        FeatureEvidenceTerms = [ ".specify/workflows"; "workflow" ] }
+      { Name = "source-code"
+        Prefixes = [ "src/" ]
+        RequiredAlignmentClasses = [ "source-contract"; "active-feature-evidence" ]
+        FeatureEvidenceTerms = [ "src/"; "runtime"; "layout"; "charts"; "public surface" ] }
+      { Name = "test-code"
+        Prefixes = [ "tests/" ]
+        RequiredAlignmentClasses = [ "test-evidence"; "active-feature-evidence" ]
+        FeatureEvidenceTerms = [ "tests/"; "test evidence"; "focused tests" ] }
+      { Name = "sample-code"
+        Prefixes = [ "samples/" ]
+        RequiredAlignmentClasses = [ "sample-contract"; "active-feature-evidence" ]
+        FeatureEvidenceTerms = [ "samples/"; "sample" ] }
+      { Name = "documentation"
+        Prefixes = [ "docs/"; "README.md" ]
+        RequiredAlignmentClasses = [ "docs-alignment"; "active-feature-evidence" ]
+        FeatureEvidenceTerms = [ "docs/"; "README"; "documentation" ] }
+      { Name = "dependency-policy"
+        Prefixes = [ "Directory.Packages.props"; "Directory.Build.props"; "scripts/dependency-report.fsx" ]
+        RequiredAlignmentClasses = [ "dependency-docs"; "active-feature-evidence" ]
+        FeatureEvidenceTerms = [ "dependency"; "Directory.Packages.props" ] }
+      { Name = "command-surface"
+        Prefixes = [ "build.fsx"; "fake.sh"; "fake.cmd" ]
+        RequiredAlignmentClasses = [ "command-docs"; "active-feature-evidence" ]
+        FeatureEvidenceTerms = [ "build.fsx"; "Dev"; "Verify"; "Ci"; "command-surface" ] }
+      { Name = "governance-script"
+        Prefixes = [ "scripts/template-drift.fsx" ]
+        RequiredAlignmentClasses = [ "template-drift-docs"; "active-feature-evidence" ]
+        FeatureEvidenceTerms = [ "scripts/template-drift.fsx"; "TemplateDrift"; "template drift" ] } ]
+
+let alignmentClasses =
+    [ { Name = "template-profile"
+        Prefixes = [ ".template.config/template.json"; "docs/template-profile.md" ] }
+      { Name = "generated-guidance"
+        Prefixes = [ ".specify/templates/"; ".specify/presets/fsharp-opinionated/templates/"; "docs/speckit.md" ] }
+      { Name = "speckit-docs"
+        Prefixes = [ "docs/speckit.md"; ".specify/workflows/" ] }
+      { Name = "source-contract"
+        Prefixes = [ activeFeatureDir + "/spec.md"; activeFeatureDir + "/plan.md"; activeFeatureDir + "/readiness/" ] }
+      { Name = "test-evidence"
+        Prefixes = [ "docs/testing.md"; activeFeatureDir + "/readiness/"; "tests/" ] }
+      { Name = "sample-contract"
+        Prefixes = [ "docs/testing.md"; "README.md"; activeFeatureDir + "/readiness/sample-smoke/" ] }
+      { Name = "docs-alignment"
+        Prefixes = [ "docs/"; "README.md"; activeFeatureDir + "/readiness/" ] }
+      { Name = "dependency-docs"
+        Prefixes = [ "docs/dependencies.md"; "Directory.Packages.props"; activeFeatureDir + "/readiness/" ] }
+      { Name = "command-docs"
+        Prefixes = [ "docs/build.md"; "docs/evidence.md"; "build.fsx"; activeFeatureDir + "/readiness/build-organization.md" ] }
+      { Name = "template-drift-docs"
+        Prefixes = [ "scripts/template-drift.fsx"; "docs/template-profile.md"; activeFeatureDir + "/readiness/template-drift.md" ] }
+      { Name = "active-feature-evidence"
+        Prefixes = [ activeFeatureDir + "/spec.md"; activeFeatureDir + "/plan.md"; activeFeatureDir + "/readiness/" ] } ]
+
+let tryClassify changedPath =
+    pathClasses
+    |> List.tryFind (fun pathClass -> startsWithAny pathClass.Prefixes changedPath)
+
+let alignmentClassByName name =
+    alignmentClasses
+    |> List.find (fun alignmentClass -> alignmentClass.Name = name)
 
 let templateOwnedChanges =
     changedPaths
-    |> List.filter (startsWithAny templateOwnedPrefixes)
+    |> List.choose (fun changed ->
+        tryClassify changed
+        |> Option.map (fun pathClass -> changed, pathClass))
 
-let hasAlignmentChange =
-    changedPaths |> List.exists (startsWithAny alignmentPrefixes)
+let changedAlignmentClasses =
+    alignmentClasses
+    |> List.choose (fun alignmentClass ->
+        if changedPaths |> List.exists (startsWithAny alignmentClass.Prefixes) then
+            Some alignmentClass.Name
+        else
+            None)
+    |> Set.ofList
+
+let activeFeatureEvidenceText () =
+    let root = path [ repositoryRoot; activeFeatureDir ]
+
+    if Directory.Exists root then
+        Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories)
+        |> Seq.filter (fun file ->
+            let extension = Path.GetExtension(file)
+            extension = ".md" || extension = ".txt" || extension = ".yml" || extension = ".json")
+        |> Seq.map File.ReadAllText
+        |> String.concat Environment.NewLine
+    else
+        ""
+
+let featureEvidence = activeFeatureEvidenceText ()
+
+let evidenceMentionsChange changedPath (pathClass: PathClass) =
+    let candidates =
+        changedPath
+        :: pathClass.Name
+        :: pathClass.FeatureEvidenceTerms
+
+    candidates
+    |> List.exists (fun term -> featureEvidence.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0)
 
 let deferralsPath = path [ repositoryRoot; "readiness"; "template-deferrals.yml" ]
 
 let validateDeferrals () =
-    if not (File.Exists deferralsPath) then
+    if fixture = Some "invalid-deferral" then
+        [ "deferral `fixture-invalid` is missing owner, target_phase" ]
+    elif not (File.Exists deferralsPath) then
         [ "readiness/template-deferrals.yml is missing" ]
     else
         let lines = File.ReadAllLines deferralsPath |> Array.toList
@@ -171,15 +266,24 @@ let validateDeferrals () =
                     Some $"deferral #{index + 1} is missing {missingFields}")
             |> List.choose id
 
-let deferralViolations = validateDeferrals ()
+let classViolations =
+    templateOwnedChanges
+    |> List.collect (fun (changedPath, pathClass) ->
+        pathClass.RequiredAlignmentClasses
+        |> List.choose (fun required ->
+            let hasAlignment = changedAlignmentClasses.Contains required
 
-let driftViolations =
-    if List.isEmpty templateOwnedChanges || hasAlignmentChange then
-        []
-    else
-        [ "template-owned changes detected without template, docs, dependency, guidance, command, or deferral alignment" ]
+            let hasFeatureEvidence =
+                required <> "active-feature-evidence" || evidenceMentionsChange changedPath pathClass
 
-let violations = deferralViolations @ driftViolations
+            if hasAlignment && hasFeatureEvidence then
+                None
+            elif required = "active-feature-evidence" then
+                Some $"{changedPath}: path class `{pathClass.Name}` is missing active feature evidence naming the changed path or affected feature area; required alignment class `{required}`."
+            else
+                Some $"{changedPath}: path class `{pathClass.Name}` is missing same-diff required alignment class `{required}`." ))
+
+let violations = validateDeferrals () @ classViolations
 
 let report =
     [ yield "# Template Drift Report"
@@ -191,12 +295,29 @@ let report =
       if List.isEmpty templateOwnedChanges then
           yield "- none"
       else
-          yield! templateOwnedChanges |> List.map (fun changed -> "- `" + changed + "`")
+          yield "| Path | Path Class |"
+          yield "|------|------------|"
+          yield!
+              templateOwnedChanges
+              |> List.map (fun (changed, pathClass) -> $"| `{changed}` | `{pathClass.Name}` |")
+      yield ""
+      yield "## Required Alignment Classes"
+      yield ""
+      if List.isEmpty templateOwnedChanges then
+          yield "- none"
+      else
+          yield!
+              templateOwnedChanges
+              |> List.collect (fun (changed, pathClass) ->
+                  pathClass.RequiredAlignmentClasses
+                  |> List.map (fun required -> $"- `{changed}` requires `{required}`"))
       yield ""
       yield "## Alignment"
       yield ""
-      yield $"- Alignment change present: {hasAlignmentChange}"
+      let changedAlignmentText = String.Join(", ", changedAlignmentClasses)
+      yield $"- Changed alignment classes: `{changedAlignmentText}`"
       yield $"- Deferral file: `{deferralsPath}`"
+      yield $"- Active feature evidence: `{activeFeatureDir}`"
       yield ""
       yield "## Diagnostics"
       yield ""

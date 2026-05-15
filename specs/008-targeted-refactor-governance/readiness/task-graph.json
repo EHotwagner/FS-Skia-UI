@@ -1,0 +1,1020 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Create feature readiness scaffolding under `specs/008-targeted-refactor-governance/readiness/` for public surface, semantic tests, native cleanup, native smoke, build organization, generated guidance, template drift, Yoga fallback diagnostics, record invariants, follow-ups, graph output, and audit output",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Inventory current public surface inputs in `specs/008-targeted-refactor-governance/readiness/public-surface-inventory.md`, including `src/Lib/Library.fsi`, package surface baselines under `readiness/surface-baselines/`, samples, and package tests",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Inventory current `src/Lib/Library.fs` responsibilities in `specs/008-targeted-refactor-governance/readiness/runtime-responsibility-map.md`, covering scene state, diagnostics, drawing, native resources, frame flow, screenshots, and viewer hosting",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Inventory current `build.fsx` concern areas and FAKE target load requirements in `specs/008-targeted-refactor-governance/readiness/build-organization.md`",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record feature Tier, public-API impact, MVU/effect-boundary applicability, synthetic native evidence policy, unsupported scope, and required evidence obligations in `specs/008-targeted-refactor-governance/readiness/evidence-obligations.md`",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Create a traceability matrix in `specs/008-targeted-refactor-governance/readiness/traceability.md` mapping FR/SC/contract targets to tests, implementation files, commands, and readiness artifacts",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add shared governance test helpers in `tests/Governance.Tests/TestSupport.fs` for Markdown section spans, path-class fixtures, same-diff evidence fixtures, readiness table parsing, and command output assertions",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing public surface stability checks in `tests/Package.Tests/SurfaceAreaTests.fs` proving `src/Lib/Library.fsi`, package baselines, helper-module exports, and any new helper `.fsi` files do not introduce unapproved package-visible public modules or members for this feature",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing runtime organization checks proving any accepted `src/Lib/Library.fs` split uses paired `.fsi` contracts or documented named fallback sections without top-level visibility modifiers in `.fs` files",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing deterministic native lifecycle test scaffolding in `tests/Lib.Tests/NativeStartupCleanupTests.fs` for owned resource categories, injected acquisition failures, release order, and synthetic disclosure",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing build organization checks in `tests/Governance.Tests/CommandContractTests.fs` for `BuildModel`, `BuildMsg`, `BuildEffect`, pure `update`, emitted effects, edge interpreter behavior, and `Dev`/`Verify`/`Ci` load contracts",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record failing-first foundation output under `specs/008-targeted-refactor-governance/readiness/logs/` for the public surface, runtime organization, native lifecycle, and build organization checks",
+      "explicit_deps": [
+        "T007",
+        "T008",
+        "T009",
+        "T010",
+        "T011"
+      ],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Define the internal helper contract and compile-order strategy in `specs/008-targeted-refactor-governance/readiness/runtime-responsibility-map.md`, including accepted `.fsi` file pairs or named-section fallback rules",
+      "explicit_deps": [
+        "T009"
+      ],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Add native startup stage and ownership fixture contracts used by tests without exposing new public API from `src/Lib/Library.fsi`",
+      "explicit_deps": [
+        "T010",
+        "T013"
+      ],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Add governance fixture directories and sample files for generated guidance section failures, deferred-scope placement failures, template drift path classes, same-diff alignment evidence, and accepted deferral records",
+      "explicit_deps": [
+        "T007",
+        "T011"
+      ],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run foundation verification for package surface checks, governance tests, native lifecycle scaffolding, and command-contract checks; store output under `specs/008-targeted-refactor-governance/readiness/logs/`",
+      "explicit_deps": [
+        "T008",
+        "T009",
+        "T010",
+        "T011",
+        "T012",
+        "T013",
+        "T014",
+        "T015"
+      ],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T2",
+      "parallel": true,
+      "title": "Add packed-library and FSI-facing surface tests proving `src/Lib/Library.fsi`, public modules, samples, and package baselines remain source-compatible after internal splitting",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T2",
+      "parallel": true,
+      "title": "Add runtime organization tests or fixtures proving scene model, diagnostics, drawing, native resources, frame flow, screenshots, and viewer hosting are separated by files or named sections with recorded reviewer notes",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T2",
+      "parallel": true,
+      "title": "Add semantic runtime tests for `ViewerProgram`, `ViewerEffect`, pure update behavior, emitted effects, and real interpreter or smoke evidence where safe",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T2",
+      "parallel": false,
+      "title": "Move scene-state and runtime diagnostic helpers from `src/Lib/Library.fs` into paired helper files such as `src/Lib/SceneModel.fsi`/`.fs` and `src/Lib/RuntimeDiagnostics.fsi`/`.fs`, or record named-section fallback evidence",
+      "explicit_deps": [
+        "T018"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T2",
+      "parallel": false,
+      "title": "Move drawing, frame, screenshot, and host-adjacent helpers into paired helper files such as `src/Lib/VulkanFrame.fsi`/`.fs`, or record named-section fallback evidence when the split is not compile-stable",
+      "explicit_deps": [
+        "T018"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T2",
+      "parallel": false,
+      "title": "Update `src/Lib/Lib.fsproj` compile order and internal call sites so the public `Library.fs` facade and `src/Lib/Library.fsi` contract remain stable",
+      "explicit_deps": [
+        "T017",
+        "T019",
+        "T020",
+        "T021"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T2",
+      "parallel": false,
+      "title": "Run `./fake.sh build -t PackageSurfaceCheck`, focused `tests/Lib.Tests`, and packed-library or FSI evidence; store outputs in `specs/008-targeted-refactor-governance/readiness/public-surface.txt` and `semantic-tests.txt`",
+      "explicit_deps": [
+        "T017",
+        "T019",
+        "T020",
+        "T021",
+        "T022"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T2",
+      "parallel": false,
+      "title": "Finalize `specs/008-targeted-refactor-governance/readiness/runtime-responsibility-map.md` with accepted split files or named-section fallback rationale and reviewer notes",
+      "explicit_deps": [
+        "T018",
+        "T020",
+        "T021",
+        "T022",
+        "T023"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T2",
+      "parallel": true,
+      "title": "Add deterministic injected acquisition failure tests in `tests/Lib.Tests/NativeStartupCleanupTests.fs` for Vulkan instance, surface, device/queues, swapchain/images, command pool/buffers, fences, staging buffers/memory, and Skia GPU resources",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T024"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T2",
+      "parallel": true,
+      "title": "Add tests for startup diagnostic stage names, original native error preservation, reverse cleanup order, ownership transfer points, successful shutdown, and repeated cleanup idempotency",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T024"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T2",
+      "parallel": true,
+      "title": "Add a native smoke evidence plan that runs existing real Vulkan smoke where supported and records unsupported-environment diagnostics separately from implementation defects",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T024"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T2",
+      "parallel": false,
+      "title": "Add `src/Lib/VulkanResources.fsi` and `src/Lib/VulkanResources.fs` ownership helpers or equivalent scoped rules for owner, acquire stage, transfer point, release action, release order, and disposal state",
+      "explicit_deps": [
+        "T025",
+        "T026"
+      ],
+      "phase_deps": [
+        "T024"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T2",
+      "parallel": false,
+      "title": "Add `src/Lib/VulkanStartup.fsi` and `src/Lib/VulkanStartup.fs` named startup stages with `Result`-based failure propagation and acquisition abstraction for deterministic tests",
+      "explicit_deps": [
+        "T025",
+        "T026",
+        "T028"
+      ],
+      "phase_deps": [
+        "T024"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T030",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T2",
+      "parallel": false,
+      "title": "Refactor `VulkanHost.run` in `src/Lib/Library.fs` to use the staged startup pipeline, unwind ownership in reverse order on failure, and transfer resources only after successful initialization",
+      "explicit_deps": [
+        "T025",
+        "T026",
+        "T028",
+        "T029"
+      ],
+      "phase_deps": [
+        "T024"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T031",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T2",
+      "parallel": false,
+      "title": "Wire synthetic disclosure into native failure test names and readiness evidence, and preserve real native smoke invocation where the current environment supports it",
+      "explicit_deps": [
+        "T027",
+        "T028",
+        "T029",
+        "T030"
+      ],
+      "phase_deps": [
+        "T024"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T032",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T2",
+      "parallel": false,
+      "title": "Run focused native startup cleanup tests and real native smoke or unsupported-environment smoke diagnostics; store outputs in `native-startup-cleanup-tests.txt` and `native-smoke.txt`",
+      "explicit_deps": [
+        "T025",
+        "T026",
+        "T027",
+        "T028",
+        "T029",
+        "T030",
+        "T031"
+      ],
+      "phase_deps": [
+        "T024"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T033",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T2",
+      "parallel": false,
+      "title": "Update `specs/008-targeted-refactor-governance/readiness/native-startup-cleanup.md` with every startup stage, acquired resource, cleanup owner, failure diagnostic, release order, transfer point, and synthetic/real evidence status",
+      "explicit_deps": [
+        "T028",
+        "T029",
+        "T030",
+        "T031",
+        "T032"
+      ],
+      "phase_deps": [
+        "T024"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T034",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Extend `tests/Governance.Tests/GeneratedGuidanceTests.fs` with failing fixtures for missing headings, missing prompts, prompts only in deferred scope, wrong-section prompts, and active/preset parity mismatches",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T033"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T035",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Extend `tests/Governance.Tests/TemplateDriftTests.fs` with failing fixtures for template-owned path classes, required alignment classes, same-diff evidence, active spec/plan/readiness mentions, and accepted deferral schema fields",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T033"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T036",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Extend command-contract tests for physical `build.fsx` split acceptance or named-section fallback, preserving `BuildModel`, `BuildMsg`, `BuildEffect`, pure `update`, emitted effects, interpreter boundaries, and `Dev`/`Verify`/`Ci` target semantics",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T033"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T037",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Replace substring-only `GeneratedGuidanceCheck` logic with structured Markdown section parsing, scoped prompt validation, deferred-scope detection, and active/preset parity diagnostics that name path, section, prompt, and mismatch class",
+      "explicit_deps": [
+        "T034"
+      ],
+      "phase_deps": [
+        "T033"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T038",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Update `.specify/templates/spec-template.md`, `.specify/presets/fsharp-opinionated/templates/spec-template.md`, `.specify/templates/plan-template.md`, and `.specify/presets/fsharp-opinionated/templates/plan-template.md` only where required by the semantic guidance contract",
+      "explicit_deps": [
+        "T034",
+        "T037"
+      ],
+      "phase_deps": [
+        "T033"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T039",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Refactor `scripts/template-drift.fsx` to classify changed template-owned paths, map path classes to required alignment classes, validate same-diff alignment files plus active feature evidence, and report accepted deferrals with required fields",
+      "explicit_deps": [
+        "T035"
+      ],
+      "phase_deps": [
+        "T033"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T040",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Attempt physical `build.fsx` organization by concern; accept it only if `Dev`, `Verify`, and `Ci` load cross-platform, otherwise keep one canonical `build.fsx` with path model, effects, interpreter, validation, governance, guidance, and target graph sections",
+      "explicit_deps": [
+        "T036"
+      ],
+      "phase_deps": [
+        "T033"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T041",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Run `./fake.sh build -t GeneratedGuidanceCheck`, `./fake.sh build -t TemplateDrift`, and Linux plus Windows `Dev`/`Verify`/`Ci` load checks where available; store outputs or unsupported-platform rationale in `generated-guidance.md`, `template-drift.md`, and `build-organization.md`",
+      "explicit_deps": [
+        "T034",
+        "T035",
+        "T036",
+        "T037",
+        "T038",
+        "T039",
+        "T040"
+      ],
+      "phase_deps": [
+        "T033"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T042",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Update `docs/build.md`, `docs/testing.md`, `docs/evidence.md`, `docs/speckit.md`, README, or workflow docs only where final diagnostics, target semantics, or deferral boundaries changed",
+      "explicit_deps": [
+        "T037",
+        "T038",
+        "T039",
+        "T040",
+        "T041"
+      ],
+      "phase_deps": [
+        "T033"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T043",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Add `tests/Layout.Tests/YogaFallbackDiagnosticsTests.fs` forcing recoverable Yoga execution failure and asserting safe fallback bounds plus an observable diagnostic through existing `LayoutDiagnostic` fields when sufficient",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T042"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T044",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Add public record invariant inventory tests in `tests/Governance.Tests/PublicRecordInvariantTests.fs` that enumerate public records from `FS.Skia.UI`, `FS.Skia.UI.Layout`, and `FS.Skia.UI.Charts` and fail on missing inventory rows",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T042"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T045",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Add follow-up proposal validation tests requiring Yoga public-surface blockers and helper-constructor or validation-first recommendations to appear in `specs/008-targeted-refactor-governance/readiness/follow-ups.md` with stable IDs",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T042"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T046",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Evaluate the existing `src/Layout/Types.fsi` diagnostic surface and either implement Yoga fallback diagnostics using existing fields or record a follow-up API proposal without changing public signatures",
+      "explicit_deps": [
+        "T043",
+        "T045"
+      ],
+      "phase_deps": [
+        "T042"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T047",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Update `src/Layout/Layout.fs` fallback handling so recoverable Yoga execution failure keeps deterministic safe bounds and emits `FallbackBoundsApplied` diagnostic data through existing fields when surface-sufficient",
+      "explicit_deps": [
+        "T043",
+        "T046"
+      ],
+      "phase_deps": [
+        "T042"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T048",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Write `specs/008-targeted-refactor-governance/readiness/record-invariants.md` with package, record name, fields, invariant, construction stance, decision, rationale, and follow-up ID where needed for every public record",
+      "explicit_deps": [
+        "T044"
+      ],
+      "phase_deps": [
+        "T042"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T049",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Write `specs/008-targeted-refactor-governance/readiness/follow-ups.md` for any Yoga diagnostic surface gap or public record helper/validation API recommendation, keeping all public API work out of this feature",
+      "explicit_deps": [
+        "T045",
+        "T046",
+        "T048"
+      ],
+      "phase_deps": [
+        "T042"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T050",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Run focused `tests/Layout.Tests`, `tests/Governance.Tests`, and package surface checks for Yoga fallback diagnostics, record inventory completeness, follow-up validation, safe fallback bounds, and no `Library.fsi` change; store outputs in `yoga-fallback-diagnostics.txt`, `record-invariants.md`, and `follow-ups.md`",
+      "explicit_deps": [
+        "T043",
+        "T044",
+        "T045",
+        "T046",
+        "T047",
+        "T048",
+        "T049"
+      ],
+      "phase_deps": [
+        "T042"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T051",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Run `./fake.sh build -t Dev` and store the log under `specs/008-targeted-refactor-governance/readiness/logs/`",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T050"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T052",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Run `./fake.sh build -t PackageSurfaceCheck` and, only if intentionally refreshing unchanged baselines is required, `./fake.sh build -t RefreshSurfaceBaselines`; store public surface output in `specs/008-targeted-refactor-governance/readiness/public-surface.txt`",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T050"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T053",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Run focused `dotnet test` commands for `tests/Lib.Tests`, `tests/Layout.Tests`, `tests/Governance.Tests`, and `tests/Package.Tests`; store semantic and diagnostic logs under `specs/008-targeted-refactor-governance/readiness/logs/`",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T050"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T054",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Run `./fake.sh build -t GeneratedGuidanceCheck` and `./fake.sh build -t TemplateDrift`; confirm readiness reports name missing sections, prompts, path classes, alignment classes, and accepted deferrals",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T050"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T055",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t Verify` and `./fake.sh build -t Ci`; confirm `Ci` delegates to `Verify`, required evidence artifacts exist, and build organization acceptance or fallback evidence is recorded",
+      "explicit_deps": [
+        "T051",
+        "T052",
+        "T053",
+        "T054"
+      ],
+      "phase_deps": [
+        "T050"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T056",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh specs/008-targeted-refactor-governance --graph-only` and confirm no cycles, dangling references, orphaned tasks, or unexpected propagated statuses",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T050"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T057",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh specs/008-targeted-refactor-governance` and confirm PASS, or document every unresolved synthetic-evidence or diff-scan blocker",
+      "explicit_deps": [
+        "T055",
+        "T056"
+      ],
+      "phase_deps": [
+        "T050"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T058",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Complete the Synthetic-Evidence Inventory, final readiness review, and follow-up proposal cross-links so no synthetic-only evidence or public API recommendation is hidden",
+      "explicit_deps": [
+        "T041",
+        "T050",
+        "T055",
+        "T057"
+      ],
+      "phase_deps": [
+        "T050"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T059",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Prepare the merge summary with command results, readiness evidence paths, public surface verdict, native cleanup verdict, governance diagnostic verdict, Yoga/record invariant verdict, and deferred public API work",
+      "explicit_deps": [
+        "T052",
+        "T053",
+        "T054",
+        "T055",
+        "T057",
+        "T058"
+      ],
+      "phase_deps": [
+        "T050"
+      ],
+      "root_cause": []
+    }
+  ]
+}

@@ -42,10 +42,10 @@ let docsGuidanceTests =
             expectFileContains
                 "docs/evidence.md"
                 [ "readiness/surface-baselines/*.txt"
-                  "specs/007-v2-template-packaging/readiness/logs/*.txt"
-                  "specs/007-v2-template-packaging/readiness/fsi/*.txt"
-                  "specs/007-v2-template-packaging/readiness/sample-smoke/*.txt"
-                  "specs/007-v2-template-packaging/readiness/template/**" ]
+                  "Active feature `readiness/logs/*.txt`"
+                  "Active feature `readiness/fsi/*.txt`"
+                  "Active feature `readiness/sample-smoke/*.txt`"
+                  "Active feature `readiness/template/**`" ]
         }
 
         test "docs name deferred roadmap categories outside v1 verification" {

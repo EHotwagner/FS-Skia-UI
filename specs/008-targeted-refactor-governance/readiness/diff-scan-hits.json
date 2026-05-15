@@ -1,0 +1,166 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "docs/evidence.md",
+      "line": 36,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "Synthetic-Evidence Inventory in `tasks.md`. Synthetic native acquisition"
+    },
+    {
+      "file": "specs/008-targeted-refactor-governance/plan.md",
+      "line": 32,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Principle V - Synthetic Evidence Disclosure**: PASS. Deterministic injectable native acquisition failures may use fa"
+    },
+    {
+      "file": "specs/008-targeted-refactor-governance/readiness/evidence-obligations.md",
+      "line": 23,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "## Synthetic Native Evidence Policy"
+    },
+    {
+      "file": "specs/008-targeted-refactor-governance/readiness/final-readiness-review.md",
+      "line": 20,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "## Synthetic Evidence"
+    },
+    {
+      "file": "specs/008-targeted-refactor-governance/readiness/merge-summary.md",
+      "line": 40,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "`native-startup-cleanup.md`. Synthetic failure injection is disclosed and paired"
+    },
+    {
+      "file": "specs/008-targeted-refactor-governance/readiness/native-startup-cleanup-tests.txt",
+      "line": 12,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- `Native startup cleanup.injected acquisition failures Synthetic release acquired resources once in reverse order`"
+    },
+    {
+      "file": "specs/008-targeted-refactor-governance/readiness/native-startup-cleanup-tests.txt",
+      "line": 13,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- `Native startup cleanup.successful shutdown Synthetic releases all acquired resources once and repeated cleanup is ide"
+    },
+    {
+      "file": "specs/008-targeted-refactor-governance/readiness/native-startup-cleanup-tests.txt",
+      "line": 15,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "Synthetic disclosure: the deterministic startup failure cases use symbolic"
+    },
+    {
+      "file": "specs/008-targeted-refactor-governance/readiness/native-startup-cleanup.md",
+      "line": 14,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "Synthetic fixture disclosure: deterministic acquisition failures use symbolic"
+    },
+    {
+      "file": "specs/008-targeted-refactor-governance/readiness/task-graph.md",
+      "line": 238,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/008-targeted-refactor-governance/research.md",
+      "line": 33,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "**Rationale**: Real native failure modes are difficult to force reliably, but every staged cleanup branch must be testab"
+    },
+    {
+      "file": "specs/008-targeted-refactor-governance/tasks.md",
+      "line": 234,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "### Approved Synthetic Fixture Disclosures"
+    },
+    {
+      "file": "src/Lib/VulkanStartup.fs",
+      "line": 95,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: symbolic resource handles force each startup failure path; real native smoke is recorded in readiness/nati"
+    },
+    {
+      "file": "src/Lib/VulkanStartup.fs",
+      "line": 110,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "Synthetic = true }"
+    },
+    {
+      "file": "src/Lib/VulkanStartup.fs",
+      "line": 113,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: symbolic successful acquisition verifies idempotent reverse cleanup order without opening a real Vulkan de"
+    },
+    {
+      "file": "tests/Lib.Tests/NativeStartupCleanupTests.fs",
+      "line": 33,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"injected acquisition failures Synthetic release acquired resources once in reverse order\" {"
+    },
+    {
+      "file": "tests/Lib.Tests/NativeStartupCleanupTests.fs",
+      "line": 34,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: symbolic handles force every failure stage deterministically; real native smoke path is readiness/native-s"
+    },
+    {
+      "file": "tests/Lib.Tests/NativeStartupCleanupTests.fs",
+      "line": 38,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "Expect.isTrue failure.Synthetic \"failure fixture discloses synthetic acquisition\""
+    },
+    {
+      "file": "tests/Lib.Tests/NativeStartupCleanupTests.fs",
+      "line": 51,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"successful shutdown Synthetic releases all acquired resources once and repeated cleanup is idempotent\" {"
+    },
+    {
+      "file": "tests/Lib.Tests/NativeStartupCleanupTests.fs",
+      "line": 52,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: symbolic successful acquisition avoids opening a real Vulkan device; real native smoke path is readiness/n"
+    }
+  ]
+}

@@ -399,6 +399,10 @@ module Layout =
         YGNodeStyleAPI.YGNodeStyleSetFlexShrink(yogaNode, single (clampNonNegative node.Intent.FlexShrink))
         node.Intent.FlexBasis |> Option.iter (fun basis -> if nonNegative basis then YGNodeStyleAPI.YGNodeStyleSetFlexBasis(yogaNode, single basis))
 
+    let yogaFailureInjectionEnabled () =
+        let mutable enabled = false
+        AppContext.TryGetSwitch("FS.Skia.UI.Layout.ForceYogaFailure", &enabled) && enabled
+
     let tryYogaLayout (available: AvailableSpace) (root: LayoutNode) =
         let measurementDiagnostics = ResizeArray<LayoutDiagnostic>()
         let nodePairs = ResizeArray<LayoutNode * Node>()
@@ -446,8 +450,16 @@ module Layout =
 
             yogaNode
 
+        let mutable rootYoga = Unchecked.defaultof<Node>
+        let mutable rootCreated = false
+
         try
-            let rootYoga = createNode root
+            // Test-only diagnostic switch used to exercise the recoverable Yoga fallback path without changing the public API.
+            if yogaFailureInjectionEnabled () then
+                invalidOp "Forced Yoga execution failure."
+
+            rootYoga <- createNode root
+            rootCreated <- true
             YGNodeStyleAPI.YGNodeStyleSetWidth(rootYoga, single available.Width)
             YGNodeStyleAPI.YGNodeStyleSetHeight(rootYoga, single available.Height)
             YGNodeAPI.YGNodeCalculateLayout(rootYoga, single available.Width, single available.Height, YGDirection.LTR)
@@ -475,9 +487,16 @@ module Layout =
 
             let bounds = read 0.0 0.0 root rootYoga
             YGNodeAPI.YGNodeFreeRecursive(rootYoga)
-            Some(bounds, List.ofSeq measurementDiagnostics)
-        with _ ->
-            None
+            rootCreated <- false
+            Ok(bounds, List.ofSeq measurementDiagnostics)
+        with ex ->
+            if rootCreated then
+                try
+                    YGNodeAPI.YGNodeFreeRecursive(rootYoga)
+                with _ ->
+                    ()
+
+            Result.Error ex
 
     let evaluate available root =
         let available, availableDiagnostics = normalizeAvailable available
@@ -491,8 +510,19 @@ module Layout =
 
         let bounds, diagnostics =
             match tryYogaLayout available root with
-            | Some(bounds, yogaDiagnostics) -> bounds, yogaDiagnostics @ pureValidationDiagnostics
-            | None -> layoutNode rootBounds root
+            | Ok(bounds, yogaDiagnostics) -> bounds, yogaDiagnostics @ pureValidationDiagnostics
+            | Result.Error ex ->
+                let bounds, pureDiagnostics = layoutNode rootBounds root
+                let fallbackDiagnostic =
+                    diagnostic
+                        (Some root.Id)
+                        FallbackBoundsApplied
+                        FS.Skia.UI.Layout.DiagnosticSeverity.Warning
+                        $"Yoga execution failed recoverably; pure fallback layout was applied. {ex.GetType().Name}: {ex.Message}"
+                        (Some "yoga")
+                        true
+
+                bounds, fallbackDiagnostic :: pureDiagnostics
         let allDiagnostics = availableDiagnostics @ validateTree root @ diagnostics
 
         let fallbackDiagnostics =

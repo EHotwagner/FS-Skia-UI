@@ -30,6 +30,17 @@ let commandContractTests =
                   "WorkflowSelfCheck" ]
         }
 
+        test "canonical build script is organized by named concern sections" {
+            expectFileContains
+                "build.fsx"
+                [ "BUILD SECTION: path model"
+                  "BUILD SECTION: workflow model"
+                  "BUILD SECTION: target update"
+                  "BUILD SECTION: interpreter"
+                  "BUILD SECTION: guidance validation"
+                  "BUILD SECTION: target graph" ]
+        }
+
         test "required targets are declared exactly once through the target graph" {
             let content = read "build.fsx"
 
