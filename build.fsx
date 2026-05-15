@@ -774,6 +774,9 @@ let scanGeneratedRow row =
     if staleAgentsReference then
         failwithf "%s/%s generated AGENTS.md references source-only active feature specs/008-targeted-refactor-governance" row.Artifact row.Profile
 
+    if File.Exists(path [ row.Root; ".specify"; "feature.json" ]) then
+        failwithf "%s/%s generated project contains source-only .specify/feature.json active feature state" row.Artifact row.Profile
+
     let nonExecutableScripts =
         if isWindows then
             []

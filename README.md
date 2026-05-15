@@ -135,11 +135,12 @@ dotnet new fs-skia-ui --name MyProduct.Minimal --profile minimal --allow-scripts
 dotnet new fs-skia-ui --name MyProduct.NoGit --skipGitInit true --allow-scripts yes
 ```
 
-Generated standalone projects initialize a Git repository by default for Spec
+Generated standalone projects create an initial Git commit by default for Spec
 Kit workflows and repair Unix execute permissions on generated shell scripts.
-The .NET CLI prompts before running template scripts unless `--allow-scripts
-yes` is supplied. Pass `--skipGitInit true` when generating inside an existing
-repository or when the output is disposable.
+That initial commit prevents unborn-branch failures in commands such as
+`/speckit-clarify`. The .NET CLI prompts before running template scripts unless
+`--allow-scripts yes` is supplied. Pass `--skipGitInit true` when generating
+inside an existing repository or when the output is disposable.
 
 Maintainers validate source and packaged template paths with:
 

@@ -8,7 +8,7 @@ NuGet template package installation.
 
 | Profile | Contents | Exclusions |
 |---------|----------|------------|
-| `default` | Core library, charts, layout, samples, tests, docs, Spec Kit assets, command wrappers, central package policy, and root surface baselines. | Historical feature specs/readiness evidence, source `.git` metadata, build outputs, local artifacts, and template package source. |
+| `default` | Core library, charts, layout, samples, tests, docs, Spec Kit assets, command wrappers, central package policy, and root surface baselines. | Historical feature specs/readiness evidence, source `.git` metadata, source `.specify/feature.json` active-feature state, build outputs, local artifacts, and template package source. |
 | `minimal` | Core library, `BasicViewer`, core tests, package checks, governance tests, docs, Spec Kit assets, command wrappers, and central package policy. | Optional layout, charts, parity, visual/sample gallery scope, historical feature specs/readiness evidence, solution file, and source-only artifacts. |
 
 ## Generation Options
@@ -29,12 +29,13 @@ The template accepts product identity parameters:
 - `--targetFramework`
 - `--skipGitInit`
 
-By default, generation initializes a Git repository for standalone Spec Kit
+By default, generation creates an initial Git commit for standalone Spec Kit
 workflows when the output directory is not already inside a Git worktree and
-repairs Unix execute permissions on generated shell scripts. The .NET CLI
-prompts before running template scripts unless `--allow-scripts yes` is
-supplied. Use `--skipGitInit true` for generated projects that should rely on
-an existing parent repository or remain disposable validation artifacts.
+repairs Unix execute permissions on generated shell scripts. The initial commit
+prevents unborn-branch failures in commands such as `/speckit-clarify`. The
+.NET CLI prompts before running template scripts unless `--allow-scripts yes`
+is supplied. Use `--skipGitInit true` for generated projects that should rely
+on an existing parent repository or remain disposable validation artifacts.
 
 Template validation exercises both `default` and `minimal` through the source
 directory and the local package artifact created by `TemplatePack`.

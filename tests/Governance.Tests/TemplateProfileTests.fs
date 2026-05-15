@@ -25,6 +25,9 @@ let templateProfileTests =
                   ".template.config/generated/"
                   "chmod +x"
                   "git init"
+                  "git add ."
+                  "commit --allow-empty"
+                  "[Spec Kit] Initial commit"
                   "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2" ]
                 |> List.iter (fun needle -> Expect.stringContains content needle $"template.json contains {needle}")
             else
@@ -36,6 +39,7 @@ let templateProfileTests =
                 expectFileContains
                     ".template.config/template.json"
                     [ "specs/**"
+                      ".specify/feature.json"
                       ".template.package/**"
                       "artifacts/**"
                       "src/Charts/**"
