@@ -21,6 +21,8 @@ The repository currently contains:
 - Runnable sample applications with non-visual contract smoke modes.
 - A governed `dotnet new fs-skia-ui` template plus build, dependency,
   documentation, and evidence workflows.
+- Spec Kit incorporation for feature specifications, implementation plans,
+  task breakdowns, readiness evidence, and synthetic-evidence disclosure.
 
 It is not a general renderer abstraction, a browser/mobile UI framework, or a
 traditional retained widget toolkit that owns application state. The current
@@ -103,6 +105,24 @@ paths, and deferred roadmap items.
 Start with [docs/technical-design.md](docs/technical-design.md) for the
 architecture overview, runtime design, subsystem design, design decisions, and
 links to the operational governance documents.
+
+## Spec Kit Governance
+
+Spec Kit is part of the repository operating model. Feature work is expected to
+start from specification and planning artifacts under `specs/`, then carry
+through task evidence, readiness logs, and merge summaries. The project-specific
+constitution in [.specify/memory/constitution.md](.specify/memory/constitution.md)
+requires explicit public-contract impact, `.fsi` visibility decisions,
+MVU/effect boundaries for stateful workflows, test evidence, diagnostics, and
+clear disclosure when evidence is synthetic.
+
+The active Spec Kit templates and F# preset overrides live under
+[.specify/templates](.specify/templates/) and
+[.specify/presets/fsharp-opinionated/templates](.specify/presets/fsharp-opinionated/templates/).
+Generated products inherit those prompts through the `fs-skia-ui` template so
+new work keeps the same planning and evidence discipline. See
+[docs/speckit.md](docs/speckit.md) for the maintained prompt and roadmap
+boundaries.
 
 ## Project Template
 

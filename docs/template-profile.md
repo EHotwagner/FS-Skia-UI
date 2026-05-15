@@ -45,7 +45,7 @@ The root `README.md` is template-owned generated-product documentation, not
 only repository landing-page copy. It should describe the project in product
 terms before listing build commands: the Elmish/MVU app model, immutable
 `Scene` output, the Vulkan/Skia host boundary, package responsibilities,
-sample coverage, and the governed template workflow.
+sample coverage, Spec Kit governance, and the governed template workflow.
 
 ## Drift Classification
 
