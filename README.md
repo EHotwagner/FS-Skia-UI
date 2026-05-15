@@ -130,9 +130,15 @@ Install the governed template from the source directory:
 
 ```bash
 dotnet new install .
-dotnet new fs-skia-ui --name MyProduct --profile default
-dotnet new fs-skia-ui --name MyProduct.Minimal --profile minimal
+dotnet new fs-skia-ui --name MyProduct --profile default --allow-scripts yes
+dotnet new fs-skia-ui --name MyProduct.Minimal --profile minimal --allow-scripts yes
+dotnet new fs-skia-ui --name MyProduct.NoGit --skipGitInit true
 ```
+
+Generated standalone projects initialize a Git repository by default for Spec
+Kit workflows. The .NET CLI prompts before running template scripts unless
+`--allow-scripts yes` is supplied. Pass `--skipGitInit true` when generating
+inside an existing repository or when the output is disposable.
 
 Maintainers validate source and packaged template paths with:
 

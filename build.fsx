@@ -618,12 +618,15 @@ let instantiateRow model row =
         [ "new fs-skia-ui"
           $"--name {row.ProjectName}"
           $"--output {quote row.Root}"
+          "--allow-scripts yes"
           $"--profile {row.Profile}"
           $"--rootNamespace {rootNamespace}"
           $"--packagePrefix {rootNamespace}"
           "--authors TemplateValidation"
           $"--repositoryUrl {quote repositoryUrl}"
-          "--targetFramework net10.0" ]
+          "--targetFramework net10.0"
+          if row.Profile = "minimal" then
+              "--skipGitInit true" ]
         |> String.concat " "
 
     runProcess $"{row.Artifact}/{row.Profile} instantiate" "dotnet" args model.RepositoryRoot (path [ row.EvidenceDir; "instantiate.log" ]) Map.empty

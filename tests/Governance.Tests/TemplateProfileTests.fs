@@ -19,7 +19,11 @@ let templateProfileTests =
                   "\"packagePrefix\""
                   "\"authors\""
                   "\"repositoryUrl\""
-                  "\"targetFramework\"" ]
+                  "\"targetFramework\""
+                  "\"skipGitInit\""
+                  "\"postActions\""
+                  "git init"
+                  "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2" ]
                 |> List.iter (fun needle -> Expect.stringContains content needle $"template.json contains {needle}")
             else
                 Expect.isFalse (directoryExists ".template.config") "generated projects do not carry template metadata"

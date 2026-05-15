@@ -8,15 +8,16 @@ NuGet template package installation.
 
 | Profile | Contents | Exclusions |
 |---------|----------|------------|
-| `default` | Core library, charts, layout, samples, tests, docs, Spec Kit assets, command wrappers, central package policy, and root surface baselines. | Historical feature specs/readiness evidence, `.git`, build outputs, local artifacts, and template package source. |
+| `default` | Core library, charts, layout, samples, tests, docs, Spec Kit assets, command wrappers, central package policy, and root surface baselines. | Historical feature specs/readiness evidence, source `.git` metadata, build outputs, local artifacts, and template package source. |
 | `minimal` | Core library, `BasicViewer`, core tests, package checks, governance tests, docs, Spec Kit assets, command wrappers, and central package policy. | Optional layout, charts, parity, visual/sample gallery scope, historical feature specs/readiness evidence, solution file, and source-only artifacts. |
 
 ## Generation Options
 
 ```bash
 dotnet new install .
-dotnet new fs-skia-ui --name MyProduct --profile default
-dotnet new fs-skia-ui --name MyProduct.Minimal --profile minimal
+dotnet new fs-skia-ui --name MyProduct --profile default --allow-scripts yes
+dotnet new fs-skia-ui --name MyProduct.Minimal --profile minimal --allow-scripts yes
+dotnet new fs-skia-ui --name MyProduct.NoGit --skipGitInit true
 ```
 
 The template accepts product identity parameters:
@@ -26,6 +27,13 @@ The template accepts product identity parameters:
 - `--authors`
 - `--repositoryUrl`
 - `--targetFramework`
+- `--skipGitInit`
+
+By default, generation initializes a Git repository for standalone Spec Kit
+workflows when the output directory is not already inside a Git worktree. The
+.NET CLI prompts before running template scripts unless `--allow-scripts yes`
+is supplied. Use `--skipGitInit true` for generated projects that should rely
+on an existing parent repository or remain disposable validation artifacts.
 
 Template validation exercises both `default` and `minimal` through the source
 directory and the local package artifact created by `TemplatePack`.

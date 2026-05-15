@@ -13,6 +13,8 @@ let generatedProjectValidationTests =
                   "Excluded-history scan: PASS"
                   "Minimal optional exclusion scan: PASS"
                   "generated Dev"
+                  "--allow-scripts yes"
+                  "--skipGitInit true"
                   "non-visual V2 validation only"
                   "full visual evidence is deferred" ]
         }
