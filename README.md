@@ -1,15 +1,86 @@
 # FS.Skia.UI
 
-Elmish-first F# viewer library for declarative SkiaSharp scenes rendered through a Vulkan-only desktop path.
+FS.Skia.UI is an experimental F# desktop UI toolkit and governed project
+template for building SkiaSharp-rendered applications with an Elmish/MVU
+application model.
 
-## Requirements
+Application code owns the model, messages, update function, and view function.
+The view function returns immutable `Scene` values. `Viewer.run` owns the host
+edge: window creation, input events, Vulkan/Skia setup, frame rendering,
+screenshots, diagnostics, and shutdown.
+
+The repository currently contains:
+
+- `FS.Skia.UI`: core scene primitives, paint/path/text/image declarations,
+  viewer runtime contracts, structured diagnostics, screenshot effects, and
+  keyboard input helpers.
+- `FS.Skia.UI.Charts`: pure chart and DataGrid builders that return core
+  `Scene` values.
+- `FS.Skia.UI.Layout`: Yoga-backed layout, graph validation, graph layout,
+  rendering, and hit testing.
+- Runnable sample applications with non-visual contract smoke modes.
+- A governed `dotnet new fs-skia-ui` template plus build, dependency,
+  documentation, and evidence workflows.
+
+It is not a general renderer abstraction, a browser/mobile UI framework, or a
+traditional retained widget toolkit that owns application state. The current
+runtime host is deliberately narrow: desktop, SkiaSharp, Silk.NET, and Vulkan.
+
+## Minimal App Shape
+
+```fsharp
+open Elmish
+open FS.Skia.UI
+
+type Model = { Title: string }
+
+type Msg =
+    | NoOp
+
+let init () =
+    { Title = "Hello FS.Skia.UI" }, Cmd.none
+
+let update msg model =
+    match msg with
+    | NoOp -> model, Cmd.none
+
+let view model =
+    Scene.group [
+        Scene.rectangle (0.0, 0.0, 640.0, 480.0) (Colors.rgba 18uy 24uy 32uy 255uy)
+        Scene.text (48.0, 88.0) model.Title Colors.white
+    ]
+
+let config =
+    Viewer.defaultConfiguration "Hello" { Width = 640; Height = 480 }
+
+let program =
+    Viewer.create config init update view
+
+[<EntryPoint>]
+let main _ =
+    match Viewer.run program with
+    | Ok() -> 0
+    | Error diagnostic ->
+        eprintfn "%s" diagnostic.Message
+        1
+```
+
+Higher-level packages follow the same rule: they produce data, diagnostics,
+hit-test results, or `Scene` output. They do not create windows or take over the
+application loop.
+
+## Current Runtime Boundary
+
+The live desktop host currently requires:
 
 - .NET SDK with `net10.0` support.
 - Windows or Linux desktop.
 - Vulkan-capable GPU, driver, and presentation surface.
 - NuGet access for SkiaSharp 4 preview and Silk.NET dependencies.
 
-macOS, mobile, browser, and headless production targets are out of scope for this first version. The public API does not expose renderer selection and does not provide an OpenGL, CPU, software, or fallback renderer.
+macOS, mobile, browser, and headless production targets are out of scope for
+this first version. The public API does not expose renderer selection and does
+not provide an OpenGL, CPU, software, or fallback renderer.
 
 ## Build And Test
 
