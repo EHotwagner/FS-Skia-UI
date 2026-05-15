@@ -100,3 +100,10 @@ PASS
 ## Diagnostics
 
 - No drift blockers.
+
+## Post-Analysis Documentation Alignment
+
+- `docs/V2Analysis.md` was updated after the 008 implementation pass to record
+  the deterministic harness versus nondeterministic AI boundary analysis. This
+  is documentation alignment for the active governance feature, not a template
+  runtime or public API change.
