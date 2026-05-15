@@ -65,4 +65,4 @@ steps:
   - id: canonical-verify
     type: shell
     command: ./fake.sh build -t Ci
-    description: "Run the repository canonical verification entry after implementation."
+    description: "Run the repository canonical verification entry after implementation; Ci delegates to Verify, which includes V2 template, dependency, guidance, drift, and evidence gates."

@@ -33,6 +33,42 @@
 
 [Gates determined based on constitution file]
 
+### Repository Governance Decisions
+
+- **Template ownership**: Decide whether source, docs, samples, tests, Spec Kit
+  assets, package policy, or command-surface changes must be reflected in
+  `.template.config/template.json` or explicitly deferred.
+- **Dependency impact**: Decide whether new or changed packages require
+  `Directory.Packages.props`, `docs/dependencies.md`, generated template
+  inclusion, and `DependencyReport` coverage.
+- **Command-surface impact**: Decide whether `build.fsx`, `fake.sh`,
+  `fake.cmd`, `Dev`, `Verify`, `Ci`, `TemplateCheck`, `DependencyReport`,
+  `GeneratedGuidanceCheck`, `TemplateDrift`, `EvidenceGraph`, or
+  `EvidenceAudit` must change.
+- **Generated project impact**: Decide whether default or minimal generated
+  project contents, validation logs, placeholder scans, excluded-history scans,
+  or generated `Dev` behavior must change.
+- **Evidence paths**: Identify exact readiness paths for logs, FSI transcripts,
+  packed-library tests, generated project output, dependency reports, guidance
+  reports, drift reports, screenshots, and audit output.
+- **`.fsi` / contract impact**: Decide whether runtime signature files, public
+  docs, package surface baselines, sample contracts, or compatibility notes
+  must change.
+- **MVU/effect boundary**: For stateful or I/O-bearing work, identify `Model`,
+  `Msg`, `Effect` or `Cmd<Msg>`, `init`, pure `update`, emitted effect
+  assertions, and the real interpreter evidence path.
+- **Synthetic evidence**: Identify any mocks, fakes, placeholders, canned
+  responses, or in-memory substitutes; if any are used, plan `[S]` disclosure
+  in code, tests, and the Synthetic-Evidence Inventory.
+- **Test evidence**: Define failing-first semantic tests, governance tests,
+  packed-library or host smoke tests, and target-level evidence required before
+  implementation is marked complete.
+- **Observability**: Define actionable diagnostics, log paths, report fields,
+  missing artifact-class failures, and unsupported environment messages.
+- **Deferred scope**: Separate current obligations from deferred visual
+  evidence, release validation, external repository split, distribution
+  automation, or broader roadmap work.
+
 ## Project Structure
 
 ### Documentation (this feature)

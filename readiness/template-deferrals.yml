@@ -1,0 +1,11 @@
+schema_version: "1.0"
+
+# Accepted template drift deferrals.
+# Each record must include:
+# - id
+# - paths
+# - rationale
+# - owner
+# - target_phase
+
+accepted_deferrals: []

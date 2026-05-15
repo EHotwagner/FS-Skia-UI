@@ -40,15 +40,34 @@ and run the shared `build.fsx` target graph. Automation should call
 | `Verify` | Full v1 verification requiring all v1 artifact classes. | `readiness/logs/verify-verdict.txt` |
 | `Ci` | Non-interactive automation entry delegating to `Verify`. | `readiness/logs/ci-verdict.txt` |
 
+## V2 Template And Governance Targets
+
+| Target | Responsibility | Output |
+|--------|----------------|--------|
+| `TemplatePack` | Builds `FS.Skia.UI.Template.*.nupkg` from `.template.package/FS.Skia.UI.Template.fsproj`. | `artifacts/templates/` and `specs/007-v2-template-packaging/readiness/template/template-pack.log` |
+| `TemplateInstallSource` | Installs the template from the source directory. | `specs/007-v2-template-packaging/readiness/template/source-install.log` |
+| `TemplateInstallPackage` | Installs the local packaged template artifact. | `specs/007-v2-template-packaging/readiness/template/package-install.log` |
+| `TemplateInstantiate` | Creates source/default, source/minimal, package/default, and package/minimal generated projects. | `artifacts/template-check/007-v2-template-packaging/` |
+| `TemplateSmoke` | Scans generated projects and runs their `./fake.sh build -t Dev` workflow. | `specs/007-v2-template-packaging/readiness/template/generated-project-scans.md` |
+| `TemplateCheck` | Requires the full template validation artifact class. | `specs/007-v2-template-packaging/readiness/template/verdict.md` |
+| `DependencyReport` | Verifies Central Package Management and dependency metadata. | `specs/007-v2-template-packaging/readiness/dependencies.md` |
+| `GeneratedGuidanceCheck` | Verifies active and preset-owned spec/plan prompts. | `specs/007-v2-template-packaging/readiness/generated-guidance.md` |
+| `TemplateDrift` | Checks template-owned drift and deferral records. | `specs/007-v2-template-packaging/readiness/template-drift.md` |
+
+`Dev` remains the fast local restore/build/test path and is independent of
+template packaging. `Verify` includes V1 checks plus `TemplateCheck`,
+`DependencyReport`, `GeneratedGuidanceCheck`, and `TemplateDrift`. `Ci`
+delegates to `Verify`.
+
 `Verify` checks existing baselines; it does not silently refresh them. Use
 `RefreshSurfaceBaselines` when an intentional public surface change has already
 been reviewed.
 
 ## Deferred
 
-The following roadmap items are outside v1 `Dev`, `Verify`, and `Ci`: template
-packaging, dependency governance, generated spec/plan hardening, layout
-evidence, visual evidence, package consumer smoke, and release validation.
+The following roadmap items remain outside V2 pass/fail: full visual evidence,
+release validation, an external template repository split, and broader
+distribution automation.
 Package consumer smoke remains available as an explicit deferred target:
 
 ```bash

@@ -14,17 +14,19 @@ let canonicalTargets =
       "PackageSurfaceCheck"
       "FsiTranscripts"
       "SampleContractSmoke"
+      "TemplateCheck"
+      "DependencyReport"
+      "GeneratedGuidanceCheck"
+      "TemplateDrift"
       "EvidenceGraph"
       "EvidenceAudit" ]
 
 let deferredItems =
-    [ "template packaging"
-      "dependency governance"
-      "generated spec/plan hardening"
-      "layout evidence"
-      "visual evidence"
+    [ "visual evidence"
       "package consumer smoke"
-      "release validation" ]
+      "release validation"
+      "external template repository"
+      "distribution automation" ]
 
 [<Tests>]
 let docsGuidanceTests =
@@ -40,9 +42,10 @@ let docsGuidanceTests =
             expectFileContains
                 "docs/evidence.md"
                 [ "readiness/surface-baselines/*.txt"
-                  "specs/006-template-framework-governance/readiness/logs/*.txt"
-                  "specs/006-template-framework-governance/readiness/fsi/*.txt"
-                  "specs/006-template-framework-governance/readiness/sample-smoke/*.txt" ]
+                  "specs/007-v2-template-packaging/readiness/logs/*.txt"
+                  "specs/007-v2-template-packaging/readiness/fsi/*.txt"
+                  "specs/007-v2-template-packaging/readiness/sample-smoke/*.txt"
+                  "specs/007-v2-template-packaging/readiness/template/**" ]
         }
 
         test "docs name deferred roadmap categories outside v1 verification" {
@@ -65,6 +68,10 @@ let docsGuidanceTests =
                   "PackLocal"
                   "RefreshSurfaceBaselines"
                   "PackageSurfaceCheck"
+                  "TemplateCheck"
+                  "DependencyReport"
+                  "GeneratedGuidanceCheck"
+                  "TemplateDrift"
                   "EvidenceGraph"
                   "EvidenceAudit"
                   "tasks.deps.yml"
@@ -73,9 +80,8 @@ let docsGuidanceTests =
 
         test "task-skill review rationale is captured" {
             expectFileContains
-                "specs/006-template-framework-governance/readiness/guidance-alignment.md"
-                [ ".agents/skills/speckit-tasks/SKILL.md"
-                  "no direct skill change"
-                  "tasks-template.md" ]
+                ".specify/presets/fsharp-opinionated/templates/tasks-template.md"
+                [ "tasks-template.md"
+                  "speckit.evidence.graph" ]
         }
     ]

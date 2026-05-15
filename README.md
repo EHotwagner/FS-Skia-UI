@@ -16,12 +16,42 @@ macOS, mobile, browser, and headless production targets are out of scope for thi
 ```bash
 ./fake.sh build -t Dev
 ./fake.sh build -t Verify
+./fake.sh build -t TemplateCheck
+./fake.sh build -t DependencyReport
+./fake.sh build -t GeneratedGuidanceCheck
+./fake.sh build -t TemplateDrift
 ```
 
 Use `fake.cmd build -t Dev` or `fake.cmd build -t Verify` from Windows command
 prompts. See [docs/build.md](docs/build.md), [docs/testing.md](docs/testing.md),
 and [docs/evidence.md](docs/evidence.md) for target responsibilities, evidence
 paths, and deferred roadmap items.
+
+## Technical Design
+
+Start with [docs/technical-design.md](docs/technical-design.md) for the
+architecture overview, runtime design, subsystem design, design decisions, and
+links to the operational governance documents.
+
+## Project Template
+
+Install the governed template from the source directory:
+
+```bash
+dotnet new install .
+dotnet new fs-skia-ui --name MyProduct --profile default
+dotnet new fs-skia-ui --name MyProduct.Minimal --profile minimal
+```
+
+Maintainers validate source and packaged template paths with:
+
+```bash
+./fake.sh build -t TemplateCheck
+```
+
+See [docs/template-profile.md](docs/template-profile.md),
+[docs/dependencies.md](docs/dependencies.md), and
+[docs/speckit.md](docs/speckit.md).
 
 ## Run The Basic Viewer Smoke Test
 
@@ -33,29 +63,71 @@ Successful output records `renderer=Vulkan`, `fallback-used=false`, startup timi
 
 ## Samples
 
-Run the examples from source:
+The repository includes these runnable samples:
+
+| Sample | Project | Focus |
+|--------|---------|-------|
+| `BasicViewer` | `samples/BasicViewer/BasicViewer.fsproj` | Core scene composition, chart placeholder, image placeholder, diagnostics, and screenshot requests. |
+| `ChartsGallery` | `samples/ChartsGallery/ChartsGallery.fsproj` | Line, bar, scatter, area, pie/donut, and histogram chart widgets. |
+| `DataGridGallery` | `samples/DataGridGallery/DataGridGallery.fsproj` | Data grid sorting, viewport state, fixed headers, and hit testing. |
+| `DemoReel` | `samples/DemoReel/DemoReel.fsproj` | Animated combined showcase for geometry, shaders, layout, charts, data grid, graphs, and effects. |
+| `EffectsGallery` | `samples/EffectsGallery/EffectsGallery.fsproj` | Paint effects, gradients, path effects, blend modes, clipping, perspective, and color spaces. |
+| `InteractiveViewer` | `samples/InteractiveViewer/InteractiveViewer.fsproj` | Keyboard and pointer state, timer-style updates, diagnostics, and JPEG screenshot requests. |
+| `KeyboardInputGallery` | `samples/KeyboardInputGallery/KeyboardInputGallery.fsproj` | Keyboard input layouts, command resolution, and keyboard state display. |
+| `LayoutGraphGallery` | `samples/LayoutGraphGallery/LayoutGraphGallery.fsproj` | Automatic layout, graph rendering, chart/data-grid composition, validation, and hit testing. |
+| `ParityGallery` | `samples/ParityGallery/ParityGallery.fsproj` | Skia feature parity coverage for shapes, paths, vertices, clips, regions, pictures, images, and charts. |
+| `ScreenshotGallery` | `samples/ScreenshotGallery/ScreenshotGallery.fsproj` | Screenshot effects, render effects, recoverable diagnostics, and shutdown effects. |
+
+Run any sample from source with its project path:
 
 ```bash
 dotnet run --project samples/BasicViewer/BasicViewer.fsproj
-dotnet run --project samples/InteractiveViewer/InteractiveViewer.fsproj
+dotnet run --project samples/DemoReel/DemoReel.fsproj
 ```
 
-Run their public-API contract smoke paths without opening a live window:
+Every current sample exposes a public-API contract smoke path that does not
+open a live window:
 
 ```bash
-dotnet run --project samples/BasicViewer/BasicViewer.fsproj -- --contract-smoke
-dotnet run --project samples/InteractiveViewer/InteractiveViewer.fsproj -- --contract-smoke
+for project in \
+  samples/BasicViewer/BasicViewer.fsproj \
+  samples/ChartsGallery/ChartsGallery.fsproj \
+  samples/DataGridGallery/DataGridGallery.fsproj \
+  samples/DemoReel/DemoReel.fsproj \
+  samples/EffectsGallery/EffectsGallery.fsproj \
+  samples/InteractiveViewer/InteractiveViewer.fsproj \
+  samples/KeyboardInputGallery/KeyboardInputGallery.fsproj \
+  samples/LayoutGraphGallery/LayoutGraphGallery.fsproj \
+  samples/ParityGallery/ParityGallery.fsproj \
+  samples/ScreenshotGallery/ScreenshotGallery.fsproj
+do
+  dotnet run --project "$project" -- --contract-smoke
+done
 ```
 
-After packing, verify the samples against the NuGet package surface:
+After packing, verify package-aware samples against the NuGet package surface:
 
 ```bash
-dotnet pack src/Lib/Lib.fsproj -c Release -o specs/001-vulkan-elmish-viewer/readiness/package
-dotnet run --project samples/BasicViewer/BasicViewer.fsproj -p:UsePackedPackage=true -p:RestoreAdditionalProjectSources=/absolute/path/to/readiness/package -- --contract-smoke
-dotnet run --project samples/InteractiveViewer/InteractiveViewer.fsproj -p:UsePackedPackage=true -p:RestoreAdditionalProjectSources=/absolute/path/to/readiness/package -- --contract-smoke
+PACKAGE_DIR="$(pwd)/specs/001-vulkan-elmish-viewer/readiness/package"
+dotnet pack src/Lib/Lib.fsproj -c Release -o "$PACKAGE_DIR"
+
+for project in \
+  samples/BasicViewer/BasicViewer.fsproj \
+  samples/EffectsGallery/EffectsGallery.fsproj \
+  samples/InteractiveViewer/InteractiveViewer.fsproj \
+  samples/ParityGallery/ParityGallery.fsproj \
+  samples/ScreenshotGallery/ScreenshotGallery.fsproj
+do
+  dotnet run --project "$project" \
+    -p:UsePackedPackage=true \
+    -p:RestoreAdditionalProjectSources="$PACKAGE_DIR" \
+    -- --contract-smoke
+done
 ```
 
-The samples use the Elmish public API for configuration, scene composition, input state, subscriptions, diagnostics, and screenshot effects. `BasicViewer` demonstrates shapes, text, image placeholders, chart data, and PNG screenshot requests. `InteractiveViewer` demonstrates keyboard and pointer state, timer-style updates, diagnostics, and JPEG screenshot requests.
+The samples use the Elmish public API for configuration, scene composition,
+input state, subscriptions, diagnostics, layout, charting, graph/data-grid
+widgets, keyboard input, and screenshot effects.
 
 If a local validation package uses a unique version, pass
 `-p:FsSkiaUiPackageVersion=<version>` with `-p:UsePackedPackage=true`.

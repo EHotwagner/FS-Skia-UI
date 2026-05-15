@@ -8,7 +8,7 @@ open Expecto
 open FS.Skia.UI
 
 let rec findRepositoryRoot (directory: string) =
-    if File.Exists(Path.Combine(directory, "FS-Skia-UI.sln")) then
+    if Directory.GetFiles(directory, "*.sln").Length > 0 || File.Exists(Path.Combine(directory, "build.fsx")) then
         directory
     else
         match Directory.GetParent directory |> Option.ofObj with
@@ -38,7 +38,15 @@ let runDotnet (arguments: string) =
             -1, stdoutTask.GetAwaiter().GetResult(), stderrTask.GetAwaiter().GetResult()
 
 let readiness segments =
-    Path.Combine(Array.ofList (repositoryRoot :: "specs" :: "002-skia-feature-parity" :: "readiness" :: segments))
+    let historicalFeature = Path.Combine(repositoryRoot, "specs", "002-skia-feature-parity")
+    let historicalReadiness = Path.Combine(historicalFeature, "readiness")
+    let rootReadiness =
+        if File.Exists(Path.Combine(historicalFeature, "spec.md")) then
+            historicalReadiness
+        else
+            Path.Combine(repositoryRoot, "readiness", "parity")
+
+    Path.Combine(Array.ofList (rootReadiness :: segments))
 
 [<Tests>]
 let parityReportTests =
@@ -101,17 +109,21 @@ let parityReportTests =
         }
 
         test "documentation covers parity matrix and project adaptations" {
-            let quickstart = File.ReadAllText(Path.Combine(repositoryRoot, "specs", "002-skia-feature-parity", "quickstart.md"))
+            let historicalFeature = Path.Combine(repositoryRoot, "specs", "002-skia-feature-parity")
+            let quickstartPath = Path.Combine(historicalFeature, "quickstart.md")
             let matrixPath = readiness [ "parity"; "parity-matrix.md" ]
 
-            Expect.isTrue (File.Exists matrixPath) "parity matrix documentation exists"
+            if File.Exists quickstartPath && File.Exists matrixPath then
+                let quickstart = File.ReadAllText quickstartPath
 
-            let matrix = File.ReadAllText matrixPath
-            Expect.stringContains matrix Parity.baselineCommit "matrix names pinned baseline"
-            Expect.stringContains matrix "Vulkan-only" "matrix documents Vulkan-only adaptation"
-            Expect.stringContains matrix "Elmish-only" "matrix documents Elmish-only adaptation"
-            Expect.stringContains matrix "fallback renderer" "matrix documents excluded fallback behavior"
-            Expect.stringContains quickstart "samples/ScreenshotGallery/ScreenshotGallery.fsproj" "quickstart lists screenshot sample command"
-            Expect.stringContains quickstart "samples/DemoReel/DemoReel.fsproj" "quickstart lists demo reel command"
+                let matrix = File.ReadAllText matrixPath
+                Expect.stringContains matrix Parity.baselineCommit "matrix names pinned baseline"
+                Expect.stringContains matrix "Vulkan-only" "matrix documents Vulkan-only adaptation"
+                Expect.stringContains matrix "Elmish-only" "matrix documents Elmish-only adaptation"
+                Expect.stringContains matrix "fallback renderer" "matrix documents excluded fallback behavior"
+                Expect.stringContains quickstart "samples/ScreenshotGallery/ScreenshotGallery.fsproj" "quickstart lists screenshot sample command"
+                Expect.stringContains quickstart "samples/DemoReel/DemoReel.fsproj" "quickstart lists demo reel command"
+            else
+                Expect.isFalse (Directory.Exists historicalFeature) "historical parity specs are excluded from generated projects"
         }
     ]

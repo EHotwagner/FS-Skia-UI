@@ -7,11 +7,15 @@ under the active feature readiness directory.
 | Artifact Class | Stable Path |
 |----------------|-------------|
 | Package surface baselines | `readiness/surface-baselines/*.txt` |
-| Build/test/package logs | `specs/006-template-framework-governance/readiness/logs/*.txt` |
-| Public contract FSI transcripts | `specs/006-template-framework-governance/readiness/fsi/*.txt` |
-| Sample smoke output | `specs/006-template-framework-governance/readiness/sample-smoke/*.txt` |
-| Task graph output | `specs/006-template-framework-governance/readiness/task-graph.json` and `.md` |
-| Evidence audit output | `specs/006-template-framework-governance/readiness/logs/evidence-audit.txt` and `diff-scan-hits.json` |
+| Build/test/package logs | `specs/007-v2-template-packaging/readiness/logs/*.txt` |
+| Public contract FSI transcripts | `specs/007-v2-template-packaging/readiness/fsi/*.txt` |
+| Sample smoke output | `specs/007-v2-template-packaging/readiness/sample-smoke/*.txt` |
+| Template validation output | `specs/007-v2-template-packaging/readiness/template/**` |
+| Dependency governance output | `specs/007-v2-template-packaging/readiness/dependencies.md` |
+| Generated guidance output | `specs/007-v2-template-packaging/readiness/generated-guidance.md` |
+| Template drift output | `specs/007-v2-template-packaging/readiness/template-drift.md` |
+| Task graph output | `specs/007-v2-template-packaging/readiness/task-graph.json` and `.md` |
+| Evidence audit output | `specs/007-v2-template-packaging/readiness/logs/evidence-audit.txt` and `diff-scan-hits.json` |
 | Local packages | `~/.local/share/nuget-local/*.nupkg` |
 
 Historical feature readiness folders remain repository evidence. They are not
@@ -22,8 +26,9 @@ make current package checks pass.
 
 `Dev`, `Verify`, `Ci`, `PackLocal`, `RefreshSurfaceBaselines`,
 `PackageSurfaceCheck`, `FsiTranscripts`, `SampleContractSmoke`,
-`EvidenceGraph`, and `EvidenceAudit` are the v1 evidence-producing targets.
-`Verify` fails when any required v1 artifact class is missing.
+`TemplateCheck`, `DependencyReport`, `GeneratedGuidanceCheck`, `TemplateDrift`,
+`EvidenceGraph`, and `EvidenceAudit` are the evidence-producing targets.
+`Verify` fails when any required V1 or V2 artifact class is missing.
 
 ## Synthetic Evidence
 
@@ -34,7 +39,6 @@ the real-evidence path before it can be accepted.
 
 ## Roadmap Boundary
 
-Template packaging, dependency governance, generated spec/plan hardening,
-layout evidence, visual evidence, package consumer smoke, and release
-validation are roadmap extensions. Future phases may add targets for those
-classes, but v1 `Dev`, `Verify`, and `Ci` exclude them.
+Full visual evidence, release validation, an external template repository split,
+and distribution automation are roadmap extensions. Future phases may add
+targets for those classes, but V2 validation remains non-visual.

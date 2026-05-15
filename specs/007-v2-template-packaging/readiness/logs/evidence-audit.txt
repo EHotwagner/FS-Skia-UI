@@ -1,0 +1,148 @@
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging
+
+[1/2] Computing task graph...
+task-graph: 64 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging/readiness/task-graph.md
+  status: 54[X], 10[ ]
+
+[2/2] Diff scan against feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+✓ PASS — no synthetic tasks, no blocking diff-scan hits.
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging
+
+[1/2] Computing task graph...
+task-graph: 64 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging/readiness/task-graph.md
+  status: 54[X], 10[ ]
+
+[2/2] Diff scan against feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+✓ PASS — no synthetic tasks, no blocking diff-scan hits.
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging
+
+[1/2] Computing task graph...
+task-graph: 64 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging/readiness/task-graph.md
+  status: 60[X], 4[ ]
+
+[2/2] Diff scan against feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+✓ PASS — no synthetic tasks, no blocking diff-scan hits.
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging
+
+[1/2] Computing task graph...
+task-graph: 64 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging/readiness/task-graph.md
+  status: 64[X]
+
+[2/2] Diff scan against feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+✓ PASS — no synthetic tasks, no blocking diff-scan hits.
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging
+
+[1/2] Computing task graph...
+task-graph: 64 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging/readiness/task-graph.md
+  status: 64[X]
+
+[2/2] Diff scan against feature base...
+  diff-scan: 0 blocking, 5 advisory
+
+=== Verdict ===
+✓ PASS — no synthetic tasks, no blocking diff-scan hits.
+    [adv]   synthetic-banner at .specify/presets/fsharp-opinionated/templates/plan-template.md:44  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .specify/templates/plan-template.md:60  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/007-v2-template-packaging/plan.md:32  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/007-v2-template-packaging/readiness/merge-summary.md:56  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/007-v2-template-packaging/readiness/task-graph.md:254  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging
+
+[1/2] Computing task graph...
+task-graph: 64 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging/readiness/task-graph.md
+  status: 64[X]
+
+[2/2] Diff scan against feature base...
+  diff-scan: 0 blocking, 5 advisory
+
+=== Verdict ===
+✓ PASS — no synthetic tasks, no blocking diff-scan hits.
+    [adv]   synthetic-banner at .specify/presets/fsharp-opinionated/templates/plan-template.md:44  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .specify/templates/plan-template.md:60  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/007-v2-template-packaging/plan.md:32  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/007-v2-template-packaging/readiness/merge-summary.md:56  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/007-v2-template-packaging/readiness/task-graph.md:254  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging
+
+[1/2] Computing task graph...
+task-graph: 64 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/007-v2-template-packaging/readiness/task-graph.md
+  status: 64[X]
+
+[2/2] Diff scan against feature base...
+  diff-scan: 0 blocking, 5 advisory
+
+=== Verdict ===
+✓ PASS — no synthetic tasks, no blocking diff-scan hits.
+    [adv]   synthetic-banner at .specify/presets/fsharp-opinionated/templates/plan-template.md:44  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .specify/templates/plan-template.md:60  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/007-v2-template-packaging/plan.md:32  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/007-v2-template-packaging/readiness/merge-summary.md:56  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/007-v2-template-packaging/readiness/task-graph.md:254  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=0

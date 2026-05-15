@@ -7,7 +7,13 @@ open System.IO
 open FS.Skia.UI
 
 let repoRoot = Path.GetFullPath(Path.Combine(__SOURCE_DIRECTORY__, ".."))
-let readiness = Path.Combine(repoRoot, "specs", "002-skia-feature-parity", "readiness")
+let historicalFeature = Path.Combine(repoRoot, "specs", "002-skia-feature-parity")
+let historicalReadiness = Path.Combine(historicalFeature, "readiness")
+let readiness =
+    if File.Exists(Path.Combine(historicalFeature, "spec.md")) then
+        historicalReadiness
+    else
+        Path.Combine(repoRoot, "readiness", "parity")
 let evidencePath (relative: string) = relative.Replace("\\", "/")
 
 let items =

@@ -82,6 +82,25 @@ The repository already has a strong seed for a governed product family:
 
 The current shape is less like a normal "starter app" and more like a governed library/product template. New projects should inherit the governance, not only the code layout.
 
+## Current Source Links
+
+This proposal was written as an implementation direction. The current source
+files that now carry those concerns are:
+
+| Concern | Current source |
+|---------|----------------|
+| Build graph and V2 targets | [build.fsx](../build.fsx), [fake.sh](../fake.sh), [fake.cmd](../fake.cmd) |
+| Template metadata and package | [.template.config/template.json](../.template.config/template.json), [.template.package/FS.Skia.UI.Template.fsproj](../.template.package/FS.Skia.UI.Template.fsproj) |
+| Central package versions | [Directory.Packages.props](../Directory.Packages.props) |
+| Core scene, viewer, diagnostics | [src/Lib/Library.fsi](../src/Lib/Library.fsi), [src/Lib/Library.fs](../src/Lib/Library.fs) |
+| Keyboard input | [src/Lib/KeyboardInput.fsi](../src/Lib/KeyboardInput.fsi), [src/Lib/KeyboardInput.fs](../src/Lib/KeyboardInput.fs) |
+| Charts and DataGrid | [src/Charts](../src/Charts/) |
+| Layout and graph | [src/Layout](../src/Layout/) |
+| Governance scripts | [scripts/dependency-report.fsx](../scripts/dependency-report.fsx), [scripts/template-drift.fsx](../scripts/template-drift.fsx), [scripts/refresh-surface-baselines.fsx](../scripts/refresh-surface-baselines.fsx) |
+| Tests | [tests](../tests/) |
+| Surface baselines | [readiness/surface-baselines](../readiness/surface-baselines/) |
+| Spec Kit assets | [.specify](../.specify/) |
+
 ## Current Gaps
 
 The proposal should explicitly close these gaps:

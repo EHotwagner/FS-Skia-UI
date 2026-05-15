@@ -6,7 +6,7 @@ open System.IO
 open Expecto
 
 let rec findRepositoryRoot (directory: string) =
-    if File.Exists(Path.Combine(directory, "FS-Skia-UI.sln")) then
+    if Directory.GetFiles(directory, "*.sln").Length > 0 || File.Exists(Path.Combine(directory, "build.fsx")) then
         directory
     else
         match Directory.GetParent directory |> Option.ofObj with
@@ -14,6 +14,16 @@ let rec findRepositoryRoot (directory: string) =
         | None -> failwithf "Could not locate repository root from %s" directory
 
 let repositoryRoot = findRepositoryRoot AppContext.BaseDirectory
+
+let readinessPath segments =
+    let historicalFeature = Path.Combine(repositoryRoot, "specs", "004-keyboard-state-display")
+    let readinessRoot =
+        if File.Exists(Path.Combine(historicalFeature, "spec.md")) then
+            Path.Combine(historicalFeature, "readiness")
+        else
+            Path.Combine(repositoryRoot, "readiness")
+
+    Path.Combine(Array.ofList (readinessRoot :: segments))
 
 let runProcess (fileName: string) (arguments: string) =
     let startInfo = ProcessStartInfo(fileName, arguments)
@@ -62,13 +72,7 @@ let smokeContractTests =
                 runProcess "dotnet" "run --project samples/KeyboardInputGallery/KeyboardInputGallery.fsproj -- --contract-smoke"
 
             let evidencePath =
-                Path.Combine(
-                    repositoryRoot,
-                    "specs",
-                    "004-keyboard-state-display",
-                    "readiness",
-                    "sample-smoke",
-                    "keyboard-input-gallery-state-display.txt")
+                readinessPath [ "sample-smoke"; "keyboard-input-gallery-state-display.txt" ]
 
             Path.GetDirectoryName evidencePath
             |> Option.ofObj

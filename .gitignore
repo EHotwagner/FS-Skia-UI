@@ -15,6 +15,7 @@ packages/
 
 # Test output
 TestResults/
+artifacts/
 *.trx
 *.coverage
 coverage/

@@ -1,0 +1,155 @@
+
+## dotnet build
+$ dotnet build "FS-Skia-UI.sln" --no-restore -maxcpucount:1
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Lib.Tests -> /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll
+  BasicViewer -> /home/developer/projects/FS-Skia-UI/samples/BasicViewer/bin/Debug/net10.0/BasicViewer.dll
+  InteractiveViewer -> /home/developer/projects/FS-Skia-UI/samples/InteractiveViewer/bin/Debug/net10.0/InteractiveViewer.dll
+  Charts -> /home/developer/projects/FS-Skia-UI/src/Charts/bin/Debug/net10.0/FS.Skia.UI.Charts.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  Charts.Tests -> /home/developer/projects/FS-Skia-UI/tests/Charts.Tests/bin/Debug/net10.0/Charts.Tests.dll
+  Layout.Tests -> /home/developer/projects/FS-Skia-UI/tests/Layout.Tests/bin/Debug/net10.0/Layout.Tests.dll
+  Parity.Tests -> /home/developer/projects/FS-Skia-UI/tests/Parity.Tests/bin/Debug/net10.0/Parity.Tests.dll
+  Package.Tests -> /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll
+  Smoke.Tests -> /home/developer/projects/FS-Skia-UI/tests/Smoke.Tests/bin/Debug/net10.0/Smoke.Tests.dll
+  ParityGallery -> /home/developer/projects/FS-Skia-UI/samples/ParityGallery/bin/Debug/net10.0/ParityGallery.dll
+  EffectsGallery -> /home/developer/projects/FS-Skia-UI/samples/EffectsGallery/bin/Debug/net10.0/EffectsGallery.dll
+  ChartsGallery -> /home/developer/projects/FS-Skia-UI/samples/ChartsGallery/bin/Debug/net10.0/ChartsGallery.dll
+  DataGridGallery -> /home/developer/projects/FS-Skia-UI/samples/DataGridGallery/bin/Debug/net10.0/DataGridGallery.dll
+  LayoutGraphGallery -> /home/developer/projects/FS-Skia-UI/samples/LayoutGraphGallery/bin/Debug/net10.0/LayoutGraphGallery.dll
+  ScreenshotGallery -> /home/developer/projects/FS-Skia-UI/samples/ScreenshotGallery/bin/Debug/net10.0/ScreenshotGallery.dll
+  DemoReel -> /home/developer/projects/FS-Skia-UI/samples/DemoReel/bin/Debug/net10.0/DemoReel.dll
+  KeyboardInputGallery -> /home/developer/projects/FS-Skia-UI/samples/KeyboardInputGallery/bin/Debug/net10.0/KeyboardInputGallery.dll
+  Governance.Tests -> /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:12.42
+
+exit-code=0
+
+## dotnet build
+$ dotnet build "FS-Skia-UI.sln" --no-restore -maxcpucount:1
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Lib.Tests -> /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll
+  BasicViewer -> /home/developer/projects/FS-Skia-UI/samples/BasicViewer/bin/Debug/net10.0/BasicViewer.dll
+  InteractiveViewer -> /home/developer/projects/FS-Skia-UI/samples/InteractiveViewer/bin/Debug/net10.0/InteractiveViewer.dll
+  Charts -> /home/developer/projects/FS-Skia-UI/src/Charts/bin/Debug/net10.0/FS.Skia.UI.Charts.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  Charts.Tests -> /home/developer/projects/FS-Skia-UI/tests/Charts.Tests/bin/Debug/net10.0/Charts.Tests.dll
+  Layout.Tests -> /home/developer/projects/FS-Skia-UI/tests/Layout.Tests/bin/Debug/net10.0/Layout.Tests.dll
+  Parity.Tests -> /home/developer/projects/FS-Skia-UI/tests/Parity.Tests/bin/Debug/net10.0/Parity.Tests.dll
+  Package.Tests -> /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll
+  Smoke.Tests -> /home/developer/projects/FS-Skia-UI/tests/Smoke.Tests/bin/Debug/net10.0/Smoke.Tests.dll
+  ParityGallery -> /home/developer/projects/FS-Skia-UI/samples/ParityGallery/bin/Debug/net10.0/ParityGallery.dll
+  EffectsGallery -> /home/developer/projects/FS-Skia-UI/samples/EffectsGallery/bin/Debug/net10.0/EffectsGallery.dll
+  ChartsGallery -> /home/developer/projects/FS-Skia-UI/samples/ChartsGallery/bin/Debug/net10.0/ChartsGallery.dll
+  DataGridGallery -> /home/developer/projects/FS-Skia-UI/samples/DataGridGallery/bin/Debug/net10.0/DataGridGallery.dll
+  LayoutGraphGallery -> /home/developer/projects/FS-Skia-UI/samples/LayoutGraphGallery/bin/Debug/net10.0/LayoutGraphGallery.dll
+  ScreenshotGallery -> /home/developer/projects/FS-Skia-UI/samples/ScreenshotGallery/bin/Debug/net10.0/ScreenshotGallery.dll
+  DemoReel -> /home/developer/projects/FS-Skia-UI/samples/DemoReel/bin/Debug/net10.0/DemoReel.dll
+  KeyboardInputGallery -> /home/developer/projects/FS-Skia-UI/samples/KeyboardInputGallery/bin/Debug/net10.0/KeyboardInputGallery.dll
+  Governance.Tests -> /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.85
+
+exit-code=0
+
+## dotnet build
+$ dotnet build "FS-Skia-UI.sln" --no-restore -maxcpucount:1
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Lib.Tests -> /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll
+  BasicViewer -> /home/developer/projects/FS-Skia-UI/samples/BasicViewer/bin/Debug/net10.0/BasicViewer.dll
+  InteractiveViewer -> /home/developer/projects/FS-Skia-UI/samples/InteractiveViewer/bin/Debug/net10.0/InteractiveViewer.dll
+  Charts -> /home/developer/projects/FS-Skia-UI/src/Charts/bin/Debug/net10.0/FS.Skia.UI.Charts.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  Charts.Tests -> /home/developer/projects/FS-Skia-UI/tests/Charts.Tests/bin/Debug/net10.0/Charts.Tests.dll
+  Layout.Tests -> /home/developer/projects/FS-Skia-UI/tests/Layout.Tests/bin/Debug/net10.0/Layout.Tests.dll
+  Parity.Tests -> /home/developer/projects/FS-Skia-UI/tests/Parity.Tests/bin/Debug/net10.0/Parity.Tests.dll
+  Package.Tests -> /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll
+  Smoke.Tests -> /home/developer/projects/FS-Skia-UI/tests/Smoke.Tests/bin/Debug/net10.0/Smoke.Tests.dll
+  ParityGallery -> /home/developer/projects/FS-Skia-UI/samples/ParityGallery/bin/Debug/net10.0/ParityGallery.dll
+  EffectsGallery -> /home/developer/projects/FS-Skia-UI/samples/EffectsGallery/bin/Debug/net10.0/EffectsGallery.dll
+  ChartsGallery -> /home/developer/projects/FS-Skia-UI/samples/ChartsGallery/bin/Debug/net10.0/ChartsGallery.dll
+  DataGridGallery -> /home/developer/projects/FS-Skia-UI/samples/DataGridGallery/bin/Debug/net10.0/DataGridGallery.dll
+  LayoutGraphGallery -> /home/developer/projects/FS-Skia-UI/samples/LayoutGraphGallery/bin/Debug/net10.0/LayoutGraphGallery.dll
+  ScreenshotGallery -> /home/developer/projects/FS-Skia-UI/samples/ScreenshotGallery/bin/Debug/net10.0/ScreenshotGallery.dll
+  DemoReel -> /home/developer/projects/FS-Skia-UI/samples/DemoReel/bin/Debug/net10.0/DemoReel.dll
+  KeyboardInputGallery -> /home/developer/projects/FS-Skia-UI/samples/KeyboardInputGallery/bin/Debug/net10.0/KeyboardInputGallery.dll
+  Governance.Tests -> /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.63
+
+exit-code=0
+
+## dotnet build
+$ dotnet build "FS-Skia-UI.sln" --no-restore -maxcpucount:1
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Lib.Tests -> /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll
+  BasicViewer -> /home/developer/projects/FS-Skia-UI/samples/BasicViewer/bin/Debug/net10.0/BasicViewer.dll
+  InteractiveViewer -> /home/developer/projects/FS-Skia-UI/samples/InteractiveViewer/bin/Debug/net10.0/InteractiveViewer.dll
+  Charts -> /home/developer/projects/FS-Skia-UI/src/Charts/bin/Debug/net10.0/FS.Skia.UI.Charts.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  Charts.Tests -> /home/developer/projects/FS-Skia-UI/tests/Charts.Tests/bin/Debug/net10.0/Charts.Tests.dll
+  Layout.Tests -> /home/developer/projects/FS-Skia-UI/tests/Layout.Tests/bin/Debug/net10.0/Layout.Tests.dll
+  Parity.Tests -> /home/developer/projects/FS-Skia-UI/tests/Parity.Tests/bin/Debug/net10.0/Parity.Tests.dll
+  Package.Tests -> /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll
+  Smoke.Tests -> /home/developer/projects/FS-Skia-UI/tests/Smoke.Tests/bin/Debug/net10.0/Smoke.Tests.dll
+  ParityGallery -> /home/developer/projects/FS-Skia-UI/samples/ParityGallery/bin/Debug/net10.0/ParityGallery.dll
+  EffectsGallery -> /home/developer/projects/FS-Skia-UI/samples/EffectsGallery/bin/Debug/net10.0/EffectsGallery.dll
+  ChartsGallery -> /home/developer/projects/FS-Skia-UI/samples/ChartsGallery/bin/Debug/net10.0/ChartsGallery.dll
+  DataGridGallery -> /home/developer/projects/FS-Skia-UI/samples/DataGridGallery/bin/Debug/net10.0/DataGridGallery.dll
+  LayoutGraphGallery -> /home/developer/projects/FS-Skia-UI/samples/LayoutGraphGallery/bin/Debug/net10.0/LayoutGraphGallery.dll
+  ScreenshotGallery -> /home/developer/projects/FS-Skia-UI/samples/ScreenshotGallery/bin/Debug/net10.0/ScreenshotGallery.dll
+  DemoReel -> /home/developer/projects/FS-Skia-UI/samples/DemoReel/bin/Debug/net10.0/DemoReel.dll
+  KeyboardInputGallery -> /home/developer/projects/FS-Skia-UI/samples/KeyboardInputGallery/bin/Debug/net10.0/KeyboardInputGallery.dll
+  Governance.Tests -> /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:20.24
+
+exit-code=0
+
+## dotnet build
+$ dotnet build "FS-Skia-UI.sln" --no-restore -maxcpucount:1
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Lib.Tests -> /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll
+  BasicViewer -> /home/developer/projects/FS-Skia-UI/samples/BasicViewer/bin/Debug/net10.0/BasicViewer.dll
+  InteractiveViewer -> /home/developer/projects/FS-Skia-UI/samples/InteractiveViewer/bin/Debug/net10.0/InteractiveViewer.dll
+  Charts -> /home/developer/projects/FS-Skia-UI/src/Charts/bin/Debug/net10.0/FS.Skia.UI.Charts.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  Charts.Tests -> /home/developer/projects/FS-Skia-UI/tests/Charts.Tests/bin/Debug/net10.0/Charts.Tests.dll
+  Layout.Tests -> /home/developer/projects/FS-Skia-UI/tests/Layout.Tests/bin/Debug/net10.0/Layout.Tests.dll
+  Parity.Tests -> /home/developer/projects/FS-Skia-UI/tests/Parity.Tests/bin/Debug/net10.0/Parity.Tests.dll
+  Package.Tests -> /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll
+  Smoke.Tests -> /home/developer/projects/FS-Skia-UI/tests/Smoke.Tests/bin/Debug/net10.0/Smoke.Tests.dll
+  ParityGallery -> /home/developer/projects/FS-Skia-UI/samples/ParityGallery/bin/Debug/net10.0/ParityGallery.dll
+  EffectsGallery -> /home/developer/projects/FS-Skia-UI/samples/EffectsGallery/bin/Debug/net10.0/EffectsGallery.dll
+  ChartsGallery -> /home/developer/projects/FS-Skia-UI/samples/ChartsGallery/bin/Debug/net10.0/ChartsGallery.dll
+  DataGridGallery -> /home/developer/projects/FS-Skia-UI/samples/DataGridGallery/bin/Debug/net10.0/DataGridGallery.dll
+  LayoutGraphGallery -> /home/developer/projects/FS-Skia-UI/samples/LayoutGraphGallery/bin/Debug/net10.0/LayoutGraphGallery.dll
+  ScreenshotGallery -> /home/developer/projects/FS-Skia-UI/samples/ScreenshotGallery/bin/Debug/net10.0/ScreenshotGallery.dll
+  DemoReel -> /home/developer/projects/FS-Skia-UI/samples/DemoReel/bin/Debug/net10.0/DemoReel.dll
+  KeyboardInputGallery -> /home/developer/projects/FS-Skia-UI/samples/KeyboardInputGallery/bin/Debug/net10.0/KeyboardInputGallery.dll
+  Governance.Tests -> /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.47
+
+exit-code=0

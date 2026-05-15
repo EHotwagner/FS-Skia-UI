@@ -6,7 +6,7 @@ open System.IO
 open Expecto
 
 let rec findRepositoryRoot (directory: string) =
-    if File.Exists(Path.Combine(directory, "FS-Skia-UI.sln")) then
+    if Directory.GetFiles(directory, "*.sln").Length > 0 || File.Exists(Path.Combine(directory, "build.fsx")) then
         directory
     else
         match Directory.GetParent directory |> Option.ofObj with
@@ -36,7 +36,7 @@ let runDotnet (workingDirectory: string) (arguments: string) =
             -1, stdoutTask.GetAwaiter().GetResult(), stderrTask.GetAwaiter().GetResult()
 
 let packageOutput name =
-    Path.Combine(repositoryRoot, "specs", "006-template-framework-governance", "readiness", "package", name)
+    Path.Combine(repositoryRoot, "specs", "007-v2-template-packaging", "readiness", "package", name)
 
 let packageVersion = "0.1.6-preview.1"
 
@@ -56,6 +56,7 @@ let packageContractTests =
             [ "src/Lib/Lib.fsproj", "FS.Skia.UI"
               "src/Charts/Charts.fsproj", "FS.Skia.UI.Charts"
               "src/Layout/Layout.fsproj", "FS.Skia.UI.Layout" ]
+            |> List.filter (fun (project, _) -> File.Exists(Path.Combine(repositoryRoot, project.Replace("/", string Path.DirectorySeparatorChar))))
             |> List.iter (fun (project, packageId) ->
                 let exitCode, _, stderr =
                     runDotnet repositoryRoot $"pack {project} --output {packageOutput}"
@@ -84,6 +85,7 @@ let packageContractTests =
                   [ "src/Lib/Lib.fsproj"
                     "src/Charts/Charts.fsproj"
                     "src/Layout/Layout.fsproj" ]
+                  |> List.filter (fun project -> File.Exists(Path.Combine(repositoryRoot, project.Replace("/", string Path.DirectorySeparatorChar))))
                   |> List.iter (fun project ->
                       let exitCode, _, stderr =
                           runDotnet repositoryRoot $"pack {project} --output {packageOutput}"
@@ -109,6 +111,9 @@ let packageContractTests =
                   [ "CoreConsumer", "FS.Skia.UI"
                     "ChartsConsumer", "FS.Skia.UI.Charts"
                     "LayoutConsumer", "FS.Skia.UI.Layout" ]
+                  |> List.filter (fun (_, packageId) ->
+                      packageId = "FS.Skia.UI"
+                      || File.Exists(Path.Combine(packageOutput, packageId + $".{packageVersion}.nupkg")))
                   |> List.iter (fun (name, packageId) ->
                       let projectDir = Path.Combine(consumerRoot, name)
                       Directory.CreateDirectory projectDir |> ignore

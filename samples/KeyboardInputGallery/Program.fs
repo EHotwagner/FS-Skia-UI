@@ -46,7 +46,7 @@ let registry =
 
 let loadModel root =
     let yaml =
-        Path.Combine(root, "specs", "003-keyboard-input-framework", "readiness", "sample-configs", "modal-input.yaml")
+        Path.Combine(root, "samples", "KeyboardInput", "configs", "modal-input.yaml")
         |> File.ReadAllText
 
     let keyId label =

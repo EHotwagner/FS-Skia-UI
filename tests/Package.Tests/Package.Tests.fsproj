@@ -7,21 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="SurfaceAreaTests.fs" />
+    <Compile Include="SurfaceAreaTests.fs" Condition="Exists('SurfaceAreaTests.fs')" />
     <Compile Include="Tests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Lib\Lib.fsproj" />
-    <ProjectReference Include="..\..\src\Charts\Charts.fsproj" />
-    <ProjectReference Include="..\..\src\Layout\Layout.fsproj" />
+    <ProjectReference Include="..\..\src\Lib\Lib.fsproj" Condition="Exists('..\..\src\Lib\Lib.fsproj')" />
+    <ProjectReference Include="..\..\src\Charts\Charts.fsproj" Condition="Exists('..\..\src\Charts\Charts.fsproj')" />
+    <ProjectReference Include="..\..\src\Layout\Layout.fsproj" Condition="Exists('..\..\src\Layout\Layout.fsproj')" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Expecto" Version="10.2.2" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
-    <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.15.3" />
+    <PackageReference Include="Expecto" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="YoloDev.Expecto.TestSdk" />
   </ItemGroup>
 
 </Project>

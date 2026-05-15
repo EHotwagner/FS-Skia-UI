@@ -14,7 +14,9 @@ packages, builds the solution, and runs the default non-visual test projects:
 
 The full testing and evidence target set is `Dev`, `Verify`, `Ci`,
 `PackLocal`, `RefreshSurfaceBaselines`, `PackageSurfaceCheck`,
-`FsiTranscripts`, `SampleContractSmoke`, `EvidenceGraph`, and `EvidenceAudit`.
+`FsiTranscripts`, `SampleContractSmoke`, `TemplateCheck`,
+`DependencyReport`, `GeneratedGuidanceCheck`, `TemplateDrift`,
+`EvidenceGraph`, and `EvidenceAudit`.
 
 `PackageSurfaceCheck` runs `tests/Package.Tests/Package.Tests.fsproj` against
 the stable package surface baselines in `readiness/surface-baselines/*.txt`.
@@ -34,12 +36,27 @@ reviewed baseline.
 writes one log per sample under
 `specs/006-template-framework-governance/readiness/sample-smoke/`.
 
-## V1 Exclusions
+## V2 Template Matrix
 
-Template packaging, dependency governance, generated spec/plan hardening,
-layout evidence, visual evidence, package consumer smoke, and release
-validation are deferred. They must not become pass/fail requirements for
-`Dev`, `Verify`, or `Ci` until a later roadmap phase adds explicit targets.
+`TemplateCheck` validates four rows:
+
+| Artifact | Profile | Required checks |
+|----------|---------|-----------------|
+| source directory | default | install, instantiate, placeholder scan, excluded-history scan, generated `Dev` |
+| source directory | minimal | install, instantiate, placeholder scan, excluded-history scan, optional-scope exclusion, generated `Dev` |
+| local package | default | package install, instantiate, placeholder scan, excluded-history scan, generated `Dev` |
+| local package | minimal | package install, instantiate, placeholder scan, excluded-history scan, optional-scope exclusion, generated `Dev` |
+
+`DependencyReport`, `GeneratedGuidanceCheck`, and `TemplateDrift` are focused
+governance targets and can be run independently while developing those
+surfaces.
+
+## V2 Exclusions
+
+Full visual evidence, release validation, an external template repository split,
+and distribution automation are deferred. They must not become pass/fail
+requirements for `Dev`, `Verify`, or `Ci` until a later roadmap phase adds
+explicit targets.
 
 Package consumer smoke is intentionally opt-in through `PackageSmoke`, which
 sets `FS_SKIA_RUN_PACKAGE_CONSUMER_SMOKE=1` for the package test project.

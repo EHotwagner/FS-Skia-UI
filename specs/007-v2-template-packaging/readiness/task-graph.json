@@ -1,0 +1,1108 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Create feature readiness scaffolding under `specs/007-v2-template-packaging/readiness/` for logs, template validation output, dependency reports, generated guidance, drift reports, task graph output, and audit output",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Inventory template-owned source files, generated-product exclusions, optional profile scope, historical specs/readiness paths, and placeholder tokens in `specs/007-v2-template-packaging/readiness/template-source-inventory.md`",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Inventory current direct package references and local package smoke/version exceptions in `specs/007-v2-template-packaging/readiness/dependency-inventory.md`",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record V2 evidence obligations in `specs/007-v2-template-packaging/readiness/evidence-obligations.md`, including Tier 1 scope, explicit no-op runtime `.fsi`/surface-baseline impact, `BuildModel` / `BuildMsg` / `BuildEffect` applicability, real evidence requirements, and deferred visual/release/external distribution boundaries",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Create a traceability matrix mapping FR/SC/contract targets to planned tests, implementation files, docs, and readiness artifacts",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add governance test helpers in `tests/Governance.Tests/` for reading JSON, XML, YAML, Markdown, feature readiness paths, and focused FAKE target output",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing V2 command-contract tests for required target names, target dependencies, `007-v2-template-packaging` readiness paths, `Verify`/`Ci` extension, explicit `.fsi`/surface-baseline no-op assertions, pure `update` transitions, emitted effects, and interpreter boundaries",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing readiness artifact path tests for V2 package logs, install logs, generated project logs, placeholder/excluded-history scans, dependency report, generated guidance report, drift report, and local template package output",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing safe-operation tests for target-owned temp-root cleanup, source-preserving `Clean` behavior, missing tool/network diagnostics, and missing artifact-class diagnostics",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Add shared path/model fields to `build.fsx` for the 007 feature directory, template logs, generated project roots, `artifacts/templates/`, and root deferral records while preserving V1 target behavior",
+      "explicit_deps": [
+        "T007",
+        "T008"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Extend `BuildMsg`, `BuildEffect`, `update`, and interpreter helpers for template packaging, template installs, generated project commands, scan reports, structured report writing, and required artifact classes",
+      "explicit_deps": [
+        "T006",
+        "T007",
+        "T010"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Extend target discovery and target dependencies with `TemplatePack`, `TemplateInstallSource`, `TemplateInstallPackage`, `TemplateInstantiate`, `TemplateSmoke`, `TemplateCheck`, `DependencyReport`, `GeneratedGuidanceCheck`, and `TemplateDrift`; keep `Dev` independent of template packaging",
+      "explicit_deps": [
+        "T007",
+        "T010",
+        "T011"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run foundation verification for command contracts, `.fsi`/surface-baseline no-op evidence, MVU/effect assertions, readiness artifact paths, and safe-operation diagnostics; store output under `specs/007-v2-template-packaging/readiness/logs/`",
+      "explicit_deps": [
+        "T006",
+        "T007",
+        "T008",
+        "T009",
+        "T010",
+        "T011",
+        "T012"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add `TemplateProfileTests` requiring `.template.config/template.json` to define `fs-skia-ui`, `default` and `minimal` profile choices, product identity symbols, source/exclude modifiers, and historical feature/readiness exclusions",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add `TemplateWorkflowTests` for `TemplatePack`, source/package install targets, four-row artifact/profile instantiation, package artifact paths, target dependencies, emitted effects, and `TemplateCheck` verdict output",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add generated project validation tests or fixtures for unreplaced placeholder diagnostics, excluded-history diagnostics, minimal profile required contents, optional layout/charts/parity/visual exclusions, generated `Dev` logs, explicit non-visual/no-graphics support messaging, and broken-reference failures",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add a real-interpreter evidence plan for source install, package install, default/minimal generation, generated `Dev` execution, and logs under `specs/007-v2-template-packaging/readiness/template/`",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Add `.template.config/template.json` with template identity, `profile` choice symbols, product identity substitutions, include/exclude source modifiers, default profile contents, minimal profile contents, and source-only history exclusions",
+      "explicit_deps": [
+        "T014",
+        "T016"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Add `.template.package/FS.Skia.UI.Template.fsproj` with local NuGet template package metadata and pack output under `artifacts/templates/`",
+      "explicit_deps": [
+        "T014",
+        "T015"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `TemplatePack` and package content verification so `FS.Skia.UI.Template.*.nupkg` contains template metadata and template-owned files while excluding source-only artifacts",
+      "explicit_deps": [
+        "T015",
+        "T019"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `TemplateInstallSource` and `TemplateInstallPackage` with uninstall/reinstall-safe behavior, actionable diagnostics, and separate readiness logs",
+      "explicit_deps": [
+        "T015",
+        "T020"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `TemplateInstantiate` to create source/default, source/minimal, package/default, and package/minimal generated projects in isolated target-owned temp roots",
+      "explicit_deps": [
+        "T015",
+        "T018",
+        "T021"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `TemplateSmoke` placeholder scans, excluded-history scans, optional profile reference checks, generated `./fake.sh build -t Dev` execution, per-project logs, and summary diagnostics",
+      "explicit_deps": [
+        "T016",
+        "T022"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `TemplateCheck` as the full V2 template validation target, require all readiness artifact classes, and wire `Verify`/`Ci` to include it without changing `Dev` into a packaging target",
+      "explicit_deps": [
+        "T015",
+        "T020",
+        "T021",
+        "T022",
+        "T023"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Document template profiles, generation options, artifact boundaries, validation commands, readiness paths, non-visual/no-graphics support messaging, and deferred visual/release/external distribution scope in `docs/template-profile.md`, `docs/build.md`, `docs/testing.md`, `docs/evidence.md`, README, and quickstart references",
+      "explicit_deps": [
+        "T014",
+        "T017",
+        "T018",
+        "T024"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Run focused `TemplateCheck` or staged source/package/default/minimal validation and store package, install, generation, placeholder, excluded-history, generated `Dev`, and verdict evidence",
+      "explicit_deps": [
+        "T017",
+        "T020",
+        "T021",
+        "T022",
+        "T023",
+        "T024",
+        "T025"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add `DependencyGovernanceTests` requiring `Directory.Packages.props` to enable Central Package Management, declare direct `<PackageVersion />` entries, and keep repo-owned `.fsproj` external `PackageReference` entries versionless",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add dependency metadata/report tests requiring `docs/dependencies.md` fields for package id, version, purpose, owner, license posture, upgrade expectation, preview risk where relevant, validation-only exceptions, and readiness output",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add a negative scan fixture or test proving an unmanaged inline external package version fails with project path, package id, and required remediation",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T030",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Add `Directory.Packages.props` with central versions for current direct external packages and Central Package Management enabled",
+      "explicit_deps": [
+        "T027"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T031",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Remove inline external dependency versions from repo-owned project files while preserving only documented validation-only local package version properties",
+      "explicit_deps": [
+        "T027",
+        "T030"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T032",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Write `docs/dependencies.md` with required dependency metadata, preview-risk notes, and validation-only exception policy",
+      "explicit_deps": [
+        "T028",
+        "T030"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T033",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `scripts/dependency-report.fsx` to scan project files, compare central policy and docs metadata, validate exceptions, and emit `specs/007-v2-template-packaging/readiness/dependencies.md`",
+      "explicit_deps": [
+        "T027",
+        "T028",
+        "T029",
+        "T030",
+        "T031",
+        "T032"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T034",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Add the `DependencyReport` FAKE target and include it in `Verify`",
+      "explicit_deps": [
+        "T033"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T035",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Ensure generated default and minimal template profiles include central dependency policy files and dependency governance documentation expected by new products",
+      "explicit_deps": [
+        "T030",
+        "T031",
+        "T032",
+        "T034"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T036",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t DependencyReport` and focused dependency governance tests; store readiness evidence and diagnostics",
+      "explicit_deps": [
+        "T033",
+        "T034",
+        "T035"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T037",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add generated spec guidance tests requiring active and preset-owned `spec-template.md` files to prompt for package impact, public contract impact, state workflow impact, layout/rendering impact, evidence obligations, unsupported scope, and build-target impact",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T036"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T038",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add generated plan guidance tests requiring active and preset-owned `plan-template.md` files to decide template ownership, dependency impact, command-surface impact, generated project impact, evidence paths, `.fsi`/contract impact, MVU/effect boundary applicability, synthetic evidence, test evidence, observability, and deferred scope",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T036"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T039",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add generated-artifact tests proving V2 obligations are distinguished from deferred visual evidence, release validation, external repository split, and distribution automation, with no manual copying from historical feature directories",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T036"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T040",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Update `.specify/templates/spec-template.md` and `.specify/presets/fsharp-opinionated/templates/spec-template.md` with the required V2 spec prompts",
+      "explicit_deps": [
+        "T037",
+        "T039"
+      ],
+      "phase_deps": [
+        "T036"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T041",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Update `.specify/templates/plan-template.md` and `.specify/presets/fsharp-opinionated/templates/plan-template.md` with the required V2 planning decisions and constitution checks",
+      "explicit_deps": [
+        "T038",
+        "T039"
+      ],
+      "phase_deps": [
+        "T036"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T042",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Write `docs/speckit.md` documenting generated spec/plan governance, preset inheritance, evidence expectations, and deferred roadmap boundaries",
+      "explicit_deps": [
+        "T037",
+        "T038",
+        "T039",
+        "T040",
+        "T041"
+      ],
+      "phase_deps": [
+        "T036"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T043",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement a generated guidance checker and the `GeneratedGuidanceCheck` FAKE target that emits `specs/007-v2-template-packaging/readiness/generated-guidance.md`",
+      "explicit_deps": [
+        "T037",
+        "T038",
+        "T039",
+        "T040",
+        "T041",
+        "T042"
+      ],
+      "phase_deps": [
+        "T036"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T044",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Include `GeneratedGuidanceCheck` in `Verify` and in generated project validation where the default and minimal profiles carry Spec Kit assets",
+      "explicit_deps": [
+        "T043"
+      ],
+      "phase_deps": [
+        "T036"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T045",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t GeneratedGuidanceCheck` and focused generated guidance tests; store readiness evidence",
+      "explicit_deps": [
+        "T043",
+        "T044"
+      ],
+      "phase_deps": [
+        "T036"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T046",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add `TemplateDriftTests` proving changed template-owned source, docs, presets, dependency policy, samples, and command-surface paths require template, docs, dependency, guidance, command, or deferral alignment",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T045"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T047",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add deferral validation tests requiring every accepted record to include `id`, paths, rationale, owner, and target phase, and proving records only cover named paths",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T045"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T048",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add drift report tests for path-level diagnostics, accepted deferrals, missing alignment actions, missing artifact classes, and readiness output",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T045"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T049",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Define template ownership and drift classification rules in `docs/template-profile.md` and/or machine-readable configuration consumed by the drift check",
+      "explicit_deps": [
+        "T046"
+      ],
+      "phase_deps": [
+        "T045"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T050",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Create root-level `readiness/template-deferrals.yml` with schema comments and no accepted deferrals unless implementation discovers an intentional source-only or future-roadmap exception",
+      "explicit_deps": [
+        "T047",
+        "T049"
+      ],
+      "phase_deps": [
+        "T045"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T051",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `scripts/template-drift.fsx` to collect changed paths, classify required alignment, validate deferrals, reject missing fields, and emit `specs/007-v2-template-packaging/readiness/template-drift.md`",
+      "explicit_deps": [
+        "T046",
+        "T047",
+        "T048",
+        "T049",
+        "T050"
+      ],
+      "phase_deps": [
+        "T045"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T052",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Add the `TemplateDrift` FAKE target and include it in `Verify`",
+      "explicit_deps": [
+        "T051"
+      ],
+      "phase_deps": [
+        "T045"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T053",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Update `docs/build.md`, `docs/testing.md`, `docs/evidence.md`, README, and `.specify/workflows/speckit/workflow.yml` so V2 validation delegates to canonical targets and documents drift/deferral boundaries",
+      "explicit_deps": [
+        "T049",
+        "T052"
+      ],
+      "phase_deps": [
+        "T045"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T054",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t TemplateDrift` plus at least one negative fixture/test for missing alignment or invalid deferral; store readiness evidence",
+      "explicit_deps": [
+        "T051",
+        "T052",
+        "T053"
+      ],
+      "phase_deps": [
+        "T045"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T055",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Run `./fake.sh build -t Dev` and confirm the V1 fast workflow still restores, builds, and runs default non-visual tests without template packaging",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T056",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Run `./fake.sh build -t TemplateCheck` and confirm all four artifact/profile rows pass, no placeholders remain, no excluded history is present, generated `Dev` completes within the 15 minute target per project, elapsed time is recorded per artifact/profile row, and required artifact classes exist",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T057",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Run `./fake.sh build -t DependencyReport`, `./fake.sh build -t GeneratedGuidanceCheck`, and `./fake.sh build -t TemplateDrift`; confirm readiness outputs and actionable diagnostics",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T058",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t Verify` and `./fake.sh build -t Ci`; confirm V1 plus V2 gates pass and `Ci` delegates to `Verify`",
+      "explicit_deps": [
+        "T055",
+        "T056",
+        "T057"
+      ],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T059",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Validate `artifacts/templates/FS.Skia.UI.Template.*.nupkg` and generated output inventories directly enough to confirm packaged artifact shape matches source-directory validation",
+      "explicit_deps": [
+        "T056"
+      ],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T060",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record a minimal profile review proving core library, one basic sample, core tests, package checks, docs, and Spec Kit governance assets are present while optional layout, charts, parity, and visual sample scope are absent",
+      "explicit_deps": [
+        "T056"
+      ],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T061",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh specs/007-v2-template-packaging --graph-only` and confirm no cycles, dangling references, orphaned tasks, or unexpected propagated statuses",
+      "explicit_deps": [],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T062",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh specs/007-v2-template-packaging` and confirm PASS, or document every unresolved synthetic-evidence or diff-scan blocker",
+      "explicit_deps": [
+        "T058",
+        "T061"
+      ],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T063",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Update quickstart, contracts, plan notes, and readiness final review only if final target names, artifact paths, or deferred boundaries changed during implementation",
+      "explicit_deps": [
+        "T056",
+        "T057",
+        "T058",
+        "T062"
+      ],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T064",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Prepare the merge summary with command results, readiness evidence paths, template validation matrix, dependency governance verdict, drift verdict, synthetic-evidence inventory, and deferred roadmap boundaries",
+      "explicit_deps": [
+        "T056",
+        "T057",
+        "T058",
+        "T062",
+        "T063"
+      ],
+      "phase_deps": [
+        "T054"
+      ],
+      "root_cause": []
+    }
+  ]
+}

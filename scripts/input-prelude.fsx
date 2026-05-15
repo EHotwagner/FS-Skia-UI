@@ -26,7 +26,7 @@ let registry =
         | Result.Error diagnostics -> failwithf "registry failed: %A" diagnostics
 
 let config =
-    fixture "specs/003-keyboard-input-framework/readiness/sample-configs/modal-input.yaml"
+    fixture "samples/KeyboardInput/configs/modal-input.yaml"
     |> KeyboardInput.parseYaml
     |> function
         | Result.Ok config -> config

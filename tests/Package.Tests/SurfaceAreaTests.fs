@@ -6,7 +6,7 @@ open System.Reflection
 open Expecto
 
 let rec findRepositoryRoot (directory: string) =
-    if File.Exists(Path.Combine(directory, "FS-Skia-UI.sln")) then
+    if Directory.GetFiles(directory, "*.sln").Length > 0 || File.Exists(Path.Combine(directory, "build.fsx")) then
         directory
     else
         match Directory.GetParent directory |> Option.ofObj with

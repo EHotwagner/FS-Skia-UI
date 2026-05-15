@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-specs/006-template-framework-governance/plan.md
+specs/007-v2-template-packaging/plan.md
 <!-- SPECKIT END -->

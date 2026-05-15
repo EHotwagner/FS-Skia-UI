@@ -25,7 +25,7 @@ let registry =
         | Result.Error diagnostics -> failwithf "registry failed: %A" diagnostics
 
 let model =
-    File.ReadAllText(Path.Combine(root, "specs", "003-keyboard-input-framework", "readiness", "sample-configs", "modal-input.yaml"))
+    File.ReadAllText(Path.Combine(root, "samples", "KeyboardInput", "configs", "modal-input.yaml"))
     |> KeyboardInput.parseYaml
     |> function
         | Result.Ok config -> config

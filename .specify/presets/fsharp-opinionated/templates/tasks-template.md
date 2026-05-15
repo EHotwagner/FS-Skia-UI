@@ -59,11 +59,20 @@ restore/build/test/package/evidence command order:
 - `./fake.sh build -t PackageSurfaceCheck` for package surface review.
 - `./fake.sh build -t FsiTranscripts` for public FSI evidence.
 - `./fake.sh build -t SampleContractSmoke` for sample smoke evidence.
+- `./fake.sh build -t TemplateCheck` for source/package default/minimal
+  generated project validation.
+- `./fake.sh build -t DependencyReport` for central package governance.
+- `./fake.sh build -t GeneratedGuidanceCheck` for generated spec/plan prompt
+  governance.
+- `./fake.sh build -t TemplateDrift` for template-owned drift and deferral
+  validation.
 - `./fake.sh build -t EvidenceGraph` and `./fake.sh build -t EvidenceAudit`
   for graph and synthetic-evidence gates.
 
 Keep `tasks.deps.yml` and the `speckit.evidence.graph` status refresh
 requirements in generated task lists.
+
+Template source: `.specify/presets/fsharp-opinionated/templates/tasks-template.md`.
 
 ---
 

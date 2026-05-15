@@ -11,13 +11,22 @@
     <Compile Include="CommandContractTests.fs" />
     <Compile Include="ArtifactPathTests.fs" />
     <Compile Include="DocsGuidanceTests.fs" />
+    <Compile Include="V2CommandContractTests.fs" />
+    <Compile Include="V2ArtifactPathTests.fs" />
+    <Compile Include="V2SafeOperationTests.fs" />
+    <Compile Include="TemplateProfileTests.fs" />
+    <Compile Include="TemplateWorkflowTests.fs" />
+    <Compile Include="GeneratedProjectValidationTests.fs" />
+    <Compile Include="DependencyGovernanceTests.fs" />
+    <Compile Include="GeneratedGuidanceTests.fs" />
+    <Compile Include="TemplateDriftTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Expecto" Version="10.2.2" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
-    <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.15.3" />
+    <PackageReference Include="Expecto" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="YoloDev.Expecto.TestSdk" />
   </ItemGroup>
 
 </Project>

@@ -90,6 +90,27 @@
 - **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
 - **FR-005**: System MUST [behavior, e.g., "log all security events"]
 
+### Framework Governance Prompts *(mandatory for this repository)*
+
+- **Package impact**: State whether this feature changes package identities,
+  package contents, package versions, or generated package consumers.
+- **Public contract impact**: State whether any `.fsi` signature, documented
+  public API, sample contract, or surface baseline changes.
+- **State workflow impact**: State whether the feature introduces or changes
+  stateful workflow, I/O, commands, effects, subscriptions, or interpreter
+  behavior.
+- **Layout/rendering impact**: State whether layout, charts, rendering,
+  screenshots, Vulkan, Skia, visual output, or unsupported environment
+  diagnostics change.
+- **Evidence obligations**: Name the required real evidence paths, including
+  FSI transcripts, packed-library tests, smoke logs, screenshots, generated
+  project logs, or governance reports.
+- **Unsupported scope**: Name visual, release, platform, distribution, or
+  roadmap boundaries that are explicitly out of scope.
+- **Build-target impact**: State whether `Dev`, `Verify`, `Ci`, `PackLocal`,
+  `TemplateCheck`, `DependencyReport`, `GeneratedGuidanceCheck`,
+  `TemplateDrift`, `EvidenceGraph`, or `EvidenceAudit` must change.
+
 *Example of marking unclear requirements:*
 
 - **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]

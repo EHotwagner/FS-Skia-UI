@@ -1,0 +1,134 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "FS-Skia-UI Contributors",
+  "classifications": [
+    "F#",
+    "Skia",
+    "Elmish",
+    "Template"
+  ],
+  "identity": "FS.Skia.UI.Template",
+  "name": "FS Skia UI Governed Project",
+  "shortName": "fs-skia-ui",
+  "sourceName": "FS-Skia-UI",
+  "preferNameDirectory": true,
+  "symbols": {
+    "profile": {
+      "type": "parameter",
+      "datatype": "choice",
+      "defaultValue": "default",
+      "description": "Starter profile to generate.",
+      "choices": [
+        {
+          "choice": "default",
+          "description": "Full governed framework starter with core, charts, layout, samples, tests, docs, and Spec Kit assets."
+        },
+        {
+          "choice": "minimal",
+          "description": "Small governed starter with core library, BasicViewer sample, core tests, package checks, docs, and Spec Kit assets."
+        }
+      ]
+    },
+    "rootNamespace": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "FS.Skia.UI",
+      "replaces": "FS.Skia.UI",
+      "fileRename": "FS.Skia.UI",
+      "description": "Root namespace and package id prefix for the generated product."
+    },
+    "packagePrefix": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "FS.Skia.UI",
+      "description": "Package prefix reserved for generated product packages."
+    },
+    "authors": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "FS-Skia-UI Contributors",
+      "replaces": "FS-Skia-UI Contributors",
+      "description": "Generated product authors."
+    },
+    "repositoryUrl": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "https://github.com/FS-Skia-UI/FS-Skia-UI",
+      "replaces": "https://github.com/FS-Skia-UI/FS-Skia-UI",
+      "description": "Generated product repository URL."
+    },
+    "targetFramework": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "net10.0",
+      "replaces": "net10.0",
+      "description": "Target framework for generated projects."
+    },
+    "projectSlug": {
+      "type": "generated",
+      "generator": "casing",
+      "parameters": {
+        "source": "name",
+        "toLower": true
+      },
+      "replaces": "fs-skia-ui"
+    }
+  },
+  "sources": [
+    {
+      "source": "./",
+      "target": "./",
+      "exclude": [
+        ".fake/**",
+        ".git/**",
+        ".template.config/**",
+        ".template.package/**",
+        "artifacts/**",
+        "bin/**",
+        "obj/**",
+        "**/bin/**",
+        "**/obj/**",
+        "specs/**",
+        "specs/**/readiness/**",
+        "specs/001-*/**",
+        "specs/002-*/**",
+        "specs/003-*/**",
+        "specs/004-*/**",
+        "specs/005-*/**",
+        "specs/006-*/**",
+        "specs/007-*/**"
+      ],
+      "modifiers": [
+        {
+          "condition": "(profile == \"minimal\")",
+          "exclude": [
+            "FS-Skia-UI.sln",
+            "src/Charts/**",
+            "src/Layout/**",
+            "tests/Charts.Tests/**",
+            "tests/Layout.Tests/**",
+            "tests/Parity.Tests/**",
+            "tests/Smoke.Tests/**",
+            "tests/Package.Tests/SurfaceAreaTests.fs",
+            "samples/ChartsGallery/**",
+            "samples/DataGridGallery/**",
+            "samples/DemoReel/**",
+            "samples/EffectsGallery/**",
+            "samples/InteractiveViewer/**",
+            "samples/KeyboardInputGallery/**",
+            "samples/KeyboardInput/**",
+            "samples/LayoutGraphGallery/**",
+            "samples/ParityGallery/**",
+            "samples/ScreenshotGallery/**",
+            "scripts/charts-prelude.fsx",
+            "scripts/layout-prelude.fsx",
+            "scripts/parity-evidence.fsx",
+            "scripts/us1-vulkan-smoke.sh",
+            "scripts/input-state-display-performance.fsx",
+            "scripts/input-performance.fsx"
+          ]
+        }
+      ]
+    }
+  ]
+}
