@@ -659,6 +659,30 @@ let fileShouldBeScanned (filePath: string) =
     |> List.exists (fun segment -> normalized.IndexOf(segment, StringComparison.Ordinal) >= 0)
     |> not
 
+let generatedShellScripts row =
+    Directory.EnumerateFiles(row.Root, "*.sh", SearchOption.AllDirectories)
+    |> Seq.filter fileShouldBeScanned
+    |> Seq.toList
+
+let isWindows =
+    Path.DirectorySeparatorChar = '\\'
+
+let hasUserExecutePermission filePath =
+    if isWindows then
+        true
+    else
+        let startInfo = ProcessStartInfo("test", $"-x {quote filePath}")
+        startInfo.RedirectStandardOutput <- true
+        startInfo.RedirectStandardError <- true
+        startInfo.UseShellExecute <- false
+
+        use proc =
+            match Process.Start startInfo |> Option.ofObj with
+            | Some proc -> proc
+            | None -> failwith "Could not start test -x"
+
+        proc.WaitForExit(30 * 1000) && proc.ExitCode = 0
+
 let scanGeneratedRow row =
     let files =
         Directory.EnumerateFiles(row.Root, "*", SearchOption.AllDirectories)
@@ -721,6 +745,7 @@ let scanGeneratedRow row =
           "docs/template-profile.md"
           ".specify/workflows/speckit/workflow.yml"
           "Directory.Packages.props"
+          "AGENTS.md"
           "build.fsx"
           "fake.sh" ]
 
@@ -739,6 +764,26 @@ let scanGeneratedRow row =
 
     if not (List.isEmpty missingRequired) then
         failwithf "%s/%s generated project is missing required files:%s%s" row.Artifact row.Profile Environment.NewLine (String.Join(Environment.NewLine, missingRequired))
+
+    let staleAgentsReference =
+        let agentsPath = path [ row.Root; "AGENTS.md" ]
+
+        File.Exists agentsPath
+        && File.ReadAllText(agentsPath).IndexOf("specs/008-targeted-refactor-governance", StringComparison.Ordinal) >= 0
+
+    if staleAgentsReference then
+        failwithf "%s/%s generated AGENTS.md references source-only active feature specs/008-targeted-refactor-governance" row.Artifact row.Profile
+
+    let nonExecutableScripts =
+        if isWindows then
+            []
+        else
+            generatedShellScripts row
+            |> List.filter (hasUserExecutePermission >> not)
+            |> List.map (relativePathFrom row.Root)
+
+    if not (List.isEmpty nonExecutableScripts) then
+        failwithf "%s/%s generated project has non-executable shell scripts:%s%s" row.Artifact row.Profile Environment.NewLine (String.Join(Environment.NewLine, nonExecutableScripts))
 
     let stopwatch = Stopwatch.StartNew()
     runProcess $"{row.Artifact}/{row.Profile} generated Dev" "bash" "./fake.sh build -t Dev" row.Root (path [ row.EvidenceDir; "dev.log" ]) Map.empty
@@ -764,6 +809,8 @@ let scanGeneratedRow row =
           "Placeholder scan: PASS"
           "Excluded-history scan: PASS"
           "Minimal optional exclusion scan: PASS"
+          "Generated AGENTS scan: PASS"
+          "Executable script scan: PASS"
           $"Generated Dev elapsed: {elapsedSeconds:F1} seconds"
           "Visual support: non-visual V2 validation only; full visual evidence is deferred." ]
         |> String.concat Environment.NewLine

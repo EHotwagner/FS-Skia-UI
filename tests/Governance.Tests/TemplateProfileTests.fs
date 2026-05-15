@@ -22,6 +22,8 @@ let templateProfileTests =
                   "\"targetFramework\""
                   "\"skipGitInit\""
                   "\"postActions\""
+                  ".template.config/generated/"
+                  "chmod +x"
                   "git init"
                   "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2" ]
                 |> List.iter (fun needle -> Expect.stringContains content needle $"template.json contains {needle}")
@@ -43,5 +45,14 @@ let templateProfileTests =
                       "samples/ScreenshotGallery/**" ]
             else
                 Expect.isFalse (directoryExists "specs/007-v2-template-packaging") "generated projects exclude source-only history"
+        }
+
+        test "generated AGENTS guidance is not tied to source active feature" {
+            if fileExists ".template.config/generated/AGENTS.md" then
+                let content = read ".template.config/generated/AGENTS.md"
+                Expect.stringContains content "specs/<feature>/plan.md" "generated AGENTS points at generated feature plans"
+                Expect.isFalse (content.Contains "specs/008-targeted-refactor-governance") "generated AGENTS omits source-only active feature"
+            else
+                Expect.isFalse (directoryExists ".template.config") "generated projects do not carry template metadata"
         }
     ]

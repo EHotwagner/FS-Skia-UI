@@ -17,7 +17,7 @@ NuGet template package installation.
 dotnet new install .
 dotnet new fs-skia-ui --name MyProduct --profile default --allow-scripts yes
 dotnet new fs-skia-ui --name MyProduct.Minimal --profile minimal --allow-scripts yes
-dotnet new fs-skia-ui --name MyProduct.NoGit --skipGitInit true
+dotnet new fs-skia-ui --name MyProduct.NoGit --skipGitInit true --allow-scripts yes
 ```
 
 The template accepts product identity parameters:
@@ -30,10 +30,11 @@ The template accepts product identity parameters:
 - `--skipGitInit`
 
 By default, generation initializes a Git repository for standalone Spec Kit
-workflows when the output directory is not already inside a Git worktree. The
-.NET CLI prompts before running template scripts unless `--allow-scripts yes`
-is supplied. Use `--skipGitInit true` for generated projects that should rely
-on an existing parent repository or remain disposable validation artifacts.
+workflows when the output directory is not already inside a Git worktree and
+repairs Unix execute permissions on generated shell scripts. The .NET CLI
+prompts before running template scripts unless `--allow-scripts yes` is
+supplied. Use `--skipGitInit true` for generated projects that should rely on
+an existing parent repository or remain disposable validation artifacts.
 
 Template validation exercises both `default` and `minimal` through the source
 directory and the local package artifact created by `TemplatePack`.

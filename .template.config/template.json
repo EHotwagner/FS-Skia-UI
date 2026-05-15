@@ -87,6 +87,7 @@
       "exclude": [
         ".fake/**",
         ".git/**",
+        "AGENTS.md",
         ".template.config/**",
         ".template.package/**",
         "artifacts/**",
@@ -135,21 +136,42 @@
           ]
         }
       ]
+    },
+    {
+      "source": ".template.config/generated/",
+      "target": "./"
     }
   ],
   "postActions": [
     {
       "condition": "(!skipGitInit && OS != \"Windows_NT\")",
-      "description": "Initialize a Git repository for standalone Spec Kit workflows.",
+      "description": "Make generated shell scripts executable and initialize a Git repository for standalone Spec Kit workflows.",
       "manualInstructions": [
         {
-          "text": "Run 'git init' from the generated project root if this project is not already inside a Git repository."
+          "text": "Run 'find . -type f \\( -name \"*.sh\" -o -name \"fake.sh\" \\) -exec chmod +x {} +' and then run 'git init' if this project is not already inside a Git repository."
         }
       ],
       "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
       "args": {
         "executable": "bash",
-        "args": "-c \"if ! command -v git >/dev/null 2>&1; then echo '[fs-skia-ui] git not found; skipped repository initialization' >&2; exit 0; fi; git rev-parse --is-inside-work-tree >/dev/null 2>&1 || git init -q\"",
+        "args": "-c \"find . -type f \\( -name '*.sh' -o -name 'fake.sh' \\) -exec chmod +x {} +; if ! command -v git >/dev/null 2>&1; then echo '[fs-skia-ui] git not found; skipped repository initialization' >&2; exit 0; fi; git rev-parse --is-inside-work-tree >/dev/null 2>&1 || git init -q\"",
+        "redirectStandardOutput": false,
+        "redirectStandardError": false
+      },
+      "continueOnError": true
+    },
+    {
+      "condition": "(skipGitInit && OS != \"Windows_NT\")",
+      "description": "Make generated shell scripts executable.",
+      "manualInstructions": [
+        {
+          "text": "Run 'find . -type f \\( -name \"*.sh\" -o -name \"fake.sh\" \\) -exec chmod +x {} +' from the generated project root."
+        }
+      ],
+      "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+      "args": {
+        "executable": "bash",
+        "args": "-c \"find . -type f \\( -name '*.sh' -o -name 'fake.sh' \\) -exec chmod +x {} +\"",
         "redirectStandardOutput": false,
         "redirectStandardError": false
       },

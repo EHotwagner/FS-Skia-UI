@@ -12,6 +12,8 @@ let generatedProjectValidationTests =
                 [ "Placeholder scan: PASS"
                   "Excluded-history scan: PASS"
                   "Minimal optional exclusion scan: PASS"
+                  "Generated AGENTS scan: PASS"
+                  "Executable script scan: PASS"
                   "generated Dev"
                   "--allow-scripts yes"
                   "--skipGitInit true"
@@ -27,6 +29,7 @@ let generatedProjectValidationTests =
                   "tests/Package.Tests/Package.Tests.fsproj"
                   "tests/Governance.Tests/Governance.Tests.fsproj"
                   "samples/BasicViewer/BasicViewer.fsproj"
+                  "AGENTS.md"
                   "Directory.Packages.props" ]
         }
     ]

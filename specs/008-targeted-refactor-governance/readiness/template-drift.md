@@ -12,6 +12,7 @@ PASS
 | `docs/template-profile.md` | `documentation` |
 | `tests/Governance.Tests/GeneratedProjectValidationTests.fs` | `test-code` |
 | `tests/Governance.Tests/TemplateProfileTests.fs` | `test-code` |
+| `.template.config/generated/AGENTS.md` | `template-manifest` |
 
 ## Required Alignment Classes
 
@@ -27,6 +28,8 @@ PASS
 - `tests/Governance.Tests/GeneratedProjectValidationTests.fs` requires `active-feature-evidence`
 - `tests/Governance.Tests/TemplateProfileTests.fs` requires `test-evidence`
 - `tests/Governance.Tests/TemplateProfileTests.fs` requires `active-feature-evidence`
+- `.template.config/generated/AGENTS.md` requires `template-profile`
+- `.template.config/generated/AGENTS.md` requires `active-feature-evidence`
 
 ## Alignment
 
