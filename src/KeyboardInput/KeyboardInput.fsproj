@@ -5,7 +5,7 @@
     <IsPackable>true</IsPackable>
     <PackageId>FS.Skia.UI.KeyboardInput</PackageId>
     <AssemblyName>FS.Skia.UI.KeyboardInput</AssemblyName>
-    <Version>0.1.8-preview.1</Version>
+    <Version>0.1.9-preview.1</Version>
     <Title>FS.Skia.UI.KeyboardInput</Title>
     <Description>Keyboard input reducer contracts for FS.Skia.UI V3 products.</Description>
     <PackageTags>fsharp;keyboard;input;ui</PackageTags>
