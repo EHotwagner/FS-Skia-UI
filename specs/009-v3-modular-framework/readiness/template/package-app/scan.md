@@ -1,11 +1,12 @@
 # package/app Scan
 
 Root: `/home/developer/projects/FS-Skia-UI/artifacts/template-check/009-v3-modular-framework/package-app`
-Files scanned: 20
+Files scanned: 88
 Placeholder scan: PASS
 Excluded-history scan: PASS
 V3 framework-source exclusion scan: PASS
 V3 selected package reference scan: PASS
+Spec Kit install scan: PASS
 Generated AGENTS scan: PASS
 Executable script scan: PASS
 Generated Dev elapsed: 0.8 seconds

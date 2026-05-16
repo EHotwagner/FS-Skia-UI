@@ -679,12 +679,18 @@ let validateTemplatePackage model outputPath =
           "content/template/profiles/app.yml"
           "content/template/profiles/headless-scene.yml"
           "content/template/profiles/governed.yml"
-          "content/template/profiles/sample-pack.yml" ]
+          "content/template/profiles/sample-pack.yml"
+          "content/.specify/templates/spec-template.md"
+          "content/.specify/scripts/bash/setup-plan.sh"
+          "content/.agents/skills/speckit-specify/SKILL.md"
+          "content/.template.config/generated/.specify/memory/constitution.md" ]
 
     let forbiddenPrefixes =
         [ "content/.git/"
           "content/artifacts/"
           "content/.template.package/"
+          "content/.specify/feature.json"
+          "content/.specify/memory/constitution.md"
           "content/specs/001-"
           "content/specs/002-"
           "content/specs/003-"
@@ -911,7 +917,16 @@ let scanGeneratedRow (row: TemplateRow) =
           "Directory.Packages.props"
           "AGENTS.md"
           "build.fsx"
-          "fake.sh" ]
+          "fake.sh"
+          ".specify/memory/constitution.md"
+          ".specify/templates/spec-template.md"
+          ".specify/scripts/bash/setup-plan.sh"
+          ".specify/workflows/speckit/workflow.yml"
+          ".specify/extensions/evidence/scripts/bash/run-audit.sh"
+          ".agents/skills/speckit-specify/SKILL.md"
+          ".agents/skills/speckit-plan/SKILL.md"
+          ".agents/skills/speckit-tasks/SKILL.md"
+          ".agents/skills/speckit-implement/SKILL.md" ]
         @ samplePackRequired
 
     let missingRequired =
@@ -991,6 +1006,7 @@ let scanGeneratedRow (row: TemplateRow) =
           "Excluded-history scan: PASS"
           "V3 framework-source exclusion scan: PASS"
           "V3 selected package reference scan: PASS"
+          "Spec Kit install scan: PASS"
           "Generated AGENTS scan: PASS"
           "Executable script scan: PASS"
           $"Generated Dev elapsed: {elapsedSeconds:F1} seconds"
@@ -1014,7 +1030,7 @@ let scanGeneratedProjects model outputPath =
                   let devLog = path [ row.EvidenceDir; "dev.log" ]
                   $"| {row.Artifact} | {row.Profile} | `{row.Root}` | `{devLog}` |")
           ""
-          "PASS: placeholder scans, excluded-history scans, V3 profile package checks, and generated Dev runs completed for all rows." ]
+          "PASS: placeholder scans, excluded-history scans, V3 profile package checks, Spec Kit install checks, and generated Dev runs completed for all rows." ]
         |> String.concat Environment.NewLine
 
     ensureParent outputPath
@@ -1278,6 +1294,36 @@ let rec copyDirectory source target =
     for directory in Directory.GetDirectories source do
         copyDirectory directory (path [ target; Path.GetFileName directory ])
 
+let rec copyDirectoryExcept (source: string) (target: string) (excludedRelativePaths: string list) =
+    Directory.CreateDirectory target |> ignore
+
+    let excluded =
+        excludedRelativePaths
+        |> List.map (fun relative -> relative.Replace('\\', '/'))
+        |> Set.ofList
+
+    let rec copy (currentSource: string) (currentTarget: string) (relativePrefix: string) =
+        Directory.CreateDirectory currentTarget |> ignore
+
+        for file in Directory.GetFiles currentSource do
+            let relative = (relativePrefix + Path.GetFileName file).Replace('\\', '/')
+
+            if Set.contains relative excluded |> not then
+                File.Copy(file, path [ currentTarget; Path.GetFileName file ], true)
+
+        for directory in Directory.GetDirectories currentSource do
+            let name = Path.GetFileName directory
+            let relative = (relativePrefix + name + "/").Replace('\\', '/')
+
+            if Set.contains relative excluded |> not then
+                copy directory (path [ currentTarget; name ]) relative
+
+    copy source target ""
+
+let copySpecKitInstall model root =
+    copyDirectoryExcept (path [ model.RepositoryRoot; ".specify" ]) (path [ root; ".specify" ]) [ "feature.json"; "memory/constitution.md" ]
+    copyDirectory (path [ model.RepositoryRoot; ".template.config"; "generated"; ".specify" ]) (path [ root; ".specify" ])
+
 let capabilitiesById model =
     readCapabilityCatalog model |> List.map (fun row -> row.Id, row) |> Map.ofList
 
@@ -1344,6 +1390,10 @@ let copySelectedSkills model row capabilities =
     Directory.CreateDirectory skillRoot |> ignore
     copyDirectory (path [ model.RepositoryRoot; "template"; "base"; ".agents"; "skills"; "fs-skia-project" ]) (path [ skillRoot; "fs-skia-project" ])
 
+    Directory.GetDirectories(path [ model.RepositoryRoot; ".agents"; "skills" ], "speckit-*", SearchOption.TopDirectoryOnly)
+    |> Array.iter (fun directory ->
+        copyDirectory directory (path [ skillRoot; Path.GetFileName directory ]))
+
     let byId = capabilitiesById model
 
     for capabilityId in capabilities do
@@ -1406,6 +1456,7 @@ let generateV3Product model row =
     cleanDirectoryContents row.EvidenceDir
     let templateRoot = templatePayloadRoot model row
     copyDirectory (path [ templateRoot; "base" ]) row.Root
+    copySpecKitInstall model row.Root
 
     let resolved = resolveCapabilities model row.Capabilities
     writeProductProject model row resolved
@@ -1455,6 +1506,14 @@ let scanV3GeneratedRow model row =
           "README.md"
           "docs/product.md"
           ".agents/skills/fs-skia-project/SKILL.md"
+          ".agents/skills/speckit-specify/SKILL.md"
+          ".agents/skills/speckit-plan/SKILL.md"
+          ".agents/skills/speckit-tasks/SKILL.md"
+          ".agents/skills/speckit-implement/SKILL.md"
+          ".specify/memory/constitution.md"
+          ".specify/templates/spec-template.md"
+          ".specify/scripts/bash/setup-plan.sh"
+          ".specify/workflows/speckit/workflow.yml"
           "build.fsx"
           "fake.sh"
           "fake.cmd" ]

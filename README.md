@@ -66,7 +66,10 @@ The generated product references FS.Skia.UI packages. For local preview work,
 `PackLocal` writes those packages to `~/.local/share/nuget-local`; add that
 folder as a NuGet source or use an equivalent configured feed before restoring
 or running the generated product project. Pass `--skipGitInit true` when
-generating inside an existing repository.
+generating inside an existing repository. The generated project includes the
+`.specify/` Spec Kit install and project-local `speckit-*` skills, so commands
+such as `$speckit-specify`, `$speckit-plan`, and `$speckit-tasks` are available
+from the new repo after generation.
 
 ## Minimal App Shape
 
@@ -195,6 +198,8 @@ That initial commit prevents unborn-branch failures in commands such as
 `/speckit-clarify`. The .NET CLI prompts before running template scripts unless
 `--allow-scripts yes` is supplied. Pass `--skipGitInit true` when generating
 inside an existing repository or when the output is disposable.
+The generated output also carries `.specify/` and the local `speckit-*` skills;
+source-only active feature state such as `.specify/feature.json` is omitted.
 
 Maintainers validate source and packaged template paths with:
 

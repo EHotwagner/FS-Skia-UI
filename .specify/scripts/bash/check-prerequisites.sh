@@ -9,7 +9,6 @@
 #
 # OPTIONS:
 #   --json              Output in JSON format
-#   --require-plan      Require plan.md to exist (accepted for compatibility)
 #   --require-tasks     Require tasks.md to exist (for implementation phase)
 #   --include-tasks     Include tasks.md in AVAILABLE_DOCS list
 #   --paths-only        Only output path variables (no validation)
@@ -33,10 +32,6 @@ for arg in "$@"; do
         --json)
             JSON_MODE=true
             ;;
-        --require-plan)
-            # plan.md is always required by this consolidated script; accept
-            # the older flag so generated implementation tasks remain runnable.
-            ;;
         --require-tasks)
             REQUIRE_TASKS=true
             ;;
@@ -54,7 +49,6 @@ Consolidated prerequisite checking for Spec-Driven Development workflow.
 
 OPTIONS:
   --json              Output in JSON format
-  --require-plan      Require plan.md to exist (accepted for compatibility)
   --require-tasks     Require tasks.md to exist (for implementation phase)
   --include-tasks     Include tasks.md in AVAILABLE_DOCS list
   --paths-only        Only output path variables (no prerequisite validation)

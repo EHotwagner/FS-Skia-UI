@@ -42,6 +42,9 @@ let templateProfileTests =
                 expectFileContains
                     ".template.config/template.json"
                     [ "template/base/"
+                      ".specify/"
+                      ".agents/skills/"
+                      "memory/constitution.md"
                       "src/Scene/skill/"
                       "src/SkiaViewer/skill/"
                       "src/Elmish/skill/"

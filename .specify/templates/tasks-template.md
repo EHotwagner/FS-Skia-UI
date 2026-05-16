@@ -1,251 +1,153 @@
----
+# Tasks: [FEATURE_NAME]
 
-description: "Task list template for feature implementation"
----
+**Feature branch**: `[FEATURE_BRANCH]`
+**Spec**: `specs/[FEATURE_ID]/spec.md`
+**Plan**: `specs/[FEATURE_ID]/plan.md`
 
-# Tasks: [FEATURE NAME]
+## Status Legend
 
-**Input**: Design documents from `/specs/[###-feature-name]/`
-**Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
+- `[ ]` — pending
+- `[X]` — done with real evidence
+- `[S]` — done with synthetic evidence only (must be disclosed per Principle V)
+- `[F]` — failed
+- `[-]` — skipped (with written rationale)
 
-**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
+The `[S*]` marker is computed, not written: any task whose dependency is
+`[S]` or `[S*]` and which otherwise would be `[X]` is promoted to `[S*]` by
+the evidence audit. See `readiness/task-graph.md` for the propagated view.
 
-**Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
+## Vertical-slice rule (US phases)
 
-## Format: `[ID] [P?] [Story] Description`
+A task tagged `[US*]` may only be marked `[X]` when the change is
+reachable from a user-facing entry point and that path was actually
+exercised — an FSI session against the packed library, a smoke run of the
+application, a manual walk-through with transcript, or a screenshot
+captured under `readiness/`. Domain, model, or core-layer changes alone
+do **not** satisfy `[X]` for a `[US*]` task, even if their unit tests
+pass green. If the user-reachable surface is missing, stubbed, or not
+yet wired, mark `[ ]` (work continues) or `[S]` with a disclosed reason
+in the Synthetic-Evidence Inventory — never `[X]`.
 
-- **[P]**: Can run in parallel (different files, no dependencies)
-- **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)
-- Include exact file paths in descriptions
+For stateful or I/O-bearing stories, `[X]` also requires Elmish/MVU evidence:
+the public `Model` / `Msg` / `Effect` or `Cmd<Msg>` contract was exercised,
+pure `update` transitions were tested, emitted effects were asserted, and
+the effect interpreter was run against real dependencies where safe.
 
-## Path Conventions
+This rule does not apply to Setup, Foundation, Integration, or Polish
+phase tasks; those are evaluated against their own phase verification.
 
-- **Single project**: `src/`, `tests/` at repository root
-- **Web app**: `backend/src/`, `frontend/src/`
-- **Mobile**: `api/src/`, `ios/src/` or `android/src/`
-- Paths shown below assume single project - adjust based on plan.md structure
+## Task Annotations
 
-<!-- 
-  ============================================================================
-  IMPORTANT: The tasks below are SAMPLE TASKS for illustration purposes only.
-  
-  The /speckit-tasks command MUST replace these with actual tasks based on:
-  - User stories from spec.md (with their priorities P1, P2, P3...)
-  - Feature requirements from plan.md
-  - Entities from data-model.md
-  - Endpoints from contracts/
-  
-  Tasks MUST be organized by user story so each story can be:
-  - Implemented independently
-  - Tested independently
-  - Delivered as an MVP increment
-  
-  DO NOT keep these sample tasks in the generated tasks.md file.
-  ============================================================================
--->
+- **[P]** — parallel-safe (no deps inside the current phase)
+- **[US1]**, **[US2]**, … — user-story scope
+- **[T1]** / **[T2]** — Tier 1 (contracted) vs Tier 2 (internal) change
 
-## Phase 1: Setup (Shared Infrastructure)
+Every task must have a matching entry in `tasks.deps.yml` even if its
+dependency list is empty. The `speckit.evidence.graph` command refuses to
+proceed with dangling references.
 
-**Purpose**: Project initialization and basic structure
+## Canonical Verification Targets
 
-- [ ] T001 Create project structure per implementation plan
-- [ ] T002 Initialize [language] project with [framework] dependencies
-- [ ] T003 [P] Configure linting and formatting tools
+Generated tasks should call repository targets instead of duplicating raw
+restore/build/test/package/evidence command order:
 
----
+- `./fake.sh build -t Dev` for fast local verification.
+- `./fake.sh build -t Verify` for the full governed workflow.
+- `./fake.sh build -t PackLocal` for local package output.
+- `./fake.sh build -t RefreshSurfaceBaselines` for intentional current surface
+  baseline refreshes.
+- `./fake.sh build -t PackageSurfaceCheck` for package surface review.
+- `./fake.sh build -t FsiTranscripts` for public FSI evidence.
+- `./fake.sh build -t SampleContractSmoke` for sample smoke evidence.
+- `./fake.sh build -t TemplateCheck` for source/package default/minimal
+  generated project validation.
+- `./fake.sh build -t DependencyReport` for central package governance.
+- `./fake.sh build -t GeneratedGuidanceCheck` for generated spec/plan prompt
+  governance.
+- `./fake.sh build -t TemplateDrift` for template-owned drift and deferral
+  validation.
+- `./fake.sh build -t EvidenceGraph` and `./fake.sh build -t EvidenceAudit`
+  for graph and synthetic-evidence gates.
 
-## Phase 2: Foundational (Blocking Prerequisites)
+Keep `tasks.deps.yml` and the `speckit.evidence.graph` status refresh
+requirements in generated task lists.
 
-**Purpose**: Core infrastructure that MUST be complete before ANY user story can be implemented
-
-**⚠️ CRITICAL**: No user story work can begin until this phase is complete
-
-Examples of foundational tasks (adjust based on your project):
-
-- [ ] T004 Setup database schema and migrations framework
-- [ ] T005 [P] Implement authentication/authorization framework
-- [ ] T006 [P] Setup API routing and middleware structure
-- [ ] T007 Create base models/entities that all stories depend on
-- [ ] T008 Configure error handling and logging infrastructure
-- [ ] T009 Setup environment configuration management
-
-**Checkpoint**: Foundation ready - user story implementation can now begin in parallel
-
----
-
-## Phase 3: User Story 1 - [Title] (Priority: P1) 🎯 MVP
-
-**Goal**: [Brief description of what this story delivers]
-
-**Independent Test**: [How to verify this story works on its own]
-
-### Tests for User Story 1 (OPTIONAL - only if tests requested) ⚠️
-
-> **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
-
-- [ ] T010 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T011 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
-
-### Implementation for User Story 1
-
-- [ ] T012 [P] [US1] Create [Entity1] model in src/models/[entity1].py
-- [ ] T013 [P] [US1] Create [Entity2] model in src/models/[entity2].py
-- [ ] T014 [US1] Implement [Service] in src/services/[service].py (depends on T012, T013)
-- [ ] T015 [US1] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T016 [US1] Add validation and error handling
-- [ ] T017 [US1] Add logging for user story 1 operations
-
-**Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
+Template source: `.specify/presets/fsharp-opinionated/templates/tasks-template.md`.
 
 ---
 
-## Phase 4: User Story 2 - [Title] (Priority: P2)
+## Phase 1: Setup
 
-**Goal**: [Brief description of what this story delivers]
-
-**Independent Test**: [How to verify this story works on its own]
-
-### Tests for User Story 2 (OPTIONAL - only if tests requested) ⚠️
-
-- [ ] T018 [P] [US2] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T019 [P] [US2] Integration test for [user journey] in tests/integration/test_[name].py
-
-### Implementation for User Story 2
-
-- [ ] T020 [P] [US2] Create [Entity] model in src/models/[entity].py
-- [ ] T021 [US2] Implement [Service] in src/services/[service].py
-- [ ] T022 [US2] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T023 [US2] Integrate with User Story 1 components (if needed)
-
-**Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
+- [ ] T001 Scaffold the feature directory and link spec + plan
+- [ ] T002 [P] Add baseline install or adoption documentation for the selected profile
+- [ ] T003 [P] Add readiness artifact scaffolding (`specs/[FEATURE_ID]/readiness/`)
+- [ ] T004 Record feature Tier, affected layer, public-API impact, Elmish/MVU applicability, and required evidence obligations
 
 ---
 
-## Phase 5: User Story 3 - [Title] (Priority: P3)
+## Phase 2: Foundation
 
-**Goal**: [Brief description of what this story delivers]
+- [ ] T005 Draft the public surface as `.fsi` signature(s), including `Model`, `Msg`, `Effect` or `Cmd<Msg>`, `init`, `update`, and interpreter boundary for stateful or I/O-bearing features
+- [ ] T006 [P] Add or update constitutional guidance that this feature touches
+- [ ] T007 [P] Define or update operational workflows, commands, reports, or scripts
+- [ ] T008 Exercise the draft `.fsi` from FSI (`scripts/prelude.fsx` or ad-hoc), including representative `init` / `update` paths when MVU applies, and capture the session transcript to `readiness/fsi-session.txt`
+- [ ] T009 Record surface-area baselines for the new / changed public modules
+- [ ] T010 Record unsupported-scope handling and failure diagnostics
 
-**Independent Test**: [How to verify this story works on its own]
-
-### Tests for User Story 3 (OPTIONAL - only if tests requested) ⚠️
-
-- [ ] T024 [P] [US3] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T025 [P] [US3] Integration test for [user journey] in tests/integration/test_[name].py
-
-### Implementation for User Story 3
-
-- [ ] T026 [P] [US3] Create [Entity] model in src/models/[entity].py
-- [ ] T027 [US3] Implement [Service] in src/services/[service].py
-- [ ] T028 [US3] Implement [endpoint/feature] in src/[location]/[file].py
-
-**Checkpoint**: All user stories should now be independently functional
+**Checkpoint**: Foundation ready — story implementation may begin in parallel.
 
 ---
 
-[Add more user story phases as needed, following the same pattern]
+## Phase 3: User Story 1 (US1)
+
+### Tests First (Principle I, Principle VI)
+
+- [ ] T011 [P] [US1] Add semantic tests that load the packed library (or prelude), exercise the US1 surface, and assert MVU state transitions plus emitted effects when applicable
+- [ ] T012 [P] [US1] Add verification for the US1 outcome against the readiness artifact, including real interpreter evidence for effects where safe
+
+### Implementation
+
+- [ ] T013 [P] [US1] Add story-specific contracts, docs, or fixtures
+- [ ] T014 [P] [US1] Add any required sample or schema artifacts
+- [ ] T015 [US1] Implement the primary user-facing behavior for the story, keeping MVU `update` pure when applicable
+- [ ] T016 [US1] Connect the story's effect interpreter to canonical readiness artifacts or workflows
+- [ ] T017 [US1] Add validation and actionable failure diagnostics
+- [ ] T018 [US1] Document the story's independent validation path
+
+**Checkpoint**: User Story 1 is fully functional and testable independently.
 
 ---
 
-## Phase N: Polish & Cross-Cutting Concerns
+## Phase 4: User Story 2 (US2)
 
-**Purpose**: Improvements that affect multiple user stories
+### Tests First
 
-- [ ] TXXX [P] Documentation updates in docs/
-- [ ] TXXX Code cleanup and refactoring
-- [ ] TXXX Performance optimization across all stories
-- [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
-- [ ] TXXX Security hardening
-- [ ] TXXX Run quickstart.md validation
+- [ ] T019 [P] [US2] Add semantic tests exercising the US2 surface through FSI, including MVU transitions and effects when applicable
+- [ ] T020 [P] [US2] Add validation for the US2 readiness outcome, including real interpreter evidence where safe
 
----
+### Implementation
 
-## Dependencies & Execution Order
+- [ ] T021 [P] [US2] Add story-specific contracts, docs, or fixtures
+- [ ] T022 [US2] Implement the primary user-facing behavior for the story
 
-### Phase Dependencies
-
-- **Setup (Phase 1)**: No dependencies - can start immediately
-- **Foundational (Phase 2)**: Depends on Setup completion - BLOCKS all user stories
-- **User Stories (Phase 3+)**: All depend on Foundational phase completion
-  - User stories can then proceed in parallel (if staffed)
-  - Or sequentially in priority order (P1 → P2 → P3)
-- **Polish (Final Phase)**: Depends on all desired user stories being complete
-
-### User Story Dependencies
-
-- **User Story 1 (P1)**: Can start after Foundational (Phase 2) - No dependencies on other stories
-- **User Story 2 (P2)**: Can start after Foundational (Phase 2) - May integrate with US1 but should be independently testable
-- **User Story 3 (P3)**: Can start after Foundational (Phase 2) - May integrate with US1/US2 but should be independently testable
-
-### Within Each User Story
-
-- Tests (if included) MUST be written and FAIL before implementation
-- Models before services
-- Services before endpoints
-- Core implementation before integration
-- Story complete before moving to next priority
-
-### Parallel Opportunities
-
-- All Setup tasks marked [P] can run in parallel
-- All Foundational tasks marked [P] can run in parallel (within Phase 2)
-- Once Foundational phase completes, all user stories can start in parallel (if team capacity allows)
-- All tests for a user story marked [P] can run in parallel
-- Models within a story marked [P] can run in parallel
-- Different user stories can be worked on in parallel by different team members
+**Checkpoint**: User Story 2 is fully functional and testable independently.
 
 ---
 
-## Parallel Example: User Story 1
+## Phase 5: Integration & Polish
 
-```bash
-# Launch all tests for User Story 1 together (if tests requested):
-Task: "Contract test for [endpoint] in tests/contract/test_[name].py"
-Task: "Integration test for [user journey] in tests/integration/test_[name].py"
-
-# Launch all models for User Story 1 together:
-Task: "Create [Entity1] model in src/models/[entity1].py"
-Task: "Create [Entity2] model in src/models/[entity2].py"
-```
+- [ ] T023 Surface-area baseline refresh (Tier 1 only)
+- [ ] T024 Run the packed library through the numbered example scripts and confirm none are broken
+- [ ] T025 Run `speckit.evidence.graph` — confirm no cycles, no dangling refs, no `[S*]` surprises
+- [ ] T026 Run `speckit.evidence.audit` — confirm verdict PASS or document every `--accept-synthetic` override
 
 ---
 
-## Implementation Strategy
+## Synthetic-Evidence Inventory
 
-### MVP First (User Story 1 Only)
+List every `[S]` task here with its Principle V disclosures. This section is
+the source for the PR description's synthetic-evidence section.
 
-1. Complete Phase 1: Setup
-2. Complete Phase 2: Foundational (CRITICAL - blocks all stories)
-3. Complete Phase 3: User Story 1
-4. **STOP and VALIDATE**: Test User Story 1 independently
-5. Deploy/demo if ready
-
-### Incremental Delivery
-
-1. Complete Setup + Foundational → Foundation ready
-2. Add User Story 1 → Test independently → Deploy/Demo (MVP!)
-3. Add User Story 2 → Test independently → Deploy/Demo
-4. Add User Story 3 → Test independently → Deploy/Demo
-5. Each story adds value without breaking previous stories
-
-### Parallel Team Strategy
-
-With multiple developers:
-
-1. Team completes Setup + Foundational together
-2. Once Foundational is done:
-   - Developer A: User Story 1
-   - Developer B: User Story 2
-   - Developer C: User Story 3
-3. Stories complete and integrate independently
-
----
-
-## Notes
-
-- [P] tasks = different files, no dependencies
-- [Story] label maps task to specific user story for traceability
-- Each user story should be independently completable and testable
-- Verify tests fail before implementing
-- Commit after each task or logical group
-- Stop at any checkpoint to validate story independently
-- Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
+| Task | Reason | Real-evidence path | Tracking issue |
+|------|--------|---------------------|----------------|
+| _(none yet)_ | | | |

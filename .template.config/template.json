@@ -98,6 +98,24 @@
       ]
     },
     {
+      "source": ".specify/",
+      "target": ".specify/",
+      "copyOnly": [
+        "**/*"
+      ],
+      "exclude": [
+        "feature.json",
+        "memory/constitution.md"
+      ]
+    },
+    {
+      "source": ".agents/skills/",
+      "target": ".agents/skills/",
+      "copyOnly": [
+        "**/*"
+      ]
+    },
+    {
       "source": ".template.config/generated/",
       "target": "./"
     },

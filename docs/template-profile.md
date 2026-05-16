@@ -17,6 +17,12 @@ The V3 product generator composes `template/base/` with selected fragments from
 | `governed` | Scene plus Testing capability with full product governance assets. | Viewer, Elmish, keyboard, layout, charts, and samples unless selected by the profile. |
 | `sample-pack` | Sample-oriented product row with Scene, SkiaViewer, Elmish, and Samples selected. | Samples remain excluded from the default app profile. |
 
+Every profile includes a generated-product Spec Kit install: `.specify/`
+templates, scripts, workflows, extensions, a product-oriented constitution, and
+project-local `speckit-*` skills. Source-only active state such as
+`.specify/feature.json` and this framework repository's constitution are not
+copied.
+
 `GeneratedProductCheck` validates the source and packaged `app` rows plus the
 source `headless-scene`, `governed`, and `sample-pack` rows. Each row records a
 file list under the active feature `readiness/generated-file-lists/` directory

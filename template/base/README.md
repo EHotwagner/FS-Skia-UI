@@ -20,6 +20,10 @@ Run the generated product governance checks:
 ./fake.sh build -t Verify
 ```
 
+Spec Kit is installed in this repo through `.specify/` and the project-local
+`speckit-*` skills under `.agents/skills/`. Use `$speckit-specify`,
+`$speckit-plan`, and `$speckit-tasks` to start governed feature work.
+
 The product references FS.Skia.UI preview packages from the configured NuGet
 sources. For local framework development, pack the source repository with
 `./fake.sh build -t PackLocal` and add `~/.local/share/nuget-local` as a NuGet

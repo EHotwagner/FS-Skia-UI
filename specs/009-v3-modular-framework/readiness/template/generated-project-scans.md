@@ -11,4 +11,4 @@
 | package | governed | `/home/developer/projects/FS-Skia-UI/artifacts/template-check/009-v3-modular-framework/package-governed` | `/home/developer/projects/FS-Skia-UI/specs/009-v3-modular-framework/readiness/template/package-governed/dev.log` |
 | package | sample-pack | `/home/developer/projects/FS-Skia-UI/artifacts/template-check/009-v3-modular-framework/package-sample-pack` | `/home/developer/projects/FS-Skia-UI/specs/009-v3-modular-framework/readiness/template/package-sample-pack/dev.log` |
 
-PASS: placeholder scans, excluded-history scans, V3 profile package checks, and generated Dev runs completed for all rows.
+PASS: placeholder scans, excluded-history scans, V3 profile package checks, Spec Kit install checks, and generated Dev runs completed for all rows.
