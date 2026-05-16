@@ -7,7 +7,7 @@ defaultApp:
   - elmish
   - keyboard-input
   - layout
-  - charts
+  - controls
 capabilities:
   - id: scene
     displayName: Scene
@@ -97,32 +97,33 @@ capabilities:
     surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.Layout.txt
     docs: docs/v3Design.md
     ownerNotes: Yoga-backed layout and graph helpers.
-  - id: charts
-    displayName: Charts
-    packageId: FS.Skia.UI.Charts
-    project: src/Charts/Charts.fsproj
+  - id: controls
+    displayName: Controls
+    packageId: FS.Skia.UI.Controls
+    project: src/Controls/Controls.fsproj
     contracts:
-      - src/Charts/Types.fsi
-      - src/Charts/LineChart.fsi
-      - src/Charts/BarChart.fsi
-      - src/Charts/PieChart.fsi
-      - src/Charts/ScatterPlot.fsi
-      - src/Charts/AreaChart.fsi
-      - src/Charts/Histogram.fsi
-      - src/Charts/Candlestick.fsi
-      - src/Charts/RadarChart.fsi
-      - src/Charts/DataGrid.fsi
+      - src/Controls/Types.fsi
+      - src/Controls/Control.fsi
+      - src/Controls/Attributes.fsi
+      - src/Controls/Theme.fsi
+      - src/Controls/Accessibility.fsi
+      - src/Controls/Diagnostics.fsi
+      - src/Controls/Catalog.fsi
+      - src/Controls/TextInput.fsi
+      - src/Controls/Collections.fsi
+      - src/Controls/Charts.fsi
+      - src/Controls/CustomControl.fsi
     tests:
-      - tests/Charts.Tests/Charts.Tests.fsproj
-    skill: src/Charts/skill/SKILL.md
-    templateFragment: template/fragments/charts
-    dependencies: [scene]
-    profiles: [app, headless-scene, governed, sample-pack]
+      - tests/Controls.Tests/Controls.Tests.fsproj
+    skill: src/Controls/skill/SKILL.md
+    templateFragment: template/fragments/controls
+    dependencies: [scene, layout, keyboard-input]
+    profiles: [app, governed, sample-pack]
     defaultApp: true
-    evidence: [capability-catalog, package-surface, generated-product]
-    surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.Charts.txt
-    docs: docs/v3Design.md
-    ownerNotes: Chart and DataGrid scene builders.
+    evidence: [control-catalog, public-surface, semantic-tests, interaction-tests, layout-rendering, generated-product]
+    surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.Controls.txt
+    docs: docs/controls.md
+    ownerNotes: Declarative controls, widgets, chart controls, graph controls, and custom wrappers.
   - id: testing
     displayName: Testing
     packageId: FS.Skia.UI.Testing

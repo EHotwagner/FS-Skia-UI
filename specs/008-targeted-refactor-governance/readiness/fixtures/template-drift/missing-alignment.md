@@ -17,7 +17,7 @@ FAIL
 
 - Changed alignment classes: ``
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/009-v3-modular-framework`
+- Active feature evidence: `specs/010-skia-controls-library`
 
 ## Diagnostics
 

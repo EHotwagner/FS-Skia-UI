@@ -41,8 +41,7 @@ let skillValidationTests =
                   "fs-skia-skiaviewer"
                   "fs-skia-elmish"
                   "fs-skia-keyboard-input"
-                  "fs-skia-layout"
-                  "fs-skia-charts"
+                  "fs-skia-ui-widgets"
                   "unrelated capability skills" ]
         }
     ]

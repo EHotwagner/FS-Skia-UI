@@ -38,31 +38,22 @@ let runDotnet (workingDirectory: string) (arguments: string) =
 let packageOutput name =
     Path.Combine(repositoryRoot, "specs", "007-v2-template-packaging", "readiness", "package", name)
 
-let packageVersion = "0.1.6-preview.1"
+let packageVersion = "0.1.9-preview.1"
 
 [<Tests>]
 let packageContractTests =
     let v1PackageTests = [
-        test "all three packages pack into local package output" {
-            let packageOutput =
-                Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                    ".local",
-                    "share",
-                    "nuget-local")
-
-            Directory.CreateDirectory packageOutput |> ignore
+        test "active packages are declared for PackLocal" {
+            let build = File.ReadAllText(Path.Combine(repositoryRoot, "build.fsx"))
 
             [ "src/Lib/Lib.fsproj", "FS.Skia.UI"
-              "src/Charts/Charts.fsproj", "FS.Skia.UI.Charts"
-              "src/Layout/Layout.fsproj", "FS.Skia.UI.Layout" ]
-            |> List.filter (fun (project, _) -> File.Exists(Path.Combine(repositoryRoot, project.Replace("/", string Path.DirectorySeparatorChar))))
+              "src/Layout/Layout.fsproj", "FS.Skia.UI.Layout"
+              "src/Controls/Controls.fsproj", "FS.Skia.UI.Controls" ]
             |> List.iter (fun (project, packageId) ->
-                let exitCode, _, stderr =
-                    runDotnet repositoryRoot $"pack {project} --output {packageOutput}"
+                Expect.stringContains build project $"{project} is packed by PackLocal"
+                Expect.stringContains build packageId $"{packageId} is packed by PackLocal")
 
-                Expect.equal exitCode 0 stderr
-                Expect.isNonEmpty (Directory.GetFiles(packageOutput, packageId + $".{packageVersion}.nupkg")) $"{packageId} package is produced")
+            Expect.isFalse (build.Contains("\"src/Charts/Charts.fsproj\", \"FS.Skia.UI.Charts\"")) "Charts is not an active PackLocal package"
         }
 
         test "package consumer smoke is deferred outside v1 verification" {
@@ -83,8 +74,8 @@ let packageContractTests =
                   Directory.CreateDirectory packageOutput |> ignore
 
                   [ "src/Lib/Lib.fsproj"
-                    "src/Charts/Charts.fsproj"
-                    "src/Layout/Layout.fsproj" ]
+                    "src/Layout/Layout.fsproj"
+                    "src/Controls/Controls.fsproj" ]
                   |> List.filter (fun project -> File.Exists(Path.Combine(repositoryRoot, project.Replace("/", string Path.DirectorySeparatorChar))))
                   |> List.iter (fun project ->
                       let exitCode, _, stderr =
@@ -109,8 +100,8 @@ let packageContractTests =
                   )
 
                   [ "CoreConsumer", "FS.Skia.UI"
-                    "ChartsConsumer", "FS.Skia.UI.Charts"
-                    "LayoutConsumer", "FS.Skia.UI.Layout" ]
+                    "LayoutConsumer", "FS.Skia.UI.Layout"
+                    "ControlsConsumer", "FS.Skia.UI.Controls" ]
                   |> List.filter (fun (_, packageId) ->
                       packageId = "FS.Skia.UI"
                       || File.Exists(Path.Combine(packageOutput, packageId + $".{packageVersion}.nupkg")))

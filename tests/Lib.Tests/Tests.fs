@@ -530,6 +530,12 @@ let us1ContractTests =
             [ ClipElement; TextRunElement; PictureElement; RegionElement; ColorSpaceElement; PerspectiveElement ]
             |> List.iter (fun kind -> Expect.contains kinds kind $"scene contains {kind}")
 
+            let measured = Scene.measureText textRun.Text textRun.Font
+            let longer = Scene.measureText (textRun.Text + textRun.Text) textRun.Font
+
+            Expect.isGreaterThan measured.Width 0.0 "text measurement reports a positive width"
+            Expect.isGreaterThan measured.Height 0.0 "text measurement reports a positive height"
+            Expect.isGreaterThan longer.Width measured.Width "longer text measures wider"
             Expect.equal textRun.Font.Family (Some "Arial") "font family is retained"
             Expect.equal region.Operation RegionUnion "region operation is retained"
             Expect.equal perspective.M33 1.0 "perspective transform is retained"

@@ -182,6 +182,11 @@ type TextRun =
       Font: FontSpec
       Paint: Paint }
 
+type TextMetrics =
+    { Width: float
+      Height: float
+      Baseline: float }
+
 type Vertex =
     { Position: Point
       Color: Color option }
@@ -556,6 +561,40 @@ module Scene =
 
     let textRun run =
         { Nodes = [ TextRun run ] }
+
+    let private vectorTextMetrics (text: string) (size: float) =
+        let cell = Math.Max(1.0, size / 7.0)
+        let glyphAdvance = cell * 6.0
+
+        { Width = glyphAdvance * float text.Length
+          Height = size
+          Baseline = size }
+
+    let measureText (text: string) (font: FontSpec) =
+        let fallback () = vectorTextMetrics text font.Size
+
+        try
+            let typeface =
+                match font.Family with
+                | Some family when not (String.IsNullOrWhiteSpace family) -> SKTypeface.FromFamilyName family
+                | _ -> SKTypeface.Default
+
+            if isNull typeface then
+                fallback ()
+            else
+                use measuredFont = new SKFont(typeface, float32 font.Size)
+
+                if measuredFont.ContainsGlyphs text then
+                    let mutable bounds = SKRect.Empty
+                    let width = measuredFont.MeasureText(text, &bounds) |> float
+
+                    { Width = width
+                      Height = float bounds.Height
+                      Baseline = -float bounds.Top }
+                else
+                    fallback ()
+        with _ ->
+            fallback ()
 
     let image bounds source =
         { Nodes = [ Image(bounds, source) ] }

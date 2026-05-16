@@ -1,0 +1,60 @@
+
+## dotnet fsi scripts/controls-prelude.fsx
+$ dotnet fsi scripts/controls-prelude.fsx
+controls-node-count=4
+controls-diagnostics=[]
+controls-scene=[GroupElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement]
+controls-catalog-count=46
+controls-text-dispatch=[NameChanged "Grace"]
+
+exit-code=0
+
+## dotnet fsi scripts/controls-prelude.fsx
+$ dotnet fsi scripts/controls-prelude.fsx
+controls-node-count=4
+controls-diagnostics=[]
+controls-scene=[GroupElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement]
+controls-catalog-count=46
+controls-text-dispatch=[NameChanged "Grace"]
+
+exit-code=0
+
+## dotnet fsi scripts/controls-prelude.fsx
+$ dotnet fsi scripts/controls-prelude.fsx
+controls-node-count=4
+controls-diagnostics=[]
+controls-scene=[GroupElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement]
+controls-catalog-count=46
+controls-text-dispatch=[NameChanged "Grace"]
+
+exit-code=0
+
+## dotnet fsi scripts/controls-prelude.fsx
+$ dotnet fsi scripts/controls-prelude.fsx
+controls-node-count=4
+controls-diagnostics=[]
+controls-scene=[GroupElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement]
+controls-catalog-count=46
+controls-text-dispatch=[NameChanged "Grace"]
+
+exit-code=0
+
+## dotnet fsi scripts/controls-prelude.fsx
+$ dotnet fsi scripts/controls-prelude.fsx
+controls-node-count=4
+controls-diagnostics=[]
+controls-scene=[GroupElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement]
+controls-catalog-count=46
+controls-text-dispatch=[NameChanged "Grace"]
+
+exit-code=0

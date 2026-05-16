@@ -1,6 +1,6 @@
 #r "../src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll"
-#r "../src/Charts/bin/Debug/net10.0/FS.Skia.UI.Charts.dll"
 #r "../src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll"
+#r "../src/Controls/bin/Debug/net10.0/FS.Skia.UI.Controls.dll"
 
 open System
 open System.IO
@@ -25,5 +25,5 @@ let write packageName values =
     printfn "wrote %s" path
 
 write "FS.Skia.UI" (names typeof<FS.Skia.UI.ViewerProgram<int, int>>.Assembly)
-write "FS.Skia.UI.Charts" (names typeof<FS.Skia.UI.Charts.ChartConfig>.Assembly)
 write "FS.Skia.UI.Layout" (names typeof<FS.Skia.UI.Layout.GraphDefinition>.Assembly)
+write "FS.Skia.UI.Controls" (names typeof<FS.Skia.UI.Controls.Control<int>>.Assembly)

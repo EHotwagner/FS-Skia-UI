@@ -30,7 +30,7 @@ and run the shared `build.fsx` target graph. Automation should call
 | `Build` | Builds the solution with the repository warning policy. | Active feature `readiness/logs/build.txt` |
 | `Test` | Runs the default non-visual test set. | Active feature `readiness/logs/test.txt` |
 | `Dev` | Fast local verification: `Restore`, `Build`, `Test`. | Active feature `readiness/logs/dev-verdict.txt` |
-| `PackLocal` | Packs the current public capability packages: Scene, SkiaViewer, Elmish, KeyboardInput, Testing, the compatibility core package, Charts, and Layout. | `~/.local/share/nuget-local/*.nupkg` and `readiness/logs/pack-local.txt` |
+| `PackLocal` | Packs the current public capability packages: Scene, SkiaViewer, Elmish, KeyboardInput, Testing, the compatibility core package, Layout, and Controls. | `~/.local/share/nuget-local/*.nupkg` and `readiness/logs/pack-local.txt` |
 | `RefreshSurfaceBaselines` | Regenerates current package surface baselines. | `readiness/surface-baselines/*.txt` |
 | `PackageSurfaceCheck` | Checks the current package surface against stable baselines. | `readiness/logs/package-surface-check.txt` |
 | `FsiTranscripts` | Runs public prelude scripts through FSI. | `readiness/fsi/*.txt` under this feature |

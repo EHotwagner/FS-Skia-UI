@@ -12,9 +12,9 @@ The V3 product generator composes `template/base/` with selected fragments from
 
 | Profile | Contents | Exclusions |
 |---------|----------|------------|
-| `app` | Product app, product tests, docs, command wrappers, full product Spec Kit governance, selected local skills, and package references for Scene, SkiaViewer, Elmish, KeyboardInput, Layout, and Charts. | Framework implementation projects, framework samples/galleries, historical specs, framework readiness evidence, framework docs, framework README copy, template package source, and generated validation roots. |
-| `headless-scene` | Product app and tests for Scene-only authoring with full product governance and selected Scene skill guidance. | Viewer, Elmish, keyboard, layout, charts, samples, and framework maintenance checks unless explicitly selected later. |
-| `governed` | Scene plus Testing capability with full product governance assets. | Viewer, Elmish, keyboard, layout, charts, and samples unless selected by the profile. |
+| `app` | Product app, product tests, docs, command wrappers, full product Spec Kit governance, selected local skills, and package references for Scene, SkiaViewer, Elmish, KeyboardInput, Layout, and Controls. | Framework implementation projects, framework samples/galleries, historical specs, framework readiness evidence, framework docs, framework README copy, template package source, and generated validation roots. |
+| `headless-scene` | Product app and tests for Scene-only authoring with full product governance and selected Scene skill guidance. | Viewer, Elmish, keyboard, layout, controls, samples, and framework maintenance checks unless explicitly selected later. |
+| `governed` | Scene plus Testing capability with full product governance assets. | Viewer, Elmish, keyboard, layout, controls, and samples unless selected by the profile. |
 | `sample-pack` | Sample-oriented product row with Scene, SkiaViewer, Elmish, and Samples selected. | Samples remain excluded from the default app profile. |
 
 Every profile includes a generated-product Spec Kit install: `.specify/`

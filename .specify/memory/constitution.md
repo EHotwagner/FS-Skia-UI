@@ -223,6 +223,62 @@ regardless of whether tests pass.
 - Structured-logging library: not yet selected; see ADR when chosen.
 - Project-specific constraints: build a new FS-Skia-UI implementation inspired by SkiaViewer, using SkiaSharp 4 preview packages with explicit version pinning, Elmish for application workflow, and .NET `net10.0` unless a plan justifies a narrower target. Treat the upstream SkiaViewer repository as behavioral/reference material only unless license attribution and source reuse are documented in the spec and plan. The primary development environment is expected to provide GPU passthrough; Vulkan smoke failures must distinguish implementation defects from missing window-system or presentation setup rather than assuming GPU access is unavailable.
 
+### Local Agent Skills
+
+Local skills under `.agents/skills/*/SKILL.md`, package-owned
+`src/*/skill/SKILL.md`, and template-owned skill paths are repository
+governance artifacts. Agents MUST use the applicable local skill whenever a
+task matches the skill's description, and MUST prefer local project or
+capability skills over generic guidance when both apply. If more than one
+skill applies, use the minimal set that covers the work and follow the
+skills in dependency order.
+
+Current Spec Kit workflow skills:
+
+- `speckit-analyze` — analyze consistency and quality across `spec.md`,
+  `plan.md`, and `tasks.md`.
+- `speckit-checklist` — generate requirements-quality checklists.
+- `speckit-clarify` — identify and record targeted spec clarifications.
+- `speckit-constitution` — create or update project governing principles.
+- `speckit-evidence-audit` — run merge-readiness evidence audit and
+  synthetic/diff-scan checks.
+- `speckit-evidence-graph` — validate and render task dependency graphs.
+- `speckit-git-commit` — commit Spec Kit command changes when enabled.
+- `speckit-git-feature` — create numbered or timestamped feature branches.
+- `speckit-git-initialize` — initialize a Git repository when needed.
+- `speckit-git-remote` — detect Git remote metadata for integrations.
+- `speckit-git-validate` — validate feature branch naming conventions.
+- `speckit-implement` — execute tasks and maintain honest task status.
+- `speckit-plan` — produce implementation plans and design artifacts.
+- `speckit-specify` — create feature specifications from user descriptions.
+- `speckit-tasks` — generate `tasks.md` and `tasks.deps.yml`.
+- `speckit-taskstoissues` — convert tasks into dependency-ordered GitHub
+  issues.
+
+Current FS.Skia.UI capability skills:
+
+- `fs-skia-scene` — work on dependency-light scene primitives and generated
+  product scene usage (`src/Scene/skill/SKILL.md`).
+- `fs-skia-skiaviewer` — work on viewer host contracts and generated product
+  viewer usage (`src/SkiaViewer/skill/SKILL.md`).
+- `fs-skia-elmish` — work on Elmish adapter contracts and generated product
+  Elmish wiring (`src/Elmish/skill/SKILL.md`).
+- `fs-skia-keyboard-input` — work on keyboard input contracts and generated
+  product keyboard guidance (`src/KeyboardInput/skill/SKILL.md`).
+- `fs-skia-layout` — work on Yoga-backed layout contracts and generated
+  product layout usage (`src/Layout/skill/SKILL.md`).
+- `fs-skia-charts` — work on chart scene builders and generated product
+  chart usage (`src/Charts/skill/SKILL.md`).
+- `fs-skia-testing` — work on generated product and package validation
+  helper contracts (`src/Testing/skill/SKILL.md`).
+
+Current generated-product and optional-content skills:
+
+- `fs-skia-project` — work on a generated FS.Skia.UI product
+  (`template/base/.agents/skills/fs-skia-project/SKILL.md`).
+- `fs-skia-samples` — work on optional generated product sample-pack content
+  (`template/fragments/samples/skill/SKILL.md`).
+
 ## Workflow & Quality Gates
 
 Work MUST pass these gates in order:
@@ -267,4 +323,4 @@ Amendments MUST update dependent templates and guidance files in the same
 change. When the constitution and a template disagree, the constitution is
 correct and the template is defective until synchronized.
 
-**Version**: 1.0.0 | **Ratified**: 2026-05-12 | **Last Amended**: 2026-05-12
+**Version**: 1.1.0 | **Ratified**: 2026-05-12 | **Last Amended**: 2026-05-16

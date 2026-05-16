@@ -1,0 +1,65 @@
+
+## dotnet fsi scripts/layout-prelude.fsx
+$ dotnet fsi scripts/layout-prelude.fsx
+layout-prelude scene=true
+automatic-layout bounds=4 diagnostics=0
+automatic-layout hit=Some "title" scene=[GroupElement; TextElement; TextElement; TextElement]
+automatic-layout focus-region={ X = 596.0
+  Y = 12.0
+  Width = 32.0
+  Height = 18.0 }
+automatic-layout workflow-start-effects=[EvaluateLayout] resize-effects=[EvaluateIncrementalLayout ["root"]] result=true
+
+exit-code=0
+
+## dotnet fsi scripts/layout-prelude.fsx
+$ dotnet fsi scripts/layout-prelude.fsx
+layout-prelude scene=true
+automatic-layout bounds=4 diagnostics=0
+automatic-layout hit=Some "title" scene=[GroupElement; TextElement; TextElement; TextElement]
+automatic-layout focus-region={ X = 596.0
+  Y = 12.0
+  Width = 32.0
+  Height = 18.0 }
+automatic-layout workflow-start-effects=[EvaluateLayout] resize-effects=[EvaluateIncrementalLayout ["root"]] result=true
+
+exit-code=0
+
+## dotnet fsi scripts/layout-prelude.fsx
+$ dotnet fsi scripts/layout-prelude.fsx
+layout-prelude scene=true
+automatic-layout bounds=4 diagnostics=0
+automatic-layout hit=Some "title" scene=[GroupElement; TextElement; TextElement; TextElement]
+automatic-layout focus-region={ X = 596.0
+  Y = 12.0
+  Width = 32.0
+  Height = 18.0 }
+automatic-layout workflow-start-effects=[EvaluateLayout] resize-effects=[EvaluateIncrementalLayout ["root"]] result=true
+
+exit-code=0
+
+## dotnet fsi scripts/layout-prelude.fsx
+$ dotnet fsi scripts/layout-prelude.fsx
+layout-prelude scene=true
+automatic-layout bounds=4 diagnostics=0
+automatic-layout hit=Some "title" scene=[GroupElement; TextElement; TextElement; TextElement]
+automatic-layout focus-region={ X = 596.0
+  Y = 12.0
+  Width = 32.0
+  Height = 18.0 }
+automatic-layout workflow-start-effects=[EvaluateLayout] resize-effects=[EvaluateIncrementalLayout ["root"]] result=true
+
+exit-code=0
+
+## dotnet fsi scripts/layout-prelude.fsx
+$ dotnet fsi scripts/layout-prelude.fsx
+layout-prelude scene=true
+automatic-layout bounds=4 diagnostics=0
+automatic-layout hit=Some "title" scene=[GroupElement; TextElement; TextElement; TextElement]
+automatic-layout focus-region={ X = 596.0
+  Y = 12.0
+  Width = 32.0
+  Height = 18.0 }
+automatic-layout workflow-start-effects=[EvaluateLayout] resize-effects=[EvaluateIncrementalLayout ["root"]] result=true
+
+exit-code=0

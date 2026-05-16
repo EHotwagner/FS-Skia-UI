@@ -49,5 +49,10 @@ engineer or agent to act.
 - Product features may consume selected FS.Skia.UI packages and local skills,
   but product readiness evidence belongs under this repository's own `specs/`
   tree.
+- Local skills under `.agents/skills/*/SKILL.md` and generated product
+  capability skill paths are product governance artifacts. Agents MUST use the
+  applicable local skill whenever a task matches the skill's description, and
+  MUST prefer local product or capability skills over generic guidance when
+  both apply.
 - When a live renderer or host environment is unavailable, record the
   environment limitation separately from product implementation failures.

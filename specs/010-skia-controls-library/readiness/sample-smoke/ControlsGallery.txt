@@ -1,0 +1,216 @@
+
+## ControlsGallery contract smoke
+$ dotnet run --no-build --project samples/ControlsGallery/ControlsGallery.fsproj -- --contract-smoke
+status=ok
+sample=ControlsGallery
+control-count=10
+catalog-count=46
+visible-range={ FirstIndex = 0
+  Count = 11
+  Total = 10000 }
+diagnostics=[]
+scene-kinds=[GroupElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement]
+manual-click-path=[Increment]
+
+exit-code=0
+
+## ControlsGallery contract smoke
+$ dotnet run --no-build --project samples/ControlsGallery/ControlsGallery.fsproj -- --contract-smoke
+status=ok
+sample=ControlsGallery
+control-count=10
+catalog-count=46
+visible-range={ FirstIndex = 0
+  Count = 11
+  Total = 10000 }
+diagnostics=[]
+scene-kinds=[GroupElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement]
+manual-click-path=[Increment]
+
+exit-code=0
+
+## ControlsGallery contract smoke
+$ dotnet run --no-build --project samples/ControlsGallery/ControlsGallery.fsproj -- --contract-smoke
+status=ok
+sample=ControlsGallery
+control-count=10
+catalog-count=46
+visible-range={ FirstIndex = 0
+  Count = 11
+  Total = 10000 }
+diagnostics=[]
+scene-kinds=[GroupElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement]
+manual-click-path=[Increment]
+
+exit-code=0
+
+## ControlsGallery contract smoke
+$ dotnet run --no-build --project samples/ControlsGallery/ControlsGallery.fsproj -- --contract-smoke
+status=ok
+sample=ControlsGallery
+control-count=10
+catalog-count=46
+visible-range={ FirstIndex = 0
+  Count = 11
+  Total = 10000 }
+diagnostics=[]
+scene-kinds=[GroupElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement]
+manual-click-path=[Increment]
+
+exit-code=0
+
+## ControlsGallery contract smoke
+$ dotnet run --no-build --project samples/ControlsGallery/ControlsGallery.fsproj -- --contract-smoke
+status=ok
+sample=ControlsGallery
+control-count=10
+catalog-count=46
+visible-range={ FirstIndex = 0
+  Count = 11
+  Total = 10000 }
+diagnostics=[]
+scene-kinds=[GroupElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement]
+manual-click-path=[Increment]
+
+exit-code=0
+
+## ControlsGallery contract smoke
+$ dotnet run --no-build --project samples/ControlsGallery/ControlsGallery.fsproj -- --contract-smoke
+status=ok
+sample=ControlsGallery
+control-count=10
+catalog-count=46
+visible-range={ FirstIndex = 0
+  Count = 11
+  Total = 10000 }
+diagnostics=[]
+scene-kinds=[GroupElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement]
+manual-click-path=[Increment]
+
+exit-code=0
+
+## ControlsGallery contract smoke
+$ dotnet run --no-build --project samples/ControlsGallery/ControlsGallery.fsproj -- --contract-smoke
+status=ok
+sample=ControlsGallery
+control-count=10
+catalog-count=46
+visible-range={ FirstIndex = 0
+  Count = 11
+  Total = 10000 }
+diagnostics=[]
+scene-kinds=[GroupElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement]
+manual-click-path=[Increment]
+
+exit-code=0
+
+## ControlsGallery contract smoke
+$ dotnet run --no-build --project samples/ControlsGallery/ControlsGallery.fsproj -- --contract-smoke
+status=ok
+sample=ControlsGallery
+control-count=10
+catalog-count=46
+visible-range={ FirstIndex = 0
+  Count = 11
+  Total = 10000 }
+diagnostics=[]
+scene-kinds=[GroupElement; GroupElement; RectangleElement; ClipElement; TextElement;
+ GroupElement; RectangleElement; ClipElement; TextElement; GroupElement;
+ RectangleElement; ClipElement; TextElement; GroupElement; RectangleElement;
+ ClipElement; TextElement; GroupElement; RectangleElement; ClipElement;
+ TextElement; GroupElement; RectangleElement; ClipElement; TextElement;
+ GroupElement; RectangleElement; ClipElement; TextElement; GroupElement;
+ RectangleElement; ClipElement; TextElement; GroupElement; RectangleElement;
+ ClipElement; TextElement; GroupElement; RectangleElement; ClipElement;
+ TextElement]
+manual-click-path=[Increment]
+
+exit-code=0
+
+## ControlsGallery contract smoke
+$ dotnet run --no-build --project samples/ControlsGallery/ControlsGallery.fsproj -- --contract-smoke
+status=ok
+sample=ControlsGallery
+control-count=10
+catalog-count=46
+visible-range={ FirstIndex = 0
+  Count = 11
+  Total = 10000 }
+diagnostics=[]
+scene-kinds=[GroupElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement]
+manual-click-path=[Increment]
+
+exit-code=0
+
+## ControlsGallery contract smoke
+$ dotnet run --no-build --project samples/ControlsGallery/ControlsGallery.fsproj -- --contract-smoke
+status=ok
+sample=ControlsGallery
+control-count=10
+catalog-count=46
+visible-range={ FirstIndex = 0
+  Count = 11
+  Total = 10000 }
+diagnostics=[]
+scene-kinds=[GroupElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement]
+manual-click-path=[Increment]
+
+exit-code=0

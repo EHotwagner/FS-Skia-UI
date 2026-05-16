@@ -155,6 +155,7 @@ FS.Skia.UI.StrokeCap
 FS.Skia.UI.StrokeCap+Tags
 FS.Skia.UI.StrokeJoin
 FS.Skia.UI.StrokeJoin+Tags
+FS.Skia.UI.TextMetrics
 FS.Skia.UI.TextRun
 FS.Skia.UI.Vertex
 FS.Skia.UI.VertexMode

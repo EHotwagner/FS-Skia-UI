@@ -120,34 +120,56 @@ let markdownTableRows relativePath =
 let fakeProcessLock = obj ()
 
 let runProcessUnlocked (fileName: string) (arguments: string) =
-    let executable, processArguments =
-        if fileName = "./fake.sh" || fileName = "fake.sh" then
-            let scriptPath = fullPath "fake.sh"
-            "bash", $"\"{scriptPath}\" {arguments}"
-        elif fileName.StartsWith("./", StringComparison.Ordinal) then
-            fullPath (fileName.Substring 2), arguments
-        else
-            fileName, arguments
+    if fileName = "./fake.sh" || fileName = "fake.sh" then
+        let scriptPath = fullPath "fake.sh"
+        let outputPath = Path.GetTempFileName()
+        let command = $"\"{scriptPath}\" {arguments} > \"{outputPath}\" 2>&1"
+        let startInfo = ProcessStartInfo("bash")
+        startInfo.ArgumentList.Add("-c")
+        startInfo.ArgumentList.Add(command)
+        startInfo.WorkingDirectory <- repositoryRoot
+        startInfo.UseShellExecute <- false
 
-    let startInfo: ProcessStartInfo = ProcessStartInfo(executable, processArguments)
-    startInfo.WorkingDirectory <- repositoryRoot
-    startInfo.RedirectStandardOutput <- true
-    startInfo.RedirectStandardError <- true
-    startInfo.UseShellExecute <- false
+        try
+            use proc =
+                match Process.Start(startInfo) |> Option.ofObj with
+                | Some proc -> proc
+                | None -> failwithf "Could not start %s %s" fileName arguments
 
-    use proc =
-        match Process.Start(startInfo) |> Option.ofObj with
-        | Some proc -> proc
-        | None -> failwithf "Could not start %s %s" fileName arguments
-
-    let stdout = proc.StandardOutput.ReadToEnd()
-    let stderr = proc.StandardError.ReadToEnd()
-
-    if proc.WaitForExit(240000) then
-        proc.ExitCode, stdout, stderr
+            if proc.WaitForExit(240000) then
+                proc.ExitCode, File.ReadAllText outputPath, ""
+            else
+                proc.Kill()
+                -1, File.ReadAllText outputPath, ""
+        finally
+            if File.Exists outputPath then
+                File.Delete outputPath
     else
-        proc.Kill()
-        -1, stdout, stderr
+        let executable, processArguments =
+            if fileName.StartsWith("./", StringComparison.Ordinal) then
+                fullPath (fileName.Substring 2), arguments
+            else
+                fileName, arguments
+
+        let startInfo: ProcessStartInfo = ProcessStartInfo(executable, processArguments)
+        startInfo.WorkingDirectory <- repositoryRoot
+        startInfo.RedirectStandardOutput <- true
+        startInfo.RedirectStandardError <- true
+        startInfo.UseShellExecute <- false
+
+        use proc =
+            match Process.Start(startInfo) |> Option.ofObj with
+            | Some proc -> proc
+            | None -> failwithf "Could not start %s %s" fileName arguments
+
+        let stdout = proc.StandardOutput.ReadToEnd()
+        let stderr = proc.StandardError.ReadToEnd()
+
+        if proc.WaitForExit(240000) then
+            proc.ExitCode, stdout, stderr
+        else
+            proc.Kill()
+            -1, stdout, stderr
 
 let runProcess (fileName: string) (arguments: string) =
     if fileName = "./fake.sh" || fileName = "fake.sh" then
@@ -156,7 +178,7 @@ let runProcess (fileName: string) (arguments: string) =
         runProcessUnlocked fileName arguments
 
 let runFakeTarget target =
-    runProcess "./fake.sh" $"build -t {target}"
+    runProcess "dotnet" $"fake run build.fsx --target {target}"
 
 let projectFiles () =
     Directory.EnumerateFiles(repositoryRoot, "*.fsproj", SearchOption.AllDirectories)
@@ -308,7 +330,13 @@ let expectFakeTarget target =
     Expect.stringContains (read "build.fsx") $"\"{target}\"" $"build.fsx declares {target}"
 
 let expectGeneratedProductFileList profile (required: string list) (forbidden: string list) =
-    let reportPath = $"specs/009-v3-modular-framework/readiness/generated-file-lists/{profile}.txt"
+    let currentPath = $"specs/010-skia-controls-library/readiness/generated-file-lists/{profile}.txt"
+    let reportPath =
+        if fileExists currentPath then
+            currentPath
+        else
+            $"specs/009-v3-modular-framework/readiness/generated-file-lists/{profile}.txt"
+
     Expect.isTrue (fileExists reportPath) $"{profile} file-list report exists"
     let content = read reportPath
 

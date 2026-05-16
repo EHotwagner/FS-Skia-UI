@@ -18,7 +18,7 @@
     <!--#if (profile == "app") -->
     <PackageReference Include="FS.Skia.UI.KeyboardInput" />
     <PackageReference Include="FS.Skia.UI.Layout" />
-    <PackageReference Include="FS.Skia.UI.Charts" />
+    <PackageReference Include="FS.Skia.UI.Controls" />
     <!--#endif -->
     <!--#if (profile == "governed") -->
     <PackageReference Include="FS.Skia.UI.Testing" />

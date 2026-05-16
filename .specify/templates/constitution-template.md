@@ -232,6 +232,21 @@ regardless of whether tests pass.
 - Structured-logging library: [LOGGING_LIBRARY]
 - Project-specific constraints: [PROJECT_CONSTRAINTS]
 
+### Local Agent Skills
+
+Local skills under `.agents/skills/*/SKILL.md`, package-owned
+`src/*/skill/SKILL.md`, and template-owned skill paths are repository
+governance artifacts. Agents MUST use the applicable local skill whenever a
+task matches the skill's description, and MUST prefer local project or
+capability skills over generic guidance when both apply. If more than one
+skill applies, use the minimal set that covers the work and follow the
+skills in dependency order.
+
+When this constitution is instantiated or amended, enumerate the current
+`.agents/skills/*/SKILL.md`, `src/*/skill/SKILL.md`, and template-owned skill
+inventory here and keep the list synchronized with local skill additions,
+removals, or renames.
+
 <!-- LOCKED -->
 ## Workflow & Quality Gates
 

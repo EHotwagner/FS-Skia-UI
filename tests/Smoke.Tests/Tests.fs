@@ -50,12 +50,11 @@ let smokeContractTests =
               "InteractiveViewer", "samples/InteractiveViewer/InteractiveViewer.fsproj"
               "ParityGallery", "samples/ParityGallery/ParityGallery.fsproj"
               "EffectsGallery", "samples/EffectsGallery/EffectsGallery.fsproj"
-              "ChartsGallery", "samples/ChartsGallery/ChartsGallery.fsproj"
-              "DataGridGallery", "samples/DataGridGallery/DataGridGallery.fsproj"
               "LayoutGraphGallery", "samples/LayoutGraphGallery/LayoutGraphGallery.fsproj"
               "ScreenshotGallery", "samples/ScreenshotGallery/ScreenshotGallery.fsproj"
               "DemoReel", "samples/DemoReel/DemoReel.fsproj"
-              "KeyboardInputGallery", "samples/KeyboardInputGallery/KeyboardInputGallery.fsproj" ]
+              "KeyboardInputGallery", "samples/KeyboardInputGallery/KeyboardInputGallery.fsproj"
+              "ControlsGallery", "samples/ControlsGallery/ControlsGallery.fsproj" ]
             |> List.iter (fun (sample, project) ->
                 let projectPath = Path.Combine(repositoryRoot, project)
                 let programPath = Path.Combine(Path.GetDirectoryName projectPath |> Option.ofObj |> Option.defaultValue repositoryRoot, "Program.fs")

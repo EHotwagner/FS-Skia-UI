@@ -1,7 +1,7 @@
 name: headless-scene
 description: Headless scene/widget authoring profile.
 capabilities: [scene]
-optionalCapabilities: [layout, charts, testing]
+optionalCapabilities: [layout, controls, testing]
 governance: full
 samples: false
 sourceFrameworkMode: false

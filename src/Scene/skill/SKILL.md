@@ -27,7 +27,7 @@ Update `specs/009-v3-modular-framework/readiness/package-surfaces/` and `capabil
 
 ## Package Boundary
 
-Scene must not reference Elmish, Silk.NET, SkiaSharp, Yoga.Net, or YamlDotNet. Keep host, input, layout, and chart concerns outside this package.
+Scene must not reference Elmish, Silk.NET, SkiaSharp, Yoga.Net, or YamlDotNet. Keep host, input, layout, and widget concerns outside this package; use `fs-skia-ui-widgets` for control, chart, and graph authoring.
 
 ## Generated Product
 

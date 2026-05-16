@@ -27,7 +27,7 @@ Capture reducer transition and emitted effect evidence under `specs/009-v3-modul
 
 ## Package Boundary
 
-Keyboard input may depend on Scene and YamlDotNet only. Keep viewer hosting, charting, and layout concerns out of this package.
+Keyboard input may depend on Scene and YamlDotNet only. Keep viewer hosting, controls, charting, graphing, and layout concerns out of this package; use `fs-skia-ui-widgets` for widget authoring.
 
 ## Generated Product
 

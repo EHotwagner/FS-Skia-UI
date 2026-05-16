@@ -162,6 +162,11 @@ type TextRun =
       Font: FontSpec
       Paint: Paint }
 
+type TextMetrics =
+    { Width: float
+      Height: float
+      Baseline: float }
+
 type Vertex =
     { Position: Point
       Color: Color option }
@@ -361,6 +366,7 @@ module Scene =
     val arc : bounds: Rect -> startAngle: float -> sweepAngle: float -> paint: Paint -> Scene
     val text : position: float * float -> text: string -> color: Color -> Scene
     val textRun : run: TextRun -> Scene
+    val measureText : text: string -> font: FontSpec -> TextMetrics
     val image : bounds: float * float * float * float -> source: string -> Scene
     val clipped : clip: Clip -> scene: Scene -> Scene
     val region : region: Region -> paint: Paint -> Scene

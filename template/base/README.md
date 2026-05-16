@@ -5,7 +5,7 @@ copying the framework repository.
 
 The selected capabilities are controlled by `--profile`:
 
-- `app`: Scene, SkiaViewer, Elmish, KeyboardInput, Layout, Charts
+- `app`: Scene, SkiaViewer, Elmish, KeyboardInput, Layout, Controls
 - `headless-scene`: Scene
 - `governed`: Scene, Testing
 - `sample-pack`: Scene, SkiaViewer, Elmish, Samples

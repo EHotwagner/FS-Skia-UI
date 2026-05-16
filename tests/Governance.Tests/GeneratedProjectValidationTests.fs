@@ -52,7 +52,7 @@ let generatedProjectValidationTests =
                   "Elmish"
                   "KeyboardInput"
                   "Layout"
-                  "Charts" ]
+                  "Controls" ]
 
             expectPathsExist
                 "V3 template base"
@@ -76,8 +76,7 @@ let generatedProjectValidationTests =
                       ".agents/skills/fs-skia-skiaviewer/SKILL.md"
                       ".agents/skills/fs-skia-elmish/SKILL.md"
                       ".agents/skills/fs-skia-keyboard-input/SKILL.md"
-                      ".agents/skills/fs-skia-layout/SKILL.md"
-                      ".agents/skills/fs-skia-charts/SKILL.md"
+                      ".agents/skills/fs-skia-ui-widgets/SKILL.md"
                       ".agents/skills/speckit-specify/SKILL.md"
                       ".agents/skills/speckit-plan/SKILL.md"
                       ".agents/skills/speckit-tasks/SKILL.md"
@@ -91,7 +90,7 @@ let generatedProjectValidationTests =
                       "PackageReference Include=\"FS.Skia.UI.Elmish\""
                       "PackageReference Include=\"FS.Skia.UI.KeyboardInput\""
                       "PackageReference Include=\"FS.Skia.UI.Layout\""
-                      "PackageReference Include=\"FS.Skia.UI.Charts\"" ]
+                      "PackageReference Include=\"FS.Skia.UI.Controls\"" ]
                     [ "samples/"
                       "tests/Parity.Tests"
                       "specs/00"
@@ -124,7 +123,12 @@ let generatedProjectValidationTests =
                   "framework-source maintenance" ]
                 |> List.iter (fun forbidden -> Expect.isFalse (build.Contains forbidden) $"generated product build excludes {forbidden}")
 
-                let verifyLog = "specs/009-v3-modular-framework/readiness/generated-product-verify/app-source/verify.log"
+                let verifyLog =
+                    if fileExists "specs/010-skia-controls-library/readiness/generated-product-verify/app-source/verify.log" then
+                        "specs/010-skia-controls-library/readiness/generated-product-verify/app-source/verify.log"
+                    else
+                        "specs/009-v3-modular-framework/readiness/generated-product-verify/app-source/verify.log"
+
                 Expect.isTrue (fileExists verifyLog) "app-source Verify log exists"
                 expectFileContains verifyLog [ "Verify completed for generated product" ]
             else
@@ -140,8 +144,8 @@ let generatedProjectValidationTests =
                       "PackageReference Include=\"FS.Skia.UI.Elmish\""
                       "PackageReference Include=\"FS.Skia.UI.KeyboardInput\""
                       "PackageReference Include=\"FS.Skia.UI.Layout\""
-                      "PackageReference Include=\"FS.Skia.UI.Charts\""
-                      ".agents/skills/fs-skia-charts/SKILL.md"
+                      "PackageReference Include=\"FS.Skia.UI.Controls\""
+                      ".agents/skills/fs-skia-ui-widgets/SKILL.md"
                       "samples/" ]
 
                 expectGeneratedProductFileList
@@ -153,7 +157,7 @@ let generatedProjectValidationTests =
                       "samples/README.md" ]
                     [ "PackageReference Include=\"FS.Skia.UI.KeyboardInput\""
                       "PackageReference Include=\"FS.Skia.UI.Layout\""
-                      "PackageReference Include=\"FS.Skia.UI.Charts\"" ]
+                      "PackageReference Include=\"FS.Skia.UI.Controls\"" ]
             else
                 Expect.isFalse (directoryExists ".template.config") "generated products do not run source-only V3 matrix checks"
         }

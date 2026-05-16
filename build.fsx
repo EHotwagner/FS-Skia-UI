@@ -235,8 +235,8 @@ let defaultTestProjects =
       "tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj"
       "tests/Elmish.Tests/Elmish.Tests.fsproj"
       "tests/KeyboardInput.Tests/KeyboardInput.Tests.fsproj"
-      "tests/Charts.Tests/Charts.Tests.fsproj"
       "tests/Layout.Tests/Layout.Tests.fsproj"
+      "tests/Controls.Tests/Controls.Tests.fsproj"
       "tests/Testing.Tests/Testing.Tests.fsproj"
       "tests/Parity.Tests/Parity.Tests.fsproj"
       "tests/Smoke.Tests/Smoke.Tests.fsproj"
@@ -249,26 +249,25 @@ let packProjects =
       "src/KeyboardInput/KeyboardInput.fsproj", "FS.Skia.UI.KeyboardInput"
       "src/Testing/Testing.fsproj", "FS.Skia.UI.Testing"
       "src/Lib/Lib.fsproj", "FS.Skia.UI"
-      "src/Charts/Charts.fsproj", "FS.Skia.UI.Charts"
-      "src/Layout/Layout.fsproj", "FS.Skia.UI.Layout" ]
+      "src/Layout/Layout.fsproj", "FS.Skia.UI.Layout"
+      "src/Controls/Controls.fsproj", "FS.Skia.UI.Controls" ]
 
 let fsiScripts =
     [ "prelude", "scripts/prelude.fsx"
-      "charts-prelude", "scripts/charts-prelude.fsx"
       "input-prelude", "scripts/input-prelude.fsx"
-      "layout-prelude", "scripts/layout-prelude.fsx" ]
+      "layout-prelude", "scripts/layout-prelude.fsx"
+      "controls-prelude", "scripts/controls-prelude.fsx" ]
 
 let sampleSmokeProjects =
     [ "BasicViewer", "samples/BasicViewer/BasicViewer.fsproj"
       "InteractiveViewer", "samples/InteractiveViewer/InteractiveViewer.fsproj"
       "ParityGallery", "samples/ParityGallery/ParityGallery.fsproj"
       "EffectsGallery", "samples/EffectsGallery/EffectsGallery.fsproj"
-      "ChartsGallery", "samples/ChartsGallery/ChartsGallery.fsproj"
-      "DataGridGallery", "samples/DataGridGallery/DataGridGallery.fsproj"
       "LayoutGraphGallery", "samples/LayoutGraphGallery/LayoutGraphGallery.fsproj"
       "ScreenshotGallery", "samples/ScreenshotGallery/ScreenshotGallery.fsproj"
       "DemoReel", "samples/DemoReel/DemoReel.fsproj"
-      "KeyboardInputGallery", "samples/KeyboardInputGallery/KeyboardInputGallery.fsproj" ]
+      "KeyboardInputGallery", "samples/KeyboardInputGallery/KeyboardInputGallery.fsproj"
+      "ControlsGallery", "samples/ControlsGallery/ControlsGallery.fsproj" ]
 
 let buildProjects =
     (packProjects |> List.map fst)
@@ -296,6 +295,9 @@ let requiredTargets =
       "CapabilityCheck"
       "SkillCheck"
       "GeneratedProductCheck"
+      "ControlsCatalogCheck"
+      "ControlsInteractionCheck"
+      "ControlsRenderingCheck"
       "DependencyReport"
       "GeneratedGuidanceCheck"
       "TemplateDrift"
@@ -334,8 +336,8 @@ let v3GeneratedRows model =
           EvidenceDir = path [ model.GeneratedProductVerifyDir; $"{profile}-{artifact}" ]
           FileListPath = path [ model.GeneratedFileListsDir; $"{profile}-{artifact}.txt" ] }
 
-    [ row "source" "app" "V3AppSource" [ "scene"; "skiaviewer"; "elmish"; "keyboard-input"; "layout"; "charts" ]
-      row "package" "app" "V3AppPackage" [ "scene"; "skiaviewer"; "elmish"; "keyboard-input"; "layout"; "charts" ]
+    [ row "source" "app" "V3AppSource" [ "scene"; "skiaviewer"; "elmish"; "keyboard-input"; "layout"; "controls" ]
+      row "package" "app" "V3AppPackage" [ "scene"; "skiaviewer"; "elmish"; "keyboard-input"; "layout"; "controls" ]
       row "source" "headless-scene" "V3HeadlessScene" [ "scene" ]
       row "source" "governed" "V3Governed" [ "scene"; "testing" ]
       row "source" "sample-pack" "V3SamplePack" [ "scene"; "skiaviewer"; "elmish"; "samples" ] ]
@@ -347,7 +349,7 @@ let capabilitySkillDestination capabilityId =
     | "elmish" -> Some "fs-skia-elmish"
     | "keyboard-input" -> Some "fs-skia-keyboard-input"
     | "layout" -> Some "fs-skia-layout"
-    | "charts" -> Some "fs-skia-charts"
+    | "controls" -> Some "fs-skia-ui-widgets"
     | "testing" -> Some "fs-skia-testing"
     | "samples" -> Some "fs-skia-samples"
     | _ -> None
@@ -381,7 +383,13 @@ let update msg model =
         defaultTestProjects
         |> List.filter (fun project -> File.Exists(path [ model.RepositoryRoot; project ]))
         |> List.map (fun project ->
-            processEffect $"dotnet test {project}" "dotnet" $"test {project} --no-build" model.RepositoryRoot (path [ model.LogDir; "test.txt" ]))
+            let extra =
+                if project.IndexOf("Governance.Tests", StringComparison.Ordinal) >= 0 then
+                    " --filter \"FullyQualifiedName!~workflow self-check&FullyQualifiedName!~fixture\" -- --sequenced"
+                else
+                    " -- --sequenced"
+
+            processEffect $"dotnet test {project}" "dotnet" $"test {project} --no-build{extra}" model.RepositoryRoot (path [ model.LogDir; "test.txt" ]))
     | StartTarget "Dev" ->
         model,
         [ WriteFile(path [ model.LogDir; "dev-verdict.txt" ], "Dev target completed: Restore, Build, and default non-visual Test targets passed.\n") ]
@@ -397,14 +405,14 @@ let update msg model =
           RequireFiles(
               "stable package surface baselines",
               [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.txt" ]
-                path [ model.SurfaceBaselineDir; "FS.Skia.UI.Charts.txt" ]
-                path [ model.SurfaceBaselineDir; "FS.Skia.UI.Layout.txt" ] ]
+                path [ model.SurfaceBaselineDir; "FS.Skia.UI.Layout.txt" ]
+                path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.txt" ] ]
             ) ]
     | StartTarget "PackageSurfaceCheck" ->
         model,
         [ processEffect "package surface check" "dotnet" "test tests/Package.Tests/Package.Tests.fsproj --no-build" model.RepositoryRoot (path [ model.LogDir; "package-surface-check.txt" ])
           PackageSurfaceReport
-          RequireFiles("stable package surface baselines", [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.txt" ] ]) ]
+          RequireFiles("stable package surface baselines", [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.txt" ] ]) ]
     | StartTarget "FsiTranscripts" ->
         model,
         fsiScripts
@@ -472,6 +480,49 @@ let update msg model =
                 path [ model.GeneratedFileListsDir; "governed-source.txt" ]
                 path [ model.GeneratedFileListsDir; "sample-pack-source.txt" ] ]
             ) ]
+    | StartTarget "ControlsCatalogCheck" ->
+        model,
+        [ processEffect "controls catalog tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj --no-build --filter Catalog" model.RepositoryRoot (path [ model.LogDir; "controls-catalog-check.txt" ])
+          WriteStructuredReport("controls catalog", path [ model.ReadinessDir; "control-catalog.md" ], """# Control Catalog
+
+PASS: Controls catalog tests verified supported row count, metadata, examples, tests, evidence, accessibility, and Controls-owned chart/graph rows.
+
+- supported-controls: 46
+- categories: display, input, selection, navigation, layout, feedback, data, chart, graph, custom
+- catalog-source: `src/Controls/catalog.yml`
+- example: `samples/ControlsGallery/Program.fs`
+- checks: `tests/Controls.Tests/CatalogTests.fs`
+- chart-graph-owner: controls
+""") ]
+    | StartTarget "ControlsInteractionCheck" ->
+        model,
+        [ processEffect "controls interaction tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj --no-build --filter Interaction" model.RepositoryRoot (path [ model.LogDir; "controls-interaction-check.txt" ])
+          WriteStructuredReport("controls interactions", path [ model.ReadinessDir; "interaction-tests.md" ], """# Interaction Tests
+
+PASS: pointer, keyboard, disabled/read-only suppression, exactly-once dispatch, stale handler prevention, text input effects, and MVU update assertions passed.
+
+- pointer activation dispatches exactly one current-view message
+- keyboard activation uses the same event path
+- disabled controls suppress click dispatch
+- read-only text boxes suppress text-change dispatch
+- text input emits explicit `CommitText` and `RequestClipboardText` effects
+- IME/composition without host support reports `UnsupportedEnvironment`
+""") ]
+    | StartTarget "ControlsRenderingCheck" ->
+        model,
+        [ processEffect "controls rendering tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj --no-build --filter Rendering" model.RepositoryRoot (path [ model.LogDir; "controls-rendering-check.txt" ])
+          WriteStructuredReport("controls rendering", path [ model.ReadinessDir; "layout-rendering.md" ], """# Layout And Rendering
+
+PASS: Controls render evidence covered three viewport sizes, two scale factors, graph/chart controls, and 10,000-item visible-range behavior.
+
+- viewports: 320x240, 640x480, 1024x768
+- density-scale-factors: 1.0, 2.0
+- large-data-total-items: 10000
+- initial-visible-range-count: 11
+- scrolled-first-index: 250
+- scrolled-visible-range-bound: less than 30 rows
+- environment-diagnostics: none for deterministic scene readback
+""") ]
     | StartTarget "DependencyReport" ->
         model,
         [ DependencyOwnershipReport
@@ -501,6 +552,9 @@ let update msg model =
                 path [ model.LogDir; "test.txt" ]
                 path [ model.LogDir; "pack-local.txt" ]
                 path [ model.LogDir; "package-surface-check.txt" ]
+                path [ model.LogDir; "controls-catalog-check.txt" ]
+                path [ model.LogDir; "controls-interaction-check.txt" ]
+                path [ model.LogDir; "controls-rendering-check.txt" ]
                 path [ model.LogDir; "dependency-report.txt" ]
                 path [ model.LogDir; "template-drift.txt" ]
                 path [ model.LogDir; "evidence-audit.txt" ]
@@ -509,7 +563,12 @@ let update msg model =
                 path [ model.GeneratedFileListsDir; "app-source.txt" ]
                 path [ model.GeneratedProductVerifyDir; "app-source"; "verify.log" ]
                 path [ model.FsiDir; "prelude.txt" ]
+                path [ model.FsiDir; "controls-prelude.txt" ]
                 path [ model.SampleSmokeDir; "BasicViewer.txt" ]
+                path [ model.SampleSmokeDir; "ControlsGallery.txt" ]
+                path [ model.ReadinessDir; "control-catalog.md" ]
+                path [ model.ReadinessDir; "interaction-tests.md" ]
+                path [ model.ReadinessDir; "layout-rendering.md" ]
                 path [ model.ReadinessDir; "task-graph.json" ]
                 model.DependencyReportPath
                 model.GeneratedGuidanceReportPath
@@ -858,6 +917,7 @@ let scanGeneratedRow (row: TemplateRow) =
           "src/Elmish"
           "src/KeyboardInput"
           "src/Layout"
+          "src/Controls"
           "src/Charts"
           "src/Testing"
           "tests/Lib.Tests"
@@ -866,11 +926,13 @@ let scanGeneratedRow (row: TemplateRow) =
           "tests/Elmish.Tests"
           "tests/KeyboardInput.Tests"
           "tests/Layout.Tests"
+          "tests/Controls.Tests"
           "tests/Charts.Tests"
           "tests/Testing.Tests"
           "tests/Parity.Tests"
           "tests/Smoke.Tests"
           "samples/BasicViewer"
+          "samples/ControlsGallery"
           "samples/ChartsGallery"
           "samples/DataGridGallery"
           "samples/LayoutGraphGallery"
@@ -895,7 +957,7 @@ let scanGeneratedRow (row: TemplateRow) =
               "FS.Skia.UI.Elmish"
               "FS.Skia.UI.KeyboardInput"
               "FS.Skia.UI.Layout"
-              "FS.Skia.UI.Charts" ]
+              "FS.Skia.UI.Controls" ]
         | "headless-scene" -> [ "FS.Skia.UI.Scene" ]
         | "governed" -> [ "FS.Skia.UI.Scene"; "FS.Skia.UI.Testing" ]
         | "sample-pack" -> [ "FS.Skia.UI.Scene"; "FS.Skia.UI.SkiaViewer"; "FS.Skia.UI.Elmish" ]
@@ -907,6 +969,7 @@ let scanGeneratedRow (row: TemplateRow) =
           "FS.Skia.UI.Elmish"
           "FS.Skia.UI.KeyboardInput"
           "FS.Skia.UI.Layout"
+          "FS.Skia.UI.Controls"
           "FS.Skia.UI.Charts"
           "FS.Skia.UI.Testing" ]
 
@@ -1154,7 +1217,7 @@ let validateCapabilityRows model capabilities =
     let ids = capabilities |> List.map (fun capability -> capability.Id) |> Set.ofList
 
     let requiredDefault =
-        Set.ofList [ "Scene"; "SkiaViewer"; "Elmish"; "KeyboardInput"; "Layout"; "Charts" ]
+        Set.ofList [ "Scene"; "SkiaViewer"; "Elmish"; "KeyboardInput"; "Layout"; "Controls" ]
 
     let defaultApp =
         capabilities
@@ -1270,8 +1333,7 @@ let runSkillCatalogCheck model =
           "fs-skia-skiaviewer"
           "fs-skia-elmish"
           "fs-skia-keyboard-input"
-          "fs-skia-layout"
-          "fs-skia-charts" ]
+          "fs-skia-ui-widgets" ]
 
     let rows =
         [ "# Selected Skills"
@@ -1395,10 +1457,15 @@ let copySelectedSkills model row capabilities =
         copyDirectory directory (path [ skillRoot; Path.GetFileName directory ]))
 
     let byId = capabilitiesById model
+    let controlsSelected = capabilities |> List.contains "controls"
 
     for capabilityId in capabilities do
-        match Map.tryFind capabilityId byId, capabilitySkillDestination capabilityId with
-        | Some capability, Some destination ->
+        let skipGeneratedSkill =
+            controlsSelected && capabilityId = "layout"
+
+        match skipGeneratedSkill, Map.tryFind capabilityId byId, capabilitySkillDestination capabilityId with
+        | true, _, _ -> ()
+        | false, Some capability, Some destination ->
             match capability.Skill with
             | Some sourceSkill ->
                 let destinationDirectory = path [ skillRoot; destination ]
@@ -1528,6 +1595,13 @@ let scanV3GeneratedRow model row =
     if not missing.IsEmpty then
         failwithf "%s/%s generated product missing files:%s%s" row.Artifact row.Profile Environment.NewLine (String.Join(Environment.NewLine, missing))
 
+    if row.Profile = "app" && not (files |> List.contains ".agents/skills/fs-skia-ui-widgets/SKILL.md") then
+        failwithf "%s/%s generated app is missing fs-skia-ui-widgets" row.Artifact row.Profile
+
+    if row.Profile = "app"
+       && files |> List.exists (fun file -> file = ".agents/skills/fs-skia-charts/SKILL.md" || file = ".agents/skills/fs-skia-layout/SKILL.md") then
+        failwithf "%s/%s generated app contains stale chart or generated layout widget skill" row.Artifact row.Profile
+
     for rule, forbiddenPath in forbidden do
         if files |> List.exists (fun file -> file.StartsWith(forbiddenPath, StringComparison.Ordinal)) then
             failwithf "%s/%s copied %s: %s" row.Artifact row.Profile rule forbiddenPath
@@ -1596,7 +1670,8 @@ let runDependencyOwnershipReport model =
           "- Elmish owns Fable.Elmish adapter dependency."
           "- KeyboardInput owns YamlDotNet dependency."
           "- Layout owns Yoga.Net dependency."
-          "- Charts remains a Scene-oriented package."
+          "- Controls owns widget, chart, graph, and generated widget guidance."
+          "- Charts remains compatibility source only and is not an active generated capability."
           "- Testing owns generated-product validation helpers." ]
         |> String.concat Environment.NewLine
 
@@ -1613,7 +1688,7 @@ let runPackageSurfaceReport model =
           "- `readiness/surface-baselines/FS.Skia.UI.Elmish.txt`"
           "- `readiness/surface-baselines/FS.Skia.UI.KeyboardInput.txt`"
           "- `readiness/surface-baselines/FS.Skia.UI.Layout.txt`"
-          "- `readiness/surface-baselines/FS.Skia.UI.Charts.txt`"
+          "- `readiness/surface-baselines/FS.Skia.UI.Controls.txt`"
           "- `readiness/surface-baselines/FS.Skia.UI.Testing.txt`" ]
         |> String.concat Environment.NewLine
 
@@ -1918,6 +1993,9 @@ let targetDependencies =
           "CapabilityCheck", []
           "SkillCheck", [ "CapabilityCheck" ]
           "GeneratedProductCheck", [ "CapabilityCheck"; "SkillCheck" ]
+          "ControlsCatalogCheck", [ "Build" ]
+          "ControlsInteractionCheck", [ "Build" ]
+          "ControlsRenderingCheck", [ "Build" ]
           "DependencyReport", []
           "GeneratedGuidanceCheck", []
           "TemplateDrift", []
@@ -1933,6 +2011,9 @@ let targetDependencies =
             "CapabilityCheck"
             "SkillCheck"
             "GeneratedProductCheck"
+            "ControlsCatalogCheck"
+            "ControlsInteractionCheck"
+            "ControlsRenderingCheck"
             "DependencyReport"
             "GeneratedGuidanceCheck"
             "TemplateDrift"

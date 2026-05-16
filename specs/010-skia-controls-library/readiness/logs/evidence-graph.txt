@@ -1,0 +1,120 @@
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library --graph-only
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library
+
+[1/2] Computing task graph...
+task-graph: 109 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library/readiness/task-graph.md
+  status: 109[X]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library --graph-only
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library
+
+[1/2] Computing task graph...
+task-graph: 109 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library/readiness/task-graph.md
+  status: 108[X], 1[-]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library --graph-only
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library
+
+[1/2] Computing task graph...
+task-graph: 109 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library/readiness/task-graph.md
+  status: 108[X], 1[-]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library --graph-only
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library
+
+[1/2] Computing task graph...
+task-graph: 109 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library/readiness/task-graph.md
+  status: 108[X], 1[-]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library --graph-only
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library
+
+[1/2] Computing task graph...
+task-graph: 109 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library/readiness/task-graph.md
+  status: 108[X], 1[-]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library --graph-only
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library
+
+[1/2] Computing task graph...
+task-graph: 109 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library/readiness/task-graph.md
+  status: 108[X], 1[-]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library --graph-only
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library
+
+[1/2] Computing task graph...
+task-graph: 109 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library/readiness/task-graph.md
+  status: 108[X], 1[-]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library --graph-only
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library
+
+[1/2] Computing task graph...
+task-graph: 109 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/010-skia-controls-library/readiness/task-graph.md
+  status: 108[X], 1[-]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0

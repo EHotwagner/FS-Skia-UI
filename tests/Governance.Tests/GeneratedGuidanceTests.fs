@@ -98,7 +98,7 @@ let generatedGuidanceTests =
                   "Elmish"
                   "KeyboardInput"
                   "Layout"
-                  "Charts"
+                  "Controls"
                   "./fake.sh build -t Dev"
                   "./fake.sh build -t Test"
                   "./fake.sh build -t Verify" ]

@@ -49,8 +49,7 @@ let templateProfileTests =
                       "src/SkiaViewer/skill/"
                       "src/Elmish/skill/"
                       "src/KeyboardInput/skill/"
-                      "src/Layout/skill/"
-                      "src/Charts/skill/"
+                      "src/Controls/skill/"
                       "src/Testing/skill/"
                       "template/fragments/samples/"
                       "fs-skia-samples" ]
@@ -74,7 +73,7 @@ let templateProfileTests =
 
             Expect.equal
                 defaultApp
-                (Set.ofList [ "Scene"; "SkiaViewer"; "Elmish"; "KeyboardInput"; "Layout"; "Charts" ])
+                (Set.ofList [ "Scene"; "SkiaViewer"; "Elmish"; "KeyboardInput"; "Layout"; "Controls" ])
                 "default app resolves to the required V3 capability set"
 
             Expect.isFalse (defaultApp.Contains "Samples") "samples are excluded from the default app"
@@ -84,7 +83,7 @@ let templateProfileTests =
             let capabilities = readCatalogCapabilities ()
             let ids = capabilities |> List.map _.Id |> Set.ofList
 
-            [ "scene"; "skiaviewer"; "elmish"; "keyboard-input"; "layout"; "charts"; "testing"; "samples" ]
+            [ "scene"; "skiaviewer"; "elmish"; "keyboard-input"; "layout"; "controls"; "testing"; "samples" ]
             |> List.iter (fun id -> Expect.isTrue (ids.Contains id) $"catalog contains {id}")
 
             capabilities
@@ -111,7 +110,7 @@ let templateProfileTests =
               "FS.Skia.UI.Elmish"
               "FS.Skia.UI.KeyboardInput"
               "FS.Skia.UI.Layout"
-              "FS.Skia.UI.Charts"
+              "FS.Skia.UI.Controls"
               "FS.Skia.UI.Testing" ]
             |> List.iter (fun needle -> Expect.stringContains catalog needle $"catalog includes {needle}")
         }
@@ -124,7 +123,7 @@ let templateProfileTests =
                   "template/profiles/governed.yml"
                   "template/profiles/sample-pack.yml" ]
 
-            [ "template/profiles/app.yml", [ "scene"; "skiaviewer"; "elmish"; "keyboard-input"; "layout"; "charts"; "full-governance" ]
+            [ "template/profiles/app.yml", [ "scene"; "skiaviewer"; "elmish"; "keyboard-input"; "layout"; "controls"; "full-governance" ]
               "template/profiles/headless-scene.yml", [ "scene" ]
               "template/profiles/governed.yml", [ "full-governance" ]
               "template/profiles/sample-pack.yml", [ "samples" ] ]

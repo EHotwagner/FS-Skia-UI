@@ -80,14 +80,20 @@ let dependencyGovernanceTests =
 
         test "V3 dependency report names package ownership rules" {
             if directoryExists "specs/009-v3-modular-framework" then
+                let reportPath =
+                    if fileExists "specs/010-skia-controls-library/readiness/dependency-report.md" then
+                        "specs/010-skia-controls-library/readiness/dependency-report.md"
+                    else
+                        "specs/009-v3-modular-framework/readiness/dependency-report.md"
+
                 expectFileContains
-                    "specs/009-v3-modular-framework/readiness/dependency-report.md"
+                    reportPath
                     [ "Scene has no Elmish, Silk.NET, SkiaSharp, Yoga.Net, or YamlDotNet dependency"
                       "SkiaViewer owns Silk.NET and SkiaSharp"
                       "Elmish owns Fable.Elmish"
                       "KeyboardInput owns YamlDotNet"
                       "Layout owns Yoga.Net"
-                      "Charts"
+                      "Controls"
                       "Testing" ]
             else
                 Expect.isFalse (directoryExists ".template.config") "generated products do not carry source-only V3 readiness reports"

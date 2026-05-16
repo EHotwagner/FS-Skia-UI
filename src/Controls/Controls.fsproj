@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <IsPackable>true</IsPackable>
+    <PackageId>FS.Skia.UI.Controls</PackageId>
+    <AssemblyName>FS.Skia.UI.Controls</AssemblyName>
+    <Version>0.1.9-preview.1</Version>
+    <Title>FS.Skia.UI.Controls</Title>
+    <Description>Declarative Skia controls, widgets, chart controls, graph controls, and custom wrappers for Elmish-style views.</Description>
+    <PackageTags>fsharp;skia;controls;widgets;elmish</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Types.fsi" />
+    <Compile Include="Types.fs" />
+    <Compile Include="Theme.fsi" />
+    <Compile Include="Theme.fs" />
+    <Compile Include="Diagnostics.fsi" />
+    <Compile Include="Diagnostics.fs" />
+    <Compile Include="Accessibility.fsi" />
+    <Compile Include="Accessibility.fs" />
+    <Compile Include="Attributes.fsi" />
+    <Compile Include="Attributes.fs" />
+    <Compile Include="Control.fsi" />
+    <Compile Include="Control.fs" />
+    <Compile Include="Catalog.fsi" />
+    <Compile Include="Catalog.fs" />
+    <Compile Include="TextInput.fsi" />
+    <Compile Include="TextInput.fs" />
+    <Compile Include="Collections.fsi" />
+    <Compile Include="Collections.fs" />
+    <Compile Include="Charts.fsi" />
+    <Compile Include="Charts.fs" />
+    <Compile Include="CustomControl.fsi" />
+    <Compile Include="CustomControl.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="catalog.yml" Pack="true" PackagePath="contentFiles/any/any/catalog.yml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lib\Lib.fsproj" />
+    <ProjectReference Include="..\Layout\Layout.fsproj" />
+    <ProjectReference Include="..\KeyboardInput\KeyboardInput.fsproj" />
+  </ItemGroup>
+
+</Project>

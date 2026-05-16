@@ -66,12 +66,12 @@ let surfaceAreaTests =
             |> List.iter (fun helper -> Expect.isFalse (actual.Contains helper) $"{helper} is not package-visible")
         }
 
-        test "FS.Skia.UI.Charts baseline exports expected contract names" {
-            assertBaseline "FS.Skia.UI.Charts" typeof<FS.Skia.UI.Charts.ChartConfig>.Assembly
-        }
-
         test "FS.Skia.UI.Layout baseline exports expected contract names" {
             assertBaseline "FS.Skia.UI.Layout" typeof<FS.Skia.UI.Layout.GraphDefinition>.Assembly
+        }
+
+        test "FS.Skia.UI.Controls baseline exports expected contract names" {
+            assertBaseline "FS.Skia.UI.Controls" typeof<FS.Skia.UI.Controls.Control<int>>.Assembly
         }
 
         test "V3 capability packages declare package-specific contracts and baselines" {
@@ -80,7 +80,7 @@ let surfaceAreaTests =
               "Elmish", "src/Elmish/Elmish.fsproj", "src/Elmish/Elmish.fsi", "readiness/surface-baselines/FS.Skia.UI.Elmish.txt"
               "KeyboardInput", "src/KeyboardInput/KeyboardInput.fsproj", "src/KeyboardInput/KeyboardInput.fsi", "readiness/surface-baselines/FS.Skia.UI.KeyboardInput.txt"
               "Layout", "src/Layout/Layout.fsproj", "src/Layout/Layout.fsi", "readiness/surface-baselines/FS.Skia.UI.Layout.txt"
-              "Charts", "src/Charts/Charts.fsproj", "src/Charts/Types.fsi", "readiness/surface-baselines/FS.Skia.UI.Charts.txt"
+              "Controls", "src/Controls/Controls.fsproj", "src/Controls/Types.fsi", "readiness/surface-baselines/FS.Skia.UI.Controls.txt"
               "Testing", "src/Testing/Testing.fsproj", "src/Testing/Testing.fsi", "readiness/surface-baselines/FS.Skia.UI.Testing.txt" ]
             |> List.iter (fun (name, project, contract, baseline) ->
                 Expect.isTrue (File.Exists(Path.Combine(repositoryRoot, project))) $"{name} project exists"

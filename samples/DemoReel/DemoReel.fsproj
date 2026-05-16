@@ -12,8 +12,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Lib\Lib.fsproj" />
-    <ProjectReference Include="..\..\src\Charts\Charts.fsproj" />
     <ProjectReference Include="..\..\src\Layout\Layout.fsproj" />
+    <ProjectReference Include="..\..\src\Controls\Controls.fsproj" />
   </ItemGroup>
 
 </Project>

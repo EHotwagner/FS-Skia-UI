@@ -7,7 +7,7 @@ description: Work on Yoga-backed layout contracts and generated product layout u
 
 ## Scope
 
-Owns `src/Layout/`, layout tests, `template/fragments/layout/`, and generated product layout examples.
+Owns `src/Layout/`, layout tests, and runtime layout engine guidance. Generated product layout-control and widget examples are owned by `fs-skia-ui-widgets`.
 
 ## Public Contract
 
@@ -27,8 +27,8 @@ Record package-surface and dependency evidence under `specs/009-v3-modular-frame
 
 ## Package Boundary
 
-Layout may depend on Scene and Yoga.Net. Do not introduce viewer, keyboard, or chart dependencies.
+Layout may depend on Scene and Yoga.Net. Do not introduce viewer, keyboard, controls, or chart dependencies.
 
 ## Generated Product
 
-Products that select layout receive the layout package reference and this skill.
+Products that select Controls receive `FS.Skia.UI.Layout` as a runtime dependency but use `fs-skia-ui-widgets` for generated widget guidance. Use this skill only for lower-level layout engine work.

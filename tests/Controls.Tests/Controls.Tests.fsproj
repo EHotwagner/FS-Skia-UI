@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="CatalogTests.fs" />
+    <Compile Include="PublicSurfaceTests.fs" />
+    <Compile Include="SemanticTests.fs" />
+    <Compile Include="InteractionTests.fs" />
+    <Compile Include="TextInputTests.fs" />
+    <Compile Include="AccessibilityTests.fs" />
+    <Compile Include="RenderingTests.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Controls\Controls.fsproj" />
+    <PackageReference Include="Expecto" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="YoloDev.Expecto.TestSdk" />
+  </ItemGroup>
+
+</Project>

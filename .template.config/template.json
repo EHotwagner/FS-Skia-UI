@@ -21,7 +21,7 @@
       "choices": [
         {
           "choice": "app",
-          "description": "Default V3 product app with Scene, SkiaViewer, Elmish, KeyboardInput, Layout, Charts, product tests, and product governance."
+          "description": "Default V3 product app with Scene, SkiaViewer, Elmish, KeyboardInput, Layout, Controls, product tests, and product governance."
         },
         {
           "choice": "headless-scene",
@@ -141,13 +141,8 @@
     },
     {
       "condition": "(profile == \"app\")",
-      "source": "src/Layout/skill/",
-      "target": ".agents/skills/fs-skia-layout/"
-    },
-    {
-      "condition": "(profile == \"app\")",
-      "source": "src/Charts/skill/",
-      "target": ".agents/skills/fs-skia-charts/"
+      "source": "src/Controls/skill/",
+      "target": ".agents/skills/fs-skia-ui-widgets/"
     },
     {
       "condition": "(profile == \"governed\")",

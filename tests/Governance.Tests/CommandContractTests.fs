@@ -105,7 +105,7 @@ let commandContractTests =
         }
 
         test "workflow self-check exercises pure transition and emitted effect assertions" {
-            let exitCode, stdout, stderr = runProcess "./fake.sh" "build -t BuildWorkflowCheck"
+            let exitCode, stdout, stderr = runFakeTarget "BuildWorkflowCheck"
             let output = stdout + stderr
             Expect.equal exitCode 0 output
             Expect.stringContains output "BuildWorkflowCheck" "self-check target ran"
