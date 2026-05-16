@@ -1,0 +1,8 @@
+name: governed
+description: Product starter with full-governance assets and explicit capabilities.
+capabilities: [scene, testing, full-governance]
+optionalCapabilities: [skiaviewer, elmish, keyboard-input, layout, charts]
+governance: full
+samples: false
+sourceFrameworkMode: false
+validationCommands: [Dev, Test, Verify]

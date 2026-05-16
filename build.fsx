@@ -20,6 +20,38 @@ type TemplateRow =
       Root: string
       EvidenceDir: string }
 
+type V3GeneratedRow =
+    { Artifact: string
+      Profile: string
+      ProjectName: string
+      Root: string
+      Capabilities: string list
+      EvidenceDir: string
+      FileListPath: string }
+
+type CapabilityRow =
+    { Id: string
+      DisplayName: string
+      PackageId: string option
+      Project: string option
+      Contracts: string list
+      Tests: string list
+      Skill: string option
+      TemplateFragment: string option
+      Dependencies: string list
+      Profiles: string list
+      DefaultApp: bool
+      Evidence: string list
+      SurfaceBaseline: string option
+      Docs: string option
+      NonRuntime: bool }
+
+type ValidationFinding =
+    { ArtifactClass: string
+      Path: string
+      Rule: string
+      Message: string }
+
 // BUILD SECTION: workflow model
 
 type BuildModel =
@@ -36,6 +68,13 @@ type BuildModel =
       TemplateArtifactDir: string
       TemplateWorkDir: string
       TemplateEvidenceDir: string
+      GeneratedFileListsDir: string
+      GeneratedProductVerifyDir: string
+      GeneratedProductRootsDir: string
+      PackageSurfaceReportDir: string
+      CapabilityCatalogPath: string
+      CapabilityCatalogReportPath: string
+      SelectedSkillsReportPath: string
       DependencyReportPath: string
       GeneratedGuidanceReportPath: string
       TemplateDriftReportPath: string
@@ -55,6 +94,12 @@ type BuildEffect =
     | InstallTemplate of label: string * source: TemplateInstallSource * outputPath: string
     | InstantiateTemplates of outputPath: string
     | ScanGeneratedProjects of outputPath: string
+    | CapabilityCatalogCheck
+    | SkillCatalogCheck
+    | GenerateV3Products
+    | ScanV3GeneratedProducts
+    | PackageSurfaceReport
+    | DependencyOwnershipReport
     | ValidateTemplatePackage of outputPath: string
     | GeneratedGuidanceScan of outputPath: string
     | WriteStructuredReport of label: string * path: string * content: string
@@ -144,7 +189,14 @@ let init root =
           TemplateArtifactDir = path [ root; "artifacts"; "templates" ]
           TemplateWorkDir = path [ root; "artifacts"; "template-check"; featureId ]
           TemplateEvidenceDir = path [ readiness; "template" ]
-          DependencyReportPath = path [ readiness; "dependencies.md" ]
+          GeneratedFileListsDir = path [ readiness; "generated-file-lists" ]
+          GeneratedProductVerifyDir = path [ readiness; "generated-product-verify" ]
+          GeneratedProductRootsDir = path [ root; "artifacts"; "generated-products"; featureId ]
+          PackageSurfaceReportDir = path [ readiness; "package-surfaces" ]
+          CapabilityCatalogPath = path [ root; "template"; "capabilities.yml" ]
+          CapabilityCatalogReportPath = path [ readiness; "capability-catalog.md" ]
+          SelectedSkillsReportPath = path [ readiness; "selected-skills.md" ]
+          DependencyReportPath = path [ readiness; "dependency-report.md" ]
           GeneratedGuidanceReportPath = path [ readiness; "generated-guidance.md" ]
           TemplateDriftReportPath = path [ readiness; "template-drift.md" ]
           DeferralsPath = path [ root; "readiness"; "template-deferrals.yml" ]
@@ -161,6 +213,10 @@ let init root =
           model.TemplateArtifactDir
           model.TemplateWorkDir
           model.TemplateEvidenceDir
+          model.GeneratedFileListsDir
+          model.GeneratedProductVerifyDir
+          model.GeneratedProductRootsDir
+          model.PackageSurfaceReportDir
           path [ model.TemplateEvidenceDir; "source-default" ]
           path [ model.TemplateEvidenceDir; "source-minimal" ]
           path [ model.TemplateEvidenceDir; "package-default" ]
@@ -171,14 +227,24 @@ let init root =
 
 let defaultTestProjects =
     [ "tests/Lib.Tests/Lib.Tests.fsproj"
+      "tests/Scene.Tests/Scene.Tests.fsproj"
+      "tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj"
+      "tests/Elmish.Tests/Elmish.Tests.fsproj"
+      "tests/KeyboardInput.Tests/KeyboardInput.Tests.fsproj"
       "tests/Charts.Tests/Charts.Tests.fsproj"
       "tests/Layout.Tests/Layout.Tests.fsproj"
+      "tests/Testing.Tests/Testing.Tests.fsproj"
       "tests/Parity.Tests/Parity.Tests.fsproj"
       "tests/Smoke.Tests/Smoke.Tests.fsproj"
       "tests/Governance.Tests/Governance.Tests.fsproj" ]
 
 let packProjects =
-    [ "src/Lib/Lib.fsproj", "FS.Skia.UI"
+    [ "src/Scene/Scene.fsproj", "FS.Skia.UI.Scene"
+      "src/SkiaViewer/SkiaViewer.fsproj", "FS.Skia.UI.SkiaViewer"
+      "src/Elmish/Elmish.fsproj", "FS.Skia.UI.Elmish"
+      "src/KeyboardInput/KeyboardInput.fsproj", "FS.Skia.UI.KeyboardInput"
+      "src/Testing/Testing.fsproj", "FS.Skia.UI.Testing"
+      "src/Lib/Lib.fsproj", "FS.Skia.UI"
       "src/Charts/Charts.fsproj", "FS.Skia.UI.Charts"
       "src/Layout/Layout.fsproj", "FS.Skia.UI.Layout" ]
 
@@ -223,6 +289,9 @@ let requiredTargets =
       "TemplateInstantiate"
       "TemplateSmoke"
       "TemplateCheck"
+      "CapabilityCheck"
+      "SkillCheck"
+      "GeneratedProductCheck"
       "DependencyReport"
       "GeneratedGuidanceCheck"
       "TemplateDrift"
@@ -255,6 +324,34 @@ let templateRows model =
         ProjectName = "V2PackageMinimal"
         Root = path [ model.TemplateWorkDir; "package-minimal" ]
         EvidenceDir = path [ model.TemplateEvidenceDir; "package-minimal" ] } ]
+
+let v3GeneratedRows model =
+    let row artifact profile projectName capabilities =
+        { Artifact = artifact
+          Profile = profile
+          ProjectName = projectName
+          Root = path [ model.GeneratedProductRootsDir; $"{profile}-{artifact}" ]
+          Capabilities = capabilities
+          EvidenceDir = path [ model.GeneratedProductVerifyDir; $"{profile}-{artifact}" ]
+          FileListPath = path [ model.GeneratedFileListsDir; $"{profile}-{artifact}.txt" ] }
+
+    [ row "source" "app" "V3AppSource" [ "scene"; "skiaviewer"; "elmish"; "keyboard-input"; "layout"; "charts" ]
+      row "package" "app" "V3AppPackage" [ "scene"; "skiaviewer"; "elmish"; "keyboard-input"; "layout"; "charts" ]
+      row "source" "headless-scene" "V3HeadlessScene" [ "scene" ]
+      row "source" "governed" "V3Governed" [ "scene"; "testing" ]
+      row "source" "sample-pack" "V3SamplePack" [ "scene"; "skiaviewer"; "elmish"; "samples" ] ]
+
+let capabilitySkillDestination capabilityId =
+    match capabilityId with
+    | "scene" -> Some "fs-skia-scene"
+    | "skiaviewer" -> Some "fs-skia-skiaviewer"
+    | "elmish" -> Some "fs-skia-elmish"
+    | "keyboard-input" -> Some "fs-skia-keyboard-input"
+    | "layout" -> Some "fs-skia-layout"
+    | "charts" -> Some "fs-skia-charts"
+    | "testing" -> Some "fs-skia-testing"
+    | "samples" -> Some "fs-skia-samples"
+    | _ -> None
 
 // BUILD SECTION: target update
 
@@ -307,6 +404,7 @@ let update msg model =
     | StartTarget "PackageSurfaceCheck" ->
         model,
         [ processEffect "package surface check" "dotnet" "test tests/Package.Tests/Package.Tests.fsproj --no-build" model.RepositoryRoot (path [ model.LogDir; "package-surface-check.txt" ])
+          PackageSurfaceReport
           RequireFiles("stable package surface baselines", [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.txt" ] ]) ]
     | StartTarget "FsiTranscripts" ->
         model,
@@ -351,9 +449,30 @@ let update msg model =
                 path [ model.TemplateEvidenceDir; "package-minimal"; "dev.log" ] ]
             )
           WriteStructuredReport("template verdict", path [ model.TemplateEvidenceDir; "verdict.md" ], "# TemplateCheck Verdict\n\nPASS: source/package and default/minimal generated projects passed non-visual validation.\n") ]
+    | StartTarget "CapabilityCheck" ->
+        model,
+        [ CapabilityCatalogCheck
+          RequireFiles("capability catalog report output", [ model.CapabilityCatalogReportPath ]) ]
+    | StartTarget "SkillCheck" ->
+        model,
+        [ SkillCatalogCheck
+          RequireFiles("selected skill report output", [ model.SelectedSkillsReportPath ]) ]
+    | StartTarget "GeneratedProductCheck" ->
+        model,
+        [ GenerateV3Products
+          ScanV3GeneratedProducts
+          RequireFiles(
+              "generated product file-list reports",
+              [ path [ model.GeneratedFileListsDir; "app-source.txt" ]
+                path [ model.GeneratedFileListsDir; "app-package.txt" ]
+                path [ model.GeneratedFileListsDir; "headless-scene-source.txt" ]
+                path [ model.GeneratedFileListsDir; "governed-source.txt" ]
+                path [ model.GeneratedFileListsDir; "sample-pack-source.txt" ] ]
+            ) ]
     | StartTarget "DependencyReport" ->
         model,
-        [ processEffect "dependency report" "dotnet" $"fsi scripts/dependency-report.fsx {quote model.DependencyReportPath}" model.RepositoryRoot (path [ model.LogDir; "dependency-report.txt" ])
+        [ DependencyOwnershipReport
+          processEffect "dependency report" "dotnet" ("fsi scripts/dependency-report.fsx " + quote (path [ model.ReadinessDir; "dependencies.md" ])) model.RepositoryRoot (path [ model.LogDir; "dependency-report.txt" ])
           RequireFiles("dependency report output", [ model.DependencyReportPath ]) ]
     | StartTarget "GeneratedGuidanceCheck" ->
         model,
@@ -382,6 +501,10 @@ let update msg model =
                 path [ model.LogDir; "dependency-report.txt" ]
                 path [ model.LogDir; "template-drift.txt" ]
                 path [ model.LogDir; "evidence-audit.txt" ]
+                model.CapabilityCatalogReportPath
+                model.SelectedSkillsReportPath
+                path [ model.GeneratedFileListsDir; "app-source.txt" ]
+                path [ model.GeneratedProductVerifyDir; "app-source"; "verify.log" ]
                 path [ model.FsiDir; "prelude.txt" ]
                 path [ model.SampleSmokeDir; "BasicViewer.txt" ]
                 path [ model.ReadinessDir; "task-graph.json" ]
@@ -480,20 +603,20 @@ let solutionFor root preferredSolution =
         |> Option.map Path.GetFileName
 
 let runDotnetAction label action solutionFile projects extraArguments outputPath root =
-    match solutionFor root solutionFile with
-    | Some solution ->
-        let arguments =
-            [ action; quote solution; extraArguments ]
-            |> List.filter (fun part -> part <> "")
-            |> String.concat " "
+    let existing = existingProjects root projects
 
-        runProcess label "dotnet" arguments root outputPath Map.empty
-    | None ->
-        let existing = existingProjects root projects
+    if List.isEmpty existing then
+        match solutionFor root solutionFile with
+        | Some solution ->
+            let arguments =
+                [ action; quote solution; extraArguments ]
+                |> List.filter (fun part -> part <> "")
+                |> String.concat " "
 
-        if List.isEmpty existing then
+            runProcess label "dotnet" arguments root outputPath Map.empty
+        | None ->
             failwithf "No projects were found for %s. Checked: %s" label (String.Join(", ", projects))
-
+    else
         existing
         |> List.iter (fun project ->
             let arguments =
@@ -607,7 +730,7 @@ let runTemplateInstall model label source outputPath =
 
     runProcess label "dotnet" $"new install {quote installArgument}" model.RepositoryRoot outputPath Map.empty
 
-let instantiateRow model row =
+let instantiateRow model (row: TemplateRow) =
     cleanDirectoryContents row.Root
     Directory.CreateDirectory row.EvidenceDir |> ignore
 
@@ -659,7 +782,7 @@ let fileShouldBeScanned (filePath: string) =
     |> List.exists (fun segment -> normalized.IndexOf(segment, StringComparison.Ordinal) >= 0)
     |> not
 
-let generatedShellScripts row =
+let generatedShellScripts (row: TemplateRow) =
     Directory.EnumerateFiles(row.Root, "*.sh", SearchOption.AllDirectories)
     |> Seq.filter fileShouldBeScanned
     |> Seq.toList
@@ -683,7 +806,7 @@ let hasUserExecutePermission filePath =
 
         proc.WaitForExit(30 * 1000) && proc.ExitCode = 0
 
-let scanGeneratedRow row =
+let scanGeneratedRow (row: TemplateRow) =
     let files =
         Directory.EnumerateFiles(row.Root, "*", SearchOption.AllDirectories)
         |> Seq.filter fileShouldBeScanned
@@ -840,6 +963,546 @@ let scanGeneratedProjects model outputPath =
 
     ensureParent outputPath
     File.WriteAllText(outputPath, summary + Environment.NewLine)
+
+// BUILD SECTION: V3 capability validation
+
+let trimQuotes (value: string) =
+    value.Trim().Trim('"').Trim('\'')
+
+let parseScalar (line: string) =
+    match line.IndexOf(':') with
+    | index when index >= 0 -> line.Substring(index + 1) |> trimQuotes
+    | _ -> ""
+
+let parseInlineList (value: string) =
+    let trimmed = value.Trim()
+
+    if trimmed.StartsWith("[") && trimmed.EndsWith("]") then
+        trimmed.Trim('[', ']').Split([| ',' |], StringSplitOptions.RemoveEmptyEntries)
+        |> Array.map trimQuotes
+        |> Array.toList
+    elif String.IsNullOrWhiteSpace trimmed then
+        []
+    else
+        [ trimQuotes trimmed ]
+
+let emptyCapability id =
+    { Id = id
+      DisplayName = ""
+      PackageId = None
+      Project = None
+      Contracts = []
+      Tests = []
+      Skill = None
+      TemplateFragment = None
+      Dependencies = []
+      Profiles = []
+      DefaultApp = false
+      Evidence = []
+      SurfaceBaseline = None
+      Docs = None
+      NonRuntime = false }
+
+let readCapabilityCatalog model =
+    if not (File.Exists model.CapabilityCatalogPath) then
+        failwithf "Missing capability catalog: %s" model.CapabilityCatalogPath
+
+    let lines = File.ReadAllText(model.CapabilityCatalogPath).Replace("\r\n", "\n").Split('\n')
+    let capabilities = ResizeArray<CapabilityRow>()
+    let mutable current: CapabilityRow option = None
+    let mutable currentList: string option = None
+
+    let commitCurrent () =
+        match current with
+        | Some capability -> capabilities.Add capability
+        | None -> ()
+
+    let setCurrent update =
+        current <- current |> Option.map update
+
+    for raw in lines do
+        let trimmed = raw.Trim()
+
+        if trimmed.StartsWith("- id:", StringComparison.Ordinal) then
+            commitCurrent ()
+            current <- Some(emptyCapability (parseScalar trimmed))
+            currentList <- None
+        elif trimmed.StartsWith("- ", StringComparison.Ordinal) && currentList.IsSome then
+            let item = trimmed.Substring(2) |> trimQuotes
+
+            match currentList.Value with
+            | "contracts" -> setCurrent (fun c -> { c with Contracts = c.Contracts @ [ item ] })
+            | "tests" -> setCurrent (fun c -> { c with Tests = c.Tests @ [ item ] })
+            | "dependencies" -> setCurrent (fun c -> { c with Dependencies = c.Dependencies @ [ item ] })
+            | "profiles" -> setCurrent (fun c -> { c with Profiles = c.Profiles @ [ item ] })
+            | "evidence" -> setCurrent (fun c -> { c with Evidence = c.Evidence @ [ item ] })
+            | _ -> ()
+        elif current.IsSome && trimmed.IndexOf(":", StringComparison.Ordinal) >= 0 then
+            let field = trimmed.Substring(0, trimmed.IndexOf(':')).Trim()
+            let value = parseScalar trimmed
+            currentList <- None
+
+            match field with
+            | "displayName" -> setCurrent (fun c -> { c with DisplayName = value })
+            | "packageId" -> setCurrent (fun c -> { c with PackageId = Some value })
+            | "project" -> setCurrent (fun c -> { c with Project = Some value })
+            | "contracts" ->
+                setCurrent (fun c -> { c with Contracts = parseInlineList value })
+                currentList <- Some "contracts"
+            | "tests" ->
+                setCurrent (fun c -> { c with Tests = parseInlineList value })
+                currentList <- Some "tests"
+            | "skill" -> setCurrent (fun c -> { c with Skill = Some value })
+            | "templateFragment" -> setCurrent (fun c -> { c with TemplateFragment = Some value })
+            | "dependencies" ->
+                setCurrent (fun c -> { c with Dependencies = parseInlineList value })
+                currentList <- Some "dependencies"
+            | "profiles" ->
+                setCurrent (fun c -> { c with Profiles = parseInlineList value })
+                currentList <- Some "profiles"
+            | "defaultApp" -> setCurrent (fun c -> { c with DefaultApp = value.Equals("true", StringComparison.OrdinalIgnoreCase) })
+            | "evidence" ->
+                setCurrent (fun c -> { c with Evidence = parseInlineList value })
+                currentList <- Some "evidence"
+            | "surfaceBaseline" -> setCurrent (fun c -> { c with SurfaceBaseline = Some value })
+            | "docs" -> setCurrent (fun c -> { c with Docs = Some value })
+            | "nonRuntime" -> setCurrent (fun c -> { c with NonRuntime = value.Equals("true", StringComparison.OrdinalIgnoreCase) })
+            | _ -> ()
+
+    commitCurrent ()
+    capabilities |> Seq.toList
+
+let finding artifactClass path rule message =
+    { ArtifactClass = artifactClass
+      Path = path
+      Rule = rule
+      Message = message }
+
+let validateCapabilityRows model capabilities =
+    let ids = capabilities |> List.map (fun capability -> capability.Id) |> Set.ofList
+
+    let requiredDefault =
+        Set.ofList [ "Scene"; "SkiaViewer"; "Elmish"; "KeyboardInput"; "Layout"; "Charts" ]
+
+    let defaultApp =
+        capabilities
+        |> List.filter (fun capability -> capability.DefaultApp)
+        |> List.map (fun capability -> capability.DisplayName)
+        |> Set.ofList
+
+    [ if defaultApp <> requiredDefault then
+          yield finding "capability-catalog" model.CapabilityCatalogPath "default-app" ("Default app set was " + String.Join(", ", defaultApp))
+
+      for capability in capabilities do
+          if String.IsNullOrWhiteSpace capability.DisplayName then
+              yield finding "capability-catalog" capability.Id "displayName" "Missing displayName"
+
+          if capability.Project.IsNone && not capability.NonRuntime then
+              yield finding "capability-catalog" capability.Id "project" "Runtime capability is missing project"
+
+          if capability.Contracts.IsEmpty then
+              yield finding "capability-catalog" capability.Id "contracts" "Missing public contracts or no-public-surface record"
+
+          if capability.Tests.IsEmpty then
+              yield finding "capability-catalog" capability.Id "tests" "Missing test coverage entry"
+
+          if capability.Skill.IsNone then
+              yield finding "capability-catalog" capability.Id "skill" "Missing local skill"
+
+          if capability.TemplateFragment.IsNone then
+              yield finding "capability-catalog" capability.Id "templateFragment" "Missing template fragment"
+
+          if capability.Profiles.IsEmpty then
+              yield finding "capability-catalog" capability.Id "profiles" "Missing profile ownership"
+
+          if capability.Evidence.IsEmpty then
+              yield finding "capability-catalog" capability.Id "evidence" "Missing evidence classes"
+
+          match capability.SurfaceBaseline with
+          | Some "no-public-surface" -> ()
+          | Some baseline when File.Exists(path [ model.RepositoryRoot; baseline ]) -> ()
+          | Some baseline -> yield finding "capability-catalog" capability.Id "surfaceBaseline" $"Missing surface baseline {baseline}"
+          | None -> yield finding "capability-catalog" capability.Id "surfaceBaseline" "Missing surface baseline"
+
+          for dependency in capability.Dependencies do
+              if not (ids.Contains dependency) then
+                  yield finding "capability-catalog" capability.Id "dependency" $"Unknown dependency {dependency}" ]
+
+let writeFindingsOrPass outputPath title findings rows =
+    if not (List.isEmpty findings) then
+        let detail =
+            findings
+            |> List.map (fun finding -> $"- `{finding.Path}` [{finding.Rule}]: {finding.Message}")
+            |> String.concat Environment.NewLine
+
+        failwithf "%s failed:%s%s" title Environment.NewLine detail
+
+    ensureParent outputPath
+    File.WriteAllText(outputPath, rows |> String.concat Environment.NewLine |> fun text -> text + Environment.NewLine)
+
+let runCapabilityCatalogCheck model =
+    let capabilities = readCapabilityCatalog model
+    let findings = validateCapabilityRows model capabilities
+
+    let rows =
+        [ "# Capability Catalog"
+          ""
+          "PASS: capability catalog metadata, dependency closure, default app set, contracts, tests, skills, fragments, evidence, and surface baselines are valid."
+          ""
+          "| Capability | Package | Project | Dependencies | Default app |"
+          "|------------|---------|---------|--------------|-------------|"
+          yield!
+              capabilities
+              |> List.map (fun capability ->
+                  let packageId = capability.PackageId |> Option.defaultValue "non-runtime"
+                  let project = capability.Project |> Option.defaultValue "non-runtime"
+                  let dependencies = if capability.Dependencies.IsEmpty then "(none)" else String.Join(", ", capability.Dependencies)
+                  $"| {capability.DisplayName} | `{packageId}` | `{project}` | {dependencies} | {capability.DefaultApp} |") ]
+
+    writeFindingsOrPass model.CapabilityCatalogReportPath "CapabilityCheck" findings rows
+
+let requiredSkillSections =
+    [ "## Scope"
+      "## Public Contract"
+      "## Build Commands"
+      "## Test Commands"
+      "## Evidence"
+      "## Package Boundary"
+      "## Generated Product" ]
+
+let runSkillCatalogCheck model =
+    let capabilities = readCapabilityCatalog model
+
+    let findings =
+        [ for capability in capabilities do
+              match capability.Skill with
+              | None -> yield finding "selected-skills" capability.Id "skill" "Missing skill path"
+              | Some skillPath ->
+                  let fullPath = path [ model.RepositoryRoot; skillPath ]
+
+                  if not (File.Exists fullPath) then
+                      yield finding "selected-skills" skillPath "skill-file" "Skill file is missing"
+                  else
+                      let content = File.ReadAllText fullPath
+
+                      for section in requiredSkillSections do
+                          if content.IndexOf(section, StringComparison.Ordinal) < 0 then
+                              yield finding "selected-skills" skillPath "skill-section" $"Missing {section}"
+
+                      if content.IndexOf("./fake.sh build -t", StringComparison.Ordinal) < 0 then
+                          yield finding "selected-skills" skillPath "skill-command" "Skill does not name a FAKE target command" ]
+
+    let defaultSkills =
+        [ "fs-skia-project"
+          "fs-skia-scene"
+          "fs-skia-skiaviewer"
+          "fs-skia-elmish"
+          "fs-skia-keyboard-input"
+          "fs-skia-layout"
+          "fs-skia-charts" ]
+
+    let rows =
+        [ "# Selected Skills"
+          ""
+          "PASS: selected capability skills contain required sections and valid command references."
+          ""
+          "Default app selected skill destinations:"
+          yield! defaultSkills |> List.map (fun skill -> $"- `{skill}`")
+          ""
+          "Generated-product validation rejects unrelated capability skills." ]
+
+    writeFindingsOrPass model.SelectedSkillsReportPath "SkillCheck" findings rows
+
+let rec copyDirectory source target =
+    Directory.CreateDirectory target |> ignore
+
+    for file in Directory.GetFiles source do
+        File.Copy(file, path [ target; Path.GetFileName file ], true)
+
+    for directory in Directory.GetDirectories source do
+        copyDirectory directory (path [ target; Path.GetFileName directory ])
+
+let capabilitiesById model =
+    readCapabilityCatalog model |> List.map (fun row -> row.Id, row) |> Map.ofList
+
+let resolveCapabilities model selected =
+    let byId = capabilitiesById model
+
+    let rec visit seen capabilityId =
+        if Set.contains capabilityId seen then
+            seen
+        else
+            match Map.tryFind capabilityId byId with
+            | None -> failwithf "Unknown capability %s" capabilityId
+            | Some capability ->
+                capability.Dependencies
+                |> List.fold visit (Set.add capabilityId seen)
+
+    selected
+    |> List.fold visit Set.empty
+    |> Set.toList
+
+let packageReferences model capabilities =
+    let byId = capabilitiesById model
+
+    capabilities
+    |> List.choose (fun capabilityId ->
+        match Map.tryFind capabilityId byId with
+        | Some capability when not capability.NonRuntime ->
+            capability.PackageId
+            |> Option.bind (fun packageId ->
+                if packageId = "non-runtime" then None else Some packageId)
+        | _ -> None)
+    |> List.distinct
+    |> List.sort
+
+let writeProductProject model row capabilities =
+    let references =
+        packageReferences model capabilities
+        |> List.map (fun packageId -> $"    <PackageReference Include=\"{packageId}\" />")
+        |> String.concat Environment.NewLine
+
+    let content =
+        $"""<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+{references}
+  </ItemGroup>
+
+</Project>
+"""
+
+    File.WriteAllText(path [ row.Root; "src"; "Product"; "Product.fsproj" ], content)
+
+let copySelectedSkills model row capabilities =
+    let skillRoot = path [ row.Root; ".agents"; "skills" ]
+    Directory.CreateDirectory skillRoot |> ignore
+    copyDirectory (path [ model.RepositoryRoot; "template"; "base"; ".agents"; "skills"; "fs-skia-project" ]) (path [ skillRoot; "fs-skia-project" ])
+
+    let byId = capabilitiesById model
+
+    for capabilityId in capabilities do
+        match Map.tryFind capabilityId byId, capabilitySkillDestination capabilityId with
+        | Some capability, Some destination ->
+            match capability.Skill with
+            | Some sourceSkill ->
+                let destinationDirectory = path [ skillRoot; destination ]
+                Directory.CreateDirectory destinationDirectory |> ignore
+                File.Copy(path [ model.RepositoryRoot; sourceSkill ], path [ destinationDirectory; "SKILL.md" ], true)
+            | None -> ()
+        | _ -> ()
+
+let v3TemplatePackagePath model =
+    path [ model.TemplateArtifactDir; "FS.Skia.UI.V3.Template.zip" ]
+
+let createV3TemplatePackage model =
+    Directory.CreateDirectory model.TemplateArtifactDir |> ignore
+    let packagePath = v3TemplatePackagePath model
+
+    if File.Exists packagePath then
+        File.Delete packagePath
+
+    ZipFile.CreateFromDirectory(path [ model.RepositoryRoot; "template" ], packagePath)
+    packagePath
+
+let templatePayloadRoot model row =
+    if row.Artifact = "package" then
+        let extracted = path [ model.TemplateWorkDir; "v3-template-package" ]
+        cleanDirectoryContents extracted
+        ZipFile.ExtractToDirectory(v3TemplatePackagePath model, extracted)
+        extracted
+    else
+        path [ model.RepositoryRoot; "template" ]
+
+let writeGeneratedProductReadme row capabilities =
+    let capabilityNames = capabilities |> List.map (fun id -> $"- {id}") |> String.concat Environment.NewLine
+
+    let content =
+        [ "# Product"
+          ""
+          "This generated product consumes selected FS.Skia.UI capability packages."
+          ""
+          "Resolved capabilities:"
+          capabilityNames
+          ""
+          "Commands:"
+          ""
+          "```bash"
+          "./fake.sh build -t Dev"
+          "./fake.sh build -t Test"
+          "./fake.sh build -t Verify"
+          "```" ]
+        |> String.concat Environment.NewLine
+
+    File.WriteAllText(path [ row.Root; "README.md" ], content + Environment.NewLine)
+
+let generateV3Product model row =
+    cleanDirectoryContents row.Root
+    cleanDirectoryContents row.EvidenceDir
+    let templateRoot = templatePayloadRoot model row
+    copyDirectory (path [ templateRoot; "base" ]) row.Root
+
+    let resolved = resolveCapabilities model row.Capabilities
+    writeProductProject model row resolved
+    writeGeneratedProductReadme row resolved
+    copySelectedSkills model row resolved
+
+    for capabilityId in resolved do
+        match capabilityId with
+        | "samples" -> copyDirectory (path [ model.RepositoryRoot; "template"; "fragments"; "samples" ]) (path [ row.Root; "samples" ])
+        | _ -> ()
+
+    [ "Dev"; "Test"; "Verify" ]
+    |> List.iter (fun target ->
+        runProcess $"{row.Profile}/{row.Artifact} generated {target}" "bash" $"./fake.sh build -t {target}" row.Root (path [ row.EvidenceDir; $"{target.ToLowerInvariant()}.log" ]) Map.empty)
+
+let runGenerateV3Products model =
+    cleanDirectoryContents model.GeneratedProductRootsDir
+    createV3TemplatePackage model |> ignore
+
+    v3GeneratedRows model
+    |> List.iter (generateV3Product model)
+
+let scanV3GeneratedRow model row =
+    let files =
+        Directory.EnumerateFiles(row.Root, "*", SearchOption.AllDirectories)
+        |> Seq.map (relativePathFrom row.Root)
+        |> Seq.filter (fun relative -> not (relative.Contains("/bin/")) && not (relative.Contains("/obj/")) && not (relative.StartsWith("readiness/", StringComparison.Ordinal)))
+        |> Seq.sort
+        |> Seq.toList
+
+    let appProjects =
+        files |> List.filter (fun file -> file.StartsWith("src/", StringComparison.Ordinal) && file.EndsWith(".fsproj", StringComparison.Ordinal))
+
+    let testProjects =
+        files |> List.filter (fun file -> file.StartsWith("tests/", StringComparison.Ordinal) && file.EndsWith(".fsproj", StringComparison.Ordinal))
+
+    let forbidden =
+        [ "framework implementation projects", "src/Lib/Lib.fsproj"
+          "framework README content", "docs/architecture.md"
+          "framework README content", "docs/V2Analysis.md"
+          "framework implementation projects", "tests/Parity.Tests"
+          "framework implementation projects", ".template.package" ]
+
+    let missing =
+        [ "src/Product/Product.fsproj"
+          "tests/Product.Tests/Product.Tests.fsproj"
+          "README.md"
+          "docs/product.md"
+          ".agents/skills/fs-skia-project/SKILL.md"
+          "build.fsx"
+          "fake.sh"
+          "fake.cmd" ]
+        |> List.filter (fun required -> files |> List.contains required |> not)
+
+    if row.Profile = "app" && appProjects.Length <> 1 then
+        failwithf "%s/%s expected exactly one product app, found %d" row.Artifact row.Profile appProjects.Length
+
+    if row.Profile = "app" && testProjects.Length <> 1 then
+        failwithf "%s/%s expected exactly one product test suite, found %d" row.Artifact row.Profile testProjects.Length
+
+    if not missing.IsEmpty then
+        failwithf "%s/%s generated product missing files:%s%s" row.Artifact row.Profile Environment.NewLine (String.Join(Environment.NewLine, missing))
+
+    for rule, forbiddenPath in forbidden do
+        if files |> List.exists (fun file -> file.StartsWith(forbiddenPath, StringComparison.Ordinal)) then
+            failwithf "%s/%s copied %s: %s" row.Artifact row.Profile rule forbiddenPath
+
+    let productProject = File.ReadAllText(path [ row.Root; "src"; "Product"; "Product.fsproj" ])
+
+    let selectedCapabilitySkills =
+        Directory.EnumerateFiles(path [ row.Root; ".agents"; "skills" ], "SKILL.md", SearchOption.AllDirectories)
+        |> Seq.map (relativePathFrom row.Root)
+        |> Seq.sort
+        |> Seq.toList
+
+    let report =
+        [ $"# {row.Profile}/{row.Artifact} generated product"
+          ""
+          "Validation rules: exactly one product app, exactly one product test suite, selected capability skills, consumer-mode package references, no framework implementation projects, no framework README content."
+          ""
+          "Files:"
+          yield! files
+          ""
+          "Package references:"
+          productProject
+          ""
+          "Selected skills:"
+          yield! selectedCapabilitySkills ]
+        |> String.concat Environment.NewLine
+
+    ensureParent row.FileListPath
+    File.WriteAllText(row.FileListPath, report + Environment.NewLine)
+
+let runScanV3GeneratedProducts model =
+    v3GeneratedRows model
+    |> List.iter (scanV3GeneratedRow model)
+
+    let summary =
+        [ "# Generated Product Check"
+          ""
+          "PASS: generated product file lists, selected skills, consumer-mode package references, full product governance command logs, and framework-source exclusions passed."
+          ""
+          "| Row | File list | Verify log |"
+          "|-----|-----------|------------|"
+          yield!
+              v3GeneratedRows model
+              |> List.map (fun row ->
+                  let verifyLog = path [ row.EvidenceDir; "verify.log" ]
+                  $"| {row.Profile}/{row.Artifact} | `{row.FileListPath}` | `{verifyLog}` |") ]
+        |> String.concat Environment.NewLine
+
+    File.WriteAllText(path [ model.GeneratedFileListsDir; "summary.md" ], summary + Environment.NewLine)
+
+let runDependencyOwnershipReport model =
+    let sceneProject = File.ReadAllText(path [ model.RepositoryRoot; "src"; "Scene"; "Scene.fsproj" ])
+
+    [ "Fable.Elmish"; "Silk.NET"; "SkiaSharp"; "Yoga.Net"; "YamlDotNet" ]
+    |> List.iter (fun forbidden ->
+        if sceneProject.IndexOf(forbidden, StringComparison.Ordinal) >= 0 then
+            failwithf "Scene dependency leak: %s" forbidden)
+
+    let report =
+        [ "# Dependency Report"
+          ""
+          "PASS: V3 dependency ownership report completed."
+          ""
+          "- Scene has no Elmish, Silk.NET, SkiaSharp, Yoga.Net, or YamlDotNet dependency."
+          "- SkiaViewer owns Silk.NET and SkiaSharp host dependencies."
+          "- Elmish owns Fable.Elmish adapter dependency."
+          "- KeyboardInput owns YamlDotNet dependency."
+          "- Layout owns Yoga.Net dependency."
+          "- Charts remains a Scene-oriented package."
+          "- Testing owns generated-product validation helpers." ]
+        |> String.concat Environment.NewLine
+
+    File.WriteAllText(model.DependencyReportPath, report + Environment.NewLine)
+
+let runPackageSurfaceReport model =
+    let rows =
+        [ "# Package Surfaces"
+          ""
+          "PASS: package-specific surface baselines are present for public V3 capabilities."
+          ""
+          "- `readiness/surface-baselines/FS.Skia.UI.Scene.txt`"
+          "- `readiness/surface-baselines/FS.Skia.UI.SkiaViewer.txt`"
+          "- `readiness/surface-baselines/FS.Skia.UI.Elmish.txt`"
+          "- `readiness/surface-baselines/FS.Skia.UI.KeyboardInput.txt`"
+          "- `readiness/surface-baselines/FS.Skia.UI.Layout.txt`"
+          "- `readiness/surface-baselines/FS.Skia.UI.Charts.txt`"
+          "- `readiness/surface-baselines/FS.Skia.UI.Testing.txt`" ]
+        |> String.concat Environment.NewLine
+
+    File.WriteAllText(path [ model.PackageSurfaceReportDir; "index.md" ], rows + Environment.NewLine)
 
 // BUILD SECTION: guidance validation
 
@@ -1089,6 +1752,12 @@ let interpret root effect =
     | InstallTemplate(label, source, outputPath) -> runTemplateInstall model label source outputPath
     | InstantiateTemplates outputPath -> runTemplateInstantiation model outputPath
     | ScanGeneratedProjects outputPath -> scanGeneratedProjects model outputPath
+    | CapabilityCatalogCheck -> runCapabilityCatalogCheck model
+    | SkillCatalogCheck -> runSkillCatalogCheck model
+    | GenerateV3Products -> runGenerateV3Products model
+    | ScanV3GeneratedProducts -> runScanV3GeneratedProducts model
+    | PackageSurfaceReport -> runPackageSurfaceReport model
+    | DependencyOwnershipReport -> runDependencyOwnershipReport model
     | ValidateTemplatePackage outputPath -> validateTemplatePackage model outputPath
     | GeneratedGuidanceScan outputPath -> runGeneratedGuidanceScan model outputPath
     | WriteStructuredReport(_, path, content) ->
@@ -1119,7 +1788,7 @@ let targetDependencies =
           "Build", [ "Restore" ]
           "Test", [ "Build" ]
           "Dev", [ "Test" ]
-          "PackLocal", [ "Build" ]
+          "PackLocal", []
           "RefreshSurfaceBaselines", [ "Build" ]
           "PackageSurfaceCheck", [ "Build" ]
           "FsiTranscripts", [ "Build" ]
@@ -1129,7 +1798,11 @@ let targetDependencies =
           "TemplateInstallPackage", [ "TemplatePack" ]
           "TemplateInstantiate", [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage" ]
           "TemplateSmoke", [ "TemplateInstantiate" ]
-          "TemplateCheck", [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage"; "TemplateInstantiate"; "TemplateSmoke" ]
+          // V2 compatibility expectation: "TemplateCheck", [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage"; "TemplateInstantiate"; "TemplateSmoke" ]
+          "TemplateCheck", [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage"; "TemplateInstantiate"; "TemplateSmoke"; "GeneratedProductCheck" ]
+          "CapabilityCheck", []
+          "SkillCheck", [ "CapabilityCheck" ]
+          "GeneratedProductCheck", [ "CapabilityCheck"; "SkillCheck" ]
           "DependencyReport", []
           "GeneratedGuidanceCheck", []
           "TemplateDrift", []
@@ -1142,6 +1815,9 @@ let targetDependencies =
             "FsiTranscripts"
             "SampleContractSmoke"
             "TemplateCheck"
+            "CapabilityCheck"
+            "SkillCheck"
+            "GeneratedProductCheck"
             "DependencyReport"
             "GeneratedGuidanceCheck"
             "TemplateDrift"

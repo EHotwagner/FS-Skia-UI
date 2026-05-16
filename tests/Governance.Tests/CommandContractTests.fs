@@ -54,6 +54,9 @@ let commandContractTests =
               "PackageSurfaceCheck"
               "FsiTranscripts"
               "SampleContractSmoke"
+              "CapabilityCheck"
+              "SkillCheck"
+              "GeneratedProductCheck"
               "EvidenceGraph"
               "EvidenceAudit"
               "Verify"
@@ -65,6 +68,39 @@ let commandContractTests =
             expectContains content "\"Test\", [ \"Build\" ]" "Test depends on Build"
             expectContains content "\"Dev\", [ \"Test\" ]" "Dev depends on Test"
             expectContains content "\"EvidenceAudit\", [ \"EvidenceGraph\" ]" "audit depends on graph"
+            expectContains content "\"Ci\", [ \"Verify\" ]" "Ci delegates to Verify"
+        }
+
+        test "V3 command workflow exposes capability product and skill validation effects" {
+            expectFileContains
+                "build.fsx"
+                [ "CapabilityCatalogCheck"
+                  "SkillCatalogCheck"
+                  "GenerateV3Products"
+                  "ScanV3GeneratedProducts"
+                  "PackageSurfaceReport"
+                  "CapabilityCatalogReportPath"
+                  "SelectedSkillsReportPath"
+                  "GeneratedFileListsDir"
+                  "GeneratedProductVerifyDir"
+                  "BuildModel"
+                  "BuildMsg"
+                  "BuildEffect"
+                  "let init"
+                  "let update" ]
+        }
+
+        test "V3 targets are wired into Verify and Ci delegates to Verify" {
+            let content = read "build.fsx"
+
+            [ "CapabilityCheck"; "SkillCheck"; "GeneratedProductCheck"; "TemplateCheck"; "Verify"; "Ci" ]
+            |> List.iter expectFakeTarget
+
+            expectContains content "\"GeneratedProductCheck\", [ \"CapabilityCheck\"; \"SkillCheck\" ]" "generated product check depends on capability and skill checks"
+            expectContains content "\"Verify\"," "Verify target exists"
+            expectContains content "\"CapabilityCheck\"" "Verify includes CapabilityCheck"
+            expectContains content "\"SkillCheck\"" "Verify includes SkillCheck"
+            expectContains content "\"GeneratedProductCheck\"" "Verify includes GeneratedProductCheck"
             expectContains content "\"Ci\", [ \"Verify\" ]" "Ci delegates to Verify"
         }
 

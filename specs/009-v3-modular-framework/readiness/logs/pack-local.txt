@@ -1,0 +1,204 @@
+The last restore is still up to date. Nothing left to do.
+Could not load types of compiled script:
+ - Could not load file or assembly 'netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'. General Exception (0x80131500)
+Starting target 'PackLocal'
+Finished target 'PackLocal'
+/home/developer/projects/FS-Skia-UI/build.fsx (917,25)-(917,55): Warning FS0052: The value has been copied to ensure the original is not mutated by this operation or because the copy is implicit when returning a struct from a member and another member is then accessed
+/home/developer/projects/FS-Skia-UI/build.fsx (1375,23)-(1375,28): Warning FS1182: The value 'model' is unused
+/home/developer/projects/FS-Skia-UI/build.fsx (1623,35)-(1623,47): Warning FS1182: The value 'templatePath' is unused
+/home/developer/projects/FS-Skia-UI/build.fsx (1012,16)-(1012,23): Warning FS3180: The mutable local 'current' is implicitly allocated as a reference cell because it has been captured by a closure. This warning is for informational purposes only to indicate where implicit allocations are performed.
+Warning: The fake-runner has not been updated for at least 12 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 76 milliseconds
+ - Packages: 22 milliseconds
+ - Script analyzing: 18 milliseconds
+ - Script running: 6 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 7 seconds
+.dll
+  Elmish -> /home/developer/projects/FS-Skia-UI/src/Elmish/bin/Release/net10.0/FS.Skia.UI.Elmish.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.KeyboardInput
+$ dotnet pack src/KeyboardInput/KeyboardInput.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Testing
+$ dotnet pack src/Testing/Testing.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Testing -> /home/developer/projects/FS-Skia-UI/src/Testing/bin/Release/net10.0/FS.Skia.UI.Testing.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI
+$ dotnet pack src/Lib/Lib.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Charts
+$ dotnet pack src/Charts/Charts.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Charts -> /home/developer/projects/FS-Skia-UI/src/Charts/bin/Release/net10.0/FS.Skia.UI.Charts.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Layout
+$ dotnet pack src/Layout/Layout.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Scene
+$ dotnet pack src/Scene/Scene.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.SkiaViewer
+$ dotnet pack src/SkiaViewer/SkiaViewer.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Release/net10.0/FS.Skia.UI.SkiaViewer.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Elmish
+$ dotnet pack src/Elmish/Elmish.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Release/net10.0/FS.Skia.UI.SkiaViewer.dll
+  Elmish -> /home/developer/projects/FS-Skia-UI/src/Elmish/bin/Release/net10.0/FS.Skia.UI.Elmish.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.KeyboardInput
+$ dotnet pack src/KeyboardInput/KeyboardInput.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Testing
+$ dotnet pack src/Testing/Testing.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Testing -> /home/developer/projects/FS-Skia-UI/src/Testing/bin/Release/net10.0/FS.Skia.UI.Testing.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI
+$ dotnet pack src/Lib/Lib.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Charts
+$ dotnet pack src/Charts/Charts.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Charts -> /home/developer/projects/FS-Skia-UI/src/Charts/bin/Release/net10.0/FS.Skia.UI.Charts.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Layout
+$ dotnet pack src/Layout/Layout.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Scene
+$ dotnet pack src/Scene/Scene.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.SkiaViewer
+$ dotnet pack src/SkiaViewer/SkiaViewer.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Release/net10.0/FS.Skia.UI.SkiaViewer.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Elmish
+$ dotnet pack src/Elmish/Elmish.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Release/net10.0/FS.Skia.UI.SkiaViewer.dll
+  Elmish -> /home/developer/projects/FS-Skia-UI/src/Elmish/bin/Release/net10.0/FS.Skia.UI.Elmish.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.KeyboardInput
+$ dotnet pack src/KeyboardInput/KeyboardInput.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Testing
+$ dotnet pack src/Testing/Testing.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Testing -> /home/developer/projects/FS-Skia-UI/src/Testing/bin/Release/net10.0/FS.Skia.UI.Testing.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI
+$ dotnet pack src/Lib/Lib.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Charts
+$ dotnet pack src/Charts/Charts.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Charts -> /home/developer/projects/FS-Skia-UI/src/Charts/bin/Release/net10.0/FS.Skia.UI.Charts.dll
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Layout
+$ dotnet pack src/Layout/Layout.fsproj -c Release -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+
+exit-code=0

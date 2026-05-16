@@ -11,16 +11,22 @@ screenshots, diagnostics, and shutdown.
 
 The repository currently contains:
 
-- `FS.Skia.UI`: core scene primitives, paint/path/text/image declarations,
-  viewer runtime contracts, structured diagnostics, screenshot effects, and
-  keyboard input helpers.
+- `FS.Skia.UI.Scene`: core scene primitives and paint/path/text/image
+  declarations.
+- `FS.Skia.UI.SkiaViewer`: viewer runtime contracts, structured diagnostics,
+  screenshots, and desktop host boundaries.
+- `FS.Skia.UI.Elmish`: Elmish/MVU adapter contracts for product applications.
+- `FS.Skia.UI.KeyboardInput`: keyboard input helpers and configuration
+  contracts.
+- `FS.Skia.UI`: compatibility core package while capability packages are staged.
 - `FS.Skia.UI.Charts`: pure chart and DataGrid builders that return core
   `Scene` values.
 - `FS.Skia.UI.Layout`: Yoga-backed layout, graph validation, graph layout,
   rendering, and hit testing.
+- `FS.Skia.UI.Testing`: generated-product and capability validation helpers.
 - Runnable sample applications with non-visual contract smoke modes.
-- A governed `dotnet new fs-skia-ui` template plus build, dependency,
-  documentation, and evidence workflows.
+- A governed product-generation template plus V3 capability profiles, selected
+  local skills, build, dependency, documentation, and evidence workflows.
 - Spec Kit incorporation for feature specifications, implementation plans,
   task breakdowns, readiness evidence, and synthetic-evidence disclosure.
 
@@ -90,6 +96,9 @@ not provide an OpenGL, CPU, software, or fallback renderer.
 ./fake.sh build -t Dev
 ./fake.sh build -t Verify
 ./fake.sh build -t TemplateCheck
+./fake.sh build -t CapabilityCheck
+./fake.sh build -t SkillCheck
+./fake.sh build -t GeneratedProductCheck
 ./fake.sh build -t DependencyReport
 ./fake.sh build -t GeneratedGuidanceCheck
 ./fake.sh build -t TemplateDrift
@@ -126,7 +135,16 @@ boundaries.
 
 ## Project Template
 
-Install the governed template from the source directory:
+V3 generated products are validated through explicit capability profiles:
+`app`, `headless-scene`, `governed`, and `sample-pack`. Maintainers run the
+source/package product matrix with:
+
+```bash
+./fake.sh build -t GeneratedProductCheck
+```
+
+The compatibility `dotnet new fs-skia-ui` template can still be installed from
+the source directory:
 
 ```bash
 dotnet new install .
@@ -146,6 +164,7 @@ Maintainers validate source and packaged template paths with:
 
 ```bash
 ./fake.sh build -t TemplateCheck
+./fake.sh build -t GeneratedProductCheck
 ```
 
 See [docs/template-profile.md](docs/template-profile.md),

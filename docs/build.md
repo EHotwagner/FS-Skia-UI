@@ -30,17 +30,17 @@ and run the shared `build.fsx` target graph. Automation should call
 | `Build` | Builds the solution with the repository warning policy. | Active feature `readiness/logs/build.txt` |
 | `Test` | Runs the default non-visual test set. | Active feature `readiness/logs/test.txt` |
 | `Dev` | Fast local verification: `Restore`, `Build`, `Test`. | Active feature `readiness/logs/dev-verdict.txt` |
-| `PackLocal` | Packs `FS.Skia.UI`, `FS.Skia.UI.Charts`, and `FS.Skia.UI.Layout`. | `~/.local/share/nuget-local/*.nupkg` and `readiness/logs/pack-local.txt` |
+| `PackLocal` | Packs the current public capability packages: Scene, SkiaViewer, Elmish, KeyboardInput, Testing, the compatibility core package, Charts, and Layout. | `~/.local/share/nuget-local/*.nupkg` and `readiness/logs/pack-local.txt` |
 | `RefreshSurfaceBaselines` | Regenerates current package surface baselines. | `readiness/surface-baselines/*.txt` |
 | `PackageSurfaceCheck` | Checks the current package surface against stable baselines. | `readiness/logs/package-surface-check.txt` |
 | `FsiTranscripts` | Runs public prelude scripts through FSI. | `readiness/fsi/*.txt` under this feature |
 | `SampleContractSmoke` | Runs non-visual sample `--contract-smoke` paths. | `readiness/sample-smoke/*.txt` under this feature |
 | `EvidenceGraph` | Runs the Spec Kit task graph validation. | `readiness/task-graph.json` and `.md` under this feature |
 | `EvidenceAudit` | Runs the synthetic evidence audit. | `readiness/logs/evidence-audit.txt` and diff-scan output |
-| `Verify` | Full v1 verification requiring all v1 artifact classes. | `readiness/logs/verify-verdict.txt` |
+| `Verify` | Full repository verification requiring package, template, generated-product, guidance, drift, dependency, and evidence audit artifact classes. | `readiness/logs/verify-verdict.txt` |
 | `Ci` | Non-interactive automation entry delegating to `Verify`. | `readiness/logs/ci-verdict.txt` |
 
-## V2 Template And Governance Targets
+## Template And Governance Targets
 
 | Target | Responsibility | Output |
 |--------|----------------|--------|
@@ -50,14 +50,19 @@ and run the shared `build.fsx` target graph. Automation should call
 | `TemplateInstantiate` | Creates source/default, source/minimal, package/default, and package/minimal generated projects. | `artifacts/template-check/<active-feature>/` |
 | `TemplateSmoke` | Scans generated projects and runs their `./fake.sh build -t Dev` workflow. | Active feature `readiness/template/generated-project-scans.md` |
 | `TemplateCheck` | Requires the full template validation artifact class. | Active feature `readiness/template/verdict.md` |
+| `CapabilityCheck` | Validates `template/capabilities.yml`, capability ownership metadata, package contracts, tests, skills, fragments, evidence classes, and default app membership. | Active feature `readiness/capability-catalog.md` |
+| `SkillCheck` | Validates package-owned local skills and selected default app skill destinations. | Active feature `readiness/selected-skills.md` |
+| `GeneratedProductCheck` | Generates and verifies the V3 app, packaged app, headless-scene, governed, and sample-pack product rows. | Active feature `readiness/generated-file-lists/summary.md` and `readiness/generated-product-verify/**` |
 | `DependencyReport` | Verifies Central Package Management and dependency metadata. | Active feature `readiness/dependencies.md` |
 | `GeneratedGuidanceCheck` | Verifies active and preset-owned spec/plan prompts by Markdown section, prompt placement, deferred-scope boundaries, and active/preset parity. | Active feature `readiness/generated-guidance.md` |
 | `TemplateDrift` | Classifies template-owned path changes and checks required alignment classes plus active feature evidence or accepted deferrals. | Active feature `readiness/template-drift.md` |
 
 `Dev` remains the fast local restore/build/test path and is independent of
-template packaging. `Verify` includes V1 checks plus `TemplateCheck`,
-`DependencyReport`, `GeneratedGuidanceCheck`, and `TemplateDrift`. `Ci`
-delegates to `Verify`.
+template packaging. `Verify` includes source tests, local package packing,
+package surface checks, public FSI transcripts, sample contract smoke,
+template validation, capability validation, selected skill validation,
+generated product validation, dependency governance, generated guidance,
+template drift, and the evidence audit. `Ci` delegates to `Verify`.
 
 `Verify` checks existing baselines; it does not silently refresh them. Use
 `RefreshSurfaceBaselines` when an intentional public surface change has already
@@ -65,7 +70,7 @@ been reviewed.
 
 ## Deferred
 
-The following roadmap items remain outside V2 pass/fail: full visual evidence,
+The following roadmap items remain outside repository pass/fail: full visual evidence,
 release validation, an external template repository split, and broader
 distribution automation.
 Package consumer smoke remains available as an explicit deferred target:

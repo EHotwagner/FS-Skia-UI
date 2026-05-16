@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FS.Skia.UI.Scene" />
+    <PackageReference Include="FS.Skia.UI.SkiaViewer" />
+    <PackageReference Include="FS.Skia.UI.Elmish" />
+    <PackageReference Include="FS.Skia.UI.KeyboardInput" />
+    <PackageReference Include="FS.Skia.UI.Layout" />
+    <PackageReference Include="FS.Skia.UI.Charts" />
+  </ItemGroup>
+
+</Project>

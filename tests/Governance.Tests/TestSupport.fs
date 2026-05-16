@@ -117,7 +117,9 @@ let markdownTableRows relativePath =
             None)
     |> Array.toList
 
-let runProcess (fileName: string) (arguments: string) =
+let fakeProcessLock = obj ()
+
+let runProcessUnlocked (fileName: string) (arguments: string) =
     let executable, processArguments =
         if fileName = "./fake.sh" || fileName = "fake.sh" then
             let scriptPath = fullPath "fake.sh"
@@ -147,6 +149,12 @@ let runProcess (fileName: string) (arguments: string) =
         proc.Kill()
         -1, stdout, stderr
 
+let runProcess (fileName: string) (arguments: string) =
+    if fileName = "./fake.sh" || fileName = "fake.sh" then
+        lock fakeProcessLock (fun () -> runProcessUnlocked fileName arguments)
+    else
+        runProcessUnlocked fileName arguments
+
 let runFakeTarget target =
     runProcess "./fake.sh" $"build -t {target}"
 
@@ -164,3 +172,148 @@ let projectFiles () =
         && not (relative.Contains("/bin/"))
         && not (relative.Contains("/obj/")))
     |> Seq.toList
+
+type CatalogCapability =
+    { Id: string
+      DisplayName: string
+      PackageId: string option
+      Project: string option
+      Contracts: string list
+      Tests: string list
+      Skill: string option
+      TemplateFragment: string option
+      Dependencies: string list
+      Profiles: string list
+      DefaultApp: bool
+      Evidence: string list
+      SurfaceBaseline: string option
+      Docs: string option
+      OwnerNotes: string option
+      NonRuntime: bool }
+
+let private emptyCapability id =
+    { Id = id
+      DisplayName = ""
+      PackageId = None
+      Project = None
+      Contracts = []
+      Tests = []
+      Skill = None
+      TemplateFragment = None
+      Dependencies = []
+      Profiles = []
+      DefaultApp = false
+      Evidence = []
+      SurfaceBaseline = None
+      Docs = None
+      OwnerNotes = None
+      NonRuntime = false }
+
+let private trimQuotes (value: string) =
+    value.Trim().Trim('"').Trim('\'')
+
+let private parseScalar (line: string) =
+    match line.IndexOf(':') with
+    | index when index >= 0 -> line.Substring(index + 1) |> trimQuotes
+    | _ -> ""
+
+let private parseInlineList (value: string) =
+    let trimmed = value.Trim()
+
+    if trimmed.StartsWith("[") && trimmed.EndsWith("]") then
+        trimmed.Trim('[', ']').Split(',', StringSplitOptions.RemoveEmptyEntries)
+        |> Array.map trimQuotes
+        |> Array.toList
+    elif String.IsNullOrWhiteSpace trimmed then
+        []
+    else
+        [ trimQuotes trimmed ]
+
+let readCatalogCapabilities () =
+    let lines =
+        read "template/capabilities.yml"
+        |> fun text -> text.Replace("\r\n", "\n").Split('\n')
+
+    let mutable current: CatalogCapability option = None
+    let mutable currentList: string option = None
+    let capabilities = ResizeArray<CatalogCapability>()
+
+    let commitCurrent () =
+        match current with
+        | Some capability -> capabilities.Add capability
+        | None -> ()
+
+    let setCurrent value =
+        current <- current |> Option.map value
+
+    for raw in lines do
+        let line = raw.TrimEnd()
+        let trimmed = line.Trim()
+
+        if trimmed.StartsWith("- id:") then
+            commitCurrent ()
+            current <- Some(emptyCapability (parseScalar trimmed))
+            currentList <- None
+        elif trimmed.StartsWith("- ") && currentList.IsSome then
+            let item = trimmed.Substring(2) |> trimQuotes
+
+            match currentList.Value with
+            | "contracts" -> setCurrent (fun c -> { c with Contracts = c.Contracts @ [ item ] })
+            | "tests" -> setCurrent (fun c -> { c with Tests = c.Tests @ [ item ] })
+            | "dependencies" -> setCurrent (fun c -> { c with Dependencies = c.Dependencies @ [ item ] })
+            | "profiles" -> setCurrent (fun c -> { c with Profiles = c.Profiles @ [ item ] })
+            | "evidence" -> setCurrent (fun c -> { c with Evidence = c.Evidence @ [ item ] })
+            | _ -> ()
+        elif current.IsSome && trimmed.Contains(":") then
+            let field = trimmed.Substring(0, trimmed.IndexOf(':')).Trim()
+            let value = parseScalar trimmed
+            currentList <- None
+
+            match field with
+            | "displayName" -> setCurrent (fun c -> { c with DisplayName = value })
+            | "packageId" -> setCurrent (fun c -> { c with PackageId = Some value })
+            | "project" -> setCurrent (fun c -> { c with Project = Some value })
+            | "contracts" ->
+                setCurrent (fun c -> { c with Contracts = parseInlineList value })
+                currentList <- Some "contracts"
+            | "tests" ->
+                setCurrent (fun c -> { c with Tests = parseInlineList value })
+                currentList <- Some "tests"
+            | "skill" -> setCurrent (fun c -> { c with Skill = Some value })
+            | "templateFragment" -> setCurrent (fun c -> { c with TemplateFragment = Some value })
+            | "dependencies" ->
+                setCurrent (fun c -> { c with Dependencies = parseInlineList value })
+                currentList <- Some "dependencies"
+            | "profiles" ->
+                setCurrent (fun c -> { c with Profiles = parseInlineList value })
+                currentList <- Some "profiles"
+            | "defaultApp" -> setCurrent (fun c -> { c with DefaultApp = value.Equals("true", StringComparison.OrdinalIgnoreCase) })
+            | "evidence" ->
+                setCurrent (fun c -> { c with Evidence = parseInlineList value })
+                currentList <- Some "evidence"
+            | "surfaceBaseline" -> setCurrent (fun c -> { c with SurfaceBaseline = Some value })
+            | "docs" -> setCurrent (fun c -> { c with Docs = Some value })
+            | "ownerNotes" -> setCurrent (fun c -> { c with OwnerNotes = Some value })
+            | "nonRuntime" -> setCurrent (fun c -> { c with NonRuntime = value.Equals("true", StringComparison.OrdinalIgnoreCase) })
+            | _ -> ()
+
+    commitCurrent ()
+    capabilities |> Seq.toList
+
+let expectPathsExist context paths =
+    paths
+    |> List.iter (fun relative -> Expect.isTrue (File.Exists(fullPath relative) || Directory.Exists(fullPath relative)) $"{context}: {relative} exists")
+
+let expectFakeTarget target =
+    Expect.stringContains (read "build.fsx") $"\"{target}\"" $"build.fsx declares {target}"
+
+let expectGeneratedProductFileList profile (required: string list) (forbidden: string list) =
+    let reportPath = $"specs/009-v3-modular-framework/readiness/generated-file-lists/{profile}.txt"
+    Expect.isTrue (fileExists reportPath) $"{profile} file-list report exists"
+    let content = read reportPath
+
+    required
+    |> List.iter (fun item -> Expect.stringContains content item $"{profile} includes {item}")
+
+    forbidden
+    |> List.iter (fun item -> Expect.isFalse (content.Contains item) $"{profile} excludes {item}")

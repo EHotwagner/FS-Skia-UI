@@ -88,4 +88,23 @@ let generatedGuidanceTests =
                   "external repository split"
                   "distribution automation" ]
         }
+
+        test "V3 generated product docs describe selected capabilities without framework architecture copy" {
+            expectFileContains
+                "template/base/README.md"
+                [ "generated product"
+                  "Scene"
+                  "SkiaViewer"
+                  "Elmish"
+                  "KeyboardInput"
+                  "Layout"
+                  "Charts"
+                  "./fake.sh build -t Dev"
+                  "./fake.sh build -t Test"
+                  "./fake.sh build -t Verify" ]
+
+            let readme = read "template/base/README.md"
+            Expect.isFalse (readme.Contains("V2Analysis")) "product README omits framework V2 analysis"
+            Expect.isFalse (readme.Contains("subsystem design", System.StringComparison.OrdinalIgnoreCase)) "product README omits framework subsystem design"
+        }
     ]

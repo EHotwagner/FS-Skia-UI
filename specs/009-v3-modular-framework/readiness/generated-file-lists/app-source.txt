@@ -1,0 +1,57 @@
+# app/source generated product
+
+Validation rules: exactly one product app, exactly one product test suite, selected capability skills, consumer-mode package references, no framework implementation projects, no framework README content.
+
+Files:
+.agents/skills/fs-skia-charts/SKILL.md
+.agents/skills/fs-skia-elmish/SKILL.md
+.agents/skills/fs-skia-keyboard-input/SKILL.md
+.agents/skills/fs-skia-layout/SKILL.md
+.agents/skills/fs-skia-project/SKILL.md
+.agents/skills/fs-skia-scene/SKILL.md
+.agents/skills/fs-skia-skiaviewer/SKILL.md
+Directory.Build.props
+Directory.Packages.props
+README.md
+build.fsx
+docs/product.md
+fake.cmd
+fake.sh
+src/Product/Product.fsproj
+src/Product/Program.fs
+tests/Product.Tests/Product.Tests.fsproj
+tests/Product.Tests/Program.fs
+tests/Product.Tests/Tests.fs
+
+Package references:
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FS.Skia.UI.Charts" />
+    <PackageReference Include="FS.Skia.UI.Elmish" />
+    <PackageReference Include="FS.Skia.UI.KeyboardInput" />
+    <PackageReference Include="FS.Skia.UI.Layout" />
+    <PackageReference Include="FS.Skia.UI.Scene" />
+    <PackageReference Include="FS.Skia.UI.SkiaViewer" />
+  </ItemGroup>
+
+</Project>
+
+
+Selected skills:
+.agents/skills/fs-skia-charts/SKILL.md
+.agents/skills/fs-skia-elmish/SKILL.md
+.agents/skills/fs-skia-keyboard-input/SKILL.md
+.agents/skills/fs-skia-layout/SKILL.md
+.agents/skills/fs-skia-project/SKILL.md
+.agents/skills/fs-skia-scene/SKILL.md
+.agents/skills/fs-skia-skiaviewer/SKILL.md

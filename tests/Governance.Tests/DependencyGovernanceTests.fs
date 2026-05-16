@@ -77,4 +77,39 @@ let dependencyGovernanceTests =
                   "SkiaSharp"
                   "UsePackedPackage" ]
         }
+
+        test "V3 dependency report names package ownership rules" {
+            if directoryExists "specs/009-v3-modular-framework" then
+                expectFileContains
+                    "specs/009-v3-modular-framework/readiness/dependency-report.md"
+                    [ "Scene has no Elmish, Silk.NET, SkiaSharp, Yoga.Net, or YamlDotNet dependency"
+                      "SkiaViewer owns Silk.NET and SkiaSharp"
+                      "Elmish owns Fable.Elmish"
+                      "KeyboardInput owns YamlDotNet"
+                      "Layout owns Yoga.Net"
+                      "Charts"
+                      "Testing" ]
+            else
+                Expect.isFalse (directoryExists ".template.config") "generated products do not carry source-only V3 readiness reports"
+        }
+
+        test "V3 project references stay within declared package ownership" {
+            expectFileContains
+                "src/Scene/Scene.fsproj"
+                [ "<PackageId>FS.Skia.UI.Scene</PackageId>"
+                  "<IsPackable>true</IsPackable>" ]
+
+            let scene = read "src/Scene/Scene.fsproj"
+
+            [ "Fable.Elmish"
+              "Silk.NET"
+              "SkiaSharp"
+              "Yoga.Net"
+              "YamlDotNet" ]
+            |> List.iter (fun forbidden -> Expect.isFalse (scene.Contains forbidden) $"Scene excludes {forbidden}")
+
+            expectFileContains "src/SkiaViewer/SkiaViewer.fsproj" [ "FS.Skia.UI.SkiaViewer"; "Silk.NET"; "SkiaSharp"; "..\\Scene\\Scene.fsproj" ]
+            expectFileContains "src/Elmish/Elmish.fsproj" [ "FS.Skia.UI.Elmish"; "Fable.Elmish"; "..\\Scene\\Scene.fsproj"; "..\\SkiaViewer\\SkiaViewer.fsproj" ]
+            expectFileContains "src/KeyboardInput/KeyboardInput.fsproj" [ "FS.Skia.UI.KeyboardInput"; "YamlDotNet"; "..\\Scene\\Scene.fsproj" ]
+        }
     ]

@@ -1,0 +1,30 @@
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/009-v3-modular-framework --graph-only
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/009-v3-modular-framework
+
+[1/2] Computing task graph...
+task-graph: 76 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/009-v3-modular-framework/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/009-v3-modular-framework/readiness/task-graph.md
+  status: 64[X], 12[ ]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/009-v3-modular-framework --graph-only
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/009-v3-modular-framework
+
+[1/2] Computing task graph...
+task-graph: 76 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/009-v3-modular-framework/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/009-v3-modular-framework/readiness/task-graph.md
+  status: 64[X], 12[ ]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0

@@ -1,0 +1,159 @@
+schemaVersion: "1.0"
+catalogVersion: "2026-05-16"
+# validation paths are listed through tests, docs, evidence, and surfaceBaseline fields per capability.
+defaultApp:
+  - scene
+  - skiaviewer
+  - elmish
+  - keyboard-input
+  - layout
+  - charts
+capabilities:
+  - id: scene
+    displayName: Scene
+    packageId: FS.Skia.UI.Scene
+    project: src/Scene/Scene.fsproj
+    contracts:
+      - src/Scene/Scene.fsi
+    tests:
+      - tests/Scene.Tests/Scene.Tests.fsproj
+    skill: src/Scene/skill/SKILL.md
+    templateFragment: template/fragments/scene
+    dependencies: []
+    profiles: [app, headless-scene, governed, sample-pack]
+    defaultApp: true
+    evidence: [capability-catalog, package-surface, generated-product]
+    surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.Scene.txt
+    docs: docs/v3Design.md
+    ownerNotes: Dependency-light scene vocabulary.
+  - id: skiaviewer
+    displayName: SkiaViewer
+    packageId: FS.Skia.UI.SkiaViewer
+    project: src/SkiaViewer/SkiaViewer.fsproj
+    contracts:
+      - src/SkiaViewer/SkiaViewer.fsi
+    tests:
+      - tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj
+    skill: src/SkiaViewer/skill/SKILL.md
+    templateFragment: template/fragments/skiaviewer
+    dependencies: [scene]
+    profiles: [app, governed, sample-pack]
+    defaultApp: true
+    evidence: [capability-catalog, package-surface, generated-product]
+    surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.SkiaViewer.txt
+    docs: docs/v3Design.md
+    ownerNotes: Host and viewer workflow boundary.
+  - id: elmish
+    displayName: Elmish
+    packageId: FS.Skia.UI.Elmish
+    project: src/Elmish/Elmish.fsproj
+    contracts:
+      - src/Elmish/Elmish.fsi
+    tests:
+      - tests/Elmish.Tests/Elmish.Tests.fsproj
+    skill: src/Elmish/skill/SKILL.md
+    templateFragment: template/fragments/elmish
+    dependencies: [scene, skiaviewer]
+    profiles: [app, governed, sample-pack]
+    defaultApp: true
+    evidence: [capability-catalog, package-surface, generated-product]
+    surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.Elmish.txt
+    docs: docs/v3Design.md
+    ownerNotes: Elmish adapter and pure update boundary.
+  - id: keyboard-input
+    displayName: KeyboardInput
+    packageId: FS.Skia.UI.KeyboardInput
+    project: src/KeyboardInput/KeyboardInput.fsproj
+    contracts:
+      - src/KeyboardInput/KeyboardInput.fsi
+    tests:
+      - tests/KeyboardInput.Tests/KeyboardInput.Tests.fsproj
+    skill: src/KeyboardInput/skill/SKILL.md
+    templateFragment: template/fragments/keyboard-input
+    dependencies: [scene]
+    profiles: [app, governed, sample-pack]
+    defaultApp: true
+    evidence: [capability-catalog, package-surface, generated-product]
+    surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.KeyboardInput.txt
+    docs: docs/v3Design.md
+    ownerNotes: Keyboard reducer and command effects.
+  - id: layout
+    displayName: Layout
+    packageId: FS.Skia.UI.Layout
+    project: src/Layout/Layout.fsproj
+    contracts:
+      - src/Layout/Types.fsi
+      - src/Layout/Layout.fsi
+      - src/Layout/GraphValidation.fsi
+      - src/Layout/Graph.fsi
+    tests:
+      - tests/Layout.Tests/Layout.Tests.fsproj
+    skill: src/Layout/skill/SKILL.md
+    templateFragment: template/fragments/layout
+    dependencies: [scene]
+    profiles: [app, headless-scene, governed, sample-pack]
+    defaultApp: true
+    evidence: [capability-catalog, package-surface, generated-product]
+    surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.Layout.txt
+    docs: docs/v3Design.md
+    ownerNotes: Yoga-backed layout and graph helpers.
+  - id: charts
+    displayName: Charts
+    packageId: FS.Skia.UI.Charts
+    project: src/Charts/Charts.fsproj
+    contracts:
+      - src/Charts/Types.fsi
+      - src/Charts/LineChart.fsi
+      - src/Charts/BarChart.fsi
+      - src/Charts/PieChart.fsi
+      - src/Charts/ScatterPlot.fsi
+      - src/Charts/AreaChart.fsi
+      - src/Charts/Histogram.fsi
+      - src/Charts/Candlestick.fsi
+      - src/Charts/RadarChart.fsi
+      - src/Charts/DataGrid.fsi
+    tests:
+      - tests/Charts.Tests/Charts.Tests.fsproj
+    skill: src/Charts/skill/SKILL.md
+    templateFragment: template/fragments/charts
+    dependencies: [scene]
+    profiles: [app, headless-scene, governed, sample-pack]
+    defaultApp: true
+    evidence: [capability-catalog, package-surface, generated-product]
+    surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.Charts.txt
+    docs: docs/v3Design.md
+    ownerNotes: Chart and DataGrid scene builders.
+  - id: testing
+    displayName: Testing
+    packageId: FS.Skia.UI.Testing
+    project: src/Testing/Testing.fsproj
+    contracts:
+      - src/Testing/Testing.fsi
+    tests:
+      - tests/Testing.Tests/Testing.Tests.fsproj
+    skill: src/Testing/skill/SKILL.md
+    templateFragment: template/fragments/testing
+    dependencies: [scene]
+    profiles: [governed, sample-pack]
+    defaultApp: false
+    evidence: [capability-catalog, package-surface, generated-product]
+    surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.Testing.txt
+    docs: docs/v3Design.md
+    ownerNotes: Product validation helpers.
+  - id: samples
+    displayName: Samples
+    packageId: non-runtime
+    nonRuntime: true
+    contracts:
+      - no-public-surface
+    tests:
+      - tests/Smoke.Tests/Smoke.Tests.fsproj
+    skill: template/fragments/samples/skill/SKILL.md
+    templateFragment: template/fragments/samples
+    dependencies: [scene, skiaviewer, elmish]
+    profiles: [sample-pack]
+    defaultApp: false
+    evidence: [generated-product]
+    surfaceBaseline: no-public-surface
+    docs: docs/v3Design.md
+    ownerNotes: Optional sample content only.

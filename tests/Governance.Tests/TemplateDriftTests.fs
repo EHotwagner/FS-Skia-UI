@@ -52,22 +52,28 @@ let templateDriftTests =
         }
 
         test "template drift fixture fails when template-owned path lacks required alignment" {
-            let outputPath = templateDriftFixtureOutput "missing-alignment"
-            let exitCode, stdout, stderr = runProcess "dotnet" $"fsi scripts/template-drift.fsx --fixture missing-alignment {outputPath}"
-            let output = stdout + stderr
+            if directoryExists "specs/008-targeted-refactor-governance" then
+                let outputPath = templateDriftFixtureOutput "missing-alignment"
+                let exitCode, stdout, stderr = runProcess "dotnet" $"fsi scripts/template-drift.fsx --fixture missing-alignment {outputPath}"
+                let output = stdout + stderr
 
-            Expect.notEqual exitCode 0 "fixture must fail"
-            Expect.stringContains output "source-code" "diagnostic names path class"
-            Expect.stringContains output "required alignment class" "diagnostic names missing alignment class"
+                Expect.notEqual exitCode 0 "fixture must fail"
+                Expect.stringContains output "source-code" "diagnostic names path class"
+                Expect.stringContains output "required alignment class" "diagnostic names missing alignment class"
+            else
+                Expect.isFalse (directoryExists ".template.config") "generated products skip source-only drift fixtures"
         }
 
         test "template drift fixture fails invalid deferrals with schema fields named" {
-            let outputPath = templateDriftFixtureOutput "invalid-deferral"
-            let exitCode, stdout, stderr = runProcess "dotnet" $"fsi scripts/template-drift.fsx --fixture invalid-deferral {outputPath}"
-            let output = stdout + stderr
+            if directoryExists "specs/008-targeted-refactor-governance" then
+                let outputPath = templateDriftFixtureOutput "invalid-deferral"
+                let exitCode, stdout, stderr = runProcess "dotnet" $"fsi scripts/template-drift.fsx --fixture invalid-deferral {outputPath}"
+                let output = stdout + stderr
 
-            Expect.notEqual exitCode 0 "fixture must fail"
-            Expect.stringContains output "owner" "diagnostic names owner"
-            Expect.stringContains output "target_phase" "diagnostic names target_phase"
+                Expect.notEqual exitCode 0 "fixture must fail"
+                Expect.stringContains output "owner" "diagnostic names owner"
+                Expect.stringContains output "target_phase" "diagnostic names target_phase"
+            else
+                Expect.isFalse (directoryExists ".template.config") "generated products skip source-only drift fixtures"
         }
     ]

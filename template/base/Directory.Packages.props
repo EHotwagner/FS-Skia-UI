@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="FS.Skia.UI.Scene" Version="0.1.8-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.SkiaViewer" Version="0.1.8-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.Elmish" Version="0.1.8-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.KeyboardInput" Version="0.1.8-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.Layout" Version="0.1.8-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.Charts" Version="0.1.8-preview.1" />
+  </ItemGroup>
+</Project>

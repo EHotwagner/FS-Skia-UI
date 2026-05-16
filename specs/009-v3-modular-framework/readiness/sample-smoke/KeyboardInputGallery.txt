@@ -1,0 +1,46 @@
+
+## KeyboardInputGallery contract smoke
+$ dotnet run --no-build --project samples/KeyboardInputGallery/KeyboardInputGallery.fsproj -- --contract-smoke
+status=ok sample=KeyboardInputGallery active-layout=qwerty available-layouts=qwerty,dvorak,colemacs-dh,workman,symbols mode-stack=["selection"] held=[] top-pairs=2 effects=16 compact-labels=6 expanded-stack=1 hidden=KeyboardStateDisplayHidden scene-kinds=[GroupElement; RectangleElement; GroupElement; RectangleElement; TextRunElement;
+ GroupElement; RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; TextRunElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; TextRunElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; TextRunElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; TextRunElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; TextRunElement; TextRunElement; TextRunElement;
+ TextRunElement; TextRunElement; TextRunElement]
+
+exit-code=0
+
+## KeyboardInputGallery contract smoke
+$ dotnet run --no-build --project samples/KeyboardInputGallery/KeyboardInputGallery.fsproj -- --contract-smoke
+status=ok sample=KeyboardInputGallery active-layout=qwerty available-layouts=qwerty,dvorak,colemacs-dh,workman,symbols mode-stack=["selection"] held=[] top-pairs=2 effects=16 compact-labels=6 expanded-stack=1 hidden=KeyboardStateDisplayHidden scene-kinds=[GroupElement; RectangleElement; GroupElement; RectangleElement; TextRunElement;
+ GroupElement; RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; TextRunElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; TextRunElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; TextRunElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; TextRunElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; GroupElement; RectangleElement; GroupElement;
+ RectangleElement; TextRunElement; TextRunElement; TextRunElement;
+ TextRunElement; TextRunElement; TextRunElement]
+
+exit-code=0

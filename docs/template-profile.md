@@ -4,7 +4,28 @@ The `fs-skia-ui` template turns this repository into the governed source for
 new FS.Skia.UI products. It supports source-directory installation and local
 NuGet template package installation.
 
-## Profiles
+## V3 Capability Profiles
+
+The V3 product generator composes `template/base/` with selected fragments from
+`template/fragments/` according to `template/capabilities.yml` and
+`template/profiles/*.yml`.
+
+| Profile | Contents | Exclusions |
+|---------|----------|------------|
+| `app` | Product app, product tests, docs, command wrappers, full product Spec Kit governance, selected local skills, and package references for Scene, SkiaViewer, Elmish, KeyboardInput, Layout, and Charts. | Framework implementation projects, framework samples/galleries, historical specs, framework readiness evidence, framework docs, framework README copy, template package source, and generated validation roots. |
+| `headless-scene` | Product app and tests for Scene-only authoring with full product governance and selected Scene skill guidance. | Viewer, Elmish, keyboard, layout, charts, samples, and framework maintenance checks unless explicitly selected later. |
+| `governed` | Scene plus Testing capability with full product governance assets. | Viewer, Elmish, keyboard, layout, charts, and samples unless selected by the profile. |
+| `sample-pack` | Sample-oriented product row with Scene, SkiaViewer, Elmish, and Samples selected. | Samples remain excluded from the default app profile. |
+
+`GeneratedProductCheck` validates the source and packaged `app` rows plus the
+source `headless-scene`, `governed`, and `sample-pack` rows. Each row records a
+file list under the active feature `readiness/generated-file-lists/` directory
+and command logs under `readiness/generated-product-verify/`.
+
+## Compatibility Profiles
+
+The installed `dotnet new fs-skia-ui` template still exposes the compatibility
+profiles used by existing template smoke checks:
 
 | Profile | Contents | Exclusions |
 |---------|----------|------------|
@@ -37,8 +58,10 @@ prevents unborn-branch failures in commands such as `/speckit-clarify`. The
 is supplied. Use `--skipGitInit true` for generated projects that should rely
 on an existing parent repository or remain disposable validation artifacts.
 
-Template validation exercises both `default` and `minimal` through the source
+`TemplateCheck` exercises both compatibility profiles through the source
 directory and the local package artifact created by `TemplatePack`.
+`GeneratedProductCheck` exercises the V3 capability profiles from source and
+packaged V3 product inputs.
 
 ## Artifact Boundaries
 
@@ -47,9 +70,12 @@ contain template metadata plus template-owned source files. It must not contain
 historical feature directories, feature readiness evidence, `.git`, `bin`,
 `obj`, or generated validation roots.
 
-Generated project validation writes logs under
-`specs/007-v2-template-packaging/readiness/template/` and isolated generated
-roots under `artifacts/template-check/007-v2-template-packaging/`.
+Compatibility template validation writes logs under the active feature
+`readiness/template/` directory and isolated generated roots under
+`artifacts/template-check/<active-feature>/`. V3 generated product validation
+writes file lists under `readiness/generated-file-lists/`, command logs under
+`readiness/generated-product-verify/`, and isolated roots under
+`artifacts/generated-products/<active-feature>/`.
 
 The root `README.md` is template-owned generated-product documentation, not
 only repository landing-page copy. It should describe the project in product
@@ -75,6 +101,6 @@ Accepted deferrals require `id`, `paths`, `rationale`, `owner`, and
 
 ## Deferred Scope
 
-V2 validation is non-visual. Full visual evidence, release validation, an
+Current validation is non-visual. Full visual evidence, release validation, an
 external template repository split, and broader distribution automation remain
 deferred roadmap work.

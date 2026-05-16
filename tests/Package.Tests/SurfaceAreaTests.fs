@@ -73,4 +73,51 @@ let surfaceAreaTests =
         test "FS.Skia.UI.Layout baseline exports expected contract names" {
             assertBaseline "FS.Skia.UI.Layout" typeof<FS.Skia.UI.Layout.GraphDefinition>.Assembly
         }
+
+        test "V3 capability packages declare package-specific contracts and baselines" {
+            [ "Scene", "src/Scene/Scene.fsproj", "src/Scene/Scene.fsi", "readiness/surface-baselines/FS.Skia.UI.Scene.txt"
+              "SkiaViewer", "src/SkiaViewer/SkiaViewer.fsproj", "src/SkiaViewer/SkiaViewer.fsi", "readiness/surface-baselines/FS.Skia.UI.SkiaViewer.txt"
+              "Elmish", "src/Elmish/Elmish.fsproj", "src/Elmish/Elmish.fsi", "readiness/surface-baselines/FS.Skia.UI.Elmish.txt"
+              "KeyboardInput", "src/KeyboardInput/KeyboardInput.fsproj", "src/KeyboardInput/KeyboardInput.fsi", "readiness/surface-baselines/FS.Skia.UI.KeyboardInput.txt"
+              "Layout", "src/Layout/Layout.fsproj", "src/Layout/Layout.fsi", "readiness/surface-baselines/FS.Skia.UI.Layout.txt"
+              "Charts", "src/Charts/Charts.fsproj", "src/Charts/Types.fsi", "readiness/surface-baselines/FS.Skia.UI.Charts.txt"
+              "Testing", "src/Testing/Testing.fsproj", "src/Testing/Testing.fsi", "readiness/surface-baselines/FS.Skia.UI.Testing.txt" ]
+            |> List.iter (fun (name, project, contract, baseline) ->
+                Expect.isTrue (File.Exists(Path.Combine(repositoryRoot, project))) $"{name} project exists"
+                Expect.isTrue (File.Exists(Path.Combine(repositoryRoot, contract))) $"{name} public .fsi contract exists"
+                Expect.isTrue (File.Exists(Path.Combine(repositoryRoot, baseline))) $"{name} package surface baseline exists")
+        }
+
+        test "Scene package stays dependency-light" {
+            let sceneProject = File.ReadAllText(Path.Combine(repositoryRoot, "src", "Scene", "Scene.fsproj"))
+
+            [ "Fable.Elmish"
+              "Silk.NET"
+              "SkiaSharp"
+              "Yoga.Net"
+              "YamlDotNet" ]
+            |> List.iter (fun forbidden -> Expect.isFalse (sceneProject.Contains forbidden) $"Scene does not reference {forbidden}")
+        }
+
+        test "top-level F# visibility modifiers do not replace signature ownership" {
+            let sourceFiles =
+                Directory.EnumerateFiles(Path.Combine(repositoryRoot, "src"), "*.fs", SearchOption.AllDirectories)
+                |> Seq.filter (fun path -> not (path.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}")) && not (path.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")))
+
+            let offending =
+                sourceFiles
+                |> Seq.collect (fun file ->
+                    File.ReadAllLines(file)
+                    |> Seq.mapi (fun index line -> file, index + 1, line.TrimStart())
+                    |> Seq.choose (fun (file, lineNumber, line) ->
+                        if line.StartsWith("private ", StringComparison.Ordinal)
+                           || line.StartsWith("internal ", StringComparison.Ordinal)
+                           || line.StartsWith("public ", StringComparison.Ordinal) then
+                            Some($"{file}:{lineNumber}: {line}")
+                        else
+                            None))
+                |> Seq.toList
+
+            Expect.isEmpty offending "top-level visibility stays in .fsi files"
+        }
     ]

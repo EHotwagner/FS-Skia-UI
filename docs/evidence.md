@@ -1,8 +1,8 @@
 # Evidence Policy
 
-V1 evidence is produced by the canonical FAKE targets. Current package surface
-baselines live at a stable root path, while feature-specific evidence remains
-under the active feature readiness directory.
+Repository evidence is produced by the canonical FAKE targets. Current package
+surface baselines live at a stable root path, while feature-specific evidence
+remains under the active feature readiness directory.
 
 | Artifact Class | Stable Path |
 |----------------|-------------|
@@ -11,6 +11,9 @@ under the active feature readiness directory.
 | Public contract FSI transcripts | Active feature `readiness/fsi/*.txt` |
 | Sample smoke output | Active feature `readiness/sample-smoke/*.txt` |
 | Template validation output | Active feature `readiness/template/**` |
+| Capability catalog output | Active feature `readiness/capability-catalog.md` |
+| Selected skill output | Active feature `readiness/selected-skills.md` |
+| Generated product matrix output | Active feature `readiness/generated-file-lists/**` and `readiness/generated-product-verify/**` |
 | Dependency governance output | Active feature `readiness/dependencies.md` |
 | Generated guidance output | Active feature `readiness/generated-guidance.md` |
 | Template drift output | Active feature `readiness/template-drift.md` |
@@ -26,9 +29,11 @@ make current package checks pass.
 
 `Dev`, `Verify`, `Ci`, `PackLocal`, `RefreshSurfaceBaselines`,
 `PackageSurfaceCheck`, `FsiTranscripts`, `SampleContractSmoke`,
-`TemplateCheck`, `DependencyReport`, `GeneratedGuidanceCheck`, `TemplateDrift`,
-`EvidenceGraph`, and `EvidenceAudit` are the evidence-producing targets.
-`Verify` fails when any required V1 or V2 artifact class is missing.
+`TemplateCheck`, `CapabilityCheck`, `SkillCheck`, `GeneratedProductCheck`,
+`DependencyReport`, `GeneratedGuidanceCheck`, `TemplateDrift`, `EvidenceGraph`,
+and `EvidenceAudit` are the evidence-producing targets. `Verify` fails when
+any required package, template, generated-product, guidance, drift,
+dependency, graph, or audit artifact class is missing.
 
 ## Synthetic Evidence
 
@@ -42,4 +47,4 @@ handles or canned failures.
 
 Full visual evidence, release validation, an external template repository split,
 and distribution automation are roadmap extensions. Future phases may add
-targets for those classes, but V2 validation remains non-visual.
+targets for those classes, but current validation remains non-visual.

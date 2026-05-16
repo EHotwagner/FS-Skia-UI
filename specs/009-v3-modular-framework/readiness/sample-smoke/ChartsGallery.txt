@@ -1,0 +1,22 @@
+
+## ChartsGallery contract smoke
+$ dotnet run --no-build --project samples/ChartsGallery/ChartsGallery.fsproj -- --contract-smoke
+status=ok
+sample=ChartsGallery
+selection-owned-by-model=true
+hit-test=Some (Point ("cost", 23))
+kinds=[GroupElement; RectangleElement; TextElement; ChartElement; ChartElement;
+ ChartElement; ChartElement; ChartElement; ChartElement; TextElement]
+
+exit-code=0
+
+## ChartsGallery contract smoke
+$ dotnet run --no-build --project samples/ChartsGallery/ChartsGallery.fsproj -- --contract-smoke
+status=ok
+sample=ChartsGallery
+selection-owned-by-model=true
+hit-test=Some (Point ("cost", 23))
+kinds=[GroupElement; RectangleElement; TextElement; ChartElement; ChartElement;
+ ChartElement; ChartElement; ChartElement; ChartElement; TextElement]
+
+exit-code=0
