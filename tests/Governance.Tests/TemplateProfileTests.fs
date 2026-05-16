@@ -13,8 +13,11 @@ let templateProfileTests =
                 [ "\"shortName\": \"fs-skia-ui\""
                   "\"identity\": \"FS.Skia.UI.Template\""
                   "\"profile\""
-                  "\"choice\": \"default\""
-                  "\"choice\": \"minimal\""
+                  "\"defaultValue\": \"app\""
+                  "\"choice\": \"app\""
+                  "\"choice\": \"headless-scene\""
+                  "\"choice\": \"governed\""
+                  "\"choice\": \"sample-pack\""
                   "\"rootNamespace\""
                   "\"packagePrefix\""
                   "\"authors\""
@@ -34,19 +37,20 @@ let templateProfileTests =
                 Expect.isFalse (directoryExists ".template.config") "generated projects do not carry template metadata"
         }
 
-        test "source and minimal modifiers exclude source-only history and optional scope" {
+        test "dotnet template sources V3 product base and selected capability skills" {
             if fileExists ".template.config/template.json" then
                 expectFileContains
                     ".template.config/template.json"
-                    [ "specs/**"
-                      ".specify/feature.json"
-                      ".template.package/**"
-                      "artifacts/**"
-                      "src/Charts/**"
-                      "src/Layout/**"
-                      "tests/Parity.Tests/**"
-                      "samples/InteractiveViewer/**"
-                      "samples/ScreenshotGallery/**" ]
+                    [ "template/base/"
+                      "src/Scene/skill/"
+                      "src/SkiaViewer/skill/"
+                      "src/Elmish/skill/"
+                      "src/KeyboardInput/skill/"
+                      "src/Layout/skill/"
+                      "src/Charts/skill/"
+                      "src/Testing/skill/"
+                      "template/fragments/samples/"
+                      "fs-skia-samples" ]
             else
                 Expect.isFalse (directoryExists "specs/007-v2-template-packaging") "generated projects exclude source-only history"
         }

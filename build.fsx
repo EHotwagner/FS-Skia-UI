@@ -217,10 +217,14 @@ let init root =
           model.GeneratedProductVerifyDir
           model.GeneratedProductRootsDir
           model.PackageSurfaceReportDir
-          path [ model.TemplateEvidenceDir; "source-default" ]
-          path [ model.TemplateEvidenceDir; "source-minimal" ]
-          path [ model.TemplateEvidenceDir; "package-default" ]
-          path [ model.TemplateEvidenceDir; "package-minimal" ] ]
+          path [ model.TemplateEvidenceDir; "source-app" ]
+          path [ model.TemplateEvidenceDir; "source-headless-scene" ]
+          path [ model.TemplateEvidenceDir; "source-governed" ]
+          path [ model.TemplateEvidenceDir; "source-sample-pack" ]
+          path [ model.TemplateEvidenceDir; "package-app" ]
+          path [ model.TemplateEvidenceDir; "package-headless-scene" ]
+          path [ model.TemplateEvidenceDir; "package-governed" ]
+          path [ model.TemplateEvidenceDir; "package-sample-pack" ] ]
         |> List.map EnsureDirectory
 
     model, effects
@@ -304,26 +308,21 @@ let processEffect label fileName arguments workingDirectory outputPath =
     RunProcess(label, fileName, arguments, workingDirectory, outputPath, Map.empty)
 
 let templateRows model =
-    [ { Artifact = "source"
-        Profile = "default"
-        ProjectName = "V2SourceDefault"
-        Root = path [ model.TemplateWorkDir; "source-default" ]
-        EvidenceDir = path [ model.TemplateEvidenceDir; "source-default" ] }
-      { Artifact = "source"
-        Profile = "minimal"
-        ProjectName = "V2SourceMinimal"
-        Root = path [ model.TemplateWorkDir; "source-minimal" ]
-        EvidenceDir = path [ model.TemplateEvidenceDir; "source-minimal" ] }
-      { Artifact = "package"
-        Profile = "default"
-        ProjectName = "V2PackageDefault"
-        Root = path [ model.TemplateWorkDir; "package-default" ]
-        EvidenceDir = path [ model.TemplateEvidenceDir; "package-default" ] }
-      { Artifact = "package"
-        Profile = "minimal"
-        ProjectName = "V2PackageMinimal"
-        Root = path [ model.TemplateWorkDir; "package-minimal" ]
-        EvidenceDir = path [ model.TemplateEvidenceDir; "package-minimal" ] } ]
+    let row artifact profile projectName =
+        { Artifact = artifact
+          Profile = profile
+          ProjectName = projectName
+          Root = path [ model.TemplateWorkDir; $"{artifact}-{profile}" ]
+          EvidenceDir = path [ model.TemplateEvidenceDir; $"{artifact}-{profile}" ] }
+
+    [ row "source" "app" "V3DotnetAppSource"
+      row "source" "headless-scene" "V3DotnetHeadlessSceneSource"
+      row "source" "governed" "V3DotnetGovernedSource"
+      row "source" "sample-pack" "V3DotnetSamplePackSource"
+      row "package" "app" "V3DotnetAppPackage"
+      row "package" "headless-scene" "V3DotnetHeadlessScenePackage"
+      row "package" "governed" "V3DotnetGovernedPackage"
+      row "package" "sample-pack" "V3DotnetSamplePackPackage" ]
 
 let v3GeneratedRows model =
     let row artifact profile projectName capabilities =
@@ -432,7 +431,7 @@ let update msg model =
     | StartTarget "TemplateSmoke" ->
         model,
         [ ScanGeneratedProjects(path [ model.TemplateEvidenceDir; "generated-project-scans.md" ])
-          WriteStructuredReport("template smoke support boundary", path [ model.TemplateEvidenceDir; "non-visual-support.md" ], "# Non-Visual Support\n\nV2 template validation is non-visual. Full visual evidence, release validation, an external template repository, and broader distribution automation remain deferred roadmap work.\n") ]
+          WriteStructuredReport("template smoke support boundary", path [ model.TemplateEvidenceDir; "non-visual-support.md" ], "# Non-Visual Support\n\nV3 template validation is non-visual. Full visual evidence, release validation, an external template repository, and broader distribution automation remain deferred roadmap work.\n") ]
     | StartTarget "TemplateCheck" ->
         model,
         [ RequireFiles(
@@ -443,12 +442,16 @@ let update msg model =
                 path [ model.TemplateEvidenceDir; "package-install.log" ]
                 path [ model.TemplateEvidenceDir; "instantiation.log" ]
                 path [ model.TemplateEvidenceDir; "generated-project-scans.md" ]
-                path [ model.TemplateEvidenceDir; "source-default"; "dev.log" ]
-                path [ model.TemplateEvidenceDir; "source-minimal"; "dev.log" ]
-                path [ model.TemplateEvidenceDir; "package-default"; "dev.log" ]
-                path [ model.TemplateEvidenceDir; "package-minimal"; "dev.log" ] ]
+                path [ model.TemplateEvidenceDir; "source-app"; "dev.log" ]
+                path [ model.TemplateEvidenceDir; "source-headless-scene"; "dev.log" ]
+                path [ model.TemplateEvidenceDir; "source-governed"; "dev.log" ]
+                path [ model.TemplateEvidenceDir; "source-sample-pack"; "dev.log" ]
+                path [ model.TemplateEvidenceDir; "package-app"; "dev.log" ]
+                path [ model.TemplateEvidenceDir; "package-headless-scene"; "dev.log" ]
+                path [ model.TemplateEvidenceDir; "package-governed"; "dev.log" ]
+                path [ model.TemplateEvidenceDir; "package-sample-pack"; "dev.log" ] ]
             )
-          WriteStructuredReport("template verdict", path [ model.TemplateEvidenceDir; "verdict.md" ], "# TemplateCheck Verdict\n\nPASS: source/package and default/minimal generated projects passed non-visual validation.\n") ]
+          WriteStructuredReport("template verdict", path [ model.TemplateEvidenceDir; "verdict.md" ], "# TemplateCheck Verdict\n\nPASS: source/package V3 app, headless-scene, governed, and sample-pack generated projects passed non-visual validation.\n") ]
     | StartTarget "CapabilityCheck" ->
         model,
         [ CapabilityCatalogCheck
@@ -669,10 +672,14 @@ let validateTemplatePackage model outputPath =
 
     let required =
         [ "content/.template.config/template.json"
-          "content/build.fsx"
-          "content/src/Lib/Lib.fsproj"
-          "content/docs/template-profile.md"
-          "content/Directory.Packages.props" ]
+          "content/template/base/build.fsx"
+          "content/template/base/src/Product/Product.fsproj"
+          "content/template/base/tests/Product.Tests/Product.Tests.fsproj"
+          "content/template/base/Directory.Packages.props"
+          "content/template/profiles/app.yml"
+          "content/template/profiles/headless-scene.yml"
+          "content/template/profiles/governed.yml"
+          "content/template/profiles/sample-pack.yml" ]
 
     let forbiddenPrefixes =
         [ "content/.git/"
@@ -732,7 +739,7 @@ let runTemplateInstall model label source outputPath =
 
 let instantiateRow model (row: TemplateRow) =
     cleanDirectoryContents row.Root
-    Directory.CreateDirectory row.EvidenceDir |> ignore
+    cleanDirectoryContents row.EvidenceDir
 
     let rootNamespace = row.ProjectName.Replace("-", ".")
     let repositoryUrl = $"https://example.invalid/{row.Artifact}/{row.Profile}/{row.ProjectName}"
@@ -748,13 +755,15 @@ let instantiateRow model (row: TemplateRow) =
           "--authors TemplateValidation"
           $"--repositoryUrl {quote repositoryUrl}"
           "--targetFramework net10.0"
-          if row.Profile = "minimal" then
-              "--skipGitInit true" ]
+          "--skipGitInit true" ]
         |> String.concat " "
 
     runProcess $"{row.Artifact}/{row.Profile} instantiate" "dotnet" args model.RepositoryRoot (path [ row.EvidenceDir; "instantiate.log" ]) Map.empty
 
 let runTemplateInstantiation model outputPath =
+    ensureParent outputPath
+    File.WriteAllText(outputPath, "# Template Instantiation" + Environment.NewLine)
+
     cleanDirectoryContents model.TemplateWorkDir
 
     runTemplateInstall model "source template install for instantiation" SourceDirectory outputPath
@@ -813,9 +822,7 @@ let scanGeneratedRow (row: TemplateRow) =
         |> Seq.toList
 
     let identityTokens =
-        [ "FS-Skia-UI"
-          "FS.Skia.UI"
-          "fs-skia-ui" ]
+        [ "FS-Skia-UI" ]
 
     let placeholderHits =
         files
@@ -838,39 +845,74 @@ let scanGeneratedRow (row: TemplateRow) =
         else
             []
 
-    let minimalForbidden =
-        if row.Profile = "minimal" then
-            [ "src/Charts"
-              "src/Layout"
-              "tests/Charts.Tests"
-              "tests/Layout.Tests"
-              "tests/Parity.Tests"
-              "tests/Smoke.Tests"
-              "samples/ChartsGallery"
-              "samples/DataGridGallery"
-              "samples/LayoutGraphGallery"
-              "samples/ParityGallery"
-              "samples/InteractiveViewer"
-              "samples/EffectsGallery"
-              "samples/ScreenshotGallery"
-              "samples/DemoReel" ]
-            |> List.filter (fun relative -> Directory.Exists(path [ row.Root; relative ]))
+    let forbiddenFrameworkPaths =
+        [ "src/Lib"
+          "src/Scene"
+          "src/SkiaViewer"
+          "src/Elmish"
+          "src/KeyboardInput"
+          "src/Layout"
+          "src/Charts"
+          "src/Testing"
+          "tests/Lib.Tests"
+          "tests/Scene.Tests"
+          "tests/SkiaViewer.Tests"
+          "tests/Elmish.Tests"
+          "tests/KeyboardInput.Tests"
+          "tests/Layout.Tests"
+          "tests/Charts.Tests"
+          "tests/Testing.Tests"
+          "tests/Parity.Tests"
+          "tests/Smoke.Tests"
+          "samples/BasicViewer"
+          "samples/ChartsGallery"
+          "samples/DataGridGallery"
+          "samples/LayoutGraphGallery"
+          "samples/ParityGallery"
+          "samples/InteractiveViewer"
+          "samples/EffectsGallery"
+          "samples/ScreenshotGallery"
+          "samples/DemoReel" ]
+        |> List.filter (fun relative -> Directory.Exists(path [ row.Root; relative ]))
+
+    let samplePackRequired =
+        if row.Profile = "sample-pack" then
+            [ "samples/README.md" ]
         else
             []
 
+    let expectedPackages =
+        match row.Profile with
+        | "app" ->
+            [ "FS.Skia.UI.Scene"
+              "FS.Skia.UI.SkiaViewer"
+              "FS.Skia.UI.Elmish"
+              "FS.Skia.UI.KeyboardInput"
+              "FS.Skia.UI.Layout"
+              "FS.Skia.UI.Charts" ]
+        | "headless-scene" -> [ "FS.Skia.UI.Scene" ]
+        | "governed" -> [ "FS.Skia.UI.Scene"; "FS.Skia.UI.Testing" ]
+        | "sample-pack" -> [ "FS.Skia.UI.Scene"; "FS.Skia.UI.SkiaViewer"; "FS.Skia.UI.Elmish" ]
+        | other -> failwithf "Unknown V3 template profile %s" other
+
+    let allCapabilityPackages =
+        [ "FS.Skia.UI.Scene"
+          "FS.Skia.UI.SkiaViewer"
+          "FS.Skia.UI.Elmish"
+          "FS.Skia.UI.KeyboardInput"
+          "FS.Skia.UI.Layout"
+          "FS.Skia.UI.Charts"
+          "FS.Skia.UI.Testing" ]
+
     let required =
-        [ "src/Lib/Lib.fsproj"
-          "tests/Lib.Tests/Lib.Tests.fsproj"
-          "tests/Package.Tests/Package.Tests.fsproj"
-          "tests/Governance.Tests/Governance.Tests.fsproj"
-          "samples/BasicViewer/BasicViewer.fsproj"
-          "docs/build.md"
-          "docs/template-profile.md"
-          ".specify/workflows/speckit/workflow.yml"
+        [ $"src/{row.ProjectName}/{row.ProjectName}.fsproj"
+          $"tests/{row.ProjectName}.Tests/{row.ProjectName}.Tests.fsproj"
+          "docs/product.md"
           "Directory.Packages.props"
           "AGENTS.md"
           "build.fsx"
           "fake.sh" ]
+        @ samplePackRequired
 
     let missingRequired =
         required
@@ -882,11 +924,24 @@ let scanGeneratedRow (row: TemplateRow) =
     if not (List.isEmpty excludedHistory) then
         failwithf "%s/%s generated project contains excluded historical specs:%s%s" row.Artifact row.Profile Environment.NewLine (String.Join(Environment.NewLine, excludedHistory))
 
-    if not (List.isEmpty minimalForbidden) then
-        failwithf "%s/%s generated project contains minimal-profile forbidden paths:%s%s" row.Artifact row.Profile Environment.NewLine (String.Join(Environment.NewLine, minimalForbidden))
+    if not (List.isEmpty forbiddenFrameworkPaths) then
+        failwithf "%s/%s generated project contains framework implementation paths:%s%s" row.Artifact row.Profile Environment.NewLine (String.Join(Environment.NewLine, forbiddenFrameworkPaths))
 
     if not (List.isEmpty missingRequired) then
         failwithf "%s/%s generated project is missing required files:%s%s" row.Artifact row.Profile Environment.NewLine (String.Join(Environment.NewLine, missingRequired))
+
+    let productProject = File.ReadAllText(path [ row.Root; "src"; row.ProjectName; $"{row.ProjectName}.fsproj" ])
+
+    expectedPackages
+    |> List.iter (fun packageId ->
+        if productProject.IndexOf($"PackageReference Include=\"{packageId}\"", StringComparison.Ordinal) < 0 then
+            failwithf "%s/%s generated project is missing package reference %s" row.Artifact row.Profile packageId)
+
+    allCapabilityPackages
+    |> List.filter (fun packageId -> not (expectedPackages |> List.contains packageId))
+    |> List.iter (fun packageId ->
+        if productProject.IndexOf($"PackageReference Include=\"{packageId}\"", StringComparison.Ordinal) >= 0 then
+            failwithf "%s/%s generated project contains unselected package reference %s" row.Artifact row.Profile packageId)
 
     let staleAgentsReference =
         let agentsPath = path [ row.Root; "AGENTS.md" ]
@@ -934,11 +989,12 @@ let scanGeneratedRow (row: TemplateRow) =
           $"Files scanned: {files.Length}"
           "Placeholder scan: PASS"
           "Excluded-history scan: PASS"
-          "Minimal optional exclusion scan: PASS"
+          "V3 framework-source exclusion scan: PASS"
+          "V3 selected package reference scan: PASS"
           "Generated AGENTS scan: PASS"
           "Executable script scan: PASS"
           $"Generated Dev elapsed: {elapsedSeconds:F1} seconds"
-          "Visual support: non-visual V2 validation only; full visual evidence is deferred." ]
+          "Visual support: non-visual V3 validation only; full visual evidence is deferred." ]
         |> String.concat Environment.NewLine
 
     File.WriteAllText(path [ row.EvidenceDir; "scan.md" ], report + Environment.NewLine)
@@ -958,7 +1014,7 @@ let scanGeneratedProjects model outputPath =
                   let devLog = path [ row.EvidenceDir; "dev.log" ]
                   $"| {row.Artifact} | {row.Profile} | `{row.Root}` | `{devLog}` |")
           ""
-          "PASS: placeholder scans, excluded-history scans, minimal profile checks, and generated Dev runs completed for all rows." ]
+          "PASS: placeholder scans, excluded-history scans, V3 profile package checks, and generated Dev runs completed for all rows." ]
         |> String.concat Environment.NewLine
 
     ensureParent outputPath

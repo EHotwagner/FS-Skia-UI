@@ -92,8 +92,8 @@ The `fs-skia-ui` template is built from the same repository through
 [.template.config/template.json](../.template.config/template.json) and
 [.template.package/FS.Skia.UI.Template.fsproj](../.template.package/FS.Skia.UI.Template.fsproj).
 Template validation installs from both the source directory and the local NuGet
-template package, then generates default and minimal projects and runs their
-`Dev` workflows. See [Template Profile](template-profile.md),
+template package, then generates the V3 `app`, `headless-scene`, `governed`,
+and `sample-pack` projects and runs their `Dev` workflows. See [Template Profile](template-profile.md),
 [Testing Workflow](testing.md), and [Evidence Policy](evidence.md) for the
 governed artifact boundaries.
 

@@ -5,8 +5,8 @@
     <PackageType>Template</PackageType>
     <PackageId>FS.Skia.UI.Template</PackageId>
     <Title>FS Skia UI Project Template</Title>
-    <Description>Governed FS.Skia.UI starter template with default and minimal profiles.</Description>
-    <Version>0.1.3-preview.1</Version>
+    <Description>Governed FS.Skia.UI V3 product template with app, headless-scene, governed, and sample-pack profiles.</Description>
+    <Version>0.1.4-preview.1</Version>
     <Authors>FS-Skia-UI Contributors</Authors>
     <PackageTags>fsharp;skia;elmish;template</PackageTags>
     <IncludeBuildOutput>false</IncludeBuildOutput>

@@ -3,11 +3,18 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="FS.Skia.UI.Scene" Version="0.1.8-preview.1" />
-    <PackageVersion Include="FS.Skia.UI.SkiaViewer" Version="0.1.8-preview.1" />
-    <PackageVersion Include="FS.Skia.UI.Elmish" Version="0.1.8-preview.1" />
-    <PackageVersion Include="FS.Skia.UI.KeyboardInput" Version="0.1.8-preview.1" />
-    <PackageVersion Include="FS.Skia.UI.Layout" Version="0.1.8-preview.1" />
-    <PackageVersion Include="FS.Skia.UI.Charts" Version="0.1.8-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.Scene" Version="0.1.9-preview.1" />
+    <!--#if (profile == "app" || profile == "sample-pack") -->
+    <PackageVersion Include="FS.Skia.UI.SkiaViewer" Version="0.1.9-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.Elmish" Version="0.1.9-preview.1" />
+    <!--#endif -->
+    <!--#if (profile == "app") -->
+    <PackageVersion Include="FS.Skia.UI.KeyboardInput" Version="0.1.9-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.Layout" Version="0.1.9-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.Charts" Version="0.1.9-preview.1" />
+    <!--#endif -->
+    <!--#if (profile == "governed") -->
+    <PackageVersion Include="FS.Skia.UI.Testing" Version="0.1.9-preview.1" />
+    <!--#endif -->
   </ItemGroup>
 </Project>

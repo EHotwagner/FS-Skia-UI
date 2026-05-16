@@ -22,29 +22,22 @@ source `headless-scene`, `governed`, and `sample-pack` rows. Each row records a
 file list under the active feature `readiness/generated-file-lists/` directory
 and command logs under `readiness/generated-product-verify/`.
 
-## Compatibility Profiles
-
-The installed `dotnet new fs-skia-ui` template still exposes the compatibility
-profiles used by existing template smoke checks:
-
-| Profile | Contents | Exclusions |
-|---------|----------|------------|
-| `default` | Core library, charts, layout, samples, tests, docs, Spec Kit assets, command wrappers, central package policy, and root surface baselines. | Historical feature specs/readiness evidence, source `.git` metadata, source `.specify/feature.json` active-feature state, build outputs, local artifacts, and template package source. |
-| `minimal` | Core library, `BasicViewer`, core tests, package checks, governance tests, docs, Spec Kit assets, command wrappers, and central package policy. | Optional layout, charts, parity, visual/sample gallery scope, historical feature specs/readiness evidence, solution file, and source-only artifacts. |
-
 ## Generation Options
 
 ```bash
 dotnet new install .
-dotnet new fs-skia-ui --name MyProduct --profile default --allow-scripts yes
-dotnet new fs-skia-ui --name MyProduct.Minimal --profile minimal --allow-scripts yes
+dotnet new fs-skia-ui --name MyProduct --profile app --allow-scripts yes
+dotnet new fs-skia-ui --name MyProduct.SceneOnly --profile headless-scene --allow-scripts yes
+dotnet new fs-skia-ui --name MyProduct.Governed --profile governed --allow-scripts yes
+dotnet new fs-skia-ui --name MyProduct.Samples --profile sample-pack --allow-scripts yes
 dotnet new fs-skia-ui --name MyProduct.NoGit --skipGitInit true --allow-scripts yes
 ```
 
-The template accepts product identity parameters:
+Generated project and module names are derived from `--name`. The template also
+accepts product metadata and compatibility parameters:
 
-- `--rootNamespace`
-- `--packagePrefix`
+- `--rootNamespace` for compatibility with existing generation commands
+- `--packagePrefix` reserved for future generated product packages
 - `--authors`
 - `--repositoryUrl`
 - `--targetFramework`
@@ -58,10 +51,10 @@ prevents unborn-branch failures in commands such as `/speckit-clarify`. The
 is supplied. Use `--skipGitInit true` for generated projects that should rely
 on an existing parent repository or remain disposable validation artifacts.
 
-`TemplateCheck` exercises both compatibility profiles through the source
-directory and the local package artifact created by `TemplatePack`.
-`GeneratedProductCheck` exercises the V3 capability profiles from source and
-packaged V3 product inputs.
+`TemplateCheck` exercises the V3 profiles through the source directory and the
+local package artifact created by `TemplatePack`. `GeneratedProductCheck`
+exercises the same capability matrix through the repository generator and
+selected capability inputs.
 
 ## Artifact Boundaries
 
@@ -70,9 +63,9 @@ contain template metadata plus template-owned source files. It must not contain
 historical feature directories, feature readiness evidence, `.git`, `bin`,
 `obj`, or generated validation roots.
 
-Compatibility template validation writes logs under the active feature
-`readiness/template/` directory and isolated generated roots under
-`artifacts/template-check/<active-feature>/`. V3 generated product validation
+Template validation writes logs under the active feature `readiness/template/`
+directory and isolated generated roots under
+`artifacts/template-check/<active-feature>/`. Generated product validation
 writes file lists under `readiness/generated-file-lists/`, command logs under
 `readiness/generated-product-verify/`, and isolated roots under
 `artifacts/generated-products/<active-feature>/`.

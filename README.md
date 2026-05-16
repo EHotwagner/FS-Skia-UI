@@ -34,6 +34,40 @@ It is not a general renderer abstraction, a browser/mobile UI framework, or a
 traditional retained widget toolkit that owns application state. The current
 runtime host is deliberately narrow: desktop, SkiaSharp, Silk.NET, and Vulkan.
 
+## Quickstart
+
+From this repository, restore the local tools and run the default validation:
+
+```bash
+dotnet tool restore
+./fake.sh build -t Dev
+```
+
+Pack the current preview capability packages locally, then install the V3
+template and generate a product:
+
+```bash
+./fake.sh build -t PackLocal
+dotnet new install .
+dotnet new fs-skia-ui --name MyProduct --profile app --allow-scripts yes
+cd MyProduct
+./fake.sh build -t Dev
+```
+
+Use a different profile when the product should start smaller or sample-focused:
+
+```bash
+dotnet new fs-skia-ui --name SceneOnly --profile headless-scene --allow-scripts yes
+dotnet new fs-skia-ui --name GovernedScene --profile governed --allow-scripts yes
+dotnet new fs-skia-ui --name SamplePack --profile sample-pack --allow-scripts yes
+```
+
+The generated product references FS.Skia.UI packages. For local preview work,
+`PackLocal` writes those packages to `~/.local/share/nuget-local`; add that
+folder as a NuGet source or use an equivalent configured feed before restoring
+or running the generated product project. Pass `--skipGitInit true` when
+generating inside an existing repository.
+
 ## Minimal App Shape
 
 ```fsharp
@@ -143,13 +177,15 @@ source/package product matrix with:
 ./fake.sh build -t GeneratedProductCheck
 ```
 
-The compatibility `dotnet new fs-skia-ui` template can still be installed from
-the source directory:
+The `dotnet new fs-skia-ui` template can be installed from the source
+directory:
 
 ```bash
 dotnet new install .
-dotnet new fs-skia-ui --name MyProduct --profile default --allow-scripts yes
-dotnet new fs-skia-ui --name MyProduct.Minimal --profile minimal --allow-scripts yes
+dotnet new fs-skia-ui --name MyProduct --profile app --allow-scripts yes
+dotnet new fs-skia-ui --name MyProduct.SceneOnly --profile headless-scene --allow-scripts yes
+dotnet new fs-skia-ui --name MyProduct.Governed --profile governed --allow-scripts yes
+dotnet new fs-skia-ui --name MyProduct.Samples --profile sample-pack --allow-scripts yes
 dotnet new fs-skia-ui --name MyProduct.NoGit --skipGitInit true --allow-scripts yes
 ```
 

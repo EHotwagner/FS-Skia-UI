@@ -47,7 +47,7 @@ and run the shared `build.fsx` target graph. Automation should call
 | `TemplatePack` | Builds `FS.Skia.UI.Template.*.nupkg` from `.template.package/FS.Skia.UI.Template.fsproj`. | `artifacts/templates/` and active feature `readiness/template/template-pack.log` |
 | `TemplateInstallSource` | Installs the template from the source directory. | Active feature `readiness/template/source-install.log` |
 | `TemplateInstallPackage` | Installs the local packaged template artifact. | Active feature `readiness/template/package-install.log` |
-| `TemplateInstantiate` | Creates source/default, source/minimal, package/default, and package/minimal generated projects. | `artifacts/template-check/<active-feature>/` |
+| `TemplateInstantiate` | Creates source and package generated projects for the V3 `app`, `headless-scene`, `governed`, and `sample-pack` profiles. | `artifacts/template-check/<active-feature>/` |
 | `TemplateSmoke` | Scans generated projects and runs their `./fake.sh build -t Dev` workflow. | Active feature `readiness/template/generated-project-scans.md` |
 | `TemplateCheck` | Requires the full template validation artifact class. | Active feature `readiness/template/verdict.md` |
 | `CapabilityCheck` | Validates `template/capabilities.yml`, capability ownership metadata, package contracts, tests, skills, fragments, evidence classes, and default app membership. | Active feature `readiness/capability-catalog.md` |

@@ -10,38 +10,44 @@
   "identity": "FS.Skia.UI.Template",
   "name": "FS Skia UI Governed Project",
   "shortName": "fs-skia-ui",
-  "sourceName": "FS-Skia-UI",
+  "sourceName": "Product",
   "preferNameDirectory": true,
   "symbols": {
     "profile": {
       "type": "parameter",
       "datatype": "choice",
-      "defaultValue": "default",
-      "description": "Starter profile to generate.",
+      "defaultValue": "app",
+      "description": "V3 product profile to generate.",
       "choices": [
         {
-          "choice": "default",
-          "description": "Full governed framework starter with core, charts, layout, samples, tests, docs, and Spec Kit assets."
+          "choice": "app",
+          "description": "Default V3 product app with Scene, SkiaViewer, Elmish, KeyboardInput, Layout, Charts, product tests, and product governance."
         },
         {
-          "choice": "minimal",
-          "description": "Small governed starter with core library, BasicViewer sample, core tests, package checks, docs, and Spec Kit assets."
+          "choice": "headless-scene",
+          "description": "Headless Scene-only V3 product for scene/widget authoring."
+        },
+        {
+          "choice": "governed",
+          "description": "Governed V3 product with Scene plus Testing helpers."
+        },
+        {
+          "choice": "sample-pack",
+          "description": "Sample-oriented V3 product with Scene, SkiaViewer, Elmish, and sample-pack content."
         }
       ]
     },
     "rootNamespace": {
       "type": "parameter",
       "datatype": "text",
-      "defaultValue": "FS.Skia.UI",
-      "replaces": "FS.Skia.UI",
-      "fileRename": "FS.Skia.UI",
-      "description": "Root namespace and package id prefix for the generated product."
+      "defaultValue": "Product",
+      "description": "Compatibility parameter accepted by the template; generated project names are derived from --name."
     },
     "packagePrefix": {
       "type": "parameter",
       "datatype": "text",
       "defaultValue": "FS.Skia.UI",
-      "description": "Package prefix reserved for generated product packages."
+      "description": "Package prefix reserved for future generated product packages."
     },
     "authors": {
       "type": "parameter",
@@ -82,65 +88,66 @@
   },
   "sources": [
     {
-      "source": "./",
+      "source": "template/base/",
       "target": "./",
       "exclude": [
-        ".fake/**",
-        ".git/**",
-        "AGENTS.md",
-        ".specify/feature.json",
-        ".template.config/**",
-        ".template.package/**",
-        "artifacts/**",
         "bin/**",
         "obj/**",
         "**/bin/**",
-        "**/obj/**",
-        "specs/**",
-        "specs/**/readiness/**",
-        "specs/001-*/**",
-        "specs/002-*/**",
-        "specs/003-*/**",
-        "specs/004-*/**",
-        "specs/005-*/**",
-        "specs/006-*/**",
-        "specs/007-*/**"
-      ],
-      "modifiers": [
-        {
-          "condition": "(profile == \"minimal\")",
-          "exclude": [
-            "FS-Skia-UI.sln",
-            "src/Charts/**",
-            "src/Layout/**",
-            "tests/Charts.Tests/**",
-            "tests/Layout.Tests/**",
-            "tests/Parity.Tests/**",
-            "tests/Smoke.Tests/**",
-            "tests/Package.Tests/SurfaceAreaTests.fs",
-            "samples/ChartsGallery/**",
-            "samples/DataGridGallery/**",
-            "samples/DemoReel/**",
-            "samples/EffectsGallery/**",
-            "samples/InteractiveViewer/**",
-            "samples/KeyboardInputGallery/**",
-            "samples/KeyboardInput/**",
-            "samples/LayoutGraphGallery/**",
-            "samples/ParityGallery/**",
-            "samples/ScreenshotGallery/**",
-            "scripts/charts-prelude.fsx",
-            "scripts/layout-prelude.fsx",
-            "scripts/parity-evidence.fsx",
-            "scripts/us1-vulkan-smoke.sh",
-            "scripts/input-state-display-performance.fsx",
-            "scripts/input-performance.fsx"
-          ]
-        }
+        "**/obj/**"
       ]
     },
     {
       "source": ".template.config/generated/",
       "target": "./"
+    },
+    {
+      "condition": "(profile == \"app\" || profile == \"headless-scene\" || profile == \"governed\" || profile == \"sample-pack\")",
+      "source": "src/Scene/skill/",
+      "target": ".agents/skills/fs-skia-scene/"
+    },
+    {
+      "condition": "(profile == \"app\" || profile == \"sample-pack\")",
+      "source": "src/SkiaViewer/skill/",
+      "target": ".agents/skills/fs-skia-skiaviewer/"
+    },
+    {
+      "condition": "(profile == \"app\" || profile == \"sample-pack\")",
+      "source": "src/Elmish/skill/",
+      "target": ".agents/skills/fs-skia-elmish/"
+    },
+    {
+      "condition": "(profile == \"app\")",
+      "source": "src/KeyboardInput/skill/",
+      "target": ".agents/skills/fs-skia-keyboard-input/"
+    },
+    {
+      "condition": "(profile == \"app\")",
+      "source": "src/Layout/skill/",
+      "target": ".agents/skills/fs-skia-layout/"
+    },
+    {
+      "condition": "(profile == \"app\")",
+      "source": "src/Charts/skill/",
+      "target": ".agents/skills/fs-skia-charts/"
+    },
+    {
+      "condition": "(profile == \"governed\")",
+      "source": "src/Testing/skill/",
+      "target": ".agents/skills/fs-skia-testing/"
+    },
+    {
+      "condition": "(profile == \"sample-pack\")",
+      "source": "template/fragments/samples/",
+      "target": "samples/",
+      "exclude": [
+        "skill/**"
+      ]
+    },
+    {
+      "condition": "(profile == \"sample-pack\")",
+      "source": "template/fragments/samples/skill/",
+      "target": ".agents/skills/fs-skia-samples/"
     }
   ],
   "postActions": [

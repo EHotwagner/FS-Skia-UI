@@ -41,22 +41,26 @@ reviewed baseline.
 writes one log per sample under
 `specs/006-template-framework-governance/readiness/sample-smoke/`.
 
-## V2 Template Matrix
+## V3 Template Matrix
 
-`TemplateCheck` validates four rows:
+`TemplateCheck` validates eight rows:
 
 | Artifact | Profile | Required checks |
 |----------|---------|-----------------|
-| source directory | default | install, instantiate, placeholder scan, excluded-history scan, generated `Dev` |
-| source directory | minimal | install, instantiate, placeholder scan, excluded-history scan, optional-scope exclusion, generated `Dev` |
-| local package | default | package install, instantiate, placeholder scan, excluded-history scan, generated `Dev` |
-| local package | minimal | package install, instantiate, placeholder scan, excluded-history scan, optional-scope exclusion, generated `Dev` |
+| source directory | app | install, instantiate, placeholder scan, excluded-history scan, V3 package-reference scan, generated `Dev` |
+| source directory | headless-scene | install, instantiate, placeholder scan, excluded-history scan, V3 package-reference scan, generated `Dev` |
+| source directory | governed | install, instantiate, placeholder scan, excluded-history scan, V3 package-reference scan, generated `Dev` |
+| source directory | sample-pack | install, instantiate, placeholder scan, excluded-history scan, V3 package-reference scan, generated `Dev` |
+| local package | app | package install, instantiate, placeholder scan, excluded-history scan, V3 package-reference scan, generated `Dev` |
+| local package | headless-scene | package install, instantiate, placeholder scan, excluded-history scan, V3 package-reference scan, generated `Dev` |
+| local package | governed | package install, instantiate, placeholder scan, excluded-history scan, V3 package-reference scan, generated `Dev` |
+| local package | sample-pack | package install, instantiate, placeholder scan, excluded-history scan, V3 package-reference scan, generated `Dev` |
 
 `DependencyReport`, `GeneratedGuidanceCheck`, and `TemplateDrift` are focused
 governance targets and can be run independently while developing those
 surfaces.
 
-## V2 Exclusions
+## Template Exclusions
 
 Full visual evidence, release validation, an external template repository split,
 and distribution automation are deferred. They must not become pass/fail

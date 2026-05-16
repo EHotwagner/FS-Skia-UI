@@ -11,11 +11,18 @@
 
   <ItemGroup>
     <PackageReference Include="FS.Skia.UI.Scene" />
+    <!--#if (profile == "app" || profile == "sample-pack") -->
     <PackageReference Include="FS.Skia.UI.SkiaViewer" />
     <PackageReference Include="FS.Skia.UI.Elmish" />
+    <!--#endif -->
+    <!--#if (profile == "app") -->
     <PackageReference Include="FS.Skia.UI.KeyboardInput" />
     <PackageReference Include="FS.Skia.UI.Layout" />
     <PackageReference Include="FS.Skia.UI.Charts" />
+    <!--#endif -->
+    <!--#if (profile == "governed") -->
+    <PackageReference Include="FS.Skia.UI.Testing" />
+    <!--#endif -->
   </ItemGroup>
 
 </Project>

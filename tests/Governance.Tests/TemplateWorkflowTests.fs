@@ -29,25 +29,31 @@ let templateWorkflowTests =
                   "TemplateInstallPackage"
                   "TemplateInstantiate"
                   "TemplateSmoke"
-                  "source-default"
-                  "source-minimal"
-                  "package-default"
-                  "package-minimal"
+                  "source-app"
+                  "source-headless-scene"
+                  "source-governed"
+                  "source-sample-pack"
+                  "package-app"
+                  "package-headless-scene"
+                  "package-governed"
+                  "package-sample-pack"
                   "TemplateCheck Verdict" ]
         }
 
-        test "US1 real interpreter evidence plan is recorded" {
-            let plan = "specs/007-v2-template-packaging/readiness/us1-real-interpreter-plan.md"
+        test "V3 real interpreter evidence plan is recorded" {
+            let plan = "specs/009-v3-modular-framework/readiness/us1-real-interpreter-evidence-plan.md"
 
             if fileExists plan then
-                expectFileContains
-                    plan
-                    [ "source install"
-                      "package install"
-                      "default"
-                      "minimal"
-                      "generated Dev" ]
+                    expectFileContains
+                        plan
+                        [ "app-source"
+                          "app-package"
+                          "GeneratedProductCheck"
+                          "selected local skills"
+                          "Dev"
+                          "Test"
+                          "Verify" ]
             else
-                Expect.isFalse (directoryExists "specs/007-v2-template-packaging") "generated projects do not carry source feature readiness"
+                Expect.isFalse (directoryExists "specs/009-v3-modular-framework") "generated projects do not carry source feature readiness"
         }
     ]
