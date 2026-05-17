@@ -6,6 +6,7 @@ open System
 open System.Diagnostics
 open System.IO
 open System.IO.Compression
+open System.Runtime.InteropServices
 
 // BUILD SECTION: path model
 
@@ -52,6 +53,79 @@ type ValidationFinding =
       Rule: string
       Message: string }
 
+type ProcessHealthThreshold =
+    { RuleId: string
+      SignalName: string
+      DefaultValue: int64
+      Comparison: string
+      ActualValue: int64 option
+      OverrideValue: int64 option
+      OverrideSource: string option
+      OverrideReason: string option
+      PlatformApplicability: string
+      Passed: bool option
+      Diagnostic: string option }
+
+type ProcessHealthSnapshot =
+    { TimestampUtc: DateTimeOffset
+      TargetName: string
+      Stage: string
+      Platform: string
+      AvailableMemoryMb: int64 option
+      ProcessCount: int option
+      ZombieProcessCount: int option
+      ThreadLimit: int64 option
+      ThreadHeadroom: int64 option
+      FileDescriptorLimit: int64 option
+      FileDescriptorHeadroom: int64 option
+      DotnetStartup: string
+      FakeBootstrap: string
+      UnsupportedSignals: string list
+      Thresholds: ProcessHealthThreshold list
+      PreflightElapsedMs: int64
+      FailFast: bool
+      Diagnostics: string list }
+
+type BootstrapValidation =
+    { TargetName: string
+      TimestampUtc: DateTimeOffset
+      DotnetSdkStatus: string
+      FakeToolRestoreStatus: string
+      PackageCacheStatus: string
+      WrapperStatus: string
+      WarningClassification: string
+      RecommendedAction: string option
+      LogPath: string
+      Passed: bool }
+
+type VerificationVerdictCategory =
+    | VerificationSuccess
+    | VerificationProductFailure
+    | VerificationEnvironmentFailure
+    | VerificationDegraded
+
+type VerificationVerdict =
+    { Category: VerificationVerdictCategory
+      Target: string
+      Stage: string
+      ExitCode: int option
+      ProductChecksRun: string list
+      ProductFailures: string list
+      EnvironmentFailures: string list
+      HealthSnapshotPath: string
+      LogPath: string
+      RecommendedRerunEnvironment: string
+      AuthoritativeProductEvidence: bool }
+
+type FocusedGateContract =
+    { TargetName: string
+      DirectPrerequisites: string list
+      Command: string
+      LogPath: string
+      ReadinessPath: string option
+      StaleAssumptions: string list
+      VerdictCategory: VerificationVerdictCategory }
+
 // BUILD SECTION: workflow model
 
 type BuildModel =
@@ -78,6 +152,15 @@ type BuildModel =
       DependencyReportPath: string
       GeneratedGuidanceReportPath: string
       TemplateDriftReportPath: string
+      ProcessHealthPath: string
+      BootstrapRunnerPath: string
+      VerificationVerdictsPath: string
+      FocusedGatesReportPath: string
+      GovernanceScannersPath: string
+      StaleBoundaryScanPath: string
+      GeneratedProductValidationPath: string
+      EvidenceGraphReportPath: string
+      EvidenceAuditReportPath: string
       DeferralsPath: string
       CompletedTargets: string list }
 
@@ -85,6 +168,10 @@ type BuildMsg =
     | StartTarget of string
     | TargetCompleted of string
     | TargetFailed of string * string
+    | ProcessHealthCollected of ProcessHealthSnapshot
+    | BootstrapValidated of BootstrapValidation
+    | VerificationVerdictWritten of VerificationVerdict
+    | FocusedGateCompleted of FocusedGateContract
 
 type BuildEffect =
     | EnsureDirectory of string
@@ -102,7 +189,13 @@ type BuildEffect =
     | DependencyOwnershipReport
     | ValidateTemplatePackage of outputPath: string
     | GeneratedGuidanceScan of outputPath: string
+    | CollectProcessHealth of target: string * outputPath: string * verdictPath: string
+    | ValidateRunnerBootstrap of target: string * outputPath: string * verdictPath: string
+    | WriteVerificationVerdict of VerificationVerdict
+    | WriteFocusedGateSummary of FocusedGateContract
+    | CheckFocusedGateAssumptions of FocusedGateContract
     | WriteStructuredReport of label: string * path: string * content: string
+    | WriteStructuredJsonReport of label: string * path: string * content: string
     | WriteFile of path: string * content: string
     | RequireFiles of artifactClass: string * paths: string list
     | WorkflowSelfCheck
@@ -199,6 +292,15 @@ let init root =
           DependencyReportPath = path [ readiness; "dependency-report.md" ]
           GeneratedGuidanceReportPath = path [ readiness; "generated-guidance.md" ]
           TemplateDriftReportPath = path [ readiness; "template-drift.md" ]
+          ProcessHealthPath = path [ readiness; "process-health.md" ]
+          BootstrapRunnerPath = path [ readiness; "bootstrap-runner.md" ]
+          VerificationVerdictsPath = path [ readiness; "verification-verdicts.md" ]
+          FocusedGatesReportPath = path [ readiness; "focused-gates.md" ]
+          GovernanceScannersPath = path [ readiness; "governance-scanners.md" ]
+          StaleBoundaryScanPath = path [ readiness; "stale-boundary-scan.md" ]
+          GeneratedProductValidationPath = path [ readiness; "generated-product-validation.md" ]
+          EvidenceGraphReportPath = path [ readiness; "evidence-graph.md" ]
+          EvidenceAuditReportPath = path [ readiness; "evidence-audit.md" ]
           DeferralsPath = path [ root; "readiness"; "template-deferrals.yml" ]
           CompletedTargets = [] }
 
@@ -305,11 +407,143 @@ let requiredTargets =
       "TemplateDrift"
       "EvidenceGraph"
       "EvidenceAudit"
+      "VerifyPreflight"
+      "CiPreflight"
+      "StaleBoundaryScan"
+      "FinalReadiness"
       "Verify"
       "Ci" ]
 
 let processEffect label fileName arguments workingDirectory outputPath =
     RunProcess(label, fileName, arguments, workingDirectory, outputPath, Map.empty)
+
+let categoryName category =
+    match category with
+    | VerificationSuccess -> "success"
+    | VerificationProductFailure -> "product-failure"
+    | VerificationEnvironmentFailure -> "environment-failure"
+    | VerificationDegraded -> "degraded"
+
+let focusedGateContract model target =
+    let log name = path [ model.LogDir; name ]
+    let readiness name = Some(path [ model.ReadinessDir; name ])
+    let noRestoreControls =
+        [ "requires-restored-project:tests/Controls.Tests/Controls.Tests.fsproj"
+          "requires-built-project:tests/Controls.Tests/Controls.Tests.fsproj" ]
+
+    match target with
+    | "PackageSurfaceCheck" ->
+        { TargetName = target
+          DirectPrerequisites = []
+          Command = "./fake.sh build -t PackageSurfaceCheck"
+          LogPath = log "package-surface-check.txt"
+          ReadinessPath = Some(path [ model.PackageSurfaceReportDir; "index.md" ])
+          StaleAssumptions =
+              [ "requires-restored-project:tests/Package.Tests/Package.Tests.fsproj"
+                "requires-built-project:tests/Package.Tests/Package.Tests.fsproj" ]
+          VerdictCategory = VerificationSuccess }
+    | "FsiTranscripts" ->
+        { TargetName = target
+          DirectPrerequisites = []
+          Command = "./fake.sh build -t FsiTranscripts"
+          LogPath = path [ model.FsiDir; "prelude.txt" ]
+          ReadinessPath = Some model.FsiDir
+          StaleAssumptions = []
+          VerdictCategory = VerificationSuccess }
+    | "ControlsCatalogCheck" ->
+        { TargetName = target
+          DirectPrerequisites = []
+          Command = "./fake.sh build -t ControlsCatalogCheck"
+          LogPath = log "controls-catalog-check.txt"
+          ReadinessPath = readiness "control-catalog.md"
+          StaleAssumptions = noRestoreControls
+          VerdictCategory = VerificationSuccess }
+    | "ControlsInteractionCheck" ->
+        { TargetName = target
+          DirectPrerequisites = []
+          Command = "./fake.sh build -t ControlsInteractionCheck"
+          LogPath = log "controls-interaction-check.txt"
+          ReadinessPath = readiness "interaction-tests.md"
+          StaleAssumptions = noRestoreControls
+          VerdictCategory = VerificationSuccess }
+    | "ControlsRenderingCheck" ->
+        { TargetName = target
+          DirectPrerequisites = []
+          Command = "./fake.sh build -t ControlsRenderingCheck"
+          LogPath = log "controls-rendering-check.txt"
+          ReadinessPath = readiness "layout-rendering.md"
+          StaleAssumptions = noRestoreControls
+          VerdictCategory = VerificationSuccess }
+    | "DependencyReport" ->
+        { TargetName = target
+          DirectPrerequisites = []
+          Command = "./fake.sh build -t DependencyReport"
+          LogPath = log "dependency-report.txt"
+          ReadinessPath = Some model.DependencyReportPath
+          StaleAssumptions = []
+          VerdictCategory = VerificationSuccess }
+    | "TemplateCheck" ->
+        { TargetName = target
+          DirectPrerequisites = [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage"; "TemplateInstantiate"; "TemplateSmoke" ]
+          Command = "./fake.sh build -t TemplateCheck"
+          LogPath = path [ model.TemplateEvidenceDir; "verdict.md" ]
+          ReadinessPath = Some(path [ model.TemplateEvidenceDir; "verdict.md" ])
+          StaleAssumptions = []
+          VerdictCategory = VerificationSuccess }
+    | "GeneratedProductCheck" ->
+        { TargetName = target
+          DirectPrerequisites = [ "CapabilityCheck"; "SkillCheck" ]
+          Command = "./fake.sh build -t GeneratedProductCheck"
+          LogPath = path [ model.GeneratedFileListsDir; "summary.md" ]
+          ReadinessPath = Some(path [ model.GeneratedFileListsDir; "summary.md" ])
+          StaleAssumptions = []
+          VerdictCategory = VerificationSuccess }
+    | "GeneratedGuidanceCheck" ->
+        { TargetName = target
+          DirectPrerequisites = []
+          Command = "./fake.sh build -t GeneratedGuidanceCheck"
+          LogPath = model.GeneratedGuidanceReportPath
+          ReadinessPath = Some model.GeneratedGuidanceReportPath
+          StaleAssumptions = []
+          VerdictCategory = VerificationSuccess }
+    | "TemplateDrift" ->
+        { TargetName = target
+          DirectPrerequisites = []
+          Command = "./fake.sh build -t TemplateDrift"
+          LogPath = log "template-drift.txt"
+          ReadinessPath = Some model.TemplateDriftReportPath
+          StaleAssumptions = []
+          VerdictCategory = VerificationSuccess }
+    | "EvidenceGraph" ->
+        { TargetName = target
+          DirectPrerequisites = []
+          Command = "./fake.sh build -t EvidenceGraph"
+          LogPath = log "evidence-graph.txt"
+          ReadinessPath = Some(path [ model.ReadinessDir; "task-graph.md" ])
+          StaleAssumptions = []
+          VerdictCategory = VerificationSuccess }
+    | "EvidenceAudit" ->
+        { TargetName = target
+          DirectPrerequisites = [ "EvidenceGraph" ]
+          Command = "./fake.sh build -t EvidenceAudit"
+          LogPath = log "evidence-audit.txt"
+          ReadinessPath = Some model.EvidenceAuditReportPath
+          StaleAssumptions = []
+          VerdictCategory = VerificationSuccess }
+    | _ ->
+        { TargetName = target
+          DirectPrerequisites = []
+          Command = $"./fake.sh build -t {target}"
+          LogPath = log $"{target}.txt"
+          ReadinessPath = None
+          StaleAssumptions = []
+          VerdictCategory = VerificationDegraded }
+
+let focusedGateSummary model target =
+    focusedGateContract model target |> WriteFocusedGateSummary
+
+let focusedGateAssumptionCheck model target =
+    focusedGateContract model target |> CheckFocusedGateAssumptions
 
 let templateRows model =
     let row artifact profile projectName =
@@ -364,6 +598,14 @@ let update msg model =
         { model with CompletedTargets = target :: model.CompletedTargets }, []
     | TargetFailed(target, reason) ->
         model, [ WriteFile(path [ model.LogDir; $"{target}-failed.txt" ], reason) ]
+    | ProcessHealthCollected _ ->
+        model, []
+    | BootstrapValidated _ ->
+        model, []
+    | VerificationVerdictWritten _ ->
+        model, []
+    | FocusedGateCompleted _ ->
+        model, []
     | StartTarget "Clean" ->
         model,
         [ CleanDirectoryContents model.LogDir
@@ -414,14 +656,19 @@ let update msg model =
             ) ]
     | StartTarget "PackageSurfaceCheck" ->
         model,
-        [ processEffect "package surface check" "dotnet" "test tests/Package.Tests/Package.Tests.fsproj -m:1" model.RepositoryRoot (path [ model.LogDir; "package-surface-check.txt" ])
+        [ focusedGateAssumptionCheck model "PackageSurfaceCheck"
+          processEffect "package surface check" "dotnet" "test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore" model.RepositoryRoot (path [ model.LogDir; "package-surface-check.txt" ])
           PackageSurfaceReport
-          RequireFiles("stable package surface baselines", [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.KeyboardInput.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.Elmish.txt" ] ]) ]
+          RequireFiles("stable package surface baselines", [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.KeyboardInput.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.Elmish.txt" ] ])
+          focusedGateSummary model "PackageSurfaceCheck" ]
     | StartTarget "FsiTranscripts" ->
         model,
-        fsiScripts
-        |> List.map (fun (name, script) ->
-            processEffect $"dotnet fsi {script}" "dotnet" $"fsi {script}" model.RepositoryRoot (path [ model.FsiDir; $"{name}.txt" ]))
+        [ focusedGateAssumptionCheck model "FsiTranscripts"
+          yield!
+              fsiScripts
+              |> List.map (fun (name, script) ->
+                  processEffect $"dotnet fsi {script}" "dotnet" $"fsi {script}" model.RepositoryRoot (path [ model.FsiDir; $"{name}.txt" ]))
+          focusedGateSummary model "FsiTranscripts" ]
     | StartTarget "SampleContractSmoke" ->
         model,
         sampleSmokeProjects
@@ -446,7 +693,8 @@ let update msg model =
           WriteStructuredReport("template smoke support boundary", path [ model.TemplateEvidenceDir; "non-visual-support.md" ], "# Non-Visual Support\n\nV3 template validation is non-visual. Full visual evidence, release validation, an external template repository, and broader distribution automation remain deferred roadmap work.\n") ]
     | StartTarget "TemplateCheck" ->
         model,
-        [ RequireFiles(
+        [ focusedGateAssumptionCheck model "TemplateCheck"
+          RequireFiles(
               "template validation artifact set",
               [ path [ model.TemplateEvidenceDir; "template-pack.log" ]
                 path [ model.TemplateEvidenceDir; "template-package-contents.md" ]
@@ -463,7 +711,8 @@ let update msg model =
                 path [ model.TemplateEvidenceDir; "package-governed"; "dev.log" ]
                 path [ model.TemplateEvidenceDir; "package-sample-pack"; "dev.log" ] ]
             )
-          WriteStructuredReport("template verdict", path [ model.TemplateEvidenceDir; "verdict.md" ], "# TemplateCheck Verdict\n\nPASS: source/package V3 app, headless-scene, governed, and sample-pack generated projects passed non-visual validation.\n") ]
+          WriteStructuredReport("template verdict", path [ model.TemplateEvidenceDir; "verdict.md" ], "# TemplateCheck Verdict\n\nPASS: source/package V3 app, headless-scene, governed, and sample-pack generated projects passed non-visual validation.\n")
+          focusedGateSummary model "TemplateCheck" ]
     | StartTarget "CapabilityCheck" ->
         model,
         [ CapabilityCatalogCheck
@@ -474,7 +723,8 @@ let update msg model =
           RequireFiles("selected skill report output", [ model.SelectedSkillsReportPath ]) ]
     | StartTarget "GeneratedProductCheck" ->
         model,
-        [ GenerateV3Products
+        [ focusedGateAssumptionCheck model "GeneratedProductCheck"
+          GenerateV3Products
           ScanV3GeneratedProducts
           RequireFiles(
               "generated product file-list reports",
@@ -483,11 +733,10 @@ let update msg model =
                 path [ model.GeneratedFileListsDir; "headless-scene-source.txt" ]
                 path [ model.GeneratedFileListsDir; "governed-source.txt" ]
                 path [ model.GeneratedFileListsDir; "sample-pack-source.txt" ] ]
-            ) ]
+            )
+          focusedGateSummary model "GeneratedProductCheck" ]
     | StartTarget "ControlsCatalogCheck" ->
-        model,
-        [ processEffect "controls catalog tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj -m:1 --no-restore --filter Catalog" model.RepositoryRoot (path [ model.LogDir; "controls-catalog-check.txt" ])
-          WriteStructuredReport("controls catalog", path [ model.ReadinessDir; "control-catalog.md" ], """# Control Catalog
+        let report = """# Control Catalog
 
 PASS: Controls catalog tests verified supported row count, metadata, examples, tests, evidence, accessibility, and Controls-owned chart/graph rows.
 
@@ -497,11 +746,14 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
 - example: `samples/ControlsGallery/Program.fs`
 - checks: `tests/Controls.Tests/CatalogTests.fs`
 - chart-graph-owner: controls
-""") ]
-    | StartTarget "ControlsInteractionCheck" ->
+"""
         model,
-        [ processEffect "controls interaction tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj -m:1 --no-restore --filter Interaction" model.RepositoryRoot (path [ model.LogDir; "controls-interaction-check.txt" ])
-          WriteStructuredReport("controls interactions", path [ model.ReadinessDir; "interaction-tests.md" ], """# Interaction Tests
+        [ focusedGateAssumptionCheck model "ControlsCatalogCheck"
+          processEffect "controls catalog tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj -m:1 --no-build --no-restore --filter Catalog" model.RepositoryRoot (path [ model.LogDir; "controls-catalog-check.txt" ])
+          WriteStructuredReport("controls catalog", path [ model.ReadinessDir; "control-catalog.md" ], report)
+          focusedGateSummary model "ControlsCatalogCheck" ]
+    | StartTarget "ControlsInteractionCheck" ->
+        let report = """# Interaction Tests
 
 PASS: pointer, keyboard, disabled/read-only suppression, exactly-once dispatch, stale handler prevention, text input effects, and MVU update assertions passed.
 
@@ -511,11 +763,14 @@ PASS: pointer, keyboard, disabled/read-only suppression, exactly-once dispatch, 
 - read-only text boxes suppress text-change dispatch
 - text input emits explicit `CommitText` and `RequestClipboardText` effects
 - IME/composition without host support reports `UnsupportedEnvironment`
-""") ]
-    | StartTarget "ControlsRenderingCheck" ->
+"""
         model,
-        [ processEffect "controls rendering tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj -m:1 --no-restore --filter Rendering" model.RepositoryRoot (path [ model.LogDir; "controls-rendering-check.txt" ])
-          WriteStructuredReport("controls rendering", path [ model.ReadinessDir; "layout-rendering.md" ], """# Layout And Rendering
+        [ focusedGateAssumptionCheck model "ControlsInteractionCheck"
+          processEffect "controls interaction tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj -m:1 --no-build --no-restore --filter Interaction" model.RepositoryRoot (path [ model.LogDir; "controls-interaction-check.txt" ])
+          WriteStructuredReport("controls interactions", path [ model.ReadinessDir; "interaction-tests.md" ], report)
+          focusedGateSummary model "ControlsInteractionCheck" ]
+    | StartTarget "ControlsRenderingCheck" ->
+        let report = """# Layout And Rendering
 
 PASS: Controls render evidence covered three viewport sizes, two scale factors, graph/chart controls, and 10,000-item visible-range behavior.
 
@@ -526,28 +781,59 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
 - scrolled-first-index: 250
 - scrolled-visible-range-bound: less than 30 rows
 - environment-diagnostics: none for deterministic scene readback
-""") ]
+"""
+        model,
+        [ focusedGateAssumptionCheck model "ControlsRenderingCheck"
+          processEffect "controls rendering tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj -m:1 --no-build --no-restore --filter Rendering" model.RepositoryRoot (path [ model.LogDir; "controls-rendering-check.txt" ])
+          WriteStructuredReport("controls rendering", path [ model.ReadinessDir; "layout-rendering.md" ], report)
+          focusedGateSummary model "ControlsRenderingCheck" ]
     | StartTarget "DependencyReport" ->
         model,
-        [ DependencyOwnershipReport
+        [ focusedGateAssumptionCheck model "DependencyReport"
+          DependencyOwnershipReport
           processEffect "dependency report" "dotnet" ("fsi scripts/dependency-report.fsx " + quote (path [ model.ReadinessDir; "dependencies.md" ])) model.RepositoryRoot (path [ model.LogDir; "dependency-report.txt" ])
-          RequireFiles("dependency report output", [ model.DependencyReportPath ]) ]
+          RequireFiles("dependency report output", [ model.DependencyReportPath ])
+          focusedGateSummary model "DependencyReport" ]
     | StartTarget "GeneratedGuidanceCheck" ->
         model,
-        [ GeneratedGuidanceScan model.GeneratedGuidanceReportPath
-          RequireFiles("generated guidance report output", [ model.GeneratedGuidanceReportPath ]) ]
+        [ focusedGateAssumptionCheck model "GeneratedGuidanceCheck"
+          GeneratedGuidanceScan model.GeneratedGuidanceReportPath
+          RequireFiles("generated guidance report output", [ model.GeneratedGuidanceReportPath ])
+          focusedGateSummary model "GeneratedGuidanceCheck" ]
     | StartTarget "TemplateDrift" ->
         model,
-        [ processEffect "template drift" "dotnet" $"fsi scripts/template-drift.fsx {quote model.TemplateDriftReportPath}" model.RepositoryRoot (path [ model.LogDir; "template-drift.txt" ])
-          RequireFiles("template drift report output", [ model.TemplateDriftReportPath ]) ]
+        [ focusedGateAssumptionCheck model "TemplateDrift"
+          processEffect "template drift" "dotnet" $"fsi scripts/template-drift.fsx {quote model.TemplateDriftReportPath}" model.RepositoryRoot (path [ model.LogDir; "template-drift.txt" ])
+          RequireFiles("template drift report output", [ model.TemplateDriftReportPath ])
+          focusedGateSummary model "TemplateDrift" ]
     | StartTarget "EvidenceGraph" ->
         model,
-        [ processEffect "speckit evidence graph" ".specify/extensions/evidence/scripts/bash/run-audit.sh" $"{model.FeatureDir} --graph-only" model.RepositoryRoot (path [ model.LogDir; "evidence-graph.txt" ])
-          RequireFiles("task graph output", [ path [ model.ReadinessDir; "task-graph.json" ]; path [ model.ReadinessDir; "task-graph.md" ] ]) ]
+        [ focusedGateAssumptionCheck model "EvidenceGraph"
+          processEffect "speckit evidence graph" ".specify/extensions/evidence/scripts/bash/run-audit.sh" $"{model.FeatureDir} --graph-only" model.RepositoryRoot (path [ model.LogDir; "evidence-graph.txt" ])
+          RequireFiles("task graph output", [ path [ model.ReadinessDir; "task-graph.json" ]; path [ model.ReadinessDir; "task-graph.md" ] ])
+          WriteStructuredReport("evidence graph readiness", model.EvidenceGraphReportPath, "# Evidence Graph Evidence\n\nPASS: `EvidenceGraph` refreshed `task-graph.md` and `task-graph.json`.\n")
+          focusedGateSummary model "EvidenceGraph" ]
     | StartTarget "EvidenceAudit" ->
         model,
-        [ processEffect "speckit evidence audit" ".specify/extensions/evidence/scripts/bash/run-audit.sh" $"{model.FeatureDir}" model.RepositoryRoot (path [ model.LogDir; "evidence-audit.txt" ])
-          RequireFiles("evidence audit output", [ path [ model.LogDir; "evidence-audit.txt" ]; path [ model.ReadinessDir; "diff-scan-hits.json" ] ]) ]
+        [ focusedGateAssumptionCheck model "EvidenceAudit"
+          processEffect "speckit evidence audit" ".specify/extensions/evidence/scripts/bash/run-audit.sh" $"{model.FeatureDir}" model.RepositoryRoot (path [ model.LogDir; "evidence-audit.txt" ])
+          RequireFiles("evidence audit output", [ path [ model.LogDir; "evidence-audit.txt" ]; path [ model.ReadinessDir; "diff-scan-hits.json" ] ])
+          WriteStructuredReport("evidence audit readiness", model.EvidenceAuditReportPath, "# Evidence Audit Evidence\n\nPASS: `EvidenceAudit` completed with synthetic propagation and diff-scan outputs present.\n")
+          focusedGateSummary model "EvidenceAudit" ]
+    | StartTarget "VerifyPreflight" ->
+        model,
+        [ CollectProcessHealth("Verify", model.ProcessHealthPath, model.VerificationVerdictsPath)
+          ValidateRunnerBootstrap("Verify", model.BootstrapRunnerPath, model.VerificationVerdictsPath) ]
+    | StartTarget "CiPreflight" ->
+        model,
+        [ CollectProcessHealth("Ci", model.ProcessHealthPath, model.VerificationVerdictsPath)
+          ValidateRunnerBootstrap("Ci", model.BootstrapRunnerPath, model.VerificationVerdictsPath) ]
+    | StartTarget "StaleBoundaryScan" ->
+        model,
+        [ WriteStructuredReport("stale boundary scan", model.StaleBoundaryScanPath, "# Stale Boundary Scan Evidence\n\nStatus: pending scanner implementation.\n\n- rule-id: stale-boundary-scan\n- classification: degraded\n- remediation-action: implement active-tree stale reference scanner before final readiness.\n") ]
+    | StartTarget "FinalReadiness" ->
+        model,
+        [ WriteStructuredReport("final readiness", model.EvidenceAuditReportPath, "# Evidence Audit Evidence\n\nStatus: waiting for `EvidenceAudit` and healthy broad aggregate evidence.\n") ]
     | StartTarget "Verify" ->
         model,
         [ RequireFiles(
@@ -593,10 +879,34 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
                 model.TemplateDriftReportPath
                 path [ model.TemplateEvidenceDir; "verdict.md" ] ]
             )
+          WriteVerificationVerdict
+              { Category = VerificationSuccess
+                Target = "Verify"
+                Stage = "final"
+                ExitCode = Some 0
+                ProductChecksRun = [ "Dev"; "PackageSurfaceCheck"; "FsiTranscripts"; "ControlsCatalogCheck"; "ControlsInteractionCheck"; "ControlsRenderingCheck"; "DependencyReport"; "TemplateCheck"; "GeneratedProductCheck"; "GeneratedGuidanceCheck"; "TemplateDrift"; "EvidenceAudit" ]
+                ProductFailures = []
+                EnvironmentFailures = []
+                HealthSnapshotPath = model.ProcessHealthPath
+                LogPath = path [ model.LogDir; "verify-verdict.txt" ]
+                RecommendedRerunEnvironment = "fresh shell, fresh container, or CI runner"
+                AuthoritativeProductEvidence = true }
           WriteStructuredReport("verify verdict", path [ model.LogDir; "verify-verdict.txt" ], "Verify target completed with v1 and v2 artifact classes present.\n") ]
     | StartTarget "Ci" ->
         model,
-        [ WriteStructuredReport("ci verdict", path [ model.LogDir; "ci-verdict.txt" ], "Ci delegates to Verify and completed without duplicating command order.\n") ]
+        [ WriteVerificationVerdict
+              { Category = VerificationSuccess
+                Target = "Ci"
+                Stage = "final"
+                ExitCode = Some 0
+                ProductChecksRun = [ "Verify" ]
+                ProductFailures = []
+                EnvironmentFailures = []
+                HealthSnapshotPath = model.ProcessHealthPath
+                LogPath = path [ model.LogDir; "ci-verdict.txt" ]
+                RecommendedRerunEnvironment = "fresh shell, fresh container, or CI runner"
+                AuthoritativeProductEvidence = true }
+          WriteStructuredReport("ci verdict", path [ model.LogDir; "ci-verdict.txt" ], "Ci delegates to Verify and completed without duplicating command order.\n") ]
     | StartTarget "PackageSmoke" ->
         model,
         [ RunProcess(
@@ -714,6 +1024,472 @@ let requireFiles (artifactClass: string) (paths: string list) =
     if missing.Length > 0 then
         let detail = String.Join(Environment.NewLine, missing)
         failwithf "Missing %s:%s%s" artifactClass Environment.NewLine detail
+
+let tryParseInt64 value =
+    let mutable parsed = 0L
+
+    if Int64.TryParse(value, &parsed) then
+        Some parsed
+    else
+        None
+
+let tryReadLinuxMemAvailableMb () =
+    let meminfo = "/proc/meminfo"
+
+    if File.Exists meminfo then
+        File.ReadAllLines meminfo
+        |> Array.tryPick (fun line ->
+            if line.StartsWith("MemAvailable:", StringComparison.Ordinal) then
+                line.Split([| ' '; '\t' |], StringSplitOptions.RemoveEmptyEntries)
+                |> Array.tryItem 1
+                |> Option.bind tryParseInt64
+                |> Option.map (fun kb -> kb / 1024L)
+            else
+                None)
+    else
+        None
+
+let tryReadProcLimit (name: string) =
+    let limits = "/proc/self/limits"
+
+    if File.Exists limits then
+        File.ReadAllLines limits
+        |> Array.tryPick (fun line ->
+            if line.StartsWith(name, StringComparison.Ordinal) then
+                let remainder = line.Substring(name.Length).Trim()
+                let soft =
+                    remainder.Split([| ' '; '\t' |], StringSplitOptions.RemoveEmptyEntries)
+                    |> Array.tryHead
+
+                match soft with
+                | Some "unlimited" -> None
+                | Some value -> tryParseInt64 value
+                | None -> None
+            else
+                None)
+    else
+        None
+
+let tryCountOpenFileDescriptors () =
+    let fd = "/proc/self/fd"
+
+    if Directory.Exists fd then
+        try
+            Directory.GetFiles(fd).Length |> int64 |> Some
+        with _ ->
+            None
+    else
+        None
+
+let tryZombieProcessCount () =
+    let proc = "/proc"
+
+    if Directory.Exists proc then
+        try
+            Directory.GetDirectories proc
+            |> Array.choose (fun directory ->
+                let name = Path.GetFileName directory
+                let isPid = name |> Seq.forall Char.IsDigit
+
+                if isPid then
+                    let statPath = path [ directory; "stat" ]
+
+                    try
+                        if File.Exists statPath then
+                            let stat = File.ReadAllText statPath
+                            let closeParen = stat.LastIndexOf(')')
+
+                            if closeParen >= 0 && stat.Length > closeParen + 2 && stat.[closeParen + 2] = 'Z' then
+                                Some 1
+                            else
+                                Some 0
+                        else
+                            Some 0
+                    with _ ->
+                        Some 0
+                else
+                    None)
+            |> Array.sum
+            |> Some
+        with _ ->
+            None
+    else
+        None
+
+let runShortCommand workingDirectory fileName arguments timeoutMs =
+    let startInfo = ProcessStartInfo(fileName, arguments)
+    startInfo.WorkingDirectory <- workingDirectory
+    startInfo.RedirectStandardOutput <- true
+    startInfo.RedirectStandardError <- true
+    startInfo.UseShellExecute <- false
+
+    try
+        use proc =
+            match Process.Start startInfo |> Option.ofObj with
+            | Some proc -> proc
+            | None -> failwithf "Could not start %s %s" fileName arguments
+
+        let stdoutTask = proc.StandardOutput.ReadToEndAsync()
+        let stderrTask = proc.StandardError.ReadToEndAsync()
+
+        if proc.WaitForExit timeoutMs then
+            proc.ExitCode, stdoutTask.Result + stderrTask.Result
+        else
+            proc.Kill()
+            -1, $"Timed out after {timeoutMs}ms"
+    with ex ->
+        -1, ex.Message
+
+let thresholdDecision ruleId signal defaultValue comparison actualValue envVar platform =
+    let overrideText = Environment.GetEnvironmentVariable envVar
+    let reasonText = Environment.GetEnvironmentVariable(envVar + "_REASON")
+
+    let overrideValue, overrideSource, overrideReason, overrideDiagnostic =
+        if String.IsNullOrWhiteSpace overrideText then
+            None, None, None, None
+        else
+            match tryParseInt64 overrideText with
+            | None ->
+                None,
+                Some envVar,
+                (if String.IsNullOrWhiteSpace reasonText then None else Some reasonText),
+                Some $"malformed threshold override {envVar}={overrideText}"
+            | Some value when String.IsNullOrWhiteSpace reasonText ->
+                Some value, Some envVar, None, Some $"threshold override {envVar} requires {envVar}_REASON"
+            | Some value -> Some value, Some envVar, Some reasonText, None
+
+    let threshold = overrideValue |> Option.defaultValue defaultValue
+
+    let passed =
+        match overrideDiagnostic, actualValue with
+        | Some _, _ -> Some false
+        | None, None -> None
+        | None, Some actual when comparison = ">=" -> Some(actual >= threshold)
+        | None, Some actual when comparison = "<=" -> Some(actual <= threshold)
+        | None, Some _ -> Some false
+
+    let diagnostic =
+        match overrideDiagnostic, actualValue, passed with
+        | Some diagnostic, _, _ -> Some diagnostic
+        | None, None, _ -> Some $"unsupported signal {signal} on {platform}"
+        | None, Some actual, Some false -> Some $"{ruleId} failed: {signal} actual {actual} must be {comparison} {threshold}"
+        | _ -> None
+
+    { RuleId = ruleId
+      SignalName = signal
+      DefaultValue = defaultValue
+      Comparison = comparison
+      ActualValue = actualValue
+      OverrideValue = overrideValue
+      OverrideSource = overrideSource
+      OverrideReason = overrideReason
+      PlatformApplicability = platform
+      Passed = passed
+      Diagnostic = diagnostic }
+
+let markdownOption value unit =
+    match value with
+    | Some number -> $"{number}{unit}"
+    | None -> "unsupported"
+
+let writeVerificationVerdictReport outputPath verdict =
+    ensureParent outputPath
+    let exitCode = verdict.ExitCode |> Option.map string |> Option.defaultValue "n/a"
+    let productChecksRun = if verdict.ProductChecksRun.IsEmpty then "(none)" else String.Join(", ", verdict.ProductChecksRun)
+    let productFailures = if verdict.ProductFailures.IsEmpty then "(none)" else String.Join(", ", verdict.ProductFailures)
+    let environmentFailures = if verdict.EnvironmentFailures.IsEmpty then "(none)" else String.Join(", ", verdict.EnvironmentFailures)
+
+    let content =
+        [ $"## {verdict.Target} {verdict.Stage}"
+          ""
+          $"- verdict-category: `{categoryName verdict.Category}`"
+          $"- authoritative-product-evidence: `{verdict.AuthoritativeProductEvidence}`"
+          $"- exit-code: `{exitCode}`"
+          $"- health-snapshot-path: `{verdict.HealthSnapshotPath}`"
+          $"- log-path: `{verdict.LogPath}`"
+          $"- recommended-rerun-environment: {verdict.RecommendedRerunEnvironment}"
+          $"- product-checks-run: {productChecksRun}"
+          $"- product-failures: {productFailures}"
+          $"- environment-failures: {environmentFailures}"
+          "" ]
+        |> String.concat Environment.NewLine
+
+    if File.Exists outputPath && File.ReadAllText(outputPath).StartsWith("# Verification Verdict Evidence", StringComparison.Ordinal) then
+        File.AppendAllText(outputPath, content + Environment.NewLine)
+    else
+        File.WriteAllText(outputPath, "# Verification Verdict Evidence" + Environment.NewLine + Environment.NewLine + content + Environment.NewLine)
+
+let collectProcessHealth root target outputPath verdictPath =
+    let stopwatch = Stopwatch.StartNew()
+    let timestamp = DateTimeOffset.UtcNow
+    let platform = RuntimeInformation.OSDescription
+    let availableMemory = tryReadLinuxMemAvailableMb ()
+    let processCount =
+        try
+            Process.GetProcesses().Length |> Some
+        with _ ->
+            None
+
+    let zombieCount = tryZombieProcessCount ()
+    let threadLimit = tryReadProcLimit "Max processes"
+    let threadHeadroom = Option.map2 (fun limit processes -> limit - int64 processes) threadLimit processCount
+    let fdLimit = tryReadProcLimit "Max open files"
+    let fdHeadroom = Option.map2 (fun limit used -> limit - used) fdLimit (tryCountOpenFileDescriptors ())
+    let dotnetExit, dotnetOutput = runShortCommand root "dotnet" "--info" 15000
+    let dotnetStartup = if dotnetExit = 0 then "pass" else $"failed: {dotnetOutput}"
+    let fakeBootstrap =
+        if File.Exists(path [ root; "fake.sh" ])
+           && File.Exists(path [ root; ".config"; "dotnet-tools.json" ])
+           && Directory.Exists(path [ Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); ".nuget"; "packages"; "fsharp.core"; "6.0.7" ]) then
+            "pass"
+        else
+            "failed: fake wrapper, tool manifest, or FSharp.Core 6.0.7 package cache is missing"
+
+    let thresholds =
+        [ thresholdDecision "process-health.available-memory" "available-memory-mb" 128L ">=" availableMemory "FS_SKIA_PROCESS_MIN_AVAILABLE_MEMORY_MB" platform
+          thresholdDecision "process-health.process-count" "process-count" 4096L "<=" (processCount |> Option.map int64) "FS_SKIA_PROCESS_MAX_PROCESS_COUNT" platform
+          thresholdDecision "process-health.zombie-count" "zombie-process-count" 2048L "<=" (zombieCount |> Option.map int64) "FS_SKIA_PROCESS_MAX_ZOMBIE_COUNT" platform
+          thresholdDecision "process-health.file-descriptor-headroom" "file-descriptor-headroom" 64L ">=" fdHeadroom "FS_SKIA_PROCESS_MIN_FD_HEADROOM" platform ]
+
+    let unsupported =
+        [ if availableMemory.IsNone then "available-memory-mb"
+          if processCount.IsNone then "process-count"
+          if zombieCount.IsNone then "zombie-process-count"
+          if threadLimit.IsNone then "thread-limit"
+          if threadHeadroom.IsNone then "thread-headroom"
+          if fdLimit.IsNone then "file-descriptor-limit"
+          if fdHeadroom.IsNone then "file-descriptor-headroom" ]
+
+    let diagnostics =
+        [ if dotnetExit <> 0 then $"dotnet startup failed: {dotnetOutput}"
+          if fakeBootstrap <> "pass" then fakeBootstrap
+          yield!
+              thresholds
+              |> List.choose (fun threshold ->
+                  match threshold.Passed, threshold.Diagnostic with
+                  | Some false, Some diagnostic -> Some diagnostic
+                  | _ -> None) ]
+
+    stopwatch.Stop()
+
+    let failFast = not diagnostics.IsEmpty
+
+    let snapshot =
+        { TimestampUtc = timestamp
+          TargetName = target
+          Stage = "preflight"
+          Platform = platform
+          AvailableMemoryMb = availableMemory
+          ProcessCount = processCount
+          ZombieProcessCount = zombieCount
+          ThreadLimit = threadLimit
+          ThreadHeadroom = threadHeadroom
+          FileDescriptorLimit = fdLimit
+          FileDescriptorHeadroom = fdHeadroom
+          DotnetStartup = dotnetStartup
+          FakeBootstrap = fakeBootstrap
+          UnsupportedSignals = unsupported
+          Thresholds = thresholds
+          PreflightElapsedMs = stopwatch.ElapsedMilliseconds
+          FailFast = failFast
+          Diagnostics = diagnostics }
+
+    let report =
+        let availableMemoryText = markdownOption snapshot.AvailableMemoryMb " MB"
+        let processCountText = snapshot.ProcessCount |> Option.map string |> Option.defaultValue "unsupported"
+        let zombieProcessCountText = snapshot.ZombieProcessCount |> Option.map string |> Option.defaultValue "unsupported"
+        let threadLimitText = snapshot.ThreadLimit |> Option.map string |> Option.defaultValue "unsupported"
+        let threadHeadroomText = snapshot.ThreadHeadroom |> Option.map string |> Option.defaultValue "unsupported"
+        let fileDescriptorLimitText = snapshot.FileDescriptorLimit |> Option.map string |> Option.defaultValue "unsupported"
+        let fileDescriptorHeadroomText = snapshot.FileDescriptorHeadroom |> Option.map string |> Option.defaultValue "unsupported"
+        let unsupportedSignalsText = if snapshot.UnsupportedSignals.IsEmpty then "(none)" else String.Join(", ", snapshot.UnsupportedSignals)
+
+        [ "# Process Health Evidence"
+          ""
+          $"## {snapshot.TargetName} {snapshot.Stage}"
+          ""
+          $"- timestamp-utc: `{snapshot.TimestampUtc:O}`"
+          $"- target: `{snapshot.TargetName}`"
+          $"- platform: `{snapshot.Platform}`"
+          $"- available-memory: `{availableMemoryText}`"
+          $"- process-count: `{processCountText}`"
+          $"- zombie-process-count: `{zombieProcessCountText}`"
+          $"- thread-limit: `{threadLimitText}`"
+          $"- thread-headroom: `{threadHeadroomText}`"
+          $"- file-descriptor-limit: `{fileDescriptorLimitText}`"
+          $"- file-descriptor-headroom: `{fileDescriptorHeadroomText}`"
+          $"- dotnet-startup: `{snapshot.DotnetStartup}`"
+          $"- fake-bootstrap: `{snapshot.FakeBootstrap}`"
+          $"- preflight-elapsed-ms: `{snapshot.PreflightElapsedMs}`"
+          $"- fail-fast: `{snapshot.FailFast}`"
+          $"- unsupported-signals: {unsupportedSignalsText}"
+          ""
+          "| Rule id | Signal | Actual | Default | Override | Reason | Decision | Diagnostic |"
+          "|---------|--------|--------|---------|----------|--------|----------|------------|"
+          yield!
+              snapshot.Thresholds
+              |> List.map (fun threshold ->
+                  let actual = threshold.ActualValue |> Option.map string |> Option.defaultValue "unsupported"
+                  let overrideValue = threshold.OverrideValue |> Option.map string |> Option.defaultValue ""
+                  let reason = threshold.OverrideReason |> Option.defaultValue ""
+                  let decision =
+                      threshold.Passed
+                      |> Option.map (fun passed -> if passed then "pass" else "fail")
+                      |> Option.defaultValue "unsupported"
+                  let diagnostic = threshold.Diagnostic |> Option.defaultValue ""
+                  $"| `{threshold.RuleId}` | {threshold.SignalName} | {actual} | {threshold.Comparison} {threshold.DefaultValue} | {overrideValue} | {reason} | {decision} | {diagnostic} |")
+          ""
+          "Diagnostics:"
+          if snapshot.Diagnostics.IsEmpty then
+              "- none"
+          else
+              yield! snapshot.Diagnostics |> List.map (fun diagnostic -> $"- {diagnostic}") ]
+        |> String.concat Environment.NewLine
+
+    File.WriteAllText(outputPath, report + Environment.NewLine)
+
+    if failFast then
+        let verdict =
+            { Category = VerificationEnvironmentFailure
+              Target = target
+              Stage = "preflight"
+              ExitCode = Some 1
+              ProductChecksRun = []
+              ProductFailures = []
+              EnvironmentFailures = diagnostics
+              HealthSnapshotPath = outputPath
+              LogPath = outputPath
+              RecommendedRerunEnvironment = "fresh shell, fresh container, or CI runner"
+              AuthoritativeProductEvidence = false }
+
+        writeVerificationVerdictReport verdictPath verdict
+        failwithf "%s process-health preflight failed with environment-failure:%s%s" target Environment.NewLine (String.Join(Environment.NewLine, diagnostics))
+
+let validateRunnerBootstrap root target outputPath verdictPath =
+    let timestamp = DateTimeOffset.UtcNow
+    let dotnetExit, dotnetOutput = runShortCommand root "dotnet" "--info" 15000
+    let toolExit, toolOutput = runShortCommand root "dotnet" "tool restore" 60000
+    let wrapperExists = File.Exists(path [ root; "fake.sh" ]) && File.Exists(path [ root; "fake.cmd" ])
+    let packageCacheExists = Directory.Exists(path [ Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); ".nuget"; "packages"; "fsharp.core"; "6.0.7" ])
+    let passed = dotnetExit = 0 && toolExit = 0 && wrapperExists && packageCacheExists
+
+    let recommended =
+        if passed then
+            None
+        else
+            Some "Run `dotnet tool restore`, clear stale `.fake/build.fsx/paket-files/paket.restore.cached` if needed, and rerun in a fresh shell, fresh container, or CI runner."
+
+    let validation =
+        { TargetName = target
+          TimestampUtc = timestamp
+          DotnetSdkStatus = if dotnetExit = 0 then "pass" else $"failed: {dotnetOutput}"
+          FakeToolRestoreStatus = if toolExit = 0 then "pass" else $"failed: {toolOutput}"
+          PackageCacheStatus = if packageCacheExists then "pass" else "failed: missing ~/.nuget/packages/fsharp.core/6.0.7"
+          WrapperStatus = if wrapperExists then "pass" else "failed: fake.sh or fake.cmd missing"
+          WarningClassification = "runner-warning-classification: repeated netstandard script-load warning is warning-noise unless target exits nonzero; CoreCLR/VSTest/socket/thread startup failures are environment-failure evidence"
+          RecommendedAction = recommended
+          LogPath = outputPath
+          Passed = passed }
+
+    let remediation = validation.RecommendedAction |> Option.defaultValue "(none)"
+
+    let report =
+        [ "# Bootstrap Runner Evidence"
+          ""
+          $"- target: `{validation.TargetName}`"
+          $"- timestamp-utc: `{validation.TimestampUtc:O}`"
+          $"- dotnet-sdk-status: `{validation.DotnetSdkStatus}`"
+          $"- fake-tool-restore-status: `{validation.FakeToolRestoreStatus}`"
+          $"- package-cache-status: `{validation.PackageCacheStatus}`"
+          $"- wrapper-status: `{validation.WrapperStatus}`"
+          $"- warning-classification: {validation.WarningClassification}"
+          $"- passed: `{validation.Passed}`"
+          $"- remediation-command: {remediation}" ]
+        |> String.concat Environment.NewLine
+
+    File.WriteAllText(outputPath, report + Environment.NewLine)
+
+    if not passed then
+        let failures =
+            [ validation.DotnetSdkStatus
+              validation.FakeToolRestoreStatus
+              validation.PackageCacheStatus
+              validation.WrapperStatus ]
+            |> List.filter (fun status -> status.StartsWith("failed", StringComparison.Ordinal))
+
+        let verdict =
+            { Category = VerificationEnvironmentFailure
+              Target = target
+              Stage = "bootstrap"
+              ExitCode = Some 1
+              ProductChecksRun = []
+              ProductFailures = []
+              EnvironmentFailures = failures
+              HealthSnapshotPath = outputPath
+              LogPath = outputPath
+              RecommendedRerunEnvironment = "fresh shell, fresh container, or CI runner"
+              AuthoritativeProductEvidence = false }
+
+        writeVerificationVerdictReport verdictPath verdict
+        failwithf "%s bootstrap validation failed with environment-failure:%s%s" target Environment.NewLine (String.Join(Environment.NewLine, failures))
+
+let checkFocusedGateAssumptions root (contract: FocusedGateContract) =
+    contract.StaleAssumptions
+    |> List.iter (fun assumption ->
+        if assumption.StartsWith("requires-restored-project:", StringComparison.Ordinal) then
+            let project = assumption.Substring("requires-restored-project:".Length)
+            let projectDir = Path.GetDirectoryName(path [ root; project ])
+            let assets = path [ projectDir; "obj"; "project.assets.json" ]
+
+            if not (File.Exists assets) then
+                failwithf "stale-build-restore-assumption: affected-gate=%s remediation-command=`dotnet restore %s` missing `%s`" contract.TargetName project assets
+        elif assumption.StartsWith("requires-built-project:", StringComparison.Ordinal) then
+            let project = assumption.Substring("requires-built-project:".Length)
+            let projectDir = Path.GetDirectoryName(path [ root; project ])
+            let projectName = Path.GetFileNameWithoutExtension project
+            let assembly = path [ projectDir; "bin"; "Debug"; "net10.0"; $"{projectName}.dll" ]
+
+            if not (File.Exists assembly) then
+                failwithf "stale-build-restore-assumption: affected-gate=%s remediation-command=`dotnet build %s` missing `%s`" contract.TargetName project assembly)
+
+let appendFocusedGateSummary outputPath (contract: FocusedGateContract) =
+    ensureParent outputPath
+
+    let prerequisites =
+        if contract.DirectPrerequisites.IsEmpty then
+            "(none)"
+        else
+            String.Join(", ", contract.DirectPrerequisites)
+
+    let assumptions =
+        if contract.StaleAssumptions.IsEmpty then
+            "(none)"
+        else
+            String.Join(", ", contract.StaleAssumptions)
+
+    let readiness =
+        contract.ReadinessPath |> Option.defaultValue "(none)"
+
+    let content =
+        [ $"## {contract.TargetName}"
+          ""
+          $"- command: `{contract.Command}`"
+          $"- direct-prerequisites: {prerequisites}"
+          $"- timestamp-utc: `{DateTimeOffset.UtcNow:O}`"
+          $"- log-path: `{contract.LogPath}`"
+          $"- readiness-path: `{readiness}`"
+          $"- verdict-category: `{categoryName contract.VerdictCategory}`"
+          $"- stale-build-restore-assumptions: {assumptions}"
+          $"- failure-rule: `stale-build-restore-assumption`"
+          $"- affected-gate: `{contract.TargetName}`"
+          $"- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale"
+          "" ]
+        |> String.concat Environment.NewLine
+
+    if File.Exists outputPath && File.ReadAllText(outputPath).StartsWith("# Focused Gates Evidence", StringComparison.Ordinal) then
+        File.AppendAllText(outputPath, content + Environment.NewLine)
+    else
+        File.WriteAllText(outputPath, "# Focused Gates Evidence" + Environment.NewLine + Environment.NewLine + content + Environment.NewLine)
 
 let relativePathFrom root filePath =
     let rootPath =
@@ -2069,7 +2845,10 @@ let runGeneratedGuidanceScan model outputPath =
 let workflowSelfCheck (root: string) =
     let model, initEffects = init root
     let _, restoreEffects = update (StartTarget "Restore") model
+    let _, verifyPreflightEffects = update (StartTarget "VerifyPreflight") model
+    let _, ciPreflightEffects = update (StartTarget "CiPreflight") model
     let _, verifyEffects = update (StartTarget "Verify") model
+    let _, focusedEffects = update (StartTarget "ControlsRenderingCheck") model
     let _, templatePackEffects = update (StartTarget "TemplatePack") model
     let _, templateSmokeEffects = update (StartTarget "TemplateSmoke") model
 
@@ -2078,6 +2857,21 @@ let workflowSelfCheck (root: string) =
 
     if restoreEffects |> List.exists (function RunDotnetAction(label, _, _, _, _, _) when label = "dotnet restore" -> true | _ -> false) |> not then
         failwith "Restore must emit a dotnet restore workflow effect"
+
+    if verifyPreflightEffects |> List.exists (function CollectProcessHealth("Verify", _, _) -> true | _ -> false) |> not then
+        failwith "VerifyPreflight must emit process-health collection before broad work"
+
+    if verifyPreflightEffects |> List.exists (function ValidateRunnerBootstrap("Verify", _, _) -> true | _ -> false) |> not then
+        failwith "VerifyPreflight must emit bootstrap validation before broad work"
+
+    if ciPreflightEffects |> List.exists (function CollectProcessHealth("Ci", _, _) -> true | _ -> false) |> not then
+        failwith "CiPreflight must emit process-health collection before broad work"
+
+    if focusedEffects |> List.exists (function CheckFocusedGateAssumptions contract when contract.TargetName = "ControlsRenderingCheck" -> true | _ -> false) |> not then
+        failwith "Focused gates must emit stale build/restore assumption checks"
+
+    if focusedEffects |> List.exists (function WriteFocusedGateSummary contract when contract.TargetName = "ControlsRenderingCheck" -> true | _ -> false) |> not then
+        failwith "Focused gates must emit focused gate summaries"
 
     if templatePackEffects |> List.exists (function ValidateTemplatePackage _ -> true | _ -> false) |> not then
         failwith "TemplatePack must validate the local template package artifact"
@@ -2092,6 +2886,8 @@ let workflowSelfCheck (root: string) =
 
     if completedEffects <> [] then
         failwith "TargetCompleted must be a pure state transition with no effects"
+
+    printfn "process reliability self-check: preflight, bootstrap, verdict, and focused gate effects are pure"
 
 // BUILD SECTION: interpreter
 
@@ -2116,7 +2912,15 @@ let interpret root effect =
     | DependencyOwnershipReport -> runDependencyOwnershipReport model
     | ValidateTemplatePackage outputPath -> validateTemplatePackage model outputPath
     | GeneratedGuidanceScan outputPath -> runGeneratedGuidanceScan model outputPath
+    | CollectProcessHealth(target, outputPath, verdictPath) -> collectProcessHealth root target outputPath verdictPath
+    | ValidateRunnerBootstrap(target, outputPath, verdictPath) -> validateRunnerBootstrap root target outputPath verdictPath
+    | WriteVerificationVerdict verdict -> writeVerificationVerdictReport model.VerificationVerdictsPath verdict
+    | WriteFocusedGateSummary contract -> appendFocusedGateSummary model.FocusedGatesReportPath contract
+    | CheckFocusedGateAssumptions contract -> checkFocusedGateAssumptions root contract
     | WriteStructuredReport(_, path, content) ->
+        ensureParent path
+        File.WriteAllText(path, content)
+    | WriteStructuredJsonReport(_, path, content) ->
         ensureParent path
         File.WriteAllText(path, content)
     | WriteFile(path, content) ->
@@ -2155,7 +2959,7 @@ let targetDependencies =
           "TemplateInstantiate", [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage" ]
           "TemplateSmoke", [ "TemplateInstantiate" ]
           // V2 compatibility expectation: "TemplateCheck", [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage"; "TemplateInstantiate"; "TemplateSmoke" ]
-          "TemplateCheck", [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage"; "TemplateInstantiate"; "TemplateSmoke"; "GeneratedProductCheck" ]
+          "TemplateCheck", [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage"; "TemplateInstantiate"; "TemplateSmoke" ]
           "CapabilityCheck", []
           "SkillCheck", [ "CapabilityCheck" ]
           "GeneratedProductCheck", [ "CapabilityCheck"; "SkillCheck" ]
@@ -2167,8 +2971,13 @@ let targetDependencies =
           "TemplateDrift", []
           "EvidenceGraph", []
           "EvidenceAudit", [ "EvidenceGraph" ]
+          "VerifyPreflight", []
+          "CiPreflight", []
+          "StaleBoundaryScan", []
+          "FinalReadiness", [ "EvidenceAudit" ]
           "Verify",
-          [ "Dev"
+          [ "VerifyPreflight"
+            "Dev"
             "PackLocal"
             "PackageSurfaceCheck"
             "FsiTranscripts"
@@ -2184,7 +2993,7 @@ let targetDependencies =
             "GeneratedGuidanceCheck"
             "TemplateDrift"
             "EvidenceAudit" ]
-          "Ci", [ "Verify" ]
+          "Ci", [ "CiPreflight"; "Verify" ]
           "PackageSmoke", [ "PackageSurfaceCheck" ]
           "BuildWorkflowCheck", [] ]
 

@@ -29,6 +29,12 @@ type Msg =
     | SaveRequested
     | GridSelectionChanged of string
 
+type Model =
+    { Name: string
+      Revenue: ChartSeries list
+      Columns: DataGridColumn list
+      Rows: DataGridRow list }
+
 let view model : Control<Msg> =
     Stack.create [
         Stack.children [
@@ -40,12 +46,15 @@ let view model : Control<Msg> =
                 Button.text "Save"
                 Button.onClick SaveRequested
             ]
-            LineChart.create [
-                LineChart.series [ "Revenue", model.Revenue ]
-            ]
-            DataGrid.create [
-                DataGrid.columns model.Columns
+            LineChart.create [ LineChart.series model.Revenue ]
+            GraphView.create [ GraphView.nodes [ "form"; "chart"; "grid" ] ]
+            DataGrid.create model.Columns [
                 DataGrid.rows model.Rows
+                DataGrid.visibleRange {
+                    FirstIndex = 0
+                    Count = model.Rows.Length
+                    Total = model.Rows.Length
+                }
             ]
         ]
     ]

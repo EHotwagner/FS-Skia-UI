@@ -23,7 +23,10 @@ Run `dotnet test tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj` and `./fake.sh 
 
 ## Evidence
 
-Capture real viewer command or package evidence under `specs/009-v3-modular-framework/readiness/package-surfaces/`. Disclose synthetic native evidence if a platform window system is unavailable.
+Capture real viewer command or package evidence under the active feature
+readiness package-surface reports. Stable public surface baselines live under
+`readiness/surface-baselines/`. Disclose synthetic native evidence if a
+platform window system is unavailable.
 
 ## Package Boundary
 

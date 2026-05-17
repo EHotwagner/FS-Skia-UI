@@ -23,7 +23,9 @@ Run `dotnet test tests/KeyboardInput.Tests/KeyboardInput.Tests.fsproj` and `./fa
 
 ## Evidence
 
-Capture reducer transition and emitted effect evidence under `specs/009-v3-modular-framework/readiness/package-surfaces/`.
+Capture reducer transition and emitted effect evidence under the active feature
+readiness package-surface reports. Stable public surface baselines live under
+`readiness/surface-baselines/`.
 
 ## Package Boundary
 

@@ -31,6 +31,12 @@ type Msg =
     | SaveRequested
     | GridSelectionChanged of string
 
+type Model =
+    { Name: string
+      Revenue: ChartSeries list
+      Columns: DataGridColumn list
+      Rows: DataGridRow list }
+
 let view model : Control<Msg> =
     Stack.create [
         Stack.children [
@@ -42,12 +48,15 @@ let view model : Control<Msg> =
                 Button.text "Save"
                 Button.onClick SaveRequested
             ]
-            LineChart.create [
-                LineChart.series [ "Revenue", model.Revenue ]
-            ]
-            DataGrid.create [
-                DataGrid.columns model.Columns
+            LineChart.create [ LineChart.series model.Revenue ]
+            GraphView.create [ GraphView.nodes [ "form"; "chart"; "grid" ] ]
+            DataGrid.create model.Columns [
                 DataGrid.rows model.Rows
+                DataGrid.visibleRange {
+                    FirstIndex = 0
+                    Count = model.Rows.Length
+                    Total = model.Rows.Length
+                }
             ]
         ]
     ]
@@ -60,9 +69,12 @@ wiring at the product edge.
 ## Build Commands
 
 Run `./fake.sh build -t Dev` for normal development and
-`./fake.sh build -t Verify` before readiness sign-off. Use
-`./fake.sh build -t PackLocal` and `./fake.sh build -t PackageSurfaceCheck`
-when changing `.fsi` files.
+`./fake.sh build -t VerifyPreflight` before broad verification. Run
+`./fake.sh build -t Verify` before readiness sign-off. Use `./fake.sh build -t
+PackLocal` and `./fake.sh build -t PackageSurfaceCheck` when changing `.fsi`
+files. If `Verify` or `Ci` reports `environment-failure`, focused gates are
+diagnostic only; final readiness needs a later healthy broad pass in a fresh
+shell, fresh container, or CI runner.
 
 ## Test Commands
 
@@ -73,11 +85,12 @@ coverage. The governed targets are `./fake.sh build -t ControlsCatalogCheck`,
 
 ## Evidence
 
-Update `specs/010-skia-controls-library/readiness/control-catalog.md`,
-`semantic-tests.md`, `interaction-tests.md`, `layout-rendering.md`,
-`public-surface.md`, and generated-product evidence when behavior or public
-surface changes. Supported catalog rows need purpose, attributes, events,
-visual states, accessibility metadata, examples, tests, and evidence.
+Update the active feature readiness reports for control catalog, semantic
+tests, interaction tests, layout/rendering, public surface, and generated
+product evidence when behavior or public surface changes. Stable public
+surface baselines live under `readiness/surface-baselines/`. Supported catalog
+rows need purpose, attributes, events, visual states, accessibility metadata,
+examples, tests, and evidence.
 
 ## Package Boundary
 

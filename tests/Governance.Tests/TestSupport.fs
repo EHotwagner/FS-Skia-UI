@@ -329,6 +329,98 @@ let expectPathsExist context paths =
 let expectFakeTarget target =
     Expect.stringContains (read "build.fsx") $"\"{target}\"" $"build.fsx declares {target}"
 
+type TempFixtureDirectory(prefix: string) =
+    let root =
+        Path.Combine(Path.GetTempPath(), prefix + "-" + Guid.NewGuid().ToString("N"))
+
+    do Directory.CreateDirectory(root) |> ignore
+
+    member _.Root = root
+
+    member _.Path([<ParamArray>] segments: string array) =
+        segments
+        |> Array.fold (fun current segment -> Path.Combine(current, segment)) root
+
+    interface IDisposable with
+        member _.Dispose() =
+            if Directory.Exists root then
+                Directory.Delete(root, true)
+
+let writeFixtureFile (root: string) (relativePath: string) (content: string) =
+    let destination =
+        Path.Combine(root, relativePath.Replace("/", string Path.DirectorySeparatorChar))
+
+    match Path.GetDirectoryName destination |> Option.ofObj with
+    | Some directory -> Directory.CreateDirectory directory |> ignore
+    | None -> ()
+    File.WriteAllText(destination, content)
+    destination
+
+let writeProjectFixture root relativePath packageReferences projectReferences =
+    let packageRows =
+        packageReferences
+        |> List.map (fun packageId -> $"    <PackageReference Include=\"{packageId}\" />")
+        |> String.concat Environment.NewLine
+
+    let projectRows =
+        projectReferences
+        |> List.map (fun projectPath -> $"    <ProjectReference Include=\"{projectPath}\" />")
+        |> String.concat Environment.NewLine
+
+    let content =
+        $"""<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+{packageRows}
+{projectRows}
+  </ItemGroup>
+
+</Project>
+"""
+
+    writeFixtureFile root relativePath content
+
+let writeCapabilityMetadataFixture root capabilitiesYaml =
+    writeFixtureFile root "template/capabilities.yml" capabilitiesYaml
+
+let writeGeneratedProductFixture root profile files =
+    files
+    |> List.map (fun (relativePath, content) ->
+        writeFixtureFile root (Path.Combine("generated", profile, relativePath).Replace('\\', '/')) content)
+
+let writeGeneratedGuidanceFixture root relativePath sourceMarkers testMarkers =
+    let content =
+        [ "# Generated Guidance Fixture"
+          ""
+          "Source markers:"
+          yield! sourceMarkers |> List.map (fun marker -> $"- {marker}")
+          ""
+          "Test markers:"
+          yield! testMarkers |> List.map (fun marker -> $"- {marker}") ]
+        |> String.concat Environment.NewLine
+
+    writeFixtureFile root relativePath (content + Environment.NewLine)
+
+let writeStaleReferenceFixture root relativePath term context =
+    writeFixtureFile root relativePath $"{context}: {term}{Environment.NewLine}"
+
+let writeReadinessReportFixture root relativePath verdict evidencePaths =
+    let content =
+        [ "# Readiness Fixture"
+          ""
+          $"Verdict: {verdict}"
+          ""
+          "Evidence:"
+          yield! evidencePaths |> List.map (fun path -> $"- `{path}`") ]
+        |> String.concat Environment.NewLine
+
+    writeFixtureFile root relativePath (content + Environment.NewLine)
+
 let expectGeneratedProductFileList profile (required: string list) (forbidden: string list) =
     let activePath = $"specs/011-controls-boundary-refactor/readiness/generated-file-lists/{profile}.txt"
     let currentPath = $"specs/010-skia-controls-library/readiness/generated-file-lists/{profile}.txt"

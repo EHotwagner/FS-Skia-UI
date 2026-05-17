@@ -50,7 +50,7 @@ let v2CommandContractTests =
                   "\"DependencyReport\", []"
                   "\"GeneratedGuidanceCheck\", []"
                   "\"TemplateDrift\", []"
-                  "\"Ci\", [ \"Verify\" ]"
+                  "\"Ci\", [ \"CiPreflight\"; \"Verify\" ]"
                   "v1 plus v2 verification artifact set" ]
         }
 

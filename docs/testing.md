@@ -17,15 +17,19 @@ packages, builds the solution, and runs the default non-visual test projects:
 | Governance command and docs checks | `tests/Governance.Tests/Governance.Tests.fsproj` |
 
 The full testing and evidence target set is `Dev`, `Verify`, `Ci`,
-`PackLocal`, `RefreshSurfaceBaselines`, `PackageSurfaceCheck`,
+`VerifyPreflight`, `CiPreflight`, `PackLocal`, `RefreshSurfaceBaselines`, `PackageSurfaceCheck`,
 `FsiTranscripts`, `SampleContractSmoke`, `TemplateCheck`,
 `DependencyReport`, `GeneratedGuidanceCheck`, `TemplateDrift`,
-`EvidenceGraph`, and `EvidenceAudit`.
+`StaleBoundaryScan`, `EvidenceGraph`, `EvidenceAudit`, and `FinalReadiness`.
 
 Governance tests include section-aware generated guidance checks, semantic
 template drift fixtures, public record invariant inventory coverage, and build
-workflow command-contract checks. Layout tests include recoverable Yoga
-execution fallback diagnostics through the existing `LayoutDiagnostic` surface.
+workflow command-contract checks. The process reliability contract tests cover
+process-health snapshots, bootstrap validation, broad verification verdicts,
+focused-gate direct invocation, stale build/restore diagnostics, scanner
+fixture helpers, and pure `BuildModel`/`BuildMsg`/`BuildEffect` transition
+assertions. Layout tests include recoverable Yoga execution fallback
+diagnostics through the existing `LayoutDiagnostic` surface.
 
 `PackageSurfaceCheck` runs `tests/Package.Tests/Package.Tests.fsproj` against
 the stable package surface baselines in `readiness/surface-baselines/*.txt`.
@@ -65,6 +69,35 @@ writes one log per sample under
 `DependencyReport`, `GeneratedGuidanceCheck`, and `TemplateDrift` are focused
 governance targets and can be run independently while developing those
 surfaces.
+
+## Process Health And Focused Gate Checks
+
+Run broad preflight checks directly when diagnosing runner health:
+
+```bash
+./fake.sh build -t VerifyPreflight
+./fake.sh build -t CiPreflight
+```
+
+These targets write `process-health.md`, `bootstrap-runner.md`, and
+`verification-verdicts.md`. Malformed threshold overrides, missing runner
+dependencies, CoreCLR startup failures, process pressure, and unsupported
+signals are classified as environment evidence.
+
+Focused gates should be run directly when isolating a failure:
+
+```bash
+./fake.sh build -t PackageSurfaceCheck
+./fake.sh build -t ControlsCatalogCheck
+./fake.sh build -t ControlsInteractionCheck
+./fake.sh build -t ControlsRenderingCheck
+./fake.sh build -t DependencyReport
+```
+
+If a focused gate relies on restored or built artifacts, stale assumptions must
+produce a diagnostic naming the affected gate and the remediation command.
+The command-contract tests fail if a focused gate is recoupled to `Verify`,
+`Ci`, or undocumented broad work.
 
 ## Template Exclusions
 

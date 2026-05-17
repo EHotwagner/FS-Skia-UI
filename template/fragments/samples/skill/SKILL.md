@@ -23,7 +23,8 @@ Run generated product `./fake.sh build -t Verify` for the sample-pack profile.
 
 ## Evidence
 
-Record sample-pack file lists under `specs/009-v3-modular-framework/readiness/generated-file-lists/`.
+Record sample-pack file lists under the active feature
+`readiness/generated-file-lists/` report.
 
 ## Package Boundary
 

@@ -13,6 +13,7 @@
     <Compile Include="ArtifactPathTests.fs" />
     <Compile Include="DocsGuidanceTests.fs" />
     <Compile Include="V2CommandContractTests.fs" />
+    <Compile Include="ProcessReliabilityContractTests.fs" />
     <Compile Include="V2ArtifactPathTests.fs" />
     <Compile Include="V2SafeOperationTests.fs" />
     <Compile Include="TemplateProfileTests.fs" />

@@ -23,7 +23,9 @@ Run `dotnet test tests/Elmish.Tests/Elmish.Tests.fsproj` and `./fake.sh build -t
 
 ## Evidence
 
-Record transition and effect evidence under `specs/009-v3-modular-framework/readiness/package-surfaces/` when adapter behavior changes.
+Record transition and effect evidence under the active feature readiness
+package-surface reports when adapter behavior changes. Stable public surface
+baselines live under `readiness/surface-baselines/`.
 
 ## Package Boundary
 

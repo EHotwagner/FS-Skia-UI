@@ -23,7 +23,9 @@ Run `dotnet test tests/Layout.Tests/Layout.Tests.fsproj` and `./fake.sh build -t
 
 ## Evidence
 
-Record package-surface and dependency evidence under `specs/009-v3-modular-framework/readiness/package-surfaces/`.
+Record package-surface and dependency evidence under the active feature
+readiness reports. Stable public surface baselines live under
+`readiness/surface-baselines/`.
 
 ## Package Boundary
 

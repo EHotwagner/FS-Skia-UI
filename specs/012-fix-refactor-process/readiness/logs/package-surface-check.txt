@@ -1,0 +1,9 @@
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    16, Skipped:     0, Total:    16, Duration: 25 ms - Package.Tests.dll (net10.0)
+
+exit-code=0

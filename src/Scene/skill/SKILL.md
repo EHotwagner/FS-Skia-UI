@@ -23,7 +23,9 @@ Run `dotnet test tests/Scene.Tests/Scene.Tests.fsproj` and `./fake.sh build -t G
 
 ## Evidence
 
-Update `specs/009-v3-modular-framework/readiness/package-surfaces/` and `capability-catalog.md` for contract or catalog changes.
+Update the active feature readiness package-surface and capability-catalog
+reports for contract or catalog changes. Stable public surface baselines live
+under `readiness/surface-baselines/`.
 
 ## Package Boundary
 

@@ -68,7 +68,7 @@ let commandContractTests =
             expectContains content "\"Test\", [ \"Restore\" ]" "Test depends on Restore"
             expectContains content "\"Dev\", [ \"Test\" ]" "Dev depends on Test"
             expectContains content "\"EvidenceAudit\", [ \"EvidenceGraph\" ]" "audit depends on graph"
-            expectContains content "\"Ci\", [ \"Verify\" ]" "Ci delegates to Verify"
+            expectContains content "\"Ci\", [ \"CiPreflight\"; \"Verify\" ]" "Ci runs preflight before delegating to Verify"
         }
 
         test "V3 command workflow exposes capability product and skill validation effects" {
@@ -101,7 +101,7 @@ let commandContractTests =
             expectContains content "\"CapabilityCheck\"" "Verify includes CapabilityCheck"
             expectContains content "\"SkillCheck\"" "Verify includes SkillCheck"
             expectContains content "\"GeneratedProductCheck\"" "Verify includes GeneratedProductCheck"
-            expectContains content "\"Ci\", [ \"Verify\" ]" "Ci delegates to Verify"
+            expectContains content "\"Ci\", [ \"CiPreflight\"; \"Verify\" ]" "Ci runs preflight before delegating to Verify"
         }
 
         test "Controls boundary refactor command surface is wired into governed targets" {

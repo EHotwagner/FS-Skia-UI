@@ -37,8 +37,12 @@ and run the shared `build.fsx` target graph. Automation should call
 | `SampleContractSmoke` | Runs non-visual sample `--contract-smoke` paths. | `readiness/sample-smoke/*.txt` under this feature |
 | `EvidenceGraph` | Runs the Spec Kit task graph validation. | `readiness/task-graph.json` and `.md` under this feature |
 | `EvidenceAudit` | Runs the synthetic evidence audit. | `readiness/logs/evidence-audit.txt` and diff-scan output |
-| `Verify` | Full repository verification requiring package, template, generated-product, guidance, drift, dependency, and evidence audit artifact classes. | `readiness/logs/verify-verdict.txt` |
-| `Ci` | Non-interactive automation entry delegating to `Verify`. | `readiness/logs/ci-verdict.txt` |
+| `VerifyPreflight` | Records process-health and bootstrap evidence for `Verify` before broad work starts. | Active feature `readiness/process-health.md`, `readiness/bootstrap-runner.md`, and `readiness/verification-verdicts.md` |
+| `CiPreflight` | Records process-health and bootstrap evidence for `Ci` before delegating to `Verify`. | Active feature `readiness/process-health.md`, `readiness/bootstrap-runner.md`, and `readiness/verification-verdicts.md` |
+| `StaleBoundaryScan` | Records stale active ownership scan status for removed package/boundary evidence. | Active feature `readiness/stale-boundary-scan.md` |
+| `FinalReadiness` | Summarizes final readiness status and broad aggregate authority. | Active feature `readiness/evidence-audit.md` |
+| `Verify` | Full repository verification requiring process-health preflight, bootstrap, package, template, generated-product, guidance, drift, dependency, and evidence audit artifact classes. | `readiness/logs/verify-verdict.txt` and `readiness/verification-verdicts.md` |
+| `Ci` | Non-interactive automation entry running `CiPreflight` before delegating to `Verify`. | `readiness/logs/ci-verdict.txt` and `readiness/verification-verdicts.md` |
 
 ## Template And Governance Targets
 
@@ -62,7 +66,39 @@ template packaging. `Verify` includes source tests, local package packing,
 package surface checks, public FSI transcripts, sample contract smoke,
 template validation, capability validation, selected skill validation,
 generated product validation, dependency governance, generated guidance,
-template drift, and the evidence audit. `Ci` delegates to `Verify`.
+template drift, and the evidence audit. `VerifyPreflight` and `CiPreflight`
+run process-health and bootstrap checks before high-pressure broad work. A
+preflight or bootstrap failure is an `environment-failure`: it fails the broad
+aggregate, records non-authoritative product evidence, and recommends rerunning
+in a fresh shell, fresh container, or CI runner. `Ci` runs its own preflight and
+then delegates to `Verify`.
+
+Focused gates remain direct entry points. Each focused gate writes or appends a
+row to `readiness/focused-gates.md` with its direct prerequisites, command, log
+path, readiness path, verdict category, and stale build/restore assumption
+diagnostics. Targets that intentionally use `--no-restore` or `--no-build`
+must name the affected gate and remediation command when the assumed artifact
+is stale.
+
+## Focused Gate Matrix
+
+| Gate | Direct prerequisites | Primary output |
+|------|----------------------|----------------|
+| `PackageSurfaceCheck` | none | `readiness/logs/package-surface-check.txt` and package surface report |
+| `FsiTranscripts` | none | `readiness/fsi/*.txt` |
+| `ControlsCatalogCheck` | restored `tests/Controls.Tests` assets | `readiness/control-catalog.md` |
+| `ControlsInteractionCheck` | restored `tests/Controls.Tests` assets | `readiness/interaction-tests.md` |
+| `ControlsRenderingCheck` | restored `tests/Controls.Tests` assets | `readiness/layout-rendering.md` |
+| `DependencyReport` | none | `readiness/dependency-report.md` and dependency log |
+| `TemplateCheck` | template pack/install/instantiate/smoke targets | `readiness/template/verdict.md` |
+| `GeneratedProductCheck` | `CapabilityCheck`, `SkillCheck` | `readiness/generated-file-lists/summary.md` |
+| `GeneratedGuidanceCheck` | none | `readiness/generated-guidance.md` |
+| `TemplateDrift` | none | `readiness/template-drift.md` |
+| `EvidenceGraph` | none | `readiness/task-graph.md` and `.json` |
+| `EvidenceAudit` | `EvidenceGraph` | `readiness/logs/evidence-audit.txt` |
+
+No focused gate may depend on `Verify` or `Ci`. Adding a broad prerequisite is
+a command-contract change and must be documented with a test before it lands.
 
 `Verify` checks existing baselines; it does not silently refresh them. Use
 `RefreshSurfaceBaselines` when an intentional public surface change has already
