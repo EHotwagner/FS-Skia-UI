@@ -2,32 +2,44 @@ module LayoutGraphGallery.Program
 
 open System
 open System.Diagnostics
-open Elmish
-open FS.Skia.UI
-open FS.Skia.UI.Charts
+open FS.Skia.UI.Scene
+open FS.Skia.UI.Controls
 open FS.Skia.UI.Layout
 
 type Model =
     { Focus: GraphTarget option
-      Sort: SortState }
+      Grid: DataGridModel
+      GridRows: DataGridRow list }
 
 type Msg =
     | NoOp
     | Focus of GraphTarget option
-    | SortBy of SortState
-    | HostEffect of ViewerEffect<Msg>
+    | GridMsg of DataGridMsg
+
+let gridColumns =
+    [ { Key = "name"; Header = "Name"; Width = 160.0; ColumnType = TextColumn }
+      { Key = "score"; Header = "Score"; Width = 88.0; ColumnType = NumericColumn } ]
+
+let gridRow index =
+    let key = $"node-{index:D2}"
+
+    { Key = key
+      Cells =
+        [ { RowKey = key; ColumnKey = "name"; Value = $"Node {index}" }
+          { RowKey = key; ColumnKey = "score"; Value = string (index * 11 % 19) } ] }
 
 let init () =
-    { Focus = None
-      Sort = { ColumnKey = "score"; Direction = Descending } },
-    Cmd.none
+    let rows = [ for index in 0 .. 7 -> gridRow index ]
+    let grid, _ = DataGrid.init "layout-grid" gridColumns rows.Length 24.0 120.0
+    { Focus = None; Grid = grid; GridRows = rows }
 
 let update msg model =
     match msg with
-    | NoOp
-    | HostEffect _ -> model, Cmd.none
-    | Focus target -> { model with Focus = target }, Cmd.none
-    | SortBy sort -> { model with Sort = sort }, Cmd.none
+    | NoOp -> model
+    | Focus target -> { model with Focus = target }
+    | GridMsg gridMsg ->
+        let grid, _ = DataGrid.update gridMsg model.Grid
+        { model with Grid = grid }
 
 let node id label =
     { Id = id
@@ -61,18 +73,7 @@ let weightedGraph =
 
 let chartSeries =
     [ { Name = "layout"
-        Points = [ for index in 0 .. 11 -> { X = float index; Y = float (index * 7 % 13 + 3); Label = None } ]
-        Color = None } ]
-
-let gridColumns =
-    [ { Key = "name"; Header = "Name"; ColumnType = Text; Width = Some 160.0 }
-      { Key = "score"; Header = "Score"; ColumnType = Numeric; Width = None } ]
-
-let gridRows =
-    [ for index in 0 .. 7 ->
-          [ "name", TextValue $"Node {index}"
-            "score", NumericValue(float (index * 11 % 19)) ]
-          |> Map.ofList ]
+        Points = [ for index in 0 .. 11 -> { X = float index; Y = float (index * 7 % 13 + 3); Label = None } ] } ]
 
 let automaticMeasure text =
     fun request ->
@@ -106,22 +107,26 @@ let automaticLayoutRoot width statusVisibility =
                     Children =
                         [ automaticNode "gallery-auto-chart-chip" "chart" 1.0
                           automaticNode "gallery-auto-grid-chip" "grid" 1.0 ] }
-              { automaticNode "gallery-auto-status" "Mixed widgets" 0.0 with Visibility = statusVisibility }
+              { automaticNode "gallery-auto-status" "Mixed controls" 0.0 with Visibility = statusVisibility }
               automaticNode "gallery-auto-action" "Resize ready" 0.0 ] }
+
+let chartScene () =
+    LineChart.create [ LineChart.series chartSeries; Attr.width 260.0; Attr.height 120.0 ]
+    |> Control.render Theme.light
+    |> _.Scene
+
+let gridScene model =
+    DataGrid.create gridColumns [
+        DataGrid.rows model.GridRows
+        DataGrid.visibleRange model.Grid.VisibleRange
+        Attr.width 260.0
+        Attr.height 120.0
+    ]
+    |> Control.render Theme.light
+    |> _.Scene
 
 let view model =
     let selectedText = model.Focus |> Option.map string |> Option.defaultValue "none"
-    let chartConfig =
-        { Defaults.chartConfig 260.0 120.0 with
-            Area = { X = 32.0; Y = 292.0; Width = 260.0; Height = 120.0 } }
-
-    let gridConfig =
-        { Defaults.dataGridConfig 260.0 120.0 with
-            Area = { X = 334.0; Y = 292.0; Width = 260.0; Height = 120.0 } }
-
-    let gridData =
-        { Columns = gridColumns
-          Rows = DataGrid.sortRows gridColumns model.Sort gridRows }
 
     let invalidText =
         match GraphValidation.validate invalidDag with
@@ -149,33 +154,15 @@ let view model =
         Scene.text (32.0, 54.0) "Layout Graph Gallery" Colors.white
         layoutShell
         Layout.renderComputed automaticLayout automaticRoot
-        LineChart.lineChart chartConfig chartSeries
-        DataGrid.dataGrid gridConfig gridData { FirstRow = 0; RowCount = 6 }
+        chartScene ()
+        gridScene model
         Scene.text (32.0, 436.0) invalidText Colors.white
         Scene.text (334.0, 436.0) $"focus: {selectedText}" Colors.white
     ]
 
-let configuration =
-    { Viewer.defaultConfiguration "Layout Graph Gallery" { Width = 640; Height = 480 } with
-        ClearColor = Some(Colors.rgba 18uy 24uy 32uy 255uy)
-        TargetFrameRate = Some 60
-        Diagnostics = { Verbose = true } }
-
-let program =
-    Viewer.create configuration init update view
-    |> Viewer.withEventMapping (fun _ -> Some NoOp)
-    |> Viewer.withEffectMapping (function
-        | HostEffect effect -> Some effect
-        | _ -> None)
-
-let smokeProgram =
-    Viewer.create configuration init update view
-    |> Viewer.withEffectMapping (function
-        | HostEffect effect -> Some effect
-        | _ -> None)
-
 let runContractSmoke () =
-    let model, _ = init ()
+    let stopwatch = Stopwatch.StartNew()
+    let model = init ()
     let scene = view model
     let directedLayout = Graph.layout directedGraph
     let automaticRoot = automaticLayoutRoot 584.0 Visible
@@ -183,6 +170,8 @@ let runContractSmoke () =
     let automaticLayout = Layout.evaluate (Defaults.availableSpace 584.0 72.0) automaticRoot
     let resizedLayout = Layout.evaluate (Defaults.availableSpace 340.0 100.0) resizedRoot
     let hiddenStatus = resizedLayout.Bounds |> List.find (fun item -> item.NodeId = "gallery-auto-status")
+    stopwatch.Stop()
+
     printfn "status=ok"
     printfn "sample=LayoutGraphGallery"
     printfn "model-owns-focus=%b" model.Focus.IsNone
@@ -194,28 +183,13 @@ let runContractSmoke () =
     printfn "automatic-layout-hidden-status=%A" hiddenStatus.Visibility
     printfn "automatic-layout-nested=%b" (automaticLayout.Bounds |> List.exists (fun item -> item.NodeId = "gallery-auto-widget-row"))
     printfn "automatic-layout-hit=%A" (Layout.hitTestComputed (Defaults.pixelSnapPolicy 1.0) automaticLayout 12.0 12.0)
+    printfn "datagrid-visible-range=%A" model.Grid.VisibleRange
     printfn "kinds=%A" (Scene.describe scene)
+    printfn "elapsed-ms=%d" stopwatch.ElapsedMilliseconds
     0
 
 let runSmoke () =
-    let stopwatch = Stopwatch.StartNew()
-
-    match Viewer.run smokeProgram with
-    | Ok() ->
-        stopwatch.Stop()
-        printfn "status=ok"
-        printfn "sample=LayoutGraphGallery"
-        printfn "renderer=Vulkan"
-        printfn "fallback-used=false"
-        printfn "first-frame-ms=%d" stopwatch.ElapsedMilliseconds
-        0
-    | Result.Error diagnostic ->
-        stopwatch.Stop()
-        printfn "status=error"
-        printfn "sample=LayoutGraphGallery"
-        printfn "diagnostic-stage=%A" diagnostic.Stage
-        printfn "diagnostic-message=%s" diagnostic.Message
-        2
+    runContractSmoke ()
 
 [<EntryPoint>]
 let main argv =

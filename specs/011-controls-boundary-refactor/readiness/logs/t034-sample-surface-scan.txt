@@ -1,0 +1,75 @@
+docs/controls.md:6:interaction state is held by a product-owned `ControlRuntimeModel`, keyboard
+docs/controls.md:7:state is held by `FS.Skia.UI.KeyboardInput.KeyboardModel`, and direct command or
+docs/controls.md:8:subscription wiring lives in `FS.Skia.UI.Controls.Elmish`.
+docs/controls.md:53:            RichText.create model.RichIntro []
+docs/controls.md:62:    Keyboard.init [ { Key = "S"; Command = "save" } ]
+docs/controls.md:64:let runtime, _ = ControlRuntime.init ()
+docs/controls.md:68:    |> List.collect (ControlsElmish.interpretKeyboardEffect (fun _ -> SaveRequested))
+docs/controls.md:73:`ControlRuntime`, `KeyboardInput`, and `Controls.Elmish` adapter wiring through
+docs/controls.md:87:reference path is `samples/ControlsGallery --contract-smoke`; first-time human
+samples/KeyboardInputGallery/KeyboardInputGallery.fsproj:16:    <ProjectReference Include="..\..\src\KeyboardInput\KeyboardInput.fsproj" />
+samples/KeyboardInputGallery/KeyboardInputGallery.fsproj:18:    <ProjectReference Include="..\..\src\Controls.Elmish\Controls.Elmish.fsproj" />
+samples/KeyboardInputGallery/Program.fs:1:module KeyboardInputGallery
+samples/KeyboardInputGallery/Program.fs:6:open FS.Skia.UI.Controls.Elmish
+samples/KeyboardInputGallery/Program.fs:7:open FS.Skia.UI.KeyboardInput
+samples/KeyboardInputGallery/Program.fs:10:    { Keyboard: KeyboardModel
+samples/KeyboardInputGallery/Program.fs:11:      LastEffects: KeyboardEffect list
+samples/KeyboardInputGallery/Program.fs:15:    | KeyboardRuntimeMsg of KeyboardMsg
+samples/KeyboardInputGallery/Program.fs:24:        Keyboard.init [
+samples/KeyboardInputGallery/Program.fs:30:    let commands = effects |> List.collect (ControlsElmish.interpretKeyboardEffect commandToMsg)
+samples/KeyboardInputGallery/Program.fs:32:    { Keyboard = keyboard
+samples/KeyboardInputGallery/Program.fs:39:    | KeyboardRuntimeMsg keyboardMsg ->
+samples/KeyboardInputGallery/Program.fs:40:        let keyboard, effects = Keyboard.update keyboardMsg model.Keyboard
+samples/KeyboardInputGallery/Program.fs:41:        let commands = effects |> List.collect (ControlsElmish.interpretKeyboardEffect commandToMsg)
+samples/KeyboardInputGallery/Program.fs:44:            Keyboard = keyboard
+samples/KeyboardInputGallery/Program.fs:53:    let display = Keyboard.stateDisplay model.Keyboard
+samples/KeyboardInputGallery/Program.fs:60:            TextBlock.create [ TextBlock.text "Keyboard Input Gallery" ]
+samples/KeyboardInputGallery/Program.fs:69:    ControlsElmish.program init update displayView (fun _ -> [])
+samples/KeyboardInputGallery/Program.fs:74:    let withMode, modeCommands = adapterProgram.Update (KeyboardRuntimeMsg(PushTemporaryMode "symbols")) model
+samples/KeyboardInputGallery/Program.fs:75:    let withKey, keyCommands = adapterProgram.Update (KeyboardRuntimeMsg(KeyDown "H")) withMode
+samples/KeyboardInputGallery/Program.fs:76:    let recovered, recoveryCommands = adapterProgram.Update (KeyboardRuntimeMsg FocusLost) withKey
+samples/KeyboardInputGallery/Program.fs:77:    let displayBeforeRecovery = Keyboard.stateDisplay withKey.Keyboard
+samples/KeyboardInputGallery/Program.fs:78:    let displayAfterRecovery = Keyboard.stateDisplay recovered.Keyboard
+samples/KeyboardInputGallery/Program.fs:82:    printfn "status=ok"
+samples/KeyboardInputGallery/Program.fs:83:    printfn "sample=KeyboardInputGallery"
+samples/KeyboardInputGallery/Program.fs:91:    printfn "hidden=KeyboardStateDisplayHidden"
+samples/KeyboardInputGallery/Program.fs:104:    if argv |> Array.contains "--contract-smoke" then
+samples/ControlsGallery/ControlsGallery.fsproj:16:    <ProjectReference Include="..\..\src\KeyboardInput\KeyboardInput.fsproj" />
+samples/ControlsGallery/ControlsGallery.fsproj:18:    <ProjectReference Include="..\..\src\Controls.Elmish\Controls.Elmish.fsproj" />
+samples/ControlsGallery/Program.fs:6:open FS.Skia.UI.Controls.Elmish
+samples/ControlsGallery/Program.fs:7:open FS.Skia.UI.KeyboardInput
+samples/ControlsGallery/Program.fs:16:      ControlRuntime: ControlRuntimeModel
+samples/ControlsGallery/Program.fs:17:      Keyboard: KeyboardModel
+samples/ControlsGallery/Program.fs:18:      LastKeyboardEffects: KeyboardEffect list
+samples/ControlsGallery/Program.fs:19:      RichContent: RichTextBlock
+samples/ControlsGallery/Program.fs:29:    | RuntimeMsg of ControlRuntimeMsg
+samples/ControlsGallery/Program.fs:30:    | KeyboardRuntimeMsg of KeyboardMsg
+samples/ControlsGallery/Program.fs:42:        { RichText.defaultStyle Theme.light with
+samples/ControlsGallery/Program.fs:46:    { RichText.block [ RichText.run "Skia rich text, " emphasis; RichText.run "generic messages, and product-owned runtimes" (RichText.defaultStyle Theme.light) ] with
+samples/ControlsGallery/Program.fs:52:    let controlRuntime, _ = ControlRuntime.init ()
+samples/ControlsGallery/Program.fs:54:        Keyboard.init [
+samples/ControlsGallery/Program.fs:60:        keyboardEffects |> List.collect (ControlsElmish.interpretKeyboardEffect commandToMsg)
+samples/ControlsGallery/Program.fs:68:      ControlRuntime = controlRuntime
+samples/ControlsGallery/Program.fs:69:      Keyboard = keyboard
+samples/ControlsGallery/Program.fs:70:      LastKeyboardEffects = keyboardEffects
+samples/ControlsGallery/Program.fs:95:        let runtime, effects = ControlRuntime.update runtimeMsg model.ControlRuntime
+samples/ControlsGallery/Program.fs:96:        let commands = effects |> List.collect (ControlsElmish.interpretControlEffect RuntimeMsg)
+samples/ControlsGallery/Program.fs:97:        { model with ControlRuntime = runtime; LastAdapterCommands = commands }, commands
+samples/ControlsGallery/Program.fs:98:    | KeyboardRuntimeMsg keyboardMsg ->
+samples/ControlsGallery/Program.fs:99:        let keyboard, effects = Keyboard.update keyboardMsg model.Keyboard
+samples/ControlsGallery/Program.fs:100:        let commands = effects |> List.collect (ControlsElmish.interpretKeyboardEffect commandToMsg)
+samples/ControlsGallery/Program.fs:101:        { model with Keyboard = keyboard; LastKeyboardEffects = effects; LastAdapterCommands = commands }, commands
+samples/ControlsGallery/Program.fs:119:    let focusedControl = model.ControlRuntime.FocusedControl |> Option.defaultValue "none"
+samples/ControlsGallery/Program.fs:124:            RichText.create model.RichContent []
+samples/ControlsGallery/Program.fs:154:            CustomControl.create customDefinition []
+samples/ControlsGallery/Program.fs:156:            ValidationMessage.create [ ValidationMessage.text $"Keyboard layout: {model.Keyboard.ActiveLayout}" ]
+samples/ControlsGallery/Program.fs:162:    ControlsElmish.program init update controlView (fun _ -> [])
+samples/ControlsGallery/Program.fs:167:    let withKeyboard, keyboardCommands = adapterProgram.Update (KeyboardRuntimeMsg(KeyDown "S")) model
+samples/ControlsGallery/Program.fs:168:    let focused, focusCommands = adapterProgram.Update (RuntimeMsg(FocusControl(Some "save-button"))) withKeyboard
+samples/ControlsGallery/Program.fs:171:    let measurement = RichText.measure focused.RichContent
+samples/ControlsGallery/Program.fs:179:    printfn "status=ok"
+samples/ControlsGallery/Program.fs:180:    printfn "sample=ControlsGallery"
+samples/ControlsGallery/Program.fs:185:    printfn "keyboard-last-command=%A" focused.Keyboard.LastCommand
+samples/ControlsGallery/Program.fs:186:    printfn "keyboard-state-display=%A" focused.Keyboard.StateDisplay
+samples/ControlsGallery/Program.fs:187:    printfn "runtime-focused=%A" focused.ControlRuntime.FocusedControl
+samples/ControlsGallery/Program.fs:200:    if argv |> Array.contains "--contract-smoke" then

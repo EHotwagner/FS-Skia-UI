@@ -6,6 +6,16 @@ entries. Local package validation may use an inline version only for `FS.*`
 packages under a `UsePackedPackage` condition or in generated consumer smoke
 fixtures.
 
+The Controls boundary refactor does not add a third-party runtime dependency.
+It moves dependency placement into explicit package owners:
+
+| Package owner | Direct project references | Direct external packages | Boundary rule |
+|---------------|---------------------------|--------------------------|---------------|
+| `FS.Skia.UI.Controls` | `FS.Skia.UI.Scene`, `FS.Skia.UI.Layout`, `FS.Skia.UI.KeyboardInput` | None | Owns form controls, rich rendering, chart controls, graph views, DataGrid, and product-owned `ControlRuntime` declarations without taking a direct Elmish or viewer dependency. |
+| `FS.Skia.UI.KeyboardInput` | `FS.Skia.UI.Scene` | `YamlDotNet` | Owns the rich keyboard input runtime, reducer/effect contracts, diagnostics, and YAML configuration parsing. |
+| `FS.Skia.UI.Controls.Elmish` | `FS.Skia.UI.Controls`, `FS.Skia.UI.KeyboardInput` | `Fable.Elmish` | Owns command, subscription, and program adapter integration so base Controls remains generic over product messages. |
+| Legacy Charts package | None active | None | The former Charts package/project is removed from active package references and generated product dependencies; replacement authoring lives under `FS.Skia.UI.Controls`. |
+
 | Package | Version | Purpose | Owner | License posture | Upgrade expectation | Preview risk |
 |---------|---------|---------|-------|-----------------|---------------------|--------------|
 | Expecto | 10.2.2 | F# semantic and governance test framework. | Test infrastructure | OSS package accepted for tests. | Review during SDK/test adapter upgrades. | None. |

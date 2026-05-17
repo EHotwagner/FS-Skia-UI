@@ -19,17 +19,21 @@ entry point for maintainers and contributors.
 |----------|---------|
 | [Architecture Overview](architecture.md) | Repository, package, runtime, sample, and governance structure, linked to [src](../src/) and [build.fsx](../build.fsx). |
 | [Runtime Design](runtime-design.md) | Viewer program shape, event/effect flow, rendering, screenshots, diagnostics, and supported platform boundary in [src/Lib/Library.fsi](../src/Lib/Library.fsi) and [src/Lib/Library.fs](../src/Lib/Library.fs). |
-| [Subsystem Design](subsystem-design.md) | Scene model, keyboard input, charts, data grid, layout, graph, samples, tests, and template governance linked to their source modules. |
+| [Subsystem Design](subsystem-design.md) | Scene model, keyboard input, Controls-owned charts/DataGrid, layout, graph, samples, tests, and template governance linked to their source modules. |
 | [Design Decisions](design-decisions.md) | Rationale for the major architectural choices and rejected alternatives. |
 
 ## Source Map
 
 | Area | Primary source |
 |------|----------------|
-| Core scene, viewer contract, diagnostics | [src/Lib/Library.fsi](../src/Lib/Library.fsi) and [src/Lib/Library.fs](../src/Lib/Library.fs) |
-| Keyboard input and keyboard state display | [src/Lib/KeyboardInput.fsi](../src/Lib/KeyboardInput.fsi) and [src/Lib/KeyboardInput.fs](../src/Lib/KeyboardInput.fs) |
-| Charts and DataGrid | [src/Charts](../src/Charts/) |
-| Layout and graph | [src/Layout](../src/Layout/) |
+| Compatibility core package | [src/Lib/Library.fsi](../src/Lib/Library.fsi), [src/Lib/Library.fs](../src/Lib/Library.fs), and [src/Lib/KeyboardInput.fsi](../src/Lib/KeyboardInput.fsi) |
+| Scene primitives | [src/Scene/Scene.fsi](../src/Scene/Scene.fsi) and [src/Scene/Scene.fs](../src/Scene/Scene.fs) |
+| Skia viewer host | [src/SkiaViewer/SkiaViewer.fsi](../src/SkiaViewer/SkiaViewer.fsi) and [src/SkiaViewer/SkiaViewer.fs](../src/SkiaViewer/SkiaViewer.fs) |
+| Elmish viewer integration | [src/Elmish/Elmish.fsi](../src/Elmish/Elmish.fsi) and [src/Elmish/Elmish.fs](../src/Elmish/Elmish.fs) |
+| Keyboard input package | [src/KeyboardInput/KeyboardInput.fsi](../src/KeyboardInput/KeyboardInput.fsi) and [src/KeyboardInput/KeyboardInput.fs](../src/KeyboardInput/KeyboardInput.fs) |
+| Controls, charts, graph views, DataGrid, rich rendering | [src/Controls](../src/Controls/) |
+| Controls Elmish adapter | [src/Controls.Elmish/ControlsElmish.fsi](../src/Controls.Elmish/ControlsElmish.fsi) and [src/Controls.Elmish/ControlsElmish.fs](../src/Controls.Elmish/ControlsElmish.fs) |
+| Layout and lower-level graph helpers | [src/Layout](../src/Layout/) |
 | Samples | [samples](../samples/) |
 | Tests | [tests](../tests/) |
 | Build and template workflow | [build.fsx](../build.fsx), [.template.config/template.json](../.template.config/template.json), and [.template.package/FS.Skia.UI.Template.fsproj](../.template.package/FS.Skia.UI.Template.fsproj) |
@@ -51,6 +55,7 @@ entry point for maintainers and contributors.
 Start with the architecture overview when changing package boundaries, project
 references, or build targets. Use the runtime design before changing
 `ViewerProgram`, `ViewerEvent`, `ViewerEffect`, rendering, diagnostics, or
-screenshot behavior. Use subsystem design when changing charts, data grid,
-layout, graph rendering, keyboard input, samples, or template ownership. Record
-any new cross-cutting choice in the design decision log.
+screenshot behavior. Use subsystem design when changing Controls-owned chart
+controls, DataGrid, layout, graph rendering, keyboard input, samples, or
+template ownership. Record any new cross-cutting choice in the design decision
+log.

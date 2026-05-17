@@ -17,7 +17,11 @@ FAIL
 
 - Changed alignment classes: ``
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/010-skia-controls-library`
+- Active feature evidence: `specs/011-controls-boundary-refactor`
+
+## Controls Boundary Guidance
+
+- PASS: generated guidance names Controls ownership, DataGrid, adapter wiring, and Charts migration without stale generated terms.
 
 ## Diagnostics
 

@@ -1,0 +1,27 @@
+specs/011-controls-boundary-refactor/readiness/template-drift.md:53:  `FS.Skia.UI.Controls.Elmish` program, command, and subscription adapter
+specs/011-controls-boundary-refactor/readiness/template-drift.md:67:  is the single generated authoring path and `FS.Skia.UI.Controls.Elmish`
+specs/011-controls-boundary-refactor/readiness/template-drift.md:69:- Updated generated app package references for `FS.Skia.UI.Controls.Elmish`.
+specs/011-controls-boundary-refactor/readiness/template-drift.md:81:  `FS.Skia.UI.Controls.Elmish` guidance plus legacy Charts replacement notes.
+specs/011-controls-boundary-refactor/readiness/template-drift.md:87:- Updated `GeneratedGuidanceCheck` to validate Controls ownership, DataGrid,
+specs/011-controls-boundary-refactor/readiness/template-drift.md:89:- Updated `TemplateDrift` report output with a Controls Boundary Guidance
+specs/011-controls-boundary-refactor/readiness/template-drift.md:94:  - `readiness/logs/t057-governance-tests.txt`
+specs/011-controls-boundary-refactor/readiness/template-drift.md:95:  - `readiness/logs/t057-active-guidance-stale-scan.txt`
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:25:| `app-source` | `FS.Skia.UI.Controls`, `FS.Skia.UI.Controls.Elmish`, `FS.Skia.UI.KeyboardInput`, `FS.Skia.UI.Layout`, `FS.Skia.UI.Elmish`, `FS.Skia.UI.Scene`, `FS.Skia.UI.SkiaViewer` |
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:26:| `app-package` | Same package set as `app-source`; generated from the packaged template payload. |
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:27:| `headless-scene-source` | `FS.Skia.UI.Scene` only; no Controls, adapter, or chart/DataGrid generated authoring path. |
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:28:| `governed-source` | `FS.Skia.UI.Scene` and `FS.Skia.UI.Testing`; Controls remains optional governed capability metadata. |
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:29:| `sample-pack-source` | Scene, SkiaViewer, Elmish, and sample assets; no generated Controls skill unless Controls is selected. |
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:53:  `FS.Skia.UI.Controls.Elmish` for app profiles that select Controls and
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:63:  product messages, and `FS.Skia.UI.Controls.Elmish` adapter program wiring.
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:70:- `build.fsx` now adds `FS.Skia.UI.Controls.Elmish` for generated products that
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:76:- `GeneratedGuidanceCheck` now validates generated Controls guidance, DataGrid,
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:79:  - `readiness/logs/t057-governance-tests.txt`
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:80:  - `readiness/logs/t057-active-guidance-stale-scan.txt`
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:83:- Local `./fake.sh build -t GeneratedGuidanceCheck` remains blocked by the
+specs/011-controls-boundary-refactor/readiness/generated-guidance.md:9:| `app` | `app-source`, `app-package` | Selects Scene, SkiaViewer, Elmish, KeyboardInput, Layout, Controls, and `FS.Skia.UI.Controls.Elmish` adapter package references. |
+specs/011-controls-boundary-refactor/readiness/generated-guidance.md:10:| `headless-scene` | `headless-scene-source` | Selects Scene only; no Controls, adapter, or chart/DataGrid authoring guidance. |
+specs/011-controls-boundary-refactor/readiness/generated-guidance.md:11:| `governed` | `governed-source` | Selects Scene and Testing with Controls available as an optional governed capability. |
+specs/011-controls-boundary-refactor/readiness/generated-guidance.md:12:| `sample-pack` | `sample-pack-source` | Selects Scene, SkiaViewer, Elmish, and Samples; generated control authoring remains under Controls when selected. |
+specs/011-controls-boundary-refactor/readiness/generated-guidance.md:36:- `FS.Skia.UI.Controls.Elmish`
+specs/011-controls-boundary-refactor/readiness/generated-guidance.md:54:- `readiness/logs/t057-governance-tests.txt`
+specs/011-controls-boundary-refactor/readiness/generated-guidance.md:55:- `readiness/logs/t057-active-guidance-stale-scan.txt`

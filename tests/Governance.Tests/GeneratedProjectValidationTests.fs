@@ -65,12 +65,33 @@ let generatedProjectValidationTests =
                   "template/base/fake.cmd" ]
         }
 
+        test "V3 generated product checks enforce Controls ownership and stale reference diagnostics" {
+            expectFileContains
+                "build.fsx"
+                [ "FS.Skia.UI.Controls.Elmish"
+                  "Controls-owned form/chart/graph/DataGrid authoring"
+                  "Controls.Elmish adapter references"
+                  "stale Charts exclusions"
+                  "removed Charts package reference"
+                  "framework sample content"
+                  "historical specs"
+                  "framework readiness evidence"
+                  "controls-boundary-guidance" ]
+
+            expectFileContains
+                "scripts/template-drift.fsx"
+                [ "Controls Boundary Guidance"
+                  "controls-boundary-guidance"
+                  "ControlsElmish.program"
+                  "no compatibility shim" ]
+        }
+
         test "V3 generated file-list report captures selected capabilities and exclusions" {
             if directoryExists "specs/009-v3-modular-framework" then
                 expectGeneratedProductFileList
                     "app-source"
-                    [ "src/Product/Product.fsproj"
-                      "tests/Product.Tests/Product.Tests.fsproj"
+                    [ "src/V3AppSource/V3AppSource.fsproj"
+                      "tests/V3AppSource.Tests/V3AppSource.Tests.fsproj"
                       ".agents/skills/fs-skia-project/SKILL.md"
                       ".agents/skills/fs-skia-scene/SKILL.md"
                       ".agents/skills/fs-skia-skiaviewer/SKILL.md"
@@ -90,7 +111,11 @@ let generatedProjectValidationTests =
                       "PackageReference Include=\"FS.Skia.UI.Elmish\""
                       "PackageReference Include=\"FS.Skia.UI.KeyboardInput\""
                       "PackageReference Include=\"FS.Skia.UI.Layout\""
-                      "PackageReference Include=\"FS.Skia.UI.Controls\"" ]
+                      "PackageReference Include=\"FS.Skia.UI.Controls\""
+                      "PackageReference Include=\"FS.Skia.UI.Controls.Elmish\""
+                      "LineChart.create"
+                      "DataGrid.create"
+                      "ControlsElmish.program" ]
                     [ "samples/"
                       "tests/Parity.Tests"
                       "specs/00"
@@ -133,6 +158,33 @@ let generatedProjectValidationTests =
                 expectFileContains verifyLog [ "Verify completed for generated product" ]
             else
                 Expect.isFalse (directoryExists ".template.config") "generated products do not run source-only V3 generated-product checks"
+        }
+
+        test "V3 source and package generated validation roots prove Controls usage and framework-source exclusions" {
+            if fileExists "specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt" then
+                [ "app-source"; "app-package" ]
+                |> List.iter (fun profile ->
+                    expectGeneratedProductFileList
+                        profile
+                        [ "PackageReference Include=\"FS.Skia.UI.Controls\""
+                          "PackageReference Include=\"FS.Skia.UI.Controls.Elmish\""
+                          "PackageReference Include=\"FS.Skia.UI.KeyboardInput\""
+                          "RichText.create"
+                          "LineChart.create"
+                          "GraphView.create"
+                          "DataGrid.create"
+                          "ControlsElmish.program" ]
+                        [ "PackageReference Include=\"FS.Skia.UI.Charts\""
+                          "src/Charts"
+                          "tests/Charts.Tests"
+                          "samples/"
+                          "specs/00"
+                          "readiness/"
+                          "src/Lib/Lib.fsproj"
+                          ".template.package"
+                          "docs/architecture.md" ])
+            else
+                Expect.isFalse (directoryExists ".template.config") "generated products do not carry active feature validation roots"
         }
 
         test "V3 generated product matrix reflects selected capability sets" {

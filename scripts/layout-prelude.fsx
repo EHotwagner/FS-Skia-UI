@@ -1,9 +1,11 @@
 #r "nuget: Fable.Elmish, 4.2.0"
 #r "nuget: Yoga.Net, 3.2.3"
 #r "../src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll"
+#r "../src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll"
 #r "../src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll"
 
 open FS.Skia.UI
+open FS.Skia.UI.Scene
 open FS.Skia.UI.Layout
 
 let config = Defaults.stackConfig 800.0 600.0

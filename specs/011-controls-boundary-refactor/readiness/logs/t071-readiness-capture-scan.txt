@@ -1,0 +1,1 @@
+PASS: T071 readiness capture files name PASS verdicts and all referenced command/generated reports exist.

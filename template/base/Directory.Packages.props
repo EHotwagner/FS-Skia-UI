@@ -12,6 +12,7 @@
     <PackageVersion Include="FS.Skia.UI.KeyboardInput" Version="0.1.9-preview.1" />
     <PackageVersion Include="FS.Skia.UI.Layout" Version="0.1.9-preview.1" />
     <PackageVersion Include="FS.Skia.UI.Controls" Version="0.1.9-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.Controls.Elmish" Version="0.1.9-preview.1" />
     <!--#endif -->
     <!--#if (profile == "governed") -->
     <PackageVersion Include="FS.Skia.UI.Testing" Version="0.1.9-preview.1" />

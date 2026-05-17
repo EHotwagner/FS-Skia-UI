@@ -1,6 +1,6 @@
 namespace FS.Skia.UI.Controls
 
-open FS.Skia.UI
+open FS.Skia.UI.Scene
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Theme =

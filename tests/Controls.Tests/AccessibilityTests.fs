@@ -18,7 +18,7 @@ let accessibilityTests =
 
         test "missing accessibility and low contrast fail diagnostics" {
             let lowContrast =
-                Accessibility.metadata AccessibilityRole.Button "Low" [ "normal" ] (Some 1) (Accessibility.keyboard true [ "Enter" ] [ "Tab" ]) (Some(Accessibility.contrast FS.Skia.UI.Colors.black FS.Skia.UI.Colors.black 1.0 4.5))
+                Accessibility.metadata AccessibilityRole.Button "Low" [ "normal" ] (Some 1) (Accessibility.keyboard true [ "Enter" ] [ "Tab" ]) (Some(Accessibility.contrast FS.Skia.UI.Scene.Colors.black FS.Skia.UI.Scene.Colors.black 1.0 4.5))
 
             let control = Button.create [ Button.text "Low"; Attr.accessibility lowContrast ]
             let diagnostics = Accessibility.validate control

@@ -109,9 +109,12 @@ capabilities:
       - src/Controls/Accessibility.fsi
       - src/Controls/Diagnostics.fsi
       - src/Controls/Catalog.fsi
+      - src/Controls/ControlRuntime.fsi
+      - src/Controls/RichText.fsi
       - src/Controls/TextInput.fsi
       - src/Controls/Collections.fsi
       - src/Controls/Charts.fsi
+      - src/Controls/DataGrid.fsi
       - src/Controls/CustomControl.fsi
     tests:
       - tests/Controls.Tests/Controls.Tests.fsproj
@@ -120,10 +123,10 @@ capabilities:
     dependencies: [scene, layout, keyboard-input]
     profiles: [app, governed, sample-pack]
     defaultApp: true
-    evidence: [control-catalog, public-surface, semantic-tests, interaction-tests, layout-rendering, generated-product]
+    evidence: [control-catalog, public-surface, semantic-tests, interaction-tests, layout-rendering, chart-datagrid-controls, generated-product]
     surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.Controls.txt
     docs: docs/controls.md
-    ownerNotes: Declarative controls, widgets, chart controls, graph controls, and custom wrappers.
+    ownerNotes: Skia-rendered ordinary controls, rich text, chart controls, graph controls, DataGrid, custom wrappers, and product-owned ControlRuntime guidance.
   - id: testing
     displayName: Testing
     packageId: FS.Skia.UI.Testing

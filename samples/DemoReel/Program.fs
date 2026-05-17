@@ -4,7 +4,7 @@ open System
 open System.Diagnostics
 open System.IO
 open Elmish
-open FS.Skia.UI
+open FS.Skia.UI.Scene
 open FS.Skia.UI.Controls
 
 module LayoutDefaults = FS.Skia.UI.Layout.Defaults
@@ -342,7 +342,14 @@ let dataControls model t =
 
 let customDefinition t =
     { Id = "custom-pulse"
+      Measure = fun () -> 120.0, 42.0
       Render =
+        fun () ->
+            Scene.group [
+                Scene.ellipse { X = 0.0; Y = 0.0; Width = 80.0; Height = 80.0 } (Paint.fill (waveColor t) |> Paint.withOpacity 0.85)
+                Scene.text (14.0, 45.0) "custom" Colors.white
+            ]
+      Draw =
         fun () ->
             Scene.group [
                 Scene.ellipse { X = 0.0; Y = 0.0; Width = 80.0; Height = 80.0 } (Paint.fill (waveColor t) |> Paint.withOpacity 0.85)
@@ -354,6 +361,8 @@ let customDefinition t =
                 Intent =
                     { LayoutDefaults.layoutIntent with
                         Size = { Width = Some 120.0; Height = Some 42.0 } } }
+      Clip = Some(0.0, 0.0, 120.0, 42.0)
+      Effects = [ "pulse-opacity" ]
       HitTest = fun x y -> x >= 0.0 && x <= 120.0 && y >= 0.0 && y <= 42.0
       Event = fun event -> if event.Kind = "click" then Some SaveRequested else None
       Accessibility = Some(Accessibility.defaultFor "custom-control" "Custom pulse")

@@ -1,7 +1,14 @@
 # Controls Fragment
 
-Adds the `FS.Skia.UI.Controls` package reference, a product-owned controls
-example view, product test coverage for that example, and the
-`fs-skia-ui-widgets` skill. Generated products must not copy framework
-galleries, framework samples, framework readiness evidence, or framework
-implementation projects.
+Adds the `FS.Skia.UI.Controls` package reference, Skia-rendered Controls
+guidance, product-owned example views, product test coverage, and the
+`fs-skia-ui-widgets` skill.
+
+Generated products use one Elmish-style Controls path for ordinary controls,
+rich text, chart controls, graph controls, and DataGrid. Product models own
+business data and messages; Controls declarations stay generic over
+`Control<'msg>`.
+
+Generated products must not copy framework galleries, framework samples,
+framework readiness evidence, historical specs, or framework implementation
+projects.

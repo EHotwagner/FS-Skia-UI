@@ -15,7 +15,7 @@ let tests =
 
         test "render updates model and emits render effect" {
             let model, _ = Viewer.init { Title = "Product"; InitialSize = { Width = 640; Height = 480 } }
-            let scene = Scene.group "root" []
+            let scene = Group []
             let next, effects = Viewer.update (Render scene) model
             Expect.equal next.LastScene (Some scene) "last scene is stored"
             Expect.equal effects [ RenderScene scene ] "render effect is emitted"

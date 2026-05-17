@@ -5,7 +5,7 @@ copying the framework repository.
 
 The selected capabilities are controlled by `--profile`:
 
-- `app`: Scene, SkiaViewer, Elmish, KeyboardInput, Layout, Controls
+- `app`: Scene, SkiaViewer, Elmish, KeyboardInput, Layout, Controls, Controls.Elmish adapter
 - `headless-scene`: Scene
 - `governed`: Scene, Testing
 - `sample-pack`: Scene, SkiaViewer, Elmish, Samples
@@ -31,3 +31,10 @@ source before restoring or running this generated project.
 
 The product owns its application code, tests, documentation, readiness evidence,
 and selected local skills.
+
+For generated app profiles, `FS.Skia.UI.Controls` is the authoring path for
+ordinary controls, rich text, chart controls, graph controls, and DataGrid.
+When Elmish integration is selected, `FS.Skia.UI.Controls.Elmish` provides the
+adapter for commands, subscriptions, and program wiring. Users moving from the
+legacy Charts package should use Controls chart and DataGrid declarations
+directly; there is no compatibility shim.

@@ -1,0 +1,1 @@
+PASS: generated guidance, local Controls skill, and active/preset spec-plan templates have no stale Charts package, chart-only, DataGrid-as-chart, renderer-neutral, or host-loop ownership terms.

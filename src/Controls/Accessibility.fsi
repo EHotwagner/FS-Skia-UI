@@ -2,7 +2,7 @@ namespace FS.Skia.UI.Controls
 
 module Accessibility =
     val keyboard: focusable: bool -> activationKeys: string list -> navigationKeys: string list -> KeyboardOperation
-    val contrast: foreground: FS.Skia.UI.Color -> background: FS.Skia.UI.Color -> ratio: float -> requiredRatio: float -> ContrastEvidence
+    val contrast: foreground: FS.Skia.UI.Scene.Color -> background: FS.Skia.UI.Scene.Color -> ratio: float -> requiredRatio: float -> ContrastEvidence
     val metadata:
         role: AccessibilityRole ->
         nameSource: string ->

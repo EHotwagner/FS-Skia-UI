@@ -1,0 +1,1 @@
+PASS: Controls, KeyboardInput, and Controls.Elmish baselines are active; Charts baseline is absent.

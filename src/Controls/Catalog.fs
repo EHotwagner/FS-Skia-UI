@@ -56,15 +56,21 @@ module Catalog =
               "tests/Controls.Tests/RenderingTests.fs" ]
           Evidence =
             [ "specs/010-skia-controls-library/readiness/control-catalog.md"
-              "specs/010-skia-controls-library/readiness/layout-rendering.md" ]
+              "specs/010-skia-controls-library/readiness/layout-rendering.md"
+              "specs/011-controls-boundary-refactor/readiness/control-catalog.md" ]
           SupportStatus = "supported"
           Owner = "controls" }
 
     let common = [ "enabled"; "visible"; "width"; "height"; "padding"; "style"; "theme"; "accessibility" ]
     let states = [ "normal"; "disabled"; "hover"; "pressed"; "focused"; "selected"; "validation"; "loading" ]
+    let chartDataGridEvidence = [ "specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md" ]
+
+    let withChartDataGridEvidence row =
+        { row with Evidence = row.Evidence @ chartDataGridEvidence }
 
     let supportedControls =
         [ definition "text-block" "Text Block" "display" "TextBlock" "Static model-owned text display." [ "text" ] common [] states "StaticText"
+          definition "rich-text" "Rich Text" "display" "RichText" "Skia-specific rich text display with measurement, clipping, effects, diagnostics, and accessibility metadata." [ "runs" ] common [] states "StaticText"
           definition "label" "Label" "display" "Label" "Short form label text." [ "text" ] common [] states "StaticText"
           definition "image" "Image" "display" "Image" "Image placeholder or drawing-surface reference." [ "value" ] common [] states "Image"
           definition "icon" "Icon" "display" "Icon" "Named icon glyph or product symbol." [ "text" ] common [] states "Image"
@@ -84,7 +90,8 @@ module Catalog =
           definition "multi-select-list" "Multi Select List" "selection" "Collections" "Multiple-selection list with model-owned selected keys." [ "items" ] common [ "onChanged" ] states "List"
           definition "combo-box" "Combo Box" "selection" "Collections" "Compact selection list." [ "items" ] common [ "onChanged" ] states "List"
           definition "tree-view" "Tree View" "data" "Collections" "Hierarchical item display." [ "items" ] common [ "onSelected" ] states "List"
-          definition "data-grid" "Data Grid" "data" "Collections" "Table-like bounded visible-range data control." [ "items" ] common [ "onSelected" ] states "Grid"
+          definition "data-grid" "Data Grid" "data" "DataGrid" "Table-like bounded visible-range data control with product-owned rows, selection, focus, sort, and filter metadata." [ "columns"; "rows" ] common [ "onSelected"; "onFocusChanged"; "onSortChanged" ] states "Grid"
+          |> withChartDataGridEvidence
           definition "stack" "Stack" "layout" "Stack" "Ordered vertical or horizontal child composition." [ "children" ] common [] states "StaticText"
           definition "grid" "Grid" "layout" "Grid" "Structured child composition." [ "children" ] common [] states "StaticText"
           definition "dock" "Dock" "layout" "Dock" "Docked region composition." [ "children" ] common [] states "StaticText"
@@ -105,10 +112,15 @@ module Catalog =
           definition "spinner" "Spinner" "feedback" "Spinner" "Indeterminate progress indicator." [] common [] states "Progress"
           definition "validation-message" "Validation Message" "feedback" "ValidationMessage" "Validation text tied to model state." [ "text" ] common [] states "StaticText"
           definition "line-chart" "Line Chart" "chart" "LineChart" "Controls-owned line data visualization." [ "series" ] common [ "onSelected" ] states "Chart"
+          |> withChartDataGridEvidence
           definition "bar-chart" "Bar Chart" "chart" "BarChart" "Controls-owned bar data visualization." [ "series" ] common [ "onSelected" ] states "Chart"
+          |> withChartDataGridEvidence
           definition "pie-chart" "Pie Chart" "chart" "PieChart" "Controls-owned part-to-whole visualization." [ "values" ] common [ "onSelected" ] states "Chart"
+          |> withChartDataGridEvidence
           definition "scatter-plot" "Scatter Plot" "chart" "ScatterPlot" "Controls-owned point cloud visualization." [ "series" ] common [ "onSelected" ] states "Chart"
+          |> withChartDataGridEvidence
           definition "graph-view" "Graph View" "graph" "GraphView" "Controls-owned node and edge visualization." [ "nodes" ] common [ "onSelected" ] states "Graph"
+          |> withChartDataGridEvidence
           definition "custom-control" "Custom Control" "custom" "CustomControl" "Product-owned wrapper for custom Skia content." [ "id"; "render"; "layout"; "hitTest"; "accessibility" ] common [ "onCustom" ] states "Custom" ]
 
     let supportedCount () =
@@ -136,7 +148,14 @@ module Catalog =
               if row.Examples.IsEmpty || row.Tests.IsEmpty || row.Evidence.IsEmpty then
                   yield Diagnostics.create (Some row.Id) row.Id MissingRequiredAttribute Error "Catalog row is missing examples, tests, or evidence."
               if row.Accessibility.Role.Trim() = "" then
-                  yield Diagnostics.create (Some row.Id) row.Id MissingAccessibilityMetadata Error "Catalog row is missing accessibility role." ]
+                  yield Diagnostics.create (Some row.Id) row.Id MissingAccessibilityMetadata Error "Catalog row is missing accessibility role."
+          for row in supportedControls do
+              if row.Id = "data-grid" && row.Category <> "data" && row.Category <> "collection" then
+                  yield Diagnostics.create (Some row.Id) row.Id UnsupportedStateCombination Error "DataGrid must be categorized as data or collection."
+              if row.Id = "data-grid" && row.Module <> "DataGrid" then
+                  yield Diagnostics.create (Some row.Id) row.Id StaleGeneratedReference Error "DataGrid catalog row must be owned by the Controls DataGrid module."
+              if row.Id = "rich-text" && row.Module <> "RichText" then
+                  yield Diagnostics.create (Some row.Id) row.Id MissingRequiredAttribute Error "Rich text catalog row must reference the RichText module." ]
 
     let markdownSummary () =
         [ "# Control Catalog"

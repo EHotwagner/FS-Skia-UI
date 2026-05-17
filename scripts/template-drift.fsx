@@ -209,6 +209,69 @@ let activeFeatureEvidenceText () =
 
 let featureEvidence = activeFeatureEvidenceText ()
 
+let controlsBoundaryGuidanceFiles =
+    [ "template/fragments/controls/README.md"
+      "template/fragments/controls/skill/SKILL.md"
+      "template/fragments/elmish/README.md"
+      "template/base/README.md"
+      "template/base/docs/product.md"
+      "src/Controls/skill/SKILL.md"
+      ".specify/templates/spec-template.md"
+      ".specify/templates/plan-template.md"
+      ".specify/presets/fsharp-opinionated/templates/spec-template.md"
+      ".specify/presets/fsharp-opinionated/templates/plan-template.md" ]
+
+let controlsBoundaryGuidanceText () =
+    controlsBoundaryGuidanceFiles
+    |> List.choose (fun relative ->
+        let absolute = path [ repositoryRoot; relative ]
+
+        if File.Exists absolute then
+            Some(File.ReadAllText absolute)
+        else
+            None)
+    |> String.concat Environment.NewLine
+
+let controlsBoundaryGuidanceViolations () =
+    let combined = controlsBoundaryGuidanceText ()
+    let removedChartsPackage = "FS.Skia.UI." + "Charts"
+    let removedChartsSkill = "fs-skia-" + "charts"
+
+    let required =
+        [ "FS.Skia.UI.Controls"
+          "Skia-rendered"
+          "DataGrid"
+          "FS.Skia.UI.Controls.Elmish"
+          "ControlsElmish.program"
+          "legacy Charts package"
+          "no compatibility shim" ]
+
+    let forbidden =
+        [ removedChartsPackage
+          removedChartsSkill
+          ("chart-" + "only")
+          ("DataGrid " + "as chart")
+          ("DataGrid-" + "as-chart")
+          ("renderer-" + "neutral")
+          ("renderer " + "neutral")
+          ("host-" + "loop ownership")
+          ("host loop " + "ownership") ]
+
+    [ yield!
+          required
+          |> List.choose (fun term ->
+              if combined.IndexOf(term, StringComparison.OrdinalIgnoreCase) < 0 then
+                  Some $"generated controls guidance missing `{term}` [controls-boundary-guidance]"
+              else
+                  None)
+      yield!
+          forbidden
+          |> List.choose (fun term ->
+              if combined.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0 then
+                  Some $"generated controls guidance contains stale term `{term}` [controls-boundary-guidance]"
+              else
+                  None) ]
+
 let evidenceMentionsChange changedPath (pathClass: PathClass) =
     let candidates =
         changedPath
@@ -283,7 +346,9 @@ let classViolations =
             else
                 Some $"{changedPath}: path class `{pathClass.Name}` is missing same-diff required alignment class `{required}`." ))
 
-let violations = validateDeferrals () @ classViolations
+let controlsBoundaryViolations = controlsBoundaryGuidanceViolations ()
+
+let violations = validateDeferrals () @ classViolations @ controlsBoundaryViolations
 
 let report =
     [ yield "# Template Drift Report"
@@ -318,6 +383,13 @@ let report =
       yield $"- Changed alignment classes: `{changedAlignmentText}`"
       yield $"- Deferral file: `{deferralsPath}`"
       yield $"- Active feature evidence: `{activeFeatureDir}`"
+      yield ""
+      yield "## Controls Boundary Guidance"
+      yield ""
+      if List.isEmpty controlsBoundaryViolations then
+          yield "- PASS: generated guidance names Controls ownership, DataGrid, adapter wiring, and Charts migration without stale generated terms."
+      else
+          yield! controlsBoundaryViolations |> List.map (fun violation -> "- " + violation)
       yield ""
       yield "## Diagnostics"
       yield ""

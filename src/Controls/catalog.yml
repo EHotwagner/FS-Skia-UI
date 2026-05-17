@@ -2,11 +2,12 @@ schemaVersion: "1.0"
 catalogVersion: "2026-05-16"
 owner: controls
 summary:
-  supportedCount: 46
+  supportedCount: 47
   categories: [display, input, selection, navigation, layout, feedback, data, chart, graph, custom]
   evidence:
     - specs/010-skia-controls-library/readiness/control-catalog.md
     - specs/010-skia-controls-library/readiness/layout-rendering.md
+    - specs/011-controls-boundary-refactor/readiness/control-catalog.md
 defaults:
   commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]
   visualStates: [normal, disabled, hover, pressed, focused, selected, validation, loading]
@@ -19,6 +20,7 @@ defaults:
   evidence:
     - specs/010-skia-controls-library/readiness/control-catalog.md
     - specs/010-skia-controls-library/readiness/layout-rendering.md
+    - specs/011-controls-boundary-refactor/readiness/control-catalog.md
   accessibility:
     nameSource: text/value/accessibility attribute
     stateMetadata: [enabled, visible, selected, validation, loading]
@@ -39,6 +41,21 @@ controls:
     examples: [samples/ControlsGallery/Program.fs]
     tests: [tests/Controls.Tests/CatalogTests.fs, tests/Controls.Tests/SemanticTests.fs, tests/Controls.Tests/InteractionTests.fs, tests/Controls.Tests/AccessibilityTests.fs, tests/Controls.Tests/RenderingTests.fs]
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
+    supportStatus: supported
+    owner: controls
+  - id: rich-text
+    displayName: Rich Text
+    category: display
+    module: RichText
+    purpose: Skia-specific rich text display with measurement, clipping, effects, diagnostics, and accessibility metadata.
+    requiredAttributes: [runs]
+    commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]
+    events: []
+    visualStates: [normal, disabled, hover, pressed, focused, selected, validation, loading]
+    accessibility: { role: StaticText, nameSource: text/value/accessibility attribute, stateMetadata: [enabled, visible, selected, validation, loading], focusBehavior: catalog focus order, keyboardOperation: Tab navigation and Enter/Space activation where interactive, contrastEvidence: readiness/layout-rendering.md }
+    examples: [samples/ControlsGallery/Program.fs]
+    tests: [tests/Controls.Tests/CatalogTests.fs, tests/Controls.Tests/SemanticTests.fs, tests/Controls.Tests/InteractionTests.fs, tests/Controls.Tests/AccessibilityTests.fs, tests/Controls.Tests/RenderingTests.fs]
+    evidence: [specs/011-controls-boundary-refactor/readiness/rich-rendering.md, specs/011-controls-boundary-refactor/readiness/control-catalog.md]
     supportStatus: supported
     owner: controls
   - id: label
@@ -329,16 +346,16 @@ controls:
   - id: data-grid
     displayName: Data Grid
     category: data
-    module: Collections
-    purpose: Table-like bounded visible-range data control.
-    requiredAttributes: [items]
+    module: DataGrid
+    purpose: Table-like bounded visible-range data control with product-owned rows, selection, focus, sort, and filter metadata.
+    requiredAttributes: [columns, rows]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]
-    events: [onSelected]
+    events: [onSelected, onFocusChanged, onSortChanged]
     visualStates: [normal, disabled, hover, pressed, focused, selected, validation, loading]
     accessibility: { role: Grid, nameSource: text/value/accessibility attribute, stateMetadata: [enabled, visible, selected, validation, loading], focusBehavior: catalog focus order, keyboardOperation: Tab navigation and Enter/Space activation where interactive, contrastEvidence: readiness/layout-rendering.md }
     examples: [samples/ControlsGallery/Program.fs]
     tests: [tests/Controls.Tests/CatalogTests.fs, tests/Controls.Tests/SemanticTests.fs, tests/Controls.Tests/InteractionTests.fs, tests/Controls.Tests/AccessibilityTests.fs, tests/Controls.Tests/RenderingTests.fs]
-    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
+    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]
     supportStatus: supported
     owner: controls
   - id: stack
@@ -638,7 +655,7 @@ controls:
     accessibility: { role: Chart, nameSource: text/value/accessibility attribute, stateMetadata: [enabled, visible, selected, validation, loading], focusBehavior: catalog focus order, keyboardOperation: Tab navigation and Enter/Space activation where interactive, contrastEvidence: readiness/layout-rendering.md }
     examples: [samples/ControlsGallery/Program.fs]
     tests: [tests/Controls.Tests/CatalogTests.fs, tests/Controls.Tests/SemanticTests.fs, tests/Controls.Tests/InteractionTests.fs, tests/Controls.Tests/AccessibilityTests.fs, tests/Controls.Tests/RenderingTests.fs]
-    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
+    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]
     supportStatus: supported
     owner: controls
   - id: bar-chart
@@ -653,7 +670,7 @@ controls:
     accessibility: { role: Chart, nameSource: text/value/accessibility attribute, stateMetadata: [enabled, visible, selected, validation, loading], focusBehavior: catalog focus order, keyboardOperation: Tab navigation and Enter/Space activation where interactive, contrastEvidence: readiness/layout-rendering.md }
     examples: [samples/ControlsGallery/Program.fs]
     tests: [tests/Controls.Tests/CatalogTests.fs, tests/Controls.Tests/SemanticTests.fs, tests/Controls.Tests/InteractionTests.fs, tests/Controls.Tests/AccessibilityTests.fs, tests/Controls.Tests/RenderingTests.fs]
-    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
+    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]
     supportStatus: supported
     owner: controls
   - id: pie-chart
@@ -668,7 +685,7 @@ controls:
     accessibility: { role: Chart, nameSource: text/value/accessibility attribute, stateMetadata: [enabled, visible, selected, validation, loading], focusBehavior: catalog focus order, keyboardOperation: Tab navigation and Enter/Space activation where interactive, contrastEvidence: readiness/layout-rendering.md }
     examples: [samples/ControlsGallery/Program.fs]
     tests: [tests/Controls.Tests/CatalogTests.fs, tests/Controls.Tests/SemanticTests.fs, tests/Controls.Tests/InteractionTests.fs, tests/Controls.Tests/AccessibilityTests.fs, tests/Controls.Tests/RenderingTests.fs]
-    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
+    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]
     supportStatus: supported
     owner: controls
   - id: scatter-plot
@@ -683,7 +700,7 @@ controls:
     accessibility: { role: Chart, nameSource: text/value/accessibility attribute, stateMetadata: [enabled, visible, selected, validation, loading], focusBehavior: catalog focus order, keyboardOperation: Tab navigation and Enter/Space activation where interactive, contrastEvidence: readiness/layout-rendering.md }
     examples: [samples/ControlsGallery/Program.fs]
     tests: [tests/Controls.Tests/CatalogTests.fs, tests/Controls.Tests/SemanticTests.fs, tests/Controls.Tests/InteractionTests.fs, tests/Controls.Tests/AccessibilityTests.fs, tests/Controls.Tests/RenderingTests.fs]
-    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
+    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]
     supportStatus: supported
     owner: controls
   - id: graph-view
@@ -698,7 +715,7 @@ controls:
     accessibility: { role: Graph, nameSource: text/value/accessibility attribute, stateMetadata: [enabled, visible, selected, validation, loading], focusBehavior: catalog focus order, keyboardOperation: Tab navigation and Enter/Space activation where interactive, contrastEvidence: readiness/layout-rendering.md }
     examples: [samples/ControlsGallery/Program.fs]
     tests: [tests/Controls.Tests/CatalogTests.fs, tests/Controls.Tests/SemanticTests.fs, tests/Controls.Tests/InteractionTests.fs, tests/Controls.Tests/AccessibilityTests.fs, tests/Controls.Tests/RenderingTests.fs]
-    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
+    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]
     supportStatus: supported
     owner: controls
   - id: custom-control

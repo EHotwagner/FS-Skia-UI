@@ -1,0 +1,13 @@
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/011-controls-boundary-refactor
+
+[1/2] Computing task graph...
+task-graph: 85 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/011-controls-boundary-refactor/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/011-controls-boundary-refactor/readiness/task-graph.md
+  status: 80[X], 5[ ]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0
+duration-seconds=0

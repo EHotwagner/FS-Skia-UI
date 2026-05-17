@@ -1,0 +1,32 @@
+status=ok
+sample=DataGridGallery
+state-owned-by-model=true
+selection-effects=[DataGridSelectionChanged ["row-00128"]]
+focus-effects=[DataGridFocusChanged (Some { RowKey = "row-00128"
+                              ColumnKey = "account" })]
+visible-range={ FirstIndex = 0
+  Count = 14
+  Total = 1000 }
+node-count=76
+kinds=[GroupElement; RectangleElement; TextElement; GroupElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ ...]
+elapsed-ms=34

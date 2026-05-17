@@ -1,0 +1,93 @@
+Build started 05/17/2026 17:27:58.
+Project "/home/developer/projects/FS-Skia-UI/src/Controls.Elmish/Controls.Elmish.fsproj" on node 1 (Pack target(s)).
+Project "/home/developer/projects/FS-Skia-UI/src/Controls.Elmish/Controls.Elmish.fsproj" (1) is building "/home/developer/projects/FS-Skia-UI/src/Controls/Controls.fsproj" (2:2) on node 1 (default targets).
+Project "/home/developer/projects/FS-Skia-UI/src/Controls/Controls.fsproj" (2:2) is building "/home/developer/projects/FS-Skia-UI/src/Scene/Scene.fsproj" (5:3) on node 1 (default targets).
+GenerateTargetFrameworkMonikerAttribute:
+Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
+CoreGenerateAssemblyInfo:
+Skipping target "CoreGenerateAssemblyInfo" because all output files are up-to-date with respect to the input files.
+_GenerateSourceLinkFile:
+  Source Link file 'obj/Release/net10.0/Scene.sourcelink.json' is up-to-date.
+CoreCompile:
+Skipping target "CoreCompile" because all output files are up-to-date with respect to the input files.
+_CopyOutOfDateSourceItemsToOutputDirectory:
+Skipping target "_CopyOutOfDateSourceItemsToOutputDirectory" because all output files are up-to-date with respect to the input files.
+GenerateBuildDependencyFile:
+Skipping target "GenerateBuildDependencyFile" because all output files are up-to-date with respect to the input files.
+CopyFilesToOutputDirectory:
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+Done Building Project "/home/developer/projects/FS-Skia-UI/src/Scene/Scene.fsproj" (default targets).
+Project "/home/developer/projects/FS-Skia-UI/src/Controls/Controls.fsproj" (2:2) is building "/home/developer/projects/FS-Skia-UI/src/Layout/Layout.fsproj" (4:3) on node 1 (default targets).
+GenerateTargetFrameworkMonikerAttribute:
+Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
+CoreGenerateAssemblyInfo:
+Skipping target "CoreGenerateAssemblyInfo" because all output files are up-to-date with respect to the input files.
+_GenerateSourceLinkFile:
+  Source Link file 'obj/Release/net10.0/Layout.sourcelink.json' is up-to-date.
+CoreCompile:
+Skipping target "CoreCompile" because all output files are up-to-date with respect to the input files.
+_CopyOutOfDateSourceItemsToOutputDirectory:
+Skipping target "_CopyOutOfDateSourceItemsToOutputDirectory" because all output files are up-to-date with respect to the input files.
+GenerateBuildDependencyFile:
+Skipping target "GenerateBuildDependencyFile" because all output files are up-to-date with respect to the input files.
+CopyFilesToOutputDirectory:
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+Done Building Project "/home/developer/projects/FS-Skia-UI/src/Layout/Layout.fsproj" (default targets).
+Project "/home/developer/projects/FS-Skia-UI/src/Controls/Controls.fsproj" (2:2) is building "/home/developer/projects/FS-Skia-UI/src/KeyboardInput/KeyboardInput.fsproj" (3:3) on node 1 (default targets).
+GenerateTargetFrameworkMonikerAttribute:
+Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
+CoreGenerateAssemblyInfo:
+Skipping target "CoreGenerateAssemblyInfo" because all output files are up-to-date with respect to the input files.
+_GenerateSourceLinkFile:
+  Source Link file 'obj/Release/net10.0/KeyboardInput.sourcelink.json' is up-to-date.
+CoreCompile:
+Skipping target "CoreCompile" because all output files are up-to-date with respect to the input files.
+_CopyOutOfDateSourceItemsToOutputDirectory:
+Skipping target "_CopyOutOfDateSourceItemsToOutputDirectory" because all output files are up-to-date with respect to the input files.
+GenerateBuildDependencyFile:
+Skipping target "GenerateBuildDependencyFile" because all output files are up-to-date with respect to the input files.
+CopyFilesToOutputDirectory:
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+Done Building Project "/home/developer/projects/FS-Skia-UI/src/KeyboardInput/KeyboardInput.fsproj" (default targets).
+GenerateTargetFrameworkMonikerAttribute:
+Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
+CoreGenerateAssemblyInfo:
+Skipping target "CoreGenerateAssemblyInfo" because all output files are up-to-date with respect to the input files.
+_GenerateSourceLinkFile:
+  Source Link file 'obj/Release/net10.0/Controls.sourcelink.json' is up-to-date.
+CoreCompile:
+Skipping target "CoreCompile" because all output files are up-to-date with respect to the input files.
+_CopyOutOfDateSourceItemsToOutputDirectory:
+Skipping target "_CopyOutOfDateSourceItemsToOutputDirectory" because all output files are up-to-date with respect to the input files.
+GenerateBuildDependencyFile:
+Skipping target "GenerateBuildDependencyFile" because all output files are up-to-date with respect to the input files.
+CopyFilesToOutputDirectory:
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Release/net10.0/FS.Skia.UI.Controls.dll
+Done Building Project "/home/developer/projects/FS-Skia-UI/src/Controls/Controls.fsproj" (default targets).
+GenerateTargetFrameworkMonikerAttribute:
+Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
+CoreGenerateAssemblyInfo:
+Skipping target "CoreGenerateAssemblyInfo" because all output files are up-to-date with respect to the input files.
+_GenerateSourceLinkFile:
+  Source Link file 'obj/Release/net10.0/Controls.Elmish.sourcelink.json' is up-to-date.
+CoreCompile:
+Skipping target "CoreCompile" because all output files are up-to-date with respect to the input files.
+_CopyOutOfDateSourceItemsToOutputDirectory:
+Skipping target "_CopyOutOfDateSourceItemsToOutputDirectory" because all output files are up-to-date with respect to the input files.
+GenerateBuildDependencyFile:
+Skipping target "GenerateBuildDependencyFile" because all output files are up-to-date with respect to the input files.
+CopyFilesToOutputDirectory:
+  Controls.Elmish -> /home/developer/projects/FS-Skia-UI/src/Controls.Elmish/bin/Release/net10.0/FS.Skia.UI.Controls.Elmish.dll
+GenerateNuspec:
+  The package FS.Skia.UI.Controls.Elmish.0.1.10-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Controls.Elmish.0.1.10-preview.1.nupkg'.
+Done Building Project "/home/developer/projects/FS-Skia-UI/src/Controls.Elmish/Controls.Elmish.fsproj" (Pack target(s)).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.83
+
+exit-code=0
+duration-seconds=1

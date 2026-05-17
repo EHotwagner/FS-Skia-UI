@@ -1,0 +1,14 @@
+Updated sample stale Charts references:
+
+Controls-owned sample API markers:
+samples/ChartsGallery/Program.fs:54:            LineChart.create [ LineChart.series model.Series; Attr.width 270.0; Attr.height 130.0 ]
+samples/LayoutGraphGallery/Program.fs:114:    LineChart.create [ LineChart.series chartSeries; Attr.width 260.0; Attr.height 120.0 ]
+samples/LayoutGraphGallery/Program.fs:119:    DataGrid.create gridColumns [
+samples/LayoutGraphGallery/Program.fs:120:        DataGrid.rows model.GridRows
+samples/ControlsGallery/Program.fs:57:let gridColumnsAttr: Attr<Msg> = DataGrid.columns gridColumns
+samples/ControlsGallery/Program.fs:171:            LineChart.create [
+samples/ControlsGallery/Program.fs:177:            GraphView.create [ GraphView.nodes [ "form"; "dashboard"; "data" ] ]
+samples/ControlsGallery/Program.fs:178:            DataGrid.create gridColumns [
+samples/ControlsGallery/Program.fs:179:                DataGrid.rows model.GridRows
+samples/DataGridGallery/Program.fs:45:    DataGrid.create columns [
+samples/DataGridGallery/Program.fs:46:        DataGrid.rows model.Rows

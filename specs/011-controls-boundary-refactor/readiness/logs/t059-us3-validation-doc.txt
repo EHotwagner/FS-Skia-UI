@@ -1,0 +1,22 @@
+specs/011-controls-boundary-refactor/readiness/generated-guidance.md:9:| `app` | `app-source`, `app-package` | Selects Scene, SkiaViewer, Elmish, KeyboardInput, Layout, Controls, and `FS.Skia.UI.Controls.Elmish` adapter package references. |
+specs/011-controls-boundary-refactor/readiness/generated-guidance.md:36:- `FS.Skia.UI.Controls.Elmish`
+specs/011-controls-boundary-refactor/readiness/generated-guidance.md:54:- `readiness/logs/t057-governance-tests.txt`
+specs/011-controls-boundary-refactor/readiness/generated-guidance.md:55:- `readiness/logs/t057-active-guidance-stale-scan.txt`
+specs/011-controls-boundary-refactor/readiness/generated-guidance.md:57:- `readiness/template-drift-target-output.md`
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:25:| `app-source` | `FS.Skia.UI.Controls`, `FS.Skia.UI.Controls.Elmish`, `FS.Skia.UI.KeyboardInput`, `FS.Skia.UI.Layout`, `FS.Skia.UI.Elmish`, `FS.Skia.UI.Scene`, `FS.Skia.UI.SkiaViewer` |
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:26:| `app-package` | Same package set as `app-source`; generated from the packaged template payload. |
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:53:  `FS.Skia.UI.Controls.Elmish` for app profiles that select Controls and
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:63:  product messages, and `FS.Skia.UI.Controls.Elmish` adapter program wiring.
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:70:- `build.fsx` now adds `FS.Skia.UI.Controls.Elmish` for generated products that
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:79:  - `readiness/logs/t057-governance-tests.txt`
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:80:  - `readiness/logs/t057-active-guidance-stale-scan.txt`
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:82:  - `readiness/template-drift-target-output.md`
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:83:- Local `./fake.sh build -t GeneratedGuidanceCheck` remains blocked by the
+specs/011-controls-boundary-refactor/readiness/us3-validation.md:1:# US3 Independent Validation
+specs/011-controls-boundary-refactor/readiness/us3-validation.md:10:`FS.Skia.UI.Controls.Elmish` at the program edge, and generated output avoids
+specs/011-controls-boundary-refactor/readiness/us3-validation.md:18:| Generated guidance and profile tests | `dotnet test tests/Governance.Tests/Governance.Tests.fsproj -m:1 --no-restore --filter "Generated project validation contract|Generated guidance hardening|Template drift governance|Controls boundary generated guidance|Template profile metadata|Controls boundary composition"` | `readiness/logs/t057-governance-tests.txt` |
+specs/011-controls-boundary-refactor/readiness/us3-validation.md:20:| Template drift report | `dotnet fsi scripts/template-drift.fsx specs/011-controls-boundary-refactor/readiness/template-drift-target-output.md` | `readiness/logs/t057-template-drift-script.txt`, `readiness/template-drift-target-output.md` |
+specs/011-controls-boundary-refactor/readiness/us3-validation.md:21:| Active generated guidance stale scan | `rg` over `build.fsx`, template fragments, spec/plan templates, template drift script, and local Controls skill | `readiness/logs/t057-active-guidance-stale-scan.txt` |
+specs/011-controls-boundary-refactor/readiness/us3-validation.md:26:- `app-source` and `app-package` include `FS.Skia.UI.Controls`,
+specs/011-controls-boundary-refactor/readiness/us3-validation.md:27:  `FS.Skia.UI.Controls.Elmish`, `FS.Skia.UI.KeyboardInput`,
+specs/011-controls-boundary-refactor/readiness/us3-validation.md:49:`./fake.sh build -t GeneratedGuidanceCheck` is blocked locally by the existing

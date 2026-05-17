@@ -20,24 +20,262 @@ type Rect =
       Width: float
       Height: float }
 
+type StrokeCap =
+    | Butt
+    | Round
+    | Square
+
+type StrokeJoin =
+    | Miter
+    | RoundJoin
+    | Bevel
+
+type BlendMode =
+    | SrcOver
+    | Multiply
+    | Screen
+    | Overlay
+    | Darken
+    | Lighten
+    | ColorDodge
+    | ColorBurn
+    | Difference
+    | Exclusion
+
+type Stroke =
+    { Width: float
+      Cap: StrokeCap
+      Join: StrokeJoin
+      Miter: float }
+
+type Shader =
+    | SolidColor of Color
+    | LinearGradient of startPoint: Point * endPoint: Point * colors: Color list
+    | RadialGradient of center: Point * radius: float * colors: Color list
+    | SweepGradient of center: Point * colors: Color list
+
+type ColorFilter =
+    | NoColorFilter
+    | BlendColor of Color * BlendMode
+
+type MaskFilter =
+    | NoMaskFilter
+    | Blur of sigma: float
+
+type ImageFilter =
+    | NoImageFilter
+    | DropShadow of dx: float * dy: float * blur: float * color: Color
+
+type PathEffect =
+    | NoPathEffect
+    | Dash of intervals: float list * phase: float
+    | Discrete of segmentLength: float * deviation: float
+    | Corner of radius: float
+
 type Paint =
     { Fill: Color option
-      StrokeWidth: float option
-      Opacity: float }
+      Stroke: Stroke option
+      Opacity: float
+      Antialias: bool
+      BlendMode: BlendMode
+      Shader: Shader option
+      ColorFilter: ColorFilter
+      MaskFilter: MaskFilter
+      ImageFilter: ImageFilter
+      PathEffect: PathEffect }
+
+type PathFillType =
+    | Winding
+    | EvenOdd
+
+type PathCommand =
+    | MoveTo of Point
+    | LineTo of Point
+    | QuadTo of control: Point * point: Point
+    | CubicTo of control1: Point * control2: Point * point: Point
+    | ArcTo of bounds: Rect * startAngle: float * sweepAngle: float
+    | Close
+
+type PathSpec =
+    { Commands: PathCommand list
+      FillType: PathFillType }
+
+type Clip =
+    | RectClip of Rect
+    | PathClip of PathSpec
+
+type RegionOperation =
+    | Replace
+    | RegionUnion
+    | RegionIntersect
+    | RegionDifference
+
+type Region =
+    { Bounds: Rect list
+      Operation: RegionOperation }
+
+type ColorSpace =
+    | Srgb
+    | DisplayP3
+    | AdobeRgb
+
+type PerspectiveTransform =
+    { M11: float
+      M12: float
+      M13: float
+      M21: float
+      M22: float
+      M23: float
+      M31: float
+      M32: float
+      M33: float }
+
+type PathOperation =
+    | Union
+    | Intersect
+    | Difference
+    | Xor
+
+type PathMeasure =
+    { Length: float
+      IsClosed: bool }
+
+type FontSpec =
+    { Family: string option
+      Size: float
+      Weight: int option }
+
+type TextRun =
+    { Text: string
+      Position: Point
+      Font: FontSpec
+      Paint: Paint }
+
+type TextMetrics =
+    { Width: float
+      Height: float
+      Baseline: float }
+
+type Vertex =
+    { Position: Point
+      Color: Color option }
+
+type VertexMode =
+    | Triangles
+    | TriangleStrip
+    | TriangleFan
+
+type SceneElementKind =
+    | EmptyElement
+    | GroupElement
+    | RectangleElement
+    | EllipseElement
+    | LineElement
+    | PathElement
+    | PointsElement
+    | VerticesElement
+    | ArcElement
+    | TextElement
+    | TextRunElement
+    | ImageElement
+    | ClipElement
+    | RegionElement
+    | ColorSpaceElement
+    | PerspectiveElement
+    | PictureElement
+    | ChartElement
+
+type RenderReadbackEvidence =
+    { Size: Size
+      CapabilityCount: int
+      Capabilities: string list
+      DeterministicHash: string }
+
+type DiagnosticSeverity =
+    | Info
+    | Warning
+    | Error
+    | Fatal
+
+type DiagnosticStage =
+    | FrameRender
+
+type RenderDiagnostic =
+    { Severity: DiagnosticSeverity
+      Stage: DiagnosticStage
+      Message: string
+      Cause: string option }
 
 type SceneNode =
     | Empty
-    | Rectangle of id: string * bounds: Rect * paint: Paint
-    | Text of id: string * position: Point * text: string * paint: Paint
-    | Group of id: string * children: SceneNode list
+    | Group of Scene list
+    | Rectangle of (float * float * float * float) * Color
+    | PaintedRectangle of Rect * Paint
+    | Ellipse of Rect * Paint
+    | Line of Point * Point * Paint
+    | Path of PathSpec * Paint
+    | Points of Point list * Paint
+    | Vertices of VertexMode * Vertex list * Paint
+    | Arc of Rect * float * float * Paint
+    | Text of (float * float) * string * Color
+    | TextRun of TextRun
+    | Image of (float * float * float * float) * string
+    | ClipNode of Clip * Scene
+    | RegionNode of Region * Paint
+    | ColorSpaceNode of ColorSpace * Scene
+    | PerspectiveNode of PerspectiveTransform * Scene
+    | PictureNode of Picture
+    | Chart of values: float list
+
+and Scene =
+    { Nodes: SceneNode list }
+
+and Picture =
+    { Name: string
+      Scene: Scene }
 
 module Colors =
-    val transparent: Color
+    val rgba: red: byte -> green: byte -> blue: byte -> alpha: byte -> Color
     val rgb: red: byte -> green: byte -> blue: byte -> Color
+    val black: Color
+    val white: Color
+    val transparent: Color
+
+module Paint =
+    val fill: color: Color -> Paint
+    val stroke: color: Color -> width: float -> Paint
+    val withOpacity: opacity: float -> paint: Paint -> Paint
+    val withBlendMode: blendMode: BlendMode -> paint: Paint -> Paint
+    val withStrokeCap: cap: StrokeCap -> paint: Paint -> Paint
+    val withPathEffect: effect: PathEffect -> paint: Paint -> Paint
+
+module Path =
+    val create: fillType: PathFillType -> commands: PathCommand list -> PathSpec
+    val moveTo: x: float -> y: float -> PathCommand
+    val lineTo: x: float -> y: float -> PathCommand
+    val close: PathCommand
 
 module Scene =
-    val empty: SceneNode
-    val rectangle: id: string -> bounds: Rect -> fill: Color -> SceneNode
-    val text: id: string -> position: Point -> value: string -> fill: Color -> SceneNode
-    val group: id: string -> children: SceneNode list -> SceneNode
-    val describe: node: SceneNode -> string
+    val empty: Scene
+    val group: scenes: Scene list -> Scene
+    val rectangle: bounds: float * float * float * float -> fill: Color -> Scene
+    val rectangleWithPaint: bounds: Rect -> paint: Paint -> Scene
+    val ellipse: bounds: Rect -> paint: Paint -> Scene
+    val line: startPoint: Point -> endPoint: Point -> paint: Paint -> Scene
+    val path: path: PathSpec -> paint: Paint -> Scene
+    val points: points: Point list -> paint: Paint -> Scene
+    val vertices: mode: VertexMode -> vertices: Vertex list -> paint: Paint -> Scene
+    val arc: bounds: Rect -> startAngle: float -> sweepAngle: float -> paint: Paint -> Scene
+    val text: position: float * float -> text: string -> color: Color -> Scene
+    val textRun: run: TextRun -> Scene
+    val measureText: text: string -> font: FontSpec -> TextMetrics
+    val image: bounds: float * float * float * float -> source: string -> Scene
+    val clipped: clip: Clip -> scene: Scene -> Scene
+    val region: region: Region -> paint: Paint -> Scene
+    val withColorSpace: colorSpace: ColorSpace -> scene: Scene -> Scene
+    val withPerspective: transform: PerspectiveTransform -> scene: Scene -> Scene
+    val picture: picture: Picture -> Scene
+    val chart: values: float list -> Scene
+    val describe: scene: Scene -> SceneElementKind list
+    val diagnostics: scene: Scene -> RenderDiagnostic list
+    val renderReadbackEvidence: size: Size -> scene: Scene -> RenderReadbackEvidence

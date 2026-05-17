@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Lib\Lib.fsproj" />
+    <ProjectReference Include="..\Scene\Scene.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

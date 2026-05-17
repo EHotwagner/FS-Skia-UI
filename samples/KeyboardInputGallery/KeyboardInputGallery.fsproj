@@ -11,7 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Lib\Lib.fsproj" />
+    <ProjectReference Include="..\..\src\Scene\Scene.fsproj" />
+    <ProjectReference Include="..\..\src\Layout\Layout.fsproj" />
+    <ProjectReference Include="..\..\src\KeyboardInput\KeyboardInput.fsproj" />
+    <ProjectReference Include="..\..\src\Controls\Controls.fsproj" />
+    <ProjectReference Include="..\..\src\Controls.Elmish\Controls.Elmish.fsproj" />
   </ItemGroup>
 
 </Project>

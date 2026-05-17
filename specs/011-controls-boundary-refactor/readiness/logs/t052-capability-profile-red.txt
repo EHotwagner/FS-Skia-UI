@@ -1,0 +1,14 @@
+  Governance.Tests -> /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed Template profile metadata.Controls capability is active home for controls rich text charts graph and DataGrid [15 ms]
+  Error Message:
+   
+Controls capability declares src/Controls/RichText.fsi. Sequence did not contain "src/Controls/RichText.fsi".
+   at TemplateProfileTests.templateProfileTests@119-5.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/TemplateProfileTests.fs:line 134
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112
+
+
+Failed!  - Failed:     1, Passed:     8, Skipped:     0, Total:     9, Duration: 23 ms - Governance.Tests.dll (net10.0)

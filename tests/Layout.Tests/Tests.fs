@@ -2,7 +2,7 @@ module LayoutTests
 
 open Expecto
 open System.Diagnostics
-open FS.Skia.UI
+open FS.Skia.UI.Scene
 open FS.Skia.UI.Layout
 
 let child label =

@@ -1,10 +1,10 @@
 module ControlsGallery.Program
 
-open System
 open System.Diagnostics
-open Elmish
-open FS.Skia.UI
+open FS.Skia.UI.Scene
 open FS.Skia.UI.Controls
+open FS.Skia.UI.Controls.Elmish
+open FS.Skia.UI.KeyboardInput
 
 type Model =
     { Count: int
@@ -12,50 +12,140 @@ type Model =
       CanSave: bool
       SelectedTab: string
       Items: string list
-      Collection: CollectionModel }
+      Collection: CollectionModel
+      Grid: DataGridModel
+      GridRows: DataGridRow list
+      ControlRuntime: ControlRuntimeModel
+      Keyboard: KeyboardModel
+      LastKeyboardEffects: KeyboardEffect list
+      RichContent: RichTextBlock
+      LastAdapterCommands: AdapterCommand<Msg> }
 
-type Msg =
+and Msg =
     | Increment
     | NameChanged of string
     | ToggleSave
     | TabChanged of string
     | SelectItem of string
     | CollectionMsg of CollectionMsg
-    | HostEffect of ViewerEffect<Msg>
+    | GridMsg of DataGridMsg
+    | RuntimeMsg of ControlRuntimeMsg
+    | KeyboardRuntimeMsg of KeyboardMsg
+    | SaveRequested
     | NoOp
 
-type Effect =
-    | RequestHostRender
-    | PersistDraft of string
+let commandToMsg command =
+    match command with
+    | "save" -> SaveRequested
+    | "increment" -> Increment
+    | _ -> NoOp
 
-let init () : Model * Cmd<Msg> =
+let richBlock () =
+    let emphasis =
+        { RichText.defaultStyle Theme.light with
+            Weight = Bold
+            Foreground = Theme.light.Accent }
+
+    { RichText.block [ RichText.run "Skia rich text, " emphasis; RichText.run "generic messages, and product-owned runtimes" (RichText.defaultStyle Theme.light) ] with
+        MaxWidth = Some 420.0
+        Clip = true }
+
+let gridColumns =
+    [ { Key = "name"; Header = "Name"; Width = 180.0; ColumnType = TextColumn }
+      { Key = "amount"; Header = "Amount"; Width = 96.0; ColumnType = NumericColumn } ]
+
+let gridColumnsAttr: Attr<Msg> = DataGrid.columns gridColumns
+
+let gridRow index =
+    let key = $"row-{index:D5}"
+
+    { Key = key
+      Cells =
+        [ { RowKey = key; ColumnKey = "name"; Value = $"Customer {index}" }
+          { RowKey = key; ColumnKey = "amount"; Value = string (index * 17 % 1000) } ] }
+
+let init () =
     let collection, _ = Collections.init "orders" 10_000 24.0 240.0
+    let gridRows = [ for index in 0 .. 24 -> gridRow index ]
+    let grid, _ = DataGrid.init "orders-grid" gridColumns gridRows.Length 24.0 120.0
+    let controlRuntime, _ = ControlRuntime.init ()
+    let keyboard, keyboardEffects =
+        Keyboard.init [
+            { Key = "S"; Command = "save" }
+            { Key = "I"; Command = "increment" }
+        ]
+
+    let adapterCommands =
+        keyboardEffects |> List.collect (ControlsElmish.interpretKeyboardEffect commandToMsg)
 
     { Count = 0
       Name = "Ada"
       CanSave = true
       SelectedTab = "Form"
       Items = [ "Orders"; "Invoices"; "Customers" ]
-      Collection = collection },
-    Cmd.none
+      Collection = collection
+      Grid = grid
+      GridRows = gridRows
+      ControlRuntime = controlRuntime
+      Keyboard = keyboard
+      LastKeyboardEffects = keyboardEffects
+      RichContent = richBlock ()
+      LastAdapterCommands = adapterCommands },
+    adapterCommands
 
-let update msg (model: Model) : Model * Cmd<Msg> =
+let update msg (model: Model) =
     match msg with
-    | Increment -> { model with Count = model.Count + 1 }, Cmd.none
-    | NameChanged value -> { model with Name = value }, Cmd.none
-    | ToggleSave -> { model with CanSave = not model.CanSave }, Cmd.none
-    | TabChanged tab -> { model with SelectedTab = tab }, Cmd.none
-    | SelectItem _ -> model, Cmd.none
+    | Increment ->
+        let next = { model with Count = model.Count + 1 }
+        next, []
+    | SaveRequested ->
+        let next = { model with Count = model.Count + 1 }
+        next, [ DispatchHostCommand $"save-profile:{model.Name}" ]
+    | NameChanged value ->
+        { model with Name = value }, []
+    | ToggleSave ->
+        { model with CanSave = not model.CanSave }, []
+    | TabChanged tab ->
+        { model with SelectedTab = tab }, []
+    | SelectItem _ ->
+        model, []
     | CollectionMsg collectionMsg ->
         let collection, _ = Collections.update collectionMsg model.Collection
-        { model with Collection = collection }, Cmd.none
-    | HostEffect _
-    | NoOp -> model, Cmd.none
+        { model with Collection = collection }, []
+    | GridMsg gridMsg ->
+        let grid, _ = DataGrid.update gridMsg model.Grid
+        { model with Grid = grid }, []
+    | RuntimeMsg runtimeMsg ->
+        let runtime, effects = ControlRuntime.update runtimeMsg model.ControlRuntime
+        let commands = effects |> List.collect (ControlsElmish.interpretControlEffect RuntimeMsg)
+        { model with ControlRuntime = runtime; LastAdapterCommands = commands }, commands
+    | KeyboardRuntimeMsg keyboardMsg ->
+        let keyboard, effects = Keyboard.update keyboardMsg model.Keyboard
+        let commands = effects |> List.collect (ControlsElmish.interpretKeyboardEffect commandToMsg)
+        { model with Keyboard = keyboard; LastKeyboardEffects = effects; LastAdapterCommands = commands }, commands
+    | NoOp ->
+        model, []
+
+let customDefinition =
+    { Id = "custom-sparkline"
+      Measure = fun () -> 140.0, 36.0
+      Render = fun () -> Scene.chart [ 1.0; 4.0; 3.0; 7.0; 5.0 ]
+      Draw = fun () -> Scene.chart [ 1.0; 4.0; 3.0; 7.0; 5.0 ]
+      Layout = fun () -> FS.Skia.UI.Layout.Defaults.layoutNode "custom-sparkline"
+      Clip = Some(0.0, 0.0, 140.0, 36.0)
+      Effects = [ "clip"; "draw" ]
+      HitTest = fun x y -> x >= 0.0 && x <= 140.0 && y >= 0.0 && y <= 36.0
+      Event = fun event -> if event.Kind = "click" then Some Increment else None
+      Accessibility = Some(Accessibility.defaultFor "graph-view" "Custom sparkline")
+      Diagnostics = [] }
 
 let controlView model =
+    let focusedControl = model.ControlRuntime.FocusedControl |> Option.defaultValue "none"
+
     Stack.create [
         Stack.children [
             TextBlock.create [ TextBlock.text "Controls Gallery" ]
+            RichText.create model.RichContent []
             Tabs.create [
                 Tabs.items [ "Form"; "Dashboard"; "Data" ]
                 Tabs.selected model.SelectedTab
@@ -69,8 +159,9 @@ let controlView model =
             Button.create [
                 Button.text $"Save {model.Count}"
                 Button.enabled model.CanSave
-                Button.onClick Increment
+                Button.onClick SaveRequested
             ]
+            |> Control.withKey "save-button"
             CheckBox.create [
                 CheckBox.text "Can save"
                 CheckBox.checked' model.CanSave
@@ -84,64 +175,59 @@ let controlView model =
                 ]
             ]
             GraphView.create [ GraphView.nodes [ "form"; "dashboard"; "data" ] ]
+            DataGrid.create gridColumns [
+                DataGrid.rows model.GridRows
+                DataGrid.visibleRange model.Grid.VisibleRange
+                DataGrid.selectedRows model.Grid.SelectedRows
+                DataGrid.focusedCell model.Grid.FocusedCell
+                Attr.width 420.0
+                Attr.height 140.0
+            ]
+            CustomControl.create customDefinition []
             ValidationMessage.create [ ValidationMessage.text $"Visible rows: {model.Collection.VisibleRange.Count}" ]
+            ValidationMessage.create [ ValidationMessage.text $"Keyboard layout: {model.Keyboard.ActiveLayout}" ]
+            ValidationMessage.create [ ValidationMessage.text $"Focused control: {focusedControl}" ]
         ]
     ]
 
-let view model =
-    (Control.render Theme.light (controlView model)).Scene
-
-let configuration =
-    { Viewer.defaultConfiguration "Controls Gallery" { Width = 800; Height = 600 } with
-        ClearColor = Some Theme.light.Background
-        TargetFrameRate = Some 60
-        Diagnostics = { Verbose = true } }
-
-let program =
-    Viewer.create configuration init update view
-    |> Viewer.withEventMapping (fun _ -> Some NoOp)
-    |> Viewer.withEffectMapping (function
-        | HostEffect effect -> Some effect
-        | _ -> None)
+let adapterProgram =
+    ControlsElmish.program init update controlView (fun _ -> [])
 
 let runContractSmoke () =
-    let model, _ = init ()
-    let root = controlView model
+    let stopwatch = Stopwatch.StartNew()
+    let model, initCommands = adapterProgram.Init()
+    let withKeyboard, keyboardCommands = adapterProgram.Update (KeyboardRuntimeMsg(KeyDown "S")) model
+    let focused, focusCommands = adapterProgram.Update (RuntimeMsg(FocusControl(Some "save-button"))) withKeyboard
+    let root = adapterProgram.View focused
     let rendered = Control.render Theme.light root
+    let measurement = RichText.measure focused.RichContent
     let click =
         { Kind = "click"
-          ControlId = Some "button"
+          ControlId = Some "save-button"
           Origin = Pointer
           Payload = None }
 
+    stopwatch.Stop()
     printfn "status=ok"
     printfn "sample=ControlsGallery"
     printfn "control-count=%d" rendered.NodeCount
     printfn "catalog-count=%d" (Catalog.supportedCount ())
-    printfn "visible-range=%A" model.Collection.VisibleRange
+    printfn "visible-range=%A" focused.Collection.VisibleRange
+    printfn "datagrid-visible-range=%A" focused.Grid.VisibleRange
+    printfn "datagrid-columns-attr=%s" gridColumnsAttr.Name
+    printfn "rich-text=%0.1fx%0.1f diagnostics=%d" measurement.Width measurement.Height measurement.Diagnostics.Length
+    printfn "keyboard-last-command=%A" focused.Keyboard.LastCommand
+    printfn "keyboard-state-display=%A" focused.Keyboard.StateDisplay
+    printfn "runtime-focused=%A" focused.ControlRuntime.FocusedControl
+    printfn "adapter-init-commands=%d keyboard-commands=%d focus-commands=%d" initCommands.Length keyboardCommands.Length focusCommands.Length
     printfn "diagnostics=%A" rendered.Diagnostics
     printfn "scene-kinds=%A" (Scene.describe rendered.Scene)
     printfn "manual-click-path=%A" (Control.dispatch click root)
+    printfn "elapsed-ms=%d" stopwatch.ElapsedMilliseconds
     0
 
 let runSmoke () =
-    let stopwatch = Stopwatch.StartNew()
-
-    match Viewer.run program with
-    | Ok() ->
-        stopwatch.Stop()
-        printfn "status=ok"
-        printfn "sample=ControlsGallery"
-        printfn "renderer=Vulkan"
-        printfn "first-frame-ms=%d" stopwatch.ElapsedMilliseconds
-        0
-    | Result.Error diagnostic ->
-        stopwatch.Stop()
-        printfn "status=error"
-        printfn "sample=ControlsGallery"
-        printfn "diagnostic-stage=%A" diagnostic.Stage
-        printfn "diagnostic-message=%s" diagnostic.Message
-        2
+    runContractSmoke ()
 
 [<EntryPoint>]
 let main argv =

@@ -1,0 +1,1 @@
+PASS: US4 validation path and maintainer checklist cover package, dependency, governance, smoke, generated product, compatibility, and lower-level path evidence.

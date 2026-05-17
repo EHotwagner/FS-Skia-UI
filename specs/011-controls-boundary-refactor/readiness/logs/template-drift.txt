@@ -1,0 +1,11 @@
+
+## template drift
+$ dotnet fsi scripts/template-drift.fsx "/home/developer/projects/FS-Skia-UI/specs/011-controls-boundary-refactor/readiness/template-drift.md"
+
+exit-code=0
+
+## template drift
+$ dotnet fsi scripts/template-drift.fsx "/home/developer/projects/FS-Skia-UI/specs/011-controls-boundary-refactor/readiness/template-drift.md"
+Out of memory.
+
+exit-code=134

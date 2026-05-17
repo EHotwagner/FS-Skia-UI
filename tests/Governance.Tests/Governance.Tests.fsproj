@@ -20,6 +20,8 @@
     <Compile Include="GeneratedProjectValidationTests.fs" />
     <Compile Include="DependencyGovernanceTests.fs" />
     <Compile Include="GeneratedGuidanceTests.fs" />
+    <Compile Include="ControlsBoundaryGeneratedGuidanceTests.fs" />
+    <Compile Include="ControlsBoundaryCompositionTests.fs" />
     <Compile Include="SkillValidationTests.fs" />
     <Compile Include="TemplateDriftTests.fs" />
     <Compile Include="PublicRecordInvariantTests.fs" />

@@ -81,11 +81,62 @@ let surfaceAreaTests =
               "KeyboardInput", "src/KeyboardInput/KeyboardInput.fsproj", "src/KeyboardInput/KeyboardInput.fsi", "readiness/surface-baselines/FS.Skia.UI.KeyboardInput.txt"
               "Layout", "src/Layout/Layout.fsproj", "src/Layout/Layout.fsi", "readiness/surface-baselines/FS.Skia.UI.Layout.txt"
               "Controls", "src/Controls/Controls.fsproj", "src/Controls/Types.fsi", "readiness/surface-baselines/FS.Skia.UI.Controls.txt"
+              "Controls.Elmish", "src/Controls.Elmish/Controls.Elmish.fsproj", "src/Controls.Elmish/ControlsElmish.fsi", "readiness/surface-baselines/FS.Skia.UI.Controls.Elmish.txt"
               "Testing", "src/Testing/Testing.fsproj", "src/Testing/Testing.fsi", "readiness/surface-baselines/FS.Skia.UI.Testing.txt" ]
             |> List.iter (fun (name, project, contract, baseline) ->
                 Expect.isTrue (File.Exists(Path.Combine(repositoryRoot, project))) $"{name} project exists"
                 Expect.isTrue (File.Exists(Path.Combine(repositoryRoot, contract))) $"{name} public .fsi contract exists"
                 Expect.isTrue (File.Exists(Path.Combine(repositoryRoot, baseline))) $"{name} package surface baseline exists")
+        }
+
+        test "controls boundary public contracts include runtime rich rendering and FSI transcript coverage" {
+            [ "src/Controls/ControlRuntime.fsi"
+              "src/Controls/RichText.fsi"
+              "src/Controls/DataGrid.fsi"
+              "src/Controls/Charts.fsi"
+              "src/Controls/CustomControl.fsi"
+              "src/KeyboardInput/KeyboardInput.fsi"
+              "src/Controls.Elmish/ControlsElmish.fsi" ]
+            |> List.iter (fun contract ->
+                Expect.isTrue (File.Exists(Path.Combine(repositoryRoot, contract))) $"{contract} is a curated public contract")
+
+            [ "scripts/controls-prelude.fsx"
+              "scripts/input-prelude.fsx"
+              "scripts/controls-elmish-prelude.fsx" ]
+            |> List.iter (fun transcriptScript ->
+                Expect.isTrue (File.Exists(Path.Combine(repositoryRoot, transcriptScript))) $"{transcriptScript} produces public FSI evidence")
+
+            [ "readiness/surface-baselines/FS.Skia.UI.Controls.txt"
+              "readiness/surface-baselines/FS.Skia.UI.KeyboardInput.txt"
+              "readiness/surface-baselines/FS.Skia.UI.Controls.Elmish.txt" ]
+            |> List.iter (fun baselinePath ->
+                Expect.isTrue (File.Exists(Path.Combine(repositoryRoot, baselinePath))) $"{baselinePath} exists for package surface review")
+        }
+
+        test "removed Charts package has no active surface baseline participation" {
+            let chartsBaseline =
+                Path.Combine(repositoryRoot, "readiness", "surface-baselines", "FS.Skia.UI.Charts.txt")
+
+            Expect.isFalse (File.Exists chartsBaseline) "legacy Charts package surface baseline is removed from active package review"
+        }
+
+        test "Controls FSI transcript authors chart graph and DataGrid without Charts package" {
+            let transcript = File.ReadAllText(Path.Combine(repositoryRoot, "scripts", "controls-prelude.fsx"))
+
+            [ "open FS.Skia.UI.Controls"
+              "LineChart.create"
+              "GraphView.create"
+              "DataGrid.create"
+              "DataGrid.columns"
+              "DataGrid.rows" ]
+            |> List.iter (fun required ->
+                Expect.stringContains transcript required $"Controls FSI transcript includes {required}")
+
+            [ "FS.Skia.UI.Charts"
+              "open FS.Skia.UI.Charts"
+              "#r \"../src/Charts" ]
+            |> List.iter (fun forbidden ->
+                Expect.isFalse (transcript.Contains(forbidden, StringComparison.Ordinal)) $"Controls FSI transcript does not use {forbidden}")
         }
 
         test "Scene package stays dependency-light" {
@@ -119,5 +170,29 @@ let surfaceAreaTests =
                 |> Seq.toList
 
             Expect.isEmpty offending "top-level visibility stays in .fsi files"
+        }
+
+        test "US4 maintained package surfaces are governed by paired signatures and active baselines" {
+            let implementationRoots =
+                [ "src/Controls"
+                  "src/KeyboardInput"
+                  "src/Controls.Elmish" ]
+
+            implementationRoots
+            |> List.collect (fun relative ->
+                Directory.EnumerateFiles(Path.Combine(repositoryRoot, relative), "*.fs", SearchOption.TopDirectoryOnly)
+                |> Seq.map (fun implementation -> implementation, Path.ChangeExtension(implementation, ".fsi"))
+                |> Seq.toList)
+            |> List.iter (fun (implementation, signature) ->
+                Expect.isTrue (File.Exists signature) $"{implementation} has a paired .fsi signature")
+
+            [ "readiness/surface-baselines/FS.Skia.UI.Controls.txt", "FS.Skia.UI.Controls.DataGrid"
+              "readiness/surface-baselines/FS.Skia.UI.KeyboardInput.txt", "FS.Skia.UI.KeyboardInput.KeyboardModel"
+              "readiness/surface-baselines/FS.Skia.UI.Controls.Elmish.txt", "FS.Skia.UI.Controls.Elmish.ControlsElmish" ]
+            |> List.iter (fun (baselinePath, expectedExport) ->
+                let content = File.ReadAllText(Path.Combine(repositoryRoot, baselinePath))
+                Expect.stringContains content expectedExport $"{baselinePath} contains {expectedExport}")
+
+            Expect.isFalse (File.Exists(Path.Combine(repositoryRoot, "readiness", "surface-baselines", "FS.Skia.UI.Charts.txt"))) "removed Charts baseline is not active"
         }
     ]

@@ -84,4 +84,61 @@ let docsGuidanceTests =
                 [ "tasks-template.md"
                   "speckit.evidence.graph" ]
         }
+
+        test "Controls compatibility guidance documents replacement path and non-promises" {
+            let compatibility = read "specs/011-controls-boundary-refactor/readiness/compatibility-impact.md"
+            let controls = read "docs/controls.md"
+            let generatedProduct = read "template/base/docs/product.md"
+            let combined = compatibility + Environment.NewLine + controls + Environment.NewLine + generatedProduct
+
+            [ "LineChart"
+              "BarChart"
+              "PieChart"
+              "ScatterPlot"
+              "GraphView"
+              "DataGrid"
+              "FS.Skia.UI.Controls"
+              "Scene"
+              "Layout"
+              "KeyboardInput"
+              "SkiaViewer"
+              "Elmish" ]
+            |> List.iter (fun required ->
+                Expect.stringContains combined required $"compatibility guidance preserves {required}")
+
+            [ "compatibility shim"
+              "automated external-app migration"
+              "release publishing automation" ]
+            |> List.iter (fun nonPromise ->
+                Expect.stringContains (compatibility.ToLowerInvariant()) nonPromise $"{nonPromise} is explicitly not promised")
+        }
+
+        test "Controls boundary readiness evidence covers governance package smoke dependency compatibility and lower-level paths" {
+            [ "specs/011-controls-boundary-refactor/readiness/public-surface.md",
+              [ "PackageSurfaceCheck"
+                "FS.Skia.UI.Controls.Elmish"
+                "t067-package-surface.txt" ]
+              "specs/011-controls-boundary-refactor/readiness/package-boundary.md",
+              [ "active package boundary evidence"
+                "FS.Skia.UI.Controls.Elmish"
+                "FS.Skia.UI.Charts.txt" ]
+              "specs/011-controls-boundary-refactor/readiness/generated-guidance.md",
+              [ "GeneratedGuidanceCheck"
+                "Controls.Elmish"
+                "removed Charts" ]
+              "specs/011-controls-boundary-refactor/readiness/dependency-report.md",
+              [ "Controls.Elmish owns Fable.Elmish"
+                "KeyboardInput owns YamlDotNet"
+                "removed Charts package" ]
+              "specs/011-controls-boundary-refactor/readiness/compatibility-impact.md",
+              [ "Controls-versus-lower-level-path"
+                "Scene"
+                "Layout"
+                "KeyboardInput"
+                "SkiaViewer"
+                "Elmish"
+                "no compatibility shim" ] ]
+            |> List.iter (fun (relativePath, required) ->
+                expectFileContains relativePath required)
+        }
     ]

@@ -1,0 +1,5 @@
+Project reference(s)
+--------------------
+../Scene/Scene.fsproj
+../Layout/Layout.fsproj
+../KeyboardInput/KeyboardInput.fsproj

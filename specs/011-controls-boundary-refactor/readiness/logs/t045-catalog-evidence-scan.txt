@@ -1,0 +1,17 @@
+docs/controls.md:85:`specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md` for
+src/Controls/catalog.yml:273:    category: data
+src/Controls/catalog.yml:333:    category: data
+src/Controls/catalog.yml:346:  - id: data-grid
+src/Controls/catalog.yml:348:    category: data
+src/Controls/catalog.yml:349:    module: DataGrid
+src/Controls/catalog.yml:358:    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]
+src/Controls/catalog.yml:646:  - id: line-chart
+src/Controls/catalog.yml:658:    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]
+src/Controls/catalog.yml:661:  - id: bar-chart
+src/Controls/catalog.yml:673:    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]
+src/Controls/catalog.yml:676:  - id: pie-chart
+src/Controls/catalog.yml:688:    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]
+src/Controls/catalog.yml:691:  - id: scatter-plot
+src/Controls/catalog.yml:703:    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]
+src/Controls/catalog.yml:706:  - id: graph-view
+src/Controls/catalog.yml:718:    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]

@@ -23,3 +23,21 @@ module Diagnostics =
 
     let unsupportedEnvironment kind (capability: string) =
         create None kind UnsupportedEnvironment Warning $"Host environment does not expose {capability}; operation reports diagnostics instead."
+
+    let stalePackageReference (packageId: string) (path: string) =
+        create None packageId StaleGeneratedReference Error $"Stale package reference `{packageId}` found in `{path}`."
+
+    let dependencyLeak (packageId: string) (dependencyPath: string) =
+        create None packageId StaleGeneratedReference Error $"Package `{packageId}` leaks dependency `{dependencyPath}` across the declared boundary."
+
+    let catalogOmission (controlId: string) (requiredField: string) =
+        create (Some controlId) "catalog" MissingRequiredAttribute Error $"Catalog entry `{controlId}` is missing required field `{requiredField}`."
+
+    let duplicateRuntimeDefinition (runtimeName: string) (path: string) =
+        create None runtimeName DuplicateAttribute Error $"Duplicate runtime definition `{runtimeName}` found in `{path}`."
+
+    let staleEventTarget (controlId: ControlId) (eventKind: string) =
+        create (Some controlId) "control-runtime" StaleGeneratedReference Warning $"Stale event target `{controlId}` for event `{eventKind}` was ignored."
+
+    let unsupportedScopeExpansion (scopeName: string) (owner: string) =
+        create None scopeName UnsupportedEnvironment Error $"Unsupported scope expansion `{scopeName}` requested by `{owner}`."

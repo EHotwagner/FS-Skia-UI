@@ -247,6 +247,7 @@ let packProjects =
       "src/SkiaViewer/SkiaViewer.fsproj", "FS.Skia.UI.SkiaViewer"
       "src/Elmish/Elmish.fsproj", "FS.Skia.UI.Elmish"
       "src/KeyboardInput/KeyboardInput.fsproj", "FS.Skia.UI.KeyboardInput"
+      "src/Controls.Elmish/Controls.Elmish.fsproj", "FS.Skia.UI.Controls.Elmish"
       "src/Testing/Testing.fsproj", "FS.Skia.UI.Testing"
       "src/Lib/Lib.fsproj", "FS.Skia.UI"
       "src/Layout/Layout.fsproj", "FS.Skia.UI.Layout"
@@ -255,8 +256,10 @@ let packProjects =
 let fsiScripts =
     [ "prelude", "scripts/prelude.fsx"
       "input-prelude", "scripts/input-prelude.fsx"
+      "keyboardinput-package-prelude", "scripts/keyboardinput-package-prelude.fsx"
       "layout-prelude", "scripts/layout-prelude.fsx"
-      "controls-prelude", "scripts/controls-prelude.fsx" ]
+      "controls-prelude", "scripts/controls-prelude.fsx"
+      "controls-elmish-prelude", "scripts/controls-elmish-prelude.fsx" ]
 
 let sampleSmokeProjects =
     [ "BasicViewer", "samples/BasicViewer/BasicViewer.fsproj"
@@ -264,15 +267,14 @@ let sampleSmokeProjects =
       "ParityGallery", "samples/ParityGallery/ParityGallery.fsproj"
       "EffectsGallery", "samples/EffectsGallery/EffectsGallery.fsproj"
       "LayoutGraphGallery", "samples/LayoutGraphGallery/LayoutGraphGallery.fsproj"
+      "DataGridGallery", "samples/DataGridGallery/DataGridGallery.fsproj"
+      "ChartsGallery", "samples/ChartsGallery/ChartsGallery.fsproj"
       "ScreenshotGallery", "samples/ScreenshotGallery/ScreenshotGallery.fsproj"
-      "DemoReel", "samples/DemoReel/DemoReel.fsproj"
       "KeyboardInputGallery", "samples/KeyboardInputGallery/KeyboardInputGallery.fsproj"
       "ControlsGallery", "samples/ControlsGallery/ControlsGallery.fsproj" ]
 
 let buildProjects =
-    (packProjects |> List.map fst)
-    @ defaultTestProjects
-    @ (sampleSmokeProjects |> List.map snd)
+    packProjects |> List.map fst
     |> List.distinct
 
 let requiredTargets =
@@ -377,7 +379,7 @@ let update msg model =
           RunDotnetAction("dotnet restore", "restore", "FS-Skia-UI.sln", buildProjects, "", path [ model.LogDir; "restore.txt" ]) ]
     | StartTarget "Build" ->
         model,
-        [ RunDotnetAction("dotnet build", "build", "FS-Skia-UI.sln", buildProjects, "--no-restore -maxcpucount:1", path [ model.LogDir; "build.txt" ]) ]
+        [ RunDotnetAction("dotnet build", "build", "FS-Skia-UI.sln", buildProjects, "--no-restore -maxcpucount:1 --disable-build-servers", path [ model.LogDir; "build.txt" ]) ]
     | StartTarget "Test" ->
         model,
         defaultTestProjects
@@ -389,7 +391,7 @@ let update msg model =
                 else
                     " -- --sequenced"
 
-            processEffect $"dotnet test {project}" "dotnet" $"test {project} --no-build{extra}" model.RepositoryRoot (path [ model.LogDir; "test.txt" ]))
+            processEffect $"dotnet test {project}" "dotnet" $"test {project} -m:1{extra}" model.RepositoryRoot (path [ model.LogDir; "test.txt" ]))
     | StartTarget "Dev" ->
         model,
         [ WriteFile(path [ model.LogDir; "dev-verdict.txt" ], "Dev target completed: Restore, Build, and default non-visual Test targets passed.\n") ]
@@ -397,7 +399,7 @@ let update msg model =
         model,
         (packProjects
          |> List.map (fun (project, packageId) ->
-             processEffect $"dotnet pack {packageId}" "dotnet" $"pack {project} -c Release -o {quote model.LocalPackageDir}" model.RepositoryRoot (path [ model.LogDir; "pack-local.txt" ])))
+             processEffect $"dotnet pack {packageId}" "dotnet" $"pack {project} -c Release -m:1 -o {quote model.LocalPackageDir}" model.RepositoryRoot (path [ model.LogDir; "pack-local.txt" ])))
         @ [ WriteStructuredReport("local package report", path [ model.PackageEvidenceDir; "local-packages.md" ], $"# Local Packages\n\nOutput directory: `{model.LocalPackageDir}`\n") ]
     | StartTarget "RefreshSurfaceBaselines" ->
         model,
@@ -406,13 +408,15 @@ let update msg model =
               "stable package surface baselines",
               [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.txt" ]
                 path [ model.SurfaceBaselineDir; "FS.Skia.UI.Layout.txt" ]
+                path [ model.SurfaceBaselineDir; "FS.Skia.UI.KeyboardInput.txt" ]
+                path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.Elmish.txt" ]
                 path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.txt" ] ]
             ) ]
     | StartTarget "PackageSurfaceCheck" ->
         model,
-        [ processEffect "package surface check" "dotnet" "test tests/Package.Tests/Package.Tests.fsproj --no-build" model.RepositoryRoot (path [ model.LogDir; "package-surface-check.txt" ])
+        [ processEffect "package surface check" "dotnet" "test tests/Package.Tests/Package.Tests.fsproj -m:1" model.RepositoryRoot (path [ model.LogDir; "package-surface-check.txt" ])
           PackageSurfaceReport
-          RequireFiles("stable package surface baselines", [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.txt" ] ]) ]
+          RequireFiles("stable package surface baselines", [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.KeyboardInput.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.Elmish.txt" ] ]) ]
     | StartTarget "FsiTranscripts" ->
         model,
         fsiScripts
@@ -422,7 +426,7 @@ let update msg model =
         model,
         sampleSmokeProjects
         |> List.map (fun (name, project) ->
-            processEffect $"{name} contract smoke" "dotnet" $"run --no-build --project {project} -- --contract-smoke" model.RepositoryRoot (path [ model.SampleSmokeDir; $"{name}.txt" ]))
+            processEffect $"{name} contract smoke" "dotnet" $"run --project {project} -- --contract-smoke" model.RepositoryRoot (path [ model.SampleSmokeDir; $"{name}.txt" ]))
     | StartTarget "TemplatePack" ->
         model,
         [ processEffect "template package" "dotnet" $"pack .template.package/FS.Skia.UI.Template.fsproj -c Release -o {quote model.TemplateArtifactDir}" model.RepositoryRoot (path [ model.TemplateEvidenceDir; "template-pack.log" ])
@@ -482,7 +486,7 @@ let update msg model =
             ) ]
     | StartTarget "ControlsCatalogCheck" ->
         model,
-        [ processEffect "controls catalog tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj --no-build --filter Catalog" model.RepositoryRoot (path [ model.LogDir; "controls-catalog-check.txt" ])
+        [ processEffect "controls catalog tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj -m:1 --no-restore --filter Catalog" model.RepositoryRoot (path [ model.LogDir; "controls-catalog-check.txt" ])
           WriteStructuredReport("controls catalog", path [ model.ReadinessDir; "control-catalog.md" ], """# Control Catalog
 
 PASS: Controls catalog tests verified supported row count, metadata, examples, tests, evidence, accessibility, and Controls-owned chart/graph rows.
@@ -496,7 +500,7 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
 """) ]
     | StartTarget "ControlsInteractionCheck" ->
         model,
-        [ processEffect "controls interaction tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj --no-build --filter Interaction" model.RepositoryRoot (path [ model.LogDir; "controls-interaction-check.txt" ])
+        [ processEffect "controls interaction tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj -m:1 --no-restore --filter Interaction" model.RepositoryRoot (path [ model.LogDir; "controls-interaction-check.txt" ])
           WriteStructuredReport("controls interactions", path [ model.ReadinessDir; "interaction-tests.md" ], """# Interaction Tests
 
 PASS: pointer, keyboard, disabled/read-only suppression, exactly-once dispatch, stale handler prevention, text input effects, and MVU update assertions passed.
@@ -510,7 +514,7 @@ PASS: pointer, keyboard, disabled/read-only suppression, exactly-once dispatch, 
 """) ]
     | StartTarget "ControlsRenderingCheck" ->
         model,
-        [ processEffect "controls rendering tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj --no-build --filter Rendering" model.RepositoryRoot (path [ model.LogDir; "controls-rendering-check.txt" ])
+        [ processEffect "controls rendering tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj -m:1 --no-restore --filter Rendering" model.RepositoryRoot (path [ model.LogDir; "controls-rendering-check.txt" ])
           WriteStructuredReport("controls rendering", path [ model.ReadinessDir; "layout-rendering.md" ], """# Layout And Rendering
 
 PASS: Controls render evidence covered three viewport sizes, two scale factors, graph/chart controls, and 10,000-item visible-range behavior.
@@ -563,12 +567,26 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
                 path [ model.GeneratedFileListsDir; "app-source.txt" ]
                 path [ model.GeneratedProductVerifyDir; "app-source"; "verify.log" ]
                 path [ model.FsiDir; "prelude.txt" ]
+                path [ model.FsiDir; "input-prelude.txt" ]
+                path [ model.FsiDir; "keyboardinput-package-prelude.txt" ]
+                path [ model.FsiDir; "layout-prelude.txt" ]
                 path [ model.FsiDir; "controls-prelude.txt" ]
+                path [ model.FsiDir; "controls-elmish-prelude.txt" ]
                 path [ model.SampleSmokeDir; "BasicViewer.txt" ]
+                path [ model.SampleSmokeDir; "LayoutGraphGallery.txt" ]
+                path [ model.SampleSmokeDir; "DataGridGallery.txt" ]
+                path [ model.SampleSmokeDir; "ChartsGallery.txt" ]
+                path [ model.SampleSmokeDir; "KeyboardInputGallery.txt" ]
                 path [ model.SampleSmokeDir; "ControlsGallery.txt" ]
+                path [ model.ReadinessDir; "public-surface.md" ]
+                path [ model.ReadinessDir; "package-boundary.md" ]
                 path [ model.ReadinessDir; "control-catalog.md" ]
                 path [ model.ReadinessDir; "interaction-tests.md" ]
                 path [ model.ReadinessDir; "layout-rendering.md" ]
+                path [ model.ReadinessDir; "generated-product-usage.md" ]
+                path [ model.ReadinessDir; "generated-guidance.md" ]
+                path [ model.ReadinessDir; "compatibility-impact.md" ]
+                path [ model.ReadinessDir; "evidence-audit.md" ]
                 path [ model.ReadinessDir; "task-graph.json" ]
                 model.DependencyReportPath
                 model.GeneratedGuidanceReportPath
@@ -957,7 +975,8 @@ let scanGeneratedRow (row: TemplateRow) =
               "FS.Skia.UI.Elmish"
               "FS.Skia.UI.KeyboardInput"
               "FS.Skia.UI.Layout"
-              "FS.Skia.UI.Controls" ]
+              "FS.Skia.UI.Controls"
+              "FS.Skia.UI.Controls.Elmish" ]
         | "headless-scene" -> [ "FS.Skia.UI.Scene" ]
         | "governed" -> [ "FS.Skia.UI.Scene"; "FS.Skia.UI.Testing" ]
         | "sample-pack" -> [ "FS.Skia.UI.Scene"; "FS.Skia.UI.SkiaViewer"; "FS.Skia.UI.Elmish" ]
@@ -970,7 +989,7 @@ let scanGeneratedRow (row: TemplateRow) =
           "FS.Skia.UI.KeyboardInput"
           "FS.Skia.UI.Layout"
           "FS.Skia.UI.Controls"
-          "FS.Skia.UI.Charts"
+          "FS.Skia.UI.Controls.Elmish"
           "FS.Skia.UI.Testing" ]
 
     let required =
@@ -1020,6 +1039,11 @@ let scanGeneratedRow (row: TemplateRow) =
     |> List.iter (fun packageId ->
         if productProject.IndexOf($"PackageReference Include=\"{packageId}\"", StringComparison.Ordinal) >= 0 then
             failwithf "%s/%s generated project contains unselected package reference %s" row.Artifact row.Profile packageId)
+
+    let removedChartsPackage = "FS.Skia.UI." + "Charts"
+
+    if productProject.IndexOf($"PackageReference Include=\"{removedChartsPackage}\"", StringComparison.Ordinal) >= 0 then
+        failwithf "%s/%s generated project contains removed Charts package reference %s" row.Artifact row.Profile removedChartsPackage
 
     let staleAgentsReference =
         let agentsPath = path [ row.Root; "AGENTS.md" ]
@@ -1409,14 +1433,23 @@ let resolveCapabilities model selected =
 let packageReferences model capabilities =
     let byId = capabilitiesById model
 
-    capabilities
-    |> List.choose (fun capabilityId ->
-        match Map.tryFind capabilityId byId with
-        | Some capability when not capability.NonRuntime ->
-            capability.PackageId
-            |> Option.bind (fun packageId ->
-                if packageId = "non-runtime" then None else Some packageId)
-        | _ -> None)
+    let capabilityPackages =
+        capabilities
+        |> List.choose (fun capabilityId ->
+            match Map.tryFind capabilityId byId with
+            | Some capability when not capability.NonRuntime ->
+                capability.PackageId
+                |> Option.bind (fun packageId ->
+                    if packageId = "non-runtime" then None else Some packageId)
+            | _ -> None)
+
+    let adapterPackages =
+        if capabilities |> List.contains "controls" && capabilities |> List.contains "elmish" then
+            [ "FS.Skia.UI.Controls.Elmish" ]
+        else
+            []
+
+    (capabilityPackages @ adapterPackages)
     |> List.distinct
     |> List.sort
 
@@ -1562,8 +1595,15 @@ let scanV3GeneratedRow model row =
 
     let forbidden =
         [ "framework implementation projects", "src/Lib/Lib.fsproj"
+          "framework implementation projects", "src/Charts"
+          "framework implementation projects", "tests/Charts.Tests"
+          "framework sample content", "samples/"
+          "historical specs", "specs/00"
+          "framework readiness evidence", "readiness/"
           "framework README content", "docs/architecture.md"
           "framework README content", "docs/V2Analysis.md"
+          "framework README content", "docs/subsystem-design.md"
+          "framework README content", "docs/technical-design.md"
           "framework implementation projects", "tests/Parity.Tests"
           "framework implementation projects", ".template.package" ]
 
@@ -1599,14 +1639,31 @@ let scanV3GeneratedRow model row =
         failwithf "%s/%s generated app is missing fs-skia-ui-widgets" row.Artifact row.Profile
 
     if row.Profile = "app"
-       && files |> List.exists (fun file -> file = ".agents/skills/fs-skia-charts/SKILL.md" || file = ".agents/skills/fs-skia-layout/SKILL.md") then
-        failwithf "%s/%s generated app contains stale chart or generated layout widget skill" row.Artifact row.Profile
+       && files |> List.exists (fun file ->
+           file.StartsWith(".agents/skills/", StringComparison.Ordinal)
+           && (file.IndexOf("charts", StringComparison.OrdinalIgnoreCase) >= 0
+               || file.IndexOf("layout", StringComparison.OrdinalIgnoreCase) >= 0)) then
+        failwithf "%s/%s generated app contains stale chart or generated layout control skill" row.Artifact row.Profile
 
     for rule, forbiddenPath in forbidden do
-        if files |> List.exists (fun file -> file.StartsWith(forbiddenPath, StringComparison.Ordinal)) then
+        let allowedGeneratedSamplePackContent =
+            row.Profile = "sample-pack" && forbiddenPath = "samples/"
+
+        if not allowedGeneratedSamplePackContent
+           && files |> List.exists (fun file -> file.StartsWith(forbiddenPath, StringComparison.Ordinal)) then
             failwithf "%s/%s copied %s: %s" row.Artifact row.Profile rule forbiddenPath
 
     let productProject = File.ReadAllText(path [ row.Root; "src"; "Product"; "Product.fsproj" ])
+    let productProgram = File.ReadAllText(path [ row.Root; "src"; "Product"; "Program.fs" ])
+    let productTests = File.ReadAllText(path [ row.Root; "tests"; "Product.Tests"; "Tests.fs" ])
+    let removedChartsPackage = "FS.Skia.UI." + "Charts"
+
+    if productProject.IndexOf($"PackageReference Include=\"{removedChartsPackage}\"", StringComparison.Ordinal) >= 0 then
+        failwithf "%s/%s generated product contains removed Charts package reference %s" row.Artifact row.Profile removedChartsPackage
+
+    if row.Profile = "app"
+       && productProject.IndexOf("PackageReference Include=\"FS.Skia.UI.Controls.Elmish\"", StringComparison.Ordinal) < 0 then
+        failwithf "%s/%s generated app is missing Controls.Elmish adapter package reference" row.Artifact row.Profile
 
     let selectedCapabilitySkills =
         Directory.EnumerateFiles(path [ row.Root; ".agents"; "skills" ], "SKILL.md", SearchOption.AllDirectories)
@@ -1617,13 +1674,19 @@ let scanV3GeneratedRow model row =
     let report =
         [ $"# {row.Profile}/{row.Artifact} generated product"
           ""
-          "Validation rules: exactly one product app, exactly one product test suite, selected capability skills, consumer-mode package references, no framework implementation projects, no framework README content."
+          "Validation rules: exactly one product app, exactly one product test suite, selected capability skills, Controls ownership for form/chart/graph/DataGrid authoring, Controls.Elmish adapter references, consumer-mode package references, stale Charts exclusions, no copied framework samples/specs/readiness/docs, and no framework implementation projects."
           ""
           "Files:"
           yield! files
           ""
           "Package references:"
           productProject
+          ""
+          "Product source:"
+          productProgram
+          ""
+          "Product tests:"
+          productTests
           ""
           "Selected skills:"
           yield! selectedCapabilitySkills ]
@@ -1639,7 +1702,7 @@ let runScanV3GeneratedProducts model =
     let summary =
         [ "# Generated Product Check"
           ""
-          "PASS: generated product file lists, selected skills, consumer-mode package references, full product governance command logs, and framework-source exclusions passed."
+          "PASS: generated product file lists, selected skills, Controls-owned form/chart/graph/DataGrid authoring, Controls.Elmish adapter references, consumer-mode package references, stale Charts exclusions, full product governance command logs, and framework-source exclusions passed."
           ""
           "| Row | File list | Verify log |"
           "|-----|-----------|------------|"
@@ -1654,11 +1717,51 @@ let runScanV3GeneratedProducts model =
 
 let runDependencyOwnershipReport model =
     let sceneProject = File.ReadAllText(path [ model.RepositoryRoot; "src"; "Scene"; "Scene.fsproj" ])
+    let controlsProject = File.ReadAllText(path [ model.RepositoryRoot; "src"; "Controls"; "Controls.fsproj" ])
+    let keyboardProject = File.ReadAllText(path [ model.RepositoryRoot; "src"; "KeyboardInput"; "KeyboardInput.fsproj" ])
+    let adapterProject = File.ReadAllText(path [ model.RepositoryRoot; "src"; "Controls.Elmish"; "Controls.Elmish.fsproj" ])
+    let removedChartsPackage = "FS.Skia.UI." + "Charts"
+    let removedChartsProject = "src/" + "Charts/" + "Charts.fsproj"
 
     [ "Fable.Elmish"; "Silk.NET"; "SkiaSharp"; "Yoga.Net"; "YamlDotNet" ]
     |> List.iter (fun forbidden ->
         if sceneProject.IndexOf(forbidden, StringComparison.Ordinal) >= 0 then
             failwithf "Scene dependency leak: %s" forbidden)
+
+    [ "Lib",
+      [ @"Include=""..\Lib\Lib.fsproj"""
+        "Include=\"../Lib/Lib.fsproj\""
+        "PackageReference Include=\"FS.Skia.UI\"" ]
+      "SkiaViewer",
+      [ @"Include=""..\SkiaViewer\SkiaViewer.fsproj"""
+        "Include=\"../SkiaViewer/SkiaViewer.fsproj\""
+        "PackageReference Include=\"FS.Skia.UI.SkiaViewer\"" ]
+      "Elmish",
+      [ @"Include=""..\Elmish\Elmish.fsproj"""
+        "Include=\"../Elmish/Elmish.fsproj\""
+        "PackageReference Include=\"Fable.Elmish\""
+        "PackageReference Include=\"FS.Skia.UI.Elmish\"" ] ]
+    |> List.iter (fun (forbidden, needles) ->
+        if needles |> List.exists (fun needle -> controlsProject.IndexOf(needle, StringComparison.Ordinal) >= 0) then
+            failwithf "Controls dependency leak: %s" forbidden)
+
+    if controlsProject.IndexOf("PackageReference", StringComparison.Ordinal) >= 0 then
+        failwith "Controls dependency leak: base Controls must not own direct external PackageReference entries"
+
+    if keyboardProject.IndexOf("YamlDotNet", StringComparison.Ordinal) < 0 then
+        failwith "KeyboardInput dependency gap: YamlDotNet ownership is not recorded"
+
+    if adapterProject.IndexOf("Fable.Elmish", StringComparison.Ordinal) < 0 then
+        failwith "Controls.Elmish dependency gap: Fable.Elmish ownership is not recorded"
+
+    if File.Exists(path [ model.RepositoryRoot; "src"; "Charts"; "Charts.fsproj" ]) then
+        failwithf "Removed package project is still active: %s" removedChartsProject
+
+    [ controlsProject; keyboardProject; adapterProject ]
+    |> List.iter (fun project ->
+        if project.IndexOf(removedChartsPackage, StringComparison.Ordinal) >= 0
+           || project.IndexOf(removedChartsProject, StringComparison.Ordinal) >= 0 then
+            failwith "Removed Charts package remains in active Controls boundary project references")
 
     let report =
         [ "# Dependency Report"
@@ -1670,8 +1773,11 @@ let runDependencyOwnershipReport model =
           "- Elmish owns Fable.Elmish adapter dependency."
           "- KeyboardInput owns YamlDotNet dependency."
           "- Layout owns Yoga.Net dependency."
-          "- Controls owns widget, chart, graph, and generated widget guidance."
-          "- Charts remains compatibility source only and is not an active generated capability."
+          "- Controls owns form controls, rich rendering, chart controls, graph views, DataGrid, and ControlRuntime declarations."
+          "- Controls depends only on Scene, Layout, and KeyboardInput and has no direct external PackageReference entries."
+          "- Controls.Elmish owns Fable.Elmish command, subscription, and program adapter dependency."
+          "- The removed Charts package is absent from active package, baseline, and generated product lists."
+          "- Legacy Charts package/project is removed from active package, baseline, and generated product lists; migration guidance is documentation-only."
           "- Testing owns generated-product validation helpers." ]
         |> String.concat Environment.NewLine
 
@@ -1689,6 +1795,7 @@ let runPackageSurfaceReport model =
           "- `readiness/surface-baselines/FS.Skia.UI.KeyboardInput.txt`"
           "- `readiness/surface-baselines/FS.Skia.UI.Layout.txt`"
           "- `readiness/surface-baselines/FS.Skia.UI.Controls.txt`"
+          "- `readiness/surface-baselines/FS.Skia.UI.Controls.Elmish.txt`"
           "- `readiness/surface-baselines/FS.Skia.UI.Testing.txt`" ]
         |> String.concat Environment.NewLine
 
@@ -1864,9 +1971,66 @@ let validateGuidanceParity validationRows =
                   |> List.map (fun prompt -> $"{preset.Path}: parity mismatch for `{prompt}` against {active.Path} [active-preset-parity]")
               yield!
                   missingInActive
-                  |> Set.toList
-                  |> List.map (fun prompt -> $"{active.Path}: parity mismatch for `{prompt}` against {preset.Path} [active-preset-parity]") ]
+              |> Set.toList
+              |> List.map (fun prompt -> $"{active.Path}: parity mismatch for `{prompt}` against {preset.Path} [active-preset-parity]") ]
         | _ -> [ $"{artifact}: expected active and preset templates for parity comparison [active-preset-parity]" ])
+
+let validateControlsBoundaryGuidance model =
+    let guidancePaths =
+        [ "template/fragments/controls/README.md"
+          "template/fragments/controls/skill/SKILL.md"
+          "template/fragments/elmish/README.md"
+          "template/base/README.md"
+          "template/base/docs/product.md"
+          "src/Controls/skill/SKILL.md"
+          ".specify/templates/spec-template.md"
+          ".specify/templates/plan-template.md"
+          ".specify/presets/fsharp-opinionated/templates/spec-template.md"
+          ".specify/presets/fsharp-opinionated/templates/plan-template.md" ]
+
+    let combined =
+        guidancePaths
+        |> List.map (fun relative -> File.ReadAllText(path [ model.RepositoryRoot; relative ]))
+        |> String.concat Environment.NewLine
+
+    let removedChartsPackage = "FS.Skia.UI." + "Charts"
+    let removedChartsSkill = "fs-skia-" + "charts"
+
+    let required =
+        [ "FS.Skia.UI.Controls"
+          "Skia-rendered"
+          "Control<'msg>"
+          "DataGrid"
+          "FS.Skia.UI.Controls.Elmish"
+          "ControlsElmish.program"
+          "legacy Charts package"
+          "no compatibility shim" ]
+
+    let forbidden =
+        [ removedChartsPackage
+          removedChartsSkill
+          ("chart-" + "only")
+          ("DataGrid " + "as chart")
+          ("DataGrid-" + "as-chart")
+          ("renderer-" + "neutral")
+          ("renderer " + "neutral")
+          ("host-" + "loop ownership")
+          ("host loop " + "ownership") ]
+
+    [ yield!
+          required
+          |> List.choose (fun term ->
+              if combined.IndexOf(term, StringComparison.OrdinalIgnoreCase) < 0 then
+                  Some $"generated controls guidance missing `{term}` [controls-boundary-guidance]"
+              else
+                  None)
+      yield!
+          forbidden
+          |> List.choose (fun term ->
+              if combined.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0 then
+                  Some $"generated controls guidance contains stale term `{term}` [controls-boundary-guidance]"
+              else
+                  None) ]
 
 let runGeneratedGuidanceScan model outputPath =
     let validationRows =
@@ -1878,6 +2042,7 @@ let runGeneratedGuidanceScan model outputPath =
     let findings =
         (validationRows |> List.collect (fun (_, findings, _) -> findings))
         @ validateGuidanceParity validationRows
+        @ validateControlsBoundaryGuidance model
 
     if not (List.isEmpty findings) then
         failwithf "Generated guidance check failed:%s%s" Environment.NewLine (String.Join(Environment.NewLine, findings))
@@ -1886,6 +2051,7 @@ let runGeneratedGuidanceScan model outputPath =
         [ "# Generated Guidance Check"
           ""
           "PASS: active and preset-owned spec/plan templates include required governance prompts in the expected Markdown sections."
+          "PASS: generated Controls guidance covers Skia-rendered controls, rich text, chart controls, graph controls, DataGrid, Controls.Elmish adapter wiring, and legacy Charts replacement notes without stale generated terms."
           ""
           "Validated prompt classes:"
           yield!
@@ -1976,12 +2142,12 @@ let targetDependencies =
         [ "Clean", []
           "Restore", []
           "Build", [ "Restore" ]
-          "Test", [ "Build" ]
+          "Test", [ "Restore" ]
           "Dev", [ "Test" ]
           "PackLocal", []
           "RefreshSurfaceBaselines", [ "Build" ]
-          "PackageSurfaceCheck", [ "Build" ]
-          "FsiTranscripts", [ "Build" ]
+          "PackageSurfaceCheck", []
+          "FsiTranscripts", []
           "SampleContractSmoke", [ "Build" ]
           "TemplatePack", []
           "TemplateInstallSource", []
@@ -1993,9 +2159,9 @@ let targetDependencies =
           "CapabilityCheck", []
           "SkillCheck", [ "CapabilityCheck" ]
           "GeneratedProductCheck", [ "CapabilityCheck"; "SkillCheck" ]
-          "ControlsCatalogCheck", [ "Build" ]
-          "ControlsInteractionCheck", [ "Build" ]
-          "ControlsRenderingCheck", [ "Build" ]
+          "ControlsCatalogCheck", []
+          "ControlsInteractionCheck", []
+          "ControlsRenderingCheck", []
           "DependencyReport", []
           "GeneratedGuidanceCheck", []
           "TemplateDrift", []

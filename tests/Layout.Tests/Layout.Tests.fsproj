@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Scene\Scene.fsproj" />
     <ProjectReference Include="..\..\src\Layout\Layout.fsproj" />
   </ItemGroup>
 

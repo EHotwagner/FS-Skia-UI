@@ -1,6 +1,6 @@
 namespace FS.Skia.UI.Layout
 
-open FS.Skia.UI
+open FS.Skia.UI.Scene
 open System
 
 type LayoutBounds =

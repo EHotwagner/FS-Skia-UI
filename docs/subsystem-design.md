@@ -3,7 +3,7 @@ title: Subsystem Design
 category: Design
 categoryindex: 4
 index: 4
-description: Technical design notes for charts, DataGrid, layout, graph, keyboard input, samples, tests, and template governance.
+description: Technical design notes for Controls-owned charts, DataGrid, layout, graph, keyboard input, samples, tests, and template governance.
 ---
 
 # Subsystem Design
@@ -24,33 +24,38 @@ implementation in [src/Lib/Library.fs](../src/Lib/Library.fs).
 
 ## Keyboard Input
 
-Keyboard input is a reducer around `InputRuntime`. YAML configuration is parsed
-into `InputConfiguration`, validated against a `CommandRegistry`, and initialized
-with an active layout. Runtime changes enter through `InputMsg` or
-`ViewerEvent`, then return an updated runtime plus `InputEffect` values such as
-resolved commands, layout state changes, diagnostics, and recorded events.
+Keyboard input is a package-owned reducer around `KeyboardModel`. YAML
+configuration is parsed, validated against command bindings, and initialized
+with an active layout. Runtime changes enter through `KeyboardMsg` or mapped
+viewer events, then return an updated model plus `KeyboardEffect` values such
+as resolved commands, layout state changes, diagnostics, and recorded events.
 
 The keyboard state display is also scene-based. `KeyboardInput.keyboardStateDisplay`
 builds an inspectable model, while `renderKeyboardStateDisplay` and
 `renderKeyboardStateDisplayAt` turn it into `Scene`.
 The public keyboard input contract is in
-[src/Lib/KeyboardInput.fsi](../src/Lib/KeyboardInput.fsi), and parsing,
-validation, update, display projection, rendering, replay, and bigram analysis
-are implemented in [src/Lib/KeyboardInput.fs](../src/Lib/KeyboardInput.fs).
+[src/KeyboardInput/KeyboardInput.fsi](../src/KeyboardInput/KeyboardInput.fsi),
+and parsing, validation, update, display projection, rendering, replay, and
+bigram analysis are implemented in
+[src/KeyboardInput/KeyboardInput.fs](../src/KeyboardInput/KeyboardInput.fs).
 
 ## Charts And DataGrid
 
-`FS.Skia.UI.Charts` owns pure chart and table scene builders. Shared chart
-configuration lives in [src/Charts/Types.fsi](../src/Charts/Types.fsi):
-`ChartConfig`, `AxisConfig`, `LegendConfig`, `DataSeries`, `DataPoint`, and
-`ChartTarget`. Chart modules render finite input data to `Scene` and expose hit
-testing where interaction state belongs to the caller. The concrete chart
-modules live under [src/Charts](../src/Charts/).
+`FS.Skia.UI.Controls` owns chart controls, graph views, and DataGrid for current
+product authoring. Shared chart configuration and builders live in
+[src/Controls/Charts.fsi](../src/Controls/Charts.fsi) and
+[src/Controls/Charts.fs](../src/Controls/Charts.fs). Chart controls render
+finite product-owned data to `Scene` and expose diagnostics while interaction
+state belongs to the caller or the explicit `ControlRuntime`.
 
-`DataGrid` follows the same pattern: callers own rows, sorting, viewport, and
-selection state. The subsystem provides sorting, visible-row calculation,
-rendering, and hit testing through [src/Charts/DataGrid.fsi](../src/Charts/DataGrid.fsi)
-and [src/Charts/DataGrid.fs](../src/Charts/DataGrid.fs).
+`DataGrid` follows the same ownership rule: callers own rows, sorting,
+viewport, focus, and selection state. Controls provides column/row declarations,
+visible-row calculation, rendering, hit testing, accessibility metadata, and
+diagnostics through [src/Controls/DataGrid.fsi](../src/Controls/DataGrid.fsi)
+and [src/Controls/DataGrid.fs](../src/Controls/DataGrid.fs).
+
+Products that need only lower-level layout or graph helpers can continue to use
+`FS.Skia.UI.Layout` directly; they do not need to select Controls.
 
 ## Layout And Graph
 
@@ -91,8 +96,12 @@ Tests are split by ownership:
 
 | Area | Test project |
 |------|--------------|
-| Core scene, viewer, diagnostics, keyboard input | [tests/Lib.Tests](../tests/Lib.Tests/) |
-| Charts and DataGrid | [tests/Charts.Tests](../tests/Charts.Tests/) |
+| Compatibility core package | [tests/Lib.Tests](../tests/Lib.Tests/) |
+| Scene primitives | [tests/Scene.Tests](../tests/Scene.Tests/) |
+| Skia viewer host | [tests/SkiaViewer.Tests](../tests/SkiaViewer.Tests/) |
+| Elmish viewer integration | [tests/Elmish.Tests](../tests/Elmish.Tests/) |
+| Keyboard input package | [tests/KeyboardInput.Tests](../tests/KeyboardInput.Tests/) |
+| Controls, chart controls, graph views, DataGrid, rich rendering | [tests/Controls.Tests](../tests/Controls.Tests/) |
 | Layout and graph | [tests/Layout.Tests](../tests/Layout.Tests/) |
 | Skia feature parity semantics | [tests/Parity.Tests](../tests/Parity.Tests/) |
 | Package surface and packed consumer checks | [tests/Package.Tests](../tests/Package.Tests/) |

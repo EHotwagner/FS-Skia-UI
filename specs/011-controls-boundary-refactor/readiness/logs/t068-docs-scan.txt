@@ -1,0 +1,1 @@
+PASS: docs name lower-level preserved paths and current Controls replacement path; active design/testing/build docs no longer point to Charts package/test ownership.

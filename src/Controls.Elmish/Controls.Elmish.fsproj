@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <IsPackable>true</IsPackable>
+    <PackageId>FS.Skia.UI.Controls.Elmish</PackageId>
+    <AssemblyName>FS.Skia.UI.Controls.Elmish</AssemblyName>
+    <Version>0.1.10-preview.1</Version>
+    <Title>FS.Skia.UI.Controls.Elmish</Title>
+    <Description>Elmish command, subscription, and program adapters for Controls and KeyboardInput runtime effects.</Description>
+    <PackageTags>fsharp;skia;controls;elmish;adapter</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="ControlsElmish.fsi" />
+    <Compile Include="ControlsElmish.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Controls\Controls.fsproj" />
+    <ProjectReference Include="..\KeyboardInput\KeyboardInput.fsproj" />
+    <PackageReference Include="Fable.Elmish" />
+  </ItemGroup>
+
+</Project>

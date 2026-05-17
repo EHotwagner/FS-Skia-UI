@@ -2,7 +2,7 @@ namespace FS.Skia.UI.Layout
 
 open System
 open Facebook.Yoga
-open FS.Skia.UI
+open FS.Skia.UI.Scene
 
 module Layout =
     let finite value = Double.IsFinite value
@@ -479,8 +479,9 @@ module Layout =
                 let children =
                     node.Children
                     |> List.mapi (fun index child ->
-                        let childYoga: Node = YGNodeAPI.YGNodeGetChild(yogaNode, unativeint index) |> Unchecked.nonNull
-                        read x y child childYoga)
+                        match YGNodeAPI.YGNodeGetChild(yogaNode, unativeint index) with
+                        | null -> invalidOp $"Yoga did not return layout child {index} for node '{node.Id}'."
+                        | childYoga -> read x y child childYoga)
                     |> List.concat
 
                 own :: children

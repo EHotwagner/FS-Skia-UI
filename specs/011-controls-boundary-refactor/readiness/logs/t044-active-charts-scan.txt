@@ -1,0 +1,6 @@
+src/Charts/Charts.fsproj exists: no
+readiness/surface-baselines/FS.Skia.UI.Charts.txt exists: no
+
+Active package/template scan:
+
+Chart-specific generated skill paths:

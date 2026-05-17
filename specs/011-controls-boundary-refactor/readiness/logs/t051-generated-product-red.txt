@@ -1,0 +1,118 @@
+  Governance.Tests -> /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed Controls boundary composition.generated product template composes form chart and DataGrid through Controls only [8 ms]
+  Error Message:
+   
+template/base/src/Product/Program.fs composes form, chart, and DataGrid through Controls using LineChart.create. Expected subject string 'module Product.Program
+
+open FS.Skia.UI.Controls
+
+type Model =
+    { Name: string
+      CanSave: bool }
+
+type Msg =
+    | NameChanged of string
+    | SaveRequested
+
+let controlsExampleView model =
+    Stack.create [
+        Stack.children [
+            TextBlock.create [ TextBlock.text "Product controls" ]
+            TextBox.create [
+                TextBox.value model.Name
+                TextBox.onChanged NameChanged
+            ]
+            Button.create [
+                Button.text "Save"
+                Button.enabled model.CanSave
+                Button.onClick SaveRequested
+            ]
+        ]
+    ]
+
+[<EntryPoint>]
+let main _ =
+    let view = controlsExampleView { Name = "Product"; CanSave = true }
+    printfn "Generated product controls: %d" (Control.count view)
+    0
+' to contain substring 'LineChart.create'.
+   at ControlsBoundaryCompositionTests.expectControlsOnlyComposition(String relativePath) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/ControlsBoundaryCompositionTests.fs:line 18
+   at ControlsBoundaryCompositionTests.controlsBoundaryCompositionTests@85-1.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/ControlsBoundaryCompositionTests.fs:line 85
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112
+
+  Failed Controls boundary composition.generated product template keeps Controls package references and source product-owned [8 ms]
+  Error Message:
+   
+template/base/src/Product/Program.fs composes form, chart, and DataGrid through Controls using LineChart.create. Expected subject string 'module Product.Program
+
+open FS.Skia.UI.Controls
+
+type Model =
+    { Name: string
+      CanSave: bool }
+
+type Msg =
+    | NameChanged of string
+    | SaveRequested
+
+let controlsExampleView model =
+    Stack.create [
+        Stack.children [
+            TextBlock.create [ TextBlock.text "Product controls" ]
+            TextBox.create [
+                TextBox.value model.Name
+                TextBox.onChanged NameChanged
+            ]
+            Button.create [
+                Button.text "Save"
+                Button.enabled model.CanSave
+                Button.onClick SaveRequested
+            ]
+        ]
+    ]
+
+[<EntryPoint>]
+let main _ =
+    let view = controlsExampleView { Name = "Product"; CanSave = true }
+    printfn "Generated product controls: %d" (Control.count view)
+    0
+' to contain substring 'LineChart.create'.
+   at ControlsBoundaryCompositionTests.expectControlsOnlyComposition(String relativePath) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/ControlsBoundaryCompositionTests.fs:line 18
+   at ControlsBoundaryCompositionTests.controlsBoundaryCompositionTests@90-2.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/ControlsBoundaryCompositionTests.fs:line 90
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112
+
+  Failed Controls boundary composition.generated product tests cover product-owned form chart and DataGrid usage [8 ms]
+  Error Message:
+   
+template/base/tests/Product.Tests/Tests.fs product tests cover TextBox. Expected subject string 'module Product.Tests
+
+open Expecto
+open Product.Program
+
+[<Tests>]
+let tests =
+    testList "product" [
+        test "generated product test suite is wired" {
+            Expect.equal 1 1 "product tests run"
+        }
+
+        test "product-owned controls example is wired" {
+            let view = controlsExampleView { Name = "Product"; CanSave = true }
+            Expect.equal (FS.Skia.UI.Controls.Control.count view) 4 "product example owns a representative controls view"
+        }
+    ]
+' to contain substring 'TextBox'.
+   at ControlsBoundaryCompositionTests.expectProductOwnedControlsTests(String relativePath) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/ControlsBoundaryCompositionTests.fs:line 66
+   at ControlsBoundaryCompositionTests.controlsBoundaryCompositionTests@96-3.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/ControlsBoundaryCompositionTests.fs:line 96
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112
+
+
+Failed!  - Failed:     3, Passed:     1, Skipped:     0, Total:     4, Duration: 17 ms - Governance.Tests.dll (net10.0)

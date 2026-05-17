@@ -15,6 +15,9 @@ let rec findRepositoryRoot (directory: string) =
 
 let repositoryRoot = findRepositoryRoot AppContext.BaseDirectory
 
+let repositoryPath (relativePath: string) =
+    Path.Combine(repositoryRoot, relativePath.Replace('/', Path.DirectorySeparatorChar))
+
 let runDotnet (workingDirectory: string) (arguments: string) =
     let startInfo: ProcessStartInfo = ProcessStartInfo("dotnet", arguments)
     startInfo.WorkingDirectory <- workingDirectory
@@ -48,12 +51,69 @@ let packageContractTests =
 
             [ "src/Lib/Lib.fsproj", "FS.Skia.UI"
               "src/Layout/Layout.fsproj", "FS.Skia.UI.Layout"
+              "src/Controls.Elmish/Controls.Elmish.fsproj", "FS.Skia.UI.Controls.Elmish"
               "src/Controls/Controls.fsproj", "FS.Skia.UI.Controls" ]
             |> List.iter (fun (project, packageId) ->
                 Expect.stringContains build project $"{project} is packed by PackLocal"
                 Expect.stringContains build packageId $"{packageId} is packed by PackLocal")
 
             Expect.isFalse (build.Contains("\"src/Charts/Charts.fsproj\", \"FS.Skia.UI.Charts\"")) "Charts is not an active PackLocal package"
+        }
+
+        test "controls boundary has no active Charts package capability or monolithic viewer coupling" {
+            let build = File.ReadAllText(Path.Combine(repositoryRoot, "build.fsx"))
+            let capabilities = File.ReadAllText(Path.Combine(repositoryRoot, "template", "capabilities.yml"))
+            let controlsProject = File.ReadAllText(Path.Combine(repositoryRoot, "src", "Controls", "Controls.fsproj"))
+
+            Expect.isFalse (File.Exists(Path.Combine(repositoryRoot, "src", "Charts", "Charts.fsproj"))) "legacy Charts project is removed or deactivated from source ownership"
+            Expect.isFalse (build.Contains("FS.Skia.UI.Charts", StringComparison.Ordinal)) "build wiring has no active Charts package reference"
+            Expect.isFalse (capabilities.Contains("id: charts", StringComparison.OrdinalIgnoreCase)) "generated capability catalog has no active charts capability"
+            Expect.isFalse (controlsProject.Contains(@"..\Lib\Lib.fsproj", StringComparison.Ordinal)) "Controls package does not depend on the monolithic viewer/runtime project"
+            Expect.isTrue (File.Exists(Path.Combine(repositoryRoot, "src", "Controls", "DataGrid.fsi"))) "DataGrid public contract is owned by Controls"
+        }
+
+        test "generated products and surface checks do not keep Charts as an active package" {
+            let build = File.ReadAllText(repositoryPath "build.fsx")
+
+            let generatedProductInputs =
+                [ "template/capabilities.yml"
+                  "template/profiles/app.yml"
+                  "template/profiles/governed.yml"
+                  "template/profiles/headless-scene.yml"
+                  "template/profiles/sample-pack.yml"
+                  "template/base/Directory.Packages.props"
+                  "template/base/src/Product/Product.fsproj"
+                  "template/base/.agents/skills/fs-skia-project/SKILL.md"
+                  "scripts/refresh-surface-baselines.fsx" ]
+
+            let forbiddenTokens =
+                [ "PackageReference Include=\"FS.Skia.UI.Charts\""
+                  "src/Charts/Charts.fsproj"
+                  "id: charts"
+                  "template/fragments/charts"
+                  ".agents/skills/fs-skia-charts/SKILL.md" ]
+
+            let activeHits =
+                generatedProductInputs
+                |> List.filter (repositoryPath >> File.Exists)
+                |> List.collect (fun relative ->
+                    let content = File.ReadAllText(repositoryPath relative)
+
+                    forbiddenTokens
+                    |> List.choose (fun token ->
+                        if content.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0 then
+                            Some $"{relative}: {token}"
+                        else
+                            None))
+
+            Expect.isEmpty activeHits "active generated product inputs do not select Charts package, capability, project, or chart-specific generated skill"
+            Expect.isFalse (build.Contains("\"FS.Skia.UI.Charts\"", StringComparison.Ordinal)) "generated product package validation does not enumerate Charts as an available capability package"
+            Expect.isFalse (File.Exists(repositoryPath "readiness/surface-baselines/FS.Skia.UI.Charts.txt")) "legacy Charts package has no active surface baseline"
+            Expect.isFalse (File.Exists(repositoryPath "template/fragments/charts/skill/SKILL.md")) "template has no chart-specific generated skill fragment"
+            Expect.isFalse (File.Exists(repositoryPath "template/base/.agents/skills/fs-skia-charts/SKILL.md")) "generated product base has no chart-specific generated skill"
+            Expect.stringContains build "readiness/surface-baselines/FS.Skia.UI.Controls.Elmish.txt" "package surface report includes the Controls.Elmish adapter baseline"
+            Expect.stringContains build "readiness/surface-baselines/FS.Skia.UI.Controls.txt" "package surface report includes the Controls baseline"
+            Expect.stringContains build "readiness/surface-baselines/FS.Skia.UI.KeyboardInput.txt" "package surface report includes the KeyboardInput baseline"
         }
 
         test "package consumer smoke is deferred outside v1 verification" {

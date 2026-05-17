@@ -1,5 +1,7 @@
 namespace FS.Skia.UI.Controls
 
+open System
+
 type ChartPoint =
     { X: float
       Y: float
@@ -10,8 +12,17 @@ type ChartSeries =
       Points: ChartPoint list }
 
 module ChartAttrs =
-    let series (values: ChartSeries list) = Attr.create "series" Data (UntypedValue values)
-    let points (values: ChartPoint list) = Attr.create "values" Data (UntypedValue values)
+    let finite values =
+        values |> List.filter Double.IsFinite
+
+    let seriesValues (values: ChartSeries list) =
+        values |> List.collect (fun series -> series.Points |> List.map _.Y) |> finite
+
+    let pointValues (values: ChartPoint list) =
+        values |> List.map _.Y |> finite
+
+    let series (values: ChartSeries list) = Attr.create "series" Data (UntypedValue(seriesValues values))
+    let points (values: ChartPoint list) = Attr.create "values" Data (UntypedValue(pointValues values))
     let nodes (values: string list) = Attr.create "nodes" Data (StringListValue values)
 
 module LineChart =

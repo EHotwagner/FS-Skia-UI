@@ -1,0 +1,9 @@
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Lib.Tests -> /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    42, Skipped:     0, Total:    42, Duration: 3 s - Lib.Tests.dll (net10.0)
+
+exit-code=0
+duration-seconds=6

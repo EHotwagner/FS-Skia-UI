@@ -1,0 +1,6 @@
+
+## source/sample-pack generated Dev
+$ bash ./fake.sh build -t Dev
+Dev completed for generated v3dotnetsamplepacksource
+
+exit-code=0

@@ -1,0 +1,1 @@
+PASS: generated product scan wrote app-source and app-package file-list reports and found no removed Charts or copied framework implementation paths.

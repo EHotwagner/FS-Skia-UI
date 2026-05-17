@@ -1,7 +1,7 @@
 module ControlsRenderingTests
 
 open Expecto
-open FS.Skia.UI
+open FS.Skia.UI.Scene
 open FS.Skia.UI.Controls
 
 [<Tests>]
@@ -34,5 +34,21 @@ let renderingTests =
                     let evidence = Scene.renderReadbackEvidence { Width = width; Height = height } rendered.Scene
                     Expect.isEmpty rendered.Diagnostics $"no rendering diagnostics at {width}x{height}@{scale}"
                     Expect.isNonEmpty evidence.DeterministicHash "render evidence has deterministic hash"
+        }
+
+        test "rich text reports unsupported Skia effect diagnostics during measurement" {
+            let block =
+                { RichText.block [ RichText.run "Hello" (RichText.defaultStyle Theme.light) ] with
+                    MaxWidth = Some 32.0
+                    Clip = true
+                    Effects = [ "drop-shadow" ] }
+
+            let measurement = RichText.measure block
+            let rendered = Control.render Theme.light (RichText.create block [])
+            let evidence = Scene.renderReadbackEvidence { Width = 160; Height = 90 } rendered.Scene
+
+            Expect.isLessThanOrEqual measurement.Width 32.0 "measurement respects max width"
+            Expect.exists measurement.Diagnostics (fun item -> item.Code = UnsupportedEnvironment && item.Message.Contains "drop-shadow") "unsupported effect is diagnosed"
+            Expect.isNonEmpty evidence.DeterministicHash "rich text render produces readback evidence"
         }
     ]

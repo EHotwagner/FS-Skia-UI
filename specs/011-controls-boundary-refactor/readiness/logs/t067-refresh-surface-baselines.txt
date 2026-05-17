@@ -1,0 +1,5 @@
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.Layout.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.KeyboardInput.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.Controls.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.Controls.Elmish.txt

@@ -16,9 +16,12 @@ let rec findRepositoryRoot (directory: string) =
 let repositoryRoot = findRepositoryRoot AppContext.BaseDirectory
 
 let readinessPath segments =
+    let activeFeature = Path.Combine(repositoryRoot, "specs", "011-controls-boundary-refactor")
     let historicalFeature = Path.Combine(repositoryRoot, "specs", "004-keyboard-state-display")
     let readinessRoot =
-        if File.Exists(Path.Combine(historicalFeature, "spec.md")) then
+        if Directory.Exists(Path.Combine(activeFeature, "readiness")) then
+            Path.Combine(activeFeature, "readiness")
+        elif File.Exists(Path.Combine(historicalFeature, "spec.md")) then
             Path.Combine(historicalFeature, "readiness")
         else
             Path.Combine(repositoryRoot, "readiness")
@@ -54,6 +57,8 @@ let smokeContractTests =
               "ScreenshotGallery", "samples/ScreenshotGallery/ScreenshotGallery.fsproj"
               "DemoReel", "samples/DemoReel/DemoReel.fsproj"
               "KeyboardInputGallery", "samples/KeyboardInputGallery/KeyboardInputGallery.fsproj"
+              "ChartsGallery", "samples/ChartsGallery/ChartsGallery.fsproj"
+              "DataGridGallery", "samples/DataGridGallery/DataGridGallery.fsproj"
               "ControlsGallery", "samples/ControlsGallery/ControlsGallery.fsproj" ]
             |> List.iter (fun (sample, project) ->
                 let projectPath = Path.Combine(repositoryRoot, project)
@@ -87,5 +92,47 @@ let smokeContractTests =
             Expect.stringContains stdout "expanded-stack=" "smoke includes expanded display model evidence"
             Expect.stringContains stdout "hidden=KeyboardStateDisplayHidden" "smoke includes hidden display evidence"
             Expect.stringContains stdout "TextRunElement" "smoke includes rendered scene text primitive"
+        }
+
+        test "Controls boundary gallery contract smoke sources cover Controls-owned chart DataGrid and adapter paths" {
+            [ "ControlsGallery",
+              "samples/ControlsGallery/ControlsGallery.fsproj",
+              [ "LineChart.create"
+                "GraphView.create"
+                "DataGrid.create"
+                "ControlsElmish.program"
+                "Keyboard.update"
+                "ControlRuntime.update"
+                "printfn \"sample=ControlsGallery\"" ]
+              "ChartsGallery",
+              "samples/ChartsGallery/ChartsGallery.fsproj",
+              [ "LineChart.create"
+                "BarChart.create"
+                "printfn \"sample=ChartsGallery\""
+                "selection-owned-by-model=" ]
+              "DataGridGallery",
+              "samples/DataGridGallery/DataGridGallery.fsproj",
+              [ "DataGrid.create"
+                "DataGrid.update"
+                "printfn \"sample=DataGridGallery\""
+                "state-owned-by-model="
+                "selection-effects="
+                "focus-effects=" ] ]
+            |> List.iter (fun (sample, project, requiredSource) ->
+                let projectPath = Path.Combine(repositoryRoot, project)
+                let sourcePath = Path.Combine(Path.GetDirectoryName projectPath |> Option.ofObj |> Option.defaultValue repositoryRoot, "Program.fs")
+                let projectContent = File.ReadAllText projectPath
+                let source = File.ReadAllText sourcePath
+
+                Expect.stringContains source "--contract-smoke" $"{sample} exposes contract smoke"
+                Expect.stringContains source "status=ok" $"{sample} reports smoke success"
+                Expect.stringContains source $"sample={sample}" $"{sample} identifies itself"
+                Expect.stringContains projectContent @"..\..\src\Controls\Controls.fsproj" $"{sample} uses Controls project"
+                Expect.isFalse (projectContent.Contains("FS.Skia.UI.Charts", StringComparison.Ordinal)) $"{sample} does not use Charts package"
+                Expect.isFalse (projectContent.Contains(@"..\..\src\Charts\Charts.fsproj", StringComparison.Ordinal)) $"{sample} does not use removed Charts project"
+
+                requiredSource
+                |> List.iter (fun required ->
+                    Expect.stringContains source required $"{sample} source includes {required}"))
         }
     ]

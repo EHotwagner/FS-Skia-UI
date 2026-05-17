@@ -267,8 +267,9 @@ Current FS.Skia.UI capability skills:
   product keyboard guidance (`src/KeyboardInput/skill/SKILL.md`).
 - `fs-skia-layout` — work on Yoga-backed layout contracts and generated
   product layout usage (`src/Layout/skill/SKILL.md`).
-- `fs-skia-charts` — work on chart scene builders and generated product
-  chart usage (`src/Charts/skill/SKILL.md`).
+- `fs-skia-ui-widgets` — work on Skia-rendered Controls, rich text, chart
+  controls, graph controls, DataGrid, and generated product Controls guidance
+  (`src/Controls/skill/SKILL.md`).
 - `fs-skia-testing` — work on generated product and package validation
   helper contracts (`src/Testing/skill/SKILL.md`).
 

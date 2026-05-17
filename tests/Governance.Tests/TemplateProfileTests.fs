@@ -115,6 +115,40 @@ let templateProfileTests =
             |> List.iter (fun needle -> Expect.stringContains catalog needle $"catalog includes {needle}")
         }
 
+        test "Controls capability is active home for controls rich text charts graph and DataGrid" {
+            let capabilities = readCatalogCapabilities ()
+            let ids = capabilities |> List.map _.Id |> Set.ofList
+
+            Expect.isFalse (ids.Contains "charts") "no generated charts capability remains active"
+
+            let controls = capabilities |> List.find (fun capability -> capability.Id = "controls")
+            let ownerNotes = defaultArg controls.OwnerNotes ""
+
+            [ "src/Controls/Types.fsi"
+              "src/Controls/Control.fsi"
+              "src/Controls/RichText.fsi"
+              "src/Controls/Charts.fsi"
+              "src/Controls/DataGrid.fsi"
+              "src/Controls/CustomControl.fsi" ]
+            |> List.iter (fun contract ->
+                Expect.contains controls.Contracts contract $"Controls capability declares {contract}")
+
+            [ "ordinary controls"
+              "rich text"
+              "chart controls"
+              "graph controls"
+              "DataGrid" ]
+            |> List.iter (fun phrase ->
+                Expect.stringContains ownerNotes phrase $"Controls capability owner notes mention {phrase}")
+
+            [ "app"; "governed"; "sample-pack" ]
+            |> List.iter (fun profile ->
+                Expect.contains controls.Profiles profile $"Controls capability participates in {profile} profile")
+
+            expectFileContains "template/profiles/app.yml" [ "controls" ]
+            Expect.isFalse ((read "template/profiles/app.yml").Contains("charts", System.StringComparison.OrdinalIgnoreCase)) "app profile has no charts capability"
+        }
+
         test "V3 profile rows are present for source and package validation" {
             expectPathsExist
                 "V3 profiles"

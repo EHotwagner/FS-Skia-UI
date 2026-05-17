@@ -9,6 +9,9 @@
   <ItemGroup>
     <Compile Include="CatalogTests.fs" />
     <Compile Include="PublicSurfaceTests.fs" />
+    <Compile Include="DiagnosticsTests.fs" />
+    <Compile Include="ControlRuntimeContractTests.fs" />
+    <Compile Include="DataGridTests.fs" />
     <Compile Include="SemanticTests.fs" />
     <Compile Include="InteractionTests.fs" />
     <Compile Include="TextInputTests.fs" />

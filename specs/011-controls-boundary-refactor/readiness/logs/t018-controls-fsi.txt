@@ -1,0 +1,8 @@
+controls-node-count=4
+controls-diagnostics=[]
+controls-scene=[GroupElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement]
+controls-catalog-count=47
+controls-text-dispatch=[NameChanged "Grace"]

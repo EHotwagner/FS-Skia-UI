@@ -6,8 +6,12 @@ packages, builds the solution, and runs the default non-visual test projects:
 | Test Scope | Project |
 |------------|---------|
 | Core library semantics | `tests/Lib.Tests/Lib.Tests.fsproj` |
-| Charts semantics | `tests/Charts.Tests/Charts.Tests.fsproj` |
+| Scene package semantics | `tests/Scene.Tests/Scene.Tests.fsproj` |
+| SkiaViewer host semantics | `tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj` |
+| Elmish adapter semantics | `tests/Elmish.Tests/Elmish.Tests.fsproj` |
+| KeyboardInput runtime semantics | `tests/KeyboardInput.Tests/KeyboardInput.Tests.fsproj` |
 | Layout semantics | `tests/Layout.Tests/Layout.Tests.fsproj` |
+| Controls, charts, graph, DataGrid, and rich rendering semantics | `tests/Controls.Tests/Controls.Tests.fsproj` |
 | Parity semantics | `tests/Parity.Tests/Parity.Tests.fsproj` |
 | Sample contract checks | `tests/Smoke.Tests/Smoke.Tests.fsproj` |
 | Governance command and docs checks | `tests/Governance.Tests/Governance.Tests.fsproj` |
@@ -32,10 +36,12 @@ reviewed baseline.
 
 | Script | Transcript |
 |--------|------------|
-| `scripts/prelude.fsx` | `specs/006-template-framework-governance/readiness/fsi/prelude.txt` |
-| `scripts/charts-prelude.fsx` | `specs/006-template-framework-governance/readiness/fsi/charts-prelude.txt` |
-| `scripts/input-prelude.fsx` | `specs/006-template-framework-governance/readiness/fsi/input-prelude.txt` |
-| `scripts/layout-prelude.fsx` | `specs/006-template-framework-governance/readiness/fsi/layout-prelude.txt` |
+| `scripts/prelude.fsx` | active feature `readiness/fsi/prelude.txt` |
+| `scripts/input-prelude.fsx` | active feature `readiness/fsi/input-prelude.txt` |
+| `scripts/keyboardinput-package-prelude.fsx` | active feature `readiness/fsi/keyboardinput-package-prelude.txt` |
+| `scripts/layout-prelude.fsx` | active feature `readiness/fsi/layout-prelude.txt` |
+| `scripts/controls-prelude.fsx` | active feature `readiness/fsi/controls-prelude.txt` |
+| `scripts/controls-elmish-prelude.fsx` | active feature `readiness/fsi/controls-elmish-prelude.txt` |
 
 `SampleContractSmoke` runs every sample that exposes `--contract-smoke` and
 writes one log per sample under

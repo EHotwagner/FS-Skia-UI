@@ -179,6 +179,8 @@ let rec findRepositoryRoot (directory: string) =
 let repositoryRoot =
     findRepositoryRoot AppContext.BaseDirectory
 
+let dotnetRunLock = obj ()
+
 let readinessPath segments =
     let historicalFeature = Path.Combine(repositoryRoot, "specs", "002-skia-feature-parity")
     let readinessRoot =
@@ -198,21 +200,22 @@ let writeReadinessEvidence relativePath (text: string) =
     path
 
 let runDotnet (arguments: string) =
-    let startInfo: ProcessStartInfo = ProcessStartInfo("dotnet", arguments)
-    startInfo.WorkingDirectory <- repositoryRoot
-    startInfo.RedirectStandardOutput <- true
-    startInfo.RedirectStandardError <- true
-    startInfo.UseShellExecute <- false
+    lock dotnetRunLock (fun () ->
+        let startInfo: ProcessStartInfo = ProcessStartInfo("dotnet", arguments)
+        startInfo.WorkingDirectory <- repositoryRoot
+        startInfo.RedirectStandardOutput <- true
+        startInfo.RedirectStandardError <- true
+        startInfo.UseShellExecute <- false
 
-    match Process.Start(startInfo) |> Option.ofObj with
-    | None ->
-        failwithf "Could not start dotnet %s" arguments
-    | Some proc ->
-        use proc = proc
-        let stdout = proc.StandardOutput.ReadToEnd()
-        let stderr = proc.StandardError.ReadToEnd()
-        proc.WaitForExitAsync().GetAwaiter().GetResult()
-        proc.ExitCode, stdout, stderr
+        match Process.Start(startInfo) |> Option.ofObj with
+        | None ->
+            failwithf "Could not start dotnet %s" arguments
+        | Some proc ->
+            use proc = proc
+            let stdout = proc.StandardOutput.ReadToEnd()
+            let stderr = proc.StandardError.ReadToEnd()
+            proc.WaitForExitAsync().GetAwaiter().GetResult()
+            proc.ExitCode, stdout, stderr)
 
 [<Tests>]
 let publicSurfaceTests =

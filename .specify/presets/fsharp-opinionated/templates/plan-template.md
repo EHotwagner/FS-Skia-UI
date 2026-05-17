@@ -31,8 +31,9 @@
   `GeneratedGuidanceCheck`, `TemplateDrift`, `EvidenceGraph`, or
   `EvidenceAudit` must change.
 - **Generated project impact**: Decide whether default/minimal generated
-  contents, validation logs, placeholder scans, excluded-history scans, or
-  generated `Dev` behavior must change.
+  contents, selected Controls guidance, local skills, validation logs,
+  placeholder scans, excluded-history scans, or generated `Dev` behavior must
+  change.
 - **Evidence paths**: Identify exact readiness paths for logs, FSI transcripts,
   packed-library tests, generated project output, dependency reports, guidance
   reports, drift reports, screenshots, and audit output.

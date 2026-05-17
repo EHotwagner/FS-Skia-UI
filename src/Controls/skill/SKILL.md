@@ -1,24 +1,61 @@
 ---
 name: fs-skia-ui-widgets
-description: Build declarative FS.Skia.UI controls, widgets, chart controls, graph controls, and generated product widget examples.
+description: Build Skia-rendered FS.Skia.UI Controls, rich text, chart controls, graph controls, DataGrid, custom wrappers, and generated product examples.
 ---
 
-# Controls And Widgets
+# Controls
 
 ## Scope
 
-Use this skill for user-facing widgets and controls built with
-`FS.Skia.UI.Controls`: forms, buttons, text input, lists, tables, layout
-containers, chart controls, graph controls, custom control wrappers, catalog
-examples, and generated product widget guidance.
+Use this skill for user-facing controls built with `FS.Skia.UI.Controls`:
+forms, buttons, text input, lists, tables, rich text, layout containers, chart
+controls, graph controls, DataGrid, custom control wrappers, catalog examples,
+and generated product guidance.
 
 ## Public Contract
 
 The supported API lives in `src/Controls/*.fsi`. View functions should build
 `Control<'msg>` values with module-per-control `create` functions and
-declarative attributes such as `TextBox.value`, `Button.onClick`, and
-`Stack.children`. Persistent values stay in the Elmish model; controls may keep
-only keyed transient interaction state.
+declarative attributes such as `TextBox.value`, `Button.onClick`,
+`LineChart.series`, `DataGrid.columns`, `DataGrid.rows`, and `Stack.children`.
+Persistent values stay in the product model; controls may keep only keyed
+transient interaction state through product-owned `ControlRuntime`.
+
+## Generated Product Pattern
+
+Generated examples should keep product state and messages local:
+
+```fsharp
+type Msg =
+    | NameChanged of string
+    | SaveRequested
+    | GridSelectionChanged of string
+
+let view model : Control<Msg> =
+    Stack.create [
+        Stack.children [
+            TextBox.create [
+                TextBox.value model.Name
+                TextBox.onChanged NameChanged
+            ]
+            Button.create [
+                Button.text "Save"
+                Button.onClick SaveRequested
+            ]
+            LineChart.create [
+                LineChart.series [ "Revenue", model.Revenue ]
+            ]
+            DataGrid.create [
+                DataGrid.columns model.Columns
+                DataGrid.rows model.Rows
+            ]
+        ]
+    ]
+```
+
+When Elmish program integration is selected, use the
+`FS.Skia.UI.Controls.Elmish` adapter for commands, subscriptions, and program
+wiring at the product edge.
 
 ## Build Commands
 
@@ -44,15 +81,21 @@ visual states, accessibility metadata, examples, tests, and evidence.
 
 ## Package Boundary
 
-Controls owns widgets, chart controls, graph controls, custom wrappers, the
-catalog, and generated widget guidance. Scene, SkiaViewer, Elmish,
-KeyboardInput, Layout, and Testing remain separate capabilities for non-widget
-work. Layout remains a runtime package; generated layout-control guidance comes
-from this skill.
+Controls owns ordinary controls, rich text, chart controls, graph controls,
+DataGrid, custom wrappers, the catalog, and generated controls guidance. Scene,
+SkiaViewer, Elmish, KeyboardInput, Layout, and Testing remain separate
+capabilities for lower-level or host-specific work. Layout remains a runtime
+package dependency; generated control authoring stays in Controls.
 
 ## Generated Product
 
-Generated products with Controls receive `fs-skia-ui-widgets` and must not
-receive `fs-skia-charts` or generated `fs-skia-layout` widget guidance. Product
-examples must be product-owned and must not copy framework galleries, samples,
-historical specs, readiness evidence, or implementation projects.
+Generated products with Controls receive this skill. Product examples must be
+product-owned and must not copy framework galleries, samples, historical specs,
+readiness evidence, docs, or implementation projects.
+
+## Charts migration
+
+Users moving from the legacy Charts package should replace chart declarations
+with Controls `LineChart`, `BarChart`, `PieChart`, `ScatterPlot`, `GraphView`,
+and `DataGrid` declarations. There is no compatibility shim; generated
+products should use `FS.Skia.UI.Controls` directly.

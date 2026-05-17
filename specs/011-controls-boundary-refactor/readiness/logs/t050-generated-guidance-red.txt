@@ -1,0 +1,188 @@
+  Governance.Tests -> /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed Controls boundary generated guidance.controls fragment describes one Skia Elmish Controls path [7 ms]
+  Error Message:
+   
+controls generated guidance contains Skia-rendered. Expected subject string '# Controls Fragment
+
+Adds the `FS.Skia.UI.Controls` package reference, a product-owned controls
+example view, product test coverage for that example, and the
+`fs-skia-ui-widgets` skill. Generated products must not copy framework
+galleries, framework samples, framework readiness evidence, or framework
+implementation projects.
+
+---
+name: fs-skia-ui-widgets
+description: Generated product guidance for FS.Skia.UI Controls widgets, chart controls, graph controls, and custom wrappers.
+---
+
+# Generated Controls Widgets
+
+## Scope
+
+Use this skill for generated product screens that compose controls in an
+Elmish-style view function.
+
+## Public Contract
+
+Reference `FS.Skia.UI.Controls` and build `Control<'msg>` values with
+module-per-control `create` functions and declarative attributes.
+
+## Build Commands
+
+Run `./fake.sh build -t Dev` and `./fake.sh build -t Verify` in the generated
+product.
+
+## Test Commands
+
+Run `./fake.sh build -t Test` for product-owned control examples.
+
+## Evidence
+
+Product evidence belongs in the generated product readiness folder. Do not copy
+framework readiness reports.
+
+## Package Boundary
+
+Controls owns widget, chart, and graph authoring. Layout remains a package
+dependency but not a separate generated widget skill.
+
+## Generated Product
+
+Keep examples small and product-owned. Do not include `fs-skia-charts` or
+generated `fs-skia-layout` widget guidance.
+' to contain substring 'Skia-rendered'.
+   at ControlsBoundaryGeneratedGuidanceTests.controlsBoundaryGeneratedGuidanceTests@27.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:line 38
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112
+
+  Failed Controls boundary generated guidance.controls guidance documents the removed Charts replacement path [7 ms]
+  Error Message:
+   
+controls generated guidance documents Charts migration. Expected subject string '# Controls Fragment
+
+Adds the `FS.Skia.UI.Controls` package reference, a product-owned controls
+example view, product test coverage for that example, and the
+`fs-skia-ui-widgets` skill. Generated products must not copy framework
+galleries, framework samples, framework readiness evidence, or framework
+implementation projects.
+
+---
+name: fs-skia-ui-widgets
+description: Generated product guidance for FS.Skia.UI Controls widgets, chart controls, graph controls, and custom wrappers.
+---
+
+# Generated Controls Widgets
+
+## Scope
+
+Use this skill for generated product screens that compose controls in an
+Elmish-style view function.
+
+## Public Contract
+
+Reference `FS.Skia.UI.Controls` and build `Control<'msg>` values with
+module-per-control `create` functions and declarative attributes.
+
+## Build Commands
+
+Run `./fake.sh build -t Dev` and `./fake.sh build -t Verify` in the generated
+product.
+
+## Test Commands
+
+Run `./fake.sh build -t Test` for product-owned control examples.
+
+## Evidence
+
+Product evidence belongs in the generated product readiness folder. Do not copy
+framework readiness reports.
+
+## Package Boundary
+
+Controls owns widget, chart, and graph authoring. Layout remains a package
+dependency but not a separate generated widget skill.
+
+## Generated Product
+
+Keep examples small and product-owned. Do not include `fs-skia-charts` or
+generated `fs-skia-layout` widget guidance.
+' to contain substring 'Charts migration'.
+   at ControlsBoundaryGeneratedGuidanceTests.controlsBoundaryGeneratedGuidanceTests@97-4.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:line 109
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112
+
+  Failed Controls boundary generated guidance.generated guidance includes generic message flow and adapter path when Elmish is selected [7 ms]
+  Error Message:
+   
+template/fragments/controls/skill/SKILL.md contains message. Expected subject string '---
+name: fs-skia-ui-widgets
+description: Generated product guidance for FS.Skia.UI Controls widgets, chart controls, graph controls, and custom wrappers.
+---
+
+# Generated Controls Widgets
+
+## Scope
+
+Use this skill for generated product screens that compose controls in an
+Elmish-style view function.
+
+## Public Contract
+
+Reference `FS.Skia.UI.Controls` and build `Control<'msg>` values with
+module-per-control `create` functions and declarative attributes.
+
+## Build Commands
+
+Run `./fake.sh build -t Dev` and `./fake.sh build -t Verify` in the generated
+product.
+
+## Test Commands
+
+Run `./fake.sh build -t Test` for product-owned control examples.
+
+## Evidence
+
+Product evidence belongs in the generated product readiness folder. Do not copy
+framework readiness reports.
+
+## Package Boundary
+
+Controls owns widget, chart, and graph authoring. Layout remains a package
+dependency but not a separate generated widget skill.
+
+## Generated Product
+
+Keep examples small and product-owned. Do not include `fs-skia-charts` or
+generated `fs-skia-layout` widget guidance.
+' to contain substring 'message'.
+   at GovernanceTestSupport.expectContains(String content, String needle, String context) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/TestSupport.fs:line 39
+   at GovernanceTestSupport.expectFileContains(String relativePath, FSharpList`1 needles) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/TestSupport.fs:line 45
+   at ControlsBoundaryGeneratedGuidanceTests.controlsBoundaryGeneratedGuidanceTests@52-1.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:line 52
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+
+  Failed Controls boundary generated guidance.controls capability is the active generated home for chart graph and DataGrid guidance [7 ms]
+  Error Message:
+   
+Controls capability owns DataGrid guidance. Expected subject string 'Declarative controls, widgets, chart controls, graph controls, and custom wrappers.' to contain substring 'DataGrid'.
+   at ControlsBoundaryGeneratedGuidanceTests.controlsBoundaryGeneratedGuidanceTests@82-3.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:line 93
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112
+
+  Failed Controls boundary generated guidance.generated guidance rejects stale chart capability wording and host-loop ownership [7 ms]
+  Error Message:
+   
+generated guidance omits stale term fs-skia-charts. Actual value was true but had expected it to be false.
+   at ControlsBoundaryGeneratedGuidanceTests.expectNoStaleTerm[a](a context, String content, FSharpList`1 forbidden) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:line 21
+   at ControlsBoundaryGeneratedGuidanceTests.controlsBoundaryGeneratedGuidanceTests@57-2.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:line 65
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112
+
+
+Failed!  - Failed:     5, Passed:     0, Skipped:     0, Total:     5, Duration: 17 ms - Governance.Tests.dll (net10.0)

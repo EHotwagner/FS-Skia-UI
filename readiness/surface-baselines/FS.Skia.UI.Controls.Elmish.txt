@@ -1,0 +1,11 @@
+FS.Skia.UI.Controls.Elmish.AdapterDiagnostic
+FS.Skia.UI.Controls.Elmish.AdapterEffect`1
+FS.Skia.UI.Controls.Elmish.AdapterEffect`1+DispatchControlRuntimeMessage
+FS.Skia.UI.Controls.Elmish.AdapterEffect`1+DispatchHostCommand
+FS.Skia.UI.Controls.Elmish.AdapterEffect`1+DispatchKeyboardMessage
+FS.Skia.UI.Controls.Elmish.AdapterEffect`1+DispatchProductMessage
+FS.Skia.UI.Controls.Elmish.AdapterEffect`1+ReportAdapterDiagnostic
+FS.Skia.UI.Controls.Elmish.AdapterEffect`1+Tags
+FS.Skia.UI.Controls.Elmish.AdapterProgram`2
+FS.Skia.UI.Controls.Elmish.AdapterSubscription`1
+FS.Skia.UI.Controls.Elmish.ControlsElmish

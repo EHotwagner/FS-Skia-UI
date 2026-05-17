@@ -65,7 +65,7 @@ let commandContractTests =
                 Expect.stringContains content $"\"{target}\"" $"{target} target is named in build.fsx")
 
             expectContains content "\"Build\", [ \"Restore\" ]" "Build depends on Restore"
-            expectContains content "\"Test\", [ \"Build\" ]" "Test depends on Build"
+            expectContains content "\"Test\", [ \"Restore\" ]" "Test depends on Restore"
             expectContains content "\"Dev\", [ \"Test\" ]" "Dev depends on Test"
             expectContains content "\"EvidenceAudit\", [ \"EvidenceGraph\" ]" "audit depends on graph"
             expectContains content "\"Ci\", [ \"Verify\" ]" "Ci delegates to Verify"
@@ -102,6 +102,56 @@ let commandContractTests =
             expectContains content "\"SkillCheck\"" "Verify includes SkillCheck"
             expectContains content "\"GeneratedProductCheck\"" "Verify includes GeneratedProductCheck"
             expectContains content "\"Ci\", [ \"Verify\" ]" "Ci delegates to Verify"
+        }
+
+        test "Controls boundary refactor command surface is wired into governed targets" {
+            let content = read "build.fsx"
+
+            [ "Dev"
+              "Verify"
+              "Ci"
+              "PackLocal"
+              "PackageSurfaceCheck"
+              "FsiTranscripts"
+              "TemplateCheck"
+              "CapabilityCheck"
+              "SkillCheck"
+              "GeneratedProductCheck"
+              "DependencyReport"
+              "GeneratedGuidanceCheck"
+              "TemplateDrift"
+              "EvidenceGraph"
+              "EvidenceAudit" ]
+            |> List.iter (fun target -> expectFakeTarget target)
+
+            [ "\"src/Controls/Controls.fsproj\", \"FS.Skia.UI.Controls\""
+              "\"src/KeyboardInput/KeyboardInput.fsproj\", \"FS.Skia.UI.KeyboardInput\""
+              "\"src/Controls.Elmish/Controls.Elmish.fsproj\", \"FS.Skia.UI.Controls.Elmish\""
+              "scripts/controls-prelude.fsx"
+              "scripts/keyboardinput-package-prelude.fsx"
+              "scripts/controls-elmish-prelude.fsx"
+              "ControlsCatalogCheck"
+              "ControlsInteractionCheck"
+              "ControlsRenderingCheck"
+              "DependencyOwnershipReport"
+              "GeneratedGuidanceScan"
+              "ScanV3GeneratedProducts"
+              "controls-boundary-guidance"
+              "EvidenceAudit\", [ \"EvidenceGraph\" ]" ]
+            |> List.iter (fun needle -> expectContains content needle $"build.fsx wires {needle}")
+
+            [ "PackageSurfaceCheck"
+              "FsiTranscripts"
+              "TemplateCheck"
+              "CapabilityCheck"
+              "SkillCheck"
+              "GeneratedProductCheck"
+              "DependencyReport"
+              "GeneratedGuidanceCheck"
+              "TemplateDrift"
+              "EvidenceAudit" ]
+            |> List.iter (fun verifyDependency ->
+                expectContains content $"\"{verifyDependency}\"" $"Verify includes {verifyDependency}")
         }
 
         test "workflow self-check exercises pure transition and emitted effect assertions" {

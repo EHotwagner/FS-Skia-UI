@@ -330,9 +330,12 @@ let expectFakeTarget target =
     Expect.stringContains (read "build.fsx") $"\"{target}\"" $"build.fsx declares {target}"
 
 let expectGeneratedProductFileList profile (required: string list) (forbidden: string list) =
+    let activePath = $"specs/011-controls-boundary-refactor/readiness/generated-file-lists/{profile}.txt"
     let currentPath = $"specs/010-skia-controls-library/readiness/generated-file-lists/{profile}.txt"
     let reportPath =
-        if fileExists currentPath then
+        if fileExists activePath then
+            activePath
+        elif fileExists currentPath then
             currentPath
         else
             $"specs/009-v3-modular-framework/readiness/generated-file-lists/{profile}.txt"

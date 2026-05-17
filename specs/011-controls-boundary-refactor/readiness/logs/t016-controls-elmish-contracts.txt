@@ -1,0 +1,8 @@
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Debug/net10.0/FS.Skia.UI.SkiaViewer.dll
+  Elmish -> /home/developer/projects/FS-Skia-UI/src/Elmish/bin/Debug/net10.0/FS.Skia.UI.Elmish.dll
+  Elmish.Tests -> /home/developer/projects/FS-Skia-UI/tests/Elmish.Tests/bin/Debug/net10.0/Elmish.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Elmish.Tests/bin/Debug/net10.0/Elmish.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     2, Skipped:     0, Total:     2, Duration: 7 ms - Elmish.Tests.dll (net10.0)

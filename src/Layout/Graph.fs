@@ -1,7 +1,7 @@
 namespace FS.Skia.UI.Layout
 
 open System
-open FS.Skia.UI
+open FS.Skia.UI.Scene
 
 type GraphTarget =
     | Node of nodeId: string
@@ -88,12 +88,12 @@ module Graph =
           Width = bounds.Width
           Height = bounds.Height }
 
-    let nodeLookup layout =
+    let nodeLookup (layout: GraphLayoutResult) =
         layout.Nodes
         |> List.map (fun item -> item.Node.Id, item)
         |> Map.ofList
 
-    let layout graph =
+    let layout (graph: GraphDefinition) =
         match GraphValidation.validate graph with
         | [] ->
             let nodes =
@@ -104,7 +104,7 @@ module Graph =
             Ok { Nodes = nodes; Edges = graph.Edges }
         | issues -> Result.Error issues
 
-    let render graph =
+    let render (graph: GraphDefinition) =
         layout graph
         |> Result.map (fun result ->
             let nodes = nodeLookup result
@@ -142,13 +142,13 @@ module Graph =
 
             Scene.group (edgeScenes @ nodeScenes))
 
-    let directed graph =
+    let directed (graph: GraphDefinition) =
         render { graph with Config = { graph.Config with Kind = Directed } }
 
-    let undirected graph =
+    let undirected (graph: GraphDefinition) =
         render { graph with Config = { graph.Config with Kind = Undirected } }
 
-    let hitTest layout x y =
+    let hitTest (layout: GraphLayoutResult) x y =
         let nodeHit =
             layout.Nodes
             |> List.tryPick (fun item ->

@@ -1,7 +1,7 @@
 namespace FS.Skia.UI.Controls
 
 open System
-open FS.Skia.UI
+open FS.Skia.UI.Scene
 
 module LayoutDefaults = FS.Skia.UI.Layout.Defaults
 
@@ -74,6 +74,12 @@ module ControlInternals =
         | "radio-group"
         | "tabs"
         | "menu" -> [ "items" ]
+        | "line-chart"
+        | "bar-chart"
+        | "scatter-plot" -> [ "series" ]
+        | "pie-chart" -> [ "values" ]
+        | "graph-view" -> [ "nodes" ]
+        | "data-grid" -> [ "columns"; "rows" ]
         | _ -> []
 
     let hasAttr name (attrs: Attr<'msg> list) =
@@ -123,18 +129,53 @@ module ControlInternals =
         if fits upper then
             upper
         else
-            let mutable low = minSize
-            let mutable high = upper
-
-            for _ in 0 .. 7 do
-                let mid = (low + high) * 0.5
-
-                if fits mid then
-                    low <- mid
+            let rec search remaining low high =
+                if remaining = 0 then
+                    low
                 else
-                    high <- mid
+                    let mid = (low + high) * 0.5
 
-            low
+                    if fits mid then
+                        search (remaining - 1) mid high
+                    else
+                        search (remaining - 1) low mid
+
+            search 8 minSize upper
+
+    let chartValues (control: Control<'msg>) =
+        let floatValues name =
+            tryLast name control.Attributes
+            |> Option.bind (fun attr ->
+                match attr.Value with
+                | UntypedValue(:? (float list) as values) -> Some values
+                | UntypedValue(:? (float array) as values) -> Some(Array.toList values)
+                | FloatValue value -> Some [ value ]
+                | _ -> None)
+
+        match control.Kind with
+        | "line-chart"
+        | "bar-chart"
+        | "scatter-plot" ->
+            floatValues "series" |> Option.defaultValue []
+        | "pie-chart" ->
+            floatValues "values" |> Option.defaultValue []
+        | "graph-view" ->
+            tryLast "nodes" control.Attributes
+            |> Option.bind (fun attr ->
+                match attr.Value with
+                | StringListValue values -> Some(values |> List.mapi (fun index _ -> float index))
+                | _ -> None)
+            |> Option.defaultValue []
+        | _ -> []
+
+    let isChartLike kind =
+        match kind with
+        | "line-chart"
+        | "bar-chart"
+        | "pie-chart"
+        | "scatter-plot"
+        | "graph-view" -> true
+        | _ -> false
 
     let renderNode (theme: Theme) y (control: Control<'msg>) =
         let width = floatValue "width" 240.0 control.Attributes
@@ -159,12 +200,21 @@ module ControlInternals =
               Font = { Family = theme.FontFamily; Size = fontSize; Weight = None }
               Paint = Paint.fill theme.Foreground }
 
-        Scene.group [
-            Scene.rectangle (0.0, y, width, height) fill
-            Scene.clipped
-                (RectClip { X = 0.0; Y = y; Width = width; Height = height })
-                (Scene.textRun labelRun)
-        ]
+        if isChartLike control.Kind then
+            Scene.group [
+                Scene.rectangle (0.0, y, width, height) fill
+                Scene.chart (chartValues control)
+                Scene.clipped
+                    (RectClip { X = 0.0; Y = y; Width = width; Height = height })
+                    (Scene.textRun labelRun)
+            ]
+        else
+            Scene.group [
+                Scene.rectangle (0.0, y, width, height) fill
+                Scene.clipped
+                    (RectClip { X = 0.0; Y = y; Width = width; Height = height })
+                    (Scene.textRun labelRun)
+            ]
 
     let renderScene (theme: Theme) (control: Control<'msg>) =
         let controls = recursively (fun control -> [ control ]) control

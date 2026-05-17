@@ -1,0 +1,173 @@
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Lib.Tests -> /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll
+  BasicViewer -> /home/developer/projects/FS-Skia-UI/samples/BasicViewer/bin/Debug/net10.0/BasicViewer.dll
+  InteractiveViewer -> /home/developer/projects/FS-Skia-UI/samples/InteractiveViewer/bin/Debug/net10.0/InteractiveViewer.dll
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  Layout.Tests -> /home/developer/projects/FS-Skia-UI/tests/Layout.Tests/bin/Debug/net10.0/Layout.Tests.dll
+  Parity.Tests -> /home/developer/projects/FS-Skia-UI/tests/Parity.Tests/bin/Debug/net10.0/Parity.Tests.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Debug/net10.0/FS.Skia.UI.Controls.dll
+  Package.Tests -> /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll
+  Smoke.Tests -> /home/developer/projects/FS-Skia-UI/tests/Smoke.Tests/bin/Debug/net10.0/Smoke.Tests.dll
+  ParityGallery -> /home/developer/projects/FS-Skia-UI/samples/ParityGallery/bin/Debug/net10.0/ParityGallery.dll
+  EffectsGallery -> /home/developer/projects/FS-Skia-UI/samples/EffectsGallery/bin/Debug/net10.0/EffectsGallery.dll
+  DataGridGallery -> /home/developer/projects/FS-Skia-UI/samples/DataGridGallery/bin/Debug/net10.0/DataGridGallery.dll
+  LayoutGraphGallery -> /home/developer/projects/FS-Skia-UI/samples/LayoutGraphGallery/bin/Debug/net10.0/LayoutGraphGallery.dll
+  ScreenshotGallery -> /home/developer/projects/FS-Skia-UI/samples/ScreenshotGallery/bin/Debug/net10.0/ScreenshotGallery.dll
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(30,22): error FS0039: The type 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(47,21): error FS0039: The type 'ViewerEffect' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(30,22): error FS0039: The type 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(47,21): error FS0039: The type 'ViewerEffect' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(151,158): error FS0039: The value, constructor, namespace or type 'withMaskFilter' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(151,158): error FS0039: The value, constructor, namespace or type 'withMaskFilter' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(152,159): error FS0039: The value, constructor, namespace or type 'withMaskFilter' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(152,159): error FS0039: The value, constructor, namespace or type 'withMaskFilter' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(198,27): error FS0039: The value or constructor 'InitializeRenderer' is not defined. Maybe you want one of the following:   initialSize   InitializingSwitchEventArgs   InitializingTraceSourceEventArgs [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(628,27): error FS0039: The value or constructor 'RenderFrame' is not defined. Maybe you want one of the following:   FrameRender   RenderDiagnostic [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(636,11): error FS0049: Uppercase variable identifiers should not generally be used in patterns, and may indicate a missing open declaration or a misspelt pattern name. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(637,11): error FS0039: The pattern discriminator 'RenderTick' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(638,11): error FS0039: The pattern discriminator 'UpdateTick' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(639,11): error FS0039: The pattern discriminator 'Resized' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(639,38): error FS0667: The field labels and expected type of this record expression or pattern do not uniquely determine a corresponding record type [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(640,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(641,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(642,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(643,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(644,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(645,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(653,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(654,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(655,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(656,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(657,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(657,72): error FS0039: The value or constructor 'Shutdown' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(658,11): error FS0049: Uppercase variable identifiers should not generally be used in patterns, and may indicate a missing open declaration or a misspelt pattern name. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(658,58): error FS0039: The value or constructor 'Shutdown' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(659,11): error FS0039: The pattern discriminator 'DiagnosticReported' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(661,35): error FS0039: The value or constructor 'ReportDiagnostic' is not defined. Maybe you want one of the following:   ReportDataGridDiagnostic   RegionOperation   RenderDiagnostic [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(662,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(663,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(664,11): error FS0039: The pattern discriminator 'PointerMoved' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(665,11): error FS0039: The pattern discriminator 'PointerPressed' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(666,11): error FS0039: The pattern discriminator 'PointerReleased' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(637,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(639,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(640,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(642,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(643,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(644,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(645,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(653,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(654,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(655,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(656,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(657,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(658,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(659,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(662,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(701,7): error FS0039: The value, namespace, type or module 'Viewer' is not defined. Maybe you want one of the following:   view   ViewerInput [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(702,9): error FS0039: The record label 'ClearColor' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(703,9): error FS0039: The record label 'TargetFrameRate' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(701,5): error FS0667: The field labels and expected type of this record expression or pattern do not uniquely determine a corresponding record type [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(704,25): error FS0039: The record label 'Verbose' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(707,5): error FS0039: The value, namespace, type or module 'Viewer' is not defined. Maybe you want one of the following:   view   ViewerInput [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(708,8): error FS0039: The value, namespace, type or module 'Viewer' is not defined. Maybe you want one of the following:   view   ViewerInput [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(709,8): error FS0039: The value, namespace, type or module 'Viewer' is not defined. Maybe you want one of the following:   view   ViewerInput [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(743,26): error FS0039: The pattern discriminator 'RenderFrame' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(773,11): error FS0039: The value, namespace, type or module 'Viewer' is not defined. Maybe you want one of the following:   view   ViewerInput [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(800,35): error FS0039: The value or constructor 'RenderFrame' is not defined. Maybe you want one of the following:   render   FrameRender   RenderDiagnostic [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(803,21): error FS0039: The value or constructor 'CaptureScreenshot' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(807,35): error FS0039: The value or constructor 'Shutdown' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(810,5): error FS0039: The value, namespace, type or module 'Viewer' is not defined. Maybe you want one of the following:   view   ViewerInput [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(811,8): error FS0039: The value, namespace, type or module 'Viewer' is not defined. Maybe you want one of the following:   view   ViewerInput [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(824,11): error FS0039: The value, namespace, type or module 'Viewer' is not defined. Maybe you want one of the following:   view   ViewerInput [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+  Controls.Elmish -> /home/developer/projects/FS-Skia-UI/src/Controls.Elmish/bin/Debug/net10.0/FS.Skia.UI.Controls.Elmish.dll
+  KeyboardInputGallery -> /home/developer/projects/FS-Skia-UI/samples/KeyboardInputGallery/bin/Debug/net10.0/KeyboardInputGallery.dll
+  Governance.Tests -> /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Debug/net10.0/FS.Skia.UI.SkiaViewer.dll
+  Elmish -> /home/developer/projects/FS-Skia-UI/src/Elmish/bin/Debug/net10.0/FS.Skia.UI.Elmish.dll
+  Testing -> /home/developer/projects/FS-Skia-UI/src/Testing/bin/Debug/net10.0/FS.Skia.UI.Testing.dll
+  Scene.Tests -> /home/developer/projects/FS-Skia-UI/tests/Scene.Tests/bin/Debug/net10.0/Scene.Tests.dll
+  SkiaViewer.Tests -> /home/developer/projects/FS-Skia-UI/tests/SkiaViewer.Tests/bin/Debug/net10.0/SkiaViewer.Tests.dll
+  Elmish.Tests -> /home/developer/projects/FS-Skia-UI/tests/Elmish.Tests/bin/Debug/net10.0/Elmish.Tests.dll
+  KeyboardInput.Tests -> /home/developer/projects/FS-Skia-UI/tests/KeyboardInput.Tests/bin/Debug/net10.0/KeyboardInput.Tests.dll
+  Testing.Tests -> /home/developer/projects/FS-Skia-UI/tests/Testing.Tests/bin/Debug/net10.0/Testing.Tests.dll
+  ChartsGallery -> /home/developer/projects/FS-Skia-UI/samples/ChartsGallery/bin/Debug/net10.0/ChartsGallery.dll
+
+Build FAILED.
+
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(30,22): error FS0039: The type 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(47,21): error FS0039: The type 'ViewerEffect' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(30,22): error FS0039: The type 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(47,21): error FS0039: The type 'ViewerEffect' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(151,158): error FS0039: The value, constructor, namespace or type 'withMaskFilter' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(151,158): error FS0039: The value, constructor, namespace or type 'withMaskFilter' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(152,159): error FS0039: The value, constructor, namespace or type 'withMaskFilter' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(152,159): error FS0039: The value, constructor, namespace or type 'withMaskFilter' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(198,27): error FS0039: The value or constructor 'InitializeRenderer' is not defined. Maybe you want one of the following:   initialSize   InitializingSwitchEventArgs   InitializingTraceSourceEventArgs [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(628,27): error FS0039: The value or constructor 'RenderFrame' is not defined. Maybe you want one of the following:   FrameRender   RenderDiagnostic [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(636,11): error FS0049: Uppercase variable identifiers should not generally be used in patterns, and may indicate a missing open declaration or a misspelt pattern name. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(637,11): error FS0039: The pattern discriminator 'RenderTick' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(638,11): error FS0039: The pattern discriminator 'UpdateTick' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(639,11): error FS0039: The pattern discriminator 'Resized' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(639,38): error FS0667: The field labels and expected type of this record expression or pattern do not uniquely determine a corresponding record type [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(640,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(641,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(642,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(643,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(644,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(645,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(653,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(654,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(655,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(656,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(657,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(657,72): error FS0039: The value or constructor 'Shutdown' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(658,11): error FS0049: Uppercase variable identifiers should not generally be used in patterns, and may indicate a missing open declaration or a misspelt pattern name. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(658,58): error FS0039: The value or constructor 'Shutdown' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(659,11): error FS0039: The pattern discriminator 'DiagnosticReported' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(661,35): error FS0039: The value or constructor 'ReportDiagnostic' is not defined. Maybe you want one of the following:   ReportDataGridDiagnostic   RegionOperation   RenderDiagnostic [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(662,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(663,11): error FS0039: The namespace or module 'ViewerEvent' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(664,11): error FS0039: The pattern discriminator 'PointerMoved' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(665,11): error FS0039: The pattern discriminator 'PointerPressed' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(666,11): error FS0039: The pattern discriminator 'PointerReleased' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(637,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(639,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(640,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(642,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(643,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(644,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(645,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(653,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(654,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(655,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(656,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(657,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(658,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(659,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(662,11): error FS0026: This rule will never be matched [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(701,7): error FS0039: The value, namespace, type or module 'Viewer' is not defined. Maybe you want one of the following:   view   ViewerInput [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(702,9): error FS0039: The record label 'ClearColor' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(703,9): error FS0039: The record label 'TargetFrameRate' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(701,5): error FS0667: The field labels and expected type of this record expression or pattern do not uniquely determine a corresponding record type [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(704,25): error FS0039: The record label 'Verbose' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(707,5): error FS0039: The value, namespace, type or module 'Viewer' is not defined. Maybe you want one of the following:   view   ViewerInput [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(708,8): error FS0039: The value, namespace, type or module 'Viewer' is not defined. Maybe you want one of the following:   view   ViewerInput [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(709,8): error FS0039: The value, namespace, type or module 'Viewer' is not defined. Maybe you want one of the following:   view   ViewerInput [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(743,26): error FS0039: The pattern discriminator 'RenderFrame' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(773,11): error FS0039: The value, namespace, type or module 'Viewer' is not defined. Maybe you want one of the following:   view   ViewerInput [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(800,35): error FS0039: The value or constructor 'RenderFrame' is not defined. Maybe you want one of the following:   render   FrameRender   RenderDiagnostic [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(803,21): error FS0039: The value or constructor 'CaptureScreenshot' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(807,35): error FS0039: The value or constructor 'Shutdown' is not defined. [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(810,5): error FS0039: The value, namespace, type or module 'Viewer' is not defined. Maybe you want one of the following:   view   ViewerInput [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(811,8): error FS0039: The value, namespace, type or module 'Viewer' is not defined. Maybe you want one of the following:   view   ViewerInput [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+/home/developer/projects/FS-Skia-UI/samples/DemoReel/Program.fs(824,11): error FS0039: The value, namespace, type or module 'Viewer' is not defined. Maybe you want one of the following:   view   ViewerInput [/home/developer/projects/FS-Skia-UI/samples/DemoReel/DemoReel.fsproj]
+    0 Warning(s)
+    67 Error(s)
+
+Time Elapsed 00:00:15.25
+
+exit-code=1
+duration-seconds=15

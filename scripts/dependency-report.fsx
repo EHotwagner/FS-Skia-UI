@@ -10,6 +10,14 @@ let path segments =
 
 let xname name = XName.Get name
 
+let relativePath (file: string) =
+    file.Substring(repositoryRoot.Length)
+        .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+        .Replace('\\', '/')
+
+let normalizeProjectReference (includeValue: string) =
+    includeValue.Replace('\\', '/')
+
 let args =
     let raw = Environment.GetCommandLineArgs() |> Array.skip 1 |> Array.toList
 
@@ -72,10 +80,7 @@ let docsContent =
 let projectFiles =
     Directory.EnumerateFiles(repositoryRoot, "*.fsproj", SearchOption.AllDirectories)
     |> Seq.filter (fun file ->
-        let relative =
-            file.Substring(repositoryRoot.Length)
-                .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-                .Replace('\\', '/')
+        let relative = relativePath file
 
         (relative.StartsWith("src/", StringComparison.Ordinal)
          || relative.StartsWith("tests/", StringComparison.Ordinal)
@@ -89,52 +94,140 @@ let validationOnlyVersionAllowed (projectPath: string) (packageId: string) (cond
     && condition.Contains("UsePackedPackage")
     && projectPath.Replace('\\', '/').StartsWith("samples/", StringComparison.Ordinal)
 
+let projectReferences relativeProject =
+    let project = path [ repositoryRoot; relativeProject ]
+
+    XDocument.Load(project).Descendants(xname "ProjectReference")
+    |> Seq.choose (fun reference ->
+        reference.Attribute(xname "Include")
+        |> Option.ofObj
+        |> Option.map (fun attr -> normalizeProjectReference attr.Value))
+    |> Set.ofSeq
+
+let packageReferences relativeProject =
+    let project = path [ repositoryRoot; relativeProject ]
+
+    XDocument.Load(project).Descendants(xname "PackageReference")
+    |> Seq.choose (fun reference ->
+        reference.Attribute(xname "Include")
+        |> Option.ofObj
+        |> Option.map (fun attr -> attr.Value))
+    |> Set.ofSeq
+
+let controlsBoundary =
+    [ "FS.Skia.UI.Controls",
+      "src/Controls/Controls.fsproj",
+      Set.ofList [ "../Scene/Scene.fsproj"; "../Layout/Layout.fsproj"; "../KeyboardInput/KeyboardInput.fsproj" ],
+      Set.empty,
+      "Owns form controls, rich rendering, chart controls, graph views, DataGrid, and product-owned ControlRuntime declarations."
+      "FS.Skia.UI.KeyboardInput",
+      "src/KeyboardInput/KeyboardInput.fsproj",
+      Set.ofList [ "../Scene/Scene.fsproj" ],
+      Set.ofList [ "YamlDotNet" ],
+      "Owns the rich keyboard input runtime, reducer/effect contracts, diagnostics, and YAML configuration parsing."
+      "FS.Skia.UI.Controls.Elmish",
+      "src/Controls.Elmish/Controls.Elmish.fsproj",
+      Set.ofList [ "../Controls/Controls.fsproj"; "../KeyboardInput/KeyboardInput.fsproj" ],
+      Set.ofList [ "Fable.Elmish" ],
+      "Owns command, subscription, and program adapter integration so base Controls stays generic over product messages." ]
+
+let removedChartsPackage = "FS.Skia.UI." + "Charts"
+let removedChartsProjectSuffix = "src/" + "Charts/" + "Charts.fsproj"
+
+let controlsBoundaryViolations =
+    controlsBoundary
+    |> List.collect (fun (packageId, relativeProject, expectedProjects, expectedPackages, _) ->
+        let project = path [ repositoryRoot; relativeProject ]
+
+        if not (File.Exists project) then
+            [ $"{relativeProject}: {packageId} project is missing" ]
+        else
+            let actualProjects = projectReferences relativeProject
+            let actualPackages = packageReferences relativeProject
+            let expectedProjectsText = expectedProjects |> Set.toList |> String.concat ", "
+            let actualProjectsText = actualProjects |> Set.toList |> String.concat ", "
+            let expectedPackagesText = expectedPackages |> Set.toList |> String.concat ", "
+            let actualPackagesText = actualPackages |> Set.toList |> String.concat ", "
+
+            [ if actualProjects <> expectedProjects then
+                  $"{relativeProject}: ProjectReference set changed; expected {expectedProjectsText} but found {actualProjectsText}"
+              if actualPackages <> expectedPackages then
+                  $"{relativeProject}: PackageReference set changed; expected {expectedPackagesText} but found {actualPackagesText}" ])
+
+let removedChartsViolations =
+    [ if File.Exists(path [ repositoryRoot; "src"; "Charts"; "Charts.fsproj" ]) then
+          removedChartsProjectSuffix + ": legacy Charts package project is still active"
+
+      yield!
+          projectFiles
+          |> List.collect (fun project ->
+              let relativeProject = relativePath project
+              let doc = XDocument.Load project
+
+              [ yield!
+                    doc.Descendants(xname "ProjectReference")
+                    |> Seq.choose (fun reference ->
+                        reference.Attribute(xname "Include")
+                        |> Option.ofObj
+                        |> Option.map (fun attr -> normalizeProjectReference attr.Value))
+                    |> Seq.filter (fun includeValue -> includeValue.EndsWith(removedChartsProjectSuffix, StringComparison.Ordinal))
+                    |> Seq.map (fun includeValue -> $"{relativeProject}: active ProjectReference points at removed Charts project {includeValue}")
+
+                yield!
+                    doc.Descendants(xname "PackageReference")
+                    |> Seq.choose (fun reference ->
+                        reference.Attribute(xname "Include")
+                        |> Option.ofObj
+                        |> Option.map (fun attr -> attr.Value))
+                    |> Seq.filter (fun includeValue -> includeValue = removedChartsPackage)
+                    |> Seq.map (fun _ -> $"{relativeProject}: active PackageReference points at removed Charts package") ]) ]
+
 let violations =
-    projectFiles
-    |> List.collect (fun project ->
-        let relativeProject =
-            project.Substring(repositoryRoot.Length)
-                .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-                .Replace('\\', '/')
+    [ yield! controlsBoundaryViolations
+      yield! removedChartsViolations
+      yield!
+          projectFiles
+          |> List.collect (fun project ->
+              let relativeProject = relativePath project
 
-        let doc = XDocument.Load project
+              let doc = XDocument.Load project
 
-        doc.Descendants(xname "PackageReference")
-        |> Seq.toList
-        |> List.collect (fun reference ->
-            let includeAttr = reference.Attribute(xname "Include") |> Option.ofObj
-            let versionAttr = reference.Attribute(xname "Version") |> Option.ofObj
-            let itemCondition =
-                reference.Parent
-                |> Option.ofObj
-                |> Option.bind (fun parent -> parent.Attribute(xname "Condition") |> Option.ofObj)
-                |> Option.map (fun attr -> attr.Value)
-                |> Option.defaultValue ""
+              doc.Descendants(xname "PackageReference")
+              |> Seq.toList
+              |> List.collect (fun reference ->
+                  let includeAttr = reference.Attribute(xname "Include") |> Option.ofObj
+                  let versionAttr = reference.Attribute(xname "Version") |> Option.ofObj
+                  let itemCondition =
+                      reference.Parent
+                      |> Option.ofObj
+                      |> Option.bind (fun parent -> parent.Attribute(xname "Condition") |> Option.ofObj)
+                      |> Option.map (fun attr -> attr.Value)
+                      |> Option.defaultValue ""
 
-            match includeAttr with
-            | None -> [ $"{relativeProject}: PackageReference missing Include" ]
-            | Some includeAttr ->
-                let packageId = includeAttr.Value
-                let hasInlineVersion = versionAttr |> Option.isSome
+                  match includeAttr with
+                  | None -> [ $"{relativeProject}: PackageReference missing Include" ]
+                  | Some includeAttr ->
+                      let packageId = includeAttr.Value
+                      let hasInlineVersion = versionAttr |> Option.isSome
 
-                let inlineVersionViolation =
-                    hasInlineVersion
-                    && not (validationOnlyVersionAllowed relativeProject packageId itemCondition)
+                      let inlineVersionViolation =
+                          hasInlineVersion
+                          && not (validationOnlyVersionAllowed relativeProject packageId itemCondition)
 
-                let centralPolicyViolation =
-                    not (packageId.StartsWith("FS.", StringComparison.Ordinal))
-                    && not (centralVersions.Contains packageId)
+                      let centralPolicyViolation =
+                          not (packageId.StartsWith("FS.", StringComparison.Ordinal))
+                          && not (centralVersions.Contains packageId)
 
-                let docsViolation =
-                    not (packageId.StartsWith("FS.", StringComparison.Ordinal))
-                    && not (docsContent.Contains("| " + packageId + " |"))
+                      let docsViolation =
+                          not (packageId.StartsWith("FS.", StringComparison.Ordinal))
+                          && not (docsContent.Contains("| " + packageId + " |"))
 
-                [ if inlineVersionViolation then
-                      $"{relativeProject}: unmanaged inline version on {packageId}; move it to Directory.Packages.props"
-                  if centralPolicyViolation then
-                      $"{relativeProject}: {packageId} missing PackageVersion in Directory.Packages.props"
-                  if docsViolation then
-                      $"{relativeProject}: {packageId} missing metadata row in docs/dependencies.md" ]))
+                      [ if inlineVersionViolation then
+                            $"{relativeProject}: unmanaged inline version on {packageId}; move it to Directory.Packages.props"
+                        if centralPolicyViolation then
+                            $"{relativeProject}: {packageId} missing PackageVersion in Directory.Packages.props"
+                        if docsViolation then
+                            $"{relativeProject}: {packageId} missing metadata row in docs/dependencies.md" ])) ]
 
 if not (List.isEmpty violations) then
     let report =
@@ -187,6 +280,29 @@ let report =
                       "no"
 
               $"| {packageId} | {central} | {documented} |")
+      ""
+      "## Controls Boundary Package Placement"
+      ""
+      "| Package | Project references | External packages | Boundary rule |"
+      "|---------|--------------------|-------------------|---------------|"
+      yield!
+          controlsBoundary
+          |> List.map (fun (packageId, _, expectedProjects, expectedPackages, rule) ->
+              let projects =
+                  if Set.isEmpty expectedProjects then
+                      "none"
+                  else
+                      expectedProjects |> Set.toList |> String.concat ", "
+
+              let packages =
+                  if Set.isEmpty expectedPackages then
+                      "none"
+                  else
+                      expectedPackages |> Set.toList |> String.concat ", "
+
+              $"| {packageId} | {projects} | {packages} | {rule} |")
+      ""
+      "PASS: Legacy Charts package/project references are absent from active repo-owned project files."
       ""
       "Validation-only exception: sample package-mode PackageReference versions for `FS.*` packages are allowed only under `UsePackedPackage` conditions." ]
     |> String.concat Environment.NewLine

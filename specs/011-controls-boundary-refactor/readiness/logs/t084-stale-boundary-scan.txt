@@ -1,0 +1,254 @@
+# T084 stale boundary scan
+
+## Active package/capability references
+
+tests/Package.Tests/SurfaceAreaTests.fs:136:              "open FS.Skia.UI.Charts"
+tests/Governance.Tests/ControlsBoundaryCompositionTests.fs:20:    [ "open FS.Skia.UI.Charts"
+tests/Governance.Tests/ControlsBoundaryCompositionTests.fs:37:      "src/Charts/Charts.fsproj"
+tests/Package.Tests/Tests.fs:60:            Expect.isFalse (build.Contains("\"src/Charts/Charts.fsproj\", \"FS.Skia.UI.Charts\"")) "Charts is not an active PackLocal package"
+tests/Package.Tests/Tests.fs:70:            Expect.isFalse (capabilities.Contains("id: charts", StringComparison.OrdinalIgnoreCase)) "generated capability catalog has no active charts capability"
+tests/Package.Tests/Tests.fs:91:                  "src/Charts/Charts.fsproj"
+tests/Package.Tests/Tests.fs:92:                  "id: charts"
+tests/Package.Tests/Tests.fs:94:                  ".agents/skills/fs-skia-charts/SKILL.md" ]
+tests/Package.Tests/Tests.fs:113:            Expect.isFalse (File.Exists(repositoryPath "template/base/.agents/skills/fs-skia-charts/SKILL.md")) "generated product base has no chart-specific generated skill"
+tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:46:                  "fs-skia-charts"
+tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:95:                  "fs-skia-charts"
+
+## Wording and coupling scan
+
+artifacts/generated-products/011-controls-boundary-refactor/app-package/docs/product.md:8:text, chart controls, graph controls, and DataGrid. Keep product values and
+specs/011-controls-boundary-refactor/readiness/task-graph.md:383:T001 [X] Create `specs/011-controls-boundary-refactor/readiness/` placeholders for public surface, package boundary, Elmish adapter, KeyboardInput package, control catalog, control runtime, rich rendering, keyboard input Elmish flow, chart/DataGrid Controls ownership, generated product usage, dependency report, template drift, compatibility impact, evidence graph, and evidence audit
+specs/011-controls-boundary-refactor/readiness/task-graph.md:385:T003 [X] Inventory stale Charts package/capability references, chart-only guidance, DataGrid chart terminology, renderer-neutral controls wording, and generated product copy risks in `specs/011-controls-boundary-refactor/readiness/template-drift.md`
+specs/011-controls-boundary-refactor/readiness/task-graph.md:391:T009 [X] Add failing package/capability boundary tests requiring Controls ownership for rich text, charts, graph views, and DataGrid while rejecting active `FS.Skia.UI.Charts`, `charts`, and `src/Lib`/viewer coupling
+specs/011-controls-boundary-refactor/readiness/task-graph.md:395:T013 [X] Add failing template and generated-guidance tests for one Controls path, no renderer-neutral promise, no chart-only guidance, and generated generic-message plus adapter examples
+specs/011-controls-boundary-refactor/readiness/task-graph.md:396:T014 [X] Draft or update Controls `.fsi` contracts for stable records, generic event attributes, explicit Skia escape hatches, rich rendering, chart controls, graph views, DataGrid, diagnostics, catalog metadata, and `ControlRuntime`
+specs/011-controls-boundary-refactor/readiness/task-graph.md:399:T017 [X] Define `src/Controls/catalog.yml` schema updates and catalog validation rules for ordinary controls, rich rendering, charts, graph views, DataGrid, accessibility metadata, evidence links, and category diagnostics
+specs/011-controls-boundary-refactor/readiness/task-graph.md:415:T033 [X] Connect Controls to the KeyboardInput package and adapter contracts without duplicate runtime definitions, hidden mutable state, or viewer/host-loop ownership
+specs/011-controls-boundary-refactor/readiness/task-graph.md:419:T037 [X] Add catalog contract tests requiring chart, graph, and DataGrid rows under Controls with category, required attributes, supported states, interaction metadata, accessibility metadata, examples, tests, and evidence links
+specs/011-controls-boundary-refactor/readiness/task-graph.md:420:T038 [X] Add public API and FSI tests proving chart, graph, and DataGrid authoring works through `FS.Skia.UI.Controls` without `FS.Skia.UI.Charts`
+specs/011-controls-boundary-refactor/readiness/task-graph.md:423:T041 [X] Add sample and generated-product composition tests combining form inputs, a chart, and a DataGrid through Controls only
+specs/011-controls-boundary-refactor/readiness/task-graph.md:427:T045 [X] Populate `src/Controls/catalog.yml` and documentation with Controls-owned chart, graph, and DataGrid entries, including evidence links and DataGrid data/collection categorization
+specs/011-controls-boundary-refactor/readiness/task-graph.md:428:T046 [X] Update `samples/ControlsGallery/`, `samples/DataGridGallery/`, and any chart gallery references so chart, graph, and DataGrid usage is Controls-owned
+specs/011-controls-boundary-refactor/readiness/task-graph.md:429:T047 [X] Refresh package surface baselines and FSI transcripts for Controls-owned chart, graph, and DataGrid contracts and the removed Charts package surface
+specs/011-controls-boundary-refactor/readiness/task-graph.md:432:T050 [X] Add generated guidance tests rejecting stale chart-only active capability references, DataGrid-as-chart wording, renderer-neutral controls promises, host-loop ownership requirements, and missing Charts migration guidance
+specs/011-controls-boundary-refactor/readiness/task-graph.md:433:T051 [X] Add generated product tests requiring Controls package references, no `FS.Skia.UI.Charts`, form plus chart/DataGrid usage, product-owned source, product tests, and no copied framework samples/specs/readiness/docs/implementation projects
+specs/011-controls-boundary-refactor/readiness/task-graph.md:434:T052 [X] Add capability/profile/template drift tests requiring Controls as the active home for ordinary controls, rich text, charts, graph views, and DataGrid across generated profiles
+specs/011-controls-boundary-refactor/readiness/task-graph.md:437:T055 [X] Update generated local skills, generated spec/plan guidance, README/docs fragments, and migration notes to remove stale Charts guidance and renderer-neutral controls wording
+specs/011-controls-boundary-refactor/readiness/task-graph.md:438:T056 [X] Add product-owned generated examples for ordinary form controls, rich text or rich rendering, chart or graph controls, DataGrid, generic message flow, and Elmish adapter integration
+specs/011-controls-boundary-refactor/readiness/task-graph.md:452:T070 [X] Generate validation roots and run generated product source/package checks proving Controls usage and absence of copied framework implementation source
+specs/011-controls-boundary-refactor/readiness/task-graph.md:458:T076 [X] Run `ControlsCatalogCheck` and `ControlsRenderingCheck` if split targets exist, or equivalent `Verify` coverage; update catalog, rich rendering, chart/DataGrid, and unsupported environment evidence
+specs/011-controls-boundary-refactor/readiness/task-graph.md:466:T084 [ ] Search active source, templates, generated output, docs, skills, and readiness reports for stale Charts package/capability references, renderer-neutral controls promises, chart-only DataGrid wording, hidden host-loop coupling, and copied framework assets
+docs/dependencies.md:14:| `FS.Skia.UI.Controls` | `FS.Skia.UI.Scene`, `FS.Skia.UI.Layout`, `FS.Skia.UI.KeyboardInput` | None | Owns form controls, rich rendering, chart controls, graph views, DataGrid, and product-owned `ControlRuntime` declarations without taking a direct Elmish or viewer dependency. |
+specs/011-controls-boundary-refactor/readiness/evidence-audit.md:12:  controls, rich rendering, charts, graph views, and DataGrid; legacy Charts
+specs/011-controls-boundary-refactor/readiness/evidence-audit.md:17:- Unsupported scope: renderer-neutral widgets, new renderer backends,
+specs/011-controls-boundary-refactor/readiness/evidence-audit.md:66:  for Controls-owned chart, graph, DataGrid, adapter, runtime, and lower-level
+specs/011-controls-boundary-refactor/readiness/evidence-audit.md:186:references plus product-owned rich text, chart, graph, DataGrid, and adapter
+artifacts/generated-products/011-controls-boundary-refactor/app-package/tests/Product.Tests/Tests.fs:16:            Expect.isGreaterThan (Control.count view) 7 "product example owns form, rich text, chart, graph, and DataGrid controls"
+artifacts/generated-products/011-controls-boundary-refactor/app-package/tests/Product.Tests/Tests.fs:19:        test "product-owned form chart and DataGrid controls are constructible" {
+docs/architecture.md:25:src/Controls/          FS.Skia.UI.Controls controls, rich rendering, charts, graph views, DataGrid
+docs/architecture.md:65:| Controls/Charts/DataGrid | [src/Controls](../src/Controls/) | Stable controls, rich rendering, chart controls, graph views, DataGrid, ControlRuntime, diagnostics, and catalog metadata. |
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:11:  implementation projects, copied framework samples, historical specs, or
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:19:form/chart/graph/DataGrid authoring diagnostics.
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:27:| `headless-scene-source` | `FS.Skia.UI.Scene` only; no Controls, adapter, or chart/DataGrid generated authoring path. |
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:46:  `DataGrid.rows`, and product-owned tests do not yet assert the form, chart,
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:65:  tests cover constructible form, chart, DataGrid, and adapter views.
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:73:  form/chart/graph/DataGrid authoring, Controls.Elmish adapter references,
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:74:  stale Charts exclusions, removed Charts package references, copied framework
+specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:129:updated scan continues to reject copied framework sample projects, framework
+docs/technical-design.md:22:| [Subsystem Design](subsystem-design.md) | Scene model, keyboard input, Controls-owned charts/DataGrid, layout, graph, samples, tests, and template governance linked to their source modules. |
+docs/technical-design.md:34:| Controls, charts, graph views, DataGrid, rich rendering | [src/Controls](../src/Controls/) |
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/sample-pack-source.txt:3:Validation rules: exactly one product app, exactly one product test suite, selected capability skills, Controls ownership for form/chart/graph/DataGrid authoring, Controls.Elmish adapter references, consumer-mode package references, stale Charts exclusions, no copied framework samples/specs/readiness/docs, and no framework implementation projects.
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/sample-pack-source.txt:255:            Expect.isGreaterThan (Control.count view) 7 "product example owns form, rich text, chart, graph, and DataGrid controls"
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/sample-pack-source.txt:258:        test "product-owned form chart and DataGrid controls are constructible" {
+artifacts/generated-products/011-controls-boundary-refactor/app-source/docs/product.md:8:text, chart controls, graph controls, and DataGrid. Keep product values and
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/summary.md:3:PASS: generated product file lists, selected skills, Controls-owned form/chart/graph/DataGrid authoring, Controls.Elmish adapter references, consumer-mode package references, stale Charts exclusions, full product governance command logs, and framework-source exclusions passed.
+docs/testing.md:14:| Controls, charts, graph, DataGrid, and rich rendering semantics | `tests/Controls.Tests/Controls.Tests.fsproj` |
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/headless-scene-source.txt:3:Validation rules: exactly one product app, exactly one product test suite, selected capability skills, Controls ownership for form/chart/graph/DataGrid authoring, Controls.Elmish adapter references, consumer-mode package references, stale Charts exclusions, no copied framework samples/specs/readiness/docs, and no framework implementation projects.
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/headless-scene-source.txt:248:            Expect.isGreaterThan (Control.count view) 7 "product example owns form, rich text, chart, graph, and DataGrid controls"
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/headless-scene-source.txt:251:        test "product-owned form chart and DataGrid controls are constructible" {
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:3:Validation rules: exactly one product app, exactly one product test suite, selected capability skills, Controls ownership for form/chart/graph/DataGrid authoring, Controls.Elmish adapter references, consumer-mode package references, stale Charts exclusions, no copied framework samples/specs/readiness/docs, and no framework implementation projects.
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:258:            Expect.isGreaterThan (Control.count view) 7 "product example owns form, rich text, chart, graph, and DataGrid controls"
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:261:        test "product-owned form chart and DataGrid controls are constructible" {
+docs/subsystem-design.md:6:description: Technical design notes for Controls-owned charts, DataGrid, layout, graph, keyboard input, samples, tests, and template governance.
+docs/subsystem-design.md:44:`FS.Skia.UI.Controls` owns chart controls, graph views, and DataGrid for current
+docs/subsystem-design.md:104:| Controls, chart controls, graph views, DataGrid, rich rendering | [tests/Controls.Tests](../tests/Controls.Tests/) |
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/governed-source.txt:3:Validation rules: exactly one product app, exactly one product test suite, selected capability skills, Controls ownership for form/chart/graph/DataGrid authoring, Controls.Elmish adapter references, consumer-mode package references, stale Charts exclusions, no copied framework samples/specs/readiness/docs, and no framework implementation projects.
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/governed-source.txt:250:            Expect.isGreaterThan (Control.count view) 7 "product example owns form, rich text, chart, graph, and DataGrid controls"
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/governed-source.txt:253:        test "product-owned form chart and DataGrid controls are constructible" {
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:3:Validation rules: exactly one product app, exactly one product test suite, selected capability skills, Controls ownership for form/chart/graph/DataGrid authoring, Controls.Elmish adapter references, consumer-mode package references, stale Charts exclusions, no copied framework samples/specs/readiness/docs, and no framework implementation projects.
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:258:            Expect.isGreaterThan (Control.count view) 7 "product example owns form, rich text, chart, graph, and DataGrid controls"
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:261:        test "product-owned form chart and DataGrid controls are constructible" {
+docs/controls.md:79:Skia rendering, chart controls, graph views, and DataGrid in generated product
+docs/controls.md:102:Catalog rows for chart, graph, and DataGrid controls link to
+template/base/README.md:36:ordinary controls, rich text, chart controls, graph controls, and DataGrid.
+template/base/README.md:39:legacy Charts package should use Controls chart and DataGrid declarations
+artifacts/generated-products/011-controls-boundary-refactor/app-source/tests/Product.Tests/Tests.fs:16:            Expect.isGreaterThan (Control.count view) 7 "product example owns form, rich text, chart, graph, and DataGrid controls"
+artifacts/generated-products/011-controls-boundary-refactor/app-source/tests/Product.Tests/Tests.fs:19:        test "product-owned form chart and DataGrid controls are constructible" {
+specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md:34:  combine form inputs, a chart, and a DataGrid through Controls only.
+specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md:69:  Controls-owned chart, graph, and DataGrid metadata and evidence links.
+specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md:71:  record the chart/DataGrid readiness evidence path and DataGrid data
+specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md:78:  builds and composes form inputs, chart, graph, and DataGrid through Controls.
+specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md:98:  surface baselines for Controls-owned chart, graph, and DataGrid public
+specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md:101:  Controls-owned chart, graph, and DataGrid authoring.
+specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md:105:  chart/DataGrid exports; `FS.Skia.UI.Charts.txt` is absent.
+specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md:110:  chart/graph ownership, DataGrid large-row behavior, catalog metadata, and
+specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md:121:  chart, graph, and DataGrid usage, including DataGrid data-category evidence
+specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md:131:The T076 catalog gate revalidates Controls-owned chart, graph, and DataGrid
+specs/011-controls-boundary-refactor/readiness/dependencies.md:29:| FS.Skia.UI.Controls | ../KeyboardInput/KeyboardInput.fsproj, ../Layout/Layout.fsproj, ../Scene/Scene.fsproj | none | Owns form controls, rich rendering, chart controls, graph views, DataGrid, and product-owned ControlRuntime declarations. |
+.specify/templates/spec-template.md:24:  chart, graph, or DataGrid authoring changes, name the active package path
+.specify/templates/spec-template.md:30:- **Layout/rendering impact**: State whether layout, charts, DataGrid,
+specs/011-controls-boundary-refactor/readiness/us4-validation.md:21:| Generated products | `specs/011-controls-boundary-refactor/readiness/generated-file-lists/summary.md` | PASS: source and package app validation roots use Controls and Controls.Elmish package references and exclude copied framework implementation source. |
+specs/011-controls-boundary-refactor/readiness/us4-validation.md:22:| Compatibility | `specs/011-controls-boundary-refactor/readiness/compatibility-impact.md` | PASS: replacement path is Controls-owned chart/graph/DataGrid authoring, lower-level paths remain available, and no compatibility shim, automated migration, or release publishing promise is made. |
+template/base/docs/product.md:8:text, chart controls, graph controls, and DataGrid. Keep product values and
+.specify/presets/fsharp-opinionated/templates/spec-template.md:24:  chart, graph, or DataGrid authoring changes, name the active package path
+.specify/presets/fsharp-opinionated/templates/spec-template.md:30:- **Layout/rendering impact**: State whether layout, charts, DataGrid,
+artifacts/generated-products/011-controls-boundary-refactor/sample-pack-source/docs/product.md:8:text, chart controls, graph controls, and DataGrid. Keep product values and
+template/base/tests/Product.Tests/Tests.fs:16:            Expect.isGreaterThan (Control.count view) 7 "product example owns form, rich text, chart, graph, and DataGrid controls"
+template/base/tests/Product.Tests/Tests.fs:19:        test "product-owned form chart and DataGrid controls are constructible" {
+tests/Smoke.Tests/Tests.fs:97:        test "Controls boundary gallery contract smoke sources cover Controls-owned chart DataGrid and adapter paths" {
+artifacts/generated-products/011-controls-boundary-refactor/sample-pack-source/tests/Product.Tests/Tests.fs:16:            Expect.isGreaterThan (Control.count view) 7 "product example owns form, rich text, chart, graph, and DataGrid controls"
+artifacts/generated-products/011-controls-boundary-refactor/sample-pack-source/tests/Product.Tests/Tests.fs:19:        test "product-owned form chart and DataGrid controls are constructible" {
+artifacts/generated-products/011-controls-boundary-refactor/governed-source/docs/product.md:8:text, chart controls, graph controls, and DataGrid. Keep product values and
+specs/011-controls-boundary-refactor/readiness/logs/t079-generated-app-inventory.txt:3:specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:3:Validation rules: exactly one product app, exactly one product test suite, selected capability skills, Controls ownership for form/chart/graph/DataGrid authoring, Controls.Elmish adapter references, consumer-mode package references, stale Charts exclusions, no copied framework samples/specs/readiness/docs, and no framework implementation projects.
+specs/011-controls-boundary-refactor/readiness/logs/t079-generated-app-inventory.txt:18:specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:3:Validation rules: exactly one product app, exactly one product test suite, selected capability skills, Controls ownership for form/chart/graph/DataGrid authoring, Controls.Elmish adapter references, consumer-mode package references, stale Charts exclusions, no copied framework samples/specs/readiness/docs, and no framework implementation projects.
+specs/011-controls-boundary-refactor/readiness/logs/t058-readiness-capture-scan.txt:11:specs/011-controls-boundary-refactor/readiness/generated-product-usage.md:27:| `headless-scene-source` | `FS.Skia.UI.Scene` only; no Controls, adapter, or chart/DataGrid generated authoring path. |
+specs/011-controls-boundary-refactor/readiness/logs/t058-readiness-capture-scan.txt:22:specs/011-controls-boundary-refactor/readiness/generated-guidance.md:10:| `headless-scene` | `headless-scene-source` | Selects Scene only; no Controls, adapter, or chart/DataGrid authoring guidance. |
+template/fragments/keyboard-input/README.md:11:Keep chart controls, graph controls, DataGrid, and rich text guidance in the
+tests/Package.Tests/SurfaceAreaTests.fs:123:        test "Controls FSI transcript authors chart graph and DataGrid without Charts package" {
+template/fragments/controls/README.md:8:rich text, chart controls, graph controls, and DataGrid. Product models own
+specs/011-controls-boundary-refactor/readiness/sample-smoke/us2-us3-sample-contracts.md:20:controls, rich text, chart controls, graph views, DataGrid, and adapter
+specs/011-controls-boundary-refactor/readiness/task-graph.json:16:      "title": "Create `specs/011-controls-boundary-refactor/readiness/` placeholders for public surface, package boundary, Elmish adapter, KeyboardInput package, control catalog, control runtime, rich rendering, keyboard input Elmish flow, chart/DataGrid Controls ownership, generated product usage, dependency report, template drift, compatibility impact, evidence graph, and evidence audit",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:42:      "title": "Inventory stale Charts package/capability references, chart-only guidance, DataGrid chart terminology, renderer-neutral controls wording, and generated product copy risks in `specs/011-controls-boundary-refactor/readiness/template-drift.md`",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:129:      "title": "Add failing package/capability boundary tests requiring Controls ownership for rich text, charts, graph views, and DataGrid while rejecting active `FS.Skia.UI.Charts`, `charts`, and `src/Lib`/viewer coupling",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:189:      "title": "Add failing template and generated-guidance tests for one Controls path, no renderer-neutral promise, no chart-only guidance, and generated generic-message plus adapter examples",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:204:      "title": "Draft or update Controls `.fsi` contracts for stable records, generic event attributes, explicit Skia escape hatches, rich rendering, chart controls, graph views, DataGrid, diagnostics, catalog metadata, and `ControlRuntime`",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:258:      "title": "Define `src/Controls/catalog.yml` schema updates and catalog validation rules for ordinary controls, rich rendering, charts, graph views, DataGrid, accessibility metadata, evidence links, and category diagnostics",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:550:      "title": "Connect Controls to the KeyboardInput package and adapter contracts without duplicate runtime definitions, hidden mutable state, or viewer/host-loop ownership",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:638:      "title": "Add catalog contract tests requiring chart, graph, and DataGrid rows under Controls with category, required attributes, supported states, interaction metadata, accessibility metadata, examples, tests, and evidence links",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:653:      "title": "Add public API and FSI tests proving chart, graph, and DataGrid authoring works through `FS.Skia.UI.Controls` without `FS.Skia.UI.Charts`",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:698:      "title": "Add sample and generated-product composition tests combining form inputs, a chart, and a DataGrid through Controls only",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:771:      "title": "Populate `src/Controls/catalog.yml` and documentation with Controls-owned chart, graph, and DataGrid entries, including evidence links and DataGrid data/collection categorization",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:791:      "title": "Update `samples/ControlsGallery/`, `samples/DataGridGallery/`, and any chart gallery references so chart, graph, and DataGrid usage is Controls-owned",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:811:      "title": "Refresh package surface baselines and FSI transcripts for Controls-owned chart, graph, and DataGrid contracts and the removed Charts package surface",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:875:      "title": "Add generated guidance tests rejecting stale chart-only active capability references, DataGrid-as-chart wording, renderer-neutral controls promises, host-loop ownership requirements, and missing Charts migration guidance",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:890:      "title": "Add generated product tests requiring Controls package references, no `FS.Skia.UI.Charts`, form plus chart/DataGrid usage, product-owned source, product tests, and no copied framework samples/specs/readiness/docs/implementation projects",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:905:      "title": "Add capability/profile/template drift tests requiring Controls as the active home for ordinary controls, rich text, charts, graph views, and DataGrid across generated profiles",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:954:      "title": "Update generated local skills, generated spec/plan guidance, README/docs fragments, and migration notes to remove stale Charts guidance and renderer-neutral controls wording",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:973:      "title": "Add product-owned generated examples for ordinary form controls, rich text or rich rendering, chart or graph controls, DataGrid, generic message flow, and Elmish adapter integration",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:1226:      "title": "Generate validation roots and run generated product source/package checks proving Controls usage and absence of copied framework implementation source",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:1336:      "title": "Run `ControlsCatalogCheck` and `ControlsRenderingCheck` if split targets exist, or equivalent `Verify` coverage; update catalog, rich rendering, chart/DataGrid, and unsupported environment evidence",
+specs/011-controls-boundary-refactor/readiness/task-graph.json:1480:      "title": "Search active source, templates, generated output, docs, skills, and readiness reports for stale Charts package/capability references, renderer-neutral controls promises, chart-only DataGrid wording, hidden host-loop coupling, and copied framework assets",
+specs/011-controls-boundary-refactor/readiness/logs/t048-stale-reference-scan.txt:4:docs/architecture.md:20:src/Charts/    FS.Skia.UI.Charts chart and DataGrid scene builders
+specs/011-controls-boundary-refactor/readiness/logs/t048-stale-reference-scan.txt:9:specs/011-controls-boundary-refactor/readiness/task-graph.md:385:T003 [X] Inventory stale Charts package/capability references, chart-only guidance, DataGrid chart terminology, renderer-neutral controls wording, and generated product copy risks in `specs/011-controls-boundary-refactor/readiness/template-drift.md`
+specs/011-controls-boundary-refactor/readiness/logs/t048-stale-reference-scan.txt:10:specs/011-controls-boundary-refactor/readiness/task-graph.md:391:T009 [X] Add failing package/capability boundary tests requiring Controls ownership for rich text, charts, graph views, and DataGrid while rejecting active `FS.Skia.UI.Charts`, `charts`, and `src/Lib`/viewer coupling
+specs/011-controls-boundary-refactor/readiness/logs/t048-stale-reference-scan.txt:11:specs/011-controls-boundary-refactor/readiness/task-graph.md:420:T038 [X] Add public API and FSI tests proving chart, graph, and DataGrid authoring works through `FS.Skia.UI.Controls` without `FS.Skia.UI.Charts`
+specs/011-controls-boundary-refactor/readiness/logs/t048-stale-reference-scan.txt:14:specs/011-controls-boundary-refactor/readiness/task-graph.md:429:T047 [X] Refresh package surface baselines and FSI transcripts for Controls-owned chart, graph, and DataGrid contracts and the removed Charts package surface
+specs/011-controls-boundary-refactor/readiness/logs/t048-stale-reference-scan.txt:15:specs/011-controls-boundary-refactor/readiness/task-graph.md:433:T051 [ ] Add generated product tests requiring Controls package references, no `FS.Skia.UI.Charts`, form plus chart/DataGrid usage, product-owned source, product tests, and no copied framework samples/specs/readiness/docs/implementation projects
+specs/011-controls-boundary-refactor/readiness/logs/t048-stale-reference-scan.txt:17:specs/011-controls-boundary-refactor/readiness/task-graph.md:466:T084 [ ] Search active source, templates, generated output, docs, skills, and readiness reports for stale Charts package/capability references, renderer-neutral controls promises, chart-only DataGrid wording, hidden host-loop coupling, and copied framework assets
+specs/011-controls-boundary-refactor/readiness/logs/t048-stale-reference-scan.txt:20:specs/011-controls-boundary-refactor/readiness/evidence-audit.md:12:  controls, rich rendering, charts, graph views, and DataGrid; legacy Charts
+specs/011-controls-boundary-refactor/readiness/logs/t048-stale-reference-scan.txt:26:specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md:8:- Legacy Charts package and DataGrid surface: `src/Charts/`
+specs/011-controls-boundary-refactor/readiness/logs/t048-stale-reference-scan.txt:32:specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md:105:  chart/DataGrid exports; `FS.Skia.UI.Charts.txt` is absent.
+specs/011-controls-boundary-refactor/readiness/logs/t048-stale-reference-scan.txt:35:specs/011-controls-boundary-refactor/readiness/template-drift.md:10:| Charts namespace | `open FS.Skia.UI.Charts` in `tests/Charts.Tests`, `samples/ChartsGallery/Program.fs`, `samples/DataGridGallery/Program.fs`, `scripts/charts-prelude.fsx` | Move authoring evidence to `FS.Skia.UI.Controls` |
+specs/011-controls-boundary-refactor/readiness/us3-validation.md:9:text, chart controls, graph views, and DataGrid. Generated Elmish products use
+specs/011-controls-boundary-refactor/readiness/us3-validation.md:11:removed Charts package guidance, stale chart skills, renderer-neutral wording,
+specs/011-controls-boundary-refactor/readiness/us3-validation.md:12:and copied framework assets.
+template/fragments/controls/skill/SKILL.md:3:description: Generated product guidance for Skia-rendered FS.Skia.UI Controls, rich text, chart controls, graph controls, DataGrid, and custom wrappers.
+template/fragments/controls/skill/SKILL.md:12:ordinary controls, rich text, chart controls, graph controls, DataGrid, and
+specs/011-controls-boundary-refactor/readiness/logs/t046-composition-tests.txt:2:[0m[1000D[?25h[37m[[37m16:13:56 [31mERR[37m] [36mControls boundary composition.generated product template composes form chart and DataGrid through Controls only[37m failed in [32m00:00:00.0070000[37m. [36m
+specs/011-controls-boundary-refactor/readiness/logs/t046-composition-tests.txt:3:template/base/src/Product/Program.fs composes form, chart, and DataGrid through Controls using LineChart.create. Expected subject string 'module Product.Program
+specs/011-controls-boundary-refactor/readiness/us2-validation.md:7:Product developers can use chart controls, graph views, and DataGrid through
+specs/011-controls-boundary-refactor/readiness/us2-validation.md:9:DataGrid is documented and cataloged as a data control, not chart-only
+tests/Controls.Tests/CatalogTests.fs:55:        test "chart graph and DataGrid rows carry full US2 Controls-owned metadata" {
+tests/Controls.Tests/CatalogTests.fs:81:                Expect.exists row.Evidence (fun path -> path.EndsWith("chart-datagrid-controls.md")) $"{id} links chart/DataGrid readiness evidence")
+artifacts/generated-products/011-controls-boundary-refactor/governed-source/tests/Product.Tests/Tests.fs:16:            Expect.isGreaterThan (Control.count view) 7 "product example owns form, rich text, chart, graph, and DataGrid controls"
+artifacts/generated-products/011-controls-boundary-refactor/governed-source/tests/Product.Tests/Tests.fs:19:        test "product-owned form chart and DataGrid controls are constructible" {
+specs/011-controls-boundary-refactor/readiness/logs/t050-generated-guidance-red.txt:168:  Failed Controls boundary generated guidance.controls capability is the active generated home for chart graph and DataGrid guidance [7 ms]
+specs/011-controls-boundary-refactor/readiness/logs/t050-generated-guidance-red.txt:171:Controls capability owns DataGrid guidance. Expected subject string 'Declarative controls, widgets, chart controls, graph controls, and custom wrappers.' to contain substring 'DataGrid'.
+specs/011-controls-boundary-refactor/readiness/logs/t050-generated-guidance-red.txt:177:  Failed Controls boundary generated guidance.generated guidance rejects stale chart capability wording and host-loop ownership [7 ms]
+tests/Governance.Tests/GeneratedProjectValidationTests.fs:72:                  "Controls-owned form/chart/graph/DataGrid authoring"
+specs/011-controls-boundary-refactor/readiness/logs/t053-adapter-guidance-red.txt:168:  Failed Controls boundary generated guidance.generated guidance rejects stale chart capability wording and host-loop ownership [7 ms]
+specs/011-controls-boundary-refactor/readiness/logs/t053-adapter-guidance-red.txt:178:  Failed Controls boundary generated guidance.controls capability is the active generated home for chart graph and DataGrid guidance [7 ms]
+specs/011-controls-boundary-refactor/readiness/logs/t053-adapter-guidance-red.txt:181:Controls capability owns DataGrid guidance. Expected subject string 'Declarative controls, widgets, chart controls, graph controls, and custom wrappers.' to contain substring 'DataGrid'.
+specs/011-controls-boundary-refactor/readiness/public-surface.md:132:  baselines refreshed after Controls-owned chart, graph, and DataGrid changes.
+specs/011-controls-boundary-refactor/readiness/public-surface.md:134:  form controls, chart, graph, and DataGrid authoring from
+specs/011-controls-boundary-refactor/readiness/public-surface.md:139:  Controls chart/DataGrid exports and no `FS.Skia.UI.Charts` baseline.
+template/capabilities.yml:129:    ownerNotes: Skia-rendered ordinary controls, rich text, chart controls, graph controls, DataGrid, custom wrappers, and product-owned ControlRuntime guidance.
+tests/Controls.Tests/DiagnosticsTests.fs:27:            let unsupported = Diagnostics.unsupportedScopeExpansion "renderer-neutral controls" "template guidance"
+tests/Controls.Tests/DiagnosticsTests.fs:35:            assertMessageContains unsupported "renderer-neutral controls"
+src/Controls/skill/SKILL.md:3:description: Build Skia-rendered FS.Skia.UI Controls, rich text, chart controls, graph controls, DataGrid, custom wrappers, and generated product examples.
+tests/Governance.Tests/TemplateProfileTests.fs:118:        test "Controls capability is active home for controls rich text charts graph and DataGrid" {
+src/Controls/Controls.fsproj:10:    <Description>Declarative Skia controls, rich rendering, chart controls, graph controls, DataGrid, and product-owned control runtime contracts.</Description>
+specs/011-controls-boundary-refactor/readiness/package-boundary.md:10:| Charts | `src/Charts/Charts.fsproj`, `.fsi/.fs` pairs for chart modules and `DataGrid`, `tests/Charts.Tests/`, `samples/ChartsGallery/`, `readiness/surface-baselines/FS.Skia.UI.Charts.txt` |
+specs/011-controls-boundary-refactor/readiness/package-boundary.md:25:- `src/Controls/Charts.*` already exposes Controls-owned chart types, but DataGrid still only appears under `src/Charts/`.
+specs/011-controls-boundary-refactor/readiness/package-boundary.md:32:- Stale boundary scan: `rg -n "FS\\.Skia\\.UI\\.Charts|\\bcharts\\b|ChartsGallery|DataGrid|renderer-neutral|src/Lib|Lib\\.fsproj"`
+specs/011-controls-boundary-refactor/readiness/package-boundary.md:124:controls, rich rendering, charts, graph views, and DataGrid. Selected generated
+specs/011-controls-boundary-refactor/readiness/package-boundary.md:126:chart-only skill. Dependency reporting confirms Controls has no direct
+artifacts/generated-products/011-controls-boundary-refactor/headless-scene-source/docs/product.md:8:text, chart controls, graph controls, and DataGrid. Keep product values and
+tests/Governance.Tests/ControlsBoundaryCompositionTests.fs:18:        Expect.stringContains source required $"{relativePath} composes form, chart, and DataGrid through Controls using {required}")
+tests/Governance.Tests/ControlsBoundaryCompositionTests.fs:79:        test "ControlsGallery sample composes form chart and DataGrid through Controls only" {
+tests/Governance.Tests/ControlsBoundaryCompositionTests.fs:84:        test "generated product template composes form chart and DataGrid through Controls only" {
+tests/Governance.Tests/ControlsBoundaryCompositionTests.fs:95:        test "generated product tests cover product-owned form chart and DataGrid usage" {
+specs/011-controls-boundary-refactor/readiness/generated-guidance.md:4:PASS: generated Controls guidance covers Skia-rendered controls, rich text, chart controls, graph controls, DataGrid, Controls.Elmish adapter wiring, and legacy Charts replacement notes without stale generated terms.
+specs/011-controls-boundary-refactor/readiness/generated-guidance.md:54:chart controls, graph controls, DataGrid, Controls.Elmish adapter wiring, and
+specs/011-controls-boundary-refactor/readiness/logs/t052-capability-profile-red.txt:4:  Failed Template profile metadata.Controls capability is active home for controls rich text charts graph and DataGrid [15 ms]
+tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:43:                [ "renderer-neutral"
+tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:44:                  "renderer neutral"
+tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:47:                  "chart-only"
+tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:48:                  "DataGrid as chart" ]
+tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:82:        test "generated guidance rejects stale chart capability wording and host-loop ownership" {
+tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:97:                  "chart-only"
+tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:98:                  "DataGrid as chart"
+tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:99:                  "DataGrid-as-chart"
+tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:100:                  "renderer-neutral"
+tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:101:                  "renderer neutral"
+tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:103:                  "host-loop ownership"
+tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:104:                  "host loop ownership" ]
+tests/Governance.Tests/ControlsBoundaryGeneratedGuidanceTests.fs:107:        test "controls capability is the active generated home for chart graph and DataGrid guidance" {
+src/Controls/Catalog.fs:66:    let chartDataGridEvidence = [ "specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md" ]
+src/Controls/Catalog.fs:69:        { row with Evidence = row.Evidence @ chartDataGridEvidence }
+specs/011-controls-boundary-refactor/readiness/dependency-report.md:10:- Controls owns form controls, rich rendering, chart controls, graph views, DataGrid, and ControlRuntime declarations.
+specs/011-controls-boundary-refactor/readiness/logs/t051-generated-product-red.txt:4:  Failed Controls boundary composition.generated product template composes form chart and DataGrid through Controls only [8 ms]
+specs/011-controls-boundary-refactor/readiness/logs/t051-generated-product-red.txt:7:template/base/src/Product/Program.fs composes form, chart, and DataGrid through Controls using LineChart.create. Expected subject string 'module Product.Program
+specs/011-controls-boundary-refactor/readiness/logs/t051-generated-product-red.txt:50:template/base/src/Product/Program.fs composes form, chart, and DataGrid through Controls using LineChart.create. Expected subject string 'module Product.Program
+specs/011-controls-boundary-refactor/readiness/logs/t051-generated-product-red.txt:90:  Failed Controls boundary composition.generated product tests cover product-owned form chart and DataGrid usage [8 ms]
+specs/011-controls-boundary-refactor/readiness/logs/t040-us2-datagrid-large-row-red.txt:38:  Failed Controls catalog contract.chart graph and DataGrid rows carry full US2 Controls-owned metadata [4 ms]
+specs/011-controls-boundary-refactor/readiness/logs/t040-us2-datagrid-large-row-red.txt:41:line-chart links chart/DataGrid readiness evidence. There isn't any element which satisfies given assertion <fun:catalogTests@81-3>.
+specs/011-controls-boundary-refactor/readiness/logs/t038-us2-public-api-fsi-red.txt:18:  Failed Surface baselines.Controls FSI transcript authors chart graph and DataGrid without Charts package [2 ms]
+specs/011-controls-boundary-refactor/readiness/logs/t041-us2-composition-red.txt:2:[0m[1000D[?25h[37m[[37m15:54:43 [31mERR[37m] [36mControls boundary composition.ControlsGallery sample composes form chart and DataGrid through Controls only[37m failed in [32m00:00:00.0070000[37m. [36m
+specs/011-controls-boundary-refactor/readiness/logs/t041-us2-composition-red.txt:3:samples/ControlsGallery/Program.fs composes form, chart, and DataGrid through Controls using DataGrid.create. Expected subject string 'module ControlsGallery.Program
+specs/011-controls-boundary-refactor/readiness/logs/t041-us2-composition-red.txt:212:[0m[1000D[?25h[37m[[37m15:54:43 [31mERR[37m] [36mControls boundary composition.generated product template composes form chart and DataGrid through Controls only[37m failed in [32m00:00:00.0070000[37m. [36m
+specs/011-controls-boundary-refactor/readiness/logs/t041-us2-composition-red.txt:213:template/base/src/Product/Program.fs composes form, chart, and DataGrid through Controls using LineChart.create. Expected subject string 'module Product.Program
+specs/011-controls-boundary-refactor/readiness/logs/t039-us2-charts-package-red.txt:36:  Failed Surface baselines.Controls FSI transcript authors chart graph and DataGrid without Charts package [2 ms]
+specs/011-controls-boundary-refactor/readiness/logs/t055-guidance-stale-scan.txt:1:PASS: generated guidance, local Controls skill, and active/preset spec-plan templates have no stale Charts package, chart-only, DataGrid-as-chart, renderer-neutral, or host-loop ownership terms.
+artifacts/generated-products/011-controls-boundary-refactor/headless-scene-source/tests/Product.Tests/Tests.fs:16:            Expect.isGreaterThan (Control.count view) 7 "product example owns form, rich text, chart, graph, and DataGrid controls"
+artifacts/generated-products/011-controls-boundary-refactor/headless-scene-source/tests/Product.Tests/Tests.fs:19:        test "product-owned form chart and DataGrid controls are constructible" {
+specs/011-controls-boundary-refactor/readiness/compatibility-impact.md:52:  Controls for high-level controls/chart/DataGrid authoring, Scene for raw
+specs/011-controls-boundary-refactor/readiness/compatibility-impact.md:61:- Replacement path remains explicit: chart controls, graph views, and DataGrid
+specs/011-controls-boundary-refactor/readiness/logs/t054-template-stale-scan.txt:1:PASS: template generated guidance has no stale Charts package, chart-only, DataGrid-as-chart, renderer-neutral, or host-loop ownership terms.
+specs/011-controls-boundary-refactor/readiness/logs/t037-us2-catalog-red.txt:9:  Failed Controls catalog contract.chart graph and DataGrid rows carry full US2 Controls-owned metadata [12 ms]
+specs/011-controls-boundary-refactor/readiness/logs/t037-us2-catalog-red.txt:12:line-chart links chart/DataGrid readiness evidence. There isn't any element which satisfies given assertion <fun:catalogTests@81-3>.
+specs/011-controls-boundary-refactor/readiness/logs/t070-generated-product-scan.txt:1:PASS: generated product scan wrote app-source and app-package file-list reports and found no removed Charts or copied framework implementation paths.
+specs/011-controls-boundary-refactor/readiness/logs/t047-surface-baseline-scan.txt:14:Controls chart/DataGrid exports:
+specs/011-controls-boundary-refactor/readiness/logs/t042-controls-test-list.txt:29:Controls catalog contract.chart graph and DataGrid rows carry full US2 Controls-owned metadata
+
+## Generated app copied-asset scan
+
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:3:Validation rules: exactly one product app, exactly one product test suite, selected capability skills, Controls ownership for form/chart/graph/DataGrid authoring, Controls.Elmish adapter references, consumer-mode package references, stale Charts exclusions, no copied framework samples/specs/readiness/docs, and no framework implementation projects.
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:3:Validation rules: exactly one product app, exactly one product test suite, selected capability skills, Controls ownership for form/chart/graph/DataGrid authoring, Controls.Elmish adapter references, consumer-mode package references, stale Charts exclusions, no copied framework samples/specs/readiness/docs, and no framework implementation projects.
+
+exit-code=0
+duration-seconds=0
+
+## Focused active blocker checks
+
+### Active package/capability inputs
+PASS: no active package/capability stale reference found outside absence tests
+
+### Active generated guidance wording
+PASS: no stale generated guidance wording found
+
+### Generated app copied assets
+PASS: generated app roots contain no copied framework samples, Charts source/tests, historical specs, architecture docs, or template package artifacts
+
+exit-code=0
+duration-seconds=0

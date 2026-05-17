@@ -1,0 +1,35 @@
+# T079 generated Controls app inventory
+
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:3:Validation rules: exactly one product app, exactly one product test suite, selected capability skills, Controls ownership for form/chart/graph/DataGrid authoring, Controls.Elmish adapter references, consumer-mode package references, stale Charts exclusions, no copied framework samples/specs/readiness/docs, and no framework implementation projects.
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:106:    <PackageReference Include="FS.Skia.UI.Controls" />
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:107:    <PackageReference Include="FS.Skia.UI.Controls.Elmish" />
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:108:    <PackageReference Include="FS.Skia.UI.Elmish" />
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:109:    <PackageReference Include="FS.Skia.UI.KeyboardInput" />
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:110:    <PackageReference Include="FS.Skia.UI.Layout" />
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:111:    <PackageReference Include="FS.Skia.UI.Scene" />
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:112:    <PackageReference Include="FS.Skia.UI.SkiaViewer" />
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:193:            RichText.create model.RichIntro []
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:203:            LineChart.create [ LineChart.series model.Revenue ]
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:204:            GraphView.create [ GraphView.nodes [ "form"; "chart"; "grid" ] ]
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:205:            DataGrid.create model.GridColumns [
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:232:    ControlsElmish.program init update controlsExampleView subscriptions
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:268:            let lineChart = LineChart.create [ LineChart.series initialModel.Revenue ]
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-package.txt:269:            let dataGrid = DataGrid.create initialModel.GridColumns [ DataGrid.rows initialModel.GridRows ]
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:3:Validation rules: exactly one product app, exactly one product test suite, selected capability skills, Controls ownership for form/chart/graph/DataGrid authoring, Controls.Elmish adapter references, consumer-mode package references, stale Charts exclusions, no copied framework samples/specs/readiness/docs, and no framework implementation projects.
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:106:    <PackageReference Include="FS.Skia.UI.Controls" />
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:107:    <PackageReference Include="FS.Skia.UI.Controls.Elmish" />
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:108:    <PackageReference Include="FS.Skia.UI.Elmish" />
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:109:    <PackageReference Include="FS.Skia.UI.KeyboardInput" />
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:110:    <PackageReference Include="FS.Skia.UI.Layout" />
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:111:    <PackageReference Include="FS.Skia.UI.Scene" />
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:112:    <PackageReference Include="FS.Skia.UI.SkiaViewer" />
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:193:            RichText.create model.RichIntro []
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:203:            LineChart.create [ LineChart.series model.Revenue ]
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:204:            GraphView.create [ GraphView.nodes [ "form"; "chart"; "grid" ] ]
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:205:            DataGrid.create model.GridColumns [
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:232:    ControlsElmish.program init update controlsExampleView subscriptions
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:268:            let lineChart = LineChart.create [ LineChart.series initialModel.Revenue ]
+specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt:269:            let dataGrid = DataGrid.create initialModel.GridColumns [ DataGrid.rows initialModel.GridRows ]
+
+exit-code=0
+duration-seconds=0

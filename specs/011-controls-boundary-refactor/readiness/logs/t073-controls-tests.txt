@@ -1,0 +1,13 @@
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Debug/net10.0/FS.Skia.UI.Controls.dll
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Controls.Tests -> /home/developer/projects/FS-Skia-UI/tests/Controls.Tests/bin/Debug/net10.0/Controls.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Controls.Tests/bin/Debug/net10.0/Controls.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    29, Skipped:     0, Total:    29, Duration: 43 ms - Controls.Tests.dll (net10.0)
+
+exit-code=0
+duration-seconds=3

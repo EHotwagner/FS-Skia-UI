@@ -1,7 +1,8 @@
 module ControlsSemanticTests
 
 open Expecto
-open FS.Skia.UI
+open System.Reflection
+open FS.Skia.UI.Scene
 open FS.Skia.UI.Controls
 
 type FormModel =
@@ -59,5 +60,41 @@ let semanticTests =
             Expect.notEqual first.Children[0].Content second.Children[0].Content "control values are model-owned descriptions"
             Expect.isTrue (second.Children[1].Content = Some "Grace") "text box value reflects the current model"
             Expect.isTrue (second.Children[2].Attributes |> List.exists (fun attr -> match attr.Name, attr.Value with "enabled", BoolValue false -> true | _ -> false)) "enabled state reflects current model"
+        }
+
+        test "custom controls expose explicit Skia measurement drawing clipping and effect hooks" {
+            let properties =
+                typeof<CustomControlDefinition<FormMsg>>
+                    .GetProperties(BindingFlags.Public ||| BindingFlags.Instance)
+                |> Array.map _.Name
+                |> Set.ofArray
+
+            [ "Measure"; "Draw"; "Clip"; "Effects"; "Diagnostics" ]
+            |> List.iter (fun property ->
+                Expect.isTrue (Set.contains property properties) $"CustomControlDefinition exposes {property}")
+        }
+
+        test "chart and graph controls render as Controls-owned scene elements" {
+            let chart =
+                LineChart.create [
+                    LineChart.series [
+                        { Name = "sales"
+                          Points = [ { X = 0.0; Y = 4.0; Label = Some "Q1" }; { X = 1.0; Y = 8.0; Label = Some "Q2" } ] }
+                    ]
+                ]
+
+            let graph =
+                GraphView.create [
+                    GraphView.nodes [ "form"; "chart"; "grid" ]
+                ]
+
+            let root = Stack.create [ Stack.children [ chart; graph ] ]
+            let rendered = Control.render Theme.light root
+            let kinds = Scene.describe rendered.Scene
+
+            Expect.equal chart.Accessibility.Value.Role Chart "line chart defaults to chart accessibility role"
+            Expect.equal graph.Accessibility.Value.Role Graph "graph view defaults to graph accessibility role"
+            Expect.equal (kinds |> List.filter ((=) ChartElement) |> List.length) 2 "chart and graph render through Controls-owned chart scene elements"
+            Expect.isEmpty rendered.Diagnostics "valid chart and graph controls render without diagnostics"
         }
     ]

@@ -1,6 +1,6 @@
 namespace FS.Skia.UI.Controls
 
-open FS.Skia.UI
+open FS.Skia.UI.Scene
 open FS.Skia.UI.Layout
 
 type ControlId = string

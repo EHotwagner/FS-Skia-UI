@@ -1,7 +1,5 @@
 namespace FS.Skia.UI.Controls
 
-open FS.Skia.UI
-
 module Accessibility =
     let keyboard focusable activationKeys navigationKeys =
         { Focusable = focusable
@@ -76,7 +74,7 @@ module Accessibility =
             [ "normal" ]
             None
             (keyboard focusable [ "Enter"; "Space" ] [ "Tab"; "Shift+Tab" ])
-            (Some(contrast Colors.black Colors.white 7.0 4.5))
+            (Some(contrast FS.Skia.UI.Scene.Colors.black FS.Skia.UI.Scene.Colors.white 7.0 4.5))
 
     let validate control =
         match control.Accessibility with

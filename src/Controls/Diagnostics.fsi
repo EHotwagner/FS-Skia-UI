@@ -14,3 +14,9 @@ module Diagnostics =
     val missingAccessibility: controlId: ControlId option -> kind: ControlKind -> ControlDiagnostic
     val keyCollision: key: ControlId -> kind: ControlKind -> ControlDiagnostic
     val unsupportedEnvironment: kind: ControlKind -> capability: string -> ControlDiagnostic
+    val stalePackageReference: packageId: string -> path: string -> ControlDiagnostic
+    val dependencyLeak: packageId: string -> dependencyPath: string -> ControlDiagnostic
+    val catalogOmission: controlId: string -> requiredField: string -> ControlDiagnostic
+    val duplicateRuntimeDefinition: runtimeName: string -> path: string -> ControlDiagnostic
+    val staleEventTarget: controlId: ControlId -> eventKind: string -> ControlDiagnostic
+    val unsupportedScopeExpansion: scopeName: string -> owner: string -> ControlDiagnostic

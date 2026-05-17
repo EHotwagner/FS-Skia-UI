@@ -7,8 +7,8 @@
     <AssemblyName>FS.Skia.UI.KeyboardInput</AssemblyName>
     <Version>0.1.10-preview.1</Version>
     <Title>FS.Skia.UI.KeyboardInput</Title>
-    <Description>Keyboard input reducer contracts for FS.Skia.UI V3 products.</Description>
-    <PackageTags>fsharp;keyboard;input;ui</PackageTags>
+    <Description>Package-owned keyboard input runtime, reducer, effect, diagnostics, and state display contracts for FS.Skia.UI products.</Description>
+    <PackageTags>fsharp;keyboard;input;runtime;ui</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
