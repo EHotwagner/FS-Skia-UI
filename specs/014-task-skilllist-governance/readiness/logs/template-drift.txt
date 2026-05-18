@@ -1,0 +1,5 @@
+
+## template drift
+$ dotnet fsi scripts/template-drift.fsx "/home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/template-drift.md"
+
+exit-code=0

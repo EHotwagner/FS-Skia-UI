@@ -17,8 +17,9 @@ packages, builds the solution, and runs the default non-visual test projects:
 | Governance command and docs checks | `tests/Governance.Tests/Governance.Tests.fsproj` |
 
 The full testing and evidence target set is `Dev`, `Verify`, `Ci`,
-`VerifyPreflight`, `CiPreflight`, `PackLocal`, `RefreshSurfaceBaselines`, `PackageSurfaceCheck`,
-`FsiTranscripts`, `SampleContractSmoke`, `TemplateCheck`,
+`VerifyPreflight`, `CiPreflight`, `PackLocal`, `RefreshSurfaceBaselines`,
+`PackageSurfaceCheck`, `FsiTranscripts`, `SampleContractSmoke`,
+`TemplateCheck`, `CapabilityCheck`, `SkillCheck`, `GeneratedProductCheck`,
 `DependencyReport`, `GeneratedGuidanceCheck`, `TemplateDrift`,
 `StaleBoundaryScan`, `EvidenceGraph`, `EvidenceAudit`, and `FinalReadiness`.
 
@@ -66,9 +67,10 @@ writes one log per sample under
 | local package | governed | package install, instantiate, placeholder scan, excluded-history scan, V3 package-reference scan, generated `Dev` |
 | local package | sample-pack | package install, instantiate, placeholder scan, excluded-history scan, V3 package-reference scan, generated `Dev` |
 
-`DependencyReport`, `GeneratedGuidanceCheck`, and `TemplateDrift` are focused
-governance targets and can be run independently while developing those
-surfaces.
+`CapabilityCheck`, `SkillCheck`, `GeneratedProductCheck`,
+`DependencyReport`, `GeneratedGuidanceCheck`, `TemplateDrift`,
+`EvidenceGraph`, and `EvidenceAudit` are focused governance targets and can be
+run independently while developing those surfaces.
 
 ## Process Health And Focused Gate Checks
 
@@ -91,7 +93,14 @@ Focused gates should be run directly when isolating a failure:
 ./fake.sh build -t ControlsCatalogCheck
 ./fake.sh build -t ControlsInteractionCheck
 ./fake.sh build -t ControlsRenderingCheck
+./fake.sh build -t CapabilityCheck
+./fake.sh build -t SkillCheck
+./fake.sh build -t GeneratedProductCheck
 ./fake.sh build -t DependencyReport
+./fake.sh build -t GeneratedGuidanceCheck
+./fake.sh build -t TemplateDrift
+./fake.sh build -t EvidenceGraph
+./fake.sh build -t EvidenceAudit
 ```
 
 If a focused gate relies on restored or built artifacts, stale assumptions must

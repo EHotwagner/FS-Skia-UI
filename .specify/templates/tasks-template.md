@@ -64,8 +64,8 @@ restore/build/test/package/evidence command order:
 - `./fake.sh build -t TemplateCheck` for source/package default/minimal
   generated project validation.
 - `./fake.sh build -t DependencyReport` for central package governance.
-- `./fake.sh build -t GeneratedGuidanceCheck` for generated spec/plan prompt
-  governance.
+- `./fake.sh build -t GeneratedGuidanceCheck` for generated prompt,
+  task-skill, and implementation guidance governance.
 - `./fake.sh build -t TemplateDrift` for template-owned drift and deferral
   validation.
 - `./fake.sh build -t EvidenceGraph` and `./fake.sh build -t EvidenceAudit`

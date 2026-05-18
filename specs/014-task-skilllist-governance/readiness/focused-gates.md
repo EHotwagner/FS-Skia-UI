@@ -156,3 +156,29 @@
 - affected-gate: `GeneratedGuidanceCheck`
 - remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
 
+## GeneratedGuidanceCheck
+
+- command: `./fake.sh build -t GeneratedGuidanceCheck`
+- direct-prerequisites: (none)
+- timestamp-utc: `2026-05-18T14:31:37.5503868+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/generated-guidance.md`
+- readiness-path: `/home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/generated-guidance.md`
+- verdict-category: `success`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- affected-gate: `GeneratedGuidanceCheck`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+## TemplateDrift
+
+- command: `./fake.sh build -t TemplateDrift`
+- direct-prerequisites: (none)
+- timestamp-utc: `2026-05-18T14:31:43.2044349+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/logs/template-drift.txt`
+- readiness-path: `/home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/template-drift.md`
+- verdict-category: `success`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- affected-gate: `TemplateDrift`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+

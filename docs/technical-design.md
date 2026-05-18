@@ -48,7 +48,7 @@ entry point for maintainers and contributors.
 | [Evidence Policy](evidence.md) | Required readiness artifacts and evidence boundaries. |
 | [Dependency Governance](dependencies.md) | Central Package Management, package ownership, and validation-only version exceptions. |
 | [Template Profile](template-profile.md) | `dotnet new fs-skia-ui` profiles, artifact boundaries, and drift classification. |
-| [Spec Kit Governance](speckit.md) | Generated spec/plan prompts and deferred roadmap boundaries. |
+| [Spec Kit Governance](speckit.md) | Generated prompts, task `skillist` governance, implementation skill loading, and deferred roadmap boundaries. |
 
 ## How To Read This Set
 

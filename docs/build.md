@@ -35,8 +35,8 @@ and run the shared `build.fsx` target graph. Automation should call
 | `PackageSurfaceCheck` | Checks the current package surface against stable baselines. | `readiness/logs/package-surface-check.txt` |
 | `FsiTranscripts` | Runs public prelude scripts through FSI. | `readiness/fsi/*.txt` under this feature |
 | `SampleContractSmoke` | Runs non-visual sample `--contract-smoke` paths. | `readiness/sample-smoke/*.txt` under this feature |
-| `EvidenceGraph` | Runs the Spec Kit task graph validation. | `readiness/task-graph.json` and `.md` under this feature |
-| `EvidenceAudit` | Runs the synthetic evidence audit. | `readiness/logs/evidence-audit.txt` and diff-scan output |
+| `EvidenceGraph` | Runs Spec Kit task graph and task `skillist` metadata validation. | `readiness/task-graph.json` and `.md` under this feature |
+| `EvidenceAudit` | Runs the synthetic evidence audit after a valid task graph. | `readiness/logs/evidence-audit.txt` and diff-scan output |
 | `VerifyPreflight` | Records process-health and bootstrap evidence for `Verify` before broad work starts. | Active feature `readiness/process-health.md`, `readiness/bootstrap-runner.md`, and `readiness/verification-verdicts.md` |
 | `CiPreflight` | Records process-health and bootstrap evidence for `Ci` before delegating to `Verify`. | Active feature `readiness/process-health.md`, `readiness/bootstrap-runner.md`, and `readiness/verification-verdicts.md` |
 | `StaleBoundaryScan` | Records stale active ownership scan status for removed package/boundary evidence. | Active feature `readiness/stale-boundary-scan.md` |
@@ -58,7 +58,7 @@ and run the shared `build.fsx` target graph. Automation should call
 | `SkillCheck` | Validates package-owned local skills and selected default app skill destinations. | Active feature `readiness/selected-skills.md` |
 | `GeneratedProductCheck` | Generates and verifies the V3 app, packaged app, headless-scene, governed, and sample-pack product rows; for generated graphical consumers it also restores from local packages, runs semantic tests, bounded smoke, and scene evidence. | Active feature `readiness/generated-file-lists/summary.md`, `readiness/generated-product-verify/**`, and `readiness/generated-product-validation.md` |
 | `DependencyReport` | Verifies Central Package Management and dependency metadata. | Active feature `readiness/dependencies.md` |
-| `GeneratedGuidanceCheck` | Verifies active and preset-owned spec/plan prompts by Markdown section, prompt placement, deferred-scope boundaries, and active/preset parity. | Active feature `readiness/generated-guidance.md` |
+| `GeneratedGuidanceCheck` | Verifies active and preset-owned spec/plan prompts, task `skillist` templates, task-generation guidance, implementation skill-loading guidance, constitution guidance, deferred-scope boundaries, and active/preset parity. | Active feature `readiness/generated-guidance.md` |
 | `TemplateDrift` | Classifies template-owned path changes and checks required alignment classes plus active feature evidence or accepted deferrals. | Active feature `readiness/template-drift.md` |
 
 ## Generated Graphical Integration
@@ -117,7 +117,7 @@ is stale.
 | `GeneratedProductCheck` | `CapabilityCheck`, `SkillCheck` | `readiness/generated-file-lists/summary.md` |
 | `GeneratedGuidanceCheck` | none | `readiness/generated-guidance.md` |
 | `TemplateDrift` | none | `readiness/template-drift.md` |
-| `EvidenceGraph` | none | `readiness/task-graph.md` and `.json` |
+| `EvidenceGraph` | none | `readiness/task-graph.md` and `.json`, including task `skillist` diagnostics |
 | `EvidenceAudit` | `EvidenceGraph` | `readiness/logs/evidence-audit.txt` |
 
 No focused gate may depend on `Verify` or `Ci`. Adding a broad prerequisite is

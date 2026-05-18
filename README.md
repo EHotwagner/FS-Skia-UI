@@ -160,7 +160,11 @@ through task evidence, readiness logs, and merge summaries. The project-specific
 constitution in [.specify/memory/constitution.md](.specify/memory/constitution.md)
 requires explicit public-contract impact, `.fsi` visibility decisions,
 MVU/effect boundaries for stateful workflows, test evidence, diagnostics, and
-clear disclosure when evidence is synthetic.
+clear disclosure when evidence is synthetic. Task generation also has a
+mandatory capability-skill review: every task must have structured `skillist`
+metadata in `tasks.deps.yml`, a matching `[skillist: ...]` mirror in
+`tasks.md`, and implementation must load the declared skills before changing
+code for that task.
 
 The active Spec Kit templates and F# preset overrides live under
 [.specify/templates](.specify/templates/) and
