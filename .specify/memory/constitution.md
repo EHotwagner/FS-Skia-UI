@@ -225,35 +225,13 @@ regardless of whether tests pass.
 
 ### Local Agent Skills
 
-Local skills under `.agents/skills/*/SKILL.md`, package-owned
-`src/*/skill/SKILL.md`, and template-owned skill paths are repository
-governance artifacts. Agents MUST use the applicable local skill whenever a
-task matches the skill's description, and MUST prefer local project or
-capability skills over generic guidance when both apply. If more than one
-skill applies, use the minimal set that covers the work and follow the
-skills in dependency order.
-
-Current Spec Kit workflow skills:
-
-- `speckit-analyze` — analyze consistency and quality across `spec.md`,
-  `plan.md`, and `tasks.md`.
-- `speckit-checklist` — generate requirements-quality checklists.
-- `speckit-clarify` — identify and record targeted spec clarifications.
-- `speckit-constitution` — create or update project governing principles.
-- `speckit-evidence-audit` — run merge-readiness evidence audit and
-  synthetic/diff-scan checks.
-- `speckit-evidence-graph` — validate and render task dependency graphs.
-- `speckit-git-commit` — commit Spec Kit command changes when enabled.
-- `speckit-git-feature` — create numbered or timestamped feature branches.
-- `speckit-git-initialize` — initialize a Git repository when needed.
-- `speckit-git-remote` — detect Git remote metadata for integrations.
-- `speckit-git-validate` — validate feature branch naming conventions.
-- `speckit-implement` — execute tasks and maintain honest task status.
-- `speckit-plan` — produce implementation plans and design artifacts.
-- `speckit-specify` — create feature specifications from user descriptions.
-- `speckit-tasks` — generate `tasks.md` and `tasks.deps.yml`.
-- `speckit-taskstoissues` — convert tasks into dependency-ordered GitHub
-  issues.
+Capability skills are package-owned `src/*/skill/SKILL.md` files or
+capability-owned template fragment skill paths declared by
+`template/capabilities.yml`. Agents MUST use the applicable capability skill
+whenever a task matches the skill's description, and MUST prefer capability
+skills over generic guidance when both apply. If more than one skill applies,
+use the minimal set that covers the work and follow the skills in dependency
+order.
 
 Current FS.Skia.UI capability skills:
 
@@ -272,12 +250,8 @@ Current FS.Skia.UI capability skills:
   (`src/Controls/skill/SKILL.md`).
 - `fs-skia-testing` — work on generated product and package validation
   helper contracts (`src/Testing/skill/SKILL.md`).
-
-Current generated-product and optional-content skills:
-
-- `fs-skia-project` — work on a generated FS.Skia.UI product
-  (`template/base/.agents/skills/fs-skia-project/SKILL.md`).
 - `fs-skia-samples` — work on optional generated product sample-pack content
+  for the non-runtime Samples capability
   (`template/fragments/samples/skill/SKILL.md`).
 
 ## Workflow & Quality Gates
