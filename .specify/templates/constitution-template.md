@@ -242,6 +242,21 @@ capability skills over generic guidance when both apply. If more than one
 skill applies, use the minimal set that covers the work and follow the
 skills in dependency order.
 
+Task generation includes a mandatory post-generation skill evaluation gate.
+Before a task list is ready for implementation, every task MUST be evaluated
+against the current capability skill inventory, MUST include a structured
+`skillist` field in `tasks.deps.yml`, and MUST mirror that value visibly on
+the matching `tasks.md` line. Tasks with no applicable capability skill MUST
+declare `skillist: []` and `[skillist: []]`; omitted metadata is invalid.
+
+Implementation includes a mandatory pre-task skill loading gate. Before
+starting a task, the implementer MUST read the task's structured `skillist`,
+resolve every listed skill to exactly one readable `SKILL.md`, load those
+skills in declared order, and record the loaded paths before code changes
+begin. Missing, unreadable, ambiguous, omitted obviously applicable, excessive
+non-minimal, or incorrectly ordered task skills block readiness or
+implementation until the task list is migrated or regenerated.
+
 When this constitution is instantiated or amended, enumerate the current
 `.agents/skills/*/SKILL.md`, `src/*/skill/SKILL.md`, and template-owned skill
 inventory here and keep the list synchronized with local skill additions,
@@ -259,9 +274,11 @@ Work MUST pass these gates in order:
    I/O-bearing plans identify their Elmish/MVU model, messages, effects,
    and interpreter boundary.
 3. **Task gate** — tasks are story-grouped; `tasks.deps.yml` is emitted
-   alongside `tasks.md`; task graph is acyclic with no dangling refs.
-4. **Implementation gate** — declared task statuses follow the legend;
-   stateful or I/O-bearing changes keep `update` pure and I/O at the
+   alongside `tasks.md`; every task has structured `skillist` metadata and a
+   matching visible mirror; task graph is acyclic with no dangling refs.
+4. **Implementation gate** — every task's declared `skillist` has been
+   resolved and loaded before work starts; declared task statuses follow the
+   legend; stateful or I/O-bearing changes keep `update` pure and I/O at the
    interpreter edge; `[S]` is used whenever Principle V applies.
 5. **Evidence gate** — the `after_implement` audit produces verdict PASS
    with no remaining `[S]` / `[S*]` and no unresolved diff-scan hits, or

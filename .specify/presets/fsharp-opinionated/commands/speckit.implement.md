@@ -120,22 +120,33 @@ When you emit an `[S]` task, you MUST also:
 
 1. Mark the task `in_progress` in your own head (not in `tasks.md` — the
    file uses the five-state legend only).
-2. Read the task's deps from `tasks.deps.yml`; confirm all deps are `[X]`
+2. Read the task's deps and structured `skillist` from `tasks.deps.yml`.
+   Existing bare-list task metadata is invalid; stop and require migration or
+   regeneration before implementation.
+3. Resolve every declared skill id to exactly one readable `SKILL.md` from
+   `.agents/skills/*/SKILL.md`, `src/*/skill/SKILL.md`, template capability
+   skill paths, or active generated product skill destinations. Load those
+   skills in declared order before code changes for the task begin. Record
+   the loaded paths under `readiness/` or in the task-specific verification
+   log. If a declared skill is missing, unreadable, or ambiguous, block the
+   task and report the task id plus unresolved skill id.
+4. Confirm all deps are `[X]`
    or `[S]`. If any dep is `[ ]`, `[F]`, or `[-]`, stop and raise it.
-3. Implement the task per the plan.
-4. Run the verification appropriate for the phase (tests, baseline check,
+5. Implement the task per the plan, applying the loaded capability skill
+   guidance before generic guidance whenever both match.
+6. Run the verification appropriate for the phase (tests, baseline check,
    FSI exercise, …). For tasks tagged `[US*]`, the verification MUST
    include a user-reachable exercise — see the Vertical-slice rule
    above. For MVU-bearing tasks, include transition/effect assertions and
    interpreter evidence. A green unit test on the domain layer is not enough.
-5. Update the status in `tasks.md`. Before writing `[X]` on a `[US*]`
+7. Update the status in `tasks.md`. Before writing `[X]` on a `[US*]`
    task, confirm the vertical-slice rule is satisfied; if not, the
    honest status is `[ ]` or `[S]`. If `[S]`, add the code-level,
    test-level, and inventory disclosures before moving on.
-6. **Re-run `speckit.evidence.graph`** after every status change. This
+8. **Re-run `speckit.evidence.graph`** after every status change. This
    refreshes `readiness/task-graph.json` and recomputes `[S*]`
    propagation. It's cheap (milliseconds).
-7. Move to the next task.
+9. Move to the next task.
 
 ## Visibility discipline (Principle II)
 

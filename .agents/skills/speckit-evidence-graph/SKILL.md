@@ -11,7 +11,8 @@ metadata:
 
 Parse `specs/<feature>/tasks.md` and `specs/<feature>/tasks.deps.yml`,
 validate the graph (acyclic, no dangling refs, every id present in both
-files), and render `readiness/task-graph.json` + `readiness/task-graph.md`.
+files), validate task `skillist` metadata and mirrors, and render
+`readiness/task-graph.json` + `readiness/task-graph.md`.
 
 ## How to invoke
 
@@ -42,6 +43,11 @@ or via the audit runner in graph-only mode:
 - Every dep reference resolves to a known `Tnnn`.
 - The graph is acyclic.
 - No task depends on itself.
+- Every task has object-form metadata with `deps` and `skillist`.
+- Every `tasks.md` task line mirrors the structured `skillist`.
+- Declared skill ids resolve to exactly one readable local capability skill.
+- Obvious capability omissions and invalid multi-skill prerequisite ordering
+  are readiness failures.
 
 ## What it computes
 
@@ -74,6 +80,10 @@ Common failure modes and their fixes:
   message names the cycle path. Break it by removing one edge.
 - **Duplicate task id** — the same `Tnnn` appears twice in `tasks.md`.
   Renumber one.
+- **Missing or invalid `skillist`** — migrate or regenerate the task list so
+  every task has structured `skillist` metadata and a matching visible mirror.
+- **Unresolved skill** — fix the skill id, restore the missing `SKILL.md`, or
+  resolve ambiguous duplicated skill ids before implementation.
 
 ## Output
 

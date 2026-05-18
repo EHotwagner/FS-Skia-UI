@@ -43,8 +43,10 @@ phase tasks; those are evaluated against their own phase verification.
 - **[T1]** / **[T2]** — Tier 1 (contracted) vs Tier 2 (internal) change
 
 Every task must have a matching entry in `tasks.deps.yml` even if its
-dependency list is empty. The `speckit.evidence.graph` command refuses to
-proceed with dangling references.
+dependency list is empty. Every task line MUST mirror the structured
+`skillist` value using `[skillist: ...]`; use `[skillist: []]` when no
+capability skill applies. The `speckit.evidence.graph` command refuses to
+proceed with dangling references or invalid task skill metadata.
 
 ## Canonical Verification Targets
 
@@ -69,8 +71,14 @@ restore/build/test/package/evidence command order:
 - `./fake.sh build -t EvidenceGraph` and `./fake.sh build -t EvidenceAudit`
   for graph and synthetic-evidence gates.
 
-Keep `tasks.deps.yml` and the `speckit.evidence.graph` status refresh
-requirements in generated task lists.
+After task generation, evaluate every task against available local capability
+skills (`.agents/skills/*/SKILL.md`, `src/*/skill/SKILL.md`, and template
+capability skills). Write the minimal ordered skill set to structured
+`skillist` metadata and mirror it in `tasks.md`. Capability skills are
+preferred over generic guidance for matching tasks.
+
+Keep `tasks.deps.yml`, the `skillist` mirror, and the
+`speckit.evidence.graph` status refresh requirements in generated task lists.
 
 Template source: `.specify/presets/fsharp-opinionated/templates/tasks-template.md`.
 
@@ -78,21 +86,21 @@ Template source: `.specify/presets/fsharp-opinionated/templates/tasks-template.m
 
 ## Phase 1: Setup
 
-- [ ] T001 Scaffold the feature directory and link spec + plan
-- [ ] T002 [P] Add baseline install or adoption documentation for the selected profile
-- [ ] T003 [P] Add readiness artifact scaffolding (`specs/[FEATURE_ID]/readiness/`)
-- [ ] T004 Record feature Tier, affected layer, public-API impact, Elmish/MVU applicability, and required evidence obligations
+- [ ] T001 [skillist: []] Scaffold the feature directory and link spec + plan
+- [ ] T002 [P] [skillist: []] Add baseline install or adoption documentation for the selected profile
+- [ ] T003 [P] [skillist: []] Add readiness artifact scaffolding (`specs/[FEATURE_ID]/readiness/`)
+- [ ] T004 [skillist: []] Record feature Tier, affected layer, public-API impact, Elmish/MVU applicability, and required evidence obligations
 
 ---
 
 ## Phase 2: Foundation
 
-- [ ] T005 Draft the public surface as `.fsi` signature(s), including `Model`, `Msg`, `Effect` or `Cmd<Msg>`, `init`, `update`, and interpreter boundary for stateful or I/O-bearing features
-- [ ] T006 [P] Add or update constitutional guidance that this feature touches
-- [ ] T007 [P] Define or update operational workflows, commands, reports, or scripts
-- [ ] T008 Exercise the draft `.fsi` from FSI (`scripts/prelude.fsx` or ad-hoc), including representative `init` / `update` paths when MVU applies, and capture the session transcript to `readiness/fsi-session.txt`
-- [ ] T009 Record surface-area baselines for the new / changed public modules
-- [ ] T010 Record unsupported-scope handling and failure diagnostics
+- [ ] T005 [skillist: []] Draft the public surface as `.fsi` signature(s), including `Model`, `Msg`, `Effect` or `Cmd<Msg>`, `init`, `update`, and interpreter boundary for stateful or I/O-bearing features
+- [ ] T006 [P] [skillist: []] Add or update constitutional guidance that this feature touches
+- [ ] T007 [P] [skillist: []] Define or update operational workflows, commands, reports, or scripts
+- [ ] T008 [skillist: []] Exercise the draft `.fsi` from FSI (`scripts/prelude.fsx` or ad-hoc), including representative `init` / `update` paths when MVU applies, and capture the session transcript to `readiness/fsi-session.txt`
+- [ ] T009 [skillist: []] Record surface-area baselines for the new / changed public modules
+- [ ] T010 [skillist: []] Record unsupported-scope handling and failure diagnostics
 
 **Checkpoint**: Foundation ready — story implementation may begin in parallel.
 
@@ -102,17 +110,17 @@ Template source: `.specify/presets/fsharp-opinionated/templates/tasks-template.m
 
 ### Tests First (Principle I, Principle VI)
 
-- [ ] T011 [P] [US1] Add semantic tests that load the packed library (or prelude), exercise the US1 surface, and assert MVU state transitions plus emitted effects when applicable
-- [ ] T012 [P] [US1] Add verification for the US1 outcome against the readiness artifact, including real interpreter evidence for effects where safe
+- [ ] T011 [P] [US1] [skillist: []] Add semantic tests that load the packed library (or prelude), exercise the US1 surface, and assert MVU state transitions plus emitted effects when applicable
+- [ ] T012 [P] [US1] [skillist: []] Add verification for the US1 outcome against the readiness artifact, including real interpreter evidence for effects where safe
 
 ### Implementation
 
-- [ ] T013 [P] [US1] Add story-specific contracts, docs, or fixtures
-- [ ] T014 [P] [US1] Add any required sample or schema artifacts
-- [ ] T015 [US1] Implement the primary user-facing behavior for the story, keeping MVU `update` pure when applicable
-- [ ] T016 [US1] Connect the story's effect interpreter to canonical readiness artifacts or workflows
-- [ ] T017 [US1] Add validation and actionable failure diagnostics
-- [ ] T018 [US1] Document the story's independent validation path
+- [ ] T013 [P] [US1] [skillist: []] Add story-specific contracts, docs, or fixtures
+- [ ] T014 [P] [US1] [skillist: []] Add any required sample or schema artifacts
+- [ ] T015 [US1] [skillist: []] Implement the primary user-facing behavior for the story, keeping MVU `update` pure when applicable
+- [ ] T016 [US1] [skillist: []] Connect the story's effect interpreter to canonical readiness artifacts or workflows
+- [ ] T017 [US1] [skillist: []] Add validation and actionable failure diagnostics
+- [ ] T018 [US1] [skillist: []] Document the story's independent validation path
 
 **Checkpoint**: User Story 1 is fully functional and testable independently.
 
@@ -122,13 +130,13 @@ Template source: `.specify/presets/fsharp-opinionated/templates/tasks-template.m
 
 ### Tests First
 
-- [ ] T019 [P] [US2] Add semantic tests exercising the US2 surface through FSI, including MVU transitions and effects when applicable
-- [ ] T020 [P] [US2] Add validation for the US2 readiness outcome, including real interpreter evidence where safe
+- [ ] T019 [P] [US2] [skillist: []] Add semantic tests exercising the US2 surface through FSI, including MVU transitions and effects when applicable
+- [ ] T020 [P] [US2] [skillist: []] Add validation for the US2 readiness outcome, including real interpreter evidence where safe
 
 ### Implementation
 
-- [ ] T021 [P] [US2] Add story-specific contracts, docs, or fixtures
-- [ ] T022 [US2] Implement the primary user-facing behavior for the story
+- [ ] T021 [P] [US2] [skillist: []] Add story-specific contracts, docs, or fixtures
+- [ ] T022 [US2] [skillist: []] Implement the primary user-facing behavior for the story
 
 **Checkpoint**: User Story 2 is fully functional and testable independently.
 
@@ -136,10 +144,10 @@ Template source: `.specify/presets/fsharp-opinionated/templates/tasks-template.m
 
 ## Phase 5: Integration & Polish
 
-- [ ] T023 Surface-area baseline refresh (Tier 1 only)
-- [ ] T024 Run the packed library through the numbered example scripts and confirm none are broken
-- [ ] T025 Run `speckit.evidence.graph` — confirm no cycles, no dangling refs, no `[S*]` surprises
-- [ ] T026 Run `speckit.evidence.audit` — confirm verdict PASS or document every `--accept-synthetic` override
+- [ ] T023 [skillist: []] Surface-area baseline refresh (Tier 1 only)
+- [ ] T024 [skillist: []] Run the packed library through the numbered example scripts and confirm none are broken
+- [ ] T025 [skillist: speckit-evidence-graph] Run `speckit.evidence.graph` — confirm no cycles, no dangling refs, no `[S*]` surprises
+- [ ] T026 [skillist: speckit-evidence-audit] Run `speckit.evidence.audit` — confirm verdict PASS or document every `--accept-synthetic` override
 
 ---
 

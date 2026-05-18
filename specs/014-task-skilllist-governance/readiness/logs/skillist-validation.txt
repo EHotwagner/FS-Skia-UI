@@ -1,0 +1,89 @@
+=== valid ===
+task-graph: 2 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/valid/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/valid/readiness/task-graph.md
+  status: 2[ ]
+verdict: pass
+
+=== missing-skillist ===
+
+VALIDATION FAILED
+  T001: missing structured skillist in tasks.deps.yml
+task-graph: 1 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/missing-skillist/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/missing-skillist/readiness/task-graph.md
+verdict: fail (2)
+
+=== non-list-skillist ===
+
+VALIDATION FAILED
+  tasks.deps.yml:6: T001: skillist must be a list
+  T001: missing structured skillist in tasks.deps.yml
+  T001: skillist omits obviously applicable skill speckit-tasks
+task-graph: 1 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/non-list-skillist/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/non-list-skillist/readiness/task-graph.md
+verdict: fail (2)
+
+=== missing-mirror ===
+
+VALIDATION FAILED
+  T001: missing tasks.md skillist mirror
+task-graph: 1 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/missing-mirror/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/missing-mirror/readiness/task-graph.md
+verdict: fail (2)
+
+=== mirror-mismatch ===
+
+VALIDATION FAILED
+  T001: tasks.md mirror [speckit-implement] does not match tasks.deps.yml [speckit-tasks]
+task-graph: 1 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/mirror-mismatch/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/mirror-mismatch/readiness/task-graph.md
+verdict: fail (2)
+
+=== omitted-obvious ===
+
+VALIDATION FAILED
+  T001: skillist omits obviously applicable skill speckit-tasks
+task-graph: 1 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/omitted-obvious/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/omitted-obvious/readiness/task-graph.md
+verdict: fail (2)
+
+=== invalid-order ===
+
+VALIDATION FAILED
+  T001: skillist order places speckit-evidence-audit before prerequisite speckit-evidence-graph
+task-graph: 1 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/invalid-order/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/invalid-order/readiness/task-graph.md
+verdict: fail (2)
+
+=== legacy-bare-list ===
+
+VALIDATION FAILED
+  tasks.deps.yml: T001: existing bare-list metadata must be migrated to object form with deps and skillist
+  T001: missing structured skillist in tasks.deps.yml
+task-graph: 1 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/legacy-bare-list/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/legacy-bare-list/readiness/task-graph.md
+verdict: fail (2)
+
+=== missing-skill ===
+
+VALIDATION FAILED
+  T001: declared skill missing-capability-skill is not readable or not registered
+task-graph: 1 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/missing-skill/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/missing-skill/readiness/task-graph.md
+verdict: fail (2)
+
+
+VALIDATION FAILED
+  T001: missing structured skillist in tasks.deps.yml
+task-graph: 1 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/missing-skillist/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/fixtures/missing-skillist/readiness/task-graph.md
+missing-skillist elapsed seconds: 0

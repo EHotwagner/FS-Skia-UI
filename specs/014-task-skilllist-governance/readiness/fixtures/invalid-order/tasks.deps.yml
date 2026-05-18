@@ -1,0 +1,6 @@
+schema_version: "1.0"
+
+tasks:
+  T001:
+    deps: []
+    skillist: ["speckit-evidence-audit", "speckit-evidence-graph"]

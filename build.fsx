@@ -708,7 +708,9 @@ let update msg model =
         |> List.filter (fun project -> File.Exists(path [ model.RepositoryRoot; project ]))
         |> List.map (fun project ->
             let extra =
-                if project.IndexOf("Governance.Tests", StringComparison.Ordinal) >= 0 then
+                if project.Replace('\\', '/').EndsWith("tests/Smoke.Tests/Smoke.Tests.fsproj", StringComparison.Ordinal) then
+                    ""
+                elif project.IndexOf("Governance.Tests", StringComparison.Ordinal) >= 0 then
                     " --filter \"FullyQualifiedName!~workflow self-check&FullyQualifiedName!~fixture\" -- --sequenced"
                 else
                     " -- --sequenced"
@@ -3044,6 +3046,71 @@ let validateControlsBoundaryGuidance model =
               else
                   None) ]
 
+let validateTaskSkillistGuidance model =
+    let requiredTerms =
+        [ ".specify/templates/tasks-template.md",
+          [ "[skillist: []]"
+            "structured"
+            "skillist"
+            "After task generation"
+            "minimal ordered skill set" ]
+          ".specify/presets/fsharp-opinionated/templates/tasks-template.md",
+          [ "[skillist: []]"
+            "structured"
+            "skillist"
+            "After task generation"
+            "minimal ordered skill set" ]
+          ".specify/presets/fsharp-opinionated/templates/tasks-deps-template.yml",
+          [ "deps:"
+            "skillist:"
+            "ordered list of applicable capability skill identifiers" ]
+          ".agents/skills/speckit-tasks/SKILL.md",
+          [ "Compulsory skill evaluation"
+            "Visible skill mirror"
+            "Declared skill ids resolve" ]
+          ".specify/presets/fsharp-opinionated/commands/speckit.tasks.md",
+          [ "Compulsory skill evaluation"
+            "Visible skill mirror"
+            "Declared skill ids resolve" ]
+          ".agents/skills/speckit-implement/SKILL.md",
+          [ "structured `skillist`"
+            "Resolve every declared skill id"
+            "skills in declared order"
+            "loaded paths" ]
+          ".specify/presets/fsharp-opinionated/commands/speckit.implement.md",
+          [ "structured `skillist`"
+            "Resolve every declared skill id"
+            "skills in declared order"
+            "loaded paths" ]
+          ".specify/memory/constitution.md",
+          [ "mandatory post-generation skill evaluation gate"
+            "`skillist` field"
+            "mandatory pre-task skill loading gate" ]
+          ".specify/templates/constitution-template.md",
+          [ "mandatory post-generation skill evaluation gate"
+            "`skillist` field"
+            "mandatory pre-task skill loading gate" ]
+          ".specify/presets/fsharp-opinionated/templates/constitution-template.md",
+          [ "mandatory post-generation skill evaluation gate"
+            "`skillist` field"
+            "mandatory pre-task skill loading gate" ] ]
+
+    requiredTerms
+    |> List.collect (fun (relative, terms) ->
+        let filePath = path [ model.RepositoryRoot; relative ]
+
+        if not (File.Exists filePath) then
+            [ $"{relative}: missing file [task-skillist-guidance]" ]
+        else
+            let content = File.ReadAllText filePath
+
+            terms
+            |> List.choose (fun term ->
+                if content.IndexOf(term, StringComparison.OrdinalIgnoreCase) < 0 then
+                    Some $"{relative}: missing `{term}` [task-skillist-guidance]"
+                else
+                    None))
+
 let runGeneratedGuidanceScan model outputPath =
     let validationRows =
         generatedGuidanceRequirements
@@ -3055,6 +3122,7 @@ let runGeneratedGuidanceScan model outputPath =
         (validationRows |> List.collect (fun (_, findings, _) -> findings))
         @ validateGuidanceParity validationRows
         @ validateControlsBoundaryGuidance model
+        @ validateTaskSkillistGuidance model
 
     if not (List.isEmpty findings) then
         failwithf "Generated guidance check failed:%s%s" Environment.NewLine (String.Join(Environment.NewLine, findings))
@@ -3064,6 +3132,7 @@ let runGeneratedGuidanceScan model outputPath =
           ""
           "PASS: active and preset-owned spec/plan templates include required governance prompts in the expected Markdown sections."
           "PASS: generated Controls guidance covers Skia-rendered controls, rich text, chart controls, graph controls, DataGrid, Controls.Elmish adapter wiring, and legacy Charts replacement notes without stale generated terms."
+          "PASS: task templates, task metadata templates, implementation guidance, and constitution guidance require `skillist` evaluation and implementation-time skill loading."
           ""
           "Validated prompt classes:"
           yield!

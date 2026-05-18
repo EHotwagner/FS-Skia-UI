@@ -35,6 +35,7 @@ id -> [ids] YAML shape ourselves.
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 from collections import defaultdict, deque
@@ -84,6 +85,8 @@ class Task:
     parallel: bool = False       # [P] annotation
     line_no: int = 0
     title: str = ""
+    skillist_mirror: Optional[List[str]] = None
+    skillist: List[str] = field(default_factory=list)
     explicit_deps: List[str] = field(default_factory=list)
     phase_deps: List[str] = field(default_factory=list)
 
@@ -166,8 +169,18 @@ def parse_tasks_md(path: Path) -> Tuple[Dict[str, Task], List[str]]:
         story_m = re.search(r"\[(US\d+)\]", rest)
         tier_m = re.search(r"\[(T[12])\]", rest)
 
+        skillist_m = re.search(r"\[skillist:\s*(?P<value>\[\]|[^\]]*)\]", rest)
+        skillist_mirror: Optional[List[str]] = None
+        if skillist_m:
+            raw_value = skillist_m.group("value").strip()
+            if raw_value == "[]":
+                skillist_mirror = []
+            else:
+                skillist_mirror = [x.strip() for x in raw_value.split(",") if x.strip()]
+
         # Title: strip all [..] annotation brackets, keep the sentence.
         title = re.sub(r"\[(P|US\d+|T[12])\]\s*", "", rest).strip()
+        title = re.sub(r"\[skillist:\s*(?:\[\]|[^\]])*\]\s*", "", title).strip()
 
         if tid in tasks:
             errors.append(f"tasks.md:{i}: duplicate task id {tid}")
@@ -183,6 +196,7 @@ def parse_tasks_md(path: Path) -> Tuple[Dict[str, Task], List[str]]:
             parallel=parallel,
             line_no=i,
             title=title,
+            skillist_mirror=skillist_mirror,
         )
         tasks[tid] = task
 
@@ -211,7 +225,24 @@ def parse_tasks_md(path: Path) -> Tuple[Dict[str, Task], List[str]]:
     return tasks, errors
 
 
-def parse_deps_yml(path: Path) -> Tuple[Dict[str, List[str]], List[str]]:
+@dataclass
+class TaskMetadata:
+    deps: Optional[List[str]] = None
+    skillist: Optional[List[str]] = None
+    legacy_bare_list: bool = False
+
+
+def parse_list_value(value: str) -> Optional[List[str]]:
+    value = value.strip()
+    if not (value.startswith("[") and value.endswith("]")):
+        return None
+    inner = value[1:-1].strip()
+    if not inner:
+        return []
+    return [item.strip().strip('"').strip("'") for item in inner.split(",") if item.strip()]
+
+
+def parse_deps_yml(path: Path) -> Tuple[Dict[str, TaskMetadata], List[str]]:
     """Parse the minimal 'id: [ids]' YAML without pyyaml.
 
     Supports:
@@ -223,7 +254,7 @@ def parse_deps_yml(path: Path) -> Tuple[Dict[str, List[str]], List[str]]:
             - T021
     """
     errors: List[str] = []
-    deps: Dict[str, List[str]] = {}
+    metadata: Dict[str, TaskMetadata] = {}
 
     try:
         text = path.read_text(encoding="utf-8")
@@ -233,10 +264,10 @@ def parse_deps_yml(path: Path) -> Tuple[Dict[str, List[str]], List[str]]:
     in_tasks = False
     current_id: Optional[str] = None
 
-    inline_re = re.compile(
-        r"^\s{2,}(T\d{3,4})\s*:\s*(?:\[\s*(?P<bracket>.*?)\s*\])?\s*$"
-    )
-    list_item_re = re.compile(r"^\s{4,}-\s*(T\d{3,4})\s*$")
+    task_re = re.compile(r"^\s{2,}(T\d{3,4})\s*:\s*(?P<value>.*)$")
+    field_re = re.compile(r"^\s{4,}(deps|skillist)\s*:\s*(?P<value>.*)$")
+    list_item_re = re.compile(r"^\s{6,}-\s*(T\d{3,4})\s*$")
+    current_field: Optional[str] = None
 
     for i, raw in enumerate(text.splitlines(), start=1):
         line = raw.rstrip()
@@ -257,33 +288,92 @@ def parse_deps_yml(path: Path) -> Tuple[Dict[str, List[str]], List[str]]:
         if not in_tasks:
             continue
 
-        m = inline_re.match(line)
+        m = task_re.match(line)
         if m:
             tid = m.group(1)
-            bracket = m.group("bracket")
-            if tid in deps:
+            value = m.group("value").strip()
+            if tid in metadata:
                 errors.append(f"tasks.deps.yml:{i}: duplicate key {tid}")
-            if bracket is None:
-                # Block form; subsequent list items will populate.
-                deps[tid] = []
-                current_id = tid
-            else:
-                items = [x.strip() for x in bracket.split(",") if x.strip()]
-                for it in items:
-                    if not re.fullmatch(r"T\d{3,4}", it):
-                        errors.append(
-                            f"tasks.deps.yml:{i}: {tid}: invalid dep token '{it}'"
-                        )
-                deps[tid] = [x for x in items if re.fullmatch(r"T\d{3,4}", x)]
+            if value:
+                parsed = parse_list_value(value)
+                if parsed is None:
+                    errors.append(
+                        f"tasks.deps.yml:{i}: {tid}: expected object metadata with deps and skillist fields, got '{value}'"
+                    )
+                    metadata[tid] = TaskMetadata()
+                else:
+                    metadata[tid] = TaskMetadata(deps=parsed, legacy_bare_list=True)
                 current_id = None
+                current_field = None
+            else:
+                metadata[tid] = TaskMetadata()
+                current_id = tid
+                current_field = None
+            continue
+
+        fm = field_re.match(line)
+        if fm and current_id is not None:
+            field_name = fm.group(1)
+            value = fm.group("value").strip()
+            parsed = parse_list_value(value)
+            if parsed is None:
+                errors.append(
+                    f"tasks.deps.yml:{i}: {current_id}: {field_name} must be a list"
+                )
+                current_field = field_name if not value else None
+            else:
+                if field_name == "deps":
+                    metadata[current_id].deps = parsed
+                else:
+                    metadata[current_id].skillist = parsed
+                current_field = None
             continue
 
         li = list_item_re.match(line)
-        if li and current_id is not None:
-            deps[current_id].append(li.group(1))
+        if li and current_id is not None and current_field == "deps":
+            if metadata[current_id].deps is None:
+                metadata[current_id].deps = []
+            metadata[current_id].deps.append(li.group(1))
             continue
 
-    return deps, errors
+    return metadata, errors
+
+
+def discover_skills(repo_root: Path) -> Tuple[Dict[str, List[Path]], List[str]]:
+    roots = [repo_root / ".agents" / "skills"]
+    if (repo_root / "src").exists():
+        roots.extend((repo_root / "src").glob("*/skill"))
+    if (repo_root / "template" / "fragments").exists():
+        roots.extend((repo_root / "template" / "fragments").glob("*/skill"))
+    skills: Dict[str, List[Path]] = defaultdict(list)
+    warnings: List[str] = []
+    for root in roots:
+        if not root.exists():
+            continue
+        for skill_file in root.glob("*/SKILL.md") if root.name == "skills" else root.glob("SKILL.md"):
+            try:
+                text = skill_file.read_text(encoding="utf-8")
+            except OSError as e:
+                warnings.append(f"{skill_file}: skill file is not readable: {e}")
+                continue
+            name_m = re.search(r"^name:\s*['\"]?([^'\"\n]+)['\"]?\s*$", text, re.MULTILINE)
+            skill_id = name_m.group(1).strip() if name_m else skill_file.parent.name
+            skills[skill_id].append(skill_file)
+    return skills, warnings
+
+
+CAPABILITY_EXPECTATIONS = [
+    ("speckit-evidence-graph", re.compile(r"(task graph|evidence graph|readiness validation|tasks\.deps\.yml|structured task metadata|mirror mismatch|skillist field|skillist, list typing|obvious capability|multi-skill dependency order|migration blocker|validator diagnostics|EvidenceGraph)", re.I)),
+    ("speckit-evidence-audit", re.compile(r"(evidence audit|diff-scan|synthetic propagation|readiness-blocking|EvidenceAudit)", re.I)),
+    ("speckit-tasks", re.compile(r"(/speckit\.tasks|speckit\.tasks|task-generation|task templates|tasks-template|tasks template|generated task guidance|post-generation skill evaluation)", re.I)),
+    ("speckit-implement", re.compile(r"(/speckit\.implement|speckit\.implement|implementation-loading|implementation skill|implementation command|load each|skill-load|before implementation)", re.I)),
+    ("speckit-constitution", re.compile(r"(constitution|constitutional)", re.I)),
+]
+
+SKILL_PREREQUISITES = {
+    "speckit-evidence-audit": ["speckit-evidence-graph"],
+    "speckit-implement": ["speckit-tasks"],
+}
 
 
 # ----------------------------------------------------------------------------
@@ -292,12 +382,13 @@ def parse_deps_yml(path: Path) -> Tuple[Dict[str, List[str]], List[str]]:
 
 def validate_and_merge(
     tasks: Dict[str, Task],
-    deps: Dict[str, List[str]],
+    metadata: Dict[str, TaskMetadata],
+    repo_root: Path,
 ) -> List[str]:
     errors: List[str] = []
 
     md_ids = set(tasks.keys())
-    yml_ids = set(deps.keys())
+    yml_ids = set(metadata.keys())
 
     only_md = md_ids - yml_ids
     only_yml = yml_ids - md_ids
@@ -312,9 +403,18 @@ def validate_and_merge(
         )
 
     # Check every dep reference points to a known task.
-    for tid, dlist in deps.items():
+    for tid, meta in metadata.items():
         if tid not in tasks:
             continue  # already errored
+        if meta.legacy_bare_list:
+            errors.append(
+                f"tasks.deps.yml: {tid}: existing bare-list metadata must be migrated to object form with deps and skillist"
+            )
+        if meta.deps is None:
+            errors.append(f"{tid}: missing deps field in tasks.deps.yml")
+            dlist = []
+        else:
+            dlist = meta.deps
         for d in dlist:
             if d not in tasks:
                 errors.append(
@@ -324,9 +424,52 @@ def validate_and_merge(
                 errors.append(f"tasks.deps.yml: {tid} depends on itself")
 
     # Merge explicit deps into tasks.
-    for tid, dlist in deps.items():
+    skills, skill_warnings = discover_skills(repo_root)
+    errors.extend(skill_warnings)
+
+    for tid, meta in metadata.items():
+        if tid not in tasks:
+            continue
+        task = tasks[tid]
+        if meta.skillist is None:
+            errors.append(f"{tid}: missing structured skillist in tasks.deps.yml")
+        else:
+            task.skillist = meta.skillist
+
+        if task.skillist_mirror is None:
+            errors.append(f"{tid}: missing tasks.md skillist mirror")
+        elif meta.skillist is not None and task.skillist_mirror != meta.skillist:
+            errors.append(
+                f"{tid}: tasks.md mirror [{', '.join(task.skillist_mirror)}] does not match tasks.deps.yml [{', '.join(meta.skillist)}]"
+            )
+
+        for skill_id in meta.skillist or []:
+            matches = skills.get(skill_id, [])
+            if not matches:
+                errors.append(f"{tid}: declared skill {skill_id} is not readable or not registered")
+            elif len(matches) > 1:
+                joined = ", ".join(str(p.relative_to(repo_root)) for p in matches)
+                errors.append(f"{tid}: declared skill {skill_id} is ambiguous: {joined}")
+
+        expected = []
+        if not re.search(r"^Complete readiness notes", task.title, re.I):
+            expected = [skill_id for skill_id, pattern in CAPABILITY_EXPECTATIONS if pattern.search(task.title)]
+        for skill_id in expected:
+            if skill_id not in (meta.skillist or []):
+                errors.append(f"{tid}: skillist omits obviously applicable skill {skill_id}")
+
+        listed = meta.skillist or []
+        positions = {skill_id: index for index, skill_id in enumerate(listed)}
+        for skill_id, prerequisites in SKILL_PREREQUISITES.items():
+            if skill_id not in positions:
+                continue
+            for prerequisite in prerequisites:
+                if prerequisite in positions and positions[prerequisite] > positions[skill_id]:
+                    errors.append(f"{tid}: skillist order places {skill_id} before prerequisite {prerequisite}")
+
+    for tid, meta in metadata.items():
         if tid in tasks:
-            tasks[tid].explicit_deps = [d for d in dlist if d in tasks]
+            tasks[tid].explicit_deps = [d for d in (meta.deps or []) if d in tasks]
 
     return errors
 
@@ -468,6 +611,8 @@ def render_json(
                 "tier": t.tier,
                 "parallel": t.parallel,
                 "title": t.title,
+                "skillist": t.skillist,
+                "skillist_mirror": t.skillist_mirror,
                 "explicit_deps": t.explicit_deps,
                 "phase_deps": t.phase_deps,
                 "root_cause": root_cause.get(t.id, []),
@@ -625,7 +770,7 @@ def main(argv: List[str]) -> int:
         errors.append(f"{deps_yml} does not exist")
 
     tasks: Dict[str, Task] = {}
-    deps: Dict[str, List[str]] = {}
+    deps: Dict[str, TaskMetadata] = {}
 
     if tasks_md.exists():
         tasks, task_errs = parse_tasks_md(tasks_md)
@@ -635,7 +780,12 @@ def main(argv: List[str]) -> int:
         errors.extend(dep_errs)
 
     if tasks and deps is not None:
-        errors.extend(validate_and_merge(tasks, deps))
+        repo_root = feature_dir
+        for parent in [feature_dir, *feature_dir.parents]:
+            if (parent / ".git").exists() or (parent / ".specify").exists():
+                repo_root = parent
+                break
+        errors.extend(validate_and_merge(tasks, deps, repo_root))
 
     cycles: List[List[str]] = []
     root_cause: Dict[str, List[str]] = {}

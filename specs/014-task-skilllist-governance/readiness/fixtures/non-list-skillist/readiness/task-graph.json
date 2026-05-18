@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "verdict": "error",
+  "errors": [
+    "tasks.deps.yml:6: T001: skillist must be a list",
+    "T001: missing structured skillist in tasks.deps.yml",
+    "T001: skillist omits obviously applicable skill speckit-tasks"
+  ],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "pending",
+      "effective": "pending",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Update task-generation guidance",
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    }
+  ]
+}

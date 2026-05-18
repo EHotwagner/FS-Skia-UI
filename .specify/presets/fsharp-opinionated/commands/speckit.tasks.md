@@ -13,9 +13,11 @@ requires TWO files, both in `specs/[FEATURE_ID]/`:
    - Never write `[S*]` yourself. That marker is computed by the evidence
      audit from the DAG; writing it by hand will confuse the script.
 
-2. **`tasks.deps.yml`** — the dependency topology. Sibling to `tasks.md`.
-   Every Tnnn id in `tasks.md` MUST appear as a key here, even if its deps
-   list is empty.
+2. **`tasks.deps.yml`** — the dependency topology and task skill metadata.
+   Sibling to `tasks.md`. Every Tnnn id in `tasks.md` MUST appear as a key
+   here with both `deps` and `skillist` fields. `skillist` is an ordered list
+   of applicable capability skill identifiers, or `[]` when no capability
+   skill applies.
 
 Use the preset's `tasks-template.md` and `tasks.deps-template.yml` as
 starting points; replace the example task bodies with real work items
@@ -25,8 +27,18 @@ derived from the spec and plan.
 
 - **Lockstep emission.** You MUST write both files in the same turn. Never
   emit `tasks.md` without `tasks.deps.yml`, and vice versa. If you only
-  have partial information, write placeholder deps (`Tnnn: []`) and note
-  which ones need review in your summary.
+  have partial information, write placeholder object metadata (`deps: []`,
+  `skillist: []`) and note which ones need review in your summary.
+- **Compulsory skill evaluation.** Immediately after drafting tasks, evaluate
+  every task against available capability skills: `.agents/skills/*/SKILL.md`,
+  `src/*/skill/SKILL.md`, template capability skill paths, and active
+  generated product skill destinations when applicable. Choose the minimal
+  ordered set that would materially help implementation. Capability skills
+  are preferred over generic guidance when both match.
+- **Visible skill mirror.** Every task line in `tasks.md` MUST mirror the
+  structured `skillist` value as `[skillist: ...]`. Use `[skillist: []]` for
+  an empty list. Non-empty mirrors preserve the exact structured order, for
+  example `[skillist: speckit-tasks, speckit-evidence-graph]`.
 - **Phase-checkpoint edges are implicit.** The graph compute script
   auto-injects an edge from every task in Phase N+1 to the last foundation
   task of Phase N. You do NOT repeat those edges in the yml — write only
@@ -64,6 +76,11 @@ This validates:
 - Every Tnnn in `tasks.md` has a matching key in `tasks.deps.yml`.
 - Every dep reference resolves to a known Tnnn.
 - The graph is acyclic.
+- Every task has structured `skillist` metadata and a matching `tasks.md`
+  mirror.
+- Declared skill ids resolve to exactly one readable skill file.
+- Obvious capability skill omissions, non-minimal invalid skill sets, and
+  invalid multi-skill prerequisite ordering are reported before implementation.
 
 Report any failures to the user immediately; refuse to declare the tasks
 phase complete until the DAG is clean.

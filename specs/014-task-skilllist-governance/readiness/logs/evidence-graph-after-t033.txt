@@ -1,0 +1,12 @@
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance
+
+[1/2] Computing task graph...
+task-graph: 33 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/014-task-skilllist-governance/readiness/task-graph.md
+  status: 33[X]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0
