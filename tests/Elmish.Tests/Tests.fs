@@ -11,6 +11,14 @@ let tests =
         test "init maps viewer effects" {
             let scene = Empty
             let _, effects = ElmishAdapter.init { Title = "Product"; InitialSize = { Width = 320; Height = 240 } } 0 scene
-            Expect.equal effects [ DispatchViewer(OpenWindow("Product", { Width = 320; Height = 240 })) ] "viewer effect is mapped"
+
+            match effects with
+            | [ DispatchViewer(OpenWindow(title, size))
+                DispatchViewer(EmitDiagnostic diagnostic) ] ->
+                Expect.equal title "Product" "viewer title is mapped"
+                Expect.equal size { Width = 320; Height = 240 } "viewer size is mapped"
+                Expect.equal diagnostic.Category Startup "startup diagnostic category is mapped"
+                Expect.equal diagnostic.Stage (Some Window) "startup diagnostic stage is mapped"
+            | other -> failtestf "Expected DispatchViewer OpenWindow and startup diagnostic effects, got %A" other
         }
     ]

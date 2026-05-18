@@ -3,6 +3,28 @@ namespace FS.Skia.UI.KeyboardInput
 type CommandId = string
 type KeyId = string
 
+type ViewerKey =
+    | ArrowLeft
+    | ArrowRight
+    | ArrowUp
+    | ArrowDown
+    | Enter
+    | Space
+    | Escape
+    | Backspace
+    | Letter of char
+    | Digit of int
+    | Function of int
+    | Unknown of raw: string
+
+type ViewerKeyDirection =
+    | KeyDown
+    | KeyUp
+
+type ViewerKeyEvent =
+    { RawKey: string
+      Direction: ViewerKeyDirection }
+
 type KeyboardBinding =
     { Key: KeyId
       Command: CommandId }
@@ -57,3 +79,8 @@ module Keyboard =
     val init: bindings: KeyboardBinding list -> KeyboardModel * KeyboardEffect list
     val update: msg: KeyboardMsg -> model: KeyboardModel -> KeyboardModel * KeyboardEffect list
     val stateDisplay: model: KeyboardModel -> KeyboardStateDisplay
+
+module ViewerKeyboard =
+    val normalize: raw: string -> ViewerKey
+    val normalizeEvent: event: ViewerKeyEvent -> ViewerKey * bool
+    val toKeyId: key: ViewerKey -> KeyId

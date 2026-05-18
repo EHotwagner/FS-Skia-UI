@@ -437,3 +437,96 @@ module Scene =
           CapabilityCount = capabilities.Length
           Capabilities = capabilities
           DeterministicHash = Convert.ToHexString(hashBytes).ToLowerInvariant() }
+
+type SceneEvidenceFormat =
+    | Hash
+    | Png
+    | Metadata
+
+type SceneEvidenceFailureClassification =
+    | UnsupportedEnvironment
+    | ProductDefect
+
+type SceneEvidenceFailure =
+    { BlockedStage: string
+      Classification: SceneEvidenceFailureClassification
+      DiagnosticCategory: string
+      Message: string }
+
+type SceneEvidenceRequest =
+    { Scene: Scene
+      OutputSize: Size
+      Format: SceneEvidenceFormat
+      RendererMode: string
+      EvidencePath: string option }
+
+type SceneEvidence =
+    { Format: SceneEvidenceFormat
+      OutputSize: Size
+      RendererMode: string
+      EvidencePath: string option
+      Value: string }
+
+module SceneEvidence =
+    let supportedRendererMode mode =
+        String.IsNullOrWhiteSpace mode
+        || String.Equals(mode, "deterministic-scene", StringComparison.Ordinal)
+
+    let writeEvidence (path: string) (value: string) =
+        let directory = IO.Path.GetDirectoryName(path)
+
+        if not (String.IsNullOrWhiteSpace directory) then
+            IO.Directory.CreateDirectory(directory |> string) |> ignore
+
+        IO.File.WriteAllText(path, value)
+
+    let render (request: SceneEvidenceRequest) =
+        if request.OutputSize.Width <= 0 || request.OutputSize.Height <= 0 then
+            Result.Error
+                { BlockedStage = "scene"
+                  Classification = ProductDefect
+                  DiagnosticCategory = "scene"
+                  Message = "Scene evidence output size must be positive." }
+        elif not (supportedRendererMode request.RendererMode) then
+            Result.Error
+                { BlockedStage = "renderer"
+                  Classification = UnsupportedEnvironment
+                  DiagnosticCategory = "renderer"
+                  Message = $"Scene evidence renderer mode '{request.RendererMode}' is not available for non-window deterministic evidence." }
+        else
+            let readback = Scene.renderReadbackEvidence request.OutputSize request.Scene
+
+            let value =
+                match request.Format with
+                | Hash -> readback.DeterministicHash
+                | Metadata -> $"size={request.OutputSize.Width}x{request.OutputSize.Height};capabilities={readback.CapabilityCount};hash={readback.DeterministicHash}"
+                | Png -> readback.DeterministicHash
+
+            request.EvidencePath |> Option.iter (fun path -> writeEvidence path value)
+
+            Result.Ok
+                { Format = request.Format
+                  OutputSize = request.OutputSize
+                  RendererMode = "deterministic-scene"
+                  EvidencePath = request.EvidencePath
+                  Value = value }
+
+    let renderHash size scene =
+        render
+            { Scene = scene
+              OutputSize = size
+              Format = Hash
+              RendererMode = "deterministic-scene"
+              EvidencePath = None }
+
+    let renderPng size scene =
+        match
+            render
+                { Scene = scene
+                  OutputSize = size
+                  Format = Png
+                  RendererMode = "deterministic-scene"
+                  EvidencePath = None }
+        with
+        | Result.Ok evidence -> Result.Ok(Encoding.UTF8.GetBytes evidence.Value)
+        | Result.Error failure -> Result.Error failure

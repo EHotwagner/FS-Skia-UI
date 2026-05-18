@@ -30,7 +30,7 @@ and run the shared `build.fsx` target graph. Automation should call
 | `Build` | Builds the solution with the repository warning policy. | Active feature `readiness/logs/build.txt` |
 | `Test` | Runs the default non-visual test set. | Active feature `readiness/logs/test.txt` |
 | `Dev` | Fast local verification: `Restore`, `Build`, `Test`. | Active feature `readiness/logs/dev-verdict.txt` |
-| `PackLocal` | Packs the current public capability packages: Scene, SkiaViewer, Elmish, KeyboardInput, Controls.Elmish, Testing, the compatibility core package, Layout, and Controls. | `~/.local/share/nuget-local/*.nupkg` and `readiness/logs/pack-local.txt` |
+| `PackLocal` | Packs the current public capability packages: Scene, SkiaViewer, Elmish, KeyboardInput, Controls.Elmish, Testing, the compatibility core package, Layout, and Controls; writes generated-consumer package snippets and setup-drift guidance. | `~/.local/share/nuget-local/*.nupkg`, active feature `readiness/package/local-packages.md`, and the task-specific PackLocal log under `readiness/logs/` |
 | `RefreshSurfaceBaselines` | Regenerates current package surface baselines. | `readiness/surface-baselines/*.txt` |
 | `PackageSurfaceCheck` | Checks the current package surface against stable baselines. | `readiness/logs/package-surface-check.txt` |
 | `FsiTranscripts` | Runs public prelude scripts through FSI. | `readiness/fsi/*.txt` under this feature |
@@ -56,10 +56,33 @@ and run the shared `build.fsx` target graph. Automation should call
 | `TemplateCheck` | Requires the full template validation artifact class. | Active feature `readiness/template/verdict.md` |
 | `CapabilityCheck` | Validates `template/capabilities.yml`, capability ownership metadata, package contracts, tests, skills, fragments, evidence classes, and default app membership. | Active feature `readiness/capability-catalog.md` |
 | `SkillCheck` | Validates package-owned local skills and selected default app skill destinations. | Active feature `readiness/selected-skills.md` |
-| `GeneratedProductCheck` | Generates and verifies the V3 app, packaged app, headless-scene, governed, and sample-pack product rows. | Active feature `readiness/generated-file-lists/summary.md` and `readiness/generated-product-verify/**` |
+| `GeneratedProductCheck` | Generates and verifies the V3 app, packaged app, headless-scene, governed, and sample-pack product rows; for generated graphical consumers it also restores from local packages, runs semantic tests, bounded smoke, and scene evidence. | Active feature `readiness/generated-file-lists/summary.md`, `readiness/generated-product-verify/**`, and `readiness/generated-product-validation.md` |
 | `DependencyReport` | Verifies Central Package Management and dependency metadata. | Active feature `readiness/dependencies.md` |
 | `GeneratedGuidanceCheck` | Verifies active and preset-owned spec/plan prompts by Markdown section, prompt placement, deferred-scope boundaries, and active/preset parity. | Active feature `readiness/generated-guidance.md` |
 | `TemplateDrift` | Classifies template-owned path changes and checks required alignment classes plus active feature evidence or accepted deferrals. | Active feature `readiness/template-drift.md` |
+
+## Generated Graphical Integration
+
+Feature `013-tetris-demo-integration` adds contracted graphical integration
+evidence before story implementation may be declared complete. The build
+surface may extend `GeneratedProductCheck`, `GeneratedGuidanceCheck`,
+`TemplateCheck`, `TemplateDrift`, `PackLocal`, `Verify`, and `Ci` so generated
+apps can prove normalized viewer input, bounded real-viewer smoke,
+deterministic scene evidence, local package setup, and unsupported-host
+diagnostics.
+
+The generated graphical app command surface is:
+
+```bash
+dotnet run --project src/Product/Product.fsproj
+dotnet run --project src/Product/Product.fsproj -- --bounded-smoke <path>
+dotnet run --project src/Product/Product.fsproj -- --scene-evidence <path>
+```
+
+Bounded real-viewer evidence and deterministic scene-level evidence are
+separate artifact classes. A headless scene hash or PNG does not replace
+first-frame viewer startup evidence; an unsupported desktop host must produce
+an explicit unsupported-environment diagnostic.
 
 `Dev` remains the fast local restore/build/test path and is independent of
 template packaging. `Verify` includes source tests, local package packing,

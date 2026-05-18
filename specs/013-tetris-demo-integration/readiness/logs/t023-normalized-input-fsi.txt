@@ -1,0 +1,5 @@
+[("ArrowLeft", ArrowLeft); ("Left", ArrowLeft); ("Return", Enter);
+ ("Spacebar", Space); ("Esc", Escape); ("Back", Backspace); ("A", Letter 'A');
+ ("7", Digit 7); ("F12", Function 12); ("VendorKey", Unknown "VendorKey")]
+(Enter, true)
+(Enter, false)

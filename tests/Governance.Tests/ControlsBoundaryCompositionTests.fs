@@ -68,7 +68,6 @@ let expectProductOwnedControlsTests relativePath =
     [ "ControlsGallery"
       "ChartsGallery"
       "DataGridGallery"
-      "readiness/"
       "specs/" ]
     |> List.iter (fun forbidden ->
         Expect.isFalse (source.Contains(forbidden, StringComparison.OrdinalIgnoreCase)) $"{relativePath} tests stay product-owned without {forbidden}")

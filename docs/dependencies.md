@@ -41,3 +41,21 @@ Version="$(FsSkiaUiPackageVersion)"` only inside `UsePackedPackage` item
 groups. Package consumer smoke tests may generate temporary projects with a
 literal local package version. These paths validate local packages and are not
 general dependency policy.
+
+## Local Generated Consumer Packages
+
+Generated graphical consumer validation for feature
+`013-tetris-demo-integration` must report the local feed path, package
+identities, versions, consumer package configuration snippet, optional
+`nuget.config` snippet, restore command, and stale or missing feed diagnostics
+before build, input, or rendering failures are attributed to application code.
+Run `./fake.sh build -t PackLocal` before `./fake.sh build -t
+GeneratedProductCheck` when validating a fresh generated consumer from local
+packages.
+
+Package identities remain stable for this feature. Missing or stale local
+packages are setup drift and should include the affected package id, expected
+version, actual version when present, feed path, and remediation command.
+Generated product source must reference FS.Skia.UI capabilities with
+`PackageReference`; it must not copy repository implementation source as a
+substitute for package consumption.

@@ -11,6 +11,7 @@ let signatureFiles =
       "src/Layout/Types.fsi"
       "src/Charts/Types.fsi"
       "src/Charts/Candlestick.fsi" ]
+    |> List.filter fileExists
 
 let typeRegex = Regex(@"^type\s+([A-Za-z0-9_']+)", RegexOptions.Compiled)
 

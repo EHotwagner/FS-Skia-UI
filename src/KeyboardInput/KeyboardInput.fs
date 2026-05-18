@@ -3,6 +3,28 @@ namespace FS.Skia.UI.KeyboardInput
 type CommandId = string
 type KeyId = string
 
+type ViewerKey =
+    | ArrowLeft
+    | ArrowRight
+    | ArrowUp
+    | ArrowDown
+    | Enter
+    | Space
+    | Escape
+    | Backspace
+    | Letter of char
+    | Digit of int
+    | Function of int
+    | Unknown of raw: string
+
+type ViewerKeyDirection =
+    | KeyDown
+    | KeyUp
+
+type ViewerKeyEvent =
+    { RawKey: string
+      Direction: ViewerKeyDirection }
+
 type KeyboardBinding =
     { Key: KeyId
       Command: CommandId }
@@ -165,3 +187,70 @@ module Keyboard =
         | ResolvePendingSequence sequence ->
             { model with PendingSequence = sequence }
             |> attachState [ PendingSequenceChanged sequence ]
+
+module ViewerKeyboard =
+    let normalize (raw: string) =
+        let value =
+            if System.String.IsNullOrEmpty raw then
+                ""
+            elif raw = " " then
+                raw
+            else
+                raw.Trim()
+
+        let lower = value.ToLowerInvariant()
+
+        match lower with
+        | "left"
+        | "arrowleft"
+        | "leftarrow" -> ArrowLeft
+        | "right"
+        | "arrowright"
+        | "rightarrow" -> ArrowRight
+        | "up"
+        | "arrowup"
+        | "uparrow" -> ArrowUp
+        | "down"
+        | "arrowdown"
+        | "downarrow" -> ArrowDown
+        | "enter"
+        | "return" -> Enter
+        | "space"
+        | "spacebar"
+        | " " -> Space
+        | "escape"
+        | "esc" -> Escape
+        | "backspace"
+        | "back" -> Backspace
+        | _ when value.Length = 1 && System.Char.IsLetter value[0] ->
+            Letter(System.Char.ToUpperInvariant value[0])
+        | _ when value.Length = 1 && System.Char.IsDigit value[0] ->
+            Digit(int value[0] - int '0')
+        | _ when lower.StartsWith("f") ->
+            match System.Int32.TryParse(value.Substring 1) with
+            | true, number when number > 0 -> Function number
+            | _ -> Unknown raw
+        | _ -> Unknown raw
+
+    let normalizeEvent event =
+        let isDown =
+            match event.Direction with
+            | ViewerKeyDirection.KeyDown -> true
+            | ViewerKeyDirection.KeyUp -> false
+
+        normalize event.RawKey, isDown
+
+    let toKeyId key =
+        match key with
+        | ArrowLeft -> "ArrowLeft"
+        | ArrowRight -> "ArrowRight"
+        | ArrowUp -> "ArrowUp"
+        | ArrowDown -> "ArrowDown"
+        | Enter -> "Enter"
+        | Space -> "Space"
+        | Escape -> "Escape"
+        | Backspace -> "Backspace"
+        | Letter value -> string value
+        | Digit value -> string value
+        | Function value -> $"F{value}"
+        | Unknown raw -> raw

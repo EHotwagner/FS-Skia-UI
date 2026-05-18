@@ -1,20 +1,47 @@
 module Product.Program
 
+open System
+open System.IO
 open FS.Skia.UI.Controls
 open FS.Skia.UI.Controls.Elmish
+open FS.Skia.UI.KeyboardInput
+open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer
 
 type Model =
     { Name: string
       CanSave: bool
+      Screen: Screen
+      PrimaryInteractions: int
+      LastInput: ViewerKey option
+      InputDiagnostics: InputFlowDiagnostic list
       Revenue: ChartSeries list
       GridColumns: DataGridColumn list
       GridRows: DataGridRow list
       RichIntro: RichTextBlock }
 
+and Screen =
+    | Initial
+    | Options
+    | Main
+    | Paused
+    | Ended
+
+and InputFlowDiagnostic =
+    { InputValue: string
+      RawKey: string option
+      Direction: string
+      Screen: string
+      ExpectedTransition: string
+      Flow: string }
+
 type Msg =
     | NameChanged of string
     | SaveRequested
     | GridSelectionChanged of string
+    | ViewerInput of ViewerKey * isDown: bool
+    | ViewerKeyEventReceived of ViewerKeyEvent
+    | EndReached
     | RuntimeMsg of ControlRuntimeMsg
     | NoOp
 
@@ -58,10 +85,70 @@ let richIntro =
 let initialModel =
     { Name = "Product"
       CanSave = true
+      Screen = Initial
+      PrimaryInteractions = 0
+      LastInput = None
+      InputDiagnostics = []
       Revenue = revenueSeries
       GridColumns = gridColumns
       GridRows = gridRows
       RichIntro = richIntro }
+
+let screenName screen =
+    match screen with
+    | Initial -> "initial"
+    | Options -> "options"
+    | Main -> "main"
+    | Paused -> "paused"
+    | Ended -> "ended"
+
+let keyName key =
+    ViewerKeyboard.toKeyId key
+
+let diagnostic flow raw direction previousScreen key expected =
+    { InputValue = keyName key
+      RawKey = raw
+      Direction = direction
+      Screen = screenName previousScreen
+      ExpectedTransition = expected
+      Flow = flow }
+
+let transitionViewerInput raw direction key isDown model =
+    if not isDown then
+        { model with LastInput = Some key }, []
+    else
+        let current = model.Screen
+
+        let nextScreen, interactions, flow, expected =
+            match current, key with
+            | Initial, Enter -> Main, model.PrimaryInteractions, "initial-start", "main"
+            | Initial, Letter 'O' -> Options, model.PrimaryInteractions, "options-open", "options"
+            | Options, Enter -> Main, model.PrimaryInteractions, "options-select", "main"
+            | Options, Escape
+            | Options, Backspace -> Initial, model.PrimaryInteractions, "options-back", "initial"
+            | Main, Space -> Paused, model.PrimaryInteractions, "pause", "paused"
+            | Main, ArrowLeft
+            | Main, ArrowRight
+            | Main, ArrowUp
+            | Main, ArrowDown -> Main, model.PrimaryInteractions + 1, "primary-interaction", "main"
+            | Paused, Escape -> Main, model.PrimaryInteractions, "resume", "main"
+            | Paused, Backspace -> Initial, model.PrimaryInteractions, "pause-back", "initial"
+            | Ended, Enter -> Initial, 0, "restart", "initial"
+            | _ -> current, model.PrimaryInteractions, "ignored", screenName current
+
+        let entry = diagnostic flow raw direction current key expected
+
+        { model with
+            Screen = nextScreen
+            PrimaryInteractions = interactions
+            LastInput = Some key
+            InputDiagnostics = entry :: model.InputDiagnostics },
+        []
+
+let dispatchViewerKey event model =
+    let key, isDown = ViewerKeyboard.normalizeEvent event
+    let direction = if isDown then "down" else "up"
+    transitionViewerInput (Some event.RawKey) direction key isDown model
 
 let visibleRows model =
     { FirstIndex = 0
@@ -104,6 +191,9 @@ let update msg model : Model * AdapterCommand<Msg> =
     | NameChanged value -> { model with Name = value }, []
     | SaveRequested -> model, [ DispatchHostCommand $"save:{model.Name}" ]
     | GridSelectionChanged _ -> model, []
+    | ViewerInput(key, isDown) -> transitionViewerInput None (if isDown then "down" else "up") key isDown model
+    | ViewerKeyEventReceived event -> dispatchViewerKey event model
+    | EndReached -> { model with Screen = Ended }, []
     | RuntimeMsg _ -> model, []
     | NoOp -> model, []
 
@@ -113,9 +203,136 @@ let subscriptions _ : AdapterSubscription<Msg> list =
 let adapterProgram =
     ControlsElmish.program init update controlsExampleView subscriptions
 
+let private writeBoundedSmokeReport (path: string) lines =
+    let directory = Path.GetDirectoryName path
+
+    if not (String.IsNullOrWhiteSpace directory) then
+        Directory.CreateDirectory(directory |> string) |> ignore
+
+    File.WriteAllLines(path, Array.ofList lines)
+
+let boundedSmoke includeFrameDiagnostics evidencePath =
+    let capturedDiagnostics = ResizeArray<ViewerDiagnosticEvent>()
+    let diagnosticCategories =
+        if includeFrameDiagnostics then
+            Set.ofList [ ViewerDiagnosticCategory.Startup; ViewerDiagnosticCategory.Renderer; ViewerDiagnosticCategory.Frame ]
+        else
+            Set.ofList [ ViewerDiagnosticCategory.Startup; ViewerDiagnosticCategory.Renderer ]
+
+    let request: ViewerRunRequest =
+        { Target = FirstFrame
+          Timeout = TimeSpan.FromSeconds 10.0
+          Diagnostics =
+            { Viewer.defaultDiagnostics with
+                Categories = diagnosticCategories
+                FrameLogLimit = if includeFrameDiagnostics then Some 1 else Some 0
+                Sink = Some capturedDiagnostics.Add }
+          RendererMode = "vulkan"
+          EvidencePath = Some evidencePath }
+
+    let scene =
+        Text(
+            (24.0, 48.0),
+            "Generated bounded smoke",
+            { Red = 240uy
+              Green = 240uy
+              Blue = 240uy
+              Alpha = 255uy }
+        )
+
+    let result: Result<ViewerRunEvidence, ViewerRunFailure> =
+        Viewer.runBounded
+            request
+            { Title = "Generated Product Bounded Smoke"
+              InitialSize = { Width = 320; Height = 200 } }
+            scene
+
+    match result with
+    | Result.Ok evidence ->
+        let diagnosticMode =
+            if includeFrameDiagnostics then "frame-focused" else "startup-focused"
+
+        let diagnosticCategories =
+            String.Join(",", capturedDiagnostics |> Seq.map _.Category)
+
+        let lines =
+            [ "status=ok"
+              "smoke=bounded-viewer"
+              $"frames-rendered={evidence.FramesRendered}"
+              $"elapsed-ms={evidence.Elapsed.TotalMilliseconds}"
+              $"initial-output-size={evidence.InitialOutputSize.Width}x{evidence.InitialOutputSize.Height}"
+              $"renderer-mode={evidence.RendererMode}"
+              $"diagnostic-mode={diagnosticMode}"
+              $"diagnostic-categories={diagnosticCategories}" ]
+
+        writeBoundedSmokeReport evidencePath lines
+        printfn "status=ok smoke=bounded-viewer frames-rendered=%d renderer-mode=%s evidence=%s" evidence.FramesRendered evidence.RendererMode evidencePath
+        0
+    | Result.Error failure ->
+        let summary = failure.LastDiagnosticSummary |> Option.defaultValue ""
+        let diagnosticMode =
+            if includeFrameDiagnostics then "frame-focused" else "startup-focused"
+
+        let diagnosticCategories =
+            String.Join(",", capturedDiagnostics |> Seq.map _.Category)
+
+        let lines =
+            [ if failure.Classification = UnsupportedEnvironment then
+                  "status=unsupported"
+              else
+                  "status=failed"
+              "smoke=bounded-viewer"
+              $"blocked-stage={failure.BlockedStage}"
+              $"classification={failure.Classification}"
+              $"diagnostic-category={failure.DiagnosticCategory}"
+              $"message={failure.Message}"
+              $"last-diagnostic-summary={summary}"
+              $"diagnostic-mode={diagnosticMode}"
+              $"diagnostic-categories={diagnosticCategories}" ]
+
+        writeBoundedSmokeReport evidencePath lines
+        printfn "status=%s smoke=bounded-viewer blocked-stage=%A classification=%A evidence=%s" (if failure.Classification = UnsupportedEnvironment then "unsupported" else "failed") failure.BlockedStage failure.Classification evidencePath
+
+        if failure.Classification = UnsupportedEnvironment then 0 else 1
+
+let sceneEvidence evidencePath =
+    let scene =
+        Text(
+            (24.0, 48.0),
+            "Generated scene evidence",
+            { Red = 240uy
+              Green = 240uy
+              Blue = 240uy
+              Alpha = 255uy }
+        )
+
+    let result =
+        SceneEvidence.render
+            { Scene = { Nodes = [ scene ] }
+              OutputSize = { Width = 320; Height = 200 }
+              Format = Metadata
+              RendererMode = "deterministic-scene"
+              EvidencePath = Some evidencePath }
+
+    match result with
+    | Result.Ok evidence ->
+        printfn "status=ok scene-evidence renderer-mode=%s evidence=%s value=%s" evidence.RendererMode evidencePath evidence.Value
+        0
+    | Result.Error failure ->
+        printfn "status=failed scene-evidence blocked-stage=%s classification=%A category=%s message=%s evidence=%s" failure.BlockedStage failure.Classification failure.DiagnosticCategory failure.Message evidencePath
+        1
+
 [<EntryPoint>]
-let main _ =
-    let model, _ = adapterProgram.Init()
-    let view = adapterProgram.View model
-    printfn "Generated product controls: %d" (Control.count view)
-    0
+let main args =
+    match List.ofArray args with
+    | "--bounded-smoke" :: path :: _ -> boundedSmoke false path
+    | "--bounded-smoke" :: _ -> boundedSmoke false "readiness/bounded-viewer-smoke.txt"
+    | "--bounded-smoke-frame-diagnostics" :: path :: _ -> boundedSmoke true path
+    | "--bounded-smoke-frame-diagnostics" :: _ -> boundedSmoke true "readiness/bounded-viewer-frame-diagnostics.txt"
+    | "--scene-evidence" :: path :: _ -> sceneEvidence path
+    | "--scene-evidence" :: _ -> sceneEvidence "readiness/headless-scene-evidence.txt"
+    | _ ->
+        let model, _ = adapterProgram.Init()
+        let view = adapterProgram.View model
+        printfn "Generated product controls: %d" (Control.count view)
+        0

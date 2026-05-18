@@ -21,3 +21,13 @@ FS.Skia.UI.KeyboardInput.KeyboardMsg+SetActiveLayout
 FS.Skia.UI.KeyboardInput.KeyboardMsg+SetPersistentMode
 FS.Skia.UI.KeyboardInput.KeyboardMsg+Tags
 FS.Skia.UI.KeyboardInput.KeyboardStateDisplay
+FS.Skia.UI.KeyboardInput.ViewerKey
+FS.Skia.UI.KeyboardInput.ViewerKey+Digit
+FS.Skia.UI.KeyboardInput.ViewerKey+Function
+FS.Skia.UI.KeyboardInput.ViewerKey+Letter
+FS.Skia.UI.KeyboardInput.ViewerKey+Tags
+FS.Skia.UI.KeyboardInput.ViewerKey+Unknown
+FS.Skia.UI.KeyboardInput.ViewerKeyDirection
+FS.Skia.UI.KeyboardInput.ViewerKeyDirection+Tags
+FS.Skia.UI.KeyboardInput.ViewerKeyEvent
+FS.Skia.UI.KeyboardInput.ViewerKeyboard

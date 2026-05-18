@@ -1,0 +1,95 @@
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration
+
+[1/2] Computing task graph...
+task-graph: 72 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration/readiness/task-graph.md
+  status: 68[X], 4[ ]
+
+[2/2] Diff scan against feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+✓ PASS — no synthetic tasks, no blocking diff-scan hits.
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration
+
+[1/2] Computing task graph...
+task-graph: 72 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration/readiness/task-graph.md
+  status: 68[X], 4[ ]
+
+[2/2] Diff scan against feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+✓ PASS — no synthetic tasks, no blocking diff-scan hits.
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration
+
+[1/2] Computing task graph...
+task-graph: 72 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration/readiness/task-graph.md
+  status: 68[X], 4[ ]
+
+[2/2] Diff scan against feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+✓ PASS — no synthetic tasks, no blocking diff-scan hits.
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration
+
+[1/2] Computing task graph...
+task-graph: 72 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration/readiness/task-graph.md
+  status: 70[X], 2[ ]
+
+[2/2] Diff scan against feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+✓ PASS — no synthetic tasks, no blocking diff-scan hits.
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration
+
+[1/2] Computing task graph...
+task-graph: 72 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/013-tetris-demo-integration/readiness/task-graph.md
+  status: 72[X]
+
+[2/2] Diff scan against feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+✓ PASS — no synthetic tasks, no blocking diff-scan hits.
+
+exit-code=0

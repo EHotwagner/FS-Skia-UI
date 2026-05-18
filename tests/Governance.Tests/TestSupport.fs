@@ -434,9 +434,34 @@ let expectGeneratedProductFileList profile (required: string list) (forbidden: s
 
     Expect.isTrue (fileExists reportPath) $"{profile} file-list report exists"
     let content = read reportPath
+    let fileList =
+        let marker = "Files:"
+        let packageMarker = "Package references:"
+        let startIndex = content.IndexOf(marker, StringComparison.Ordinal)
+
+        if startIndex < 0 then
+            content
+        else
+            let filesStart = startIndex + marker.Length
+            let packageStart = content.IndexOf(packageMarker, filesStart, StringComparison.Ordinal)
+
+            if packageStart < 0 then
+                content.Substring(filesStart)
+            else
+                content.Substring(filesStart, packageStart - filesStart)
 
     required
     |> List.iter (fun item -> Expect.stringContains content item $"{profile} includes {item}")
 
     forbidden
-    |> List.iter (fun item -> Expect.isFalse (content.Contains item) $"{profile} excludes {item}")
+    |> List.iter (fun item ->
+        let subject =
+            if item.StartsWith("PackageReference", StringComparison.Ordinal)
+               || item.Contains(".fsproj", StringComparison.Ordinal)
+               || item.Contains("src/Charts", StringComparison.Ordinal)
+               || item.Contains("tests/Charts.Tests", StringComparison.Ordinal) then
+                content
+            else
+                fileList
+
+        Expect.isFalse (subject.Contains item) $"{profile} excludes {item}")

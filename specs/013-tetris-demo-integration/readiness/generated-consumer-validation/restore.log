@@ -1,0 +1,74 @@
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config
+  Determining projects to restore...
+/home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/src/Product/Product.fsproj : error NU1015: The following PackageReference item(s) do not have a version specified: FS.Skia.UI.Controls, FS.Skia.UI.Controls.Elmish, FS.Skia.UI.Elmish, FS.Skia.UI.KeyboardInput, FS.Skia.UI.Layout, FS.Skia.UI.Scene, FS.Skia.UI.SkiaViewer [/home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/tests/Product.Tests/Product.Tests.fsproj]
+/home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/tests/Product.Tests/Product.Tests.fsproj : error NU1015: The following PackageReference item(s) do not have a version specified: Expecto, Microsoft.NET.Test.Sdk, YoloDev.Expecto.TestSdk
+  Failed to restore /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/tests/Product.Tests/Product.Tests.fsproj (in 100 ms).
+  Failed to restore /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/src/Product/Product.fsproj (in 100 ms).
+
+exit-code=1
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/tests/Product.Tests/Product.Tests.fsproj (in 566 ms).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/src/Product/Product.fsproj (in 566 ms).
+
+exit-code=0
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/tests/Product.Tests/Product.Tests.fsproj (in 278 ms).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/src/Product/Product.fsproj (in 278 ms).
+
+exit-code=0
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/src/Product/Product.fsproj (in 8.18 sec).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/tests/Product.Tests/Product.Tests.fsproj (in 8.18 sec).
+
+exit-code=0
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/src/Product/Product.fsproj (in 8.07 sec).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/tests/Product.Tests/Product.Tests.fsproj (in 8.07 sec).
+
+exit-code=0
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/tests/Product.Tests/Product.Tests.fsproj (in 8.62 sec).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/src/Product/Product.fsproj (in 8.62 sec).
+
+exit-code=0
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/tests/Product.Tests/Product.Tests.fsproj (in 8.39 sec).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/src/Product/Product.fsproj (in 8.39 sec).
+
+exit-code=0
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/tests/Product.Tests/Product.Tests.fsproj (in 8 sec).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/src/Product/Product.fsproj (in 8 sec).
+
+exit-code=0
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/tests/Product.Tests/Product.Tests.fsproj (in 8.1 sec).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/013-tetris-demo-integration/app-source/src/Product/Product.fsproj (in 8.1 sec).
+
+exit-code=0

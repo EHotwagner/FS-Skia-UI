@@ -1,0 +1,10 @@
+The last restore is still up to date. Nothing left to do.
+Starting target 'PackageSurfaceCheck'
+Hint: To further diagnose the problem you can run fake in verbose mode `fake -v run ...` or set the 'FAKE_DETAILED_ERRORS' environment variable to 'true'
+Performance:
+ - Cli parsing: 130 milliseconds
+ - Packages: 36 milliseconds
+ - Script analyzing: 33 milliseconds
+ - Script running: 13 milliseconds
+ - Script cleanup: 1 millisecond
+ - Runtime: 631 milliseconds

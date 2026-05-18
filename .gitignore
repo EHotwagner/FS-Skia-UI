@@ -12,6 +12,7 @@ obj/
 *.nupkg
 *.snupkg
 packages/
+specs/*/readiness/generated-consumer-validation/nuget-packages/
 
 # Test output
 TestResults/

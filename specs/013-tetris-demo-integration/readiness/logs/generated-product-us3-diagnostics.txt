@@ -1,0 +1,14 @@
+The last restore is still up to date. Nothing left to do.
+Starting target 'CapabilityCheck'
+Finished target 'CapabilityCheck'
+Starting target 'SkillCheck'
+Finished target 'SkillCheck'
+Starting target 'GeneratedProductCheck'
+Finished target 'GeneratedProductCheck'
+Performance:
+ - Cli parsing: 129 milliseconds
+ - Packages: 36 milliseconds
+ - Script analyzing: 33 milliseconds
+ - Script running: 36 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 37 seconds

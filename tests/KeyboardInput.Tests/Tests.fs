@@ -88,4 +88,38 @@ let tests =
             Expect.equal recovered.PersistentModeState["layout"] "qwerty" "persistent mode state survives focus loss"
             Expect.exists effects (function ReportKeyboardDiagnostic diagnostic when diagnostic.Code = "FocusLostRecovered" -> true | _ -> false) "focus loss reports recovery diagnostic"
         }
+
+        test "viewer keyboard normalization exposes public stable key values" {
+            Expect.equal (ViewerKeyboard.normalize "Left") ArrowLeft "left normalizes"
+            Expect.equal (ViewerKeyboard.normalize "ArrowLeft") ArrowLeft "alternate left normalizes"
+            Expect.equal (ViewerKeyboard.normalize "Right") ArrowRight "right normalizes"
+            Expect.equal (ViewerKeyboard.normalize "ArrowRight") ArrowRight "alternate right normalizes"
+            Expect.equal (ViewerKeyboard.normalize "Up") ArrowUp "up normalizes"
+            Expect.equal (ViewerKeyboard.normalize "ArrowUp") ArrowUp "alternate up normalizes"
+            Expect.equal (ViewerKeyboard.normalize "Down") ArrowDown "down normalizes"
+            Expect.equal (ViewerKeyboard.normalize "ArrowDown") ArrowDown "alternate down normalizes"
+            Expect.equal (ViewerKeyboard.normalize "Return") Enter "return normalizes to enter"
+            Expect.equal (ViewerKeyboard.normalize "Enter") Enter "enter normalizes"
+            Expect.equal (ViewerKeyboard.normalize " ") Space "space character normalizes"
+            Expect.equal (ViewerKeyboard.normalize "Spacebar") Space "spacebar normalizes"
+            Expect.equal (ViewerKeyboard.normalize "Esc") Escape "escape alternate normalizes"
+            Expect.equal (ViewerKeyboard.normalize "Back") Backspace "backspace alternate normalizes"
+            Expect.equal (ViewerKeyboard.normalize "a") (Letter 'A') "letters normalize to uppercase"
+            Expect.equal (ViewerKeyboard.normalize "7") (Digit 7) "digits normalize"
+            Expect.equal (ViewerKeyboard.normalize "F12") (Function 12) "function keys normalize"
+            Expect.equal (ViewerKeyboard.normalize "VendorKey") (Unknown "VendorKey") "unknown raw key is preserved"
+        }
+
+        test "viewer keyboard events preserve down and up direction for interpreters" {
+            let downKey, isDown =
+                ViewerKeyboard.normalizeEvent { RawKey = "Escape"; Direction = ViewerKeyDirection.KeyDown }
+
+            let upKey, isStillDown =
+                ViewerKeyboard.normalizeEvent { RawKey = "Escape"; Direction = ViewerKeyDirection.KeyUp }
+
+            Expect.equal downKey Escape "key-down event normalizes key"
+            Expect.isTrue isDown "key-down event is marked down"
+            Expect.equal upKey Escape "key-up event normalizes key"
+            Expect.isFalse isStillDown "key-up event is marked not down"
+        }
     ]

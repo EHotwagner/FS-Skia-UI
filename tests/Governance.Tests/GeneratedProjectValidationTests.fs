@@ -90,8 +90,8 @@ let generatedProjectValidationTests =
             if directoryExists "specs/009-v3-modular-framework" then
                 expectGeneratedProductFileList
                     "app-source"
-                    [ "src/V3AppSource/V3AppSource.fsproj"
-                      "tests/V3AppSource.Tests/V3AppSource.Tests.fsproj"
+                    [ "src/Product/Product.fsproj"
+                      "tests/Product.Tests/Product.Tests.fsproj"
                       ".agents/skills/fs-skia-project/SKILL.md"
                       ".agents/skills/fs-skia-scene/SKILL.md"
                       ".agents/skills/fs-skia-skiaviewer/SKILL.md"

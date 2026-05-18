@@ -1,0 +1,101 @@
+  Governance.Tests -> /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Passed Public record invariant inventory.helper or validation-first recommendations carry a stable follow-up id [4 ms]
+  Passed V3 local skill validation.generated product receives selected skills only [3 ms]
+  Passed Template drift governance.root deferral file exists with required schema comments [3 ms]
+  Passed Template drift governance.drift script reports path diagnostics and alignment classes [3 ms]
+  Passed Public record invariant inventory.every public record in signature files has an inventory row [12 ms]
+  Passed Controls boundary composition.ControlsGallery sample composes form chart and DataGrid through Controls only
+  Passed Template drift governance.template ownership and deferral rules are documented [3 ms]
+  Passed V3 local skill validation.capability skills declare required sections and command references [7 ms]
+  Passed Controls boundary composition.generated product template composes form chart and DataGrid through Controls only
+  Passed Controls boundary composition.generated product template keeps Controls package references and source product-owned [1 ms]
+  Passed Controls boundary generated guidance.generated guidance includes generic message flow and adapter path when Elmish is selected
+  Passed Controls boundary composition.generated product tests cover product-owned form chart and DataGrid usage
+  Passed Controls boundary generated guidance.controls generated skill shows generic product message examples
+  Passed Controls boundary generated guidance.controls fragment describes one Skia Elmish Controls path
+  Passed Controls boundary generated guidance.generated guidance rejects stale chart capability wording and host-loop ownership
+  Passed Controls boundary generated guidance.Elmish fragment shows Controls adapter program wiring when selected
+  Passed Controls boundary generated guidance.controls guidance documents the removed Charts replacement path
+  Passed Controls boundary generated guidance.controls capability is the active generated home for chart graph and DataGrid guidance [3 ms]
+  Passed Generated guidance hardening.active and preset spec templates include prompts in the governance section [7 ms]
+  Passed Generated guidance hardening.active and preset plan templates include decisions in the repository governance section [11 ms]
+  Passed Generated guidance hardening.Spec Kit docs distinguish V2 obligations from deferred roadmap work [3 ms]
+  Passed Dependency governance.dependency docs include metadata fields and validation-only policy
+  Passed Dependency governance.V3 dependency report names package ownership rules
+  Passed Generated guidance hardening.V3 generated product docs describe selected capabilities without framework architecture copy [3 ms]
+  Passed Generated guidance hardening.section parser rejects prompts that appear only in deferred scope [3 ms]
+  Passed Dependency governance.Controls boundary dependency report captures adapter and removed Charts package placement
+  Passed Generated guidance hardening.active and preset prompt classes remain semantically aligned [5 ms]
+  Passed Dependency governance.Central Package Management declares direct external versions [5 ms]
+  Passed Dependency governance.V3 project references stay within declared package ownership
+  Passed Generated project validation contract.V3 generated product governance runs product checks and excludes framework maintenance
+  Passed Generated project validation contract.V3 dotnet template required contents are enforced [1 ms]
+  Passed Generated project validation contract.TemplateSmoke scans placeholders excluded history V3 profile references and generated Dev [1 ms]
+  Passed Generated project validation contract.V3 generated product checks enforce Controls ownership and stale reference diagnostics [1 ms]
+  Passed Generated project validation contract.V3 default generated product content is enforced [1 ms]
+  Passed Generated project validation contract.V3 generated file-list report captures selected capabilities and exclusions [3 ms]
+  Passed Generated project validation contract.V3 source and package generated validation roots prove Controls usage and framework-source exclusions [2 ms]
+  Passed Dependency governance.Controls boundary dependencies and runtime ownership are explicit [5 ms]
+  Passed Template workflow contract.template package project declares local NuGet template metadata
+  Passed Template workflow contract.V3 real interpreter evidence plan is recorded
+  Passed Template profile metadata.dotnet template sources V3 product base and selected capability skills
+  Passed Template profile metadata.template identity and profile choices are declared
+  Passed Generated project validation contract.V3 generated product matrix reflects selected capability sets
+  Passed Template profile metadata.generated AGENTS guidance is not tied to source active feature
+  Passed Template workflow contract.TemplateCheck requires package install generation smoke and verdict artifacts
+  Passed Template profile metadata.V3 capability catalog has required default app capabilities
+  Passed Template profile metadata.V3 capability catalog rows have ownership metadata and closed dependencies [1 ms]
+  Passed Template profile metadata.V3 profile rows are present for source and package validation
+  Passed Template profile metadata.V3 profiles keep samples explicit
+  Passed V2 artifact paths.feature readiness inventories document setup obligations
+  Passed V2 artifact paths.build graph names all required V2 readiness artifact classes
+  Passed Template profile metadata.Controls capability is active home for controls rich text charts graph and DataGrid [1 ms]
+  Passed V2 safe operations and diagnostics.Clean is target-owned and source-preserving [1 ms]
+  Passed Template profile metadata.V3 capability dependencies resolve prerequisites without cycles [4 ms]
+  Passed Process reliability command contract.build workflow carries process health bootstrap verdict and focused gate data through MVU boundary [3 ms]
+  Passed Process reliability command contract.process health snapshot contract covers runner signals thresholds startup and elapsed timing [3 ms]
+  Passed Process reliability command contract.interpreter diagnostics classify bootstrap startup process and warning failures as environment evidence [3 ms]
+  Passed Process reliability command contract.verification verdict reports expose environment product degraded and success categories [4 ms]
+  Passed Process reliability command contract.broad aggregate targets emit preflight and bootstrap effects before broad work [4 ms]
+  Passed Process reliability command contract.threshold overrides require value source and reason diagnostics [4 ms]
+  Passed Process reliability command contract.focused gates are direct entry points and avoid broad aggregate dependencies [9 ms]
+  Passed Process reliability command contract.focused gate diagnostics name stale build and restore remediation
+  Passed V2 command contract.V2 workflow preserves MVU effect boundary and emitted effect assertions
+  Passed V2 command contract.build workflow exposes V2 target names and feature paths [1 ms]
+  Passed Dependency governance.repo-owned external PackageReference entries are versionless [55 ms]
+  Passed V2 command contract.Verify and Ci compose V1 plus V2 gates [1 ms]
+  Passed Process reliability command contract.scanner fixtures can create XML metadata generated product guidance stale and readiness inputs [10 ms]
+  Passed Docs and generated guidance.build testing and evidence docs cover canonical targets and artifact paths
+  Passed Docs and generated guidance.README and workflow delegate to canonical command surface
+  Passed Docs and generated guidance.generated task guidance names canonical targets and preserves evidence graph requirements
+  Passed Docs and generated guidance.task-skill review rationale is captured
+  Passed Docs and generated guidance.docs name deferred roadmap categories outside v1 verification
+  Passed Docs and generated guidance.Controls compatibility guidance documents replacement path and non-promises
+  Passed Docs and generated guidance.Controls boundary readiness evidence covers governance package smoke dependency compatibility and lower-level paths
+  Passed Governance artifact paths.surface baselines live at stable root readiness path
+  Passed Governance artifact paths.consumer package smoke is explicitly deferred from v1 targets
+  Passed Runtime organization guardrails.accepted internal helper files have paired signatures and compile before Library.fs
+  Passed Governance artifact paths.build graph documents and requires every v1 plus v2 artifact class [5 ms]
+  Passed Canonical command contract.canonical build script is organized by named concern sections
+  Passed Canonical command contract.build workflow exposes required MVU-style effect algebra
+  Passed Runtime organization guardrails.runtime responsibility map records helper split and named-section fallback
+  Passed Runtime organization guardrails.runtime implementation files do not use top-level visibility modifiers in fs files [5 ms]
+  Passed Canonical command contract.required targets are declared exactly once through the target graph [1 ms]
+  Passed Canonical command contract.repo-local FAKE manifest and wrappers are available
+  Passed Canonical command contract.V3 command workflow exposes capability product and skill validation effects
+  Passed Canonical command contract.V3 targets are wired into Verify and Ci delegates to Verify [8 ms]
+  Passed Canonical command contract.Controls boundary refactor command surface is wired into governed targets [14 ms]
+  Passed Process reliability command contract.workflow self-check exercises process reliability transition and effect assertions [1 s]
+  Passed V2 command contract.workflow self-check exercises V2 transition assertions [1 s]
+  Passed Canonical command contract.workflow self-check exercises pure transition and emitted effect assertions [1 s]
+  Passed V2 safe operations and diagnostics.dependency report negative fixture names remediation [2 s]
+  Passed Template drift governance.template drift fixture fails when template-owned path lacks required alignment [3 s]
+  Passed Template drift governance.template drift fixture fails invalid deferrals with schema fields named [3 s]
+  Passed V2 safe operations and diagnostics.template drift negative fixture rejects invalid deferrals [3 s]
+
+Test Run Successful.
+Total tests: 93
+     Passed: 93
+ Total time: 4.1777 Seconds

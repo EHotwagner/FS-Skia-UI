@@ -24,9 +24,40 @@ remains under the active feature readiness directory.
 | Governance scanner summaries | Active feature `readiness/governance-scanners.md` |
 | Stale boundary scan | Active feature `readiness/stale-boundary-scan.md` |
 | Generated product validation summary | Active feature `readiness/generated-product-validation.md` |
+| Generated consumer validation details | Active feature `readiness/generated-consumer-validation/**` |
 | Task graph output | Active feature `readiness/task-graph.json` and `.md` |
 | Evidence audit output | Active feature `readiness/logs/evidence-audit.txt` and `diff-scan-hits.json` |
 | Local packages | `~/.local/share/nuget-local/*.nupkg` |
+
+Feature `013-tetris-demo-integration` additionally requires these active
+feature readiness files before final review:
+
+- `readiness/normalized-viewer-input.md`
+- `readiness/bounded-viewer-smoke.md`
+- `readiness/diagnostics.md`
+- `readiness/headless-scene-evidence.md`
+- `readiness/generated-template-input-flows.md`
+- `readiness/local-consumer-packages.md`
+- `readiness/generated-consumer-validation.md`
+- `readiness/evidence-graph.md`
+- `readiness/evidence-audit.md`
+
+Viewer startup evidence must come from a bounded real viewer run or an explicit
+unsupported-host diagnostic. Scene-level visual evidence is deterministic and
+non-window, but it remains a separate evidence class.
+
+Generated graphical consumer validation starts from `PackLocal` output, restores
+the generated product from the local feed, runs generated semantic tests, then
+runs bounded smoke and deterministic scene evidence. A desktop
+`UnsupportedHost` result is acceptable only when the bounded-smoke artifact
+records the unsupported renderer or window capability and the scene-evidence
+artifact remains present separately.
+
+Viewer diagnostics evidence should record both startup-focused and
+frame-focused paths. Startup-focused runs keep frame-loop diagnostics disabled
+or sampled to zero; frame-focused runs must enable the frame category
+explicitly and cap repeated frame messages. In-process diagnostic sink evidence
+is preferred over process stderr scraping.
 
 Historical feature readiness folders remain repository evidence. They are not
 the source of truth for current package baselines and should not be patched to

@@ -1,0 +1,7 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+/home/developer/projects/FS-Skia-UI/src/Scene/Scene.fs(1,22): error FS0193: Module 'FS.Skia.UI.Scene' requires a type 'SceneEvidenceRequest' [/home/developer/projects/FS-Skia-UI/src/Scene/Scene.fsproj]
+/home/developer/projects/FS-Skia-UI/src/Scene/Scene.fs(1,22): error FS0193: Module 'FS.Skia.UI.Scene' requires a type 'SceneEvidenceFormat' [/home/developer/projects/FS-Skia-UI/src/Scene/Scene.fsproj]
+/home/developer/projects/FS-Skia-UI/src/Scene/Scene.fs(1,22): error FS0193: Module 'FS.Skia.UI.Scene' requires a type 'SceneEvidenceFailureClassification' [/home/developer/projects/FS-Skia-UI/src/Scene/Scene.fsproj]
+/home/developer/projects/FS-Skia-UI/src/Scene/Scene.fs(1,22): error FS0193: Module 'FS.Skia.UI.Scene' requires a type 'SceneEvidenceFailure' [/home/developer/projects/FS-Skia-UI/src/Scene/Scene.fsproj]
+/home/developer/projects/FS-Skia-UI/src/Scene/Scene.fs(1,22): error FS0193: Module 'FS.Skia.UI.Scene' requires a type 'SceneEvidence' [/home/developer/projects/FS-Skia-UI/src/Scene/Scene.fsproj]

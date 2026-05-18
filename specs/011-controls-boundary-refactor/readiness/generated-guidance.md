@@ -52,4 +52,4 @@ Deferred roadmap boundaries checked: visual evidence, release validation, extern
 The T078 guidance gate validates active and preset-owned spec/plan governance
 prompts plus generated Controls guidance for Skia-rendered Controls, rich text,
 chart controls, graph controls, DataGrid, Controls.Elmish adapter wiring, and
-legacy Charts replacement notes.
+removed Charts / legacy Charts replacement notes.

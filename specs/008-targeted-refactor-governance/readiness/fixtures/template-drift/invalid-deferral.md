@@ -17,7 +17,7 @@ FAIL
 
 - Changed alignment classes: `template-drift-docs`
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/011-controls-boundary-refactor`
+- Active feature evidence: `specs/013-tetris-demo-integration`
 
 ## Controls Boundary Guidance
 

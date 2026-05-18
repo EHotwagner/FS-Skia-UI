@@ -279,3 +279,37 @@ module Scene =
     val describe: scene: Scene -> SceneElementKind list
     val diagnostics: scene: Scene -> RenderDiagnostic list
     val renderReadbackEvidence: size: Size -> scene: Scene -> RenderReadbackEvidence
+
+type SceneEvidenceFormat =
+    | Hash
+    | Png
+    | Metadata
+
+type SceneEvidenceFailureClassification =
+    | UnsupportedEnvironment
+    | ProductDefect
+
+type SceneEvidenceFailure =
+    { BlockedStage: string
+      Classification: SceneEvidenceFailureClassification
+      DiagnosticCategory: string
+      Message: string }
+
+type SceneEvidenceRequest =
+    { Scene: Scene
+      OutputSize: Size
+      Format: SceneEvidenceFormat
+      RendererMode: string
+      EvidencePath: string option }
+
+type SceneEvidence =
+    { Format: SceneEvidenceFormat
+      OutputSize: Size
+      RendererMode: string
+      EvidencePath: string option
+      Value: string }
+
+module SceneEvidence =
+    val render: request: SceneEvidenceRequest -> Result<SceneEvidence, SceneEvidenceFailure>
+    val renderHash: size: Size -> scene: Scene -> Result<SceneEvidence, SceneEvidenceFailure>
+    val renderPng: size: Size -> scene: Scene -> Result<byte[], SceneEvidenceFailure>

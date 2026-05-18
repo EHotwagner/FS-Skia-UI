@@ -7,6 +7,7 @@ open System.Diagnostics
 open System.IO
 open System.IO.Compression
 open System.Runtime.InteropServices
+open System.Text.RegularExpressions
 
 // BUILD SECTION: path model
 
@@ -185,6 +186,7 @@ type BuildEffect =
     | SkillCatalogCheck
     | GenerateV3Products
     | ScanV3GeneratedProducts
+    | ValidateGeneratedConsumer
     | PackageSurfaceReport
     | DependencyOwnershipReport
     | ValidateTemplatePackage of outputPath: string
@@ -354,6 +356,84 @@ let packProjects =
       "src/Lib/Lib.fsproj", "FS.Skia.UI"
       "src/Layout/Layout.fsproj", "FS.Skia.UI.Layout"
       "src/Controls/Controls.fsproj", "FS.Skia.UI.Controls" ]
+
+let projectVersion repositoryRoot project =
+    let content = File.ReadAllText(path [ repositoryRoot; project ])
+    let versionMatch = Regex.Match(content, "<Version>([^<]+)</Version>", RegexOptions.CultureInvariant)
+
+    if versionMatch.Success then
+        versionMatch.Groups.[1].Value
+    else
+        let props = File.ReadAllText(path [ repositoryRoot; "Directory.Build.props" ])
+        let propsMatch = Regex.Match(props, "<Version>([^<]+)</Version>", RegexOptions.CultureInvariant)
+
+        if propsMatch.Success then
+            propsMatch.Groups.[1].Value
+        else
+            "unknown"
+
+let localPackageReport repositoryRoot localPackageDir =
+    let packages =
+        packProjects
+        |> List.map (fun (project, packageId) ->
+            let version = projectVersion repositoryRoot project
+            project, packageId, version)
+
+    let packageRows =
+        packages
+        |> List.map (fun (project, packageId, version) -> $"| `{packageId}` | `{version}` | `{project}` |")
+
+    let packageReferences =
+        packages
+        |> List.map (fun (_, packageId, version) -> $"""    <PackageReference Include="{packageId}" Version="{version}" />""")
+
+    let expectedArtifacts =
+        packages
+        |> List.map (fun (_, packageId, version) ->
+            let fileName = packageId + "." + version + ".nupkg"
+            let packagePath = Path.Combine(localPackageDir, fileName)
+            $"- `{packagePath}`")
+
+    [ "# Local Packages"
+      ""
+      $"Output directory: `{localPackageDir}`"
+      ""
+      "## Package Inventory"
+      ""
+      "| Package | Version | Project |"
+      "|---------|---------|---------|"
+      yield! packageRows
+      ""
+      "## Consumer Package Configuration"
+      ""
+      "```xml"
+      "  <ItemGroup>"
+      yield! packageReferences
+      "  </ItemGroup>"
+      "```"
+      ""
+      "## NuGet.config Snippet"
+      ""
+      "```xml"
+      "  <packageSources>"
+      "    <clear />"
+      $"""    <add key="local" value="{localPackageDir}" />"""
+      "    <add key=\"nuget\" value=\"https://api.nuget.org/v3/index.json\" />"
+      "  </packageSources>"
+      "```"
+      ""
+      "## Restore Command"
+      ""
+      $"`dotnet restore --source {localPackageDir} --source https://api.nuget.org/v3/index.json`"
+      ""
+      "## Expected Local Artifacts"
+      ""
+      yield! expectedArtifacts
+      ""
+      "## Drift Diagnostics"
+      ""
+      "Missing or stale `.nupkg` files are setup drift before generated consumer build, input, or rendering failures. Re-run `./fake.sh build -t PackLocal` and verify the package identity, expected version, actual version, and feed path above." ]
+    |> String.concat Environment.NewLine
 
 let fsiScripts =
     [ "prelude", "scripts/prelude.fsx"
@@ -642,7 +722,7 @@ let update msg model =
         (packProjects
          |> List.map (fun (project, packageId) ->
              processEffect $"dotnet pack {packageId}" "dotnet" $"pack {project} -c Release -m:1 -o {quote model.LocalPackageDir}" model.RepositoryRoot (path [ model.LogDir; "pack-local.txt" ])))
-        @ [ WriteStructuredReport("local package report", path [ model.PackageEvidenceDir; "local-packages.md" ], $"# Local Packages\n\nOutput directory: `{model.LocalPackageDir}`\n") ]
+        @ [ WriteStructuredReport("local package report", path [ model.PackageEvidenceDir; "local-packages.md" ], localPackageReport model.RepositoryRoot model.LocalPackageDir) ]
     | StartTarget "RefreshSurfaceBaselines" ->
         model,
         [ processEffect "refresh surface baselines" "dotnet" "fsi scripts/refresh-surface-baselines.fsx" model.RepositoryRoot (path [ model.LogDir; "surface-refresh.txt" ])
@@ -726,13 +806,15 @@ let update msg model =
         [ focusedGateAssumptionCheck model "GeneratedProductCheck"
           GenerateV3Products
           ScanV3GeneratedProducts
+          ValidateGeneratedConsumer
           RequireFiles(
               "generated product file-list reports",
               [ path [ model.GeneratedFileListsDir; "app-source.txt" ]
                 path [ model.GeneratedFileListsDir; "app-package.txt" ]
                 path [ model.GeneratedFileListsDir; "headless-scene-source.txt" ]
                 path [ model.GeneratedFileListsDir; "governed-source.txt" ]
-                path [ model.GeneratedFileListsDir; "sample-pack-source.txt" ] ]
+                path [ model.GeneratedFileListsDir; "sample-pack-source.txt" ]
+                model.GeneratedProductValidationPath ]
             )
           focusedGateSummary model "GeneratedProductCheck" ]
     | StartTarget "ControlsCatalogCheck" ->
@@ -1009,8 +1091,14 @@ let runDotnetAction label action solutionFile projects extraArguments outputPath
     else
         existing
         |> List.iter (fun project ->
+            let projectExtraArguments =
+                if action = "test" && project.Replace('\\', '/').EndsWith("tests/Smoke.Tests/Smoke.Tests.fsproj", StringComparison.Ordinal) then
+                    extraArguments.Replace(" -- --sequenced", "")
+                else
+                    extraArguments
+
             let arguments =
-                [ action; quote project; extraArguments ]
+                [ action; quote project; projectExtraArguments ]
                 |> List.filter (fun part -> part <> "")
                 |> String.concat " "
 
@@ -2491,6 +2579,154 @@ let runScanV3GeneratedProducts model =
 
     File.WriteAllText(path [ model.GeneratedFileListsDir; "summary.md" ], summary + Environment.NewLine)
 
+let writeLocalNuGetConfig model root =
+    let content =
+        $"""<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <clear />
+    <add key="local" value="{model.LocalPackageDir}" />
+    <add key="nuget" value="https://api.nuget.org/v3/index.json" />
+  </packageSources>
+</configuration>
+"""
+
+    File.WriteAllText(path [ root; "NuGet.config" ], content)
+
+let ensureGeneratedPackageVersions model root =
+    let propsPath = path [ root; "Directory.Packages.props" ]
+    let mutable content = File.ReadAllText(propsPath)
+
+    for project, packageId in packProjects do
+        let version = projectVersion model.RepositoryRoot project
+        let pattern = $"""(<PackageVersion Include="{Regex.Escape(packageId)}" Version=")[^"]+(" />)"""
+        content <- Regex.Replace(content, pattern, MatchEvaluator(fun m -> m.Groups.[1].Value + version + m.Groups.[2].Value))
+
+    File.WriteAllText(propsPath, content)
+
+let runGeneratedConsumerValidation model =
+    ensureParent model.GeneratedProductValidationPath
+    let stopwatch = Stopwatch.StartNew()
+    let row =
+        v3GeneratedRows model
+        |> List.find (fun row -> row.Profile = "app" && row.Artifact = "source")
+
+    writeLocalNuGetConfig model row.Root
+    ensureGeneratedPackageVersions model row.Root
+
+    let validationDir = path [ model.ReadinessDir; "generated-consumer-validation" ]
+    let generatedPackageCache = path [ validationDir; "nuget-packages" ]
+    Directory.CreateDirectory validationDir |> ignore
+    cleanDirectoryContents generatedPackageCache
+    let restoreLog = path [ validationDir; "restore.log" ]
+    let semanticLog = path [ validationDir; "semantic-tests.log" ]
+    let boundedSmokePath = path [ validationDir; "bounded-smoke.txt" ]
+    let boundedSmokeLog = path [ validationDir; "bounded-smoke.log" ]
+    let sceneEvidencePath = path [ validationDir; "headless-scene-evidence.txt" ]
+    let sceneEvidenceLog = path [ validationDir; "scene-evidence.log" ]
+
+    let mutable category = "Completed"
+    let diagnostics = ResizeArray<string>()
+
+    let validationEnvironment =
+        Map.ofList [ "NUGET_PACKAGES", generatedPackageCache ]
+
+    let runStep step categoryOnFailure fileName arguments workingDirectory outputPath =
+        try
+            runProcess step fileName arguments workingDirectory outputPath validationEnvironment
+            diagnostics.Add($"{step}: ok")
+            true
+        with ex ->
+            category <- categoryOnFailure
+            diagnostics.Add($"{step}: failed: {ex.Message}")
+            false
+
+    let restored =
+        runStep
+            "generated consumer restore from local packages"
+            "RestoreFailure"
+            "dotnet"
+            "restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache"
+            row.Root
+            restoreLog
+
+    let semanticPassed =
+        restored
+        && runStep
+            "generated consumer semantic tests"
+            "SemanticTestFailure"
+            "dotnet"
+            "test tests/Product.Tests/Product.Tests.fsproj -m:1 --no-restore"
+            row.Root
+            semanticLog
+
+    let smokePassed =
+        semanticPassed
+        && runStep
+            "generated consumer bounded smoke"
+            "ViewerStartupFailure"
+            "dotnet"
+            $"run --project src/Product/Product.fsproj --no-restore -- --bounded-smoke {quote boundedSmokePath}"
+            row.Root
+            boundedSmokeLog
+
+    if smokePassed && File.Exists boundedSmokePath then
+        let boundedSmoke = File.ReadAllText boundedSmokePath
+        if boundedSmoke.IndexOf("status=unsupported", StringComparison.Ordinal) >= 0 then
+            category <- "UnsupportedHost"
+            diagnostics.Add("bounded viewer smoke unsupported")
+        elif boundedSmoke.IndexOf("status=ok", StringComparison.Ordinal) >= 0 then
+            diagnostics.Add("bounded viewer smoke reached requested evidence")
+        else
+            category <- "ViewerStartupFailure"
+            diagnostics.Add("bounded viewer smoke did not report ok or unsupported")
+
+    let scenePassed =
+        semanticPassed
+        && runStep
+            "generated consumer scene evidence"
+            "SceneEvidenceFailure"
+            "dotnet"
+            $"run --project src/Product/Product.fsproj --no-restore -- --scene-evidence {quote sceneEvidencePath}"
+            row.Root
+            sceneEvidenceLog
+
+    if scenePassed && File.Exists sceneEvidencePath then
+        diagnostics.Add("headless scene evidence captured")
+    elif semanticPassed then
+        category <- "SceneEvidenceFailure"
+        diagnostics.Add("headless scene evidence output missing")
+
+    stopwatch.Stop()
+
+    let report =
+        [ "# Generated Product Validation"
+          ""
+          $"Category: `{category}`"
+          $"Elapsed: `{stopwatch.Elapsed}`"
+          $"Command context: `./fake.sh build -t PackLocal && ./fake.sh build -t GeneratedProductCheck`"
+          $"Generated consumer root: `{row.Root}`"
+          $"Local package feed: `{model.LocalPackageDir}`"
+          ""
+          "## Evidence"
+          ""
+          $"- Restore log: `{restoreLog}`"
+          $"- Semantic test log: `{semanticLog}`"
+          $"- Bounded smoke log: `{boundedSmokeLog}`"
+          $"- Bounded smoke evidence: `{boundedSmokePath}`"
+          $"- Scene evidence log: `{sceneEvidenceLog}`"
+          $"- Scene evidence output: `{sceneEvidencePath}`"
+          ""
+          "## Diagnostics"
+          ""
+          yield! diagnostics |> Seq.map (fun item -> $"- {item}") ]
+        |> String.concat Environment.NewLine
+
+    File.WriteAllText(model.GeneratedProductValidationPath, report + Environment.NewLine)
+
+    if category = "RestoreFailure" || category = "SemanticTestFailure" || category = "ViewerStartupFailure" || category = "SceneEvidenceFailure" then
+        failwithf "Generated consumer validation failed with category %s; see %s" category model.GeneratedProductValidationPath
+
 let runDependencyOwnershipReport model =
     let sceneProject = File.ReadAllText(path [ model.RepositoryRoot; "src"; "Scene"; "Scene.fsproj" ])
     let controlsProject = File.ReadAllText(path [ model.RepositoryRoot; "src"; "Controls"; "Controls.fsproj" ])
@@ -2908,6 +3144,7 @@ let interpret root effect =
     | SkillCatalogCheck -> runSkillCatalogCheck model
     | GenerateV3Products -> runGenerateV3Products model
     | ScanV3GeneratedProducts -> runScanV3GeneratedProducts model
+    | ValidateGeneratedConsumer -> runGeneratedConsumerValidation model
     | PackageSurfaceReport -> runPackageSurfaceReport model
     | DependencyOwnershipReport -> runDependencyOwnershipReport model
     | ValidateTemplatePackage outputPath -> validateTemplatePackage model outputPath

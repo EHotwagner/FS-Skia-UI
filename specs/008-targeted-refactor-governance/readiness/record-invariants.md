@@ -15,6 +15,7 @@
 | FS.Skia.UI | PathMeasure | Length, IsClosed | Length should be non-negative. | Produced by helpers. | Keep. | Public construction is harmless; normal use receives values from `Path.measure`. | None |
 | FS.Skia.UI | FontSpec | Family, Size, Weight | Size should be positive; weight should be font-valid. | Free construction today. | Recommend validation-first helpers later. | Invalid fonts are recoverable diagnostics. | API-REC-001 |
 | FS.Skia.UI | TextRun | Text, Position, Font, Paint | Text should be non-null and font/paint constraints apply. | Free construction today. | Recommend validation-first helpers later. | Additive text helpers could reduce invalid literals. | API-REC-001 |
+| FS.Skia.UI | TextMetrics | Width, Height, Baseline | Width and height should be non-negative and baseline should be meaningful for the measured font. | Produced by text measurement helpers. | Keep. | Normal construction is helper-owned; direct construction remains useful for tests and integrations. | None |
 | FS.Skia.UI | Vertex | Position, Color | Free construction intended. | Free construction intended. | Keep. | Vertex validity depends on the containing primitive. | None |
 | FS.Skia.UI | RenderReadbackEvidence | Size, CapabilityCount, Capabilities, DeterministicHash | Evidence should be produced by readback helper. | Produced by helper. | Keep. | Direct construction is test-oriented and harmless. | None |
 | FS.Skia.UI | DiagnosticOptions | Verbose | Free construction intended. | Free construction intended. | Keep. | Boolean option has no invariant. | None |
