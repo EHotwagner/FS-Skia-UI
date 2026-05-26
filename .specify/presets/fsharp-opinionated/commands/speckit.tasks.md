@@ -34,7 +34,10 @@ derived from the spec and plan.
   `src/*/skill/SKILL.md`, template capability skill paths, and active
   generated product skill destinations when applicable. Choose the minimal
   ordered set that would materially help implementation. Capability skills
-  are preferred over generic guidance when both match.
+  are preferred over generic guidance when both match. Treat matching as a
+  confidence review, not regex certainty: note matched signals, confidence,
+  ambiguity, and reviewer disposition for medium, low, indirect, false-positive,
+  or valid-empty cases.
 - **Visible skill mirror.** Every task line in `tasks.md` MUST mirror the
   structured `skillist` value as `[skillist: ...]`. Use `[skillist: []]` for
   an empty list. Non-empty mirrors preserve the exact structured order, for
@@ -61,6 +64,10 @@ derived from the spec and plan.
 - **Synthetic-evidence inventory.** Include the empty Synthetic-Evidence
   Inventory table from the template. It will grow as `/speckit.implement`
   adds `[S]` tasks.
+- **Risk-level evidence.** Generated tasks should name small, medium, and broad
+  governance risk levels, focused validation for the chosen level, when broad
+  validation is required, and how non-authoritative aggregate results are
+  recorded.
 
 ## Validation
 
@@ -79,8 +86,9 @@ This validates:
 - Every task has structured `skillist` metadata and a matching `tasks.md`
   mirror.
 - Declared skill ids resolve to exactly one readable skill file.
-- Obvious capability skill omissions, non-minimal invalid skill sets, and
-  invalid multi-skill prerequisite ordering are reported before implementation.
+- High-confidence capability skill omissions, confidence, matched signals,
+  reviewer disposition, non-minimal invalid skill sets, and invalid multi-skill
+  prerequisite ordering are reported before implementation.
 
 Report any failures to the user immediately; refuse to declare the tasks
 phase complete until the DAG is clean.

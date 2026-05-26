@@ -17,7 +17,7 @@ FAIL
 
 - Changed alignment classes: ``
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/013-tetris-demo-integration`
+- Active feature evidence: `specs/015-improve-governance-weaknesses`
 
 ## Controls Boundary Guidance
 

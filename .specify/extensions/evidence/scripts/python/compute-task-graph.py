@@ -41,6 +41,7 @@ import sys
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from pathlib import Path
+from datetime import datetime
 from typing import Dict, List, Optional, Set, Tuple
 
 # ----------------------------------------------------------------------------
@@ -89,6 +90,7 @@ class Task:
     skillist: List[str] = field(default_factory=list)
     explicit_deps: List[str] = field(default_factory=list)
     phase_deps: List[str] = field(default_factory=list)
+    skill_match_assessments: List[dict] = field(default_factory=list)
 
     @property
     def all_deps(self) -> List[str]:
@@ -455,8 +457,33 @@ def validate_and_merge(
         if not re.search(r"^Complete readiness notes", task.title, re.I):
             expected = [skill_id for skill_id, pattern in CAPABILITY_EXPECTATIONS if pattern.search(task.title)]
         for skill_id in expected:
+            assessment = {
+                "task_id": tid,
+                "declared_skillist": meta.skillist or [],
+                "candidate_skill_id": skill_id,
+                "matched_signals": ["task-text"],
+                "confidence": "high",
+                "ambiguity": None,
+                "reviewer_disposition": "accepted" if skill_id in (meta.skillist or []) else None,
+                "diagnostic": f"{tid}: task text matches {skill_id}",
+            }
+            task.skill_match_assessments.append(assessment)
             if skill_id not in (meta.skillist or []):
-                errors.append(f"{tid}: skillist omits obviously applicable skill {skill_id}")
+                errors.append(f"{tid}: high-confidence skill match omitted declared skill {skill_id}; matched_signals=task-text")
+
+        if not expected:
+            task.skill_match_assessments.append(
+                {
+                    "task_id": tid,
+                    "declared_skillist": meta.skillist or [],
+                    "candidate_skill_id": None,
+                    "matched_signals": [],
+                    "confidence": "none",
+                    "ambiguity": None,
+                    "reviewer_disposition": "accepted-empty" if not (meta.skillist or []) else "declared",
+                    "diagnostic": f"{tid}: no high-confidence capability signal detected",
+                }
+            )
 
         listed = meta.skillist or []
         positions = {skill_id: index for index, skill_id in enumerate(listed)}
@@ -470,6 +497,78 @@ def validate_and_merge(
     for tid, meta in metadata.items():
         if tid in tasks:
             tasks[tid].explicit_deps = [d for d in (meta.deps or []) if d in tasks]
+
+    return errors
+
+
+def parse_skill_loading_evidence(path: Path) -> List[dict]:
+    if not path.exists():
+        return []
+    rows: List[dict] = []
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return []
+    for line in text.splitlines():
+        trimmed = line.strip()
+        if not trimmed.startswith("|") or "---" in trimmed or "Task | Skill id" in trimmed:
+            continue
+        cells = [cell.strip().strip("`") for cell in trimmed.strip("|").split("|")]
+        if len(cells) < 8:
+            continue
+        rows.append(
+            {
+                "task_id": cells[0],
+                "declared_skill_id": cells[1],
+                "resolved_skill_path": cells[2],
+                "load_result": cells[3],
+                "loaded_at": cells[4],
+                "work_started_at": cells[5],
+                "evidence_path": cells[6],
+                "exception": cells[7],
+            }
+        )
+    return rows
+
+
+def parse_utc(value: str) -> Optional[datetime]:
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def validate_skill_loading_evidence(tasks: Dict[str, Task], repo_root: Path, feature_dir: Path) -> List[str]:
+    errors: List[str] = []
+    evidence_path = feature_dir / "readiness" / "skill-loading-evidence.md"
+    rows = parse_skill_loading_evidence(evidence_path)
+    row_by_key = {(row["task_id"], row["declared_skill_id"]): row for row in rows}
+    skills, skill_warnings = discover_skills(repo_root)
+    errors.extend(skill_warnings)
+
+    for task in tasks.values():
+        if task.declared not in ("done", "synthetic"):
+            continue
+        for skill_id in task.skillist:
+            row = row_by_key.get((task.id, skill_id))
+            if row is None:
+                errors.append(f"{task.id}: declared skill {skill_id} has no pre-work load evidence")
+                continue
+            if row["load_result"] != "loaded" and not row["exception"]:
+                errors.append(f"{task.id}: declared skill {skill_id} has incomplete reviewer exception")
+            loaded_at = parse_utc(row["loaded_at"])
+            work_started_at = parse_utc(row["work_started_at"])
+            if loaded_at is None or work_started_at is None:
+                errors.append(f"{task.id}: declared skill {skill_id} has invalid load/work timestamp")
+            elif loaded_at >= work_started_at:
+                errors.append(f"{task.id}: skill {skill_id} loaded after work started")
+            resolved = Path(row["resolved_skill_path"])
+            resolved_path = resolved if resolved.is_absolute() else repo_root / resolved
+            matches = skills.get(skill_id, [])
+            if not resolved_path.exists() or not resolved_path.is_file():
+                errors.append(f"{task.id}: declared skill {skill_id} evidence path is unreadable: {row['resolved_skill_path']}")
+            elif len(matches) != 1 or matches[0].resolve() != resolved_path.resolve():
+                errors.append(f"{task.id}: declared skill {skill_id} evidence path does not match resolved skill path")
 
     return errors
 
@@ -613,6 +712,7 @@ def render_json(
                 "title": t.title,
                 "skillist": t.skillist,
                 "skillist_mirror": t.skillist_mirror,
+                "skill_match_assessments": t.skill_match_assessments,
                 "explicit_deps": t.explicit_deps,
                 "phase_deps": t.phase_deps,
                 "root_cause": root_cause.get(t.id, []),
@@ -695,6 +795,19 @@ def render_markdown(
         for w in warnings:
             out.append(f"- {w}")
         out.append("")
+
+    out.append("## Skill Match Assessments")
+    out.append("")
+    out.append("| Task | Candidate | Confidence | Signals | Reviewer disposition | Diagnostic |")
+    out.append("|------|-----------|------------|---------|----------------------|------------|")
+    for t in sorted(tasks.values(), key=lambda x: x.id):
+        for assessment in t.skill_match_assessments:
+            candidate = assessment.get("candidate_skill_id") or "(none)"
+            signals = ", ".join(assessment.get("matched_signals") or [])
+            disposition = assessment.get("reviewer_disposition") or "(required)"
+            diagnostic = assessment.get("diagnostic") or ""
+            out.append(f"| {t.id} | {candidate} | {assessment.get('confidence')} | {signals} | {disposition} | {diagnostic} |")
+    out.append("")
 
     # Counts by effective status
     counts: Dict[str, int] = defaultdict(int)
@@ -786,6 +899,7 @@ def main(argv: List[str]) -> int:
                 repo_root = parent
                 break
         errors.extend(validate_and_merge(tasks, deps, repo_root))
+        errors.extend(validate_skill_loading_evidence(tasks, repo_root, feature_dir))
 
     cycles: List[List[str]] = []
     root_cause: Dict[str, List[str]] = {}

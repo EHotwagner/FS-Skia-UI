@@ -61,6 +61,11 @@ Documentation and tests must avoid implying broader platform support until a
 future feature adds and verifies it. The Vulkan/Silk.NET/SkiaSharp host code is
 implemented in [src/Lib/Library.fs](../src/Lib/Library.fs).
 
+**Roadmap boundary:** Current support remains .NET desktop with the Vulkan
+renderer path and SkiaSharp preview dependency risk. macOS, mobile, browser,
+OpenGL, CPU/software rendering, and fallback renderer support are separate
+future platform-expansion features, not current support.
+
 ## DD-004: Pure Widget Packages Over Host-Owned Widgets
 
 **Decision:** Charts, DataGrid, layout, and graph features are pure scene

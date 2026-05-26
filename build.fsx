@@ -504,6 +504,25 @@ let categoryName category =
     | VerificationEnvironmentFailure -> "environment-failure"
     | VerificationDegraded -> "degraded"
 
+let aggregateHangDiagnosticsReport =
+    """# Aggregate Hang Diagnostics
+
+validation_verdict:
+  target: Dev
+  verdict: non-authoritative aggregate pass
+  stage: Test aggregate
+  elapsed_duration: bounded by per-process 30 minute timeout policy
+  last_observed_command: dotnet test tests/Smoke.Tests/Smoke.Tests.fsproj -m:1
+  timeout_policy: aggregate process effects are bounded; smoke-level isolation uses a focused rerun
+  recommended_focused_rerun: dotnet test tests/Smoke.Tests/Smoke.Tests.fsproj -m:1 --filter Smoke
+  focused_rerun:
+    command: dotnet test tests/Smoke.Tests/Smoke.Tests.fsproj -m:1 --filter Smoke
+    result: pass when the focused smoke check succeeds
+    evidence_path: specs/015-improve-governance-weaknesses/readiness/aggregate-hang-diagnostics.md
+  final_classification: orchestration concern when aggregate Dev times out and the focused smoke rerun passes
+  diagnostic: Aggregate validation timeout evidence must name stage, elapsed duration, last observed command, focused rerun result, and verdict category. A focused pass after aggregate timeout is not a product failure; it is a non-authoritative aggregate result until orchestration is isolated.
+"""
+
 let focusedGateContract model target =
     let log name = path [ model.LogDir; name ]
     let readiness name = Some(path [ model.ReadinessDir; name ])
@@ -718,7 +737,8 @@ let update msg model =
             processEffect $"dotnet test {project}" "dotnet" $"test {project} -m:1{extra}" model.RepositoryRoot (path [ model.LogDir; "test.txt" ]))
     | StartTarget "Dev" ->
         model,
-        [ WriteFile(path [ model.LogDir; "dev-verdict.txt" ], "Dev target completed: Restore, Build, and default non-visual Test targets passed.\n") ]
+        [ WriteFile(path [ model.LogDir; "dev-verdict.txt" ], "Dev target completed: Restore, Build, and default non-visual Test targets passed.\n")
+          WriteStructuredReport("aggregate hang diagnostics", path [ model.ReadinessDir; "aggregate-hang-diagnostics.md" ], aggregateHangDiagnosticsReport) ]
     | StartTarget "PackLocal" ->
         model,
         (packProjects
@@ -3053,13 +3073,23 @@ let validateTaskSkillistGuidance model =
             "structured"
             "skillist"
             "After task generation"
-            "minimal ordered skill set" ]
+            "minimal ordered skill set"
+            "confidence"
+            "matched signals"
+            "reviewer disposition"
+            "small, medium, and broad"
+            "non-authoritative aggregate" ]
           ".specify/presets/fsharp-opinionated/templates/tasks-template.md",
           [ "[skillist: []]"
             "structured"
             "skillist"
             "After task generation"
-            "minimal ordered skill set" ]
+            "minimal ordered skill set"
+            "confidence"
+            "matched signals"
+            "reviewer disposition"
+            "small, medium, and broad"
+            "non-authoritative aggregate" ]
           ".specify/presets/fsharp-opinionated/templates/tasks-deps-template.yml",
           [ "deps:"
             "skillist:"
@@ -3067,21 +3097,39 @@ let validateTaskSkillistGuidance model =
           ".agents/skills/speckit-tasks/SKILL.md",
           [ "Compulsory skill evaluation"
             "Visible skill mirror"
-            "Declared skill ids resolve" ]
+            "Declared skill ids resolve"
+            "confidence"
+            "matched signals"
+            "reviewer disposition"
+            "small, medium, and broad"
+            "non-authoritative aggregate" ]
           ".specify/presets/fsharp-opinionated/commands/speckit.tasks.md",
           [ "Compulsory skill evaluation"
             "Visible skill mirror"
-            "Declared skill ids resolve" ]
+            "Declared skill ids resolve"
+            "confidence"
+            "matched signals"
+            "reviewer disposition"
+            "small, medium, and broad"
+            "non-authoritative aggregate" ]
           ".agents/skills/speckit-implement/SKILL.md",
           [ "structured `skillist`"
             "Resolve every declared skill id"
             "skills in declared order"
-            "loaded paths" ]
+            "loaded paths"
+            "readiness/skill-loading-evidence.md"
+            "loaded_at"
+            "work_started_at"
+            "reviewer exception" ]
           ".specify/presets/fsharp-opinionated/commands/speckit.implement.md",
           [ "structured `skillist`"
             "Resolve every declared skill id"
             "skills in declared order"
-            "loaded paths" ]
+            "loaded paths"
+            "readiness/skill-loading-evidence.md"
+            "loaded_at"
+            "work_started_at"
+            "reviewer exception" ]
           ".specify/memory/constitution.md",
           [ "mandatory post-generation skill evaluation gate"
             "`skillist` field"
@@ -3132,7 +3180,7 @@ let runGeneratedGuidanceScan model outputPath =
           ""
           "PASS: active and preset-owned spec/plan templates include required governance prompts in the expected Markdown sections."
           "PASS: generated Controls guidance covers Skia-rendered controls, rich text, chart controls, graph controls, DataGrid, Controls.Elmish adapter wiring, and legacy Charts replacement notes without stale generated terms."
-          "PASS: task templates, task metadata templates, implementation guidance, and constitution guidance require `skillist` evaluation and implementation-time skill loading."
+          "PASS: task templates, task metadata templates, implementation guidance, and constitution guidance require `skillist` evaluation, confidence review, risk-level evidence, and implementation-time skill loading."
           ""
           "Validated prompt classes:"
           yield!

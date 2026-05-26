@@ -1,0 +1,129 @@
+schema_version: "1.0"
+
+tasks:
+  T001:
+    deps: []
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: ["speckit-tasks"]
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: ["speckit-evidence-graph", "speckit-implement"]
+  T006:
+    deps: []
+    skillist: ["speckit-evidence-audit", "speckit-implement"]
+  T007:
+    deps: []
+    skillist: ["speckit-tasks", "speckit-implement"]
+  T008:
+    deps: []
+    skillist: ["speckit-implement"]
+  T009:
+    deps: [T005]
+    skillist: ["speckit-evidence-graph"]
+  T010:
+    deps: [T006]
+    skillist: ["speckit-evidence-audit"]
+  T011:
+    deps: []
+    skillist: []
+  T012:
+    deps: []
+    skillist: ["speckit-evidence-audit", "speckit-implement"]
+  T013:
+    deps: []
+    skillist: ["speckit-implement"]
+  T014:
+    deps: [T013]
+    skillist: ["speckit-implement"]
+  T015:
+    deps: [T012, T014]
+    skillist: ["speckit-evidence-audit", "speckit-implement"]
+  T016:
+    deps: [T015]
+    skillist: ["speckit-evidence-audit", "speckit-implement"]
+  T017:
+    deps: []
+    skillist: ["speckit-evidence-graph"]
+  T018:
+    deps: []
+    skillist: ["speckit-evidence-graph"]
+  T019:
+    deps: [T017, T018]
+    skillist: ["speckit-evidence-graph"]
+  T020:
+    deps: [T019]
+    skillist: ["speckit-evidence-graph"]
+  T021:
+    deps: [T019]
+    skillist: ["speckit-tasks"]
+  T022:
+    deps: [T020, T021]
+    skillist: ["speckit-evidence-graph"]
+  T023:
+    deps: []
+    skillist: ["speckit-evidence-audit"]
+  T024:
+    deps: []
+    skillist: ["speckit-tasks"]
+  T025:
+    deps: [T023]
+    skillist: ["speckit-evidence-audit"]
+  T026:
+    deps: [T024, T025]
+    skillist: ["speckit-tasks"]
+  T027:
+    deps: [T025, T026]
+    skillist: ["speckit-evidence-audit"]
+  T028:
+    deps: []
+    skillist: []
+  T029:
+    deps: []
+    skillist: []
+  T030:
+    deps: [T028]
+    skillist: []
+  T031:
+    deps: [T029, T030]
+    skillist: []
+  T032:
+    deps: [T031]
+    skillist: []
+  T033:
+    deps: []
+    skillist: []
+  T034:
+    deps: [T033]
+    skillist: []
+  T035:
+    deps: [T034]
+    skillist: []
+  T036:
+    deps: []
+    skillist: ["speckit-evidence-graph"]
+  T037:
+    deps: [T036]
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T038:
+    deps: []
+    skillist: ["speckit-tasks", "speckit-implement"]
+  T039:
+    deps: [T037, T038]
+    skillist: ["speckit-implement"]
+  T040:
+    deps: [T039]
+    skillist: []
+  T041:
+    deps: [T037, T039, T040]
+    skillist: ["speckit-evidence-audit", "speckit-implement"]
+  T042:
+    deps: [T037, T039, T040, T041]
+    skillist: ["speckit-evidence-audit"]

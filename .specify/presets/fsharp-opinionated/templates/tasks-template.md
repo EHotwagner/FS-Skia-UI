@@ -75,10 +75,16 @@ After task generation, evaluate every task against available local capability
 skills (`.agents/skills/*/SKILL.md`, `src/*/skill/SKILL.md`, and template
 capability skills). Write the minimal ordered skill set to structured
 `skillist` metadata and mirror it in `tasks.md`. Capability skills are
-preferred over generic guidance for matching tasks.
+preferred over generic guidance for matching tasks. Treat skill detection as a
+confidence review rather than regex certainty: record confidence, matched signals,
+ambiguity, and reviewer disposition for medium, low, indirect, false-positive,
+or valid-empty cases.
 
 Keep `tasks.deps.yml`, the `skillist` mirror, and the
 `speckit.evidence.graph` status refresh requirements in generated task lists.
+Generated tasks should also name the small, medium, and broad governance risk
+level, focused validation required for the selected level, when broad validation
+is required, and how non-authoritative aggregate results are recorded.
 
 Template source: `.specify/presets/fsharp-opinionated/templates/tasks-template.md`.
 

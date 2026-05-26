@@ -1,0 +1,1596 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Create readiness scaffolding for skill loading, skill detection calibration, governance risk levels, aggregate hang diagnostics, runtime limitations, evidence graph, and evidence audit",
+      "skillist": [
+        "speckit-evidence-graph",
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph",
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T001",
+          "declared_skillist": [
+            "speckit-evidence-graph",
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T001: task text matches speckit-evidence-graph"
+        },
+        {
+          "task_id": "T001",
+          "declared_skillist": [
+            "speckit-evidence-graph",
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T001: task text matches speckit-evidence-audit"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record Tier 1 governance-contract scope, no public F# API/package impact, no product MVU applicability, and required real evidence paths in `readiness/governance-risk-levels.md`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T002",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T002: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add this feature's task-generation assumptions and initial skillist rationale to the readiness notes",
+      "skillist": [
+        "speckit-tasks"
+      ],
+      "skillist_mirror": [
+        "speckit-tasks"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T003",
+          "declared_skillist": [
+            "speckit-tasks"
+          ],
+          "candidate_skill_id": "speckit-tasks",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T003: task text matches speckit-tasks"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Add or identify governance test fixture locations for task skill evidence, skill-match assessment, risk-level evidence, and aggregate timeout verdict examples",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T004",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T004: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": []
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing-first graph/parser fixtures for structured task metadata, skillist mirrors, missing skill-loading evidence references, and ambiguous skill diagnostics",
+      "skillist": [
+        "speckit-evidence-graph",
+        "speckit-implement"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph",
+        "speckit-implement"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T005",
+          "declared_skillist": [
+            "speckit-evidence-graph",
+            "speckit-implement"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T005: task text matches speckit-evidence-graph"
+        },
+        {
+          "task_id": "T005",
+          "declared_skillist": [
+            "speckit-evidence-graph",
+            "speckit-implement"
+          ],
+          "candidate_skill_id": "speckit-implement",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T005: task text matches speckit-implement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing-first audit fixtures for late skill-loading evidence, incomplete reviewer exceptions, synthetic disclosure separation, and readiness-blocking diagnostics",
+      "skillist": [
+        "speckit-evidence-audit",
+        "speckit-implement"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit",
+        "speckit-implement"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T006",
+          "declared_skillist": [
+            "speckit-evidence-audit",
+            "speckit-implement"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T006: task text matches speckit-evidence-audit"
+        },
+        {
+          "task_id": "T006",
+          "declared_skillist": [
+            "speckit-evidence-audit",
+            "speckit-implement"
+          ],
+          "candidate_skill_id": "speckit-implement",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T006: task text matches speckit-implement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Update task-generation templates and preset command guidance to require skill-loading evidence obligations and confidence-based skill-match review in generated tasks",
+      "skillist": [
+        "speckit-tasks",
+        "speckit-implement"
+      ],
+      "skillist_mirror": [
+        "speckit-tasks",
+        "speckit-implement"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T007",
+          "declared_skillist": [
+            "speckit-tasks",
+            "speckit-implement"
+          ],
+          "candidate_skill_id": "speckit-tasks",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T007: task text matches speckit-tasks"
+        },
+        {
+          "task_id": "T007",
+          "declared_skillist": [
+            "speckit-tasks",
+            "speckit-implement"
+          ],
+          "candidate_skill_id": "speckit-implement",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T007: task text matches speckit-implement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Update implementation guidance to require declared skills to be resolved, loaded in order before task work, and recorded in `readiness/skill-loading-evidence.md`",
+      "skillist": [
+        "speckit-implement"
+      ],
+      "skillist_mirror": [
+        "speckit-implement"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T008",
+          "declared_skillist": [
+            "speckit-implement"
+          ],
+          "candidate_skill_id": "speckit-implement",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T008: task text matches speckit-implement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Extend the evidence graph contract model or parser expectations for skill match confidence, matched signals, ambiguity, and reviewer disposition",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T009",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T009: task text matches speckit-evidence-graph"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Extend the evidence audit expectations for risk-level evidence paths, timeout verdict records, and non-authoritative aggregate results",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T010",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T010: task text matches speckit-evidence-audit"
+        }
+      ],
+      "explicit_deps": [
+        "T006"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Document unsupported scope and Principle IV non-applicability for this governance-only feature in the readiness scaffold",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T011",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T011: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Add tests or fixtures that reject completed tasks with non-empty skillist when pre-work skill-loading evidence is missing, late, unreadable, ambiguous, or exception-incomplete",
+      "skillist": [
+        "speckit-evidence-audit",
+        "speckit-implement"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit",
+        "speckit-implement"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T012",
+          "declared_skillist": [
+            "speckit-evidence-audit",
+            "speckit-implement"
+          ],
+          "candidate_skill_id": "speckit-implement",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T012: task text matches speckit-implement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Add guidance validation that `speckit-implement` records task id, skill id, resolved path, load result, loaded_at, work_started_at, evidence path, and reviewer exception fields",
+      "skillist": [
+        "speckit-implement"
+      ],
+      "skillist_mirror": [
+        "speckit-implement"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T013",
+          "declared_skillist": [
+            "speckit-implement"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T013: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Implement the per-task skill-loading evidence workflow in implementation guidance and generated implementation command text",
+      "skillist": [
+        "speckit-implement"
+      ],
+      "skillist_mirror": [
+        "speckit-implement"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T014",
+          "declared_skillist": [
+            "speckit-implement"
+          ],
+          "candidate_skill_id": "speckit-implement",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T014: task text matches speckit-implement"
+        }
+      ],
+      "explicit_deps": [
+        "T013"
+      ],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Implement audit diagnostics that block task completion when declared skill-loading evidence is absent, late, unresolved, or exception-incomplete",
+      "skillist": [
+        "speckit-evidence-audit",
+        "speckit-implement"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit",
+        "speckit-implement"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T015",
+          "declared_skillist": [
+            "speckit-evidence-audit",
+            "speckit-implement"
+          ],
+          "candidate_skill_id": "speckit-implement",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T015: task text matches speckit-implement"
+        }
+      ],
+      "explicit_deps": [
+        "T012",
+        "T014"
+      ],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Write `readiness/skill-loading-evidence.md` with real validation evidence, sample accepted rows, rejection examples, and reviewer exception requirements",
+      "skillist": [
+        "speckit-evidence-audit",
+        "speckit-implement"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit",
+        "speckit-implement"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T016",
+          "declared_skillist": [
+            "speckit-evidence-audit",
+            "speckit-implement"
+          ],
+          "candidate_skill_id": "speckit-implement",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T016: task text matches speckit-implement"
+        }
+      ],
+      "explicit_deps": [
+        "T015"
+      ],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Add calibration fixtures covering obvious skill matches, ambiguous matches, indirect ownership matches, false positives, and valid empty skill lists",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T017",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T017: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Add tests for confidence, matched signals, ambiguity, reviewer disposition, and diagnostics when no skill is selected for a capability-owned task",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T018",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T018: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Implement skill-match assessment reporting in evidence graph validation without treating heuristic matches as authoritative proof",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T019",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T019: task text matches speckit-evidence-graph"
+        }
+      ],
+      "explicit_deps": [
+        "T017",
+        "T018"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Implement reviewer-disposition handling for medium, low, ambiguous, indirect, false-positive, and valid-empty skill assessments",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T020",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T020: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T019"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Update task-generation guidance so generated tasks disclose confidence review needs instead of presenting regex skill detection as certainty",
+      "skillist": [
+        "speckit-tasks"
+      ],
+      "skillist_mirror": [
+        "speckit-tasks"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T021",
+          "declared_skillist": [
+            "speckit-tasks"
+          ],
+          "candidate_skill_id": "speckit-tasks",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T021: task text matches speckit-tasks"
+        }
+      ],
+      "explicit_deps": [
+        "T019"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Write `readiness/skill-detection-calibration.md` with calibration cases, runtime under 30 seconds, accepted dispositions, and remaining uncertainty",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T022",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T022: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T020",
+        "T021"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Add tests or fixtures for small, medium, and broad governance risk levels with required checks, broad_required, rationale, and missing-evidence failures",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T023",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T023: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Add generated guidance checks that explain focused validation, broad validation, and non-authoritative aggregate results for each risk level",
+      "skillist": [
+        "speckit-tasks"
+      ],
+      "skillist_mirror": [
+        "speckit-tasks"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T024",
+          "declared_skillist": [
+            "speckit-tasks"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T024: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Implement governance risk-level evidence validation and final-readiness blocking when the selected evidence path is incomplete",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T025",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T025: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T023"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Update templates, preset commands, and generated guidance to name minimum evidence paths for small, medium, and broad changes",
+      "skillist": [
+        "speckit-tasks"
+      ],
+      "skillist_mirror": [
+        "speckit-tasks"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T026",
+          "declared_skillist": [
+            "speckit-tasks"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T026: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T024",
+        "T025"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Write `readiness/governance-risk-levels.md` with representative classifications and the required focused or broad checks for this feature",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T027",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T027: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T025",
+        "T026"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Add build-process tests or fixtures for aggregate `Dev` timeout verdicts including stage, elapsed duration, last observed command, focused rerun, and verdict category",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T028",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T028: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Add focused smoke rerun separation tests proving a passing direct smoke check is not reported as an aggregate product failure after a hang",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T029",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T029: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T030",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Implement bounded aggregate hang diagnostics in `Dev` or readiness reporting with stage timing, last active command, timeout policy, and recommended focused rerun",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T030",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T030: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T028"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T031",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Implement verdict classification for timeout, orchestration concern, non-authoritative aggregate result, product failure, and environment failure",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T031",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T031: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T029",
+        "T030"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T032",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Write `readiness/aggregate-hang-diagnostics.md` with simulated or reproduced hang evidence, focused rerun command, focused result, and final classification",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T032",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T032: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T031"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T033",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": true,
+      "title": "Add documentation checks that require runtime limitation notes to name platform, renderer, dependency, fallback, and toolchain boundaries without claiming new support",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T033",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T033: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T032"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T034",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": false,
+      "title": "Write `readiness/runtime-limitations.md` with current .NET 10 desktop, Vulkan/SkiaSharp preview, unsupported macOS/mobile/browser, and no software-renderer fallback boundaries",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T034",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T034: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T033"
+      ],
+      "phase_deps": [
+        "T032"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T035",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": false,
+      "title": "Update product readiness or roadmap documentation to distinguish current support from separate future platform-expansion features",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T035",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T035: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T034"
+      ],
+      "phase_deps": [
+        "T032"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T036",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `.specify/extensions/evidence/scripts/bash/run-audit.sh specs/015-improve-governance-weaknesses --graph-only` and capture clean graph output in `readiness/evidence-graph.md`",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T036",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T036: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T037",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceGraph` and `./fake.sh build -t EvidenceAudit`, then capture PASS or explicit blocking diagnostics in `readiness/evidence-audit.md`",
+      "skillist": [
+        "speckit-evidence-graph",
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph",
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T037",
+          "declared_skillist": [
+            "speckit-evidence-graph",
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T037: task text matches speckit-evidence-graph"
+        },
+        {
+          "task_id": "T037",
+          "declared_skillist": [
+            "speckit-evidence-graph",
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T037: task text matches speckit-evidence-audit"
+        }
+      ],
+      "explicit_deps": [
+        "T036"
+      ],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T038",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t GeneratedGuidanceCheck` and confirm generated task and implementation guidance preserve skillist, skill-loading evidence, confidence reporting, and risk-level rules",
+      "skillist": [
+        "speckit-tasks",
+        "speckit-implement"
+      ],
+      "skillist_mirror": [
+        "speckit-tasks",
+        "speckit-implement"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T038",
+          "declared_skillist": [
+            "speckit-tasks",
+            "speckit-implement"
+          ],
+          "candidate_skill_id": "speckit-implement",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T038: task text matches speckit-implement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T039",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run focused governance tests for skill-loading evidence, skill-match calibration, risk levels, aggregate timeout verdicts, and runtime limitation docs",
+      "skillist": [
+        "speckit-implement"
+      ],
+      "skillist_mirror": [
+        "speckit-implement"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T039",
+          "declared_skillist": [
+            "speckit-implement"
+          ],
+          "candidate_skill_id": "speckit-implement",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T039: task text matches speckit-implement"
+        }
+      ],
+      "explicit_deps": [
+        "T037",
+        "T038"
+      ],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T040",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t Dev` only if the final declared risk level remains broad, otherwise document why focused validation is sufficient",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T040",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T040: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T039"
+      ],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T041",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Validate this feature's completed non-empty skillist tasks against `readiness/skill-loading-evidence.md`, including loaded skill path, load timing, work start timing, and reviewer-visible exceptions",
+      "skillist": [
+        "speckit-evidence-audit",
+        "speckit-implement"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit",
+        "speckit-implement"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T041",
+          "declared_skillist": [
+            "speckit-evidence-audit",
+            "speckit-implement"
+          ],
+          "candidate_skill_id": "speckit-implement",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T041: task text matches speckit-implement"
+        }
+      ],
+      "explicit_deps": [
+        "T037",
+        "T039",
+        "T040"
+      ],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    },
+    {
+      "id": "T042",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Complete final readiness review with synthetic inventory, non-authoritative aggregate verdicts, unsupported scope, and no package/API/runtime support changes",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T042",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T042: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T037",
+        "T039",
+        "T040",
+        "T041"
+      ],
+      "phase_deps": [
+        "T035"
+      ],
+      "root_cause": []
+    }
+  ]
+}

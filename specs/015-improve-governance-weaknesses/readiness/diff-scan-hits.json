@@ -1,0 +1,46 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": ".specify/extensions/evidence/scripts/bash/run-audit.sh",
+      "line": 377,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "TOTAL_BLOCKERS=$((SYNTHETIC_COUNT + AUTO_SYNTHETIC_COUNT + BLOCK_HITS + READINESS_CONTRACT_HITS))"
+    },
+    {
+      "file": "specs/015-improve-governance-weaknesses/plan.md",
+      "line": 30,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: Avoid synthetic task completion evidence. Fixture task lists and simulated hang logs are valid"
+    },
+    {
+      "file": "specs/015-improve-governance-weaknesses/readiness/final-readiness.md",
+      "line": 7,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "## Synthetic Inventory"
+    },
+    {
+      "file": "specs/015-improve-governance-weaknesses/readiness/task-graph.md",
+      "line": 186,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/015-improve-governance-weaknesses/spec.md",
+      "line": 34,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "**Synthetic Evidence Boundary**: Simulated hang logs may be used only as validation fixtures for timeout classification "
+    }
+  ]
+}

@@ -76,7 +76,7 @@ echo "=== speckit.evidence.audit ==="
 echo "feature: $FEATURE_DIR"
 echo
 
-echo "[1/2] Computing task graph..."
+echo "[1/3] Computing task graph..."
 if ! python3 "$GRAPH_SCRIPT" "$FEATURE_DIR"; then
   echo
   echo "✗ Graph compute failed. See $READINESS_DIR/task-graph.md for details." >&2
@@ -105,8 +105,41 @@ d = json.load(open('$GRAPH_JSON'))
 print(sum(1 for t in d['tasks'] if t['effective'] == 'auto-synthetic'))
 ")
 
-# --- 3. diff scan -----------------------------------------------------------
-echo "[2/2] Diff scan against feature base..."
+# --- 3. readiness contract scan --------------------------------------------
+echo "[2/3] Readiness contract scan..."
+
+READINESS_CONTRACT_HITS_JSON="$READINESS_DIR/readiness-contract-hits.json"
+python3 - "$READINESS_DIR" "$READINESS_CONTRACT_HITS_JSON" <<'PYEOF'
+import json, sys
+from pathlib import Path
+
+readiness = Path(sys.argv[1])
+out = Path(sys.argv[2])
+checks = [
+    ("governance-risk-levels.md", ["small", "medium", "broad", "required evidence", "broad validation"], "governance risk level evidence is incomplete"),
+    ("aggregate-hang-diagnostics.md", ["verdict", "stage", "elapsed duration", "last observed command", "focused rerun", "non-authoritative aggregate"], "aggregate timeout verdict evidence is incomplete"),
+    ("runtime-limitations.md", [".NET 10 desktop", "Vulkan", "SkiaSharp preview", "unsupported macOS/mobile/browser", "no software-renderer fallback"], "runtime limitation evidence is incomplete"),
+]
+hits = []
+for file_name, terms, reason in checks:
+    path = readiness / file_name
+    if not path.exists():
+        hits.append({"path": str(path), "reason": f"missing {file_name}"})
+        continue
+    text = path.read_text(encoding="utf-8")
+    missing = [term for term in terms if term.lower() not in text.lower()]
+    if missing:
+        hits.append({"path": str(path), "reason": reason, "missing": missing})
+out.write_text(json.dumps(hits, indent=2) + "\n", encoding="utf-8")
+print(f"  readiness-contract: {len(hits)} blocking")
+for hit in hits:
+    print(f"    [BLOCK] {hit['path']} ({hit['reason']})", file=sys.stderr)
+PYEOF
+READINESS_CONTRACT_HITS=$(python3 -c "import json; print(len(json.load(open('$READINESS_CONTRACT_HITS_JSON'))))")
+echo
+
+# --- 4. diff scan -----------------------------------------------------------
+echo "[3/3] Diff scan against feature base..."
 
 # Resolve feature base.
 if [[ -z "$BASE_REF" ]]; then
@@ -341,11 +374,11 @@ with open(out, "w") as f:
 PYEOF
 fi
 
-TOTAL_BLOCKERS=$((SYNTHETIC_COUNT + AUTO_SYNTHETIC_COUNT + BLOCK_HITS))
+TOTAL_BLOCKERS=$((SYNTHETIC_COUNT + AUTO_SYNTHETIC_COUNT + BLOCK_HITS + READINESS_CONTRACT_HITS))
 
 echo "=== Verdict ==="
 if [[ $TOTAL_BLOCKERS -eq 0 ]]; then
-  echo "✓ PASS — no synthetic tasks, no blocking diff-scan hits."
+  echo "✓ PASS — no synthetic tasks, no readiness contract hits, no blocking diff-scan hits."
   exit 0
 fi
 
@@ -354,6 +387,9 @@ echo "  synthetic tasks (declared):     $SYNTHETIC_COUNT"
 echo "  auto-synthetic tasks (computed): $AUTO_SYNTHETIC_COUNT"
 if [[ $BLOCK_HITS -gt 0 ]]; then
   echo "  blocking diff-scan hits:         (see above)"
+fi
+if [[ $READINESS_CONTRACT_HITS -gt 0 ]]; then
+  echo "  readiness contract hits:         $READINESS_CONTRACT_HITS"
 fi
 if [[ $ADVISORY_HITS -gt 0 ]]; then
   echo "  advisory diff-scan hits:         $ADVISORY_HITS (printed, not blocking)"

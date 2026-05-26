@@ -127,9 +127,13 @@ When you emit an `[S]` task, you MUST also:
    `.agents/skills/*/SKILL.md`, `src/*/skill/SKILL.md`, template capability
    skill paths, or active generated product skill destinations. Load those
    skills in declared order before code changes for the task begin. Record
-   the loaded paths under `readiness/` or in the task-specific verification
-   log. If a declared skill is missing, unreadable, or ambiguous, block the
-   task and report the task id plus unresolved skill id.
+   the loaded paths in `readiness/skill-loading-evidence.md` or in a
+   task-specific verification log before marking the task complete. Each
+   record must include task id, skill id, resolved path, load result,
+   `loaded_at`, `work_started_at`, evidence path, and reviewer exception
+   fields. If a declared skill is missing, unreadable, ambiguous, late-loaded,
+   or missing evidence, block the task and report the task id plus unresolved
+   skill id.
 4. Confirm all deps are `[X]`
    or `[S]`. If any dep is `[ ]`, `[F]`, or `[-]`, stop and raise it.
 5. Implement the task per the plan, applying the loaded capability skill
