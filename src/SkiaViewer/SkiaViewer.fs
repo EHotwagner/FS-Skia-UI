@@ -457,37 +457,53 @@ module Viewer =
                     let stopwatch = Stopwatch.StartNew()
                     let timeout = TimeSpan.FromSeconds 10.0
 
+                    let keepOpen =
+                        String.Equals(
+                            Environment.GetEnvironmentVariable "FS_SKIA_KEEP_PERSISTENT_WINDOW_OPEN",
+                            "1",
+                            StringComparison.Ordinal
+                        )
+
                     try
-                        while (not window.IsClosing && (not !framePresented || not (inputVerified ())) && stopwatch.Elapsed < timeout) do
-                            window.DoEvents()
-                            window.DoUpdate()
-                            window.DoRender()
-                            Thread.Sleep(1)
+                        if keepOpen then
+                            while not window.IsClosing do
+                                window.DoEvents()
+                                window.DoUpdate()
+                                window.DoRender()
+                                Thread.Sleep(1)
 
-                        if !framePresented && inputVerified () then
-                            try
-                                if not window.IsClosing then
-                                    closedIntentionally := true
-                                    window.Close()
-                            with _ ->
-                                ()
-
-                            Result.Ok(launchOk inputDispatch !windowOpened "Persistent viewer launch completed after intentional close.")
+                            Result.Ok(launchOk inputDispatch !windowOpened "Persistent viewer launch completed after user close.")
                         else
-                            try
-                                if not window.IsClosing then
-                                    closedIntentionally := true
-                                    window.Close()
-                            with _ ->
-                                ()
+                            while (not window.IsClosing && (not !framePresented || not (inputVerified ())) && stopwatch.Elapsed < timeout) do
+                                window.DoEvents()
+                                window.DoUpdate()
+                                window.DoRender()
+                                Thread.Sleep(1)
 
-                            let message =
-                                if !framePresented then
-                                    "Persistent viewer timed out before verified input dispatch."
-                                else
-                                    "Persistent viewer timed out before presenting a frame."
+                            if !framePresented && inputVerified () then
+                                try
+                                    if not window.IsClosing then
+                                        closedIntentionally := true
+                                        window.Close()
+                                with _ ->
+                                    ()
 
-                            Result.Error(makeFailure Timeout ProductDefect Startup message !lastDiagnostic)
+                                Result.Ok(launchOk inputDispatch !windowOpened "Persistent viewer launch completed after intentional close.")
+                            else
+                                try
+                                    if not window.IsClosing then
+                                        closedIntentionally := true
+                                        window.Close()
+                                with _ ->
+                                    ()
+
+                                let message =
+                                    if !framePresented then
+                                        "Persistent viewer timed out before verified input dispatch."
+                                    else
+                                        "Persistent viewer timed out before presenting a frame."
+
+                                Result.Error(makeFailure Timeout ProductDefect Startup message !lastDiagnostic)
                     finally
                         for disposable in Seq.rev inputDisposables do
                             disposable.Dispose()
