@@ -67,6 +67,23 @@ let private runGraph root =
         "python3"
         $".specify/extensions/evidence/scripts/python/compute-task-graph.py \"{root}\""
 
+let private writePersistentRuntimeReadiness root packageResolution generatedVerify =
+    writeFeature
+        root
+        "- [X] T001 [skillist: []] Record persistent GUI runtime evidence\n- [X] T002 [skillist: []] Document persistent GUI runtime evidence"
+        ""
+
+    writeFixtureFile root "spec.md" "Persistent GUI Runtime interactive-lifecycle.md package-resolution.md generated-verify.md game-visual-evidence.md" |> ignore
+    writeFixtureFile root "plan.md" "persistent-gui-runtime package-resolution.md generated-verify.md game-visual-evidence.md" |> ignore
+    writeFixtureFile root "readiness/interactive-lifecycle.md" "mode=interactive-window self-closed-for-evidence=false" |> ignore
+    writeFixtureFile root "readiness/evidence-launch-mode.md" "mode=persistent-evidence self-closed-for-evidence=true input-dispatch=observed" |> ignore
+    writeFixtureFile root "readiness/container-session-diagnostics.md" "runtime directory display socket session bus unsupported-host reason" |> ignore
+    writeFixtureFile root "readiness/package-resolution.md" packageResolution |> ignore
+    writeFixtureFile root "readiness/generated-verify.md" generatedVerify |> ignore
+    writeFixtureFile root "readiness/game-visual-evidence.md" "supported-host=true evidence-kind=screenshot board-readable=true input-or-progress-observed=true" |> ignore
+    writeFixtureFile root "readiness/task-workflow-guidance.md" "implementation batch records red-green evidence log graph before/after skill-loading notes non-authoritative aggregate" |> ignore
+    writeFixtureFile root "readiness/evidence-audit.md" "EvidenceGraph EvidenceAudit PASS required readiness acceptance keywords" |> ignore
+
 [<Tests>]
 let syntheticErrorEvidenceTests =
     testList "Synthetic error evidence governance" [
@@ -143,6 +160,65 @@ tasks:
             Expect.stringContains stdout "late-seh-tasks=1" "late SEH task is counted"
             Expect.stringContains stdout "non-eligible synthetic evidence class" "non-eligible classification is diagnostic"
             Expect.stringContains stdout "Return to design/task generation" "diagnostic directs contributor back to planning"
+        }
+
+        test "EvidenceAudit Synthetic rejects malformed SEH inventory rows before implementation" {
+            use fixture = new TempFixtureDirectory("seh-malformed-row")
+
+            writeFeature
+                fixture.Root
+                "- [S] T001 [SEH] synthetic-error-handling-approved [skillist: []] Validate malformed readiness row\n- [X] T002 [skillist: []] Document rejection"
+                "| T001 | Malformed readiness row lacks governed metadata | infeasible, see spec FR-025 | n/a | synthetic-error-handling-approved |  | malformed readiness rows |  | accepted-seh-pending |"
+
+            let code, stdout, stderr = runAudit fixture.Root
+            Expect.equal code 2 $"audit fails: {stdout} {stderr}"
+            Expect.stringContains stdout "diagnostic=T001" "audit reports the malformed SEH row task"
+            Expect.stringContains stdout "missing design-phase source" "audit identifies missing design source"
+            Expect.stringContains stdout "missing expected error behavior" "audit identifies missing expected error behavior"
+            Expect.stringContains stdout "missing accepted-seh acceptance status" "audit rejects pending acceptance"
+        }
+
+        test "EvidenceAudit Synthetic rejects invalid command arguments with usage diagnostics" {
+            let code, stdout, stderr =
+                runProcess
+                    "bash"
+                    ".specify/extensions/evidence/scripts/bash/run-audit.sh --not-a-real-audit-flag"
+
+            Expect.equal code 4 $"invalid flag exits as usage error: {stdout} {stderr}"
+            Expect.stringContains stderr "unknown flag: --not-a-real-audit-flag" "invalid command argument is diagnostic"
+        }
+
+        test "EvidenceAudit Synthetic rejects missing package resolution fields" {
+            use fixture = new TempFixtureDirectory("seh-missing-package-fields")
+
+            writePersistentRuntimeReadiness
+                fixture.Root
+                "requested-version=1.2.3 resolved-version=1.2.3 package-source=local-feed"
+                "generated-tests-exist=true generated-tests-ran=true authoritative=true"
+
+            let code, stdout, stderr = runAudit fixture.Root
+            Expect.equal code 2 $"audit fails: {stdout} {stderr}"
+            Expect.stringContains stdout "persistent GUI runtime hits" "audit classifies the readiness contract blocker"
+            Expect.stringContains stderr "unresolved package mismatch" "missing exact-match package field is rejected"
+        }
+
+        test "task graph Synthetic rejects corrupt evidence records" {
+            use fixture = new TempFixtureDirectory("seh-corrupt-record")
+
+            writeFeature
+                fixture.Root
+                "- [S] T001 [SEH] synthetic-error-handling-approved [skillist: []] Validate corrupt evidence record"
+                "| T001 | Corrupt evidence record | infeasible, see spec FR-025 | n/a | synthetic-error-handling-approved | specs/018-persistent-gui-runtime/plan.md FR-025 | corrupt evidence records | fail with parse diagnostic | accepted-seh |"
+
+            writeFixtureFile
+                fixture.Root
+                "tasks.deps.yml"
+                "schema_version: \"1.0\"\ntasks:\n  T001:\n    deps: [T999]\n    skillist: []\n"
+            |> ignore
+
+            let code, stdout, stderr = runGraph fixture.Root
+            Expect.equal code 2 $"graph rejects corrupt evidence record: {stdout} {stderr}"
+            Expect.stringContains (stdout + stderr) "T001 depends on T999, which does not exist" "corrupt dependency record is diagnostic"
         }
 
         test "guidance Synthetic documents eligible and non-eligible SEH examples" {

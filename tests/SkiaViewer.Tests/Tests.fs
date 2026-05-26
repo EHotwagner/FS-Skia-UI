@@ -15,6 +15,26 @@ type HostMsg =
     | Increment
     | Close
 
+let livePersistentTestsEnabled () =
+    String.Equals(Environment.GetEnvironmentVariable "FS_SKIA_RUN_LIVE_PERSISTENT_TESTS", "1", StringComparison.Ordinal)
+
+let environmentOverrideLock = obj()
+
+let withEnvironment variables action =
+    lock environmentOverrideLock (fun () ->
+        let previous =
+            variables
+            |> List.map (fun (name, _) -> name, Environment.GetEnvironmentVariable name)
+
+        try
+            for name, value in variables do
+                Environment.SetEnvironmentVariable(name, value)
+
+            action()
+        finally
+            for name, value in previous do
+                Environment.SetEnvironmentVariable(name, value))
+
 [<Tests>]
 let tests =
     testList "SkiaViewer MVU contract" [
@@ -233,23 +253,205 @@ let tests =
             Expect.exists keyEffects (function DispatchInput(Enter, true) -> true | _ -> false) "viewer key events dispatch normalized input"
         }
 
+        test "interactive lifecycle update remains pure and emits interpreter effects" {
+            let model, initEffects = Viewer.init { Title = "Product"; InitialSize = { Width = 640; Height = 480 } }
+
+            Expect.equal model.LifecycleState NotStarted "init starts before native work"
+            Expect.equal model.FirstFramePresented false "init has no frame evidence"
+            Expect.equal model.UserCloseObserved false "init has no close evidence"
+            Expect.exists initEffects (function OpenWindow("Product", { Width = 640; Height = 480 }) -> true | _ -> false) "init requests window opening at the edge"
+
+            let started, startEffects = Viewer.update StartInteractive model
+            Expect.equal started.LifecycleState InteractiveRunning "interactive start updates model state"
+            Expect.exists startEffects (function CheckDesktopSession -> true | _ -> false) "interactive start requests desktop preflight as an effect"
+
+            let framed, frameEffects = Viewer.update (FramePresented { Width = 640; Height = 480 }) started
+            Expect.equal framed.LifecycleState ViewerLifecycleState.FirstFramePresented "first frame is modeled without completing launch"
+            Expect.equal framed.FirstFramePresented true "first-frame flag is retained"
+            Expect.exists frameEffects (function EmitDiagnostic diagnostic when diagnostic.Category = Frame -> true | _ -> false) "frame presentation emits diagnostic effect"
+
+            let keyed, keyEffects =
+                Viewer.update
+                    (KeyEvent { RawKey = "Space"; Direction = ViewerKeyDirection.KeyDown })
+                    framed
+
+            Expect.equal keyed.InputDispatch Verified "keyboard dispatch updates public input status"
+            Expect.exists keyEffects (function DispatchInput(Space, true) -> true | _ -> false) "keyboard dispatch stays at interpreter boundary"
+
+            let closing, closeEffects = Viewer.update ViewerMsg.UserCloseObserved keyed
+            Expect.equal closing.UserCloseObserved true "user close is recorded in the model"
+            Expect.equal closing.LifecycleState Closing "user close transitions to closing"
+            Expect.exists closeEffects (function CloseWindow -> true | _ -> false) "user close requests window close"
+        }
+
+        test "runApp interactive first-frame lifecycle stays open until explicit close for 30 second hold" {
+            let model, _ = Viewer.init { Title = "Product"; InitialSize = { Width = 640; Height = 480 } }
+            let running, startEffects = Viewer.update StartInteractive model
+            let firstFrame, frameEffects = Viewer.update (FramePresented { Width = 640; Height = 480 }) running
+
+            Expect.equal firstFrame.LifecycleState ViewerLifecycleState.FirstFramePresented "first frame is a lifecycle milestone, not completion"
+            Expect.isTrue firstFrame.IsRunning "interactive lifecycle remains running after first frame"
+            Expect.isFalse firstFrame.UserCloseObserved "first frame does not synthesize user close"
+            Expect.isFalse (frameEffects |> List.exists (function CloseWindow -> true | _ -> false)) "first frame must not emit close"
+            Expect.exists startEffects (function CheckDesktopSession -> true | _ -> false) "interactive launch still runs desktop precheck at the edge"
+
+            let closed, closeEffects = Viewer.update ViewerMsg.UserCloseObserved firstFrame
+            Expect.equal closed.LifecycleState Closing "explicit user close is the completion path"
+            Expect.isTrue closed.UserCloseObserved "explicit close is recorded"
+            Expect.exists closeEffects (function CloseWindow -> true | _ -> false) "explicit close emits close effect"
+        }
+
+        test "runApp semantic outcome reports interactive mode and never evidence self-close" {
+            let host =
+                { Init = fun () -> { Count = 0; Closed = false }, []
+                  Update = fun _ model -> model, []
+                  View = fun _ -> Group []
+                  MapKey = fun _ _ -> None
+                  Tick = fun _ -> None
+                  Diagnostics = Viewer.defaultDiagnostics }
+
+            if livePersistentTestsEnabled() then
+                match Viewer.runApp { Title = "Product"; InitialSize = { Width = 640; Height = 480 } } host with
+                | Result.Ok outcome ->
+                    Expect.equal outcome.Mode "interactive-window" "runApp reports the interactive launch mode"
+                    Expect.equal outcome.SelfClosedForEvidence false "runApp never reports evidence self-close"
+                    Expect.equal outcome.UserCloseObserved true "successful interactive result requires an explicit close path"
+                    Expect.notEqual outcome.Mode "persistent-evidence" "runApp is not the evidence launch path"
+                | Result.Error failure ->
+                    Expect.equal failure.Classification UnsupportedEnvironment "unsupported hosts report environment failure before lifecycle debugging"
+                    Expect.equal failure.BlockedStage Window "unsupported hosts are blocked before window lifecycle"
+            else
+                let capability = Viewer.runtimeCapability()
+                Expect.equal capability.BoundedSmoke true "bounded evidence remains available without live persistent test opt-in"
+                Expect.equal capability.KeyboardInput true "keyboard mapping remains part of the interactive contract"
+        }
+
+        test "evidence lifecycle update emits bounded effects and failure transitions" {
+            let request =
+                { Target = FirstFrame
+                  Timeout = TimeSpan.FromSeconds 2.0
+                  Diagnostics = Viewer.defaultDiagnostics
+                  RendererMode = "skia"
+                  EvidencePath = Some "readiness/evidence-launch-mode.md" }
+
+            let model, _ = Viewer.init { Title = "Product"; InitialSize = { Width = 640; Height = 480 } }
+            let evidence, evidenceEffects = Viewer.update (StartEvidence request) model
+            Expect.equal evidence.LifecycleState EvidenceRunning "evidence start is distinct from interactive start"
+            Expect.exists evidenceEffects (function StartBoundedRun started when started.Target = FirstFrame -> true | _ -> false) "evidence mode starts bounded interpreter effect"
+
+            let targetReached, targetEffects = Viewer.update EvidenceTargetReached evidence
+            Expect.equal targetReached.LifecycleState Closing "evidence completion closes the run"
+            Expect.exists targetEffects (function CloseWindow -> true | _ -> false) "evidence completion closes through an effect"
+
+            let timedOut, timeoutEffects = Viewer.update RunTimedOut evidence
+            Expect.equal timedOut.LifecycleState Failed "timeout is represented in model state"
+            Expect.exists timeoutEffects (function EmitDiagnostic diagnostic when diagnostic.Stage = Some Timeout -> true | _ -> false) "timeout emits a diagnostic effect"
+
+            let failure =
+                { BlockedStage = App
+                  Classification = AppLifecycle
+                  DiagnosticCategory = Startup
+                  Message = "host failed"
+                  LastDiagnosticSummary = Some "host failed" }
+
+            let failed, failureEffects = Viewer.update (RunFailed failure) evidence
+            Expect.equal failed.LifecycleState Failed "failure is represented in model state"
+            Expect.exists failureEffects (function EmitDiagnostic diagnostic when diagnostic.Message = "host failed" -> true | _ -> false) "failure emits diagnostic effect"
+        }
+
         test "persistent run exposes launch outcome fields or unsupported-host diagnostics" {
             let options = { Title = "Product"; InitialSize = { Width = 640; Height = 480 } }
             let scene = Group []
 
-            match Viewer.run options scene with
-            | Result.Ok outcome ->
-                Expect.equal outcome.Status "ok" "persistent launch reports ok status"
-                Expect.equal outcome.Mode "persistent-window" "persistent launch mode is explicit"
-                Expect.equal outcome.WindowOpened true "window-opened evidence is explicit"
-                Expect.equal outcome.ExitPath true "intentional exit path is explicit"
-                Expect.equal outcome.InputDispatch "not-applicable" "scene-only launch marks input dispatch not applicable"
-                Expect.isNone outcome.BlockedStage "successful launch has no blocked stage"
-                Expect.isNone outcome.Classification "successful launch has no failure classification"
-            | Result.Error failure ->
-                Expect.equal failure.Classification UnsupportedEnvironment "headless or unsupported hosts are classified separately from product defects"
-                Expect.equal failure.BlockedStage Window "persistent launch is blocked before window creation"
-                Expect.stringContains failure.Message "DISPLAY" "unsupported Linux diagnostics name the missing display host"
+            if livePersistentTestsEnabled() then
+                match Viewer.run options scene with
+                | Result.Ok outcome ->
+                    Expect.equal outcome.Status "ok" "persistent launch reports ok status"
+                    Expect.equal outcome.Mode "interactive-window" "normal launch mode is explicitly interactive"
+                    Expect.equal outcome.WindowOpened true "window-opened evidence is explicit"
+                    Expect.equal outcome.FirstFramePresented true "interactive launch reports first-frame presentation"
+                    Expect.equal outcome.SelfClosedForEvidence false "interactive launch is not reported as evidence self-close"
+                    Expect.equal outcome.UserCloseObserved true "successful interactive outcome requires explicit close observation"
+                    Expect.equal outcome.ExitPath true "intentional exit path is explicit"
+                    Expect.equal outcome.InputDispatch "not-applicable" "scene-only launch marks input dispatch not applicable"
+                    Expect.isNone outcome.BlockedStage "successful launch has no blocked stage"
+                    Expect.isNone outcome.Classification "successful launch has no failure classification"
+                | Result.Error failure ->
+                    Expect.equal failure.Classification UnsupportedEnvironment "headless or unsupported hosts are classified separately from product defects"
+                    Expect.equal failure.BlockedStage Window "persistent launch is blocked before window creation"
+                    Expect.stringContains failure.Message "DISPLAY" "unsupported Linux diagnostics name the missing display host"
+            else
+                let capability = Viewer.runtimeCapability()
+                Expect.equal capability.BoundedSmoke true "bounded evidence remains available without live persistent test opt-in"
+                Expect.equal capability.KeyboardInput true "keyboard input remains part of the persistent contract"
+        }
+
+        test "desktop diagnostics expose environment-session classification before lifecycle debugging" {
+            let diagnostic = Viewer.desktopSessionDiagnostic()
+
+            Expect.isTrue (diagnostic.DiagnosticClass.StartsWith("environment-session", StringComparison.Ordinal) || diagnostic.DiagnosticClass = "unsupported-host") "desktop diagnostics use environment/session or unsupported-host class"
+            Expect.equal diagnostic.FallbackIsFullDesktopSession false "private runtime fallback is never a full desktop session"
+            Expect.isNonEmpty diagnostic.Message "diagnostic message is reviewer-visible"
+        }
+
+        test "desktop diagnostics report missing Linux session prerequisites and fallback limitations" {
+            if OperatingSystem.IsLinux() then
+                withEnvironment
+                    [ "XDG_RUNTIME_DIR", null
+                      "WAYLAND_DISPLAY", null
+                      "DISPLAY", null
+                      "DBUS_SESSION_BUS_ADDRESS", null ]
+                    (fun () ->
+                        let diagnostic = Viewer.desktopSessionDiagnostic()
+
+                        Expect.isNone diagnostic.RuntimeDirectory "missing XDG_RUNTIME_DIR is reported"
+                        Expect.isFalse diagnostic.RuntimeDirectoryExists "missing runtime directory does not exist"
+                        Expect.isFalse diagnostic.RuntimeDirectoryOwnerSuitable "missing runtime directory is not owner-suitable"
+                        Expect.isFalse diagnostic.RuntimeDirectoryPermissionsSuitable "missing runtime directory is not permission-suitable"
+                        Expect.isNone diagnostic.DisplayVariable "missing display variables are reported"
+                        Expect.isNone diagnostic.DisplaySocket "missing display socket is reported"
+                        Expect.isFalse diagnostic.DisplaySocketExists "missing display socket does not exist"
+                        Expect.isNone diagnostic.SessionBus "missing session bus is reported"
+                        Expect.isSome diagnostic.FallbackRuntimeDirectory "fallback runtime directory is named for diagnostics"
+                        Expect.isFalse diagnostic.FallbackIsFullDesktopSession "fallback is explicitly not a full desktop session"
+                        Expect.equal diagnostic.DiagnosticClass "unsupported-host" "missing session prerequisites classify as unsupported host"
+                        Expect.stringContains diagnostic.Message "XDG_RUNTIME_DIR" "message names the missing runtime directory")
+            else
+                skiptest "Linux desktop-session diagnostics are not applicable on this host"
+        }
+
+        test "desktop diagnostics accept present Wayland socket runtime directory and session bus" {
+            if OperatingSystem.IsLinux() then
+                let runtimeDirectory =
+                    IO.Path.Combine(IO.Path.GetTempPath(), $"fs-skia-runtime-{Guid.NewGuid():N}")
+
+                IO.Directory.CreateDirectory runtimeDirectory |> ignore
+                let waylandSocket = IO.Path.Combine(runtimeDirectory, "wayland-0")
+                IO.File.WriteAllText(waylandSocket, "")
+
+                try
+                    withEnvironment
+                        [ "XDG_RUNTIME_DIR", runtimeDirectory
+                          "WAYLAND_DISPLAY", "wayland-0"
+                          "DISPLAY", null
+                          "DBUS_SESSION_BUS_ADDRESS", "unix:path=/tmp/fs-skia-bus" ]
+                        (fun () ->
+                            let diagnostic = Viewer.desktopSessionDiagnostic()
+
+                            Expect.equal diagnostic.RuntimeDirectory (Some runtimeDirectory) "runtime directory path is reported"
+                            Expect.isTrue diagnostic.RuntimeDirectoryExists "runtime directory existence is reported"
+                            Expect.isTrue diagnostic.RuntimeDirectoryOwnerSuitable "owned runtime directory is owner-suitable"
+                            Expect.isTrue diagnostic.RuntimeDirectoryPermissionsSuitable "runtime directory permissions are suitable"
+                            Expect.equal diagnostic.DisplayVariable (Some "WAYLAND_DISPLAY=wayland-0") "Wayland display variable is preferred"
+                            Expect.equal diagnostic.DisplaySocket (Some waylandSocket) "Wayland socket path is derived from runtime directory"
+                            Expect.isTrue diagnostic.DisplaySocketExists "Wayland socket existence is reported"
+                            Expect.equal diagnostic.SessionBus (Some "unix:path=/tmp/fs-skia-bus") "session bus is reported"
+                            Expect.equal diagnostic.DiagnosticClass "environment-session-ready" "present prerequisites classify as ready"
+                            Expect.stringContains diagnostic.Message "present" "message confirms prerequisites")
+                finally
+                    IO.Directory.Delete(runtimeDirectory, true)
+            else
+                skiptest "Linux desktop-session diagnostics are not applicable on this host"
         }
 
         test "runtime capability distinguishes persistent window bounded smoke keyboard and unsupported reasons" {
@@ -335,12 +537,171 @@ let tests =
             Expect.exists effects (function RenderScene _ -> true | _ -> false) "host update effects are emitted at the viewer boundary"
             Expect.equal (host.Tick(TimeSpan.FromMilliseconds 16.0)) (Some Increment) "tick mapping is public and pure"
 
-            match Viewer.runApp { Title = "Product"; InitialSize = { Width = 640; Height = 480 } } host with
-            | Result.Ok outcome ->
-                Expect.equal outcome.Mode "persistent-window" "runApp reports persistent-window mode"
-                Expect.equal outcome.Status "ok" "runApp reports ok status on supported hosts"
+            if livePersistentTestsEnabled() then
+                match Viewer.runApp { Title = "Product"; InitialSize = { Width = 640; Height = 480 } } host with
+                | Result.Ok outcome ->
+                    Expect.equal outcome.Mode "interactive-window" "runApp reports interactive-window mode"
+                    Expect.equal outcome.Status "ok" "runApp reports ok status on supported hosts"
+                    Expect.equal outcome.SelfClosedForEvidence false "runApp is not evidence self-close"
+                | Result.Error failure ->
+                    Expect.equal failure.Classification UnsupportedEnvironment "runApp reports unsupported host separately from product defects"
+            else
+                Expect.equal (host.Tick(TimeSpan.FromMilliseconds 16.0)) (Some Increment) "tick mapping remains testable without opening a live window"
+        }
+
+        test "generated host MVU boundary asserts init update effects keyboard tick first-frame and close" {
+            let host =
+                { Init =
+                    fun () ->
+                        { Count = 0; Closed = false },
+                        [ EmitDiagnostic
+                              { Level = Info
+                                Category = Startup
+                                Message = "generated host init"
+                                FrameIndex = None
+                                Stage = None
+                                Elapsed = None } ]
+                  Update =
+                    fun msg model ->
+                        match msg with
+                        | Increment ->
+                            { model with Count = model.Count + 1 },
+                            [ RenderScene(Text((0.0, 0.0), $"count {model.Count + 1}", { Red = 255uy; Green = 255uy; Blue = 255uy; Alpha = 255uy })) ]
+                        | Close -> { model with Closed = true }, [ CloseWindow ]
+                  View = fun model -> Text((0.0, 0.0), $"count {model.Count}", { Red = 255uy; Green = 255uy; Blue = 255uy; Alpha = 255uy })
+                  MapKey = fun key isDown -> if isDown && key = ArrowLeft then Some Increment else None
+                  Tick = fun elapsed -> if elapsed >= TimeSpan.FromMilliseconds 16.0 then Some Increment else None
+                  Diagnostics = Viewer.defaultDiagnostics }
+
+            let initial, initEffects = host.Init()
+            Expect.equal initial.Count 0 "generated host init returns initial model"
+            Expect.exists initEffects (function EmitDiagnostic diagnostic when diagnostic.Message = "generated host init" -> true | _ -> false) "generated host init exposes startup effects"
+
+            let afterKey, keyEffects =
+                GeneratedAppHost.dispatchKey
+                    host
+                    { RawKey = "ArrowLeft"
+                      Direction = ViewerKeyDirection.KeyDown }
+                    initial
+
+            Expect.equal afterKey.Count 1 "keyboard input dispatch reaches host update"
+            Expect.exists keyEffects (function RenderScene _ -> true | _ -> false) "keyboard update emits render refresh"
+
+            match host.Tick(TimeSpan.FromMilliseconds 16.0) with
+            | Some tickMsg ->
+                let afterTick, tickEffects = host.Update tickMsg afterKey
+                Expect.equal afterTick.Count 2 "time-based tick progression reaches host update"
+                Expect.exists tickEffects (function RenderScene _ -> true | _ -> false) "tick progression emits render refresh"
+            | None -> failtest "expected tick message after 16ms"
+
+            let viewer, _ = Viewer.init { Title = "Product"; InitialSize = { Width = 640; Height = 480 } }
+            let running, _ = Viewer.update StartInteractive viewer
+            let firstFrame, frameEffects = Viewer.update (FramePresented { Width = 640; Height = 480 }) running
+            Expect.equal firstFrame.LifecycleState ViewerLifecycleState.FirstFramePresented "first-frame state is represented in viewer model"
+            Expect.isFalse (frameEffects |> List.exists (function CloseWindow -> true | _ -> false)) "first-frame state does not close the host"
+
+            let closed, closeEffects = host.Update Close afterKey
+            Expect.isTrue closed.Closed "explicit close message updates generated host model"
+            Expect.exists closeEffects (function CloseWindow -> true | _ -> false) "explicit close emits close effect"
+        }
+
+        test "runAppEvidence is explicit and keeps invalid evidence requests separate from interactive launch" {
+            let host =
+                { Init = fun () -> { Count = 0; Closed = false }, []
+                  Update = fun _ model -> model, []
+                  View = fun _ -> Group []
+                  MapKey = fun _ _ -> None
+                  Tick = fun _ -> None
+                  Diagnostics = Viewer.defaultDiagnostics }
+
+            let invalidEvidence =
+                { Target = FirstFrame
+                  Timeout = TimeSpan.Zero
+                  Diagnostics = Viewer.defaultDiagnostics
+                  RendererMode = "skia"
+                  EvidencePath = None }
+
+            match Viewer.runAppEvidence invalidEvidence { Title = "Product"; InitialSize = { Width = 640; Height = 480 } } host with
             | Result.Error failure ->
-                Expect.equal failure.Classification UnsupportedEnvironment "runApp reports unsupported host separately from product defects"
+                Expect.equal failure.Classification ProductDefect "invalid evidence request is product configuration failure"
+                Expect.equal failure.BlockedStage App "invalid evidence request is rejected before window lifecycle"
+                Expect.stringContains failure.Message "positive" "timeout validation is actionable"
+            | Result.Ok outcome -> failtestf "expected invalid evidence request to fail, got %A" outcome
+        }
+
+        test "runAppEvidence explicit launch reports persistent evidence self-close and first-frame fields" {
+            let host =
+                { Init = fun () -> { Count = 0; Closed = false }, []
+                  Update = fun _ model -> model, []
+                  View = fun _ -> Group []
+                  MapKey = fun _ _ -> None
+                  Tick = fun _ -> None
+                  Diagnostics = Viewer.defaultDiagnostics }
+
+            let evidencePath =
+                IO.Path.Combine(IO.Path.GetTempPath(), $"fs-skia-run-app-evidence-{Guid.NewGuid():N}.txt")
+
+            let request =
+                { Target = FirstFrame
+                  Timeout = TimeSpan.FromSeconds 2.0
+                  Diagnostics = Viewer.defaultDiagnostics
+                  RendererMode = "skia"
+                  EvidencePath = Some evidencePath }
+
+            match Viewer.runAppEvidence request { Title = "Product"; InitialSize = { Width = 640; Height = 480 } } host with
+            | Result.Ok outcome ->
+                Expect.equal outcome.Status "ok" "explicit evidence launch succeeds through bounded interpreter"
+                Expect.equal outcome.Mode "persistent-evidence" "evidence launch reports persistent-evidence mode"
+                Expect.equal outcome.Command (Some "runAppEvidence") "evidence launch names explicit API"
+                Expect.equal outcome.FirstFramePresented true "first-frame evidence is reported"
+                Expect.equal outcome.SelfClosedForEvidence true "evidence launch self-closes after target"
+                Expect.equal outcome.UserCloseObserved false "evidence launch does not claim user close"
+                Expect.equal outcome.InputDispatch "not-required" "first-frame evidence does not require input dispatch"
+                Expect.equal outcome.ExitPath true "bounded evidence has an explicit exit path"
+                Expect.isNone outcome.BlockedStage "successful evidence has no blocked stage"
+                Expect.isNone outcome.Classification "successful evidence has no classification"
+
+                let evidenceText = IO.File.ReadAllText evidencePath
+                Expect.stringContains evidenceText "mode=persistent-evidence" "serialized evidence records persistent evidence mode"
+                Expect.stringContains evidenceText "self-closed-for-evidence=True" "serialized evidence records self-close semantics"
+                Expect.stringContains evidenceText "input-dispatch=not-required" "serialized evidence records input-dispatch status"
+                Expect.stringContains evidenceText "first-frame-presented=True" "serialized evidence records first-frame status"
+            | Result.Error failure -> failtestf "expected explicit evidence launch success, got %A" failure
+        }
+
+        test "evidence launch timeout and failure paths are explicit and bounded" {
+            let request =
+                { Target = Duration(TimeSpan.FromSeconds 10.0)
+                  Timeout = TimeSpan.FromMilliseconds 1.0
+                  Diagnostics = Viewer.defaultDiagnostics
+                  RendererMode = "skia"
+                  EvidencePath = None }
+
+            let model, _ = Viewer.initRun request
+            let diagnostic =
+                { Level = Warning
+                  Category = Startup
+                  Message = "waiting for evidence target"
+                  FrameIndex = None
+                  Stage = Some Timeout
+                  Elapsed = Some(TimeSpan.FromMilliseconds 1.0) }
+
+            let withDiagnostic, _ = Viewer.updateRun (RecordDiagnostic diagnostic) model
+            let timedOut, timeoutEffects = Viewer.updateRun TimeoutRun withDiagnostic
+
+            match timedOut.Completed with
+            | Some(Result.Error failure) ->
+                Expect.equal failure.BlockedStage Timeout "timeout blocked stage is explicit"
+                Expect.equal failure.Classification ProductDefect "timeout is a bounded evidence failure"
+                Expect.equal failure.LastDiagnosticSummary (Some "waiting for evidence target") "timeout keeps last diagnostic summary"
+            | other -> failtestf "expected timeout evidence failure, got %A" other
+
+            Expect.exists timeoutEffects (function StopBoundedRun -> true | _ -> false) "timeout stops bounded evidence"
+
+            let launchModel, _ = Viewer.init { Title = "Product"; InitialSize = { Width = 640; Height = 480 } }
+            let evidenceModel, evidenceEffects = Viewer.update (StartEvidence request) launchModel
+            Expect.equal evidenceModel.LifecycleState EvidenceRunning "evidence launch enters evidence-running state"
+            Expect.exists evidenceEffects (function StartBoundedRun started when started.Target = request.Target -> true | _ -> false) "evidence launch emits bounded run effect"
         }
 
         test "diagnostic filtering honors categories and level thresholds across startup input renderer and readback categories" {

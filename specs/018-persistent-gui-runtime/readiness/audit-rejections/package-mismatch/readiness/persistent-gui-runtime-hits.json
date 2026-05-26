@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/audit-rejections/package-mismatch/readiness/package-resolution.md",
+    "reason": "missing readiness acceptance keywords",
+    "missing": [
+      "requested-version",
+      "resolved-version",
+      "package-source"
+    ]
+  },
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/audit-rejections/package-mismatch/readiness/package-resolution.md",
+    "reason": "unresolved package mismatch"
+  },
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/audit-rejections/package-mismatch/readiness/generated-verify.md",
+    "reason": "missing readiness acceptance keywords",
+    "missing": [
+      "failure-class"
+    ]
+  }
+]

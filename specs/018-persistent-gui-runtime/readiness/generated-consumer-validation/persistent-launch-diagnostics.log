@@ -1,0 +1,35 @@
+
+## generated consumer persistent launch diagnostics
+$ dotnet run --project src/Product/Product.fsproj --no-restore
+status=ok mode=interactive-window command=dotnet run --project src/Product/Product.fsproj window-opened=true input-dispatch=false exit-path=true renderer-mode=skia missing-package-capability=none unsupported-host-reasons=none diagnostic-api=Viewer.desktopSessionDiagnostic() diagnostic-class=environment-session-ready runtime-directory=/run/user/1000 runtime-directory-exists=true display-variable=WAYLAND_DISPLAY=wayland-0 display-socket-exists=true session-bus=unix:path=/run/user/1000/bus fallback-is-full-desktop-session=false desktop-message=Desktop session prerequisites are present.
+Failed to load plugin: 'libgtk-3.so.0: cannot open shared object file: No such file or directory'
+
+exit-code=0
+
+## generated consumer persistent launch diagnostics
+$ dotnet run --project src/Product/Product.fsproj --no-restore
+status=ok mode=interactive-window command=dotnet run --project src/Product/Product.fsproj window-opened=true first-frame-presented=true user-close-observed=true self-closed-for-evidence=false input-dispatch=not-verified exit-path=true renderer-mode=skia blocked-stage=none classification=none category=none missing-package-capability=none unsupported-host-reasons=none diagnostic-api=Viewer.desktopSessionDiagnostic() diagnostic-class=environment-session-ready runtime-directory=/run/user/1000 runtime-directory-exists=true display-variable=WAYLAND_DISPLAY=wayland-0 display-socket-exists=true session-bus=unix:path=/run/user/1000/bus fallback-is-full-desktop-session=false message=Persistent generated app host launch completed after intentional close. desktop-message=Desktop session prerequisites are present.
+Failed to load plugin: 'libgtk-3.so.0: cannot open shared object file: No such file or directory'
+
+exit-code=0
+
+## generated consumer persistent launch diagnostics
+$ dotnet run --project src/Product/Product.fsproj --no-restore
+status=ok mode=interactive-window command=dotnet run --project src/Product/Product.fsproj window-opened=true first-frame-presented=true user-close-observed=true self-closed-for-evidence=false input-dispatch=not-verified exit-path=true renderer-mode=skia blocked-stage=none classification=none category=none missing-package-capability=none unsupported-host-reasons=none diagnostic-api=Viewer.desktopSessionDiagnostic() diagnostic-class=environment-session-ready runtime-directory=/run/user/1000 runtime-directory-exists=true display-variable=WAYLAND_DISPLAY=wayland-0 display-socket-exists=true session-bus=unix:path=/run/user/1000/bus fallback-is-full-desktop-session=false message=Persistent generated app host launch completed after intentional close. desktop-message=Desktop session prerequisites are present.
+Failed to load plugin: 'libgtk-3.so.0: cannot open shared object file: No such file or directory'
+
+exit-code=0
+
+## generated consumer persistent launch diagnostics
+$ dotnet run --project src/Product/Product.fsproj --no-restore
+status=ok mode=interactive-window command=dotnet run --project src/Product/Product.fsproj window-opened=true first-frame-presented=true user-close-observed=true self-closed-for-evidence=false input-dispatch=not-verified exit-path=true renderer-mode=skia blocked-stage=none classification=none category=none missing-package-capability=none unsupported-host-reasons=none diagnostic-api=Viewer.desktopSessionDiagnostic() diagnostic-class=environment-session-ready runtime-directory=/run/user/1000 runtime-directory-exists=true display-variable=WAYLAND_DISPLAY=wayland-0 display-socket-exists=true session-bus=unix:path=/run/user/1000/bus fallback-is-full-desktop-session=false message=Persistent generated app host launch completed after intentional close. desktop-message=Desktop session prerequisites are present.
+Failed to load plugin: 'libgtk-3.so.0: cannot open shared object file: No such file or directory'
+
+exit-code=0
+
+## generated consumer persistent launch diagnostics
+$ dotnet run --project src/Product/Product.fsproj --no-restore
+status=ok mode=interactive-window command=dotnet run --project src/Product/Product.fsproj window-opened=true first-frame-presented=true user-close-observed=true self-closed-for-evidence=false input-dispatch=not-verified exit-path=true renderer-mode=skia blocked-stage=none classification=none category=none missing-package-capability=none unsupported-host-reasons=none diagnostic-api=Viewer.desktopSessionDiagnostic() diagnostic-class=environment-session-ready runtime-directory=/run/user/1000 runtime-directory-exists=true display-variable=WAYLAND_DISPLAY=wayland-0 display-socket-exists=true session-bus=unix:path=/run/user/1000/bus fallback-is-full-desktop-session=false message=Persistent generated app host launch completed after intentional close. desktop-message=Desktop session prerequisites are present.
+Failed to load plugin: 'libgtk-3.so.0: cannot open shared object file: No such file or directory'
+
+exit-code=0

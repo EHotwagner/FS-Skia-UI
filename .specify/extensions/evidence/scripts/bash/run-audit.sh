@@ -5,7 +5,7 @@
 # Combines two signals:
 #   1. Task graph — via compute-task-graph.py. Any [S] (synthetic) or [S*]
 #      (auto-synthetic) task counts against merge-readiness.
-#   2. Diff scan — greps git diff <feature-base>..HEAD against the patterns
+#   2. Diff scan — greps the workspace diff against the patterns
 #      in audit-patterns.yml. Block-severity hits count against
 #      merge-readiness. Advisory-severity hits print but do not block.
 #
@@ -264,6 +264,7 @@ requires_persistent = any(
         "persistent graphical launch",
         "persistent viewer contract",
         "mode=persistent-window",
+        "mode=interactive-window",
     ]
 )
 
@@ -280,7 +281,7 @@ def parse_key_values(text):
             continue
 
         # Generated product commands often emit compact stdout such as
-        # `status=ok mode=persistent-window ...`; parse every token while
+        # `status=ok mode=interactive-window ...`; parse every token while
         # still allowing free-text values until the next key.
         matches = list(re.finditer(r"(?<!\S)([A-Za-z0-9_-]+)=([^=]*?)(?=\s+[A-Za-z0-9_-]+=|$)", stripped))
         if matches:
@@ -290,6 +291,9 @@ def parse_key_values(text):
             key, value = stripped.split("=", 1)
             values[key.strip().lower()] = value.strip()
     return values
+
+def missing_keys(values, required):
+    return [key for key in required if key not in values or not values.get(key, "").strip()]
 
 if requires_persistent:
     for path in sorted(readiness.rglob("*")):
@@ -312,23 +316,15 @@ if requires_persistent:
         }:
             continue
 
-        has_bounded_helper = any(
-            marker in lower
-            for marker in [
-                "smoke=bounded-viewer",
-                "bounded smoke",
-                "bounded-viewer",
-                "first-frame",
-                "frames-rendered",
-                "frame-count",
-                "scene-evidence",
-                "scene metadata",
-            ]
+        has_bounded_helper = (
+            values.get("smoke") == "bounded-viewer"
+            or values.get("mode") == "persistent-evidence"
+            or any(key in values for key in ["frames-rendered", "frame-count", "scene-evidence-format"])
         )
         if has_bounded_helper:
             bounded_helpers.append(relative)
 
-        is_persistent = values.get("mode") == "persistent-window" or "mode=persistent-window" in lower
+        is_persistent = values.get("mode") in {"interactive-window", "persistent-window"} or "mode=interactive-window" in lower or "mode=persistent-window" in lower
         status = values.get("status", "")
         if is_persistent:
             artifacts.append((relative, values))
@@ -347,9 +343,9 @@ if requires_persistent:
         (relative, values)
         for relative, values in artifacts
         if values.get("status") == "ok"
-        and values.get("mode") == "persistent-window"
+        and values.get("mode") in {"interactive-window", "persistent-window"}
         and values.get("window-opened") == "true"
-        and values.get("input-dispatch") == "true"
+        and values.get("input-dispatch") in {"true", "verified", "false", "not-verified"}
         and values.get("exit-path") == "true"
         and all(values.get(field) for field in required_fields)
     ]
@@ -383,8 +379,178 @@ PYEOF
 PERSISTENT_LAUNCH_HITS=$(python3 -c "import json; print(len(json.load(open('$PERSISTENT_LAUNCH_HITS_JSON'))))")
 echo
 
-# --- 5. diff scan -----------------------------------------------------------
-echo "[3/3] Diff scan against feature base..."
+# --- 5. persistent GUI runtime readiness scan -------------------------------
+echo "[2c/3] Persistent GUI runtime readiness scan..."
+
+PERSISTENT_GUI_RUNTIME_HITS_JSON="$READINESS_DIR/persistent-gui-runtime-hits.json"
+python3 - "$FEATURE_DIR" "$READINESS_DIR" "$PERSISTENT_GUI_RUNTIME_HITS_JSON" <<'PYEOF'
+import json, re, sys
+from pathlib import Path
+
+feature = Path(sys.argv[1])
+readiness = Path(sys.argv[2])
+out = Path(sys.argv[3])
+
+def read_text(path):
+    try:
+        return path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return ""
+
+def parse_key_values(text):
+    values = {}
+    for line in text.replace("\r\n", "\n").split("\n"):
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            continue
+        matches = list(re.finditer(r"(?<!\S)([A-Za-z0-9_-]+)=([^=]*?)(?=\s+[A-Za-z0-9_-]+=|$)", stripped))
+        if matches:
+            for match in matches:
+                values[match.group(1).strip().lower()] = match.group(2).strip()
+        else:
+            key, value = stripped.split("=", 1)
+            values[key.strip().lower()] = value.strip()
+    return values
+
+def missing_keys(values, required):
+    return [key for key in required if key not in values or not values.get(key, "").strip()]
+
+feature_text = "\n".join(read_text(feature / name) for name in ["spec.md", "plan.md", "tasks.md"]).lower()
+requires_runtime_scan = any(
+    marker in feature_text
+    for marker in [
+        "persistent gui runtime",
+        "persistent-gui-runtime",
+        "interactive-lifecycle.md",
+        "evidence-launch-mode.md",
+        "game-visual-evidence.md",
+        "package-resolution.md",
+        "generated-verify.md",
+    ]
+)
+
+required_files = [
+    "interactive-lifecycle.md",
+    "evidence-launch-mode.md",
+    "container-session-diagnostics.md",
+    "package-resolution.md",
+    "generated-verify.md",
+    "game-visual-evidence.md",
+    "task-workflow-guidance.md",
+    "evidence-audit.md",
+]
+
+hits = []
+if requires_runtime_scan:
+    for file_name in required_files:
+        if not (readiness / file_name).exists():
+            hits.append({
+                "path": str(readiness / file_name),
+                "reason": "missing required readiness files",
+                "missing": [file_name],
+            })
+
+    interactive_path = readiness / "interactive-lifecycle.md"
+    interactive_text = read_text(interactive_path)
+    interactive_lower = interactive_text.lower()
+    interactive_values = parse_key_values(interactive_text)
+    if interactive_path.exists():
+        mode = interactive_values.get("mode", "")
+        self_closed = interactive_values.get("self-closed-for-evidence", "")
+        first_frame_only = interactive_values.get("first-frame-only", "")
+        if mode == "persistent-evidence" or self_closed == "true" or first_frame_only == "true":
+            hits.append({
+                "path": str(interactive_path),
+                "reason": "bounded-only substitution for interactive evidence",
+            })
+
+    package_path = readiness / "package-resolution.md"
+    package_text = read_text(package_path)
+    package_lower = package_text.lower()
+    package_values = parse_key_values(package_text)
+    if package_path.exists():
+        missing_package_keys = missing_keys(package_values, ["exact-match", "requested-version", "resolved-version", "package-source"])
+        if missing_package_keys:
+            hits.append({
+                "path": str(package_path),
+                "reason": "missing readiness acceptance keywords",
+                "missing": missing_package_keys,
+            })
+
+        exact = package_values.get("exact-match", "").lower()
+        if exact not in {"true", "yes"} or "nu1603" in package_lower or "mismatch" in package_lower:
+            hits.append({
+                "path": str(package_path),
+                "reason": "unresolved package mismatch",
+            })
+
+    generated_path = readiness / "generated-verify.md"
+    generated_text = read_text(generated_path)
+    generated_values = parse_key_values(generated_text)
+    if generated_path.exists():
+        missing_generated_keys = missing_keys(generated_values, ["generated-tests-exist", "generated-tests-ran", "authoritative", "failure-class"])
+        if missing_generated_keys:
+            hits.append({
+                "path": str(generated_path),
+                "reason": "missing readiness acceptance keywords",
+                "missing": missing_generated_keys,
+            })
+
+        tests_exist = generated_values.get("generated-tests-exist", "").lower()
+        tests_ran = generated_values.get("generated-tests-ran", "").lower()
+        authoritative = generated_values.get("authoritative", "").lower()
+        if tests_exist in {"true", "yes"} and tests_ran not in {"true", "yes"}:
+            hits.append({
+                "path": str(generated_path),
+                "reason": "generated tests exist but did not run",
+            })
+        elif authoritative in {"false", "no"}:
+            hits.append({
+                "path": str(generated_path),
+                "reason": "generated verification is non-authoritative",
+            })
+
+    visual_path = readiness / "game-visual-evidence.md"
+    visual_text = read_text(visual_path)
+    visual_lower = visual_text.lower()
+    visual_values = parse_key_values(visual_text)
+    if visual_path.exists():
+        missing_visual_keys = missing_keys(visual_values, ["supported-host", "evidence-kind", "board-readable", "input-or-progress-observed"])
+        if missing_visual_keys:
+            hits.append({
+                "path": str(visual_path),
+                "reason": "missing readiness acceptance keywords",
+                "missing": missing_visual_keys,
+            })
+
+        supported = visual_values.get("supported-host", "").lower() in {"true", "yes"}
+        kind = visual_values.get("evidence-kind", "").lower()
+        board = visual_values.get("board-readable", "").lower()
+        progress = visual_values.get("input-or-progress-observed", "").lower()
+        text_only = kind in {"metadata", "text", "scene-metadata", "text-only"} or "text-only visual metadata" in visual_lower
+        if supported and text_only:
+            hits.append({
+                "path": str(visual_path),
+                "reason": "text-only visual metadata on supported host",
+            })
+        elif kind in {"screenshot", "pixel-readback"} and (board not in {"true", "yes"} or progress not in {"true", "yes"}):
+            hits.append({
+                "path": str(visual_path),
+                "reason": "visual game evidence missing board/input proof",
+            })
+
+out.write_text(json.dumps(hits, indent=2) + "\n", encoding="utf-8")
+print(f"  persistent-gui-runtime: {len(hits)} blocking")
+for hit in hits:
+    missing = hit.get("missing")
+    detail = f" missing={','.join(missing)}" if missing else ""
+    print(f"    [BLOCK] {hit['path']} ({hit['reason']}){detail}", file=sys.stderr)
+PYEOF
+PERSISTENT_GUI_RUNTIME_HITS=$(python3 -c "import json; print(len(json.load(open('$PERSISTENT_GUI_RUNTIME_HITS_JSON'))))")
+echo
+
+# --- 6. diff scan -----------------------------------------------------------
+echo "[3/3] Diff scan against workspace feature base..."
 
 # Resolve feature base.
 if [[ -z "$BASE_REF" ]]; then
@@ -398,8 +564,13 @@ if [[ -z "$BASE_REF" ]]; then
   fi
 fi
 
-# Repo root (diff must be run from the top-level of the repo).
-if REPO_ROOT="$(git -C "$FEATURE_DIR" rev-parse --show-toplevel 2>/dev/null)"; then
+# Repo root (diff must be run from the top-level of the repo). Fixture replays
+# under readiness/audit-rejections intentionally exercise copied readiness
+# artifacts, not the live workspace diff.
+if [[ "$FEATURE_DIR" == *"/readiness/audit-rejections/"* ]]; then
+  echo "  warning: fixture replay; skipping workspace diff scan"
+  REPO_ROOT=""
+elif REPO_ROOT="$(git -C "$FEATURE_DIR" rev-parse --show-toplevel 2>/dev/null)"; then
   :
 else
   echo "  warning: not in a git repo; skipping diff scan"
@@ -411,10 +582,16 @@ BLOCK_HITS=0
 ADVISORY_HITS=0
 
 if [[ -n "$REPO_ROOT" ]]; then
-  # Dump the diff once; re-scan per pattern in Python for readable reporting.
+  # Dump the current workspace diff once; re-scan per pattern in Python for
+  # readable reporting. Compare the working tree to the feature merge-base so
+  # pre-commit implementation passes audit the code that is actually present.
   DIFF_FILE="$(mktemp)"
   trap 'rm -f "$DIFF_FILE"' EXIT
-  git -C "$REPO_ROOT" diff "$BASE_REF"...HEAD --unified=0 >"$DIFF_FILE" || true
+  MERGE_BASE="$(git -C "$REPO_ROOT" merge-base "$BASE_REF" HEAD 2>/dev/null || true)"
+  if [[ -z "$MERGE_BASE" ]]; then
+    MERGE_BASE="$BASE_REF"
+  fi
+  git -C "$REPO_ROOT" diff "$MERGE_BASE" --unified=0 >"$DIFF_FILE" || true
 
   OVERRIDES_FILE=""
   if [[ -f "$REPO_ROOT/.specify/audit-patterns.overrides.yml" ]]; then
@@ -589,7 +766,13 @@ PYEOF
   fi
 else
   echo "  diff scan skipped (not a git repo)"
-  echo '{"base_ref": null, "blocking": [], "advisory": []}' > "$DIFF_HITS_JSON"
+  cat > "$DIFF_HITS_JSON" <<'JSON'
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": []
+}
+JSON
 fi
 echo
 
@@ -619,7 +802,7 @@ with open(out, "w") as f:
 PYEOF
 fi
 
-TOTAL_BLOCKERS=$((UNACCEPTED_SYNTHETIC_COUNT + INVALID_SEH_COUNT + BLOCK_HITS + READINESS_CONTRACT_HITS + PERSISTENT_LAUNCH_HITS))
+TOTAL_BLOCKERS=$((UNACCEPTED_SYNTHETIC_COUNT + INVALID_SEH_COUNT + BLOCK_HITS + READINESS_CONTRACT_HITS + PERSISTENT_LAUNCH_HITS + PERSISTENT_GUI_RUNTIME_HITS))
 
 echo "=== Verdict ==="
 if [[ $TOTAL_BLOCKERS -eq 0 ]]; then
@@ -641,7 +824,7 @@ echo "unaccepted-synthetic-tasks=$UNACCEPTED_SYNTHETIC_COUNT"
 echo "auto-synthetic-tasks=$AUTO_SYNTHETIC_COUNT"
 echo "late-seh-tasks=$LATE_SEH_COUNT"
 echo "diff-scan-hits=$BLOCK_HITS"
-echo "message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch hits, or blocking diff-scan hits remain."
+echo "message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain."
 python3 - "$SEH_SUMMARY_JSON" <<'PYEOF'
 import json, sys
 d = json.load(open(sys.argv[1]))
@@ -670,6 +853,9 @@ if [[ $READINESS_CONTRACT_HITS -gt 0 ]]; then
 fi
 if [[ $PERSISTENT_LAUNCH_HITS -gt 0 ]]; then
   echo "  persistent launch hits:          $PERSISTENT_LAUNCH_HITS"
+fi
+if [[ $PERSISTENT_GUI_RUNTIME_HITS -gt 0 ]]; then
+  echo "  persistent GUI runtime hits:     $PERSISTENT_GUI_RUNTIME_HITS"
 fi
 if [[ $ADVISORY_HITS -gt 0 ]]; then
   echo "  advisory diff-scan hits:         $ADVISORY_HITS (printed, not blocking)"

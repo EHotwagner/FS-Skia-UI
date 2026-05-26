@@ -73,6 +73,9 @@ let generatedProjectValidationTests =
                   "MapKey = mapKey"
                   "Tick = tick"
                   "Viewer.runApp viewerOptions generatedHost"
+                  "--launch-evidence"
+                  "mode=interactive-window"
+                  "mode=persistent-evidence"
                   "--bounded-smoke"
                   "--bounded-smoke-frame-diagnostics"
                   "--scene-evidence" ]

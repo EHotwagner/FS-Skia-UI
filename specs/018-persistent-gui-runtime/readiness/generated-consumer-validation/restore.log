@@ -1,0 +1,72 @@
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/tests/Product.Tests/Product.Tests.fsproj (in 12.03 sec).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/src/Product/Product.fsproj (in 12.03 sec).
+
+exit-code=0
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/tests/Product.Tests/Product.Tests.fsproj (in 9.22 sec).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/src/Product/Product.fsproj (in 9.22 sec).
+
+exit-code=0
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/src/Product/Product.fsproj (in 472 ms).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/tests/Product.Tests/Product.Tests.fsproj (in 472 ms).
+
+exit-code=0
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/src/Product/Product.fsproj (in 392 ms).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/tests/Product.Tests/Product.Tests.fsproj (in 392 ms).
+
+exit-code=0
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/src/Product/Product.fsproj (in 418 ms).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/tests/Product.Tests/Product.Tests.fsproj (in 418 ms).
+
+exit-code=0
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/src/Product/Product.fsproj (in 436 ms).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/tests/Product.Tests/Product.Tests.fsproj (in 436 ms).
+
+exit-code=0
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/tests/Product.Tests/Product.Tests.fsproj (in 287 ms).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/src/Product/Product.fsproj (in 287 ms).
+
+exit-code=0
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/src/Product/Product.fsproj (in 315 ms).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/tests/Product.Tests/Product.Tests.fsproj (in 315 ms).
+
+exit-code=0
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/src/Product/Product.fsproj (in 299 ms).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/tests/Product.Tests/Product.Tests.fsproj (in 299 ms).
+
+exit-code=0

@@ -1,0 +1,7 @@
+The template "FS Skia UI Governed Project" was created successfully.
+
+Processing post-creation actions...
+Running command 'bash -c "find . -type f \( -name '*.sh' -o -name 'fake.sh' \) -exec chmod +x {} +"'...
+Command succeeded.
+
+

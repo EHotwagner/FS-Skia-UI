@@ -1,0 +1,44 @@
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime
+
+[1/3] Computing task graph...
+task-graph: 50 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/task-graph.md
+  status: 22[X], 3[S], 24[S*], 1[F]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/supported-host-persistent-launch.txt (missing supported-host persistent launch evidence)
+    [BLOCK] evidence-launch-mode.md, generated-file-lists/app-package.txt, generated-file-lists/app-source.txt, generated-file-lists/governed-source.txt, generated-file-lists/headless-scene-source.txt, generated-file-lists/sample-pack-source.txt, logs/t024-fsi-packed-evidence-launch.txt, logs/t025-generated-evidence-command-red.txt, logs/t027-generated-launch-evidence-command.txt, logs/t027-generated-launch-evidence-output.txt, logs/t035-generated-visual-evidence-tests.txt, logs/t038-game-pixel-readback-evidence.txt, logs/t038-game-screenshot-evidence.txt, logs/t038-pixel-readback-command.txt, logs/t038-screenshot-command.txt (bounded-only substitution)
+    [BLOCK] logs/t050-supported-host-persistent-launch-fsi.txt, supported-host-persistent-launch.txt (unsupported-host-only persistent launch evidence)
+  persistent-launch: 3 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/package-resolution.md (unresolved package mismatch)
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/generated-verify.md (generated verification is non-authoritative)
+  persistent-gui-runtime: 2 blocking
+
+[3/3] Diff scan against feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=22
+accepted-seh-tasks=1
+unaccepted-synthetic-tasks=26
+auto-synthetic-tasks=24
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+  synthetic tasks (declared):     3
+  auto-synthetic tasks (computed): 24
+  accepted [SEH] tasks:           1
+  unaccepted synthetic tasks:      26
+  late [SEH] tasks:                0
+  persistent launch hits:          3
+  persistent GUI runtime hits:     2
+
+  To override, rerun with:  --accept-synthetic "justification"

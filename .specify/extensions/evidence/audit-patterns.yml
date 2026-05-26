@@ -61,6 +61,38 @@ whitelist:
   - pattern_id: todo
     file_glob: "**/*.md"
 
+  # Readiness logs are captured command output. They may contain quoted
+  # guidance or historical red-run diagnostics with placeholder-marker text,
+  # but they are not executable source.
+  - pattern_id: todo
+    file_glob: "specs/**/readiness/logs/**"
+
+  - pattern_id: not-implemented
+    file_glob: "specs/**/readiness/logs/**"
+
+  - pattern_id: skipped-tests
+    file_glob: "specs/**/readiness/logs/**"
+
+  # Generated audit outputs are scanner reports, not implementation source.
+  # Scanning them creates self-referential findings from the previous run.
+  - pattern_id: todo
+    file_glob: "specs/**/readiness/diff-scan-hits.json"
+
+  - pattern_id: not-implemented
+    file_glob: "specs/**/readiness/diff-scan-hits.json"
+
+  - pattern_id: mock-identifiers
+    file_glob: "specs/**/readiness/diff-scan-hits.json"
+
+  - pattern_id: skipped-tests
+    file_glob: "specs/**/readiness/diff-scan-hits.json"
+
+  - pattern_id: commented-assertions
+    file_glob: "specs/**/readiness/diff-scan-hits.json"
+
+  - pattern_id: synthetic-banner
+    file_glob: "specs/**/readiness/diff-scan-hits.json"
+
   # Constitution template itself contains the word TODO in examples.
   - pattern_id: todo
     file_glob: ".specify/memory/constitution.md"

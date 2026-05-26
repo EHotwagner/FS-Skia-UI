@@ -1,9 +1,35 @@
 module ProductTests
 
+open System
 open Expecto
 open Product.Program
 open FS.Skia.UI.Controls
 open FS.Skia.UI.KeyboardInput
+open FS.Skia.UI.Scene
+
+let rec collectSceneNodes node =
+    seq {
+        yield node
+        match node with
+        | Group scenes ->
+            for scene in scenes do
+                for child in scene.Nodes do
+                    yield! collectSceneNodes child
+        | ClipNode(_, scene)
+        | ColorSpaceNode(_, scene)
+        | PerspectiveNode(_, scene) ->
+            for child in scene.Nodes do
+                yield! collectSceneNodes child
+        | PictureNode picture ->
+            for child in picture.Scene.Nodes do
+                yield! collectSceneNodes child
+        | _ -> ()
+    }
+
+let sceneText node =
+    collectSceneNodes node
+    |> Seq.choose (function Text(_, value, _) -> Some value | TextRun run -> Some run.Text | _ -> None)
+    |> String.concat " "
 
 [<Tests>]
 let tests =
@@ -91,6 +117,9 @@ let tests =
         test "generated graphical app exposes bounded smoke command" {
             let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
 
+            Expect.stringContains source "--launch-evidence" "generated product exposes explicit launch evidence CLI"
+            Expect.stringContains source "Viewer.runBounded" "launch evidence uses a bounded evidence entry point"
+            Expect.stringContains source "mode=persistent-evidence" "launch evidence reports evidence mode"
             Expect.stringContains source "--bounded-smoke" "generated product exposes bounded smoke CLI"
             Expect.stringContains source "--bounded-smoke-frame-diagnostics" "generated product exposes explicit frame diagnostic smoke CLI"
             Expect.stringContains source "Viewer.runBounded" "bounded smoke uses the public SkiaViewer bounded run entry point"
@@ -101,6 +130,44 @@ let tests =
             Expect.stringContains source "FrameLogLimit = if includeFrameDiagnostics then Some 1 else Some 0" "generated smoke limits repeated frame diagnostics"
         }
 
+        test "generated evidence commands are opt-in and not reported as ongoing interactive play" {
+            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+            let defaultBranch = source.Substring(source.LastIndexOf("| _ ->", StringComparison.Ordinal))
+
+            Expect.stringContains source "--launch-evidence" "first-frame launch evidence is exposed only by explicit CLI flag"
+            Expect.stringContains source "--bounded-smoke" "bounded evidence smoke is exposed only by explicit CLI flag"
+            Expect.stringContains source "--bounded-smoke-frame-diagnostics" "frame diagnostics are exposed only by explicit CLI flag"
+            Expect.stringContains source "--screenshot-evidence" "screenshot evidence is exposed only by explicit CLI flag"
+            Expect.stringContains source "--pixel-readback-evidence" "pixel-readback evidence is exposed only by explicit CLI flag"
+            Expect.stringContains source "input-dispatch=not-required" "bounded evidence reports that input dispatch is not an interactive-play claim"
+            Expect.stringContains source "self-closed-for-evidence=true" "bounded evidence reports self-close semantics"
+            Expect.stringContains source "mode=persistent-evidence" "bounded evidence uses persistent evidence mode"
+            Expect.stringContains source "command=--launch-evidence" "first-frame evidence records the evidence command"
+            Expect.stringContains source "command=--screenshot-evidence" "screenshot evidence records the evidence command"
+            Expect.stringContains source "command=--pixel-readback-evidence" "pixel-readback evidence records the evidence command"
+            Expect.stringContains source "Viewer.runBounded" "generated evidence commands use bounded viewer evidence entry points"
+            Expect.stringContains defaultBranch "Viewer.runApp viewerOptions generatedHost" "normal launch remains the persistent interactive path"
+            Expect.isFalse (defaultBranch.Contains("mode=persistent-evidence")) "normal launch does not report bounded evidence mode"
+            Expect.isFalse (defaultBranch.Contains("self-closed-for-evidence=true")) "normal launch does not claim evidence self-close"
+            Expect.isFalse (defaultBranch.Contains("input-dispatch=not-required")) "normal launch does not reuse bounded evidence input-dispatch wording"
+            Expect.isFalse (defaultBranch.Contains("--screenshot-evidence")) "screenshot evidence stays out of normal launch branch"
+            Expect.isFalse (defaultBranch.Contains("--pixel-readback-evidence")) "pixel-readback evidence stays out of normal launch branch"
+        }
+
+        test "generated visual evidence commands require screenshot proof pixel fallback and unsupported diagnostics" {
+            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+
+            Expect.stringContains source "--screenshot-evidence" "generated product exposes screenshot evidence command"
+            Expect.stringContains source "--pixel-readback-evidence" "generated product exposes pixel-readback evidence command"
+            Expect.stringContains source "evidence-kind=screenshot" "screenshot command records screenshot evidence kind"
+            Expect.stringContains source "evidence-kind=pixel-readback" "pixel-readback command records fallback evidence kind"
+            Expect.stringContains source "fallback-reason=screenshot-unavailable" "pixel-readback command records why screenshot proof was unavailable"
+            Expect.stringContains source "board-readable=true" "visual evidence proves the board/grid is readable"
+            Expect.stringContains source "input-or-progress-observed=true" "visual evidence proves input dispatch or time progression was observed"
+            Expect.stringContains source "unsupported-host-reason=" "unsupported visual evidence reports why neither visual path is available"
+            Expect.stringContains source "supported-host=false" "unsupported visual evidence is explicit instead of substituting text-only metadata"
+        }
+
         test "generated graphical app default executable path uses persistent host" {
             let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
 
@@ -109,7 +176,70 @@ let tests =
             Expect.stringContains source "MapKey = mapKey" "generated host wires keyboard mapping"
             Expect.stringContains source "Tick = tick" "generated host wires tick mapping"
             Expect.stringContains source "Viewer.runApp viewerOptions generatedHost" "default path runs persistent generated app host"
+            Expect.stringContains source "mode=interactive-window" "default path reports interactive mode"
+            Expect.stringContains source "mode=interactive-window" "unsupported default diagnostics still identify interactive mode"
             Expect.stringContains source "--bounded-smoke" "bounded smoke remains behind an explicit flag"
+            Expect.stringContains source "--launch-evidence" "launch evidence remains behind an explicit flag"
+        }
+
+        test "generated normal launch reports desktop session diagnostics without evidence fallback" {
+            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+            let defaultBranch = source.Substring(source.LastIndexOf("| _ ->", StringComparison.Ordinal))
+
+            Expect.stringContains defaultBranch "Viewer.desktopSessionDiagnostic()" "normal launch captures desktop/session diagnostics before app lifecycle debugging"
+            Expect.stringContains defaultBranch "diagnostic-class=" "normal launch reports diagnostic classification"
+            Expect.stringContains defaultBranch "runtime-directory=" "normal launch reports runtime directory state"
+            Expect.stringContains defaultBranch "display-variable=" "normal launch reports display variable state"
+            Expect.stringContains defaultBranch "display-socket-exists=" "normal launch reports display socket state"
+            Expect.stringContains defaultBranch "session-bus=" "normal launch reports session bus state"
+            Expect.stringContains defaultBranch "fallback-is-full-desktop-session=false" "private runtime fallback is labeled as not a full desktop session"
+            Expect.isFalse (defaultBranch.Contains("Viewer.runBounded")) "normal launch does not silently switch to bounded evidence"
+            Expect.isFalse (defaultBranch.Contains("SceneEvidence.render")) "normal launch does not silently switch to scene-only metadata"
+            Expect.isFalse (defaultBranch.Contains("--launch-evidence")) "explicit evidence flag stays out of normal launch diagnostics"
+            Expect.isFalse (defaultBranch.Contains("--scene-evidence")) "scene evidence flag stays out of normal launch diagnostics"
+        }
+
+        test "generated default game view renders board grid and side information" {
+            let rendered = view initialModel
+            let nodes = collectSceneNodes rendered |> Seq.toList
+            let text = sceneText rendered
+
+            let rectangleCount =
+                nodes
+                |> List.filter (function Rectangle _ | PaintedRectangle _ -> true | _ -> false)
+                |> List.length
+
+            let lineCount =
+                nodes
+                |> List.filter (function Line _ -> true | _ -> false)
+                |> List.length
+
+            Expect.isGreaterThanOrEqual rectangleCount 20 "Tetris-style board renders multiple cells"
+            Expect.isGreaterThanOrEqual lineCount 10 "Tetris-style board renders visible grid lines"
+            Expect.stringContains text "score" "side panel includes score"
+            Expect.stringContains text "level" "side panel includes level"
+            Expect.stringContains text "next" "side panel includes next piece"
+        }
+
+        test "generated default game dispatches input advances over time and keeps evidence flags opt-in" {
+            let started, _ = dispatchViewerKey { RawKey = "Enter"; Direction = ViewerKeyDirection.KeyDown } initialModel
+            let moved, _ = dispatchViewerKey { RawKey = "ArrowLeft"; Direction = ViewerKeyDirection.KeyDown } started
+
+            Expect.notEqual moved initialModel "keyboard input changes playable game state"
+            Expect.isGreaterThan moved.PrimaryInteractions started.PrimaryInteractions "left input is reflected in gameplay state"
+
+            match tick (TimeSpan.FromMilliseconds 500.0) with
+            | Some tickMsg ->
+                let afterTick, _ = update tickMsg moved
+                Expect.notEqual afterTick moved "time-based tick advances gameplay state"
+            | None -> failtest "generated game tick must advance gameplay over time"
+
+            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+            let defaultBranch = source.Substring(source.LastIndexOf("| _ ->", StringComparison.Ordinal))
+            Expect.stringContains defaultBranch "Viewer.runApp viewerOptions generatedHost" "normal launch uses interactive host"
+            Expect.isFalse (defaultBranch.Contains("--launch-evidence")) "launch evidence flag stays out of normal launch branch"
+            Expect.isFalse (defaultBranch.Contains("--bounded-smoke")) "bounded smoke flag stays out of normal launch branch"
+            Expect.isFalse (defaultBranch.Contains("self-closed-for-evidence=true")) "normal launch does not report evidence self-close"
         }
 
         test "generated graphical app exposes deterministic scene evidence command" {

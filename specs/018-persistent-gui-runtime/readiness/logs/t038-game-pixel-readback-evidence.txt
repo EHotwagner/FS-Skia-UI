@@ -1,0 +1,14 @@
+status=ok
+mode=persistent-evidence
+command=--pixel-readback-evidence
+evidence-kind=pixel-readback
+supported-host=true
+fallback-reason=screenshot-unavailable
+board-readable=true
+input-or-progress-observed=true
+self-closed-for-evidence=true
+input-dispatch=not-required
+first-frame-presented=true
+renderer-mode=deterministic-scene
+scene-evidence-format=Hash
+value=d2c64bff9d9e88520b6ddc0ffab4aa436eee5f0013d0253d77aa0a8a925270f4

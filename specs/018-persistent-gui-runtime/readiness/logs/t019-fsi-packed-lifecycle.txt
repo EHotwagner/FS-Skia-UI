@@ -1,0 +1,1 @@
+running=true firstFrameState=FirstFramePresented closeOnFrame=false closed=true closeEffects=true

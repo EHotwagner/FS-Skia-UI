@@ -1,0 +1,190 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": ".specify/extensions/evidence/scripts/bash/run-audit.sh",
+      "line": 805,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "TOTAL_BLOCKERS=$((UNACCEPTED_SYNTHETIC_COUNT + INVALID_SEH_COUNT + BLOCK_HITS + READINESS_CONTRACT_HITS + PERSISTENT_LAU"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/plan.md",
+      "line": 20,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "**Synthetic Evidence**: Product lifecycle tests may use a fake/test window-loop only for the keep-open regression when n"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/plan.md",
+      "line": 43,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: PASS with restrictions. CI may use disclosed fake window-loop fixtures for regression of \"inte"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/plan.md",
+      "line": 113,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic disclosure**: PASS with restrictions. Fake window-loop and synthetic error metadata checks must be disclos"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/readiness/audit-rejections/bounded-only-interactive/readiness/task-graph.md",
+      "line": 29,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/readiness/audit-rejections/missing-generated-test-execution/readiness/task-graph.md",
+      "line": 29,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/readiness/audit-rejections/missing-readiness-files/readiness/task-graph.md",
+      "line": 29,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/readiness/audit-rejections/package-mismatch/readiness/task-graph.md",
+      "line": 29,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/readiness/audit-rejections/text-only-visual-supported-host/readiness/task-graph.md",
+      "line": 29,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/readiness/logs/t012-generated-guidance-red.txt",
+      "line": 204,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/readiness/logs/t012-generated-guidance-red.txt",
+      "line": 336,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "1. **Code-level disclosure.** Add a `// SYNTHETIC:` comment at the use"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/readiness/logs/t012-generated-guidance-red.txt",
+      "line": 339,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "let userRepo = InMemoryUserRepo()  // SYNTHETIC: staging DB not provisioned; real repo in US-17"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/readiness/logs/t012-generated-guidance-red.txt",
+      "line": 348,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "(* SYNTHETIC FIXTURE: all tests in this file use canned SMTP responses. *)"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/readiness/task-graph.md",
+      "line": 71,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "## Synthetic Error-Handling Classification"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/readiness/task-graph.md",
+      "line": 73,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Accepted | Label | Design source | Synthetic input class | Expected error behavior | Diagnostics |"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/readiness/task-graph.md",
+      "line": 277,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/readiness/task-workflow-guidance.md",
+      "line": 30,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "## Synthetic Fake Window-Loop Limits"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/spec.md",
+      "line": 84,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **FR-025**: Synthetic error-handling guidance MUST provide a pre-implementation validation path that identifies missin"
+    },
+    {
+      "file": "specs/018-persistent-gui-runtime/tasks.md",
+      "line": 151,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    },
+    {
+      "file": "tests/Governance.Tests/SyntheticErrorEvidenceTests.fs",
+      "line": 165,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"EvidenceAudit Synthetic rejects malformed SEH inventory rows before implementation\" {"
+    },
+    {
+      "file": "tests/Governance.Tests/SyntheticErrorEvidenceTests.fs",
+      "line": 181,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"EvidenceAudit Synthetic rejects invalid command arguments with usage diagnostics\" {"
+    },
+    {
+      "file": "tests/Governance.Tests/SyntheticErrorEvidenceTests.fs",
+      "line": 191,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"EvidenceAudit Synthetic rejects missing package resolution fields\" {"
+    },
+    {
+      "file": "tests/Governance.Tests/SyntheticErrorEvidenceTests.fs",
+      "line": 205,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"task graph Synthetic rejects corrupt evidence records\" {"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/audit-rejections/text-only-visual-supported-host/readiness/package-resolution.md",
+    "reason": "missing readiness acceptance keywords",
+    "missing": [
+      "requested-version",
+      "resolved-version",
+      "package-source"
+    ]
+  },
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/audit-rejections/text-only-visual-supported-host/readiness/generated-verify.md",
+    "reason": "missing readiness acceptance keywords",
+    "missing": [
+      "failure-class"
+    ]
+  },
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/audit-rejections/text-only-visual-supported-host/readiness/game-visual-evidence.md",
+    "reason": "text-only visual metadata on supported host"
+  }
+]

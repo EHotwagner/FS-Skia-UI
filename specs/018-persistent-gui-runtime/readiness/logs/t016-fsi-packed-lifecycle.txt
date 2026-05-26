@@ -1,0 +1,1 @@
+state=FirstFramePresented isRunning=true closeEffects=false userClose=false

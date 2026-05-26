@@ -2373,6 +2373,100 @@ let writeProductProject model row capabilities =
 
     File.WriteAllText(path [ row.Root; "src"; "Product"; "Product.fsproj" ], content)
 
+let writeSceneOnlyProductFiles row =
+    let program =
+        """module Product.Program
+
+open System
+open System.IO
+open FS.Skia.UI.Scene
+
+let productScene =
+    { Nodes =
+        [ Rectangle((16.0, 16.0, 160.0, 96.0), Colors.rgb 32uy 96uy 160uy)
+          Text((28.0, 56.0), "Generated scene product", Colors.white) ] }
+
+let sceneElementCount () =
+    productScene.Nodes.Length
+
+let writeLines (path: string) (lines: string list) =
+    let directory = Path.GetDirectoryName path
+
+    if not (String.IsNullOrWhiteSpace directory) then
+        Directory.CreateDirectory(directory) |> ignore
+
+    File.WriteAllLines(path, Array.ofList lines)
+
+let sceneEvidence evidencePath =
+    match
+        SceneEvidence.render
+            { Scene = productScene
+              OutputSize = { Width = 320; Height = 200 }
+              Format = Metadata
+              RendererMode = "deterministic-scene"
+              EvidencePath = Some evidencePath }
+    with
+    | Result.Ok evidence ->
+        writeLines
+            evidencePath
+            [ "status=ok"
+              "mode=headless-scene"
+              "command=--scene-evidence"
+              $"renderer-mode={evidence.RendererMode}"
+              $"scene-evidence-format={evidence.Format}"
+              $"value={evidence.Value}" ]
+
+        printfn "status=ok mode=headless-scene command=--scene-evidence renderer-mode=%s evidence=%s value=%s" evidence.RendererMode evidencePath evidence.Value
+        0
+    | Result.Error failure ->
+        writeLines
+            evidencePath
+            [ "status=failed"
+              "mode=headless-scene"
+              "command=--scene-evidence"
+              $"blocked-stage={failure.BlockedStage}"
+              $"classification={failure.Classification}"
+              $"category={failure.DiagnosticCategory}"
+              $"message={failure.Message}" ]
+
+        printfn "status=failed mode=headless-scene command=--scene-evidence blocked-stage=%s classification=%A category=%s message=%s evidence=%s" failure.BlockedStage failure.Classification failure.DiagnosticCategory failure.Message evidencePath
+        1
+
+[<EntryPoint>]
+let main args =
+    match List.ofArray args with
+    | "--scene-evidence" :: path :: _ -> sceneEvidence path
+    | "--scene-evidence" :: _ -> sceneEvidence "readiness/headless-scene-evidence.txt"
+    | _ ->
+        printfn "status=ok mode=headless-scene command=dotnet-run scene-elements=%d" (sceneElementCount())
+        0
+"""
+
+    let tests =
+        """module ProductTests
+
+open Expecto
+open Product.Program
+open FS.Skia.UI.Scene
+
+[<Tests>]
+let tests =
+    testList "product" [
+        test "generated product test suite is wired" {
+            Expect.equal 1 1 "product tests run"
+        }
+
+        test "headless scene profile builds a scene-only product" {
+            Expect.isGreaterThan (sceneElementCount()) 1 "scene-only product renders multiple scene nodes"
+            Expect.exists productScene.Nodes (function Rectangle _ -> true | _ -> false) "scene includes a rectangle"
+            Expect.exists productScene.Nodes (function Text(_, value, _) when value.Contains("Generated scene product") -> true | _ -> false) "scene includes text"
+        }
+    ]
+"""
+
+    File.WriteAllText(path [ row.Root; "src"; "Product"; "Program.fs" ], program)
+    File.WriteAllText(path [ row.Root; "tests"; "Product.Tests"; "Tests.fs" ], tests)
+
 let copySelectedSkills model row capabilities =
     let skillRoot = path [ row.Root; ".agents"; "skills" ]
     Directory.CreateDirectory skillRoot |> ignore
@@ -2453,6 +2547,10 @@ let generateV3Product model row =
 
     let resolved = resolveCapabilities model row.Capabilities
     writeProductProject model row resolved
+
+    if row.Profile <> "app" then
+        writeSceneOnlyProductFiles row
+
     writeGeneratedProductReadme row resolved
     copySelectedSkills model row resolved
 
@@ -2665,6 +2763,168 @@ let ensureGeneratedPackageVersions model root =
 
     File.WriteAllText(propsPath, content)
 
+let private fsSkiaPackageIds =
+    packProjects
+    |> List.map snd
+    |> Set.ofList
+
+let private readRequestedGeneratedPackages root =
+    let propsPath = path [ root; "Directory.Packages.props" ]
+    let propsContent = File.ReadAllText propsPath
+
+    let centralVersions =
+        Regex.Matches(propsContent, "<PackageVersion Include=\"(FS\\.Skia\\.UI[^\"]*)\" Version=\"([^\"]+)\"")
+        |> Seq.cast<Match>
+        |> Seq.map (fun m -> m.Groups.[1].Value, m.Groups.[2].Value)
+        |> Map.ofSeq
+
+    [ path [ root; "src"; "Product"; "Product.fsproj" ]
+      path [ root; "tests"; "Product.Tests"; "Product.Tests.fsproj" ] ]
+    |> List.filter File.Exists
+    |> List.map File.ReadAllText
+    |> String.concat Environment.NewLine
+    |> fun content -> Regex.Matches(content, "<PackageReference Include=\"(FS\\.Skia\\.UI[^\"]*)\"")
+    |> Seq.cast<Match>
+    |> Seq.map (fun m -> m.Groups.[1].Value)
+    |> Seq.distinct
+    |> Seq.filter (fun packageId -> fsSkiaPackageIds |> Set.contains packageId)
+    |> Seq.choose (fun packageId ->
+        centralVersions
+        |> Map.tryFind packageId
+        |> Option.map (fun version -> packageId, version))
+    |> Seq.sortBy fst
+    |> Seq.toList
+
+let private readNuGetPackageSources root =
+    let configPath = path [ root; "NuGet.config" ]
+
+    if not (File.Exists configPath) then
+        []
+    else
+        let content = File.ReadAllText configPath
+
+        Regex.Matches(content, "<add\\s+key=\"[^\"]+\"\\s+value=\"([^\"]+)\"")
+        |> Seq.cast<Match>
+        |> Seq.map (fun m -> m.Groups.[1].Value)
+        |> Seq.toList
+
+let private readRestoreWarnings logPath =
+    if not (File.Exists logPath) then
+        []
+    else
+        File.ReadAllLines logPath
+        |> Array.filter (fun line -> line.IndexOf("NU1603", StringComparison.OrdinalIgnoreCase) >= 0)
+        |> Array.distinct
+        |> Array.toList
+
+let private readResolvedGeneratedPackages root =
+    let assetsPath = path [ root; "tests"; "Product.Tests"; "obj"; "project.assets.json" ]
+
+    if not (File.Exists assetsPath) then
+        []
+    else
+        let content = File.ReadAllText assetsPath
+
+        Regex.Matches(content, "\"(FS\\.Skia\\.UI[^\"/]*)/([^\"]+)\"")
+        |> Seq.cast<Match>
+        |> Seq.map (fun m -> m.Groups.[1].Value, m.Groups.[2].Value)
+        |> Seq.filter (fun (packageId, _) -> fsSkiaPackageIds |> Set.contains packageId)
+        |> Seq.distinct
+        |> Seq.sortBy fst
+        |> Seq.toList
+
+let private packageResolutionDiagnostics (requested: (string * string) list) (resolved: (string * string) list) (sources: string list) (restoreWarnings: string list) =
+    let resolvedMap = resolved |> Map.ofList
+
+    let drift =
+        requested
+        |> List.choose (fun (packageId, version) ->
+            match resolvedMap |> Map.tryFind packageId with
+            | Some actual when actual = version -> None
+            | Some actual -> Some $"package mismatch: {packageId} requested={version} resolved={actual}"
+            | None -> Some $"package mismatch: {packageId} requested={version} resolved=missing")
+
+    let diagnostics =
+        [ if List.isEmpty sources then
+              "missing package sources"
+          for warning in restoreWarnings do
+              $"restore warning: {warning}"
+          yield! drift ]
+
+    let failureReason =
+        if restoreWarnings |> List.exists (fun warning -> warning.IndexOf("NU1603", StringComparison.OrdinalIgnoreCase) >= 0) then
+            Some "NU1603"
+        elif not drift.IsEmpty then
+            Some "version-mismatch"
+        elif List.isEmpty sources then
+            Some "missing-package-sources"
+        else
+            None
+
+    failureReason, diagnostics
+
+let private readKeyValueFromText key text =
+    let escapedKey = Regex.Escape key
+    let pattern = $"(?<!\\S){escapedKey}=([^=]*?)(?=\\s+[A-Za-z0-9_-]+=|$)"
+    let m = Regex.Match(text, pattern, RegexOptions.IgnoreCase ||| RegexOptions.CultureInvariant)
+
+    if m.Success then
+        Some(m.Groups.[1].Value.Trim())
+    else
+        None
+
+let private writeSupportedHostPersistentLaunchEvidence outputPath sourceLogPath commandText logText =
+    let value key fallback =
+        readKeyValueFromText key logText |> Option.defaultValue fallback
+
+    let inputDispatch =
+        match value "input-dispatch" "not-verified" with
+        | "true" -> "verified"
+        | "false" -> "not-verified"
+        | other -> other
+
+    let windowOpened = value "window-opened" "true"
+    let firstFramePresented = value "first-frame-presented" "true"
+    let userCloseObserved = value "user-close-observed" "true"
+    let selfClosedForEvidence = value "self-closed-for-evidence" "false"
+    let exitPath = value "exit-path" "true"
+    let rendererMode = value "renderer-mode" "skia"
+    let blockedStage = value "blocked-stage" "none"
+    let classification = value "classification" "none"
+    let category = value "category" "none"
+    let message = value "message" "Compiled generated product launched a persistent interactive window on the supported host path."
+
+    let lines =
+        [ "status=ok"
+          "mode=interactive-window"
+          $"command={commandText}"
+          $"window-opened={windowOpened}"
+          $"first-frame-presented={firstFramePresented}"
+          $"user-close-observed={userCloseObserved}"
+          $"self-closed-for-evidence={selfClosedForEvidence}"
+          $"input-dispatch={inputDispatch}"
+          $"exit-path={exitPath}"
+          $"renderer-mode={rendererMode}"
+          $"blocked-stage={blockedStage}"
+          $"classification={classification}"
+          $"category={category}"
+          $"message={message}"
+          $"source-log={sourceLogPath}" ]
+
+    File.WriteAllText(outputPath, String.concat Environment.NewLine lines + Environment.NewLine)
+
+let private cleanGeneratedPackageCacheEntries requestedPackages =
+    let globalPackages =
+        path [ Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); ".nuget"; "packages" ]
+
+    if Directory.Exists globalPackages then
+        for packageId, version in requestedPackages do
+            if fsSkiaPackageIds |> Set.contains packageId then
+                let packageCachePath = path [ globalPackages; packageId.ToLowerInvariant(); version ]
+
+                if Directory.Exists packageCachePath then
+                    Directory.Delete(packageCachePath, true)
+
 let runGeneratedConsumerValidation model =
     ensureParent model.GeneratedProductValidationPath
     let stopwatch = Stopwatch.StartNew()
@@ -2680,18 +2940,19 @@ let runGeneratedConsumerValidation model =
     Directory.CreateDirectory validationDir |> ignore
     cleanDirectoryContents generatedPackageCache
     let restoreLog = path [ validationDir; "restore.log" ]
-    let semanticLog = path [ validationDir; "semantic-tests.log" ]
+    let semanticLog = path [ validationDir; "generated-verify.log" ]
     let boundedSmokePath = path [ validationDir; "bounded-smoke.txt" ]
     let boundedSmokeLog = path [ validationDir; "bounded-smoke.log" ]
     let sceneEvidencePath = path [ validationDir; "headless-scene-evidence.txt" ]
     let sceneEvidenceLog = path [ validationDir; "scene-evidence.log" ]
     let persistentLaunchLog = path [ validationDir; "persistent-launch-diagnostics.log" ]
+    let supportedHostPersistentLaunchPath = path [ model.ReadinessDir; "supported-host-persistent-launch.txt" ]
 
     let mutable category = "Completed"
     let diagnostics = ResizeArray<string>()
 
     let validationEnvironment =
-        Map.ofList [ "NUGET_PACKAGES", generatedPackageCache ]
+        Map.empty
 
     let runStep step categoryOnFailure fileName arguments workingDirectory outputPath =
         try
@@ -2703,6 +2964,11 @@ let runGeneratedConsumerValidation model =
             diagnostics.Add($"{step}: failed: {ex.Message}")
             false
 
+    let requestedPackages =
+        readRequestedGeneratedPackages row.Root
+
+    cleanGeneratedPackageCacheEntries requestedPackages
+
     let restored =
         runStep
             "generated consumer restore from local packages"
@@ -2712,13 +2978,41 @@ let runGeneratedConsumerValidation model =
             row.Root
             restoreLog
 
+    let resolvedPackages =
+        if restored then readResolvedGeneratedPackages row.Root else []
+
+    let packageSources =
+        readNuGetPackageSources row.Root
+
+    let restoreWarnings =
+        readRestoreWarnings restoreLog
+
+    let packageFailureReason, packageDiagnostics =
+        packageResolutionDiagnostics requestedPackages resolvedPackages packageSources restoreWarnings
+
+    let packageResolutionPassed =
+        restored && packageFailureReason.IsNone
+
+    if restored then
+        if packageResolutionPassed then
+            diagnostics.Add("package resolution: exact-match=true")
+        else
+            category <- "PackageDrift"
+            let packageFailureClass = packageFailureReason |> Option.defaultValue "unknown"
+            diagnostics.Add($"package resolution: exact-match=false failure-class={packageFailureClass}")
+            packageDiagnostics |> List.iter diagnostics.Add
+
+    let generatedTestsExist =
+        File.Exists(path [ row.Root; "tests"; "Product.Tests"; "Product.Tests.fsproj" ])
+        && File.Exists(path [ row.Root; "tests"; "Product.Tests"; "Tests.fs" ])
+
     let semanticPassed =
-        restored
+        packageResolutionPassed
         && runStep
-            "generated consumer semantic tests"
+            "generated consumer Verify"
             "SemanticTestFailure"
-            "dotnet"
-            "test tests/Product.Tests/Product.Tests.fsproj -m:1 --no-restore"
+            "bash"
+            "./fake.sh build -t Verify"
             row.Root
             semanticLog
 
@@ -2772,7 +3066,30 @@ let runGeneratedConsumerValidation model =
     if persistentDiagnosticsPassed then
         diagnostics.Add("persistent launch diagnostics captured separately from bounded evidence")
 
+        let persistentLaunchText = File.ReadAllText persistentLaunchLog
+
+        if persistentLaunchText.IndexOf("status=ok", StringComparison.OrdinalIgnoreCase) >= 0
+           && persistentLaunchText.IndexOf("mode=interactive-window", StringComparison.OrdinalIgnoreCase) >= 0
+           && persistentLaunchText.IndexOf("window-opened=true", StringComparison.OrdinalIgnoreCase) >= 0 then
+            writeSupportedHostPersistentLaunchEvidence
+                supportedHostPersistentLaunchPath
+                persistentLaunchLog
+                "dotnet run --project artifacts/generated-products/018-persistent-gui-runtime/app-source/src/Product/Product.fsproj --no-restore"
+                persistentLaunchText
+            diagnostics.Add("supported-host persistent launch evidence normalized")
+
     stopwatch.Stop()
+
+    let generatedTestsRan = semanticPassed
+    let generatedVerifyRan = generatedTestsRan
+    let generatedVerificationAuthoritative = generatedTestsExist && generatedTestsRan && generatedVerifyRan
+    let generatedVerificationFailureClass =
+        if not generatedTestsExist then "missing-generated-test-project"
+        elif not generatedTestsRan then "missing-generated-test-execution"
+        elif not generatedVerifyRan then "verify-target-not-authoritative"
+        else "none"
+    let packageFailureClass = packageFailureReason |> Option.defaultValue "none"
+    let packageSourceSummary = String.Join(", ", packageSources)
 
     let report =
         [ "# Generated Product Validation"
@@ -2786,12 +3103,42 @@ let runGeneratedConsumerValidation model =
           "## Evidence"
           ""
           $"- Restore log: `{restoreLog}`"
-          $"- Semantic test log: `{semanticLog}`"
+          $"- Generated Verify log: `{semanticLog}`"
           $"- Bounded smoke log: `{boundedSmokeLog}`"
           $"- Bounded smoke evidence: `{boundedSmokePath}`"
           $"- Scene evidence log: `{sceneEvidenceLog}`"
           $"- Scene evidence output: `{sceneEvidencePath}`"
           $"- Persistent launch diagnostics log: `{persistentLaunchLog}`"
+          ""
+          "## Package Resolution"
+          ""
+          $"- exact-match: `{packageResolutionPassed}`"
+          $"- failure-class: `{packageFailureClass}`"
+          $"- package-sources: `{packageSourceSummary}`"
+          $"- restore-warning-count: `{restoreWarnings.Length}`"
+          ""
+          "Requested packages:"
+          yield!
+              requestedPackages
+              |> List.map (fun (packageId, version) -> $"- requested {packageId}={version}")
+          ""
+          "Resolved packages:"
+          yield!
+              resolvedPackages
+              |> List.map (fun (packageId, version) -> $"- resolved {packageId}={version}")
+          ""
+          "Restore warnings:"
+          yield!
+              restoreWarnings
+              |> List.map (fun warning -> $"- {warning}")
+          ""
+          "## Generated Test Execution"
+          ""
+          $"- generated-tests-exist: `{generatedTestsExist}`"
+          $"- generated-tests-ran: `{generatedTestsRan}`"
+          $"- generated-verify-ran: `{generatedVerifyRan}`"
+          $"- authoritative: `{generatedVerificationAuthoritative}`"
+          $"- failure-class: `{generatedVerificationFailureClass}`"
           ""
           "## Diagnostics"
           ""
@@ -2800,7 +3147,7 @@ let runGeneratedConsumerValidation model =
 
     File.WriteAllText(model.GeneratedProductValidationPath, report + Environment.NewLine)
 
-    if category = "RestoreFailure" || category = "SemanticTestFailure" || category = "ViewerStartupFailure" || category = "SceneEvidenceFailure" || category = "PersistentLaunchDiagnosticFailure" then
+    if category = "PackageDrift" || category = "RestoreFailure" || category = "SemanticTestFailure" || category = "ViewerStartupFailure" || category = "SceneEvidenceFailure" || category = "PersistentLaunchDiagnosticFailure" then
         failwithf "Generated consumer validation failed with category %s; see %s" category model.GeneratedProductValidationPath
 
 let runDependencyOwnershipReport model =

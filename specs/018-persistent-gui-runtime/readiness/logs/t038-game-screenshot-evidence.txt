@@ -1,0 +1,14 @@
+status=ok
+mode=persistent-evidence
+command=--screenshot-evidence
+evidence-kind=screenshot
+supported-host=true
+fallback-reason=none
+board-readable=true
+input-or-progress-observed=true
+self-closed-for-evidence=true
+input-dispatch=not-required
+first-frame-presented=true
+renderer-mode=deterministic-scene
+scene-evidence-format=Png
+value=d2c64bff9d9e88520b6ddc0ffab4aa436eee5f0013d0253d77aa0a8a925270f4

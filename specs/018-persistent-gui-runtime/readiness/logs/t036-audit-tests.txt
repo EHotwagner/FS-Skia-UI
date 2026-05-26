@@ -1,0 +1,62 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Governance.Tests -> /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed persistent viewer evidence contracts.EvidenceAudit rejects missing persistent runtime readiness acceptance keywords [1 s]
+  Error Message:
+   
+audit reports missing package/generated/visual acceptance keywords. Expected subject string '=== speckit.evidence.audit ===
+feature: /tmp/persistent-gui-runtime-missing-keywords-f86653df75454d0f8610125c42ff749f
+
+[1/3] Computing task graph...
+task-graph: 1 tasks parsed
+  wrote /tmp/persistent-gui-runtime-missing-keywords-f86653df75454d0f8610125c42ff749f/readiness/task-graph.json
+  wrote /tmp/persistent-gui-runtime-missing-keywords-f86653df75454d0f8610125c42ff749f/readiness/task-graph.md
+  status: 1[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 3 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[3/3] Diff scan against feature base...
+  warning: neither main nor master exists; using HEAD~1
+  warning: not in a git repo; skipping diff scan
+  diff scan skipped (not a git repo)
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=1
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+  synthetic tasks (declared):     0
+  auto-synthetic tasks (computed): 0
+  accepted [SEH] tasks:           0
+  unaccepted synthetic tasks:      0
+  late [SEH] tasks:                0
+  readiness contract hits:         3
+
+  To override, rerun with:  --accept-synthetic "justification"
+    [BLOCK] /tmp/persistent-gui-runtime-missing-keywords-f86653df75454d0f8610125c42ff749f/readiness/governance-risk-levels.md (missing governance-risk-levels.md)
+    [BLOCK] /tmp/persistent-gui-runtime-missing-keywords-f86653df75454d0f8610125c42ff749f/readiness/aggregate-hang-diagnostics.md (missing aggregate-hang-diagnostics.md)
+    [BLOCK] /tmp/persistent-gui-runtime-missing-keywords-f86653df75454d0f8610125c42ff749f/readiness/runtime-limitations.md (missing runtime-limitations.md)
+fatal: not a git repository (or any of the parent directories): .git
+fatal: not a git repository (or any of the parent directories): .git
+' to contain substring 'missing readiness acceptance keywords'.
+   at PersistentViewerEvidenceTests.persistentViewerEvidenceTests@208-14.Invoke(TempFixtureDirectory _arg3) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/PersistentViewerEvidenceTests.fs:line 218
+   at Microsoft.FSharp.Core.Operators.Using[T,TResult](T resource, FSharpFunc`2 action) in /__w/1/s/src/fsharp/src/FSharp.Core/prim-types.fs:line 5488
+   at PersistentViewerEvidenceTests.persistentViewerEvidenceTests@207-13.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/PersistentViewerEvidenceTests.fs:line 207
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+
+
+Failed!  - Failed:     1, Passed:    12, Skipped:     0, Total:    13, Duration: 3 s - Governance.Tests.dll (net10.0)

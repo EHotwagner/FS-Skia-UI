@@ -1,0 +1,3 @@
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/src/Product/Product.fsproj (in 472 ms).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/018-persistent-gui-runtime/app-source/tests/Product.Tests/Product.Tests.fsproj (in 471 ms).

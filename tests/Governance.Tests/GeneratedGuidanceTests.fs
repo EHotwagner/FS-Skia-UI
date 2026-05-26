@@ -103,6 +103,33 @@ let generatedGuidanceTests =
                       "exit without a persistent launch attempt" ])
         }
 
+        test "generated task guidance requires implementation workflow evidence records" {
+            [ ".specify/templates/tasks-template.md"
+              ".specify/presets/fsharp-opinionated/templates/tasks-template.md" ]
+            |> List.iter (fun template ->
+                expectFileContains
+                    template
+                    [ "implementation batch records"
+                      "red-green evidence log"
+                      "graph before/after"
+                      "skill-loading notes"
+                      "non-authoritative aggregate" ])
+        }
+
+        test "implementation guidance requires pre-work skill loading and graph refresh evidence" {
+            [ ".agents/skills/speckit-implement/SKILL.md"
+              ".specify/presets/fsharp-opinionated/commands/speckit.implement.md" ]
+            |> List.iter (fun guidance ->
+                expectFileContains
+                    guidance
+                    [ "readiness/skill-loading-evidence.md"
+                      "loaded_at"
+                      "work_started_at"
+                      "reviewer exception"
+                      "graph before/after"
+                      "red-green evidence log" ])
+        }
+
         test "Spec Kit docs distinguish V2 obligations from deferred roadmap work" {
             expectFileContains
                 "docs/speckit.md"

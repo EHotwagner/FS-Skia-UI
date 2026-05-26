@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/audit-rejections/bounded-only-interactive/readiness/interactive-lifecycle.md",
+    "reason": "bounded-only substitution for interactive evidence"
+  },
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/audit-rejections/bounded-only-interactive/readiness/package-resolution.md",
+    "reason": "missing readiness acceptance keywords",
+    "missing": [
+      "requested-version",
+      "resolved-version",
+      "package-source"
+    ]
+  },
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/audit-rejections/bounded-only-interactive/readiness/generated-verify.md",
+    "reason": "missing readiness acceptance keywords",
+    "missing": [
+      "failure-class"
+    ]
+  }
+]

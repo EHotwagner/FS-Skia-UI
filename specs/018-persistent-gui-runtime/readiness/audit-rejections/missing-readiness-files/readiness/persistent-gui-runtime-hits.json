@@ -1,0 +1,58 @@
+[
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/audit-rejections/missing-readiness-files/readiness/interactive-lifecycle.md",
+    "reason": "missing required readiness files",
+    "missing": [
+      "interactive-lifecycle.md"
+    ]
+  },
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/audit-rejections/missing-readiness-files/readiness/evidence-launch-mode.md",
+    "reason": "missing required readiness files",
+    "missing": [
+      "evidence-launch-mode.md"
+    ]
+  },
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/audit-rejections/missing-readiness-files/readiness/container-session-diagnostics.md",
+    "reason": "missing required readiness files",
+    "missing": [
+      "container-session-diagnostics.md"
+    ]
+  },
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/audit-rejections/missing-readiness-files/readiness/package-resolution.md",
+    "reason": "missing required readiness files",
+    "missing": [
+      "package-resolution.md"
+    ]
+  },
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/audit-rejections/missing-readiness-files/readiness/generated-verify.md",
+    "reason": "missing required readiness files",
+    "missing": [
+      "generated-verify.md"
+    ]
+  },
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/audit-rejections/missing-readiness-files/readiness/game-visual-evidence.md",
+    "reason": "missing required readiness files",
+    "missing": [
+      "game-visual-evidence.md"
+    ]
+  },
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/audit-rejections/missing-readiness-files/readiness/task-workflow-guidance.md",
+    "reason": "missing required readiness files",
+    "missing": [
+      "task-workflow-guidance.md"
+    ]
+  },
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/audit-rejections/missing-readiness-files/readiness/evidence-audit.md",
+    "reason": "missing required readiness files",
+    "missing": [
+      "evidence-audit.md"
+    ]
+  }
+]
