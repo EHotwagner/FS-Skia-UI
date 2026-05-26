@@ -16,6 +16,13 @@ The `[S*]` marker is computed, not written: any task whose dependency is
 `[S]` or `[S*]` and which otherwise would be `[X]` is promoted to `[S*]` by
 the evidence audit. See `readiness/task-graph.md` for the propagated view.
 
+Approved synthetic error-handling work uses `[SEH]` plus the
+`synthetic-error-handling-approved` label. It still remains `[S]` when
+completed with synthetic-only malformed-input or explicit error-path evidence.
+The classification must be assigned during design, planning, clarification, or
+task generation. implementation-time relabeling is forbidden; newly discovered
+needs go back to task/design review.
+
 ## Vertical-slice rule (US phases)
 
 A task tagged `[US*]` may only be marked `[X]` when the change is
@@ -41,6 +48,8 @@ phase tasks; those are evaluated against their own phase verification.
 - **[P]** — parallel-safe (no deps inside the current phase)
 - **[US1]**, **[US2]**, … — user-story scope
 - **[T1]** / **[T2]** — Tier 1 (contracted) vs Tier 2 (internal) change
+- **[SEH]** — design-approved synthetic error-handling task paired with
+  `synthetic-error-handling-approved`
 
 Every task must have a matching entry in `tasks.deps.yml` even if its
 dependency list is empty. Every task line MUST mirror the structured
@@ -85,6 +94,17 @@ Keep `tasks.deps.yml`, the `skillist` mirror, and the
 Generated tasks should also name the small, medium, and broad governance risk
 level, focused validation required for the selected level, when broad validation
 is required, and how non-authoritative aggregate results are recorded.
+
+For malformed-input and explicit error-path tasks, generated task lists MAY use
+`[SEH]` only when the task itself validates an error behavior and real input is
+infeasible, unsafe, impossible, or not representative of the error path.
+Eligible examples include malformed parser input, corrupt file content, invalid
+command arguments, protocol violations, missing required data, hostile payloads,
+and forced error-result fixtures. Non-eligible examples include convenience mocks,
+incomplete integrations, unavailable product capability, missing host support,
+placeholder outputs, speed-only fixtures, and ordinary in-memory substitutes.
+If a task is split, renamed, or rescoped, preserve `[SEH]` only
+when the same approved rationale still applies; otherwise invalidate it.
 
 For graphical viewer features, generated tasks MUST include a distinct
 persistent graphical launch task that is reachable from the default executable
@@ -170,7 +190,9 @@ Template source: `.specify/presets/fsharp-opinionated/templates/tasks-template.m
 
 List every `[S]` task here with its Principle V disclosures. This section is
 the source for the PR description's synthetic-evidence section.
+For `[SEH]` rows, include the approval label, design-phase source, synthetic
+input class, expected error behavior, and reviewer-visible acceptance status.
 
-| Task | Reason | Real-evidence path | Tracking issue |
-|------|--------|---------------------|----------------|
-| _(none yet)_ | | | |
+| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error behavior | Acceptance status |
+|------|--------|--------------------|----------------|-------|---------------|-----------------------|-------------------------|-------------------|
+| _(none yet)_ | | | | | | | | |

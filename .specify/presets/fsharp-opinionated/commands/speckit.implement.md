@@ -92,6 +92,22 @@ the ordinary spec → FSI → semantic tests → implementation path.
 
 ## Synthetic-evidence disclosures (Principle V)
 
+`[SEH]` is a design/task-generation classification for malformed-input and
+explicit error-path synthetic evidence. Do not add `[SEH]` or
+`synthetic-error-handling-approved` during implementation-time relabeling,
+readiness cleanup, or after an audit failure. If implementation discovers a
+new synthetic error-handling need, stop that task and send it back to the
+design/task phase so reviewers can decide before implementation incentives
+apply. `[SEH]` tasks still remain `[S]` when completed with synthetic-only
+evidence, and the inventory row must keep the approval label, design source,
+synthetic input class, expected error behavior, and `accepted-seh` status.
+Non-eligible synthetic cases such as convenience mocks, incomplete
+integrations, missing host support, placeholder outputs, speed-only fixtures,
+or ordinary in-memory substitutes remain ordinary `[S]` evidence. Eligible
+examples already approved during design include malformed parser input, corrupt
+file content, invalid command arguments, protocol violations, missing required
+data, hostile payloads, and forced error-result fixtures.
+
 When you emit an `[S]` task, you MUST also:
 
 1. **Code-level disclosure.** Add a `// SYNTHETIC:` comment at the use

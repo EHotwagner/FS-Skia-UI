@@ -40,10 +40,39 @@ let runProcess (fileName: string) (arguments: string) =
         | Some proc -> proc
         | None -> failwithf "Could not start %s %s" fileName arguments
 
-    let stdout: string = proc.StandardOutput.ReadToEnd()
-    let stderr: string = proc.StandardError.ReadToEnd()
-    proc.WaitForExit()
-    proc.ExitCode, stdout, stderr
+    let stdoutTask = proc.StandardOutput.ReadToEndAsync()
+    let stderrTask = proc.StandardError.ReadToEndAsync()
+    let timeoutMilliseconds = 120000
+
+    if proc.WaitForExit(timeoutMilliseconds) then
+        let stdout = stdoutTask.GetAwaiter().GetResult()
+        let stderr = stderrTask.GetAwaiter().GetResult()
+        proc.ExitCode, stdout, stderr
+    else
+        try
+            proc.Kill(true)
+        with _ ->
+            ()
+
+        let stdout =
+            if stdoutTask.Wait(1000) then
+                stdoutTask.Result
+            else
+                ""
+
+        let stderr =
+            if stderrTask.Wait(1000) then
+                stderrTask.Result
+            else
+                ""
+
+        failtestf
+            "%s %s timed out after %d ms. stdout:\n%s\nstderr:\n%s"
+            fileName
+            arguments
+            timeoutMilliseconds
+            stdout
+            stderr
 
 [<Tests>]
 let smokeContractTests =

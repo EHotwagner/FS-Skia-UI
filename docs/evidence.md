@@ -112,6 +112,24 @@ fixtures must name the real-evidence path before they can be accepted, and the
 task inventory must identify any task whose pass depends directly on symbolic
 handles or canned failures.
 
+Synthetic error-handling tasks are the narrow exception. A malformed-input or
+explicit error-path task may be annotated `[SEH]` and labeled
+`synthetic-error-handling-approved` only during design, planning,
+clarification, or task generation. It still remains `[S]`; reviewers should
+look for the inventory row fields `Design source`, `Synthetic input class`,
+`Expected error behavior`, and `Acceptance status=accepted-seh`. EvidenceAudit
+reports `accepted-seh-tasks`, `unaccepted-synthetic-tasks`,
+`auto-synthetic-tasks`, and `late-seh-tasks` so accepted synthetic evidence is
+visible without being treated as real evidence.
+
+Eligible `[SEH]` cases include malformed parser input, corrupt file content,
+invalid command arguments, protocol violations, missing required data, hostile
+payloads, and forced error-result fixtures. Convenience mocks, incomplete
+integrations, unavailable product capability, missing host support, placeholder
+outputs, speed-only fixtures, and ordinary in-memory substitutes remain
+ordinary synthetic evidence. Implementation-time relabeling is rejected; send
+newly discovered cases back to task/design review.
+
 ## Roadmap Boundary
 
 Full visual evidence, release validation, an external template repository split,

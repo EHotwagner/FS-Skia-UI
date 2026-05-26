@@ -27,6 +27,7 @@
     <Compile Include="SkillValidationTests.fs" />
     <Compile Include="PersistentViewerEvidenceTests.fs" />
     <Compile Include="GovernanceEvidenceTests.fs" />
+    <Compile Include="SyntheticErrorEvidenceTests.fs" />
     <Compile Include="TemplateDriftTests.fs" />
     <Compile Include="PublicRecordInvariantTests.fs" />
     <Compile Include="Program.fs" />

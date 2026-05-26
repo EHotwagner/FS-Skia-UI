@@ -1,0 +1,11 @@
+{
+  "accepted_seh_tasks": [
+    "T012",
+    "T019",
+    "T024"
+  ],
+  "unaccepted_synthetic_tasks": [],
+  "auto_synthetic_tasks": [],
+  "late_seh_tasks": [],
+  "diagnostics": []
+}

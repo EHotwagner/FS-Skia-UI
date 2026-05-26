@@ -1,0 +1,24 @@
+{
+  "accepted_seh_tasks": [
+    "T001"
+  ],
+  "unaccepted_synthetic_tasks": [],
+  "auto_synthetic_tasks": [],
+  "late_seh_tasks": [
+    "T001"
+  ],
+  "diagnostics": [
+    {
+      "task": "T001",
+      "failed_rule": "late [SEH] classification; non-eligible synthetic evidence class",
+      "observed": {
+        "status": "synthetic",
+        "seh": true,
+        "label": true,
+        "acceptance_status": "accepted-seh"
+      },
+      "source": "implementation readiness cleanup after audit failure",
+      "required_action": "Return to design/task generation and record valid [SEH] classification before implementation."
+    }
+  ]
+}

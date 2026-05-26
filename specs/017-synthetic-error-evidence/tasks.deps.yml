@@ -1,0 +1,133 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+# Phase-checkpoint edges are auto-injected by the graph script; only explicit
+# non-phase cross-edges are listed here.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: ["speckit-tasks"]
+  T003:
+    deps: []
+    skillist: ["speckit-tasks", "speckit-implement", "speckit-constitution"]
+  T004:
+    deps: [T001, T002, T003]
+    skillist: []
+
+  T005:
+    deps: []
+    skillist: []
+  T006:
+    deps: []
+    skillist: ["speckit-constitution"]
+  T007:
+    deps: []
+    skillist: ["speckit-tasks"]
+  T008:
+    deps: []
+    skillist: ["speckit-tasks", "speckit-implement"]
+  T009:
+    deps: []
+    skillist: ["speckit-evidence-graph"]
+  T010:
+    deps: []
+    skillist: ["speckit-evidence-audit"]
+  T011:
+    deps: [T005, T006, T007, T008, T009, T010]
+    skillist: []
+
+  T012:
+    deps: []
+    skillist: []
+  T013:
+    deps: []
+    skillist: ["speckit-tasks"]
+  T014:
+    deps: [T006]
+    skillist: ["speckit-constitution"]
+  T015:
+    deps: [T007, T012, T013]
+    skillist: ["speckit-tasks"]
+  T016:
+    deps: [T007, T013, T015]
+    skillist: ["speckit-tasks"]
+  T017:
+    deps: [T015, T016]
+    skillist: []
+  T018:
+    deps: [T014, T015, T016, T017]
+    skillist: ["speckit-tasks"]
+
+  T019:
+    deps: []
+    skillist: ["speckit-evidence-audit"]
+  T020:
+    deps: []
+    skillist: ["speckit-evidence-graph"]
+  T021:
+    deps: [T009, T019, T020]
+    skillist: ["speckit-evidence-graph"]
+  T022:
+    deps: [T010, T019, T021]
+    skillist: ["speckit-evidence-audit"]
+  T023:
+    deps: [T021, T022]
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T024:
+    deps: [T019, T021, T022, T023]
+    skillist: ["speckit-evidence-audit"]
+
+  T025:
+    deps: []
+    skillist: ["speckit-evidence-audit"]
+  T026:
+    deps: []
+    skillist: ["speckit-tasks", "speckit-implement"]
+  T027:
+    deps: [T022, T025]
+    skillist: ["speckit-evidence-audit"]
+  T028:
+    deps: [T016, T026, T027]
+    skillist: ["speckit-tasks", "speckit-implement"]
+  T029:
+    deps: [T025, T027, T028]
+    skillist: []
+
+  T030:
+    deps: []
+    skillist: ["speckit-evidence-audit"]
+  T031:
+    deps: []
+    skillist: ["speckit-tasks"]
+  T032:
+    deps: [T022, T030]
+    skillist: ["speckit-evidence-audit"]
+  T033:
+    deps: [T015, T016, T031, T032]
+    skillist: ["speckit-tasks"]
+  T034:
+    deps: [T030, T032, T033]
+    skillist: []
+
+  T035:
+    deps: [T018, T024, T029, T034]
+    skillist: []
+  T036:
+    deps: [T035]
+    skillist: []
+  T037:
+    deps: [T035, T036]
+    skillist: ["speckit-evidence-graph"]
+  T038:
+    deps: [T037]
+    skillist: ["speckit-evidence-audit"]
+  T039:
+    deps: [T036, T037, T038]
+    skillist: []
+  T040:
+    deps: [T036, T037, T038]
+    skillist: []

@@ -15,6 +15,8 @@
 | [X] done | 1 |
 | [S] synthetic | 0 |
 | [S*] auto-synthetic | 0 |
+| accepted [SEH] synthetic | 0 |
+| unaccepted synthetic | 0 |
 
 ## Graph
 

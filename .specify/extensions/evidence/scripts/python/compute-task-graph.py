@@ -91,6 +91,14 @@ class Task:
     explicit_deps: List[str] = field(default_factory=list)
     phase_deps: List[str] = field(default_factory=list)
     skill_match_assessments: List[dict] = field(default_factory=list)
+    seh_annotation: bool = False
+    seh_approval_label: bool = False
+    design_source: str = ""
+    synthetic_input_class: str = ""
+    expected_error_behavior: str = ""
+    seh_rationale: str = ""
+    seh_acceptance_status: str = ""
+    seh_diagnostics: List[str] = field(default_factory=list)
 
     @property
     def all_deps(self) -> List[str]:
@@ -170,6 +178,8 @@ def parse_tasks_md(path: Path) -> Tuple[Dict[str, Task], List[str]]:
         parallel = bool(re.search(r"\[P\]", rest))
         story_m = re.search(r"\[(US\d+)\]", rest)
         tier_m = re.search(r"\[(T[12])\]", rest)
+        seh_annotation = bool(re.search(r"(?<!`)\[SEH\](?!`)", rest))
+        seh_approval_label = bool(re.search(r"(?<!`)synthetic-error-handling-approved(?!`)", rest))
 
         skillist_m = re.search(r"\[skillist:\s*(?P<value>\[\]|[^\]]*)\]", rest)
         skillist_mirror: Optional[List[str]] = None
@@ -181,7 +191,7 @@ def parse_tasks_md(path: Path) -> Tuple[Dict[str, Task], List[str]]:
                 skillist_mirror = [x.strip() for x in raw_value.split(",") if x.strip()]
 
         # Title: strip all [..] annotation brackets, keep the sentence.
-        title = re.sub(r"\[(P|US\d+|T[12])\]\s*", "", rest).strip()
+        title = re.sub(r"(?<!`)\[(P|US\d+|T[12]|SEH)\](?!`)\s*", "", rest).strip()
         title = re.sub(r"\[skillist:\s*(?:\[\]|[^\]])*\]\s*", "", title).strip()
 
         if tid in tasks:
@@ -199,6 +209,8 @@ def parse_tasks_md(path: Path) -> Tuple[Dict[str, Task], List[str]]:
             line_no=i,
             title=title,
             skillist_mirror=skillist_mirror,
+            seh_annotation=seh_annotation,
+            seh_approval_label=seh_approval_label,
         )
         tasks[tid] = task
 
@@ -206,6 +218,60 @@ def parse_tasks_md(path: Path) -> Tuple[Dict[str, Task], List[str]]:
             phase_tasks[current_phase].append(tid)
             if not past_checkpoint:
                 phase_foundation[current_phase].append(tid)
+
+    # Merge Synthetic-Evidence Inventory metadata when present. This reads the
+    # governed Markdown table shape and ignores unrelated tables.
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        if line.strip().lower() != "## synthetic-evidence inventory":
+            continue
+        header: Optional[List[str]] = None
+        for row in lines[index + 1:]:
+            stripped = row.strip()
+            if stripped.startswith("## "):
+                break
+            if not (stripped.startswith("|") and stripped.endswith("|")):
+                continue
+            cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+            if cells and all(cell and set(cell) <= {"-"} for cell in cells):
+                continue
+            if header is None:
+                header = [cell.lower() for cell in cells]
+                continue
+            if cells and cells[0].startswith("_("):
+                continue
+            row_data = {header[i]: cells[i] for i in range(min(len(header), len(cells)))}
+            task_id_match = TASK_ID_RE.search(row_data.get("task", ""))
+            if not task_id_match:
+                continue
+            task = tasks.get(task_id_match.group(0))
+            if not task:
+                continue
+            label = row_data.get("label", "")
+            task.seh_approval_label = task.seh_approval_label or label == "synthetic-error-handling-approved"
+            task.design_source = row_data.get("design source", task.design_source).strip()
+            task.synthetic_input_class = row_data.get("synthetic input class", task.synthetic_input_class).strip()
+            task.expected_error_behavior = row_data.get("expected error behavior", task.expected_error_behavior).strip()
+            task.seh_acceptance_status = row_data.get("acceptance status", task.seh_acceptance_status).strip()
+            task.seh_rationale = row_data.get("reason", task.seh_rationale).strip()
+        break
+
+    for task in tasks.values():
+        if task.declared == "synthetic" and (task.seh_annotation or task.seh_approval_label):
+            if not task.seh_annotation:
+                task.seh_diagnostics.append("missing [SEH] annotation")
+            if not task.seh_approval_label:
+                task.seh_diagnostics.append("missing synthetic-error-handling-approved label")
+            if not task.design_source:
+                task.seh_diagnostics.append("missing design-phase source")
+            if not task.synthetic_input_class:
+                task.seh_diagnostics.append("missing synthetic input class")
+            if not task.expected_error_behavior:
+                task.seh_diagnostics.append("missing expected error behavior")
+            if not task.seh_rationale:
+                task.seh_diagnostics.append("missing rationale")
+            if task.declared == "synthetic" and task.seh_acceptance_status != "accepted-seh":
+                task.seh_diagnostics.append("missing accepted-seh acceptance status")
 
     # Inject phase-checkpoint edges.
     # For each task in Phase N, add an implicit dep on the LAST task of
@@ -605,6 +671,16 @@ def detect_cycles(tasks: Dict[str, Task]) -> List[List[str]]:
     return cycles
 
 
+def is_accepted_seh(t: Task) -> bool:
+    return (
+        t.declared == "synthetic"
+        and t.seh_annotation
+        and t.seh_approval_label
+        and t.seh_acceptance_status == "accepted-seh"
+        and not t.seh_diagnostics
+    )
+
+
 def topo_sort(tasks: Dict[str, Task]) -> List[str]:
     """Kahn's algorithm. Assumes no cycles (caller checks)."""
     indeg: Dict[str, int] = {tid: 0 for tid in tasks}
@@ -653,6 +729,7 @@ def propagate(
         tainted_deps = [
             d for d in t.all_deps
             if d in tasks and tasks[d].effective in ("synthetic", "auto-synthetic")
+            and not is_accepted_seh(tasks[d])
         ]
         if t.declared == "synthetic":
             t.effective = "synthetic"
@@ -716,6 +793,17 @@ def render_json(
                 "explicit_deps": t.explicit_deps,
                 "phase_deps": t.phase_deps,
                 "root_cause": root_cause.get(t.id, []),
+                "seh": {
+                    "annotation": t.seh_annotation,
+                    "approval_label": t.seh_approval_label,
+                    "design_source": t.design_source,
+                    "synthetic_input_class": t.synthetic_input_class,
+                    "expected_error_behavior": t.expected_error_behavior,
+                    "rationale": t.seh_rationale,
+                    "acceptance_status": t.seh_acceptance_status,
+                    "diagnostics": t.seh_diagnostics,
+                    "accepted": is_accepted_seh(t),
+                },
             }
             for t in sorted(tasks.values(), key=lambda x: x.id)
         ],
@@ -750,7 +838,9 @@ def render_ascii(tasks: Dict[str, Task], root_cause: Dict[str, List[str]]) -> st
     for t in sorted(tasks.values(), key=lambda x: x.id):
         box = STATUS_BOX[t.effective]
         marker = ""
-        if t.effective == "auto-synthetic":
+        if is_accepted_seh(t):
+            marker = "   ← accepted [SEH]"
+        elif t.effective == "auto-synthetic":
             marker = "   ← auto-synthetic"
         elif t.effective == "synthetic":
             marker = "   ← root cause"
@@ -811,8 +901,14 @@ def render_markdown(
 
     # Counts by effective status
     counts: Dict[str, int] = defaultdict(int)
+    accepted_seh = 0
+    unaccepted_synthetic = 0
     for t in tasks.values():
         counts[t.effective] += 1
+        if t.effective == "synthetic" and is_accepted_seh(t):
+            accepted_seh += 1
+        elif t.effective in ("synthetic", "auto-synthetic"):
+            unaccepted_synthetic += 1
     out.append("## Status counts (effective)")
     out.append("")
     out.append("| Status | Count |")
@@ -820,7 +916,23 @@ def render_markdown(
     for key in ("pending", "done", "synthetic", "auto-synthetic", "failed", "skipped"):
         if counts[key] or key in ("synthetic", "auto-synthetic"):
             out.append(f"| {STATUS_BOX[key]} {key} | {counts[key]} |")
+    out.append(f"| accepted [SEH] synthetic | {accepted_seh} |")
+    out.append(f"| unaccepted synthetic | {unaccepted_synthetic} |")
     out.append("")
+
+    if accepted_seh or unaccepted_synthetic:
+        out.append("## Synthetic Error-Handling Classification")
+        out.append("")
+        out.append("| Task | Accepted | Label | Design source | Synthetic input class | Expected error behavior | Diagnostics |")
+        out.append("|------|----------|-------|---------------|-----------------------|-------------------------|-------------|")
+        for t in sorted(tasks.values(), key=lambda x: x.id):
+            if t.effective not in ("synthetic", "auto-synthetic") and not (t.seh_annotation or t.seh_approval_label):
+                continue
+            diagnostics = "; ".join(t.seh_diagnostics)
+            out.append(
+                f"| {t.id} | {'yes' if is_accepted_seh(t) else 'no'} | {'yes' if t.seh_approval_label else 'no'} | {t.design_source or '(missing)'} | {t.synthetic_input_class or '(missing)'} | {t.expected_error_behavior or '(missing)'} | {diagnostics or '(none)'} |"
+            )
+        out.append("")
 
     # Mermaid
     out.append("## Graph")

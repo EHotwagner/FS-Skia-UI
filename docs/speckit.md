@@ -61,6 +61,16 @@ declared skills, obvious capability omissions, non-minimal invalid skill sets,
 and invalid multi-skill ordering. `EvidenceAudit` consumes the refreshed graph
 for synthetic-evidence propagation and diff-scan readiness.
 
+Approved synthetic error-handling is visible in the same path. A task tagged
+`[SEH]` with `synthetic-error-handling-approved` is accepted only when its
+Synthetic-Evidence Inventory row records the design source, synthetic input
+class, expected error behavior, rationale, and `accepted-seh` status before
+implementation starts. The audit summary separates `accepted-seh-tasks` from
+`unaccepted-synthetic-tasks`, `auto-synthetic-tasks`, and `late-seh-tasks`, so
+reviewers can find all accepted synthetic malformed-input/error-path evidence
+from `tasks.md`, `task-graph.md`, or `evidence-audit.md` within the ordinary
+review window. Implementation-time relabeling remains a readiness failure.
+
 ## Deferred Roadmap
 
 Generated guidance validation is section-aware: prompts must appear in the

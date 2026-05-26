@@ -93,7 +93,9 @@ fi
 GRAPH_JSON="$READINESS_DIR/task-graph.json"
 [[ ! -f "$GRAPH_JSON" ]] && die "task-graph.json not produced"
 
-# Extract counts of synthetic and auto-synthetic tasks.
+# Extract counts of synthetic and auto-synthetic tasks. Design-approved [SEH]
+# tasks stay synthetic in the graph but are not readiness blockers when their
+# governed metadata is complete and design-phase provenance is present.
 SYNTHETIC_COUNT=$(python3 -c "
 import json,sys
 d = json.load(open('$GRAPH_JSON'))
@@ -104,6 +106,87 @@ import json,sys
 d = json.load(open('$GRAPH_JSON'))
 print(sum(1 for t in d['tasks'] if t['effective'] == 'auto-synthetic'))
 ")
+SEH_SUMMARY_JSON="$READINESS_DIR/seh-audit-summary.json"
+python3 - "$GRAPH_JSON" "$SEH_SUMMARY_JSON" <<'PYEOF'
+import json, sys
+from pathlib import Path
+
+graph = json.load(open(sys.argv[1]))
+out = Path(sys.argv[2])
+
+non_eligible_terms = [
+    "convenience mock",
+    "incomplete integration",
+    "unavailable product capability",
+    "missing host support",
+    "placeholder output",
+    "speed-only",
+    "ordinary in-memory",
+    "unsupported-host substitute",
+]
+late_terms = [
+    "implementation",
+    "readiness cleanup",
+    "after audit",
+    "after-failure",
+    "late",
+]
+
+accepted = []
+unaccepted = []
+late = []
+diagnostics = []
+
+for task in graph["tasks"]:
+    seh = task.get("seh", {})
+    effective = task.get("effective")
+    task_id = task.get("id")
+    is_synthetic = effective in {"synthetic", "auto-synthetic"}
+    is_accepted = bool(seh.get("accepted"))
+    design_source = (seh.get("design_source") or "").lower()
+    input_class = (seh.get("synthetic_input_class") or "").lower()
+    rationale = (seh.get("rationale") or "").lower()
+    acceptance_status = (seh.get("acceptance_status") or "").lower()
+
+    if is_accepted:
+        accepted.append(task)
+    elif is_synthetic:
+        unaccepted.append(task)
+
+    if seh.get("annotation") or seh.get("approval_label"):
+        failed_rules = list(seh.get("diagnostics") or [])
+        if any(term in design_source or term in acceptance_status for term in late_terms):
+            failed_rules.append("late [SEH] classification")
+            late.append(task)
+        if any(term in input_class or term in rationale for term in non_eligible_terms):
+            failed_rules.append("non-eligible synthetic evidence class")
+        if failed_rules:
+            diagnostics.append({
+                "task": task_id,
+                "failed_rule": "; ".join(sorted(set(failed_rules))),
+                "observed": {
+                    "status": effective,
+                    "seh": seh.get("annotation"),
+                    "label": seh.get("approval_label"),
+                    "acceptance_status": seh.get("acceptance_status"),
+                },
+                "source": seh.get("design_source") or "(missing)",
+                "required_action": "Return to design/task generation and record valid [SEH] classification before implementation.",
+            })
+
+payload = {
+    "accepted_seh_tasks": [t["id"] for t in accepted],
+    "unaccepted_synthetic_tasks": [t["id"] for t in unaccepted],
+    "auto_synthetic_tasks": [t["id"] for t in graph["tasks"] if t.get("effective") == "auto-synthetic"],
+    "late_seh_tasks": [t["id"] for t in late],
+    "diagnostics": diagnostics,
+}
+out.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+PYEOF
+ACCEPTED_SEH_COUNT=$(python3 -c "import json; d=json.load(open('$SEH_SUMMARY_JSON')); print(len(d['accepted_seh_tasks']))")
+UNACCEPTED_SYNTHETIC_COUNT=$(python3 -c "import json; d=json.load(open('$SEH_SUMMARY_JSON')); print(len(d['unaccepted_synthetic_tasks']))")
+LATE_SEH_COUNT=$(python3 -c "import json; d=json.load(open('$SEH_SUMMARY_JSON')); print(len(d['late_seh_tasks']))")
+INVALID_SEH_COUNT=$(python3 -c "import json; d=json.load(open('$SEH_SUMMARY_JSON')); print(len(d['diagnostics']))")
 
 # --- 3. readiness contract scan --------------------------------------------
 echo "[2/3] Readiness contract scan..."
@@ -536,17 +619,49 @@ with open(out, "w") as f:
 PYEOF
 fi
 
-TOTAL_BLOCKERS=$((SYNTHETIC_COUNT + AUTO_SYNTHETIC_COUNT + BLOCK_HITS + READINESS_CONTRACT_HITS + PERSISTENT_LAUNCH_HITS))
+TOTAL_BLOCKERS=$((UNACCEPTED_SYNTHETIC_COUNT + INVALID_SEH_COUNT + BLOCK_HITS + READINESS_CONTRACT_HITS + PERSISTENT_LAUNCH_HITS))
 
 echo "=== Verdict ==="
 if [[ $TOTAL_BLOCKERS -eq 0 ]]; then
-  echo "✓ PASS — no synthetic tasks, no readiness contract hits, no blocking diff-scan hits."
+  echo "verdict=PASS"
+  echo "real-tasks=$(python3 -c "import json; d=json.load(open('$GRAPH_JSON')); print(sum(1 for t in d['tasks'] if t['effective'] == 'done'))")"
+  echo "accepted-seh-tasks=$ACCEPTED_SEH_COUNT"
+  echo "unaccepted-synthetic-tasks=0"
+  echo "auto-synthetic-tasks=$AUTO_SYNTHETIC_COUNT"
+  echo "late-seh-tasks=0"
+  echo "diff-scan-hits=$BLOCK_HITS"
+  echo "message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits."
   exit 0
 fi
 
-echo "✗ NEEDS-EVIDENCE"
+echo "verdict=FAIL"
+echo "real-tasks=$(python3 -c "import json; d=json.load(open('$GRAPH_JSON')); print(sum(1 for t in d['tasks'] if t['effective'] == 'done'))")"
+echo "accepted-seh-tasks=$ACCEPTED_SEH_COUNT"
+echo "unaccepted-synthetic-tasks=$UNACCEPTED_SYNTHETIC_COUNT"
+echo "auto-synthetic-tasks=$AUTO_SYNTHETIC_COUNT"
+echo "late-seh-tasks=$LATE_SEH_COUNT"
+echo "diff-scan-hits=$BLOCK_HITS"
+echo "message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch hits, or blocking diff-scan hits remain."
+python3 - "$SEH_SUMMARY_JSON" <<'PYEOF'
+import json, sys
+d = json.load(open(sys.argv[1]))
+for diagnostic in d.get("diagnostics", []):
+    print(
+        "diagnostic="
+        + diagnostic["task"]
+        + " failed-rule="
+        + diagnostic["failed_rule"]
+        + " source="
+        + diagnostic["source"]
+        + " required-action="
+        + diagnostic["required_action"]
+    )
+PYEOF
 echo "  synthetic tasks (declared):     $SYNTHETIC_COUNT"
 echo "  auto-synthetic tasks (computed): $AUTO_SYNTHETIC_COUNT"
+echo "  accepted [SEH] tasks:           $ACCEPTED_SEH_COUNT"
+echo "  unaccepted synthetic tasks:      $UNACCEPTED_SYNTHETIC_COUNT"
+echo "  late [SEH] tasks:                $LATE_SEH_COUNT"
 if [[ $BLOCK_HITS -gt 0 ]]; then
   echo "  blocking diff-scan hits:         (see above)"
 fi

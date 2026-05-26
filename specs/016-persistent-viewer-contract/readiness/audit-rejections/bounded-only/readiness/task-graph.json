@@ -30,7 +30,18 @@
       ],
       "explicit_deps": [],
       "phase_deps": [],
-      "root_cause": []
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
     }
   ]
 }

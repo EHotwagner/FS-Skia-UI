@@ -162,6 +162,20 @@ A feature MUST NOT be declared merge-ready while any `[S]` or auto-propagated
 diff-scan hit is unresolved. The evidence audit runs as an `after_implement`
 hook and hard-blocks merge readiness on either condition.
 
+Narrow exception: a task may be annotated `[SEH]` and labeled
+`synthetic-error-handling-approved` when design, planning, clarification, or
+task generation proves that the task validates malformed input or an explicit
+error path whose real input is infeasible, unsafe, impossible, or not
+representative. The task still remains `[S]`, keeps every disclosure above,
+and its Synthetic-Evidence Inventory row must name the design source,
+rationale, synthetic input class, expected error behavior, and acceptance
+status. Valid `[SEH]` tasks may make `EvidenceAudit` pass when no ordinary
+`[S]`, `[S*]`, late classification, or diff-scan blocker remains.
+Implementation-time relabeling is forbidden; newly discovered cases return to
+design/task review. Convenience mocks, incomplete integrations, unavailable
+product capability, missing host support, placeholder outputs, speed-only
+fixtures, and ordinary in-memory substitutes are not `[SEH]`.
+
 An explicit `--accept-synthetic` override is available for bounded cases
 (staged rollout, upstream dependency not yet ready). It requires written
 justification in the PR description and is logged to

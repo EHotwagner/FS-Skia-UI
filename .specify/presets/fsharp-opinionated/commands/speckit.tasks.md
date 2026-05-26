@@ -12,6 +12,10 @@ requires TWO files, both in `specs/[FEATURE_ID]/`:
      `[F]` failed / `[-]` skipped.
    - Never write `[S*]` yourself. That marker is computed by the evidence
      audit from the DAG; writing it by hand will confuse the script.
+   - `[SEH]` is an annotation, not a completion status. Use it only for
+     design-approved synthetic error-handling tasks that will remain `[S]`
+     when completed with malformed-input or explicit error-path synthetic
+     evidence.
 
 2. **`tasks.deps.yml`** — the dependency topology and task skill metadata.
    Sibling to `tasks.md`. Every Tnnn id in `tasks.md` MUST appear as a key
@@ -64,6 +68,17 @@ derived from the spec and plan.
 - **Synthetic-evidence inventory.** Include the empty Synthetic-Evidence
   Inventory table from the template. It will grow as `/speckit.implement`
   adds `[S]` tasks.
+- **Synthetic error-handling classification.** Assign `[SEH]` plus
+  `synthetic-error-handling-approved` only during design, planning,
+  clarification, or task generation. Each approved row must include the
+  design source, rationale, synthetic input class, expected error behavior,
+  and acceptance status. Eligible examples: malformed parser input, corrupt
+  file content, invalid command arguments, protocol violations, missing
+  required data, hostile payloads, and forced error-result fixtures.
+  Non-eligible examples: convenience mocks, incomplete integrations,
+  unavailable product capability, missing host support, placeholder outputs,
+  speed-only fixtures, and ordinary in-memory substitutes. implementation-time relabeling
+  is forbidden; newly discovered cases return to design/task work.
 - **Risk-level evidence.** Generated tasks should name small, medium, and broad
   governance risk levels, focused validation for the chosen level, when broad
   validation is required, and how non-authoritative aggregate results are

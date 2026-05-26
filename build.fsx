@@ -915,19 +915,26 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
         [ focusedGateAssumptionCheck model "EvidenceGraph"
           processEffect "speckit evidence graph" ".specify/extensions/evidence/scripts/bash/run-audit.sh" $"{model.FeatureDir} --graph-only" model.RepositoryRoot (path [ model.LogDir; "evidence-graph.txt" ])
           RequireFiles("task graph output", [ path [ model.ReadinessDir; "task-graph.json" ]; path [ model.ReadinessDir; "task-graph.md" ] ])
-          WriteStructuredReport("evidence graph readiness", model.EvidenceGraphReportPath, "# Evidence Graph Evidence\n\nPASS: `EvidenceGraph` refreshed `task-graph.md` and `task-graph.json`.\n")
+          WriteStructuredReport("evidence graph readiness", model.EvidenceGraphReportPath, "# Evidence Graph Evidence\n\nPASS: `EvidenceGraph` refreshed `task-graph.md` and `task-graph.json` with accepted `[SEH]`, unaccepted `[S]`, and `[S*]` counts reported separately.\n")
           focusedGateSummary model "EvidenceGraph" ]
     | StartTarget "EvidenceAudit" ->
         model,
         [ focusedGateAssumptionCheck model "EvidenceAudit"
           processEffect "speckit evidence audit" ".specify/extensions/evidence/scripts/bash/run-audit.sh" $"{model.FeatureDir}" model.RepositoryRoot (path [ model.LogDir; "evidence-audit.txt" ])
           RequireFiles("evidence audit output", [ path [ model.LogDir; "evidence-audit.txt" ]; path [ model.ReadinessDir; "diff-scan-hits.json" ] ])
-          WriteStructuredReport("evidence audit readiness", model.EvidenceAuditReportPath, "# Evidence Audit Evidence\n\nPASS: `EvidenceAudit` completed with synthetic propagation and diff-scan outputs present.\n")
+          WriteStructuredReport("evidence audit readiness", model.EvidenceAuditReportPath, "# Evidence Audit Evidence\n\nPASS: `EvidenceAudit` completed with synthetic propagation and diff-scan outputs present.\n\nSee `readiness/logs/evidence-audit.txt` for `accepted-seh-tasks`, `unaccepted-synthetic-tasks`, `auto-synthetic-tasks`, and `late-seh-tasks` counts. Accepted `[SEH]` evidence remains synthetic and is reported separately from real task evidence.\n")
           focusedGateSummary model "EvidenceAudit" ]
     | StartTarget "VerifyPreflight" ->
         model,
         [ CollectProcessHealth("Verify", model.ProcessHealthPath, model.VerificationVerdictsPath)
-          ValidateRunnerBootstrap("Verify", model.BootstrapRunnerPath, model.VerificationVerdictsPath) ]
+          ValidateRunnerBootstrap("Verify", model.BootstrapRunnerPath, model.VerificationVerdictsPath)
+          RequireFiles(
+              "verify readiness preflight artifact set",
+              [ path [ model.ReadinessDir; "public-surface.md" ]
+                path [ model.ReadinessDir; "package-boundary.md" ]
+                path [ model.ReadinessDir; "generated-product-usage.md" ]
+                path [ model.ReadinessDir; "compatibility-impact.md" ] ]
+            ) ]
     | StartTarget "CiPreflight" ->
         model,
         [ CollectProcessHealth("Ci", model.ProcessHealthPath, model.VerificationVerdictsPath)
@@ -3127,7 +3134,11 @@ let validateTaskSkillistGuidance model =
             "small, medium, and broad"
             "non-authoritative aggregate"
             "persistent graphical launch task"
-            "MUST reject viewer-backed default executable paths" ]
+            "MUST reject viewer-backed default executable paths"
+            "[SEH]"
+            "synthetic-error-handling-approved"
+            "malformed parser input"
+            "convenience mocks" ]
           ".specify/presets/fsharp-opinionated/templates/tasks-template.md",
           [ "[skillist: []]"
             "structured"
@@ -3140,7 +3151,11 @@ let validateTaskSkillistGuidance model =
             "small, medium, and broad"
             "non-authoritative aggregate"
             "persistent graphical launch task"
-            "MUST reject viewer-backed default executable paths" ]
+            "MUST reject viewer-backed default executable paths"
+            "[SEH]"
+            "synthetic-error-handling-approved"
+            "malformed parser input"
+            "convenience mocks" ]
           ".specify/presets/fsharp-opinionated/templates/tasks-deps-template.yml",
           [ "deps:"
             "skillist:"
@@ -3153,7 +3168,10 @@ let validateTaskSkillistGuidance model =
             "matched signals"
             "reviewer disposition"
             "small, medium, and broad"
-            "non-authoritative aggregate" ]
+            "non-authoritative aggregate"
+            "[SEH]"
+            "synthetic-error-handling-approved"
+            "implementation-time relabeling" ]
           ".specify/presets/fsharp-opinionated/commands/speckit.tasks.md",
           [ "Compulsory skill evaluation"
             "Visible skill mirror"
@@ -3162,7 +3180,10 @@ let validateTaskSkillistGuidance model =
             "matched signals"
             "reviewer disposition"
             "small, medium, and broad"
-            "non-authoritative aggregate" ]
+            "non-authoritative aggregate"
+            "[SEH]"
+            "synthetic-error-handling-approved"
+            "implementation-time relabeling" ]
           ".agents/skills/speckit-implement/SKILL.md",
           [ "structured `skillist`"
             "Resolve every declared skill id"
@@ -3171,7 +3192,10 @@ let validateTaskSkillistGuidance model =
             "readiness/skill-loading-evidence.md"
             "loaded_at"
             "work_started_at"
-            "reviewer exception" ]
+            "reviewer exception"
+            "[SEH]"
+            "synthetic-error-handling-approved"
+            "implementation-time relabeling" ]
           ".specify/presets/fsharp-opinionated/commands/speckit.implement.md",
           [ "structured `skillist`"
             "Resolve every declared skill id"
@@ -3180,19 +3204,28 @@ let validateTaskSkillistGuidance model =
             "readiness/skill-loading-evidence.md"
             "loaded_at"
             "work_started_at"
-            "reviewer exception" ]
+            "reviewer exception"
+            "[SEH]"
+            "synthetic-error-handling-approved"
+            "implementation-time relabeling" ]
           ".specify/memory/constitution.md",
           [ "mandatory post-generation skill evaluation gate"
             "`skillist` field"
-            "mandatory pre-task skill loading gate" ]
+            "mandatory pre-task skill loading gate"
+            "[SEH]"
+            "synthetic-error-handling-approved" ]
           ".specify/templates/constitution-template.md",
           [ "mandatory post-generation skill evaluation gate"
             "`skillist` field"
-            "mandatory pre-task skill loading gate" ]
+            "mandatory pre-task skill loading gate"
+            "[SEH]"
+            "synthetic-error-handling-approved" ]
           ".specify/presets/fsharp-opinionated/templates/constitution-template.md",
           [ "mandatory post-generation skill evaluation gate"
             "`skillist` field"
-            "mandatory pre-task skill loading gate" ] ]
+            "mandatory pre-task skill loading gate"
+            "[SEH]"
+            "synthetic-error-handling-approved" ] ]
 
     requiredTerms
     |> List.collect (fun (relative, terms) ->
@@ -3267,6 +3300,9 @@ let workflowSelfCheck (root: string) =
 
     if verifyPreflightEffects |> List.exists (function ValidateRunnerBootstrap("Verify", _, _) -> true | _ -> false) |> not then
         failwith "VerifyPreflight must emit bootstrap validation before broad work"
+
+    if verifyPreflightEffects |> List.exists (function RequireFiles("verify readiness preflight artifact set", _) -> true | _ -> false) |> not then
+        failwith "VerifyPreflight must require readiness impact files before broad work"
 
     if ciPreflightEffects |> List.exists (function CollectProcessHealth("Ci", _, _) -> true | _ -> false) |> not then
         failwith "CiPreflight must emit process-health collection before broad work"
