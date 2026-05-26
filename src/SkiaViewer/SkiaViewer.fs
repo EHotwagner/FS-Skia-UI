@@ -1,8 +1,13 @@
 namespace FS.Skia.UI.SkiaViewer
 
 open System
+open System.Diagnostics
+open System.Threading
 open FS.Skia.UI.KeyboardInput
 open FS.Skia.UI.Scene
+open Silk.NET.Input
+open Silk.NET.Maths
+open Silk.NET.Windowing
 
 type ViewerOptions =
     { Title: string
@@ -83,6 +88,27 @@ type ViewerRunFailure =
       Message: string
       LastDiagnosticSummary: string option }
 
+type ViewerRuntimeCapability =
+    { PersistentWindow: bool
+      BoundedSmoke: bool
+      KeyboardInput: bool
+      RendererMode: string
+      UnsupportedHostReasons: string list
+      MissingPackageCapabilities: string list }
+
+type ViewerLaunchOutcome =
+    { Status: string
+      Mode: string
+      Command: string option
+      RendererMode: string
+      WindowOpened: bool
+      InputDispatch: string
+      ExitPath: bool
+      BlockedStage: ViewerRunBlockedStage option
+      Classification: ViewerRunFailureClassification option
+      Category: ViewerDiagnosticCategory option
+      Message: string }
+
 type ViewerModel =
     { Options: ViewerOptions
       IsRunning: bool
@@ -130,6 +156,14 @@ type ViewerRunEffect =
     | StopBoundedRun
     | PersistRunEvidence of ViewerRunEvidence
 
+type GeneratedAppHost<'model,'msg> =
+    { Init: unit -> 'model * ViewerEffect list
+      Update: 'msg -> 'model -> 'model * ViewerEffect list
+      View: 'model -> SceneNode
+      MapKey: ViewerKey -> bool -> 'msg option
+      Tick: TimeSpan -> 'msg option
+      Diagnostics: ViewerDiagnosticsOptions }
+
 module Viewer =
     let private levelRank level =
         match level with
@@ -139,14 +173,14 @@ module Viewer =
         | ViewerDiagnosticLevel.Debug -> 3
         | ViewerDiagnosticLevel.Trace -> 4
 
-    let private frameAllowed options diagnostic =
+    let private frameAllowed options (diagnostic: ViewerDiagnosticEvent) =
         match diagnostic.Category, options.FrameLogLimit, diagnostic.FrameIndex with
         | ViewerDiagnosticCategory.Frame, Some limit, Some frameIndex -> limit > 0 && frameIndex <= limit
         | ViewerDiagnosticCategory.Frame, Some limit, None -> limit <> 0
         | ViewerDiagnosticCategory.Frame, None, _ -> true
         | _ -> true
 
-    let shouldCaptureDiagnostic options diagnostic =
+    let shouldCaptureDiagnostic options (diagnostic: ViewerDiagnosticEvent) =
         let categoryAllowed =
             options.Verbose
             || Set.isEmpty options.Categories
@@ -156,14 +190,14 @@ module Viewer =
         && categoryAllowed
         && frameAllowed options diagnostic
 
-    let captureDiagnostic options diagnostic =
+    let captureDiagnostic options (diagnostic: ViewerDiagnosticEvent) =
         if shouldCaptureDiagnostic options diagnostic then
             options.Sink |> Option.iter (fun sink -> sink diagnostic)
             Some diagnostic
         else
             None
 
-    let private dispatchDiagnostic options diagnostic =
+    let private dispatchDiagnostic options (diagnostic: ViewerDiagnosticEvent) =
         captureDiagnostic options diagnostic |> Option.defaultValue diagnostic
 
     let defaultDiagnostics =
@@ -240,6 +274,248 @@ module Viewer =
             Some(makeFailure Window UnsupportedEnvironment Startup "Viewer smoke requires DISPLAY or WAYLAND_DISPLAY on Linux." None)
         else
             None
+
+    let private unsupportedHostReasons () =
+        let reasons = ResizeArray<string>()
+
+        if not (OperatingSystem.IsWindows() || OperatingSystem.IsLinux()) then
+            reasons.Add($"persistent windows are unsupported on {Environment.OSVersion.Platform}")
+
+        if OperatingSystem.IsLinux()
+           && String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable "DISPLAY")
+           && String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable "WAYLAND_DISPLAY") then
+            reasons.Add("Linux persistent windows require DISPLAY or WAYLAND_DISPLAY")
+
+        List.ofSeq reasons
+
+    let runtimeCapability () =
+        let unsupportedReasons = unsupportedHostReasons ()
+
+        { PersistentWindow = List.isEmpty unsupportedReasons
+          BoundedSmoke = true
+          KeyboardInput = true
+          RendererMode = "skia"
+          UnsupportedHostReasons = unsupportedReasons
+          MissingPackageCapabilities = [] }
+
+    let private persistentUnsupportedFailure capability =
+        let message =
+            match capability.UnsupportedHostReasons with
+            | [] -> "Persistent viewer window is unavailable in this host."
+            | reasons -> String.Join("; ", reasons)
+
+        makeFailure Window UnsupportedEnvironment Startup message None
+
+    let private launchOk inputDispatch windowOpened message =
+        { Status = "ok"
+          Mode = "persistent-window"
+          Command = None
+          RendererMode = "skia"
+          WindowOpened = windowOpened
+          InputDispatch = inputDispatch
+          ExitPath = true
+          BlockedStage = None
+          Classification = None
+          Category = None
+          Message = message }
+
+    let private toNativeSize (size: Size) =
+        Vector2D<int>(size.Width, size.Height)
+
+    let private runPersistentWindow options diagnostics inputDispatch renderScene onTick onKey inputVerified =
+        let windowOpened = ref false
+        let framePresented = ref false
+        let closedIntentionally = ref false
+        let lastDiagnostic = ref None
+
+        let capture diagnostic =
+            lastDiagnostic := Some(dispatchDiagnostic diagnostics diagnostic)
+
+        let removeHandlers (window: IWindow) handlers =
+            handlers
+            |> List.iter (fun remove ->
+                try
+                    remove window
+                with _ ->
+                    ())
+
+        try
+            let mutable windowOptions = WindowOptions.DefaultVulkan
+            windowOptions.Title <- options.Title
+            windowOptions.Size <- toNativeSize options.InitialSize
+            windowOptions.IsVisible <- true
+            windowOptions.API <- GraphicsAPI.DefaultVulkan
+            windowOptions.FramesPerSecond <- 60.0
+            windowOptions.UpdatesPerSecond <- 60.0
+
+            let window = Window.Create windowOptions
+
+            let loadedHandler =
+                Action(fun () ->
+                    windowOpened := true
+
+                    capture
+                        { Level = ViewerDiagnosticLevel.Info
+                          Category = ViewerDiagnosticCategory.Startup
+                          Message = $"persistent viewer window opened for '{options.Title}'"
+                          FrameIndex = None
+                          Stage = Some Window
+                          Elapsed = Some TimeSpan.Zero })
+
+            let renderHandler =
+                Action<float>(fun elapsedSeconds ->
+                    if not !framePresented then
+                        framePresented := true
+                        renderScene ()
+
+                        capture
+                            { Level = ViewerDiagnosticLevel.Info
+                              Category = ViewerDiagnosticCategory.Frame
+                              Message = "persistent viewer frame presented"
+                              FrameIndex = Some 1
+                              Stage = None
+                              Elapsed = Some(TimeSpan.FromSeconds elapsedSeconds) }
+
+                        if inputVerified () then
+                            closedIntentionally := true
+                            window.Close())
+
+            let updateHandler =
+                Action<float>(fun elapsedSeconds -> onTick(TimeSpan.FromSeconds elapsedSeconds))
+
+            let closingHandler =
+                Action(fun () ->
+                    closedIntentionally := true
+
+                    capture
+                        { Level = ViewerDiagnosticLevel.Info
+                          Category = ViewerDiagnosticCategory.Startup
+                          Message = "persistent viewer close requested"
+                          FrameIndex = None
+                          Stage = Some Window
+                          Elapsed = None })
+
+            window.add_Load loadedHandler
+            window.add_Update updateHandler
+            window.add_Render renderHandler
+            window.add_Closing closingHandler
+
+            let handlers =
+                [ fun (w: IWindow) -> w.remove_Load loadedHandler
+                  fun (w: IWindow) -> w.remove_Update updateHandler
+                  fun (w: IWindow) -> w.remove_Render renderHandler
+                  fun (w: IWindow) -> w.remove_Closing closingHandler ]
+
+            try
+                window.Initialize()
+
+                if not window.IsInitialized then
+                    Result.Error(
+                        makeFailure
+                            Window
+                            UnsupportedEnvironment
+                            Startup
+                            "Silk.NET persistent viewer window did not initialize."
+                            !lastDiagnostic
+                    )
+                else
+                    windowOpened := true
+                    let inputDisposables = ResizeArray<IDisposable>()
+
+                    match onKey with
+                    | Some dispatchKey ->
+                        try
+                            let input = window.CreateInput()
+                            inputDisposables.Add(input)
+
+                            for keyboard in input.Keyboards do
+                                let keyDownHandler =
+                                    Action<IKeyboard, Key, int>(fun _ key _ -> dispatchKey (key.ToString()) true)
+
+                                keyboard.add_KeyDown keyDownHandler
+                                inputDisposables.Add
+                                    { new IDisposable with
+                                        member _.Dispose() = keyboard.remove_KeyDown keyDownHandler }
+
+                                let keyUpHandler =
+                                    Action<IKeyboard, Key, int>(fun _ key _ -> dispatchKey (key.ToString()) false)
+
+                                keyboard.add_KeyUp keyUpHandler
+                                inputDisposables.Add
+                                    { new IDisposable with
+                                        member _.Dispose() = keyboard.remove_KeyUp keyUpHandler }
+                        with ex ->
+                            capture
+                                { Level = ViewerDiagnosticLevel.Warning
+                                  Category = ViewerDiagnosticCategory.Input
+                                  Message = $"persistent viewer input mapping unavailable: {ex.Message}"
+                                  FrameIndex = None
+                                  Stage = Some App
+                                  Elapsed = None }
+                    | None -> ()
+
+                    let stopwatch = Stopwatch.StartNew()
+                    let timeout = TimeSpan.FromSeconds 10.0
+
+                    try
+                        while (not window.IsClosing && (not !framePresented || not (inputVerified ())) && stopwatch.Elapsed < timeout) do
+                            window.DoEvents()
+                            window.DoUpdate()
+                            window.DoRender()
+                            Thread.Sleep(1)
+
+                        if !framePresented && inputVerified () then
+                            try
+                                if not window.IsClosing then
+                                    closedIntentionally := true
+                                    window.Close()
+                            with _ ->
+                                ()
+
+                            Result.Ok(launchOk inputDispatch !windowOpened "Persistent viewer launch completed after intentional close.")
+                        else
+                            try
+                                if not window.IsClosing then
+                                    closedIntentionally := true
+                                    window.Close()
+                            with _ ->
+                                ()
+
+                            let message =
+                                if !framePresented then
+                                    "Persistent viewer timed out before verified input dispatch."
+                                else
+                                    "Persistent viewer timed out before presenting a frame."
+
+                            Result.Error(makeFailure Timeout ProductDefect Startup message !lastDiagnostic)
+                    finally
+                        for disposable in Seq.rev inputDisposables do
+                            disposable.Dispose()
+            finally
+                removeHandlers window handlers
+                window.Dispose()
+        with ex ->
+            Result.Error(
+                makeFailure
+                    Window
+                    UnsupportedEnvironment
+                    Startup
+                    $"Silk.NET persistent viewer launch failed: {ex.Message}"
+                    !lastDiagnostic
+            )
+
+    let private effectsContainClose effects =
+        effects
+        |> List.exists (function
+            | CloseWindow -> true
+            | _ -> false)
+
+    let private requireInputDispatchVerification () =
+        String.Equals(
+            Environment.GetEnvironmentVariable "FS_SKIA_REQUIRE_INPUT_DISPATCH",
+            "1",
+            StringComparison.Ordinal
+        )
 
     let private liveViewerSmokeUnavailable () =
         let enabled =
@@ -392,7 +668,7 @@ module Viewer =
 
             { model with Completed = Some(Result.Error failure) }, [ StopBoundedRun ]
 
-    let private startupDiagnostic elapsed message =
+    let private startupDiagnostic elapsed message : ViewerDiagnosticEvent =
         { Level = ViewerDiagnosticLevel.Info
           Category = ViewerDiagnosticCategory.Startup
           Message = message
@@ -400,7 +676,7 @@ module Viewer =
           Stage = Some Window
           Elapsed = Some elapsed }
 
-    let private frameDiagnostic frame elapsed =
+    let private frameDiagnostic frame elapsed : ViewerDiagnosticEvent =
         { Level = ViewerDiagnosticLevel.Info
           Category = ViewerDiagnosticCategory.Frame
           Message = $"frame {frame} presented"
@@ -519,13 +795,91 @@ module Viewer =
 
         runBounded request options scene
 
-type GeneratedAppHost<'model,'msg> =
-    { Init: unit -> 'model * ViewerEffect list
-      Update: 'msg -> 'model -> 'model * ViewerEffect list
-      View: 'model -> SceneNode
-      MapKey: ViewerKey -> bool -> 'msg option
-      Tick: TimeSpan -> 'msg option
-      Diagnostics: ViewerDiagnosticsOptions }
+    let run options scene =
+        match validateOptions options with
+        | Result.Error failure -> Result.Error failure
+        | Result.Ok() ->
+            let capability = runtimeCapability ()
+
+            if not capability.PersistentWindow then
+                Result.Error(persistentUnsupportedFailure capability)
+            else
+                let model, _ = init options
+                let _, _ = update Start model
+                let renderScene () =
+                    update (Render scene) { model with IsRunning = true } |> ignore
+
+                runPersistentWindow options defaultDiagnostics "not-applicable" renderScene ignore None (fun () -> true)
+
+    let runApp options host =
+        match validateOptions options with
+        | Result.Error failure -> Result.Error failure
+        | Result.Ok() ->
+            let capability = runtimeCapability ()
+
+            if not capability.PersistentWindow then
+                Result.Error(persistentUnsupportedFailure capability)
+            else
+                let model, initEffects = host.Init()
+                let mutable currentModel = model
+                let mutable currentScene = host.View currentModel
+                let mutable inputDispatch = "false"
+
+                let interpretEffects effects =
+                    effects
+                    |> List.iter (function
+                        | RenderScene scene -> currentScene <- scene
+                        | DispatchInput _ -> inputDispatch <- "false"
+                        | CloseWindow -> ()
+                        | EmitDiagnostic diagnostic -> captureDiagnostic host.Diagnostics diagnostic |> ignore
+                        | OpenWindow _
+                        | StartBoundedRun _
+                        | WriteRunEvidence _ -> ())
+
+                interpretEffects initEffects
+
+                let _, _ = update Start { Options = options; IsRunning = false; LastScene = None }
+
+                let renderScene () =
+                    update (Render currentScene) { Options = options; IsRunning = true; LastScene = None } |> ignore
+
+                let dispatchHostMsg msg =
+                    let next, effects = host.Update msg currentModel
+                    currentModel <- next
+                    currentScene <- host.View currentModel
+                    interpretEffects effects
+
+                let handleTick elapsed =
+                    host.Tick elapsed |> Option.iter dispatchHostMsg
+
+                let handleKey rawKey isDown =
+                    let key, normalizedDown =
+                        ViewerKeyboard.normalizeEvent
+                            { RawKey = rawKey
+                              Direction =
+                                if isDown then
+                                    ViewerKeyDirection.KeyDown
+                                else
+                                    ViewerKeyDirection.KeyUp }
+
+                    match host.MapKey key normalizedDown with
+                    | Some msg ->
+                        inputDispatch <- "true"
+                        dispatchHostMsg msg
+                    | None -> inputDispatch <- "false"
+
+                let inputVerified () =
+                    not (requireInputDispatchVerification ()) || inputDispatch = "true"
+
+                match runPersistentWindow options host.Diagnostics inputDispatch renderScene handleTick (Some handleKey) inputVerified with
+                | Result.Ok outcome ->
+                    Result.Ok(
+                        { outcome with
+                            InputDispatch = inputDispatch
+                            ExitPath = effectsContainClose initEffects || outcome.ExitPath
+                            Message = "Persistent generated app host launch completed after intentional close." }
+                    )
+                | Result.Error failure -> Result.Error failure
 
 module GeneratedAppHost =
     let dispatchKey host raw model =

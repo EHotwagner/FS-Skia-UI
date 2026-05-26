@@ -86,6 +86,15 @@ Generated tasks should also name the small, medium, and broad governance risk
 level, focused validation required for the selected level, when broad validation
 is required, and how non-authoritative aggregate results are recorded.
 
+For graphical viewer features, generated tasks MUST include a distinct
+persistent graphical launch task that is reachable from the default executable
+path. Bounded smoke, first-frame, frame-count, scene metadata, or
+unsupported-host diagnostics may be generated as explicit helper evidence, but
+they MUST NOT be described as completing interactive graphical readiness.
+Task generation MUST reject viewer-backed default executable paths that only
+print metadata, count controls, run bounded smoke, emit scene evidence, or
+exit without a persistent launch attempt.
+
 Template source: `.specify/presets/fsharp-opinionated/templates/tasks-template.md`.
 
 ---

@@ -110,7 +110,7 @@ echo "[2/3] Readiness contract scan..."
 
 READINESS_CONTRACT_HITS_JSON="$READINESS_DIR/readiness-contract-hits.json"
 python3 - "$READINESS_DIR" "$READINESS_CONTRACT_HITS_JSON" <<'PYEOF'
-import json, sys
+import json, re, sys
 from pathlib import Path
 
 readiness = Path(sys.argv[1])
@@ -138,7 +138,169 @@ PYEOF
 READINESS_CONTRACT_HITS=$(python3 -c "import json; print(len(json.load(open('$READINESS_CONTRACT_HITS_JSON'))))")
 echo
 
-# --- 4. diff scan -----------------------------------------------------------
+# --- 4. persistent launch evidence scan -------------------------------------
+echo "[2b/3] Persistent launch evidence scan..."
+
+PERSISTENT_LAUNCH_HITS_JSON="$READINESS_DIR/persistent-launch-hits.json"
+python3 - "$FEATURE_DIR" "$READINESS_DIR" "$PERSISTENT_LAUNCH_HITS_JSON" <<'PYEOF'
+import json, re, sys
+from pathlib import Path
+
+feature = Path(sys.argv[1])
+readiness = Path(sys.argv[2])
+out = Path(sys.argv[3])
+
+required_fields = [
+    "status",
+    "mode",
+    "command",
+    "window-opened",
+    "input-dispatch",
+    "exit-path",
+    "blocked-stage",
+    "classification",
+    "category",
+    "message",
+]
+
+def read_text(path):
+    try:
+        return path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return ""
+
+feature_text = "\n".join(
+    read_text(feature / name)
+    for name in ["spec.md", "plan.md", "tasks.md"]
+)
+
+requires_persistent = any(
+    marker in feature_text.lower()
+    for marker in [
+        "supported-host persistent launch",
+        "persistent graphical launch",
+        "persistent viewer contract",
+        "mode=persistent-window",
+    ]
+)
+
+hits = []
+artifacts = []
+bounded_helpers = []
+unsupported_launches = []
+
+def parse_key_values(text):
+    values = {}
+    for line in text.replace("\r\n", "\n").split("\n"):
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            continue
+
+        # Generated product commands often emit compact stdout such as
+        # `status=ok mode=persistent-window ...`; parse every token while
+        # still allowing free-text values until the next key.
+        matches = list(re.finditer(r"(?<!\S)([A-Za-z0-9_-]+)=([^=]*?)(?=\s+[A-Za-z0-9_-]+=|$)", stripped))
+        if matches:
+            for match in matches:
+                values[match.group(1).strip().lower()] = match.group(2).strip()
+        else:
+            key, value = stripped.split("=", 1)
+            values[key.strip().lower()] = value.strip()
+    return values
+
+if requires_persistent:
+    for path in sorted(readiness.rglob("*")):
+        if not path.is_file() or path.suffix.lower() not in {".txt", ".md", ".log"}:
+            continue
+
+        text = read_text(path)
+        lower = text.lower()
+        values = parse_key_values(text)
+        relative = str(path.relative_to(readiness))
+        relative_lower = relative.lower()
+
+        if relative_lower.startswith("audit-fixtures/") or relative_lower.startswith("audit-rejections/"):
+            continue
+        if relative_lower in {
+            "governance-risk-levels.md",
+            "aggregate-hang-diagnostics.md",
+            "runtime-limitations.md",
+            "task-graph.md",
+        }:
+            continue
+
+        has_bounded_helper = any(
+            marker in lower
+            for marker in [
+                "smoke=bounded-viewer",
+                "bounded smoke",
+                "bounded-viewer",
+                "first-frame",
+                "frames-rendered",
+                "frame-count",
+                "scene-evidence",
+                "scene metadata",
+            ]
+        )
+        if has_bounded_helper:
+            bounded_helpers.append(relative)
+
+        is_persistent = values.get("mode") == "persistent-window" or "mode=persistent-window" in lower
+        status = values.get("status", "")
+        if is_persistent:
+            artifacts.append((relative, values))
+            if status == "unsupported":
+                unsupported_launches.append(relative)
+            if status == "ok" and "supported-host-persistent-launch" in relative_lower:
+                missing = [field for field in required_fields if not values.get(field)]
+                if missing:
+                    hits.append({
+                        "path": relative,
+                        "reason": "missing persistent launch fields",
+                        "missing": missing,
+                    })
+
+    supported_ok = [
+        (relative, values)
+        for relative, values in artifacts
+        if values.get("status") == "ok"
+        and values.get("mode") == "persistent-window"
+        and values.get("window-opened") == "true"
+        and values.get("input-dispatch") == "true"
+        and values.get("exit-path") == "true"
+        and all(values.get(field) for field in required_fields)
+    ]
+
+    if not supported_ok:
+        hits.append({
+            "path": str(readiness / "supported-host-persistent-launch.txt"),
+            "reason": "missing supported-host persistent launch evidence",
+            "required": required_fields,
+        })
+
+        if bounded_helpers:
+            hits.append({
+                "path": ", ".join(bounded_helpers),
+                "reason": "bounded-only substitution",
+            })
+
+        if unsupported_launches:
+            hits.append({
+                "path": ", ".join(unsupported_launches),
+                "reason": "unsupported-host-only persistent launch evidence",
+            })
+
+out.write_text(json.dumps(hits, indent=2) + "\n", encoding="utf-8")
+print(f"  persistent-launch: {len(hits)} blocking")
+for hit in hits:
+    missing = hit.get("missing")
+    detail = f" missing={','.join(missing)}" if missing else ""
+    print(f"    [BLOCK] {hit['path']} ({hit['reason']}){detail}", file=sys.stderr)
+PYEOF
+PERSISTENT_LAUNCH_HITS=$(python3 -c "import json; print(len(json.load(open('$PERSISTENT_LAUNCH_HITS_JSON'))))")
+echo
+
+# --- 5. diff scan -----------------------------------------------------------
 echo "[3/3] Diff scan against feature base..."
 
 # Resolve feature base.
@@ -374,7 +536,7 @@ with open(out, "w") as f:
 PYEOF
 fi
 
-TOTAL_BLOCKERS=$((SYNTHETIC_COUNT + AUTO_SYNTHETIC_COUNT + BLOCK_HITS + READINESS_CONTRACT_HITS))
+TOTAL_BLOCKERS=$((SYNTHETIC_COUNT + AUTO_SYNTHETIC_COUNT + BLOCK_HITS + READINESS_CONTRACT_HITS + PERSISTENT_LAUNCH_HITS))
 
 echo "=== Verdict ==="
 if [[ $TOTAL_BLOCKERS -eq 0 ]]; then
@@ -390,6 +552,9 @@ if [[ $BLOCK_HITS -gt 0 ]]; then
 fi
 if [[ $READINESS_CONTRACT_HITS -gt 0 ]]; then
   echo "  readiness contract hits:         $READINESS_CONTRACT_HITS"
+fi
+if [[ $PERSISTENT_LAUNCH_HITS -gt 0 ]]; then
+  echo "  persistent launch hits:          $PERSISTENT_LAUNCH_HITS"
 fi
 if [[ $ADVISORY_HITS -gt 0 ]]; then
   echo "  advisory diff-scan hits:         $ADVISORY_HITS (printed, not blocking)"

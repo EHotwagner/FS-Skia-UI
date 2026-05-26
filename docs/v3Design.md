@@ -93,7 +93,7 @@ for runtime behavior.
 | Package | Current source | V3 responsibility | Dependencies |
 |---------|----------------|-------------------|--------------|
 | `FS.Skia.UI.Scene` | `src/Lib/Library.fsi` scene subset | Immutable scene, paint, geometry, image, text, effects, diagnostics primitives, and pure render descriptions. | `FSharp.Core` |
-| `FS.Skia.UI.SkiaViewer` | `src/Lib/Library.fs` viewer and Vulkan code | Window host, Vulkan/Skia startup, frame rendering, screenshots, viewer diagnostics, shutdown, and platform smoke helpers. | `FS.Skia.UI.Scene`, Silk.NET, SkiaSharp |
+| `FS.Skia.UI.SkiaViewer` | `src/Lib/Library.fs` viewer and Vulkan code | Persistent window host, generated app host, Vulkan/Skia startup, frame rendering, screenshots, viewer diagnostics, shutdown, and bounded platform smoke helpers. | `FS.Skia.UI.Scene`, Silk.NET, SkiaSharp |
 | `FS.Skia.UI.Elmish` | `src/Lib/Library.fsi` Elmish viewer subset | Elmish program adapter, event mapper, effect mapper, subscriptions, and `ViewerProgram` construction helpers. | `FS.Skia.UI.Scene`, `FS.Skia.UI.SkiaViewer`, `Fable.Elmish` |
 | `FS.Skia.UI.KeyboardInput` | `src/Lib/KeyboardInput.*` | Keyboard configuration, command registry, runtime reducer, replay, bigram analysis, and optional state display scenes. | `FS.Skia.UI.Scene`, `YamlDotNet` |
 | `FS.Skia.UI.Layout` | `src/Layout` | Yoga-backed layout, computed bounds, hit testing, layout diagnostics, and graph layout support if graph remains coupled. | `FS.Skia.UI.Scene`, `Yoga.Net` |
@@ -296,6 +296,19 @@ Exclude by default:
 The generated product may still have a link table pointing to the framework
 documentation site or source repository. That keeps the project clean while
 making framework help discoverable.
+
+### Persistent Viewer Migration
+
+Generated apps that previously used only bounded viewer smoke, first-frame,
+frame-count, or scene metadata paths must choose one of these migration paths:
+
+- adopt the persistent generated host and make `Viewer.runApp viewerOptions generatedHost` the default executable path
+- declare the product headless or non-interactive in its spec, task list, and readiness evidence
+- record the missing persistent viewer capability as a blocking product/package gap
+
+Bounded-only generated apps must not claim interactive graphical readiness.
+Unsupported-host diagnostics can explain local execution limits, but they do not
+replace a supported-host persistent launch artifact.
 
 ## Framework Repository Shape
 

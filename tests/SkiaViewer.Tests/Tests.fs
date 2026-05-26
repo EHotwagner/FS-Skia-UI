@@ -7,6 +7,14 @@ open FS.Skia.UI.KeyboardInput
 open FS.Skia.UI.Scene
 open FS.Skia.UI.SkiaViewer
 
+type HostModel =
+    { Count: int
+      Closed: bool }
+
+type HostMsg =
+    | Increment
+    | Close
+
 [<Tests>]
 let tests =
     testList "SkiaViewer MVU contract" [
@@ -223,6 +231,116 @@ let tests =
                     model
 
             Expect.exists keyEffects (function DispatchInput(Enter, true) -> true | _ -> false) "viewer key events dispatch normalized input"
+        }
+
+        test "persistent run exposes launch outcome fields or unsupported-host diagnostics" {
+            let options = { Title = "Product"; InitialSize = { Width = 640; Height = 480 } }
+            let scene = Group []
+
+            match Viewer.run options scene with
+            | Result.Ok outcome ->
+                Expect.equal outcome.Status "ok" "persistent launch reports ok status"
+                Expect.equal outcome.Mode "persistent-window" "persistent launch mode is explicit"
+                Expect.equal outcome.WindowOpened true "window-opened evidence is explicit"
+                Expect.equal outcome.ExitPath true "intentional exit path is explicit"
+                Expect.equal outcome.InputDispatch "not-applicable" "scene-only launch marks input dispatch not applicable"
+                Expect.isNone outcome.BlockedStage "successful launch has no blocked stage"
+                Expect.isNone outcome.Classification "successful launch has no failure classification"
+            | Result.Error failure ->
+                Expect.equal failure.Classification UnsupportedEnvironment "headless or unsupported hosts are classified separately from product defects"
+                Expect.equal failure.BlockedStage Window "persistent launch is blocked before window creation"
+                Expect.stringContains failure.Message "DISPLAY" "unsupported Linux diagnostics name the missing display host"
+        }
+
+        test "runtime capability distinguishes persistent window bounded smoke keyboard and unsupported reasons" {
+            let capability = Viewer.runtimeCapability()
+
+            Expect.isTrue capability.BoundedSmoke "bounded smoke remains available as explicit evidence helper"
+            Expect.isTrue capability.KeyboardInput "keyboard input capability is reported"
+            Expect.equal capability.RendererMode "skia" "renderer mode is reported independently from host support"
+            Expect.isEmpty capability.MissingPackageCapabilities "current package exposes the persistent contract and has no package-capability gap"
+
+            if capability.PersistentWindow then
+                Expect.isEmpty capability.UnsupportedHostReasons "supported hosts do not report unsupported reasons"
+            else
+                Expect.isNonEmpty capability.UnsupportedHostReasons "unsupported hosts report actionable reasons"
+
+            capability.UnsupportedHostReasons
+            |> List.iter (fun reason ->
+                Expect.isFalse (capability.MissingPackageCapabilities |> List.contains reason) "unsupported host reasons are not reported as missing package capabilities")
+        }
+
+        test "persistent run preserves bounded APIs as explicit separate helpers" {
+            let options = { Title = "Product"; InitialSize = { Width = 320; Height = 200 } }
+            let scene = Group []
+
+            let invalidPersistent = Viewer.run { options with Title = "" } scene
+            let invalidBounded =
+                Viewer.runBounded
+                    { Target = FrameCount 0
+                      Timeout = TimeSpan.FromSeconds 1.0
+                      Diagnostics = Viewer.defaultDiagnostics
+                      RendererMode = "skia"
+                      EvidencePath = None }
+                    options
+                    scene
+
+            match invalidPersistent, invalidBounded with
+            | Result.Error persistentFailure, Result.Error boundedFailure ->
+                Expect.equal persistentFailure.Classification ProductDefect "persistent option validation remains product-defect classification"
+                Expect.equal boundedFailure.Classification ProductDefect "bounded request validation remains product-defect classification"
+                Expect.stringContains boundedFailure.Message "frame count" "bounded helper keeps its own request validation"
+            | other -> failtestf "expected separate persistent and bounded validation failures, got %A" other
+        }
+
+        test "bounded helper APIs remain explicitly callable regression" {
+            let scene = Group []
+            let invalidOptions = { Title = ""; InitialSize = { Width = 320; Height = 200 } }
+            let validOptions = { Title = "Product"; InitialSize = { Width = 320; Height = 200 } }
+
+            match Viewer.runUntilFirstFrame invalidOptions scene with
+            | Result.Error failure ->
+                Expect.equal failure.Classification ProductDefect "first-frame helper keeps option validation"
+                Expect.stringContains failure.Message "title" "first-frame helper reports title validation"
+            | Result.Ok evidence -> failtestf "expected first-frame validation failure, got %A" evidence
+
+            match Viewer.runForFrames 0 validOptions scene with
+            | Result.Error failure ->
+                Expect.equal failure.Classification ProductDefect "frame-count helper keeps request validation"
+                Expect.stringContains failure.Message "frame count" "frame-count helper reports frame validation"
+            | Result.Ok evidence -> failtestf "expected frame-count validation failure, got %A" evidence
+        }
+
+        test "generated app host public boundary maps keyboard tick update and close effects" {
+            let host =
+                { Init = fun () -> { Count = 0; Closed = false }, []
+                  Update =
+                    fun msg model ->
+                        match msg with
+                        | Increment -> { model with Count = model.Count + 1 }, [ RenderScene(Group []) ]
+                        | Close -> { model with Closed = true }, [ CloseWindow ]
+                  View = fun model -> Text((0.0, 0.0), $"count {model.Count}", { Red = 255uy; Green = 255uy; Blue = 255uy; Alpha = 255uy })
+                  MapKey = fun key isDown -> if isDown && key = Space then Some Increment else None
+                  Tick = fun elapsed -> if elapsed > TimeSpan.Zero then Some Increment else None
+                  Diagnostics = Viewer.defaultDiagnostics }
+
+            let model, effects =
+                GeneratedAppHost.dispatchKey
+                    host
+                    { RawKey = "Space"
+                      Direction = ViewerKeyDirection.KeyDown }
+                    { Count = 0; Closed = false }
+
+            Expect.equal model.Count 1 "keyboard dispatch routes through host update"
+            Expect.exists effects (function RenderScene _ -> true | _ -> false) "host update effects are emitted at the viewer boundary"
+            Expect.equal (host.Tick(TimeSpan.FromMilliseconds 16.0)) (Some Increment) "tick mapping is public and pure"
+
+            match Viewer.runApp { Title = "Product"; InitialSize = { Width = 640; Height = 480 } } host with
+            | Result.Ok outcome ->
+                Expect.equal outcome.Mode "persistent-window" "runApp reports persistent-window mode"
+                Expect.equal outcome.Status "ok" "runApp reports ok status on supported hosts"
+            | Result.Error failure ->
+                Expect.equal failure.Classification UnsupportedEnvironment "runApp reports unsupported host separately from product defects"
         }
 
         test "diagnostic filtering honors categories and level thresholds across startup input renderer and readback categories" {

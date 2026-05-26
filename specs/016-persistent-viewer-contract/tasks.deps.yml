@@ -1,0 +1,159 @@
+schema_version: "1.0"
+
+tasks:
+  T001:
+    deps: []
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: ["speckit-tasks"]
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: ["fs-skia-skiaviewer", "fs-skia-scene", "fs-skia-elmish", "fs-skia-keyboard-input"]
+  T006:
+    deps: []
+    skillist: ["fs-skia-skiaviewer"]
+  T007:
+    deps: []
+    skillist: ["fs-skia-skiaviewer", "fs-skia-elmish", "fs-skia-keyboard-input"]
+  T008:
+    deps: []
+    skillist: ["fs-skia-skiaviewer", "fs-skia-elmish", "fs-skia-keyboard-input"]
+  T009:
+    deps: []
+    skillist: ["speckit-evidence-audit"]
+  T010:
+    deps: []
+    skillist: ["speckit-tasks"]
+  T011:
+    deps: []
+    skillist: ["fs-skia-testing", "fs-skia-skiaviewer"]
+  T012:
+    deps: []
+    skillist: []
+  T013:
+    deps: []
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T014:
+    deps: [T005]
+    skillist: ["fs-skia-skiaviewer"]
+  T015:
+    deps: [T009, T013]
+    skillist: []
+  T016:
+    deps: [T005, T006]
+    skillist: ["fs-skia-skiaviewer"]
+  T017:
+    deps: [T005, T007]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-elmish", "fs-skia-keyboard-input"]
+  T018:
+    deps: [T008, T011]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-elmish", "fs-skia-keyboard-input", "fs-skia-testing"]
+  T019:
+    deps: [T016]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-scene"]
+  T020:
+    deps: [T017, T019]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-elmish", "fs-skia-keyboard-input"]
+  T021:
+    deps: [T018, T020]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-elmish", "fs-skia-keyboard-input"]
+  T022:
+    deps: [T018, T021]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing"]
+  T023:
+    deps: [T021, T022]
+    skillist: []
+  T024:
+    deps: [T021, T023]
+    skillist: []
+  T025:
+    deps: [T009]
+    skillist: ["speckit-evidence-audit"]
+  T026:
+    deps: [T009]
+    skillist: ["speckit-evidence-audit"]
+  T027:
+    deps: [T010]
+    skillist: ["speckit-tasks"]
+  T028:
+    deps: [T025, T026]
+    skillist: ["speckit-evidence-audit"]
+  T029:
+    deps: [T027]
+    skillist: ["speckit-tasks"]
+  T030:
+    deps: [T022, T028, T029]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing"]
+  T031:
+    deps: [T012, T028, T030]
+    skillist: []
+  T032:
+    deps: [T028, T031]
+    skillist: ["speckit-evidence-audit"]
+  T033:
+    deps: [T006]
+    skillist: ["fs-skia-skiaviewer"]
+  T034:
+    deps: [T011, T033]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing"]
+  T035:
+    deps: [T033]
+    skillist: ["fs-skia-skiaviewer"]
+  T036:
+    deps: [T020, T034, T035]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-elmish", "fs-skia-keyboard-input"]
+  T037:
+    deps: [T034, T036]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing"]
+  T038:
+    deps: [T035, T037]
+    skillist: []
+  T039:
+    deps: [T031, T038]
+    skillist: []
+  T040:
+    deps: [T006]
+    skillist: ["fs-skia-skiaviewer"]
+  T041:
+    deps: [T011, T040]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing"]
+  T042:
+    deps: [T019, T040]
+    skillist: ["fs-skia-skiaviewer"]
+  T043:
+    deps: [T041, T042]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing"]
+  T044:
+    deps: [T030, T043]
+    skillist: []
+  T045:
+    deps: [T014, T019, T020]
+    skillist: ["fs-skia-skiaviewer"]
+  T046:
+    deps: [T021, T022, T037, T043, T045]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing"]
+  T047:
+    deps: [T031, T039]
+    skillist: []
+  T048:
+    deps: []
+    skillist: ["speckit-evidence-graph"]
+  T049:
+    deps: [T032, T048]
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T050:
+    deps: [T029, T030, T044]
+    skillist: ["speckit-tasks", "speckit-implement"]
+  T051:
+    deps: [T046, T047, T049, T050]
+    skillist: []
+  T052:
+    deps: [T024, T032, T038, T044, T049, T051]
+    skillist: ["speckit-evidence-audit"]

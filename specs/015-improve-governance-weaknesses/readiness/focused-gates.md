@@ -91,3 +91,16 @@
 - affected-gate: `EvidenceAudit`
 - remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
 
+## TemplateDrift
+
+- command: `./fake.sh build -t TemplateDrift`
+- direct-prerequisites: (none)
+- timestamp-utc: `2026-05-26T12:27:08.6307481+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/015-improve-governance-weaknesses/readiness/logs/template-drift.txt`
+- readiness-path: `/home/developer/projects/FS-Skia-UI/specs/015-improve-governance-weaknesses/readiness/template-drift.md`
+- verdict-category: `success`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- affected-gate: `TemplateDrift`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+

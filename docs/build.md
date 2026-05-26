@@ -84,6 +84,12 @@ separate artifact classes. A headless scene hash or PNG does not replace
 first-frame viewer startup evidence; an unsupported desktop host must produce
 an explicit unsupported-environment diagnostic.
 
+Persistent generated graphical launch evidence uses the default executable
+path and reports `mode=persistent-window`. Bounded smoke, first-frame,
+frame-count, scene metadata, and unsupported-host diagnostics remain explicit
+helper evidence and do not substitute for supported-host persistent launch
+readiness.
+
 `Dev` remains the fast local restore/build/test path and is independent of
 template packaging. `Verify` includes source tests, local package packing,
 package surface checks, public FSI transcripts, sample contract smoke,

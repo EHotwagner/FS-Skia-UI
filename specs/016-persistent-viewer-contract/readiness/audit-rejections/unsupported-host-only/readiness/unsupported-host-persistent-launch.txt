@@ -1,0 +1,1 @@
+status=unsupported mode=persistent-window command=dotnet run --project src/Product/Product.fsproj blocked-stage=Window classification=UnsupportedEnvironment category=Startup missing-package-capability=none unsupported-host-reasons=Linux persistent windows require DISPLAY or WAYLAND_DISPLAY message=Linux persistent windows require DISPLAY or WAYLAND_DISPLAY

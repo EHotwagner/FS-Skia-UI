@@ -65,6 +65,58 @@ let generatedProjectValidationTests =
                   "template/base/fake.cmd" ]
         }
 
+        test "generated graphical template source defaults to persistent viewer host" {
+            expectFileContains
+                "template/base/src/Product/Program.fs"
+                [ "let viewerOptions"
+                  "let generatedHost"
+                  "MapKey = mapKey"
+                  "Tick = tick"
+                  "Viewer.runApp viewerOptions generatedHost"
+                  "--bounded-smoke"
+                  "--bounded-smoke-frame-diagnostics"
+                  "--scene-evidence" ]
+        }
+
+        test "GeneratedProductCheck enforces persistent host wiring and rejects bounded-only default markers" {
+            expectFileContains
+                "build.fsx"
+                [ "requiredPersistentHostTerms"
+                  "Viewer.runApp viewerOptions generatedHost"
+                  "generated app is missing persistent viewer host wiring"
+                  "forbiddenDefaultSubstitutions"
+                  "print metadata"
+                  "count controls"
+                  "run bounded smoke"
+                  "emit scene evidence"
+                  "without a persistent launch attempt"
+                  "bounded-only or print-only default path markers" ]
+        }
+
+        test "generated app default diagnostics report command capability blocked stage category and message" {
+            expectFileContains
+                "template/base/src/Product/Program.fs"
+                [ "let defaultCommand"
+                  "Viewer.runtimeCapability()"
+                  "missing-package-capability"
+                  "unsupported-host-reasons"
+                  "command=%s"
+                  "blocked-stage=%A"
+                  "classification=%A"
+                  "category=%A"
+                  "message=%s" ]
+        }
+
+        test "GeneratedProductCheck records persistent launch diagnostics separately from bounded evidence" {
+            expectFileContains
+                "build.fsx"
+                [ "persistent-launch-diagnostics.log"
+                  "generated consumer persistent launch diagnostics"
+                  "persistent launch diagnostics captured separately from bounded evidence"
+                  "Persistent launch diagnostics log"
+                  "PersistentLaunchDiagnosticFailure" ]
+        }
+
         test "V3 generated product checks enforce Controls ownership and stale reference diagnostics" {
             expectFileContains
                 "build.fsx"

@@ -1,0 +1,7 @@
+model-count=1
+render-effect=true
+tick-dispatch=true
+status=ok
+mode=persistent-window
+window-opened=true
+exit-path=true

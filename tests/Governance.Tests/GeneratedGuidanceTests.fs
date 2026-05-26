@@ -77,6 +77,32 @@ let generatedGuidanceTests =
                 "active and preset plan prompt classes match"
         }
 
+        test "generated task guidance requires persistent viewer launch evidence separately from bounded helpers" {
+            [ ".specify/templates/tasks-template.md"
+              ".specify/presets/fsharp-opinionated/templates/tasks-template.md" ]
+            |> List.iter (fun template ->
+                expectFileContains
+                    template
+                    [ "persistent graphical launch task"
+                      "default executable"
+                      "Bounded smoke, first-frame, frame-count, scene metadata"
+                      "MUST NOT be described as completing interactive graphical readiness" ])
+        }
+
+        test "generated task guidance rejects print-only and bounded-only default graphical viewer paths" {
+            [ ".specify/templates/tasks-template.md"
+              ".specify/presets/fsharp-opinionated/templates/tasks-template.md" ]
+            |> List.iter (fun template ->
+                expectFileContains
+                    template
+                    [ "MUST reject viewer-backed default executable paths"
+                      "print metadata"
+                      "count controls"
+                      "run bounded smoke"
+                      "emit scene evidence"
+                      "exit without a persistent launch attempt" ])
+        }
+
         test "Spec Kit docs distinguish V2 obligations from deferred roadmap work" {
             expectFileContains
                 "docs/speckit.md"

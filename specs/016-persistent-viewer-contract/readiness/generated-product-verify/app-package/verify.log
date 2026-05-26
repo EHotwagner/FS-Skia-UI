@@ -1,0 +1,12 @@
+
+## app/package generated Verify
+$ bash ./fake.sh build -t Verify
+Dev completed for generated product
+Test completed for generated product
+GeneratedGuidanceCheck completed for generated product
+TemplateDrift completed for generated product
+EvidenceGraph completed for generated product
+EvidenceAudit completed for generated product
+Verify completed for generated product
+
+exit-code=0

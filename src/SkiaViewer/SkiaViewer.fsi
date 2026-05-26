@@ -83,6 +83,27 @@ type ViewerRunFailure =
       Message: string
       LastDiagnosticSummary: string option }
 
+type ViewerRuntimeCapability =
+    { PersistentWindow: bool
+      BoundedSmoke: bool
+      KeyboardInput: bool
+      RendererMode: string
+      UnsupportedHostReasons: string list
+      MissingPackageCapabilities: string list }
+
+type ViewerLaunchOutcome =
+    { Status: string
+      Mode: string
+      Command: string option
+      RendererMode: string
+      WindowOpened: bool
+      InputDispatch: string
+      ExitPath: bool
+      BlockedStage: ViewerRunBlockedStage option
+      Classification: ViewerRunFailureClassification option
+      Category: ViewerDiagnosticCategory option
+      Message: string }
+
 type ViewerModel =
     { Options: ViewerOptions
       IsRunning: bool
@@ -130,6 +151,14 @@ type ViewerRunEffect =
     | StopBoundedRun
     | PersistRunEvidence of ViewerRunEvidence
 
+type GeneratedAppHost<'model,'msg> =
+    { Init: unit -> 'model * ViewerEffect list
+      Update: 'msg -> 'model -> 'model * ViewerEffect list
+      View: 'model -> SceneNode
+      MapKey: ViewerKey -> bool -> 'msg option
+      Tick: TimeSpan -> 'msg option
+      Diagnostics: ViewerDiagnosticsOptions }
+
 module Viewer =
     val init: options: ViewerOptions -> ViewerModel * ViewerEffect list
     val update: msg: ViewerMsg -> model: ViewerModel -> ViewerModel * ViewerEffect list
@@ -139,17 +168,12 @@ module Viewer =
     val shouldCaptureDiagnostic: options: ViewerDiagnosticsOptions -> diagnostic: ViewerDiagnosticEvent -> bool
     val captureDiagnostic: options: ViewerDiagnosticsOptions -> diagnostic: ViewerDiagnosticEvent -> ViewerDiagnosticEvent option
     val failureFromDiagnostic: diagnostic: ViewerDiagnosticEvent -> ViewerRunFailure
+    val runtimeCapability: unit -> ViewerRuntimeCapability
+    val run: options: ViewerOptions -> scene: SceneNode -> Result<ViewerLaunchOutcome, ViewerRunFailure>
+    val runApp: options: ViewerOptions -> host: GeneratedAppHost<'model,'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
     val runBounded: request: ViewerRunRequest -> options: ViewerOptions -> scene: SceneNode -> Result<ViewerRunEvidence, ViewerRunFailure>
     val runUntilFirstFrame: options: ViewerOptions -> scene: SceneNode -> Result<ViewerRunEvidence, ViewerRunFailure>
     val runForFrames: frameCount: int -> options: ViewerOptions -> scene: SceneNode -> Result<ViewerRunEvidence, ViewerRunFailure>
-
-type GeneratedAppHost<'model,'msg> =
-    { Init: unit -> 'model * ViewerEffect list
-      Update: 'msg -> 'model -> 'model * ViewerEffect list
-      View: 'model -> SceneNode
-      MapKey: ViewerKey -> bool -> 'msg option
-      Tick: TimeSpan -> 'msg option
-      Diagnostics: ViewerDiagnosticsOptions }
 
 module GeneratedAppHost =
     val dispatchKey: host: GeneratedAppHost<'model,'msg> -> raw: ViewerKeyEvent -> model: 'model -> 'model * ViewerEffect list

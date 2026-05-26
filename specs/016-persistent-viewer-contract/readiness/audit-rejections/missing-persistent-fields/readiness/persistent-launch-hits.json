@@ -1,0 +1,28 @@
+[
+  {
+    "path": "supported-host-persistent-launch.txt",
+    "reason": "missing persistent launch fields",
+    "missing": [
+      "blocked-stage",
+      "classification",
+      "category",
+      "message"
+    ]
+  },
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/016-persistent-viewer-contract/readiness/audit-rejections/missing-persistent-fields/readiness/supported-host-persistent-launch.txt",
+    "reason": "missing supported-host persistent launch evidence",
+    "required": [
+      "status",
+      "mode",
+      "command",
+      "window-opened",
+      "input-dispatch",
+      "exit-path",
+      "blocked-stage",
+      "classification",
+      "category",
+      "message"
+    ]
+  }
+]

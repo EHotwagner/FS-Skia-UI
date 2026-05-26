@@ -1,0 +1,1 @@
+status=ok mode=persistent-window command=dotnet run --project src/Product/Product.fsproj window-opened=true input-dispatch=available exit-path=true renderer-mode=skia missing-package-capability=none unsupported-host-reasons=none

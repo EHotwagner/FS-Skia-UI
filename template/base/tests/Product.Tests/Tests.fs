@@ -101,6 +101,17 @@ let tests =
             Expect.stringContains source "FrameLogLimit = if includeFrameDiagnostics then Some 1 else Some 0" "generated smoke limits repeated frame diagnostics"
         }
 
+        test "generated graphical app default executable path uses persistent host" {
+            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+
+            Expect.stringContains source "let viewerOptions" "generated product declares viewer options"
+            Expect.stringContains source "let generatedHost" "generated product declares generated host"
+            Expect.stringContains source "MapKey = mapKey" "generated host wires keyboard mapping"
+            Expect.stringContains source "Tick = tick" "generated host wires tick mapping"
+            Expect.stringContains source "Viewer.runApp viewerOptions generatedHost" "default path runs persistent generated app host"
+            Expect.stringContains source "--bounded-smoke" "bounded smoke remains behind an explicit flag"
+        }
+
         test "generated graphical app exposes deterministic scene evidence command" {
             let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
 

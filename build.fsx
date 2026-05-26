@@ -2551,6 +2551,38 @@ let scanV3GeneratedRow model row =
        && productProject.IndexOf("PackageReference Include=\"FS.Skia.UI.Controls.Elmish\"", StringComparison.Ordinal) < 0 then
         failwithf "%s/%s generated app is missing Controls.Elmish adapter package reference" row.Artifact row.Profile
 
+    if row.Profile = "app" then
+        let requiredPersistentHostTerms =
+            [ "let viewerOptions"
+              "let generatedHost"
+              "MapKey = mapKey"
+              "Tick = tick"
+              "Viewer.runApp viewerOptions generatedHost"
+              "--bounded-smoke"
+              "--bounded-smoke-frame-diagnostics"
+              "--scene-evidence" ]
+
+        let missingPersistentHostTerms =
+            requiredPersistentHostTerms
+            |> List.filter (fun term -> productProgram.IndexOf(term, StringComparison.Ordinal) < 0)
+
+        if not missingPersistentHostTerms.IsEmpty then
+            failwithf "%s/%s generated app is missing persistent viewer host wiring:%s%s" row.Artifact row.Profile Environment.NewLine (String.Join(Environment.NewLine, missingPersistentHostTerms))
+
+        let forbiddenDefaultSubstitutions =
+            [ "print metadata"
+              "count controls"
+              "run bounded smoke"
+              "emit scene evidence"
+              "without a persistent launch attempt" ]
+
+        let foundDefaultSubstitutions =
+            forbiddenDefaultSubstitutions
+            |> List.filter (fun term -> productProgram.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0)
+
+        if not foundDefaultSubstitutions.IsEmpty then
+            failwithf "%s/%s generated app contains bounded-only or print-only default path markers:%s%s" row.Artifact row.Profile Environment.NewLine (String.Join(Environment.NewLine, foundDefaultSubstitutions))
+
     let selectedCapabilitySkills =
         Directory.EnumerateFiles(path [ row.Root; ".agents"; "skills" ], "SKILL.md", SearchOption.AllDirectories)
         |> Seq.map (relativePathFrom row.Root)
@@ -2646,6 +2678,7 @@ let runGeneratedConsumerValidation model =
     let boundedSmokeLog = path [ validationDir; "bounded-smoke.log" ]
     let sceneEvidencePath = path [ validationDir; "headless-scene-evidence.txt" ]
     let sceneEvidenceLog = path [ validationDir; "scene-evidence.log" ]
+    let persistentLaunchLog = path [ validationDir; "persistent-launch-diagnostics.log" ]
 
     let mutable category = "Completed"
     let diagnostics = ResizeArray<string>()
@@ -2719,6 +2752,19 @@ let runGeneratedConsumerValidation model =
         category <- "SceneEvidenceFailure"
         diagnostics.Add("headless scene evidence output missing")
 
+    let persistentDiagnosticsPassed =
+        semanticPassed
+        && runStep
+            "generated consumer persistent launch diagnostics"
+            "PersistentLaunchDiagnosticFailure"
+            "dotnet"
+            "run --project src/Product/Product.fsproj --no-restore"
+            row.Root
+            persistentLaunchLog
+
+    if persistentDiagnosticsPassed then
+        diagnostics.Add("persistent launch diagnostics captured separately from bounded evidence")
+
     stopwatch.Stop()
 
     let report =
@@ -2738,6 +2784,7 @@ let runGeneratedConsumerValidation model =
           $"- Bounded smoke evidence: `{boundedSmokePath}`"
           $"- Scene evidence log: `{sceneEvidenceLog}`"
           $"- Scene evidence output: `{sceneEvidencePath}`"
+          $"- Persistent launch diagnostics log: `{persistentLaunchLog}`"
           ""
           "## Diagnostics"
           ""
@@ -2746,7 +2793,7 @@ let runGeneratedConsumerValidation model =
 
     File.WriteAllText(model.GeneratedProductValidationPath, report + Environment.NewLine)
 
-    if category = "RestoreFailure" || category = "SemanticTestFailure" || category = "ViewerStartupFailure" || category = "SceneEvidenceFailure" then
+    if category = "RestoreFailure" || category = "SemanticTestFailure" || category = "ViewerStartupFailure" || category = "SceneEvidenceFailure" || category = "PersistentLaunchDiagnosticFailure" then
         failwithf "Generated consumer validation failed with category %s; see %s" category model.GeneratedProductValidationPath
 
 let runDependencyOwnershipReport model =
@@ -3078,7 +3125,9 @@ let validateTaskSkillistGuidance model =
             "matched signals"
             "reviewer disposition"
             "small, medium, and broad"
-            "non-authoritative aggregate" ]
+            "non-authoritative aggregate"
+            "persistent graphical launch task"
+            "MUST reject viewer-backed default executable paths" ]
           ".specify/presets/fsharp-opinionated/templates/tasks-template.md",
           [ "[skillist: []]"
             "structured"
@@ -3089,7 +3138,9 @@ let validateTaskSkillistGuidance model =
             "matched signals"
             "reviewer disposition"
             "small, medium, and broad"
-            "non-authoritative aggregate" ]
+            "non-authoritative aggregate"
+            "persistent graphical launch task"
+            "MUST reject viewer-backed default executable paths" ]
           ".specify/presets/fsharp-opinionated/templates/tasks-deps-template.yml",
           [ "deps:"
             "skillist:"

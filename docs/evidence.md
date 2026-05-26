@@ -42,16 +42,23 @@ feature readiness files before final review:
 - `readiness/evidence-graph.md`
 - `readiness/evidence-audit.md`
 
-Viewer startup evidence must come from a bounded real viewer run or an explicit
-unsupported-host diagnostic. Scene-level visual evidence is deterministic and
-non-window, but it remains a separate evidence class.
+Persistent viewer readiness must come from a distinct graphical launch artifact
+from the default executable path. The artifact records `status`,
+`mode=persistent-window`, `command`, `window-opened`, `input-dispatch`,
+`exit-path`, `blocked-stage`, `classification`, `category`, and `message`.
+
+Bounded viewer runs, first-frame evidence, frame-count evidence, deterministic
+scene metadata, and unsupported-host diagnostics are CI and diagnostic helpers.
+They do not replace supported-host persistent graphical launch evidence.
+They must be cited as helper evidence only; reviewers should treat a package
+that contains only bounded or unsupported-host artifacts as incomplete for
+interactive graphical readiness.
 
 Generated graphical consumer validation starts from `PackLocal` output, restores
 the generated product from the local feed, runs generated semantic tests, then
-runs bounded smoke and deterministic scene evidence. A desktop
-`UnsupportedHost` result is acceptable only when the bounded-smoke artifact
-records the unsupported renderer or window capability and the scene-evidence
-artifact remains present separately.
+runs persistent source/wiring checks, bounded smoke, and deterministic scene
+evidence. Unsupported-host diagnostics must remain separate from supported-host
+persistent launch evidence.
 
 Viewer diagnostics evidence should record both startup-focused and
 frame-focused paths. Startup-focused runs keep frame-loop diagnostics disabled

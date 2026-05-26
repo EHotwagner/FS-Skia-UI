@@ -203,6 +203,42 @@ let subscriptions _ : AdapterSubscription<Msg> list =
 let adapterProgram =
     ControlsElmish.program init update controlsExampleView subscriptions
 
+let view (model: Model) =
+    let text =
+        $"Product screen: {screenName model.Screen}; interactions: {model.PrimaryInteractions}; name: {model.Name}"
+
+    Text(
+        (24.0, 48.0),
+        text,
+        { Red = 240uy
+          Green = 240uy
+          Blue = 240uy
+          Alpha = 255uy }
+    )
+
+let mapKey key isDown =
+    Some(ViewerInput(key, isDown))
+
+let tick _ =
+    None
+
+let viewerOptions =
+    { Title = "Generated Product"
+      InitialSize = { Width = 640; Height = 480 } }
+
+let generatedHost =
+    { Init = fun () -> initialModel, []
+      Update =
+        fun msg model ->
+            let next, _ = update msg model
+            next, [ RenderScene(view next) ]
+      View = view
+      MapKey = mapKey
+      Tick = tick
+      Diagnostics = Viewer.defaultDiagnostics }
+
+let defaultCommand = "dotnet run --project src/Product/Product.fsproj"
+
 let private writeBoundedSmokeReport (path: string) lines =
     let directory = Path.GetDirectoryName path
 
@@ -332,7 +368,24 @@ let main args =
     | "--scene-evidence" :: path :: _ -> sceneEvidence path
     | "--scene-evidence" :: _ -> sceneEvidence "readiness/headless-scene-evidence.txt"
     | _ ->
-        let model, _ = adapterProgram.Init()
-        let view = adapterProgram.View model
-        printfn "Generated product controls: %d" (Control.count view)
-        0
+        let capability = Viewer.runtimeCapability()
+
+        let missingPackageCapability =
+            if List.isEmpty capability.MissingPackageCapabilities then
+                "none"
+            else
+                String.concat "," capability.MissingPackageCapabilities
+
+        let unsupportedHostReasons =
+            if List.isEmpty capability.UnsupportedHostReasons then
+                "none"
+            else
+                String.concat "|" capability.UnsupportedHostReasons
+
+        match Viewer.runApp viewerOptions generatedHost with
+        | Result.Ok outcome ->
+            printfn "status=%s mode=%s command=%s window-opened=%b input-dispatch=%s exit-path=%b renderer-mode=%s missing-package-capability=%s unsupported-host-reasons=%s" outcome.Status outcome.Mode defaultCommand outcome.WindowOpened outcome.InputDispatch outcome.ExitPath outcome.RendererMode missingPackageCapability unsupportedHostReasons
+            0
+        | Result.Error failure ->
+            printfn "status=%s mode=persistent-window command=%s blocked-stage=%A classification=%A category=%A missing-package-capability=%s unsupported-host-reasons=%s message=%s" (if failure.Classification = UnsupportedEnvironment then "unsupported" else "failed") defaultCommand failure.BlockedStage failure.Classification failure.DiagnosticCategory missingPackageCapability unsupportedHostReasons failure.Message
+            if failure.Classification = UnsupportedEnvironment then 0 else 1
