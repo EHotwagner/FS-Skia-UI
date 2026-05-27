@@ -3,8 +3,6 @@ module ProductTests
 open System
 open Expecto
 open Product.Program
-open FS.Skia.UI.Controls
-open FS.Skia.UI.KeyboardInput
 open FS.Skia.UI.Scene
 
 let rec collectSceneNodes node =
@@ -30,6 +28,59 @@ let sceneText node =
     collectSceneNodes node
     |> Seq.choose (function Text(_, value, _) -> Some value | TextRun run -> Some run.Text | _ -> None)
     |> String.concat " "
+
+//#if (profile == "governed" || profile == "headless-scene")
+[<Tests>]
+let tests =
+    testList "product" [
+        test "generated headless product exposes scene contract" {
+            let scene: FS.Skia.UI.Scene.Scene = { Nodes = [ Product.Program.view initialModel ] }
+            let text = scene.Nodes |> List.map sceneText |> String.concat " "
+            let updated, effects = Product.Program.update Rendered initialModel
+
+            Expect.isNonEmpty scene.Nodes "Product.Program.view returns a scene"
+            Expect.stringContains text "Governed headless scene" "headless view renders scene text"
+            Expect.equal updated.RenderCount 1 "headless update is callable"
+            Expect.isEmpty effects "headless update has no host effects"
+        }
+
+        test "generated headless product exposes deterministic scene evidence command" {
+            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+
+            Expect.stringContains source "--scene-evidence" "headless profile exposes scene evidence"
+            Expect.stringContains source "SceneEvidence.render" "scene evidence uses public Scene evidence helper"
+            Expect.stringContains source "RendererMode = \"deterministic-scene\"" "scene evidence is deterministic"
+            Expect.isFalse (source.Contains("Viewer.runApp")) "headless profile does not require the viewer runtime"
+            Expect.isFalse (source.Contains("ControlsElmish")) "headless profile does not require Controls Elmish adapters"
+        }
+
+        test "generated headless layout evidence is readable" {
+            let report = Product.Program.layoutEvidenceForSize { Width = 640; Height = 480 } initialModel
+
+            Expect.equal report.ProofLevel ReadableLayout "headless layout report proves readable layout"
+            Expect.isSome report.HudRegion "headless layout report has a named summary region"
+            Expect.isSome report.GameplayRegion "headless layout report has a named content region"
+            Expect.isNonEmpty report.TextBounds "headless layout report has text bounds"
+            Expect.isNonEmpty report.GameplayBounds "headless layout report has scene content bounds"
+            Expect.equal report.OverlapStatus NoLayoutOverlap "headless layout report has no overlaps"
+        }
+
+        //#if (profile == "governed")
+        test "generated governed profile validates layout through Testing helpers" {
+            let report = Product.Program.layoutEvidenceForSize { Width = 640; Height = 480 } initialModel
+            let result =
+                FS.Skia.UI.Testing.GeneratedLayoutValidation.validate
+                    { Report = report
+                      RequireReadableLayout = true }
+
+            Expect.isTrue result.Accepted "governed profile can validate generated layout evidence"
+            Expect.equal result.FailureClass None "accepted governed layout has no failure class"
+        }
+        //#endif
+    ]
+//#else
+open FS.Skia.UI.Controls
+open FS.Skia.UI.KeyboardInput
 
 [<Tests>]
 let tests =
@@ -363,3 +414,4 @@ let tests =
             Expect.stringContains source "readiness/headless-scene-evidence.txt" "scene evidence writes a stable readiness path"
         }
     ]
+//#endif

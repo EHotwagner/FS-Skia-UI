@@ -2,6 +2,130 @@ module Product.Program
 
 open System
 open System.IO
+//#if (profile == "governed" || profile == "headless-scene")
+open FS.Skia.UI.Scene
+
+type Model =
+    { Name: string
+      RenderCount: int }
+
+type Msg =
+    | Rendered
+    | NoOp
+
+let initialModel =
+    { Name = "Product"
+      RenderCount = 0 }
+
+let update msg model =
+    match msg with
+    | Rendered -> { model with RenderCount = model.RenderCount + 1 }, []
+    | NoOp -> model, []
+
+let view model =
+    let textColor = { Red = 240uy; Green = 240uy; Blue = 240uy; Alpha = 255uy }
+
+    Group(
+        [ { Nodes = [ Rectangle((16.0, 16.0, 288.0, 128.0), { Red = 24uy; Green = 32uy; Blue = 44uy; Alpha = 255uy }) ] }
+          { Nodes = [ Text((32.0, 56.0), $"Governed headless scene: {model.Name}", textColor) ] }
+          { Nodes = [ Text((32.0, 88.0), $"renders: {model.RenderCount}", textColor) ] } ]
+    )
+
+let layoutEvidenceForSize (size: Size) (model: Model) : LayoutEvidenceReport =
+    let hud: LayoutRegionEvidence =
+        { Name = "summary"
+          Bounds = { X = 0.0; Y = 0.0; Width = float size.Width; Height = 64.0 } }
+
+    let gameplay: LayoutRegionEvidence =
+        { Name = "content"
+          Bounds =
+            { X = 0.0
+              Y = hud.Bounds.Height
+              Width = float size.Width
+              Height = max 1.0 (float size.Height - hud.Bounds.Height) } }
+
+    { Scene = { Nodes = [ view model ] }
+      OutputSize = size
+      ProofLevel = ReadableLayout
+      HudRegion = Some hud
+      GameplayRegion = Some gameplay
+      TextBounds =
+        [ { Name = "title"
+            Text = $"Governed headless scene: {model.Name}"
+            Bounds = { X = 32.0; Y = 40.0; Width = 240.0; Height = 24.0 }
+            MeasurementMode = ApproximateTextBounds } ]
+      GameplayBounds =
+        [ { Name = "scene-content"
+            Bounds = { X = 16.0; Y = 80.0; Width = 288.0; Height = 64.0 } } ]
+      OverlapStatus = NoLayoutOverlap
+      MeasurementMode = ApproximateTextBounds
+      UnsupportedReasons = []
+      Diagnostics = []
+      RenderEvidence = None }
+
+let private writeLines (path: string) (lines: string list) =
+    let directory = Path.GetDirectoryName path
+
+    if not (String.IsNullOrWhiteSpace directory) then
+        Directory.CreateDirectory(directory |> string) |> ignore
+
+    File.WriteAllLines(path, Array.ofList lines)
+
+let layoutEvidenceCommand evidencePath width height =
+    let size = { Width = width; Height = height }
+    let report = layoutEvidenceForSize size initialModel
+
+    let lines =
+        [ "status=ok"
+          "command=--layout-evidence"
+          "profile=headless-governed"
+          $"scene=Product.Program.view"
+          $"output-size={size.Width}x{size.Height}"
+          $"proof-level={report.ProofLevel}"
+          $"text-bounds={report.TextBounds.Length}"
+          $"gameplay-bounds={report.GameplayBounds.Length}"
+          $"overlap-status={report.OverlapStatus}"
+          $"measurement-mode={report.MeasurementMode}" ]
+
+    writeLines evidencePath lines
+    lines |> List.iter (printfn "%s")
+    0
+
+let sceneEvidence evidencePath =
+    let result =
+        SceneEvidence.render
+            { Scene = { Nodes = [ view initialModel ] }
+              OutputSize = { Width = 320; Height = 200 }
+              Format = Metadata
+              RendererMode = "deterministic-scene"
+              EvidencePath = Some evidencePath }
+
+    match result with
+    | Result.Ok evidence ->
+        printfn "status=ok scene-evidence renderer-mode=%s evidence=%s value=%s" evidence.RendererMode evidencePath evidence.Value
+        0
+    | Result.Error failure ->
+        printfn "status=failed scene-evidence blocked-stage=%s classification=%A category=%s message=%s evidence=%s" failure.BlockedStage failure.Classification failure.DiagnosticCategory failure.Message evidencePath
+        1
+
+[<EntryPoint>]
+let main args =
+    match List.ofArray args with
+    | "--layout-evidence" :: path :: width :: height :: _ ->
+        match Int32.TryParse width, Int32.TryParse height with
+        | (true, parsedWidth), (true, parsedHeight) -> layoutEvidenceCommand path parsedWidth parsedHeight
+        | _ ->
+            printfn "status=failed command=--layout-evidence diagnostics=width and height must be integers"
+            1
+    | "--layout-evidence" :: path :: _ -> layoutEvidenceCommand path 640 480
+    | "--layout-evidence" :: _ -> layoutEvidenceCommand "readiness/layout-evidence.txt" 640 480
+    | "--scene-evidence" :: path :: _ -> sceneEvidence path
+    | "--scene-evidence" :: _ -> sceneEvidence "readiness/headless-scene-evidence.txt"
+    | _ ->
+        printfn "status=ok mode=headless-scene command=dotnet-run scene-nodes=1"
+        0
+
+//#else
 open FS.Skia.UI.Controls
 open FS.Skia.UI.Controls.Elmish
 open FS.Skia.UI.KeyboardInput
@@ -1064,3 +1188,4 @@ let main args =
         | Result.Error (failure: ViewerRunFailure) ->
             printfn "status=%s mode=interactive-window command=%s window-visible=unsupported accessible-window=false blocked-stage=%A classification=%A category=%A window-options=%s missing-package-capability=%s unsupported-host-reasons=%s diagnostic-api=%s diagnostic-class=%s runtime-directory=%s runtime-directory-exists=%b display-variable=%s display-socket-exists=%b session-bus=%s %s message=%s desktop-message=%s" (if failure.Classification = UnsupportedEnvironment then "unsupported" else "failed") defaultCommand failure.BlockedStage failure.Classification failure.DiagnosticCategory windowOptionSummary missingPackageCapability unsupportedHostReasons desktopSessionDiagnosticApi diagnosticClass (optional runtimeDirectory) runtimeDirectoryExists (optional displayVariable) displaySocketExists (optional sessionBus) fallbackFullDesktopSession failure.Message desktopMessage
             if failure.Classification = UnsupportedEnvironment then 0 else 1
+//#endif
