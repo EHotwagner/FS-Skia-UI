@@ -1,0 +1,117 @@
+schema_version: "1.0"
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: ["fs-skia-layout-evidence"]
+  T003:
+    deps: [T002]
+    skillist: ["fs-skia-layout-evidence"]
+  T004:
+    deps: [T001, T002]
+    skillist: ["fs-skia-layout-evidence"]
+  T005:
+    deps: [T002]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-scene", "fs-skia-testing"]
+  T006:
+    deps: [T005]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-scene", "fs-skia-testing"]
+  T007:
+    deps: [T002]
+    skillist: ["fs-skia-layout-evidence"]
+  T008:
+    deps: [T003]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-template-update"]
+  T009:
+    deps: [T005]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-scene", "fs-skia-testing"]
+  T010:
+    deps: [T005]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-scene", "fs-skia-testing"]
+  T011:
+    deps: [T008]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-template-update"]
+  T012:
+    deps: [T008]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-template-update"]
+  T013:
+    deps: [T008]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-template-update"]
+  T014:
+    deps: [T011, T013]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-template-update"]
+  T015:
+    deps: [T012, T014]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-template-update"]
+  T016:
+    deps: [T014, T015]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-template-update"]
+  T017:
+    deps: [T016]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-template-update"]
+  T018:
+    deps: [T008]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-template-update"]
+  T019:
+    deps: [T005, T018]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-template-update"]
+  T020:
+    deps: [T018]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-template-update"]
+  T021:
+    deps: [T019, T020]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-template-update"]
+  T022:
+    deps: [T005]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-scene", "fs-skia-testing"]
+  T023:
+    deps: [T005]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-testing"]
+  T024:
+    deps: [T005]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-scene", "fs-skia-testing"]
+  T025:
+    deps: [T006, T022]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-scene", "fs-skia-testing"]
+  T026:
+    deps: [T023, T025]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-testing"]
+  T027:
+    deps: [T024, T025, T026]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-scene", "fs-skia-testing"]
+  T028:
+    deps: [T005]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-skiaviewer", "fs-skia-testing"]
+  T029:
+    deps: [T028]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-skiaviewer"]
+  T030:
+    deps: [T028]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-skiaviewer", "fs-skia-testing"]
+  T031:
+    deps: [T029, T030]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-skiaviewer"]
+  T032:
+    deps: [T010, T025, T026]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-scene", "fs-skia-testing"]
+  T033:
+    deps: [T016, T017, T021, T027]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-template-update"]
+  T034:
+    deps: [T016, T021, T027, T031, T033]
+    skillist: ["fs-skia-layout-evidence"]
+  T035:
+    deps: []
+    skillist: ["speckit-evidence-graph"]
+  T036:
+    deps: [T035]
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T037:
+    deps: [T033]
+    skillist: ["fs-skia-layout-evidence", "fs-skia-template-update"]
+  T038:
+    deps: [T032, T033, T034, T036, T037]
+    skillist: ["fs-skia-layout-evidence"]

@@ -1,5 +1,6 @@
 module SkillValidationTests
 
+open System
 open Expecto
 open GovernanceTestSupport
 
@@ -11,6 +12,37 @@ let requiredSkillSections =
       "Evidence"
       "Package Boundary"
       "Generated Product" ]
+
+let private taskBlock taskId (depsYaml: string) =
+    let marker = $"  {taskId}:"
+    let start = depsYaml.IndexOf(marker, StringComparison.Ordinal)
+
+    if start < 0 then
+        ""
+    else
+        let rest = depsYaml.Substring(start + marker.Length)
+        let next = rest.IndexOf("\n  T", StringComparison.Ordinal)
+
+        if next < 0 then rest else rest.Substring(0, next)
+
+let private taskLine taskId (tasksMarkdown: string) =
+    tasksMarkdown.Replace("\r\n", "\n").Split('\n')
+    |> Array.tryFind (fun line -> line.Contains($" {taskId} ", StringComparison.Ordinal))
+    |> Option.defaultValue ""
+
+let private requiresLayoutEvidenceSkill (text: string) =
+    [ "HUD"
+      "gameplay"
+      "layout evidence"
+      "readability"
+      "generated validation"
+      "public contract"
+      "host-warning"
+      "warning-classification"
+      "Product.Program.view"
+      "Product.Program.generatedHost"
+      "Product.Program.update" ]
+    |> List.exists (fun needle -> text.Contains(needle, StringComparison.OrdinalIgnoreCase))
 
 [<Tests>]
 let skillValidationTests =
@@ -43,5 +75,39 @@ let skillValidationTests =
                   "fs-skia-keyboard-input"
                   "fs-skia-ui-widgets"
                   "unrelated capability skills" ]
+        }
+
+        test "layout evidence implementation skill is discoverable in the capability inventory" {
+            expectFileContains
+                "template/capabilities.yml"
+                [ "implementationSkills inventory:"
+                  "skillId: fs-skia-layout-evidence"
+                  ".agents/skills/fs-skia-layout-evidence/SKILL.md"
+                  "generated-game-hud-readability"
+                  "public-scene-host-update-guidance"
+                  "host-warning-classification" ]
+        }
+
+        test "active layout evidence tasks mirror fs-skia-layout-evidence in structured and visible metadata" {
+            let deps = read "specs/020-asteroids-integration-feedback/tasks.deps.yml"
+            let tasks = read "specs/020-asteroids-integration-feedback/tasks.md"
+
+            let taskIds =
+                [ "T002"; "T003"; "T004"; "T005"; "T006"; "T007"; "T008"; "T009"; "T010"
+                  "T011"; "T012"; "T013"; "T014"; "T015"; "T016"; "T017"; "T018"; "T019"; "T020"; "T021"
+                  "T022"; "T023"; "T024"; "T025"; "T026"; "T027"; "T028"; "T029"; "T030"; "T031"
+                  "T032"; "T033"; "T034"; "T037"; "T038" ]
+
+            taskIds
+            |> List.iter (fun taskId ->
+                Expect.stringContains (taskBlock taskId deps) "\"fs-skia-layout-evidence\"" $"{taskId} structured skillist includes layout evidence skill"
+                Expect.stringContains (taskLine taskId tasks) "fs-skia-layout-evidence" $"{taskId} visible task line mirrors layout evidence skill")
+        }
+
+        test "layout evidence task metadata fixture rejects omitted skill" {
+            let malformedLine = "- [ ] T900 [US1] [skillist: fs-skia-template-update] Update generated game HUD readability validation"
+
+            Expect.isTrue (requiresLayoutEvidenceSkill malformedLine) "fixture describes layout evidence work"
+            Expect.isFalse (malformedLine.Contains("fs-skia-layout-evidence", StringComparison.Ordinal)) "fixture omits required skill and would be rejected"
         }
     ]

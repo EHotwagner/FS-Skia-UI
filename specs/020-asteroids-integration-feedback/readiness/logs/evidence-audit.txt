@@ -1,0 +1,879 @@
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 12[X], 3[S], 21[S*], 2[ ]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 3 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 3 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 7 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 4 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=12
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=24
+auto-synthetic-tasks=21
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+diagnostic=T024 failed-rule=missing accepted-seh acceptance status source=`specs/020-asteroids-integration-feedback/contracts/layout-evidence-contract.md` required-action=Return to design/task generation and record valid [SEH] classification before implementation.
+  synthetic tasks (declared):     3
+  auto-synthetic tasks (computed): 21
+  accepted [SEH] tasks:           0
+  unaccepted synthetic tasks:      24
+  late [SEH] tasks:                0
+  readiness contract hits:         3
+  persistent launch hits:          3
+  window visibility hits:          7
+  advisory diff-scan hits:         4 (printed, not blocking)
+
+  To override, rerun with:  --accept-synthetic "justification"
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/governance-risk-levels.md (missing governance-risk-levels.md)
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/aggregate-hang-diagnostics.md (missing aggregate-hang-diagnostics.md)
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/runtime-limitations.md (missing runtime-limitations.md)
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/supported-host-persistent-launch.txt (missing supported-host persistent launch evidence)
+    [BLOCK] generated-consumer-validation/bounded-smoke.log, generated-consumer-validation/bounded-smoke.txt, generated-consumer-validation/game-image-evidence.png.metadata.txt, generated-consumer-validation/image-evidence.log, generated-file-lists/app-package.txt, generated-file-lists/app-source.txt (bounded-only substitution)
+    [BLOCK] generated-consumer-validation/window-options.log, generated-consumer-validation/window-options.txt (unsupported-host-only persistent launch evidence)
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/interactive-visible-window.md (missing required window visibility readiness file) missing=interactive-visible-window.md
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/close-reason-separation.md (missing required window visibility readiness file) missing=close-reason-separation.md
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/window-state-diagnostics.md (missing required window visibility readiness file) missing=window-state-diagnostics.md
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/window-options.md (missing required window visibility readiness file) missing=window-options.md
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/real-image-evidence.md (missing required window visibility readiness file) missing=real-image-evidence.md
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/generated-validation.md (missing generated validation fields) missing=exact-package-match,generated-tests-ran,authoritative,failure-class
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/generated-validation.md (unresolved package mismatch)
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:374  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:382  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/tests/Product.Tests/Tests.fs:306  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at tests/Testing.Tests/Tests.fs:255  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=2
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 12[X], 3[S], 21[S*], 1[ ], 1[F]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 3 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 3 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 7 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 4 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=12
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=24
+auto-synthetic-tasks=21
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+diagnostic=T024 failed-rule=missing accepted-seh acceptance status source=`specs/020-asteroids-integration-feedback/contracts/layout-evidence-contract.md` required-action=Return to design/task generation and record valid [SEH] classification before implementation.
+  synthetic tasks (declared):     3
+  auto-synthetic tasks (computed): 21
+  accepted [SEH] tasks:           0
+  unaccepted synthetic tasks:      24
+  late [SEH] tasks:                0
+  readiness contract hits:         3
+  persistent launch hits:          3
+  window visibility hits:          7
+  advisory diff-scan hits:         4 (printed, not blocking)
+
+  To override, rerun with:  --accept-synthetic "justification"
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/governance-risk-levels.md (missing governance-risk-levels.md)
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/aggregate-hang-diagnostics.md (missing aggregate-hang-diagnostics.md)
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/runtime-limitations.md (missing runtime-limitations.md)
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/supported-host-persistent-launch.txt (missing supported-host persistent launch evidence)
+    [BLOCK] generated-consumer-validation/bounded-smoke.log, generated-consumer-validation/bounded-smoke.txt, generated-consumer-validation/game-image-evidence.png.metadata.txt, generated-consumer-validation/image-evidence.log, generated-file-lists/app-package.txt, generated-file-lists/app-source.txt (bounded-only substitution)
+    [BLOCK] generated-consumer-validation/window-options.log, generated-consumer-validation/window-options.txt (unsupported-host-only persistent launch evidence)
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/interactive-visible-window.md (missing required window visibility readiness file) missing=interactive-visible-window.md
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/close-reason-separation.md (missing required window visibility readiness file) missing=close-reason-separation.md
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/window-state-diagnostics.md (missing required window visibility readiness file) missing=window-state-diagnostics.md
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/window-options.md (missing required window visibility readiness file) missing=window-options.md
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/real-image-evidence.md (missing required window visibility readiness file) missing=real-image-evidence.md
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/generated-validation.md (missing generated validation fields) missing=exact-package-match,generated-tests-ran,authoritative,failure-class
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/generated-validation.md (unresolved package mismatch)
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:374  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:382  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/tests/Product.Tests/Tests.fs:306  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at tests/Testing.Tests/Tests.fs:255  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=2
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 12[X], 3[S], 21[S*], 1[ ], 1[F]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 4 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=12
+accepted-seh-tasks=1
+unaccepted-synthetic-tasks=23
+auto-synthetic-tasks=21
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+  synthetic tasks (declared):     3
+  auto-synthetic tasks (computed): 21
+  accepted [SEH] tasks:           1
+  unaccepted synthetic tasks:      23
+  late [SEH] tasks:                0
+  advisory diff-scan hits:         4 (printed, not blocking)
+
+  To override, rerun with:  --accept-synthetic "justification"
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:374  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:382  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/tests/Product.Tests/Tests.fs:306  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at tests/Testing.Tests/Tests.fs:255  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=2
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 12[X], 4[S], 21[S*], 1[F]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 3 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 4 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=12
+accepted-seh-tasks=1
+unaccepted-synthetic-tasks=24
+auto-synthetic-tasks=21
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+  synthetic tasks (declared):     4
+  auto-synthetic tasks (computed): 21
+  accepted [SEH] tasks:           1
+  unaccepted synthetic tasks:      24
+  late [SEH] tasks:                0
+  persistent launch hits:          3
+  advisory diff-scan hits:         4 (printed, not blocking)
+
+  To override, rerun with:  --accept-synthetic "justification"
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/supported-host-persistent-launch.txt (missing supported-host persistent launch evidence)
+    [BLOCK] generated-consumer-validation/bounded-smoke.log, generated-consumer-validation/bounded-smoke.txt, generated-consumer-validation/game-image-evidence.png.metadata.txt, generated-consumer-validation/image-evidence.log, generated-file-lists/app-package.txt, generated-file-lists/app-source.txt (bounded-only substitution)
+    [BLOCK] generated-consumer-validation/window-options.log, generated-consumer-validation/window-options.txt, window-options.md (unsupported-host-only persistent launch evidence)
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:374  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:382  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/tests/Product.Tests/Tests.fs:306  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at tests/Testing.Tests/Tests.fs:255  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=2
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 12[X], 4[S], 21[S*], 1[F]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 3 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 4 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=12
+accepted-seh-tasks=1
+unaccepted-synthetic-tasks=24
+auto-synthetic-tasks=21
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+  synthetic tasks (declared):     4
+  auto-synthetic tasks (computed): 21
+  accepted [SEH] tasks:           1
+  unaccepted synthetic tasks:      24
+  late [SEH] tasks:                0
+  persistent launch hits:          3
+  advisory diff-scan hits:         4 (printed, not blocking)
+
+  To override, rerun with:  --accept-synthetic "justification"
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/supported-host-persistent-launch.txt (missing supported-host persistent launch evidence)
+    [BLOCK] generated-consumer-validation/bounded-smoke.log, generated-consumer-validation/bounded-smoke.txt, generated-consumer-validation/game-image-evidence.png.metadata.txt, generated-consumer-validation/image-evidence.log, generated-consumer-validation/persistent-launch-diagnostics.log, generated-consumer-validation/persistent-launch-evidence.txt, generated-file-lists/app-package.txt, generated-file-lists/app-source.txt (bounded-only substitution)
+    [BLOCK] generated-consumer-validation/window-options.log, generated-consumer-validation/window-options.txt, window-options.md (unsupported-host-only persistent launch evidence)
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:374  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:382  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/tests/Product.Tests/Tests.fs:306  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at tests/Testing.Tests/Tests.fs:255  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=2
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 12[X], 4[S], 21[S*], 1[F]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 3 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 4 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=12
+accepted-seh-tasks=1
+unaccepted-synthetic-tasks=24
+auto-synthetic-tasks=21
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+  synthetic tasks (declared):     4
+  auto-synthetic tasks (computed): 21
+  accepted [SEH] tasks:           1
+  unaccepted synthetic tasks:      24
+  late [SEH] tasks:                0
+  persistent launch hits:          3
+  advisory diff-scan hits:         4 (printed, not blocking)
+
+  To override, rerun with:  --accept-synthetic "justification"
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/supported-host-persistent-launch.txt (missing supported-host persistent launch evidence)
+    [BLOCK] generated-consumer-validation/bounded-smoke.log, generated-consumer-validation/bounded-smoke.txt, generated-consumer-validation/game-image-evidence.png.metadata.txt, generated-consumer-validation/image-evidence.log, generated-consumer-validation/persistent-launch-diagnostics.log, generated-consumer-validation/persistent-launch-evidence.txt, generated-file-lists/app-package.txt, generated-file-lists/app-source.txt (bounded-only substitution)
+    [BLOCK] generated-consumer-validation/window-options.log, generated-consumer-validation/window-options.txt, window-options.md (unsupported-host-only persistent launch evidence)
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:374  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:382  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/tests/Product.Tests/Tests.fs:306  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at tests/Testing.Tests/Tests.fs:255  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=2
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 12[X], 4[S], 21[S*], 1[F]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 3 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 4 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=12
+accepted-seh-tasks=1
+unaccepted-synthetic-tasks=24
+auto-synthetic-tasks=21
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+  synthetic tasks (declared):     4
+  auto-synthetic tasks (computed): 21
+  accepted [SEH] tasks:           1
+  unaccepted synthetic tasks:      24
+  late [SEH] tasks:                0
+  persistent launch hits:          3
+  advisory diff-scan hits:         4 (printed, not blocking)
+
+  To override, rerun with:  --accept-synthetic "justification"
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/supported-host-persistent-launch.txt (missing supported-host persistent launch evidence)
+    [BLOCK] generated-consumer-validation/bounded-smoke.log, generated-consumer-validation/bounded-smoke.txt, generated-consumer-validation/game-image-evidence.png.metadata.txt, generated-consumer-validation/image-evidence.log, generated-consumer-validation/persistent-launch-diagnostics.log, generated-consumer-validation/persistent-launch-evidence.txt, generated-file-lists/app-package.txt, generated-file-lists/app-source.txt (bounded-only substitution)
+    [BLOCK] generated-consumer-validation/window-options.log, generated-consumer-validation/window-options.txt, window-options.md (unsupported-host-only persistent launch evidence)
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:374  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:382  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/tests/Product.Tests/Tests.fs:306  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at tests/Testing.Tests/Tests.fs:255  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=2
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 12[X], 4[S], 21[S*], 1[F]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 4 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=12
+accepted-seh-tasks=1
+unaccepted-synthetic-tasks=24
+auto-synthetic-tasks=21
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+  synthetic tasks (declared):     4
+  auto-synthetic tasks (computed): 21
+  accepted [SEH] tasks:           1
+  unaccepted synthetic tasks:      24
+  late [SEH] tasks:                0
+  advisory diff-scan hits:         4 (printed, not blocking)
+
+  To override, rerun with:  --accept-synthetic "justification"
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:374  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:382  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/tests/Product.Tests/Tests.fs:306  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at tests/Testing.Tests/Tests.fs:255  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=2
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 12[X], 4[S], 21[S*], 1[F]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 4 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=12
+accepted-seh-tasks=1
+unaccepted-synthetic-tasks=24
+auto-synthetic-tasks=21
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+  synthetic tasks (declared):     4
+  auto-synthetic tasks (computed): 21
+  accepted [SEH] tasks:           1
+  unaccepted synthetic tasks:      24
+  late [SEH] tasks:                0
+  advisory diff-scan hits:         4 (printed, not blocking)
+
+  To override, rerun with:  --accept-synthetic "justification"
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:374  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:382  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/tests/Product.Tests/Tests.fs:306  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at tests/Testing.Tests/Tests.fs:255  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=2
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 12[X], 4[S], 21[S*], 1[F]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 4 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=12
+accepted-seh-tasks=1
+unaccepted-synthetic-tasks=24
+auto-synthetic-tasks=21
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+  synthetic tasks (declared):     4
+  auto-synthetic tasks (computed): 21
+  accepted [SEH] tasks:           1
+  unaccepted synthetic tasks:      24
+  late [SEH] tasks:                0
+  advisory diff-scan hits:         4 (printed, not blocking)
+
+  To override, rerun with:  --accept-synthetic "justification"
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:374  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/src/Product/Program.fs:382  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at template/base/tests/Product.Tests/Tests.fs:306  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at tests/Testing.Tests/Tests.fs:255  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=2
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 25[X], 3[S], 9[S*], 1[F]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 1 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=25
+accepted-seh-tasks=1
+unaccepted-synthetic-tasks=11
+auto-synthetic-tasks=9
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+  synthetic tasks (declared):     3
+  auto-synthetic tasks (computed): 9
+  accepted [SEH] tasks:           1
+  unaccepted synthetic tasks:      11
+  late [SEH] tasks:                0
+  advisory diff-scan hits:         1 (printed, not blocking)
+
+  To override, rerun with:  --accept-synthetic "justification"
+    [adv]   synthetic-banner at tests/Testing.Tests/Tests.fs:255  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=2
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 36[X], 1[S], 1[F]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=36
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=1
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+  synthetic tasks (declared):     1
+  auto-synthetic tasks (computed): 0
+  accepted [SEH] tasks:           0
+  unaccepted synthetic tasks:      1
+  late [SEH] tasks:                0
+
+  To override, rerun with:  --accept-synthetic "justification"
+
+exit-code=2
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 37[X], 1[F]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=37
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 37[X], 1[F]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=37
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 38[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=38
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 38[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 1 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=38
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+  synthetic tasks (declared):     0
+  auto-synthetic tasks (computed): 0
+  accepted [SEH] tasks:           0
+  unaccepted synthetic tasks:      0
+  late [SEH] tasks:                0
+  readiness contract hits:         1
+
+  To override, rerun with:  --accept-synthetic "justification"
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/aggregate-hang-diagnostics.md (aggregate timeout verdict evidence is incomplete)
+
+exit-code=2
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 38[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=38
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback
+
+[1/3] Computing task graph...
+task-graph: 38 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/020-asteroids-integration-feedback/readiness/task-graph.md
+  status: 38[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=38
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+
+exit-code=0

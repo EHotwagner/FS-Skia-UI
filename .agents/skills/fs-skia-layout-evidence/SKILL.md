@@ -1,0 +1,120 @@
+---
+name: fs-skia-layout-evidence
+description: Work on generated game HUD readability, scene layout evidence, public contract guidance, and benign host warning classification.
+---
+
+# FS Skia Layout Evidence Capability
+
+## Scope
+
+Use this skill for tasks that change generated game HUD/status layout,
+gameplay-region bounds, public scene layout evidence, generated layout
+validation, public scene/host/update naming guidance, or readiness host warning
+classification.
+
+Tasks that touch those areas must declare `fs-skia-layout-evidence` in
+`tasks.deps.yml` and mirror it on the matching `tasks.md` line. Resolve this
+skill before implementation starts and record the resolved path in the active
+feature's readiness evidence.
+
+## Public Contract
+
+Public evidence contracts must start in `.fsi` files before implementation.
+Keep deterministic render metadata separate from readable layout proof:
+readability evidence must report HUD region, gameplay region, text or entity
+bounds, overlap status, measurement mode, unsupported reasons, and diagnostics.
+
+Use explicit proof levels:
+
+- `ReadableLayout` only when HUD region, gameplay region, HUD text bounds,
+  gameplay entity bounds, and non-overlap diagnostics are present.
+- `DeterministicRenderOnly` for hashes, scene metadata, or render readback that
+  does not prove readability.
+- `UnsupportedLayoutInspection` when host, font, or public API facts cannot be
+  produced. Unsupported facts must be actionable and must not be converted into
+  readability proof.
+
+Public guidance must use `Product.Program.view` for the app scene,
+`Product.Program.generatedHost` for the host value, and
+`Product.Program.update` for reducer examples.
+
+## Build Commands
+
+Prefer repository targets over ad-hoc command sequences:
+
+- `./fake.sh build -t GeneratedGuidanceCheck`
+- `./fake.sh build -t GeneratedProductCheck`
+- `./fake.sh build -t TemplateCheck`
+- `./fake.sh build -t PackageSurfaceCheck`
+- `./fake.sh build -t EvidenceGraph`
+- `./fake.sh build -t EvidenceAudit`
+- `./fake.sh build -t Verify`
+
+## Test Commands
+
+Use the package or governance tests that match the touched surface:
+
+- `dotnet test tests/Scene.Tests/Scene.Tests.fsproj`
+- `dotnet test tests/Testing.Tests/Testing.Tests.fsproj`
+- `dotnet test tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj`
+- `dotnet test tests/Governance.Tests/Governance.Tests.fsproj`
+
+## Generated Product
+
+Generated game samples that claim readability must reserve a named HUD/status
+region, keep active gameplay entities in the gameplay region, validate default
+and constrained sizes, and fail when HUD/HUD or HUD/gameplay overlap is
+detected. Unsupported host or font/layout facts must be explicit and must not be
+reported as readable layout proof.
+
+Movement, wrapping, spawning, clamping, collisions, and active entity bounds
+must use gameplay-region coordinates once a HUD region is reserved.
+
+## Guidance
+
+Generated and public docs must use app-owned names when showing consumer
+signatures or tests:
+
+- `Product.Program.view` for the scene-returning function.
+- `Product.Program.generatedHost` for the generated host value.
+- `Product.Program.update` for reducer tests or signatures.
+
+## Validation
+
+Prefer repository targets over ad-hoc command sequences:
+
+- `dotnet test tests/Scene.Tests/Scene.Tests.fsproj`
+- `dotnet test tests/Testing.Tests/Testing.Tests.fsproj`
+- `dotnet test tests/Governance.Tests/Governance.Tests.fsproj`
+- `./fake.sh build -t GeneratedGuidanceCheck`
+- `./fake.sh build -t GeneratedProductCheck`
+- `./fake.sh build -t TemplateCheck`
+- `./fake.sh build -t EvidenceGraph`
+- `./fake.sh build -t EvidenceAudit`
+
+## Evidence
+
+Readiness evidence for this capability belongs under the active feature's
+`readiness/` directory and must state whether it proves readable layout,
+deterministic rendering only, or unsupported layout inspection.
+
+Required readiness files for the Asteroids integration feedback feature are:
+
+- `hud-layout-readability.md`
+- `public-contract-guidance.md`
+- `layout-evidence.md`
+- `host-warning-classification.md`
+- `generated-validation.md`
+- `evidence-audit.md`
+
+Warning classification evidence must preserve real `LaunchFailure`,
+`RenderingFailure`, `LayoutFailure`, and `PackageFailure` diagnostics even when
+known benign environment warnings are present.
+
+## Package Boundary
+
+Keep pure layout-evidence classifiers in Scene or Testing contracts as planned.
+Do not move viewer launch, filesystem, package restore, process, font host, or
+window-system effects into pure validation helpers. When host warning
+classification or evidence collection needs I/O, model the request and result
+explicitly and keep execution at the interpreter or build-target edge.

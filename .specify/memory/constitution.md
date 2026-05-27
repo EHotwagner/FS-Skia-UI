@@ -239,13 +239,14 @@ regardless of whether tests pass.
 
 ### Local Agent Skills
 
-Capability skills are package-owned `src/*/skill/SKILL.md` files or
+Capability skills are package-owned `src/*/skill/SKILL.md` files,
 capability-owned template fragment skill paths declared by
-`template/capabilities.yml`. Agents MUST use the applicable capability skill
-whenever a task matches the skill's description, and MUST prefer capability
-skills over generic guidance when both apply. If more than one skill applies,
-use the minimal set that covers the work and follow the skills in dependency
-order.
+`template/capabilities.yml`, or explicitly registered repo-local governance
+skills under `.agents/skills/*/SKILL.md`. Agents MUST use the applicable
+capability skill whenever a task matches the skill's description, and MUST
+prefer capability skills over generic guidance when both apply. If more than
+one skill applies, use the minimal set that covers the work and follow the
+skills in dependency order.
 
 Task generation includes a mandatory post-generation skill evaluation gate.
 Before a task list is ready for implementation, every task MUST be evaluated
@@ -282,6 +283,9 @@ Current FS.Skia.UI capability skills:
 - `fs-skia-samples` — work on optional generated product sample-pack content
   for the non-runtime Samples capability
   (`template/fragments/samples/skill/SKILL.md`).
+- `fs-skia-layout-evidence` — work on generated game HUD readability, scene
+  layout evidence, public scene/host/update guidance, and benign host warning
+  classification (`.agents/skills/fs-skia-layout-evidence/SKILL.md`).
 
 ## Workflow & Quality Gates
 
@@ -329,4 +333,4 @@ Amendments MUST update dependent templates and guidance files in the same
 change. When the constitution and a template disagree, the constitution is
 correct and the template is defective until synchronized.
 
-**Version**: 1.2.0 | **Ratified**: 2026-05-12 | **Last Amended**: 2026-05-18
+**Version**: 1.3.0 | **Ratified**: 2026-05-12 | **Last Amended**: 2026-05-27

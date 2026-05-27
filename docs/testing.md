@@ -16,6 +16,18 @@ packages, builds the solution, and runs the default non-visual test projects:
 | Sample contract checks | `tests/Smoke.Tests/Smoke.Tests.fsproj` |
 | Governance command and docs checks | `tests/Governance.Tests/Governance.Tests.fsproj` |
 
+Sample contract checks are executable smoke contracts. They must run through
+the Expecto executable, not the VSTest adapter:
+
+```bash
+dotnet run --project tests/Smoke.Tests/Smoke.Tests.fsproj --no-restore
+```
+
+Smoke tests that launch samples or child processes must keep explicit
+per-process timeouts and include captured stdout/stderr in timeout diagnostics.
+`dotnet test` remains the runner for package, semantic, and governance suites
+that do not shell out to sample applications.
+
 The full testing and evidence target set is `Dev`, `Verify`, `Ci`,
 `VerifyPreflight`, `CiPreflight`, `PackLocal`, `RefreshSurfaceBaselines`,
 `PackageSurfaceCheck`, `FsiTranscripts`, `SampleContractSmoke`,
@@ -31,6 +43,11 @@ focused-gate direct invocation, stale build/restore diagnostics, scanner
 fixture helpers, and pure `BuildModel`/`BuildMsg`/`BuildEffect` transition
 assertions. Layout tests include recoverable Yoga execution fallback
 diagnostics through the existing `LayoutDiagnostic` surface.
+
+Generated app public-contract smoke tests should use app-owned names:
+`Product.Program.view` returns `FS.Skia.UI.Scene.Scene`,
+`Product.Program.generatedHost` is the host value passed to the viewer launch
+API, and reducer checks call `Product.Program.update`.
 
 `PackageSurfaceCheck` runs `tests/Package.Tests/Package.Tests.fsproj` against
 the stable package surface baselines in `readiness/surface-baselines/*.txt`.

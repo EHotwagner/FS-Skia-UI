@@ -451,13 +451,13 @@ let persistentViewerEvidenceTests =
             expectFileContains
                 "docs/generated-apps.md"
                 [ "not interactive readiness substitutes"
-                  "Viewer.runApp viewerOptions generatedHost"
+                  "Viewer.runApp viewerOptions Product.Program.generatedHost"
                   "only print metadata"
                   "diagnostic helpers only" ]
 
             expectFileContains
                 "template/fragments/skiaviewer/README.md"
-                [ "Viewer.runApp viewerOptions generatedHost"
+                [ "Viewer.runApp viewerOptions Product.Program.generatedHost"
                   "first-frame"
                   "frame-count"
                   "do not substitute"

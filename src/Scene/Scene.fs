@@ -195,6 +195,51 @@ type RenderReadbackEvidence =
       Capabilities: string list
       DeterministicHash: string }
 
+type LayoutProofLevel =
+    | ReadableLayout
+    | DeterministicRenderOnly
+    | UnsupportedLayoutInspection
+
+type LayoutMeasurementMode =
+    | ExactTextBounds
+    | ApproximateTextBounds
+    | UnsupportedTextBounds
+
+type LayoutOverlapKind =
+    | HudTextOverlap
+    | HudGameplayOverlap
+    | GameplayOutOfBounds
+
+type LayoutOverlapDiagnostic =
+    { Kind: LayoutOverlapKind
+      FirstName: string
+      SecondName: string option
+      Bounds: Rect
+      Message: string }
+
+type LayoutOverlapStatus =
+    | NoLayoutOverlap
+    | LayoutOverlaps of LayoutOverlapDiagnostic list
+
+type LayoutRegionEvidence =
+    { Name: string
+      Bounds: Rect }
+
+type LayoutTextBounds =
+    { Name: string
+      Text: string
+      Bounds: Rect
+      MeasurementMode: LayoutMeasurementMode }
+
+type LayoutGameplayBounds =
+    { Name: string
+      Bounds: Rect }
+
+type LayoutUnsupportedReason =
+    { Fact: string
+      Reason: string
+      Diagnostic: string }
+
 type DiagnosticSeverity =
     | Info
     | Warning
@@ -237,6 +282,20 @@ and Scene =
 and Picture =
     { Name: string
       Scene: Scene }
+
+type LayoutEvidenceReport =
+    { Scene: Scene
+      OutputSize: Size
+      ProofLevel: LayoutProofLevel
+      HudRegion: LayoutRegionEvidence option
+      GameplayRegion: LayoutRegionEvidence option
+      TextBounds: LayoutTextBounds list
+      GameplayBounds: LayoutGameplayBounds list
+      OverlapStatus: LayoutOverlapStatus
+      MeasurementMode: LayoutMeasurementMode
+      UnsupportedReasons: LayoutUnsupportedReason list
+      Diagnostics: string list
+      RenderEvidence: RenderReadbackEvidence option }
 
 module Colors =
     let rgba red green blue alpha =
@@ -530,3 +589,106 @@ module SceneEvidence =
         with
         | Result.Ok evidence -> Result.Ok(Encoding.UTF8.GetBytes evidence.Value)
         | Result.Error failure -> Result.Error failure
+
+module LayoutEvidence =
+    let private intersects first second =
+        first.X < second.X + second.Width
+        && first.X + first.Width > second.X
+        && first.Y < second.Y + second.Height
+        && first.Y + first.Height > second.Y
+
+    let private overlapDiagnostics report =
+        let hudTextOverlaps =
+            report.TextBounds
+            |> List.mapi (fun index first ->
+                report.TextBounds
+                |> List.skip (index + 1)
+                |> List.choose (fun second ->
+                    if intersects first.Bounds second.Bounds then
+                        Some
+                            { Kind = HudTextOverlap
+                              FirstName = first.Name
+                              SecondName = Some second.Name
+                              Bounds = first.Bounds
+                              Message = $"HUD text '{first.Name}' overlaps '{second.Name}'" }
+                    else
+                        None))
+            |> List.concat
+
+        let hudGameplayOverlaps =
+            report.TextBounds
+            |> List.collect (fun text ->
+                report.GameplayBounds
+                |> List.choose (fun gameplay ->
+                    if intersects text.Bounds gameplay.Bounds then
+                        Some
+                            { Kind = HudGameplayOverlap
+                              FirstName = text.Name
+                              SecondName = Some gameplay.Name
+                              Bounds = text.Bounds
+                              Message = $"HUD text '{text.Name}' overlaps gameplay '{gameplay.Name}'" }
+                    else
+                        None))
+
+        hudTextOverlaps @ hudGameplayOverlaps
+
+    let classify report =
+        let overlaps = overlapDiagnostics report
+
+        let missingFacts =
+            report.HudRegion.IsNone
+            || report.GameplayRegion.IsNone
+            || report.TextBounds.IsEmpty
+            || report.GameplayBounds.IsEmpty
+
+        if not report.UnsupportedReasons.IsEmpty || report.MeasurementMode = UnsupportedTextBounds then
+            { report with
+                ProofLevel = UnsupportedLayoutInspection
+                OverlapStatus = if overlaps.IsEmpty then report.OverlapStatus else LayoutOverlaps overlaps
+                Diagnostics =
+                    report.Diagnostics
+                    @ (report.UnsupportedReasons |> List.map (fun reason -> $"{reason.Fact}: {reason.Reason}"))
+                    @ (overlaps |> List.map _.Message) }
+        elif missingFacts || not overlaps.IsEmpty then
+            { report with
+                ProofLevel = DeterministicRenderOnly
+                OverlapStatus = if overlaps.IsEmpty then report.OverlapStatus else LayoutOverlaps overlaps
+                Diagnostics =
+                    report.Diagnostics
+                    @ [ if report.HudRegion.IsNone then "missing HUD region"
+                        if report.GameplayRegion.IsNone then "missing gameplay region"
+                        if report.TextBounds.IsEmpty then "missing HUD text bounds"
+                        if report.GameplayBounds.IsEmpty then "missing gameplay bounds"
+                        yield! overlaps |> List.map _.Message ] }
+        else
+            { report with
+                ProofLevel = ReadableLayout
+                OverlapStatus = NoLayoutOverlap }
+
+    let fromRenderEvidence scene evidence =
+        { Scene = scene
+          OutputSize = evidence.Size
+          ProofLevel = DeterministicRenderOnly
+          HudRegion = None
+          GameplayRegion = None
+          TextBounds = []
+          GameplayBounds = []
+          OverlapStatus = NoLayoutOverlap
+          MeasurementMode = ApproximateTextBounds
+          UnsupportedReasons = []
+          Diagnostics = [ "deterministic render metadata only" ]
+          RenderEvidence = Some evidence }
+
+    let unsupported scene outputSize reason =
+        { Scene = scene
+          OutputSize = outputSize
+          ProofLevel = UnsupportedLayoutInspection
+          HudRegion = None
+          GameplayRegion = None
+          TextBounds = []
+          GameplayBounds = []
+          OverlapStatus = NoLayoutOverlap
+          MeasurementMode = UnsupportedTextBounds
+          UnsupportedReasons = [ reason ]
+          Diagnostics = [ $"unsupported layout fact: {reason.Fact}; {reason.Reason}" ]
+          RenderEvidence = None }

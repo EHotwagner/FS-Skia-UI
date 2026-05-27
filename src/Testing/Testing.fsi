@@ -1,6 +1,7 @@
 namespace FS.Skia.UI.Testing
 
 open System
+open FS.Skia.UI.Scene
 
 type PackageReferenceExpectation =
     { PackageId: string
@@ -128,6 +129,45 @@ type GeneratedValidationContractResult =
       FailureClass: string
       Diagnostics: string list }
 
+type GeneratedLayoutValidationFailureClass =
+    | MissingLayoutFacts
+    | UnsupportedLayoutFacts
+    | OverlappingLayoutBounds
+    | DeterministicRenderOnlyClaim
+
+type GeneratedLayoutValidationCheck =
+    { Report: LayoutEvidenceReport
+      RequireReadableLayout: bool }
+
+type GeneratedLayoutValidationResult =
+    { Accepted: bool
+      FailureClass: GeneratedLayoutValidationFailureClass option
+      Diagnostics: string list }
+
+type HostWarningClass =
+    | BenignEnvironmentWarning
+    | LaunchFailure
+    | RenderingFailure
+    | LayoutFailure
+    | PackageFailure
+    | UnknownWarning
+
+type HostWarningClassificationCheck =
+    { RawMessage: string
+      KnownBenignMarkers: string list
+      LaunchSucceeded: bool
+      RenderingSucceeded: bool
+      LayoutReadable: bool option
+      ExplicitlyUnsupportedWithoutReadabilityClaim: bool
+      PackageSucceeded: bool
+      EvidencePath: string option }
+
+type HostWarningClassificationResult =
+    { WarningClass: HostWarningClass
+      Fatal: bool
+      EvidencePath: string option
+      Diagnostics: string list }
+
 module GeneratedProductAssertions =
     val summarize: expectation: GeneratedProductExpectation -> string
     val validateDefaultInteractiveLaunch: source: string -> GeneratedProductLaunchValidationResult
@@ -144,3 +184,9 @@ module GeneratedConsumerValidation =
     val selectVisualEvidence: request: VisualEvidenceRequest -> VisualEvidenceResult
     val validateVisualEvidenceCommandOutput: check: GeneratedVisualEvidenceCommandCheck -> GeneratedVisualEvidenceCommandResult
     val buildValidationContractOutput: check: GeneratedValidationContractCheck -> GeneratedValidationContractResult
+
+module GeneratedLayoutValidation =
+    val validate: check: GeneratedLayoutValidationCheck -> GeneratedLayoutValidationResult
+
+module HostWarningClassification =
+    val classify: check: HostWarningClassificationCheck -> HostWarningClassificationResult

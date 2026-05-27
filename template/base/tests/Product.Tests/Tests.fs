@@ -38,6 +38,16 @@ let tests =
             Expect.equal 1 1 "product tests run"
         }
 
+        test "generated public contract exposes qualified app-owned names" {
+            let scene: FS.Skia.UI.Scene.Scene = { Nodes = [ Product.Program.view initialModel ] }
+            let host = Product.Program.generatedHost
+            let updated, _ = Product.Program.update NoOp initialModel
+
+            Expect.isNonEmpty scene.Nodes "Product.Program.view returns a scene"
+            Expect.equal updated initialModel "Product.Program.update is callable as the app reducer"
+            Expect.isSome (host.MapKey Enter true) "Product.Program.generatedHost exposes viewer input mapping"
+        }
+
         test "product-owned controls example is wired" {
             let view = controlsExampleView initialModel
             Expect.isGreaterThan (Control.count view) 7 "product example owns form, rich text, chart, graph, and DataGrid controls"
@@ -277,6 +287,50 @@ let tests =
             Expect.stringContains text "score" "side panel includes score"
             Expect.stringContains text "level" "side panel includes level"
             Expect.stringContains text "next" "side panel includes next piece"
+        }
+
+        test "generated game layout evidence separates HUD and gameplay at default and constrained sizes" {
+            let defaultReport = Product.Program.layoutEvidenceForSize { Width = 1280; Height = 720 } initialModel
+            let constrainedReport = Product.Program.layoutEvidenceForSize { Width = 640; Height = 480 } initialModel
+
+            [ defaultReport; constrainedReport ]
+            |> List.iter (fun report ->
+                Expect.equal report.ProofLevel ReadableLayout "generated report proves readable layout"
+                Expect.isSome report.HudRegion "HUD region is named"
+                Expect.isSome report.GameplayRegion "gameplay region is named"
+                Expect.isNonEmpty report.TextBounds "HUD text bounds are present"
+                Expect.isNonEmpty report.GameplayBounds "active gameplay bounds are present"
+                Expect.equal report.OverlapStatus NoLayoutOverlap "HUD and gameplay bounds do not overlap")
+        }
+
+        test "generated game layout validation fails broken HUD and gameplay layouts" {
+            let hudOverlap = Product.Program.layoutEvidenceForSize { Width = 480; Height = 480 } initialModel
+            let gameplayOverlap =
+                Product.Program.layoutEvidenceForSize
+                    { Width = 640; Height = 480 }
+                    { initialModel with ActiveRow = -6 }
+
+            let hudResult = Product.Program.validateGeneratedLayout hudOverlap
+            let gameplayResult = Product.Program.validateGeneratedLayout gameplayOverlap
+
+            Expect.isFalse hudResult.Accepted "HUD/HUD overlap fails validation"
+            Expect.equal hudResult.FailureClass (Some OverlappingLayoutBounds) "HUD/HUD overlap is classified"
+            Expect.isFalse gameplayResult.Accepted "HUD/gameplay overlap fails validation"
+            Expect.equal gameplayResult.FailureClass (Some OverlappingLayoutBounds) "HUD/gameplay overlap is classified"
+        }
+
+        test "generated gameplay policies use gameplay region for active entity movement and bounds" {
+            let started, _ = Product.Program.update (ViewerInput(Enter, true)) initialModel
+            let moved, _ = Product.Program.update (ViewerInput(ArrowLeft, true)) started
+            let ticked, _ = Product.Program.update GameTick moved
+
+            let region = Product.Program.gameplayRegionForSize { Width = 640; Height = 480 }
+            let bounds = Product.Program.activeGameplayBoundsForSize { Width = 640; Height = 480 } ticked
+
+            Expect.isTrue (Product.Program.boundsInside region.Bounds bounds.Bounds) "active entity remains inside gameplay region"
+            Expect.isTrue (Product.Program.movementUsesGameplayRegion { Width = 640; Height = 480 } ticked) "movement policy is region based"
+            Expect.isTrue (Product.Program.spawnUsesGameplayRegion { Width = 640; Height = 480 } initialModel) "spawn policy is region based"
+            Expect.isTrue (Product.Program.collisionUsesGameplayRegion { Width = 640; Height = 480 } ticked) "collision policy is region based"
         }
 
         test "generated default game dispatches input advances over time and keeps evidence flags opt-in" {

@@ -2,6 +2,7 @@ module TestingCapabilityTests
 
 open System
 open Expecto
+open FS.Skia.UI.Scene
 open FS.Skia.UI.Testing
 
 [<Tests>]
@@ -229,6 +230,84 @@ let main args =
                 GeneratedProductAssertions.validateDefaultInteractiveLaunch (invalidDefaults |> List.item 2 |> snd)
 
             Expect.exists missingAccessible.Diagnostics (fun item -> item.Contains "accessible desktop window") "missing accessible-window claim is diagnostic"
+        }
+
+        test "generated layout validation accepts complete readable layout reports" {
+            let report =
+                { Scene = Scene.empty
+                  OutputSize = { Width = 640; Height = 480 }
+                  ProofLevel = ReadableLayout
+                  HudRegion = Some { Name = "hud"; Bounds = { X = 0.0; Y = 0.0; Width = 640.0; Height = 96.0 } }
+                  GameplayRegion = Some { Name = "gameplay"; Bounds = { X = 0.0; Y = 96.0; Width = 640.0; Height = 384.0 } }
+                  TextBounds = [ { Name = "score"; Text = "score"; Bounds = { X = 16.0; Y = 16.0; Width = 80.0; Height = 24.0 }; MeasurementMode = ExactTextBounds } ]
+                  GameplayBounds = [ { Name = "ship"; Bounds = { X = 120.0; Y = 160.0; Width = 24.0; Height = 24.0 } } ]
+                  OverlapStatus = NoLayoutOverlap
+                  MeasurementMode = ExactTextBounds
+                  UnsupportedReasons = []
+                  Diagnostics = []
+                  RenderEvidence = None }
+
+            let result = GeneratedLayoutValidation.validate { Report = report; RequireReadableLayout = true }
+            Expect.isTrue result.Accepted "complete layout report is accepted"
+            Expect.isNone result.FailureClass "accepted report has no failure class"
+        }
+
+        test "generated layout validation rejects missing unsupported overlapping and deterministic-only reports" {
+            let deterministic =
+                LayoutEvidence.fromRenderEvidence Scene.empty (Scene.renderReadbackEvidence { Width = 640; Height = 480 } Scene.empty)
+
+            let unsupported =
+                LayoutEvidence.unsupported
+                    Scene.empty
+                    { Width = 640; Height = 480 }
+                    { Fact = "font-metrics"; Reason = "host metrics unavailable"; Diagnostic = "unsupported layout inspection" }
+
+            let overlapping =
+                LayoutEvidence.classify
+                    { deterministic with
+                        HudRegion = Some { Name = "hud"; Bounds = { X = 0.0; Y = 0.0; Width = 640.0; Height = 96.0 } }
+                        GameplayRegion = Some { Name = "gameplay"; Bounds = { X = 0.0; Y = 96.0; Width = 640.0; Height = 384.0 } }
+                        TextBounds = [ { Name = "score"; Text = "score"; Bounds = { X = 16.0; Y = 16.0; Width = 80.0; Height = 24.0 }; MeasurementMode = ApproximateTextBounds } ]
+                        GameplayBounds = [ { Name = "ship"; Bounds = { X = 16.0; Y = 16.0; Width = 24.0; Height = 24.0 } } ]
+                        RenderEvidence = None }
+
+            let deterministicResult = GeneratedLayoutValidation.validate { Report = deterministic; RequireReadableLayout = true }
+            let unsupportedResult = GeneratedLayoutValidation.validate { Report = unsupported; RequireReadableLayout = true }
+            let overlappingResult = GeneratedLayoutValidation.validate { Report = overlapping; RequireReadableLayout = true }
+
+            Expect.equal deterministicResult.FailureClass (Some DeterministicRenderOnlyClaim) "deterministic render only cannot satisfy readability"
+            Expect.equal unsupportedResult.FailureClass (Some UnsupportedLayoutFacts) "unsupported facts are classified"
+            Expect.equal overlappingResult.FailureClass (Some OverlappingLayoutBounds) "overlap is classified"
+        }
+
+        test "host warning classification keeps benign environment warnings non-fatal only after supporting checks pass" {
+            let baseline =
+                { RawMessage = "libEGL warning: failed to open swrast"
+                  KnownBenignMarkers = [ "libEGL warning" ]
+                  LaunchSucceeded = true
+                  RenderingSucceeded = true
+                  LayoutReadable = Some true
+                  ExplicitlyUnsupportedWithoutReadabilityClaim = false
+                  PackageSucceeded = true
+                  EvidencePath = Some "readiness/host-warning-classification.md" }
+
+            let benign = HostWarningClassification.classify baseline
+            Expect.equal benign.WarningClass BenignEnvironmentWarning "known warning is benign when evidence passed"
+            Expect.isFalse benign.Fatal "benign environment warning is non-fatal"
+
+            let launchFailure = HostWarningClassification.classify { baseline with LaunchSucceeded = false }
+            let renderingFailure = HostWarningClassification.classify { baseline with RenderingSucceeded = false }
+            let layoutFailure = HostWarningClassification.classify { baseline with LayoutReadable = Some false }
+            let packageFailure = HostWarningClassification.classify { baseline with PackageSucceeded = false }
+            let unknown = HostWarningClassification.classify { baseline with RawMessage = "unexpected warning"; KnownBenignMarkers = [] }
+
+            Expect.equal launchFailure.WarningClass LaunchFailure "launch failure remains fatal"
+            Expect.equal renderingFailure.WarningClass RenderingFailure "rendering failure remains fatal"
+            Expect.equal layoutFailure.WarningClass LayoutFailure "layout failure remains fatal"
+            Expect.equal packageFailure.WarningClass PackageFailure "package failure remains fatal"
+            Expect.equal unknown.WarningClass UnknownWarning "unknown warning remains visible"
+            [ launchFailure; renderingFailure; layoutFailure; packageFailure; unknown ]
+            |> List.iter (fun result -> Expect.isTrue result.Fatal $"{result.WarningClass} is fatal")
         }
 
         test "generated diagnostic validation requires failure classes and observable native facts" {

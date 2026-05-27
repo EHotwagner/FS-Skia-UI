@@ -6,7 +6,7 @@ Viewer-backed graphical profiles must use the persistent generated host as the
 default executable path:
 
 ```fsharp
-Viewer.runApp viewerOptions generatedHost
+Viewer.runApp viewerOptions Product.Program.generatedHost
 ```
 
 Bounded smoke, first-frame, frame-count, scene metadata, and unsupported-host

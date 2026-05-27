@@ -89,4 +89,71 @@ let tests =
                 Expect.stringContains failure.Message "live-window" "message names unsupported renderer mode"
             | Result.Ok evidence -> failtestf "expected unsupported renderer failure, got %A" evidence
         }
+
+        test "layout evidence classifies complete non-overlapping HUD and gameplay facts as readable" {
+            let report =
+                { Scene = Scene.text (16.0, 28.0) "Score 100" Colors.white
+                  OutputSize = { Width = 1280; Height = 720 }
+                  ProofLevel = DeterministicRenderOnly
+                  HudRegion = Some { Name = "hud"; Bounds = { X = 0.0; Y = 0.0; Width = 1280.0; Height = 96.0 } }
+                  GameplayRegion = Some { Name = "gameplay"; Bounds = { X = 0.0; Y = 96.0; Width = 1280.0; Height = 624.0 } }
+                  TextBounds = [ { Name = "score"; Text = "Score 100"; Bounds = { X = 16.0; Y = 12.0; Width = 92.0; Height = 24.0 }; MeasurementMode = ExactTextBounds } ]
+                  GameplayBounds = [ { Name = "ship"; Bounds = { X = 620.0; Y = 420.0; Width = 28.0; Height = 28.0 } } ]
+                  OverlapStatus = NoLayoutOverlap
+                  MeasurementMode = ExactTextBounds
+                  UnsupportedReasons = []
+                  Diagnostics = []
+                  RenderEvidence = None }
+
+            Expect.equal (LayoutEvidence.classify report).ProofLevel ReadableLayout "complete layout facts prove readability"
+        }
+
+        test "layout evidence keeps deterministic render metadata separate from readability proof" {
+            let scene = Scene.rectangle (0.0, 0.0, 10.0, 10.0) Colors.white
+            let renderEvidence = Scene.renderReadbackEvidence { Width = 640; Height = 480 } scene
+
+            let report =
+                LayoutEvidence.fromRenderEvidence scene renderEvidence
+
+            Expect.equal report.ProofLevel DeterministicRenderOnly "render hash evidence is not relabeled as readable layout"
+            Expect.isNone report.HudRegion "deterministic-only report does not invent HUD facts"
+            Expect.isEmpty report.TextBounds "deterministic-only report does not invent text bounds"
+        }
+
+        test "layout evidence reports unsupported inspection without claiming readability" {
+            let report =
+                LayoutEvidence.unsupported
+                    Scene.empty
+                    { Width = 640; Height = 480 }
+                    { Fact = "font-metrics"; Reason = "host metrics unavailable"; Diagnostic = "unsupported layout inspection" }
+
+            Expect.equal report.ProofLevel UnsupportedLayoutInspection "unsupported facts are explicit"
+            Expect.isNonEmpty report.UnsupportedReasons "unsupported reason is preserved"
+            Expect.exists report.Diagnostics (fun item -> item.Contains "font-metrics") "diagnostic names unsupported fact"
+        }
+
+        test "layout evidence detects missing and overlapping bounds" {
+            let report =
+                { Scene = Scene.empty
+                  OutputSize = { Width = 640; Height = 480 }
+                  ProofLevel = ReadableLayout
+                  HudRegion = Some { Name = "hud"; Bounds = { X = 0.0; Y = 0.0; Width = 640.0; Height = 80.0 } }
+                  GameplayRegion = Some { Name = "gameplay"; Bounds = { X = 0.0; Y = 80.0; Width = 640.0; Height = 400.0 } }
+                  TextBounds =
+                    [ { Name = "score"; Text = "Score"; Bounds = { X = 12.0; Y = 12.0; Width = 80.0; Height = 24.0 }; MeasurementMode = ApproximateTextBounds }
+                      { Name = "lives"; Text = "Lives"; Bounds = { X = 40.0; Y = 18.0; Width = 80.0; Height = 24.0 }; MeasurementMode = ApproximateTextBounds } ]
+                  GameplayBounds = []
+                  OverlapStatus = NoLayoutOverlap
+                  MeasurementMode = ApproximateTextBounds
+                  UnsupportedReasons = []
+                  Diagnostics = []
+                  RenderEvidence = None }
+
+            let classified = LayoutEvidence.classify report
+
+            Expect.equal classified.ProofLevel DeterministicRenderOnly "missing gameplay bounds prevent readability"
+            match classified.OverlapStatus with
+            | LayoutOverlaps overlaps -> Expect.exists overlaps (fun item -> item.Kind = HudTextOverlap) "HUD/HUD overlap is reported"
+            | NoLayoutOverlap -> failtest "expected HUD overlap diagnostics"
+        }
     ]

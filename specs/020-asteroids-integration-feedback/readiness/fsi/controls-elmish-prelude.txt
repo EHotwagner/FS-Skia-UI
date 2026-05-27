@@ -1,0 +1,42 @@
+
+## dotnet fsi scripts/controls-elmish-prelude.fsx
+$ dotnet fsi scripts/controls-elmish-prelude.fsx
+controls-elmish-prelude view=button commandCount=1 controlCommandCount=2
+
+exit-code=0
+
+## dotnet fsi scripts/controls-elmish-prelude.fsx
+$ dotnet fsi scripts/controls-elmish-prelude.fsx
+controls-elmish-prelude view=button commandCount=1 controlCommandCount=2
+
+exit-code=0
+
+## dotnet fsi scripts/controls-elmish-prelude.fsx
+$ dotnet fsi scripts/controls-elmish-prelude.fsx
+controls-elmish-prelude view=button commandCount=1 controlCommandCount=2
+
+exit-code=0
+
+## dotnet fsi scripts/controls-elmish-prelude.fsx
+$ dotnet fsi scripts/controls-elmish-prelude.fsx
+controls-elmish-prelude view=button commandCount=1 controlCommandCount=2
+
+exit-code=0
+
+## dotnet fsi scripts/controls-elmish-prelude.fsx
+$ dotnet fsi scripts/controls-elmish-prelude.fsx
+controls-elmish-prelude view=button commandCount=1 controlCommandCount=2
+
+exit-code=0
+
+## dotnet fsi scripts/controls-elmish-prelude.fsx
+$ dotnet fsi scripts/controls-elmish-prelude.fsx
+controls-elmish-prelude view=button commandCount=1 controlCommandCount=2
+
+exit-code=0
+
+## dotnet fsi scripts/controls-elmish-prelude.fsx
+$ dotnet fsi scripts/controls-elmish-prelude.fsx
+controls-elmish-prelude view=button commandCount=1 controlCommandCount=2
+
+exit-code=0

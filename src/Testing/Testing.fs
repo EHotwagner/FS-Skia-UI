@@ -1,6 +1,7 @@
 namespace FS.Skia.UI.Testing
 
 open System
+open FS.Skia.UI.Scene
 
 type PackageReferenceExpectation =
     { PackageId: string
@@ -128,6 +129,45 @@ type GeneratedValidationContractResult =
       FailureClass: string
       Diagnostics: string list }
 
+type GeneratedLayoutValidationFailureClass =
+    | MissingLayoutFacts
+    | UnsupportedLayoutFacts
+    | OverlappingLayoutBounds
+    | DeterministicRenderOnlyClaim
+
+type GeneratedLayoutValidationCheck =
+    { Report: LayoutEvidenceReport
+      RequireReadableLayout: bool }
+
+type GeneratedLayoutValidationResult =
+    { Accepted: bool
+      FailureClass: GeneratedLayoutValidationFailureClass option
+      Diagnostics: string list }
+
+type HostWarningClass =
+    | BenignEnvironmentWarning
+    | LaunchFailure
+    | RenderingFailure
+    | LayoutFailure
+    | PackageFailure
+    | UnknownWarning
+
+type HostWarningClassificationCheck =
+    { RawMessage: string
+      KnownBenignMarkers: string list
+      LaunchSucceeded: bool
+      RenderingSucceeded: bool
+      LayoutReadable: bool option
+      ExplicitlyUnsupportedWithoutReadabilityClaim: bool
+      PackageSucceeded: bool
+      EvidencePath: string option }
+
+type HostWarningClassificationResult =
+    { WarningClass: HostWarningClass
+      Fatal: bool
+      EvidencePath: string option
+      Diagnostics: string list }
+
 module GeneratedProductAssertions =
     let summarize expectation =
         let packages =
@@ -238,7 +278,7 @@ module LocalConsumerPackages =
                       RemediationCommand = "dotnet fake run build.fsx --target PackLocal" })
 
 module GeneratedConsumerValidation =
-    let summarize result =
+    let summarize (result: GeneratedValidationResult) =
         let evidence = result.EvidencePath |> Option.defaultValue "none"
         let diagnostics = result.Diagnostics |> String.concat "; "
         $"{result.Category}: elapsed={result.Elapsed}; command={result.CommandContext}; evidence={evidence}; diagnostics={diagnostics}"
@@ -450,4 +490,86 @@ module GeneratedConsumerValidation =
         { Output = output
           Authoritative = authoritative
           FailureClass = failureClass
+          Diagnostics = diagnostics }
+
+module GeneratedLayoutValidation =
+    let validate check =
+        let classified = LayoutEvidence.classify check.Report
+
+        let diagnostics =
+            [ if check.RequireReadableLayout && classified.ProofLevel <> ReadableLayout then
+                  $"layout proof level is {classified.ProofLevel}, expected ReadableLayout"
+              if classified.HudRegion.IsNone then
+                  "missing HUD region"
+              if classified.GameplayRegion.IsNone then
+                  "missing gameplay region"
+              if classified.TextBounds.IsEmpty then
+                  "missing HUD text bounds"
+              if classified.GameplayBounds.IsEmpty then
+                  "missing gameplay bounds"
+              if classified.ProofLevel = UnsupportedLayoutInspection && classified.UnsupportedReasons.IsEmpty then
+                  "unsupported layout inspection requires an unsupported reason"
+              match classified.OverlapStatus with
+              | LayoutOverlaps overlaps -> yield! overlaps |> List.map _.Message
+              | NoLayoutOverlap -> ()
+              yield! classified.Diagnostics ]
+            |> List.distinct
+
+        let failureClass =
+            if diagnostics.IsEmpty then
+                None
+            elif classified.ProofLevel = DeterministicRenderOnly && classified.RenderEvidence.IsSome then
+                Some DeterministicRenderOnlyClaim
+            elif classified.ProofLevel = UnsupportedLayoutInspection then
+                Some UnsupportedLayoutFacts
+            else
+                match classified.OverlapStatus with
+                | LayoutOverlaps _ -> Some OverlappingLayoutBounds
+                | NoLayoutOverlap -> Some MissingLayoutFacts
+
+        { Accepted = failureClass.IsNone
+          FailureClass = failureClass
+          Diagnostics = diagnostics }
+
+module HostWarningClassification =
+    let classify check =
+        let known =
+            check.KnownBenignMarkers
+            |> List.exists (fun marker -> check.RawMessage.Contains(marker, StringComparison.OrdinalIgnoreCase))
+
+        let layoutAccepted =
+            check.LayoutReadable = Some true || check.ExplicitlyUnsupportedWithoutReadabilityClaim
+
+        let warningClass =
+            if not check.PackageSucceeded then PackageFailure
+            elif not check.LaunchSucceeded then LaunchFailure
+            elif not check.RenderingSucceeded then RenderingFailure
+            elif not layoutAccepted then LayoutFailure
+            elif known then BenignEnvironmentWarning
+            else UnknownWarning
+
+        let fatal =
+            match warningClass with
+            | BenignEnvironmentWarning -> false
+            | _ -> true
+
+        let diagnostics =
+            [ $"warning-class={warningClass}"
+              $"fatal={fatal}"
+              if String.IsNullOrWhiteSpace check.RawMessage then
+                  "raw-message=missing"
+              if not known && warningClass = UnknownWarning then
+                  "unknown warning marker"
+              if not check.LaunchSucceeded then
+                  "launch evidence failed"
+              if not check.RenderingSucceeded then
+                  "rendering evidence failed"
+              if not layoutAccepted then
+                  "layout readability failed or missing"
+              if not check.PackageSucceeded then
+                  "package evidence failed" ]
+
+        { WarningClass = warningClass
+          Fatal = fatal
+          EvidencePath = check.EvidencePath
           Diagnostics = diagnostics }

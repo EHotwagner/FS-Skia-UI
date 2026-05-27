@@ -142,6 +142,37 @@ let processReliabilityContractTests =
                   "remediation-command" ]
         }
 
+        test "smoke tests run through direct Expecto executable instead of VSTest adapter" {
+            let content = read "build.fsx"
+
+            Expect.stringContains
+                content
+                "EndsWith(\"tests/Smoke.Tests/Smoke.Tests.fsproj\""
+                "FAKE detects the Smoke.Tests project explicitly"
+
+            Expect.stringContains
+                content
+                "processEffect $\"dotnet run {project}\""
+                "FAKE labels Smoke.Tests as direct executable smoke"
+
+            Expect.stringContains
+                content
+                "run --project {project} --no-restore"
+                "main Test target runs Smoke.Tests through dotnet run"
+
+            Expect.stringContains
+                content
+                "run --project {quote project} --no-restore"
+                "shared dotnet action helper also routes Smoke.Tests through dotnet run"
+
+            let forbidden =
+                [ "test tests/Smoke.Tests/Smoke.Tests.fsproj" ]
+
+            forbidden
+            |> List.iter (fun needle ->
+                Expect.isFalse (content.Contains(needle, StringComparison.Ordinal)) $"build.fsx must not contain {needle}")
+        }
+
         test "scanner fixtures can create XML metadata generated product guidance stale and readiness inputs" {
             use fixture = new TempFixtureDirectory("process-reliability")
             let project = writeProjectFixture fixture.Root "src/Product/Product.fsproj" [ "FS.Skia.UI.Controls" ] [ "../Scene/Scene.fsproj" ]

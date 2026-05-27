@@ -52,6 +52,15 @@ type Msg =
     | RuntimeMsg of ControlRuntimeMsg
     | NoOp
 
+type GeneratedLayoutValidationFailureClass =
+    | MissingLayoutFacts
+    | OverlappingLayoutBounds
+
+type GeneratedLayoutValidationResult =
+    { Accepted: bool
+      FailureClass: GeneratedLayoutValidationFailureClass option
+      Diagnostics: string list }
+
 let revenueSeries =
     [ { Name = "Revenue"
         Points =
@@ -227,12 +236,211 @@ let subscriptions _ : AdapterSubscription<Msg> list =
 let adapterProgram =
     ControlsElmish.program init update controlsExampleView subscriptions
 
-let view (model: Model) =
-    let boardX = 32.0
-    let boardY = 24.0
-    let cell = 18.0
+let hudRegionForSize (size: Size) : LayoutRegionEvidence =
+    { Name = "hud"
+      Bounds = { X = 0.0; Y = 0.0; Width = float size.Width; Height = 96.0 } }
+
+let gameplayRegionForSize (size: Size) : LayoutRegionEvidence =
+    let hud = hudRegionForSize size
+    { Name = "gameplay"
+      Bounds =
+        { X = 0.0
+          Y = hud.Bounds.Height
+          Width = float size.Width
+          Height = max 1.0 (float size.Height - hud.Bounds.Height) } }
+
+let boundsInside outer inner =
+    inner.X >= outer.X
+    && inner.Y >= outer.Y
+    && inner.X + inner.Width <= outer.X + outer.Width
+    && inner.Y + inner.Height <= outer.Y + outer.Height
+
+let private intersects first second =
+    first.X < second.X + second.Width
+    && first.X + first.Width > second.X
+    && first.Y < second.Y + second.Height
+    && first.Y + first.Height > second.Y
+
+let private boardLayout size =
+    let gameplay = gameplayRegionForSize size
+    let cell =
+        min
+            ((gameplay.Bounds.Width - 64.0) / 10.0)
+            ((gameplay.Bounds.Height - 48.0) / 20.0)
+        |> max 10.0
+
     let boardWidth = cell * 10.0
     let boardHeight = cell * 20.0
+    let boardX = gameplay.Bounds.X + 32.0
+    let boardY = gameplay.Bounds.Y + 24.0
+
+    boardX, boardY, cell, boardWidth, boardHeight
+
+let activeGameplayBoundsForSize size model : LayoutGameplayBounds =
+    let boardX, boardY, cell, _, _ = boardLayout size
+    { Name = "active-piece"
+      Bounds =
+        { X = boardX + float model.ActiveColumn * cell + 1.0
+          Y = boardY + float model.ActiveRow * cell + 1.0
+          Width = cell * 2.0 - 2.0
+          Height = cell * 2.0 - 2.0 } }
+
+let movementUsesGameplayRegion size model =
+    let region = gameplayRegionForSize size
+    let bounds = activeGameplayBoundsForSize size model
+    boundsInside region.Bounds bounds.Bounds
+
+let spawnUsesGameplayRegion size model =
+    let region = gameplayRegionForSize size
+    let bounds = activeGameplayBoundsForSize size { model with ActiveColumn = 4; ActiveRow = 1 }
+    boundsInside region.Bounds bounds.Bounds
+
+let collisionUsesGameplayRegion size model =
+    movementUsesGameplayRegion size model
+
+let private hudTextBounds (size: Size) model =
+    let text width x y name value =
+        { Name = name
+          Text = value
+          Bounds = { X = x; Y = y; Width = width; Height = 24.0 }
+          MeasurementMode = ApproximateTextBounds }
+
+    [ text 128.0 16.0 16.0 "score" $"score: {model.Score}"
+      text 96.0 168.0 16.0 "level" $"level: {model.Level}"
+      text 96.0 296.0 16.0 "next" $"next: {model.NextPiece}"
+      text 152.0 (float size.Width - 184.0) 16.0 "status" $"screen: {screenName model.Screen}" ]
+
+let private overlapDiagnostics report =
+    let hudTextOverlaps =
+        report.TextBounds
+        |> List.mapi (fun index first ->
+            report.TextBounds
+            |> List.skip (index + 1)
+            |> List.choose (fun second ->
+                if intersects first.Bounds second.Bounds then
+                    Some
+                        { Kind = HudTextOverlap
+                          FirstName = first.Name
+                          SecondName = Some second.Name
+                          Bounds = first.Bounds
+                          Message = $"HUD text '{first.Name}' overlaps '{second.Name}'" }
+                else
+                    None))
+        |> List.concat
+
+    let hudGameplayOverlaps =
+        report.TextBounds
+        |> List.collect (fun text ->
+            report.GameplayBounds
+            |> List.choose (fun gameplay ->
+                if intersects text.Bounds gameplay.Bounds then
+                    Some
+                        { Kind = HudGameplayOverlap
+                          FirstName = text.Name
+                          SecondName = Some gameplay.Name
+                          Bounds = text.Bounds
+                          Message = $"HUD text '{text.Name}' overlaps gameplay '{gameplay.Name}'" }
+                else
+                    None))
+
+    hudTextOverlaps @ hudGameplayOverlaps
+
+let layoutEvidenceForSize size model : LayoutEvidenceReport =
+    let report =
+        { Scene = Scene.empty
+          OutputSize = size
+          ProofLevel = ReadableLayout
+          HudRegion = Some(hudRegionForSize size)
+          GameplayRegion = Some(gameplayRegionForSize size)
+          TextBounds = hudTextBounds size model
+          GameplayBounds = [ activeGameplayBoundsForSize size model ]
+          OverlapStatus = NoLayoutOverlap
+          MeasurementMode = ApproximateTextBounds
+          UnsupportedReasons = []
+          Diagnostics = [ "hud-region=present"; "gameplay-region=present"; "measurement-mode=approximate" ]
+          RenderEvidence = None }
+
+    let overlaps = overlapDiagnostics report
+
+    if overlaps.IsEmpty then
+        report
+    else
+        { report with
+            ProofLevel = DeterministicRenderOnly
+            OverlapStatus = LayoutOverlaps overlaps
+            Diagnostics = report.Diagnostics @ (overlaps |> List.map _.Message) }
+
+let validateGeneratedLayout report =
+    let overlaps = overlapDiagnostics report
+
+    let diagnostics =
+        [ if report.HudRegion.IsNone then
+              "missing HUD region"
+          if report.GameplayRegion.IsNone then
+              "missing gameplay region"
+          if report.TextBounds.IsEmpty then
+              "missing HUD text bounds"
+          if report.GameplayBounds.IsEmpty then
+              "missing gameplay bounds"
+          for overlap in overlaps do
+              overlap.Message ]
+
+    if diagnostics.IsEmpty then
+        { Accepted = true
+          FailureClass = None
+          Diagnostics = [] }
+    else
+        { Accepted = false
+          FailureClass = if overlaps.IsEmpty then Some MissingLayoutFacts else Some OverlappingLayoutBounds
+          Diagnostics = diagnostics }
+
+let private writeLayoutEvidenceLines (path: string) lines =
+    let directory = Path.GetDirectoryName path
+
+    if not (String.IsNullOrWhiteSpace directory) then
+        Directory.CreateDirectory(directory |> string) |> ignore
+
+    File.WriteAllLines(path, Array.ofList lines)
+
+let layoutEvidenceCommand evidencePath width height =
+    let size = { Width = width; Height = height }
+    let report = layoutEvidenceForSize size initialModel
+    let validation = validateGeneratedLayout report
+    let hud =
+        report.HudRegion
+        |> Option.map (fun region -> $"{region.Name}:{region.Bounds.X},{region.Bounds.Y},{region.Bounds.Width},{region.Bounds.Height}")
+        |> Option.defaultValue "missing"
+
+    let gameplay =
+        report.GameplayRegion
+        |> Option.map (fun region -> $"{region.Name}:{region.Bounds.X},{region.Bounds.Y},{region.Bounds.Width},{region.Bounds.Height}")
+        |> Option.defaultValue "missing"
+
+    let status = if validation.Accepted then "ok" else "failed"
+    let diagnostics = String.concat "|" (report.Diagnostics @ validation.Diagnostics)
+
+    let lines =
+        [ $"status={status}"
+          "command=--layout-evidence"
+          $"scene=Product.Program.view"
+          $"output-size={size.Width}x{size.Height}"
+          $"proof-level={report.ProofLevel}"
+          $"hud-region={hud}"
+          $"gameplay-region={gameplay}"
+          $"text-bounds={report.TextBounds.Length}"
+          $"gameplay-bounds={report.GameplayBounds.Length}"
+          $"overlap-status={report.OverlapStatus}"
+          $"measurement-mode={report.MeasurementMode}"
+          $"accepted={validation.Accepted}"
+          $"diagnostics={diagnostics}" ]
+
+    writeLayoutEvidenceLines evidencePath lines
+    lines |> List.iter (printfn "%s")
+    if validation.Accepted then 0 else 1
+
+let view (model: Model) =
+    let outputSize = { Width = 640; Height = 480 }
+    let boardX, boardY, cell, boardWidth, boardHeight = boardLayout outputSize
     let boardColor = { Red = 18uy; Green = 24uy; Blue = 32uy; Alpha = 255uy }
     let gridColor = { Red = 72uy; Green = 82uy; Blue = 96uy; Alpha = 255uy }
     let activeColor = { Red = 64uy; Green = 196uy; Blue = 255uy; Alpha = 255uy }
@@ -743,6 +951,14 @@ let windowOptionsReport evidencePath behavior =
 [<EntryPoint>]
 let main args =
     match List.ofArray args with
+    | "--layout-evidence" :: path :: width :: height :: _ ->
+        match Int32.TryParse width, Int32.TryParse height with
+        | (true, parsedWidth), (true, parsedHeight) -> layoutEvidenceCommand path parsedWidth parsedHeight
+        | _ ->
+            printfn "status=failed command=--layout-evidence diagnostics=width and height must be integers"
+            1
+    | "--layout-evidence" :: path :: _ -> layoutEvidenceCommand path 640 480
+    | "--layout-evidence" :: _ -> layoutEvidenceCommand "readiness/layout-evidence.txt" 640 480
     | "--launch-evidence" :: path :: _ -> launchEvidence path
     | "--launch-evidence" :: _ -> launchEvidence "readiness/evidence-launch-mode.txt"
     | "--bounded-smoke" :: path :: _ -> boundedSmoke false path

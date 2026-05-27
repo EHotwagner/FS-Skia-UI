@@ -165,4 +165,32 @@ let generatedGuidanceTests =
             Expect.isFalse (readme.Contains("V2Analysis")) "product README omits framework V2 analysis"
             Expect.isFalse (readme.Contains("subsystem design", System.StringComparison.OrdinalIgnoreCase)) "product README omits framework subsystem design"
         }
+
+        test "generated app guidance names qualified app-owned scene host and update values" {
+            [ "docs/generated-apps.md"
+              "docs/testing.md"
+              "template/base/docs/product.md" ]
+            |> List.iter (fun path ->
+                expectFileContains
+                    path
+                    [ "Product.Program.view"
+                      "Product.Program.generatedHost"
+                      "Product.Program.update"
+                      "FS.Skia.UI.Scene.Scene" ])
+        }
+
+        test "generated app source and tests keep public contract names app-qualified" {
+            expectFileContains
+                "template/base/src/Product/Program.fs"
+                [ "module Product.Program"
+                  "let view"
+                  "let generatedHost"
+                  "let update" ]
+
+            expectFileContains
+                "template/base/tests/Product.Tests/Tests.fs"
+                [ "Product.Program.view"
+                  "Product.Program.generatedHost"
+                  "Product.Program.update" ]
+        }
     ]

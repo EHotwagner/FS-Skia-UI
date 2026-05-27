@@ -191,6 +191,51 @@ type RenderReadbackEvidence =
       Capabilities: string list
       DeterministicHash: string }
 
+type LayoutProofLevel =
+    | ReadableLayout
+    | DeterministicRenderOnly
+    | UnsupportedLayoutInspection
+
+type LayoutMeasurementMode =
+    | ExactTextBounds
+    | ApproximateTextBounds
+    | UnsupportedTextBounds
+
+type LayoutOverlapKind =
+    | HudTextOverlap
+    | HudGameplayOverlap
+    | GameplayOutOfBounds
+
+type LayoutOverlapDiagnostic =
+    { Kind: LayoutOverlapKind
+      FirstName: string
+      SecondName: string option
+      Bounds: Rect
+      Message: string }
+
+type LayoutOverlapStatus =
+    | NoLayoutOverlap
+    | LayoutOverlaps of LayoutOverlapDiagnostic list
+
+type LayoutRegionEvidence =
+    { Name: string
+      Bounds: Rect }
+
+type LayoutTextBounds =
+    { Name: string
+      Text: string
+      Bounds: Rect
+      MeasurementMode: LayoutMeasurementMode }
+
+type LayoutGameplayBounds =
+    { Name: string
+      Bounds: Rect }
+
+type LayoutUnsupportedReason =
+    { Fact: string
+      Reason: string
+      Diagnostic: string }
+
 type DiagnosticSeverity =
     | Info
     | Warning
@@ -233,6 +278,20 @@ and Scene =
 and Picture =
     { Name: string
       Scene: Scene }
+
+type LayoutEvidenceReport =
+    { Scene: Scene
+      OutputSize: Size
+      ProofLevel: LayoutProofLevel
+      HudRegion: LayoutRegionEvidence option
+      GameplayRegion: LayoutRegionEvidence option
+      TextBounds: LayoutTextBounds list
+      GameplayBounds: LayoutGameplayBounds list
+      OverlapStatus: LayoutOverlapStatus
+      MeasurementMode: LayoutMeasurementMode
+      UnsupportedReasons: LayoutUnsupportedReason list
+      Diagnostics: string list
+      RenderEvidence: RenderReadbackEvidence option }
 
 module Colors =
     val rgba: red: byte -> green: byte -> blue: byte -> alpha: byte -> Color
@@ -313,3 +372,8 @@ module SceneEvidence =
     val render: request: SceneEvidenceRequest -> Result<SceneEvidence, SceneEvidenceFailure>
     val renderHash: size: Size -> scene: Scene -> Result<SceneEvidence, SceneEvidenceFailure>
     val renderPng: size: Size -> scene: Scene -> Result<byte[], SceneEvidenceFailure>
+
+module LayoutEvidence =
+    val classify: report: LayoutEvidenceReport -> LayoutEvidenceReport
+    val fromRenderEvidence: scene: Scene -> evidence: RenderReadbackEvidence -> LayoutEvidenceReport
+    val unsupported: scene: Scene -> outputSize: Size -> reason: LayoutUnsupportedReason -> LayoutEvidenceReport

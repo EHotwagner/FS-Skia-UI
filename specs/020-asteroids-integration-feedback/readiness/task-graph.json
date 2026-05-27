@@ -1,0 +1,1964 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Scaffold `specs/020-asteroids-integration-feedback/readiness/` with the six required readiness files and placeholder command/status sections",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T001",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T001: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Review and harden `.agents/skills/fs-skia-layout-evidence/SKILL.md` against the spec contracts, then record the resolved skill path in readiness notes",
+      "skillist": [
+        "fs-skia-layout-evidence"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T002",
+          "declared_skillist": [
+            "fs-skia-layout-evidence"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T002: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add the layout evidence skill to `template/capabilities.yml` and any generated capability inventory consumed by task or guidance validation",
+      "skillist": [
+        "fs-skia-layout-evidence"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T003",
+          "declared_skillist": [
+            "fs-skia-layout-evidence"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T003: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T002"
+      ],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record Tier 1 scope, public API impact, generated product impact, MVU/effect-boundary applicability, synthetic limitations, and required evidence obligations in `readiness/layout-evidence.md`",
+      "skillist": [
+        "fs-skia-layout-evidence"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T004",
+          "declared_skillist": [
+            "fs-skia-layout-evidence"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T004: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T001",
+        "T002"
+      ],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Draft public `.fsi` contracts for layout proof levels, HUD/gameplay/text bounds, overlap diagnostics, unsupported reasons, and generated validation result types in `src/Scene/Scene.fsi` and/or `src/Testing/Testing.fsi`",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T005",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-scene",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T005: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T002"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing semantic tests through the public `.fsi` surface for readable layout, deterministic-render-only evidence, unsupported layout inspection, and missing/overlapping bounds",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T006",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-scene",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T006: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing governance tests that require `fs-skia-layout-evidence` metadata for layout, evidence, guidance, validation, and warning-classification tasks",
+      "skillist": [
+        "fs-skia-layout-evidence"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T007",
+          "declared_skillist": [
+            "fs-skia-layout-evidence"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T007: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T002"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing generated guidance checks for qualified `Product.Program.view`, `Product.Program.generatedHost`, and `Product.Program.update` names",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T008",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T008: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T003"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Exercise the draft public contracts from FSI, including representative readable, deterministic-only, and unsupported evidence records, and capture `readiness/public-contract-guidance.md`",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T009",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-scene",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T009: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record initial package surface review expectations for changed Scene/Testing signatures and planned baseline updates",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T010",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-scene",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T010: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add generated product tests for 1280x720 HUD/gameplay separation, 640x480 HUD readability, HUD/HUD overlap failure, and HUD/gameplay overlap failure",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T011",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T011: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T008"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add generated product tests proving movement, wrap, spawn, collision, and active entity bounds use the gameplay region instead of the full scene",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T012",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T012: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T008"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add template/guidance fixtures that describe the reserved HUD region, gameplay region, documented small-window size, and evidence command",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T013",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T013: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T008"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Update generated game layout and rendering so score, lives, wave, status, and active gameplay entities are emitted with named HUD/gameplay regions",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T014",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T014: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T011",
+        "T013"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Update generated gameplay coordinate policies so entities wrap, clamp, spawn, and collide inside the gameplay region when the HUD region is reserved",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T015",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T015: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T012",
+        "T014"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Produce real generated product evidence for 1280x720 and 640x480 validation sizes and write `readiness/hud-layout-readability.md`",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T016",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T016: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T014",
+        "T015"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Document the independent US1 validation path in generated docs and `readiness/generated-validation.md`",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T017",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T017: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T016"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add public docs and generated guidance tests that fail on omitted or inconsistent `Product.Program.view`, `Product.Program.generatedHost`, or `Product.Program.update`",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T018",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T018: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T008"
+      ],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add an FSI or generated-product signature smoke test that writes an app-owned signature using `FS.Skia.UI.Scene.Scene`, the generated host value, and a qualified update call",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T019",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T019: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005",
+        "T018"
+      ],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Update `docs/generated-apps.md`, `docs/testing.md`, template docs, and generated examples to use the qualified app-owned scene, host, and update names consistently",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T020",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T020: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T018"
+      ],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Run the consumer guidance smoke path and record command output, source snippets, and result in `readiness/public-contract-guidance.md`",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T021",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T021: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T019",
+        "T020"
+      ],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add semantic tests for evidence report fields: scene, output size, proof level, HUD region, gameplay region, text bounds, gameplay bounds, overlap status, measurement mode, unsupported reason, and diagnostics",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T022",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-scene",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T022: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T021"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add validation helper tests that fail readability claims with missing facts, undisclosed unsupported facts, HUD/HUD overlap, HUD/gameplay overlap, or deterministic-render-only proof",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T023",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T023: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T021"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add malformed/missing layout fact coverage for unsupported and invalid evidence reports using public layout evidence constructors and classifiers",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T024",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-scene",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T024: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T021"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement the public layout evidence records, proof-level classification, conservative approximate measurement disclosure, and overlap diagnostics",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T025",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-scene",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T025: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T006",
+        "T022"
+      ],
+      "phase_deps": [
+        "T021"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement generated validation helpers that fail on missing, unsupported-without-disclosure, overlapping, or deterministic-only readability claims",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T026",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T026: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T023",
+        "T025"
+      ],
+      "phase_deps": [
+        "T021"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Produce layout evidence artifacts and write `readiness/layout-evidence.md`",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T027",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-scene",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T027: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T024",
+        "T025",
+        "T026"
+      ],
+      "phase_deps": [
+        "T021"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add warning-classification tests for benign environment warnings, launch failures, rendering failures, layout failures, package failures, and unknown warnings",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-skiaviewer",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-skiaviewer",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T028",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-skiaviewer",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T028: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add readiness/report tests proving benign warnings are non-fatal only when launch/render/layout/package evidence is otherwise successful or explicitly unsupported without a readability claim",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-skiaviewer"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-skiaviewer"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T029",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-skiaviewer"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T029: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T028"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T030",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement host warning classification records, non-fatal rule evaluation, and diagnostics that preserve real launch/render/layout/package failures",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-skiaviewer",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-skiaviewer",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T030",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-skiaviewer",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T030: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T028"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T031",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Run a persistent graphical launch path or supported unsupported-host diagnostic path and write `readiness/host-warning-classification.md`",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-skiaviewer"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-skiaviewer"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T031",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-skiaviewer"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T031: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T029",
+        "T030"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T032",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Refresh intentional Scene/Testing package surface baselines and record `PackageSurfaceCheck` evidence",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-scene",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T032",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-scene",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T032: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T010",
+        "T025",
+        "T026"
+      ],
+      "phase_deps": [
+        "T031"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T033",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `GeneratedProductCheck`, `GeneratedGuidanceCheck`, and `TemplateCheck`, then update `readiness/generated-validation.md`",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T033",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T033: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T016",
+        "T017",
+        "T021",
+        "T027"
+      ],
+      "phase_deps": [
+        "T031"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T034",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run focused readiness review for `hud-layout-readability.md`, `public-contract-guidance.md`, `layout-evidence.md`, `host-warning-classification.md`, and `generated-validation.md`",
+      "skillist": [
+        "fs-skia-layout-evidence"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T034",
+          "declared_skillist": [
+            "fs-skia-layout-evidence"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T034: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T016",
+        "T021",
+        "T027",
+        "T031",
+        "T033"
+      ],
+      "phase_deps": [
+        "T031"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T035",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceGraph` and confirm no cycles, dangling refs, mirror mismatches, invalid skill ids, or `[S*]` surprises",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T035",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T035: task text matches speckit-evidence-graph"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T031"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T036",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceAudit`, write `readiness/evidence-audit.md`, and document every accepted synthetic or unsupported condition",
+      "skillist": [
+        "speckit-evidence-graph",
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph",
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T036",
+          "declared_skillist": [
+            "speckit-evidence-graph",
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "task-text"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T036: task text matches speckit-evidence-audit"
+        }
+      ],
+      "explicit_deps": [
+        "T035"
+      ],
+      "phase_deps": [
+        "T031"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T037",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Measure generated layout-readability and guidance validation duration on a prepared supported host, require completion under 5 minutes, and record elapsed time in `readiness/generated-validation.md`",
+      "skillist": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence",
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T037",
+          "declared_skillist": [
+            "fs-skia-layout-evidence",
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T037: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T033"
+      ],
+      "phase_deps": [
+        "T031"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T038",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t Verify` for broad Tier 1 validation, then record focused failures separately from non-authoritative aggregate results",
+      "skillist": [
+        "fs-skia-layout-evidence"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T038",
+          "declared_skillist": [
+            "fs-skia-layout-evidence"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T038: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T032",
+        "T033",
+        "T034",
+        "T036",
+        "T037"
+      ],
+      "phase_deps": [
+        "T031"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    }
+  ]
+}

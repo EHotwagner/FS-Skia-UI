@@ -5,7 +5,7 @@
     <IsPackable>true</IsPackable>
     <PackageId>FS.Skia.UI.Testing</PackageId>
     <AssemblyName>FS.Skia.UI.Testing</AssemblyName>
-    <Version>0.1.19-preview.1</Version>
+    <Version>0.1.20-preview.1</Version>
     <Title>FS.Skia.UI.Testing</Title>
     <Description>Generated product and package validation helpers for FS.Skia.UI V3 products.</Description>
     <PackageTags>fsharp;testing;governance;template</PackageTags>
@@ -14,6 +14,10 @@
   <ItemGroup>
     <Compile Include="Testing.fsi" />
     <Compile Include="Testing.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Scene\Scene.fsproj" />
   </ItemGroup>
 
 </Project>
