@@ -173,7 +173,7 @@ let main args =
     | _ ->
         match Viewer.runApp viewerOptions generatedHost with
         | Result.Ok outcome ->
-            printfn "status=%s mode=interactive-window" outcome.Status
+            printfn "status=%s mode=interactive-window accessible-window=true window-visible=observed:true" outcome.Status
             0
         | Result.Error _ -> 1
 """
@@ -199,6 +199,80 @@ let main args =
             Expect.exists invalid.Diagnostics (fun item -> item.Contains "Viewer.runBounded") "bounded substitute is diagnostic"
             Expect.exists invalid.Diagnostics (fun item -> item.Contains "self-close") "evidence self-close is diagnostic"
             Expect.exists invalid.Diagnostics (fun item -> item.Contains "metadata-only") "metadata-only default is diagnostic"
+        }
+
+        test "generated product validation rejects first-frame metadata and inaccessible default commands" {
+            let invalidDefaults =
+                [ ("first-frame-only",
+                   "match List.ofArray args with\n| _ ->\n    printfn \"mode=interactive-window first-frame-only=true exit after first frame\"\n    0")
+                  ("metadata-only",
+                   "match List.ofArray args with\n| _ ->\n    printfn \"mode=interactive-window accessible-window=true print metadata\"\n    0")
+                  ("missing-accessible-window",
+                   "match List.ofArray args with\n| _ ->\n    match Viewer.runApp viewerOptions generatedHost with\n    | Result.Ok outcome ->\n        printfn \"status=%s mode=interactive-window\" outcome.Status\n        0\n    | Result.Error _ -> 1") ]
+
+            invalidDefaults
+            |> List.iter (fun (caseName, source) ->
+                let result = GeneratedProductAssertions.validateDefaultInteractiveLaunch source
+                Expect.isFalse result.InteractiveLaunchRequired $"{caseName} default command is rejected")
+
+            let firstFrame =
+                GeneratedProductAssertions.validateDefaultInteractiveLaunch (invalidDefaults |> List.item 0 |> snd)
+
+            Expect.exists firstFrame.Diagnostics (fun item -> item.Contains "first frame") "first-frame-only default is diagnostic"
+
+            let metadataOnly =
+                GeneratedProductAssertions.validateDefaultInteractiveLaunch (invalidDefaults |> List.item 1 |> snd)
+
+            Expect.exists metadataOnly.Diagnostics (fun item -> item.Contains "metadata-only") "metadata-only default is diagnostic"
+
+            let missingAccessible =
+                GeneratedProductAssertions.validateDefaultInteractiveLaunch (invalidDefaults |> List.item 2 |> snd)
+
+            Expect.exists missingAccessible.Diagnostics (fun item -> item.Contains "accessible desktop window") "missing accessible-window claim is diagnostic"
+        }
+
+        test "generated diagnostic validation requires failure classes and observable native facts" {
+            let output =
+                """
+status=degraded mode=interactive-window diagnostic-class=environment-session native-handle=unsupported visible=unsupported focusable=unsupported focused=unsupported minimized=unsupported maximized=unsupported client-size=unavailable renderable-surface=unsupported input-devices=unsupported
+status=failed mode=interactive-window diagnostic-class=window-visibility native-handle=observed:true visible=observed:false focusable=observed:false focused=unsupported minimized=observed:false maximized=observed:false client-size=640x480 renderable-surface=observed:true input-devices=observed:false
+status=failed mode=interactive-window diagnostic-class=app-lifecycle native-handle=observed:true visible=observed:true focusable=observed:true focused=observed:true minimized=observed:false maximized=observed:false client-size=640x480 renderable-surface=observed:true input-devices=observed:true
+status=failed mode=interactive-window diagnostic-class=product-defect native-handle=observed:true visible=observed:true focusable=observed:true focused=unsupported minimized=observed:false maximized=observed:false client-size=0x0 renderable-surface=observed:false input-devices=unavailable
+"""
+
+            let result =
+                GeneratedProductAssertions.validateWindowDiagnostics
+                    { Output = output
+                      RequiredFailureClasses = [ "environment-session"; "window-visibility"; "app-lifecycle"; "product-defect" ]
+                      RequiredNativeFacts =
+                        [ "native-handle"
+                          "visible"
+                          "focusable"
+                          "focused"
+                          "minimized"
+                          "maximized"
+                          "client-size"
+                          "renderable-surface"
+                          "input-devices" ] }
+
+            Expect.isTrue result.DiagnosticsComplete "generated diagnostics include all required failure classes and native facts"
+            Expect.isEmpty result.Diagnostics "complete diagnostics have no validation errors"
+        }
+
+        test "generated diagnostic validation rejects taskbar-only success and missing native facts" {
+            let output =
+                "status=ok mode=interactive-window diagnostic-class=window-visibility taskbar-only=true native-handle=observed:true visible=observed:false"
+
+            let result =
+                GeneratedProductAssertions.validateWindowDiagnostics
+                    { Output = output
+                      RequiredFailureClasses = [ "environment-session"; "window-visibility"; "app-lifecycle"; "product-defect" ]
+                      RequiredNativeFacts = [ "native-handle"; "visible"; "renderable-surface"; "input-devices" ] }
+
+            Expect.isFalse result.DiagnosticsComplete "incomplete taskbar-only success is rejected"
+            Expect.exists result.Diagnostics (fun item -> item.Contains "environment-session") "missing environment/session class is diagnostic"
+            Expect.exists result.Diagnostics (fun item -> item.Contains "renderable-surface") "missing renderable-surface fact is diagnostic"
+            Expect.exists result.Diagnostics (fun item -> item.Contains "taskbar-only") "taskbar-only status=ok is diagnostic"
         }
 
         test "visual evidence prefers screenshots and preserves board input progress fields" {
@@ -243,5 +317,137 @@ let main args =
             Expect.equal result.UnsupportedReason (Some "headless session has no display socket") "unsupported reason is retained"
             Expect.isNone result.BoardReadable "unsupported host cannot claim readable board"
             Expect.isNone result.InputOrProgressObserved "unsupported host cannot claim input/progress"
+        }
+
+        test "generated image evidence command output accepts decodable image proof fields" {
+            let result =
+                GeneratedConsumerValidation.validateVisualEvidenceCommandOutput
+                    { Output =
+                        "status=ok\nevidence-kind=image\npath=readiness/artifacts/window.png\nimage-decodable=true\nproves-scene-rendering=true\nproves-desktop-visibility=false\n"
+                      RequestedImageEvidence = true }
+
+            Expect.isTrue result.Accepted "decodable requested image evidence is accepted"
+            Expect.equal result.EvidenceKind (Some "image") "image evidence kind is preserved"
+            Expect.isNone result.FailureReason "valid image evidence has no failure class"
+            Expect.isEmpty result.Diagnostics "valid image evidence has no diagnostics"
+        }
+
+        test "generated visual evidence command output distinguishes pixel metadata and unsupported host cases" {
+            let cases =
+                [ "pixel-readback",
+                  "status=ok\nevidence-kind=pixel-readback\npath=readiness/artifacts/readback.txt\nfallback-reason=screenshot-unavailable\nproves-scene-rendering=true\nproves-desktop-visibility=false\n"
+                  "metadata-hash",
+                  "status=ok\nevidence-kind=metadata-hash\npath=readiness/artifacts/scene.hash\nproves-scene-rendering=false\nproves-desktop-visibility=false\n"
+                  "unsupported-host",
+                  "status=unsupported\nevidence-kind=unsupported-host\nunsupported-reason=headless session has no display socket\n" ]
+
+            for expectedKind, output in cases do
+                let result =
+                    GeneratedConsumerValidation.validateVisualEvidenceCommandOutput
+                        { Output = output
+                          RequestedImageEvidence = expectedKind = "pixel-readback" }
+
+                Expect.isTrue result.Accepted $"{expectedKind} output is accepted when labeled accurately"
+                Expect.equal result.EvidenceKind (Some expectedKind) $"{expectedKind} kind is preserved"
+        }
+
+        test "generated visual evidence command output rejects text hashes mislabeled as screenshots" {
+            let result =
+                GeneratedConsumerValidation.validateVisualEvidenceCommandOutput
+                    { Output =
+                        "status=ok\nevidence-kind=image\npath=readiness/artifacts/window.png\nimage-decodable=false\nhash=abc123\nproves-scene-rendering=false\nproves-desktop-visibility=false\n"
+                      RequestedImageEvidence = true }
+
+            Expect.isFalse result.Accepted "text hash cannot satisfy requested image evidence"
+            Expect.equal result.FailureReason (Some "metadata-only-image-evidence") "metadata-only screenshot claims have a specific failure class"
+            Expect.exists result.Diagnostics (fun item -> item.Contains "decodable image") "diagnostic names decodable image requirement"
+            Expect.exists result.Diagnostics (fun item -> item.Contains "metadata") "diagnostic names metadata/hash mislabeling"
+        }
+
+        test "generated validation contract output includes all required validation fields" {
+            let packageResolution =
+                GeneratedConsumerValidation.verifyPackageResolution
+                    { RequestedPackages = [ { PackageId = "FS.Skia.UI.SkiaViewer"; Version = "0.1.17-preview.1"; FeedPath = "/tmp/feed" } ]
+                      ResolvedPackages = [ { PackageId = "FS.Skia.UI.SkiaViewer"; Version = "0.1.17-preview.1"; FeedPath = "/tmp/feed" } ]
+                      PackageSources = [ "/tmp/feed" ]
+                      RestoreWarnings = [] }
+
+            let generatedTests =
+                GeneratedConsumerValidation.verifyGeneratedTests
+                    { TestsExist = true
+                      TestsRan = true
+                      VerifyRan = true }
+
+            let interactive =
+                GeneratedProductAssertions.validateDefaultInteractiveLaunch
+                    "match args with | _ -> match Viewer.runApp viewerOptions generatedHost with | Result.Ok outcome -> printfn \"mode=interactive-window accessible-window=true window-visible=observed:true\" | Result.Error _ -> ()"
+
+            let windowDiagnostics =
+                GeneratedProductAssertions.validateWindowDiagnostics
+                    { Output = "status=failed diagnostic-class=window-visibility native-handle=observed:true visible=observed:false"
+                      RequiredFailureClasses = [ "window-visibility" ]
+                      RequiredNativeFacts = [ "native-handle"; "visible" ] }
+
+            let imageEvidence =
+                GeneratedConsumerValidation.validateVisualEvidenceCommandOutput
+                    { Output = "evidence-kind=image\nimage-decodable=true\nproves-scene-rendering=true\nproves-desktop-visibility=false\n"
+                      RequestedImageEvidence = true }
+
+            let result =
+                GeneratedConsumerValidation.buildValidationContractOutput
+                    { PackageResolution = packageResolution
+                      GeneratedTests = generatedTests
+                      DefaultInteractiveLaunch = interactive
+                      BoundedEvidenceValidated = true
+                      CloseReasonValidated = true
+                      WindowDiagnostics = windowDiagnostics
+                      WindowOptionsValidated = true
+                      ImageEvidence = imageEvidence }
+
+            Expect.isTrue result.Authoritative "complete generated validation is authoritative"
+            Expect.equal result.FailureClass "none" "successful validation reports no failure class"
+            Expect.stringContains result.Output "exact-package-match=true" "package resolution field is emitted"
+            Expect.stringContains result.Output "generated-tests-ran=true" "generated test execution field is emitted"
+            Expect.stringContains result.Output "default-interactive-launch=true" "interactive launch field is emitted"
+            Expect.stringContains result.Output "bounded-evidence-validation=true" "bounded evidence field is emitted"
+            Expect.stringContains result.Output "close-reason-validation=true" "close reason field is emitted"
+            Expect.stringContains result.Output "window-diagnostics-validation=true" "window diagnostics field is emitted"
+            Expect.stringContains result.Output "window-options-validation=true" "window options field is emitted"
+            Expect.stringContains result.Output "image-evidence-validation=true" "image evidence field is emitted"
+            Expect.stringContains result.Output "authoritative=true" "authoritative flag is emitted"
+            Expect.stringContains result.Output "failure-class=none" "failure class field is emitted"
+        }
+
+        test "generated validation contract output reports first failing class" {
+            let result =
+                GeneratedConsumerValidation.buildValidationContractOutput
+                    { PackageResolution =
+                        { ExactMatch = false
+                          FailureReason = Some "NU1603"
+                          Diagnostics = [ "restore warning: NU1603" ] }
+                      GeneratedTests =
+                        { Authoritative = true
+                          NonAuthoritativeReason = None
+                          Diagnostics = [] }
+                      DefaultInteractiveLaunch =
+                        { InteractiveLaunchRequired = true
+                          Diagnostics = [] }
+                      BoundedEvidenceValidated = true
+                      CloseReasonValidated = true
+                      WindowDiagnostics =
+                        { DiagnosticsComplete = true
+                          Diagnostics = [] }
+                      WindowOptionsValidated = true
+                      ImageEvidence =
+                        { Accepted = true
+                          EvidenceKind = Some "image"
+                          FailureReason = None
+                          Diagnostics = [] } }
+
+            Expect.isFalse result.Authoritative "package drift makes validation non-authoritative"
+            Expect.equal result.FailureClass "NU1603" "first failing class is surfaced"
+            Expect.stringContains result.Output "authoritative=false" "non-authoritative output is explicit"
+            Expect.stringContains result.Output "failure-class=NU1603" "failure class is emitted"
+            Expect.exists result.Diagnostics (fun item -> item.Contains "NU1603") "diagnostics are retained"
         }
     ]

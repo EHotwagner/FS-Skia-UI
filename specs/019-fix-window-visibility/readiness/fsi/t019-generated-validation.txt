@@ -1,0 +1,3 @@
+case=first-frame-only accepted=false diagnostics=default executable must call Viewer.runApp viewerOptions generatedHost;default executable must claim an accessible desktop window;default executable must not exit after first frame
+case=metadata-only accepted=false diagnostics=default executable must call Viewer.runApp viewerOptions generatedHost;default executable must not be metadata-only
+case=missing-accessible-window accepted=false diagnostics=default executable must claim an accessible desktop window

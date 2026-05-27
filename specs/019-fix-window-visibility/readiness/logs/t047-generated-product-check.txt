@@ -1,0 +1,6 @@
+The last restore is still up to date. Nothing left to do.
+Starting target 'CapabilityCheck'
+Finished target 'CapabilityCheck'
+Starting target 'SkillCheck'
+Finished target 'SkillCheck'
+Starting target 'GeneratedProductCheck'

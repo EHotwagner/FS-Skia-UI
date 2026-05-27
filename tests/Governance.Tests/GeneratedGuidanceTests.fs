@@ -112,7 +112,10 @@ let generatedGuidanceTests =
                     [ "implementation batch records"
                       "red-green evidence log"
                       "graph before/after"
+                      "before and after every status change"
                       "skill-loading notes"
+                      "persistent launch rules"
+                      "non-authoritative aggregate reporting"
                       "non-authoritative aggregate" ])
         }
 
@@ -127,7 +130,9 @@ let generatedGuidanceTests =
                       "work_started_at"
                       "reviewer exception"
                       "graph before/after"
-                      "red-green evidence log" ])
+                      "before and after every status change"
+                      "red-green evidence log"
+                      "implementation batch records" ])
         }
 
         test "Spec Kit docs distinguish V2 obligations from deferred roadmap work" {

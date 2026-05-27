@@ -1,0 +1,28 @@
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Debug/net10.0/FS.Skia.UI.SkiaViewer.dll
+  SkiaViewer.Tests -> /home/developer/projects/FS-Skia-UI/tests/SkiaViewer.Tests/bin/Debug/net10.0/SkiaViewer.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/SkiaViewer.Tests/bin/Debug/net10.0/SkiaViewer.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed SkiaViewer MVU contract.metadata hash evidence is labeled separately and never written as screenshot image [190 ms]
+  Error Message:
+   
+metadata evidence is labeled metadata-hash. There isn't any element which satisfies given assertion <fun:tests@1104-122>.
+   at SkiaViewerCapabilityTests.tests@1102-121.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/SkiaViewer.Tests/Tests.fs:line 1104
+   at Expecto.Tests.TestCaseBuilder.TryFinally[g](FSharpFunc`2 f, FSharpFunc`2 compensation)
+   at SkiaViewerCapabilityTests.tests@1083-120.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/SkiaViewer.Tests/Tests.fs:line 1094
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+
+  Failed SkiaViewer MVU contract.requested image evidence writes decodable image artifact and explicit proof claims [192 ms]
+  Error Message:
+   
+requested image evidence records an image artifact. There isn't any element which satisfies given assertion <fun:tests@1072-115>.
+   at SkiaViewerCapabilityTests.tests@1069-114.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/SkiaViewer.Tests/Tests.fs:line 1072
+   at Expecto.Tests.TestCaseBuilder.TryFinally[g](FSharpFunc`2 f, FSharpFunc`2 compensation)
+   at SkiaViewerCapabilityTests.tests@1050-113.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/SkiaViewer.Tests/Tests.fs:line 1061
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+
+
+Failed!  - Failed:     2, Passed:    38, Skipped:     0, Total:    40, Duration: 278 ms - SkiaViewer.Tests.dll (net10.0)

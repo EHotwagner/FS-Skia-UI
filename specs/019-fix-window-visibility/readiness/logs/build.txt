@@ -1,0 +1,122 @@
+
+## dotnet build src/Scene/Scene.fsproj
+$ dotnet build "src/Scene/Scene.fsproj" --no-restore -maxcpucount:1 --disable-build-servers
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.71
+
+exit-code=0
+
+## dotnet build src/SkiaViewer/SkiaViewer.fsproj
+$ dotnet build "src/SkiaViewer/SkiaViewer.fsproj" --no-restore -maxcpucount:1 --disable-build-servers
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Debug/net10.0/FS.Skia.UI.SkiaViewer.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.97
+
+exit-code=0
+
+## dotnet build src/Elmish/Elmish.fsproj
+$ dotnet build "src/Elmish/Elmish.fsproj" --no-restore -maxcpucount:1 --disable-build-servers
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Debug/net10.0/FS.Skia.UI.SkiaViewer.dll
+  Elmish -> /home/developer/projects/FS-Skia-UI/src/Elmish/bin/Debug/net10.0/FS.Skia.UI.Elmish.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.73
+
+exit-code=0
+
+## dotnet build src/KeyboardInput/KeyboardInput.fsproj
+$ dotnet build "src/KeyboardInput/KeyboardInput.fsproj" --no-restore -maxcpucount:1 --disable-build-servers
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.77
+
+exit-code=0
+
+## dotnet build src/Controls.Elmish/Controls.Elmish.fsproj
+$ dotnet build "src/Controls.Elmish/Controls.Elmish.fsproj" --no-restore -maxcpucount:1 --disable-build-servers
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Debug/net10.0/FS.Skia.UI.Controls.dll
+  Controls.Elmish -> /home/developer/projects/FS-Skia-UI/src/Controls.Elmish/bin/Debug/net10.0/FS.Skia.UI.Controls.Elmish.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:08.02
+
+exit-code=0
+
+## dotnet build src/Testing/Testing.fsproj
+$ dotnet build "src/Testing/Testing.fsproj" --no-restore -maxcpucount:1 --disable-build-servers
+  Testing -> /home/developer/projects/FS-Skia-UI/src/Testing/bin/Debug/net10.0/FS.Skia.UI.Testing.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.64
+
+exit-code=0
+
+## dotnet build src/Lib/Lib.fsproj
+$ dotnet build "src/Lib/Lib.fsproj" --no-restore -maxcpucount:1 --disable-build-servers
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:05.81
+
+exit-code=0
+
+## dotnet build src/Layout/Layout.fsproj
+$ dotnet build "src/Layout/Layout.fsproj" --no-restore -maxcpucount:1 --disable-build-servers
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:00.81
+
+exit-code=0
+
+## dotnet build src/Controls/Controls.fsproj
+$ dotnet build "src/Controls/Controls.fsproj" --no-restore -maxcpucount:1 --disable-build-servers
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Debug/net10.0/FS.Skia.UI.Controls.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.10
+
+exit-code=0

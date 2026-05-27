@@ -1,0 +1,6 @@
+35:## Elmish/MVU Evidence Obligations
+43:## Fake Window-Loop Limits
+53:## Real Interpreter Evidence
+62:## Supported-Host Visible-Window Evidence
+72:Small validation covers isolated readiness/documentation changes. Medium
+79:Non-authoritative aggregate results must be recorded with the failing class,

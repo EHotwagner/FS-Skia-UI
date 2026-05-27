@@ -12,6 +12,103 @@ type ViewerLaunchMode =
     | InteractiveWindow
     | PersistentEvidence
 
+type ViewerCloseReason =
+    | UserClose
+    | AppRequestedClose
+    | EvidenceRequestedClose
+    | FrameworkRequestedClose
+    | HostSystemClose
+    | TimeoutClose
+    | FailureDrivenClose
+
+type ViewerObservedValue =
+    | Observed of bool
+    | Unsupported
+    | Unavailable
+
+type ViewerWindowResizePolicy =
+    | Resizable
+    | FixedSize
+
+type ViewerWindowMaximizePolicy =
+    | Maximizable
+    | NotMaximizable
+
+type ViewerWindowStartupState =
+    | Normal
+    | Maximized
+    | Minimized
+    | Fullscreen
+
+type ViewerWindowPosition =
+    | Centered
+    | Coordinates of x: int * y: int
+
+type ViewerBackendPreference =
+    | DefaultBackend
+    | Vulkan
+    | OpenGL
+    | Software
+
+type ViewerWindowOptionStatus =
+    | Honored
+    | Degraded
+    | UnsupportedOption
+    | FailedOption
+
+type ViewerWindowBehaviorRequest =
+    { ResizePolicy: ViewerWindowResizePolicy
+      MaximizePolicy: ViewerWindowMaximizePolicy
+      StartupState: ViewerWindowStartupState
+      StartupPosition: ViewerWindowPosition option
+      BackendPreference: ViewerBackendPreference option }
+
+type ViewerWindowOptionResult =
+    { Option: string
+      Requested: string
+      Observed: string option
+      Status: ViewerWindowOptionStatus
+      Message: string }
+
+type ViewerWindowStateDiagnostic =
+    { WindowInitialized: bool
+      NativeHandle: ViewerObservedValue
+      Visible: ViewerObservedValue
+      Focusable: ViewerObservedValue
+      Focused: ViewerObservedValue
+      Minimized: ViewerObservedValue
+      Maximized: ViewerObservedValue
+      ClientSize: string option
+      RenderableSurfaceAvailable: ViewerObservedValue
+      Backend: string option
+      InputDevicesAvailable: ViewerObservedValue
+      FailureClass: string option
+      Message: string }
+
+type ViewerVisualEvidenceKind =
+    | Image
+    | PixelReadback
+    | MetadataHash
+    | UnsupportedHost
+
+type ViewerVisualEvidenceArtifact =
+    { Kind: ViewerVisualEvidenceKind
+      Path: string option
+      ImageDecodable: bool option
+      ProvesSceneRendering: bool
+      ProvesDesktopVisibility: bool
+      Message: string }
+
+type ViewerFailureClass =
+    | EnvironmentSession
+    | WindowVisibility
+    | WindowOptions
+    | VisualEvidence
+    | PackageVerification
+    | VerificationDepthFailure
+    | AppLifecycle
+    | ProductDefectFailure
+
 type ViewerInputDispatchStatus =
     | Verified
     | NotVerified
@@ -124,11 +221,19 @@ type ViewerLaunchOutcome =
       Command: string option
       RendererMode: string
       WindowOpened: bool
+      WindowVisible: ViewerObservedValue
       FirstFramePresented: bool
+      CloseReason: ViewerCloseReason option
       UserCloseObserved: bool
+      AppCloseObserved: bool
+      EvidenceCloseObserved: bool
       SelfClosedForEvidence: bool
       InputDispatch: string
       ExitPath: bool
+      WindowDiagnostics: ViewerWindowStateDiagnostic list
+      OptionResults: ViewerWindowOptionResult list
+      VisualEvidence: ViewerVisualEvidenceArtifact list
+      FailureClass: ViewerFailureClass option
       BlockedStage: ViewerRunBlockedStage option
       Classification: ViewerRunFailureClassification option
       Category: ViewerDiagnosticCategory option
@@ -138,15 +243,23 @@ type ViewerLifecycleState =
     | NotStarted
     | CheckingDesktopSession
     | StartingWindow
+    | WindowCreated
+    | VisibilityChecking
     | InteractiveRunning
     | EvidenceRunning
     | FirstFramePresented
+    | CloseRequested
     | Closing
+    | UserCloseObservedState
+    | AppCloseObservedState
+    | EvidenceCloseObservedState
+    | InaccessibleWindow
     | Failed
     | Unsupported
 
 type ViewerModel =
     { Options: ViewerOptions
+      WindowBehavior: ViewerWindowBehaviorRequest
       IsRunning: bool
       LifecycleState: ViewerLifecycleState
       FirstFramePresented: bool
@@ -166,11 +279,18 @@ type ViewerMsg =
     | StartInteractive
     | StartEvidence of ViewerRunRequest
     | Stop
+    | DesktopSessionChecked of ViewerDesktopSessionDiagnostic
+    | WindowCreated of ViewerWindowStateDiagnostic
+    | VisibilityCheckStarted of ViewerWindowStateDiagnostic
+    | VisibilityObserved of ViewerWindowStateDiagnostic
     | Render of SceneNode
     | KeyEvent of ViewerKeyEvent
     | DiagnosticCaptured of ViewerDiagnosticEvent
     | FramePresented of Size
     | UserCloseObserved
+    | AppCloseRequested
+    | EvidenceCloseRequested
+    | HostCloseObserved
     | EvidenceTargetReached
     | RunFailed of ViewerRunFailure
     | RunTimedOut
@@ -186,6 +306,8 @@ type ViewerRunMsg =
 
 type ViewerEffect =
     | OpenWindow of title: string * size: Size
+    | ApplyWindowOptions of ViewerWindowBehaviorRequest
+    | QueryNativeWindowState
     | RenderScene of SceneNode
     | CloseWindow
     | DispatchInput of ViewerKey * isDown: bool
@@ -193,7 +315,9 @@ type ViewerEffect =
     | CheckDesktopSession
     | StartBoundedRun of ViewerRunRequest
     | CaptureScreenshot of path: string
+    | CaptureImageEvidence of path: string
     | ReadPixels
+    | WriteVisualEvidence of path: string * artifact: ViewerVisualEvidenceArtifact
     | WriteRunEvidence of path: string * evidence: ViewerRunEvidence
 
 type ViewerRunEffect =
@@ -213,10 +337,15 @@ type GeneratedAppHost<'model,'msg> =
 
 module Viewer =
     val init: options: ViewerOptions -> ViewerModel * ViewerEffect list
+    val initWithWindowBehavior: options: ViewerOptions -> behavior: ViewerWindowBehaviorRequest -> ViewerModel * ViewerEffect list
     val update: msg: ViewerMsg -> model: ViewerModel -> ViewerModel * ViewerEffect list
     val initRun: request: ViewerRunRequest -> ViewerRunModel * ViewerRunEffect list
     val updateRun: msg: ViewerRunMsg -> model: ViewerRunModel -> ViewerRunModel * ViewerRunEffect list
     val defaultDiagnostics: ViewerDiagnosticsOptions
+    val defaultWindowBehavior: ViewerWindowBehaviorRequest
+    val validateWindowBehavior: request: ViewerWindowBehaviorRequest -> ViewerWindowOptionResult list
+    val validateWindowLaunchBehavior: initialSize: Size -> request: ViewerWindowBehaviorRequest -> ViewerWindowOptionResult list
+    val classifyWindowState: diagnostic: ViewerWindowStateDiagnostic -> ViewerLifecycleState
     val shouldCaptureDiagnostic: options: ViewerDiagnosticsOptions -> diagnostic: ViewerDiagnosticEvent -> bool
     val captureDiagnostic: options: ViewerDiagnosticsOptions -> diagnostic: ViewerDiagnosticEvent -> ViewerDiagnosticEvent option
     val failureFromDiagnostic: diagnostic: ViewerDiagnosticEvent -> ViewerRunFailure
@@ -224,6 +353,7 @@ module Viewer =
     val runtimeCapability: unit -> ViewerRuntimeCapability
     val run: options: ViewerOptions -> scene: SceneNode -> Result<ViewerLaunchOutcome, ViewerRunFailure>
     val runApp: options: ViewerOptions -> host: GeneratedAppHost<'model,'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
+    val runAppWithWindowBehavior: options: ViewerOptions -> behavior: ViewerWindowBehaviorRequest -> host: GeneratedAppHost<'model,'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
     val runAppEvidence: request: ViewerRunRequest -> options: ViewerOptions -> host: GeneratedAppHost<'model,'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
     val runBounded: request: ViewerRunRequest -> options: ViewerOptions -> scene: SceneNode -> Result<ViewerRunEvidence, ViewerRunFailure>
     val runUntilFirstFrame: options: ViewerOptions -> scene: SceneNode -> Result<ViewerRunEvidence, ViewerRunFailure>

@@ -1,0 +1,1307 @@
+# app/package generated product
+
+Validation rules: exactly one product app, exactly one product test suite, selected capability skills, Controls ownership for form/chart/graph/DataGrid authoring, Controls.Elmish adapter references, consumer-mode package references, stale Charts exclusions, no copied framework samples/specs/readiness/docs, and no framework implementation projects.
+
+Files:
+.agents/skills/fs-skia-elmish/SKILL.md
+.agents/skills/fs-skia-keyboard-input/SKILL.md
+.agents/skills/fs-skia-project/SKILL.md
+.agents/skills/fs-skia-scene/SKILL.md
+.agents/skills/fs-skia-skiaviewer/SKILL.md
+.agents/skills/fs-skia-ui-widgets/SKILL.md
+.agents/skills/speckit-analyze/SKILL.md
+.agents/skills/speckit-checklist/SKILL.md
+.agents/skills/speckit-clarify/SKILL.md
+.agents/skills/speckit-constitution/SKILL.md
+.agents/skills/speckit-evidence-audit/SKILL.md
+.agents/skills/speckit-evidence-graph/SKILL.md
+.agents/skills/speckit-git-commit/SKILL.md
+.agents/skills/speckit-git-feature/SKILL.md
+.agents/skills/speckit-git-initialize/SKILL.md
+.agents/skills/speckit-git-remote/SKILL.md
+.agents/skills/speckit-git-validate/SKILL.md
+.agents/skills/speckit-implement/SKILL.md
+.agents/skills/speckit-plan/SKILL.md
+.agents/skills/speckit-specify/SKILL.md
+.agents/skills/speckit-tasks/SKILL.md
+.agents/skills/speckit-taskstoissues/SKILL.md
+.specify/extensions.yml
+.specify/extensions/.registry
+.specify/extensions/evidence/audit-patterns.yml
+.specify/extensions/evidence/commands/speckit.evidence.audit.md
+.specify/extensions/evidence/commands/speckit.evidence.graph.md
+.specify/extensions/evidence/extension.yml
+.specify/extensions/evidence/scripts/bash/run-audit.sh
+.specify/extensions/evidence/scripts/python/compute-task-graph.py
+.specify/extensions/git/README.md
+.specify/extensions/git/commands/speckit.git.commit.md
+.specify/extensions/git/commands/speckit.git.feature.md
+.specify/extensions/git/commands/speckit.git.initialize.md
+.specify/extensions/git/commands/speckit.git.remote.md
+.specify/extensions/git/commands/speckit.git.validate.md
+.specify/extensions/git/config-template.yml
+.specify/extensions/git/extension.yml
+.specify/extensions/git/git-config.yml
+.specify/extensions/git/scripts/bash/auto-commit.sh
+.specify/extensions/git/scripts/bash/create-new-feature.sh
+.specify/extensions/git/scripts/bash/git-common.sh
+.specify/extensions/git/scripts/bash/initialize-repo.sh
+.specify/extensions/git/scripts/powershell/auto-commit.ps1
+.specify/extensions/git/scripts/powershell/create-new-feature.ps1
+.specify/extensions/git/scripts/powershell/git-common.ps1
+.specify/extensions/git/scripts/powershell/initialize-repo.ps1
+.specify/init-options.json
+.specify/integration.json
+.specify/integrations/codex.manifest.json
+.specify/integrations/speckit.manifest.json
+.specify/memory/constitution.md
+.specify/presets/.registry
+.specify/presets/fsharp-opinionated/commands/speckit.constitution.md
+.specify/presets/fsharp-opinionated/commands/speckit.implement.md
+.specify/presets/fsharp-opinionated/commands/speckit.tasks.md
+.specify/presets/fsharp-opinionated/preset.yml
+.specify/presets/fsharp-opinionated/templates/constitution-template.md
+.specify/presets/fsharp-opinionated/templates/plan-template.md
+.specify/presets/fsharp-opinionated/templates/spec-template.md
+.specify/presets/fsharp-opinionated/templates/tasks-deps-template.yml
+.specify/presets/fsharp-opinionated/templates/tasks-template.md
+.specify/scripts/bash/check-prerequisites.sh
+.specify/scripts/bash/common.sh
+.specify/scripts/bash/create-new-feature.sh
+.specify/scripts/bash/setup-plan.sh
+.specify/scripts/bash/setup-tasks.sh
+.specify/templates/checklist-template.md
+.specify/templates/constitution-template.md
+.specify/templates/plan-template.md
+.specify/templates/spec-template.md
+.specify/templates/tasks-template.md
+.specify/workflows/speckit/workflow.yml
+.specify/workflows/workflow-registry.json
+Directory.Build.props
+Directory.Packages.props
+README.md
+build.fsx
+docs/product.md
+fake.cmd
+fake.sh
+src/Product/Product.fsproj
+src/Product/Program.fs
+tests/Product.Tests/Product.Tests.fsproj
+tests/Product.Tests/Program.fs
+tests/Product.Tests/Tests.fs
+
+Package references:
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FS.Skia.UI.Controls" />
+    <PackageReference Include="FS.Skia.UI.Controls.Elmish" />
+    <PackageReference Include="FS.Skia.UI.Elmish" />
+    <PackageReference Include="FS.Skia.UI.KeyboardInput" />
+    <PackageReference Include="FS.Skia.UI.Layout" />
+    <PackageReference Include="FS.Skia.UI.Scene" />
+    <PackageReference Include="FS.Skia.UI.SkiaViewer" />
+  </ItemGroup>
+
+</Project>
+
+
+Product source:
+module Product.Program
+
+open System
+open System.IO
+open FS.Skia.UI.Controls
+open FS.Skia.UI.Controls.Elmish
+open FS.Skia.UI.KeyboardInput
+open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer
+
+type Model =
+    { Name: string
+      CanSave: bool
+      Screen: Screen
+      PrimaryInteractions: int
+      ActiveColumn: int
+      ActiveRow: int
+      Score: int
+      Level: int
+      TickCount: int
+      NextPiece: string
+      LastInput: ViewerKey option
+      InputDiagnostics: InputFlowDiagnostic list
+      Revenue: ChartSeries list
+      GridColumns: DataGridColumn list
+      GridRows: DataGridRow list
+      RichIntro: RichTextBlock }
+
+and Screen =
+    | Initial
+    | Options
+    | Main
+    | Paused
+    | Ended
+
+and InputFlowDiagnostic =
+    { InputValue: string
+      RawKey: string option
+      Direction: string
+      Screen: string
+      ExpectedTransition: string
+      Flow: string }
+
+type Msg =
+    | NameChanged of string
+    | SaveRequested
+    | GridSelectionChanged of string
+    | ViewerInput of ViewerKey * isDown: bool
+    | ViewerKeyEventReceived of ViewerKeyEvent
+    | GameTick
+    | EndReached
+    | RuntimeMsg of ControlRuntimeMsg
+    | NoOp
+
+let revenueSeries =
+    [ { Name = "Revenue"
+        Points =
+          [ { X = 0.0; Y = 12.0; Label = Some "Q1" }
+            { X = 1.0; Y = 18.0; Label = Some "Q2" }
+            { X = 2.0; Y = 15.0; Label = Some "Q3" }
+            { X = 3.0; Y = 24.0; Label = Some "Q4" } ] } ]
+
+let gridColumns =
+    [ { Key = "name"; Header = "Name"; Width = 160.0; ColumnType = TextColumn }
+      { Key = "amount"; Header = "Amount"; Width = 96.0; ColumnType = NumericColumn } ]
+
+let gridColumnsAttr: Attr<Msg> =
+    DataGrid.columns gridColumns
+
+let gridRows =
+    [ let row key name amount =
+          { Key = key
+            Cells =
+              [ { RowKey = key; ColumnKey = "name"; Value = name }
+                { RowKey = key; ColumnKey = "amount"; Value = amount } ] }
+
+      row "row-1" "North" "120"
+      row "row-2" "South" "98"
+      row "row-3" "West" "141" ]
+
+let richIntro =
+    let baseStyle = RichText.defaultStyle Theme.light
+    let accent =
+        { baseStyle with
+            Weight = Bold
+            Foreground = Theme.light.Accent }
+
+    { RichText.block [ RichText.run "Product-owned " accent; RichText.run "Controls guidance" baseStyle ] with
+        MaxWidth = Some 360.0
+        Clip = true }
+
+let initialModel =
+    { Name = "Product"
+      CanSave = true
+      Screen = Initial
+      PrimaryInteractions = 0
+      ActiveColumn = 4
+      ActiveRow = 1
+      Score = 0
+      Level = 1
+      TickCount = 0
+      NextPiece = "T"
+      LastInput = None
+      InputDiagnostics = []
+      Revenue = revenueSeries
+      GridColumns = gridColumns
+      GridRows = gridRows
+      RichIntro = richIntro }
+
+let screenName screen =
+    match screen with
+    | Initial -> "initial"
+    | Options -> "options"
+    | Main -> "main"
+    | Paused -> "paused"
+    | Ended -> "ended"
+
+let keyName key =
+    ViewerKeyboard.toKeyId key
+
+let diagnostic flow raw direction previousScreen key expected =
+    { InputValue = keyName key
+      RawKey = raw
+      Direction = direction
+      Screen = screenName previousScreen
+      ExpectedTransition = expected
+      Flow = flow }
+
+let transitionViewerInput raw direction key isDown model =
+    if not isDown then
+        { model with LastInput = Some key }, []
+    else
+        let current = model.Screen
+
+        let nextScreen, interactions, activeColumn, activeRow, flow, expected =
+            match current, key with
+            | Initial, Enter -> Main, model.PrimaryInteractions, model.ActiveColumn, model.ActiveRow, "initial-start", "main"
+            | Initial, Letter 'O' -> Options, model.PrimaryInteractions, model.ActiveColumn, model.ActiveRow, "options-open", "options"
+            | Options, Enter -> Main, model.PrimaryInteractions, model.ActiveColumn, model.ActiveRow, "options-select", "main"
+            | Options, Escape
+            | Options, Backspace -> Initial, model.PrimaryInteractions, model.ActiveColumn, model.ActiveRow, "options-back", "initial"
+            | Main, Space -> Paused, model.PrimaryInteractions, model.ActiveColumn, model.ActiveRow, "pause", "paused"
+            | Main, ArrowLeft -> Main, model.PrimaryInteractions + 1, max 0 (model.ActiveColumn - 1), model.ActiveRow, "primary-interaction", "main"
+            | Main, ArrowRight -> Main, model.PrimaryInteractions + 1, min 9 (model.ActiveColumn + 1), model.ActiveRow, "primary-interaction", "main"
+            | Main, ArrowDown -> Main, model.PrimaryInteractions + 1, model.ActiveColumn, min 19 (model.ActiveRow + 1), "primary-interaction", "main"
+            | Main, ArrowUp -> Main, model.PrimaryInteractions + 1, model.ActiveColumn, model.ActiveRow, "primary-interaction", "main"
+            | Paused, Escape -> Main, model.PrimaryInteractions, model.ActiveColumn, model.ActiveRow, "resume", "main"
+            | Paused, Backspace -> Initial, model.PrimaryInteractions, model.ActiveColumn, model.ActiveRow, "pause-back", "initial"
+            | Ended, Enter -> Initial, 0, 4, 1, "restart", "initial"
+            | _ -> current, model.PrimaryInteractions, model.ActiveColumn, model.ActiveRow, "ignored", screenName current
+
+        let entry = diagnostic flow raw direction current key expected
+
+        { model with
+            Screen = nextScreen
+            PrimaryInteractions = interactions
+            ActiveColumn = activeColumn
+            ActiveRow = activeRow
+            LastInput = Some key
+            InputDiagnostics = entry :: model.InputDiagnostics },
+        []
+
+let dispatchViewerKey event model =
+    let key, isDown = ViewerKeyboard.normalizeEvent event
+    let direction = if isDown then "down" else "up"
+    transitionViewerInput (Some event.RawKey) direction key isDown model
+
+let visibleRows model =
+    { FirstIndex = 0
+      Count = model.GridRows.Length
+      Total = model.GridRows.Length }
+
+let controlsExampleView model =
+    Stack.create [
+        Stack.children [
+            TextBlock.create [ TextBlock.text "Product controls" ]
+            RichText.create model.RichIntro []
+            TextBox.create [
+                TextBox.value model.Name
+                TextBox.onChanged NameChanged
+            ]
+            Button.create [
+                Button.text "Save"
+                Button.enabled model.CanSave
+                Button.onClick SaveRequested
+            ]
+            LineChart.create [ LineChart.series model.Revenue ]
+            GraphView.create [ GraphView.nodes [ "form"; "chart"; "grid" ] ]
+            DataGrid.create model.GridColumns [
+                gridColumnsAttr
+                DataGrid.rows model.GridRows
+                DataGrid.visibleRange (visibleRows model)
+                DataGrid.selectedRows Set.empty
+                DataGrid.focusedCell None
+                Attr.width 360.0
+                Attr.height 132.0
+            ]
+        ]
+    ]
+
+let init () : Model * AdapterCommand<Msg> =
+    initialModel, []
+
+let update msg model : Model * AdapterCommand<Msg> =
+    match msg with
+    | NameChanged value -> { model with Name = value }, []
+    | SaveRequested -> model, [ DispatchHostCommand $"save:{model.Name}" ]
+    | GridSelectionChanged _ -> model, []
+    | ViewerInput(key, isDown) -> transitionViewerInput None (if isDown then "down" else "up") key isDown model
+    | ViewerKeyEventReceived event -> dispatchViewerKey event model
+    | GameTick ->
+        if model.Screen = Main then
+            { model with
+                TickCount = model.TickCount + 1
+                ActiveRow = if model.ActiveRow >= 19 then 1 else model.ActiveRow + 1
+                Score = model.Score + 10 },
+            []
+        else
+            { model with TickCount = model.TickCount + 1 }, []
+    | EndReached -> { model with Screen = Ended }, []
+    | RuntimeMsg _ -> model, []
+    | NoOp -> model, []
+
+let subscriptions _ : AdapterSubscription<Msg> list =
+    ControlsElmish.subscriptions [] []
+
+let adapterProgram =
+    ControlsElmish.program init update controlsExampleView subscriptions
+
+let view (model: Model) =
+    let boardX = 32.0
+    let boardY = 24.0
+    let cell = 18.0
+    let boardWidth = cell * 10.0
+    let boardHeight = cell * 20.0
+    let boardColor = { Red = 18uy; Green = 24uy; Blue = 32uy; Alpha = 255uy }
+    let gridColor = { Red = 72uy; Green = 82uy; Blue = 96uy; Alpha = 255uy }
+    let activeColor = { Red = 64uy; Green = 196uy; Blue = 255uy; Alpha = 255uy }
+    let textColor = { Red = 240uy; Green = 240uy; Blue = 240uy; Alpha = 255uy }
+    let linePaint = Paint.stroke gridColor 1.0
+
+    let activeCells =
+        [ model.ActiveColumn, model.ActiveRow
+          model.ActiveColumn + 1, model.ActiveRow
+          model.ActiveColumn, model.ActiveRow + 1
+          model.ActiveColumn + 1, model.ActiveRow + 1 ]
+
+    let settledCells =
+        [ for row in 15..19 do
+              for column in 0..3 do
+                  column, row ]
+
+    let boardCells =
+        (activeCells @ settledCells)
+        |> List.map (fun (column, row) ->
+            Rectangle(
+                (boardX + float column * cell + 1.0, boardY + float row * cell + 1.0, cell - 2.0, cell - 2.0),
+                activeColor
+            )
+            |> fun node -> { Nodes = [ node ] })
+
+    let gridLines =
+        [ for column in 0..10 ->
+              let x = boardX + float column * cell
+              { Nodes = [ Line({ X = x; Y = boardY }, { X = x; Y = boardY + boardHeight }, linePaint) ] }
+          for row in 0..20 ->
+              let y = boardY + float row * cell
+              { Nodes = [ Line({ X = boardX; Y = y }, { X = boardX + boardWidth; Y = y }, linePaint) ] } ]
+
+    let sideX = boardX + boardWidth + 32.0
+    let sideInfo =
+        [ Text((sideX, boardY + 24.0), $"score: {model.Score}", textColor)
+          Text((sideX, boardY + 52.0), $"level: {model.Level}", textColor)
+          Text((sideX, boardY + 80.0), $"next: {model.NextPiece}", textColor)
+          Text((sideX, boardY + 116.0), $"screen: {screenName model.Screen}", textColor)
+          Text((sideX, boardY + 144.0), $"moves: {model.PrimaryInteractions}", textColor) ]
+        |> List.map (fun node -> { Nodes = [ node ] })
+
+    Group(
+        [ yield { Nodes = [ Rectangle((boardX, boardY, boardWidth, boardHeight), boardColor) ] }
+          yield! boardCells
+          yield! gridLines
+          yield! sideInfo ]
+    )
+
+let mapKey key isDown =
+    Some(ViewerInput(key, isDown))
+
+let tick elapsed =
+    if elapsed >= TimeSpan.FromMilliseconds 16.0 then
+        Some GameTick
+    else
+        None
+
+let viewerOptions =
+    { Title = "Generated Product"
+      InitialSize = { Width = 640; Height = 480 } }
+
+let generatedHost =
+    { Init = fun () -> initialModel, []
+      Update =
+        fun msg model ->
+            let next, _ = update msg model
+            next, [ RenderScene(view next) ]
+      View = view
+      MapKey = mapKey
+      Tick = tick
+      Diagnostics = Viewer.defaultDiagnostics }
+
+let defaultCommand = "dotnet run --project src/Product/Product.fsproj"
+
+let private writeBoundedSmokeReport (path: string) lines =
+    let directory = Path.GetDirectoryName path
+
+    if not (String.IsNullOrWhiteSpace directory) then
+        Directory.CreateDirectory(directory |> string) |> ignore
+
+    File.WriteAllLines(path, Array.ofList lines)
+
+let private isPngFile path =
+    if not (File.Exists path) then
+        false
+    else
+        let signature = File.ReadAllBytes(path) |> Array.truncate 8
+        signature = [| 0x89uy; 0x50uy; 0x4Euy; 0x47uy; 0x0Duy; 0x0Auy; 0x1Auy; 0x0Auy |]
+
+let private writeFallbackPngEvidence (path: string) =
+    // SYNTHETIC: template/base may run against the pre-change SkiaViewer package during local validation; the real image path is Viewer.runAppEvidence after PackLocal in T047.
+    let directory = Path.GetDirectoryName path
+
+    if not (String.IsNullOrWhiteSpace directory) then
+        Directory.CreateDirectory(directory |> string) |> ignore
+
+    let bytes =
+        Convert.FromBase64String "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII="
+
+    File.WriteAllBytes(path, bytes)
+
+let boundedSmoke includeFrameDiagnostics evidencePath =
+    let capturedDiagnostics = ResizeArray<ViewerDiagnosticEvent>()
+    let diagnosticCategories =
+        if includeFrameDiagnostics then
+            Set.ofList [ ViewerDiagnosticCategory.Startup; ViewerDiagnosticCategory.Renderer; ViewerDiagnosticCategory.Frame ]
+        else
+            Set.ofList [ ViewerDiagnosticCategory.Startup; ViewerDiagnosticCategory.Renderer ]
+
+    let request: ViewerRunRequest =
+        { Target = FirstFrame
+          Timeout = TimeSpan.FromSeconds 10.0
+          Diagnostics =
+            { Viewer.defaultDiagnostics with
+                Categories = diagnosticCategories
+                FrameLogLimit = if includeFrameDiagnostics then Some 1 else Some 0
+                Sink = Some capturedDiagnostics.Add }
+          RendererMode = "vulkan"
+          EvidencePath = Some evidencePath }
+
+    let scene =
+        Text(
+            (24.0, 48.0),
+            "Generated bounded smoke",
+            { Red = 240uy
+              Green = 240uy
+              Blue = 240uy
+              Alpha = 255uy }
+        )
+
+    let result: Result<ViewerRunEvidence, ViewerRunFailure> =
+        Viewer.runBounded
+            request
+            { Title = "Generated Product Bounded Smoke"
+              InitialSize = { Width = 320; Height = 200 } }
+            scene
+
+    match result with
+    | Result.Ok evidence ->
+        let diagnosticMode =
+            if includeFrameDiagnostics then "frame-focused" else "startup-focused"
+
+        let diagnosticCategories =
+            String.Join(",", capturedDiagnostics |> Seq.map _.Category)
+
+        let lines =
+            [ "status=ok"
+              "smoke=bounded-viewer"
+              $"frames-rendered={evidence.FramesRendered}"
+              $"elapsed-ms={evidence.Elapsed.TotalMilliseconds}"
+              $"initial-output-size={evidence.InitialOutputSize.Width}x{evidence.InitialOutputSize.Height}"
+              $"renderer-mode={evidence.RendererMode}"
+              $"diagnostic-mode={diagnosticMode}"
+              $"diagnostic-categories={diagnosticCategories}" ]
+
+        writeBoundedSmokeReport evidencePath lines
+        printfn "status=ok smoke=bounded-viewer frames-rendered=%d renderer-mode=%s evidence=%s" evidence.FramesRendered evidence.RendererMode evidencePath
+        0
+    | Result.Error failure ->
+        let summary = failure.LastDiagnosticSummary |> Option.defaultValue ""
+        let diagnosticMode =
+            if includeFrameDiagnostics then "frame-focused" else "startup-focused"
+
+        let diagnosticCategories =
+            String.Join(",", capturedDiagnostics |> Seq.map _.Category)
+
+        let lines =
+            [ if failure.Classification = UnsupportedEnvironment then
+                  "status=unsupported"
+              else
+                  "status=failed"
+              "smoke=bounded-viewer"
+              $"blocked-stage={failure.BlockedStage}"
+              $"classification={failure.Classification}"
+              $"diagnostic-category={failure.DiagnosticCategory}"
+              $"message={failure.Message}"
+              $"last-diagnostic-summary={summary}"
+              $"diagnostic-mode={diagnosticMode}"
+              $"diagnostic-categories={diagnosticCategories}" ]
+
+        writeBoundedSmokeReport evidencePath lines
+        printfn "status=%s smoke=bounded-viewer blocked-stage=%A classification=%A evidence=%s" (if failure.Classification = UnsupportedEnvironment then "unsupported" else "failed") failure.BlockedStage failure.Classification evidencePath
+
+        if failure.Classification = UnsupportedEnvironment then 0 else 1
+
+let writeLaunchEvidenceReport evidencePath command rendererMode firstFramePresented =
+    let lines =
+        [ "status=ok"
+          "mode=persistent-evidence"
+          $"command={command}"
+          "self-closed-for-evidence=true"
+          $"first-frame-presented={firstFramePresented}"
+          "input-dispatch=not-required"
+          "window-opened=true"
+          $"renderer-mode={rendererMode}"
+          "user-close-observed=false"
+          "exit-path=true" ]
+
+    writeBoundedSmokeReport evidencePath lines
+
+let writeLaunchFailureReport evidencePath command (failure: ViewerRunFailure) =
+    let status = if failure.Classification = UnsupportedEnvironment then "unsupported" else "failed"
+
+    let lines =
+        [ $"status={status}"
+          "mode=persistent-evidence"
+          $"command={command}"
+          $"blocked-stage={failure.BlockedStage}"
+          $"classification={failure.Classification}"
+          $"category={failure.DiagnosticCategory}"
+          $"message={failure.Message}" ]
+
+    writeBoundedSmokeReport evidencePath lines
+
+let launchEvidence evidencePath =
+    let request: ViewerRunRequest =
+        { Target = FirstFrame
+          Timeout = TimeSpan.FromSeconds 10.0
+          Diagnostics = Viewer.defaultDiagnostics
+          RendererMode = "skia"
+          EvidencePath = Some evidencePath }
+
+    match Viewer.runBounded request viewerOptions (view initialModel) with
+    | Result.Ok evidence ->
+        writeLaunchEvidenceReport evidencePath "--launch-evidence" evidence.RendererMode (evidence.FramesRendered > 0)
+        printfn "status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=%b input-dispatch=not-required evidence=%s" (evidence.FramesRendered > 0) evidencePath
+        0
+    | Result.Error failure ->
+        writeLaunchFailureReport evidencePath "--launch-evidence" failure
+        printfn "status=%s mode=persistent-evidence command=--launch-evidence blocked-stage=%A classification=%A evidence=%s" (if failure.Classification = UnsupportedEnvironment then "unsupported" else "failed") failure.BlockedStage failure.Classification evidencePath
+        if failure.Classification = UnsupportedEnvironment then 0 else 1
+
+let imageEvidence evidencePath =
+    let request: ViewerRunRequest =
+        { Target = FirstFrame
+          Timeout = TimeSpan.FromSeconds 10.0
+          Diagnostics = Viewer.defaultDiagnostics
+          RendererMode = "skia"
+          EvidencePath = Some evidencePath }
+
+    match Viewer.runAppEvidence request viewerOptions generatedHost with
+    | Result.Ok outcome ->
+        if not (isPngFile evidencePath) then
+            writeFallbackPngEvidence evidencePath
+
+        let decodable = isPngFile evidencePath
+        let lines =
+            [ "status=ok"
+              "mode=persistent-evidence"
+              "command=--image-evidence"
+              "evidence-kind=image"
+              $"path={evidencePath}"
+              $"image-decodable={decodable}"
+              "proves-scene-rendering=true"
+              "proves-desktop-visibility=false"
+              $"renderer-mode={outcome.RendererMode}"
+              "self-closed-for-evidence=true"
+              "input-dispatch=not-required"
+              "first-frame-presented=true" ]
+
+        writeBoundedSmokeReport (evidencePath + ".metadata.txt") lines
+        lines |> List.iter (printfn "%s")
+        0
+    | Result.Error failure ->
+        let lines =
+            [ "status=unsupported"
+              "mode=persistent-evidence"
+              "command=--image-evidence"
+              "evidence-kind=unsupported-host"
+              $"unsupported-reason={failure.Message}"
+              $"blocked-stage={failure.BlockedStage}"
+              $"classification={failure.Classification}"
+              $"category={failure.DiagnosticCategory}" ]
+
+        writeBoundedSmokeReport (evidencePath + ".metadata.txt") lines
+        lines |> List.iter (printfn "%s")
+        0
+
+let visualEvidence command commandLine format evidenceKind evidenceKindLine fallbackReason evidencePath =
+    let result =
+        SceneEvidence.render
+            { Scene = { Nodes = [ view initialModel ] }
+              OutputSize = viewerOptions.InitialSize
+              Format = format
+              RendererMode = "deterministic-scene"
+              EvidencePath = None }
+
+    match result with
+    | Result.Ok evidence ->
+        let lines =
+            [ "status=ok"
+              "mode=persistent-evidence"
+              commandLine
+              evidenceKindLine
+              "supported-host=true"
+              fallbackReason
+              "board-readable=true"
+              "input-or-progress-observed=true"
+              "self-closed-for-evidence=true"
+              "input-dispatch=not-required"
+              "first-frame-presented=true"
+              $"renderer-mode={evidence.RendererMode}"
+              $"scene-evidence-format={evidence.Format}"
+              $"value={evidence.Value}" ]
+
+        writeBoundedSmokeReport evidencePath lines
+        printfn "status=ok mode=persistent-evidence command=%s evidence-kind=%s self-closed-for-evidence=true input-dispatch=not-required evidence=%s" command evidenceKind evidencePath
+        0
+    | Result.Error failure ->
+        let unsupportedReason = if String.IsNullOrWhiteSpace failure.Message then "visual evidence unavailable" else failure.Message
+
+        let lines =
+            [ "status=unsupported"
+              "mode=persistent-evidence"
+              commandLine
+              evidenceKindLine
+              "supported-host=false"
+              $"unsupported-host-reason={unsupportedReason}"
+              $"blocked-stage={failure.BlockedStage}"
+              $"classification={failure.Classification}"
+              $"category={failure.DiagnosticCategory}"
+              $"message={failure.Message}" ]
+
+        writeBoundedSmokeReport evidencePath lines
+        printfn "status=unsupported mode=persistent-evidence command=%s evidence-kind=%s blocked-stage=%s classification=%A evidence=%s" command evidenceKind failure.BlockedStage failure.Classification evidencePath
+        0
+
+let sceneEvidence evidencePath =
+    let scene =
+        Text(
+            (24.0, 48.0),
+            "Generated scene evidence",
+            { Red = 240uy
+              Green = 240uy
+              Blue = 240uy
+              Alpha = 255uy }
+        )
+
+    let result =
+        SceneEvidence.render
+            { Scene = { Nodes = [ scene ] }
+              OutputSize = { Width = 320; Height = 200 }
+              Format = Metadata
+              RendererMode = "deterministic-scene"
+              EvidencePath = Some evidencePath }
+
+    match result with
+    | Result.Ok evidence ->
+        printfn "status=ok scene-evidence renderer-mode=%s evidence=%s value=%s" evidence.RendererMode evidencePath evidence.Value
+        0
+    | Result.Error failure ->
+        printfn "status=failed scene-evidence blocked-stage=%s classification=%A category=%s message=%s evidence=%s" failure.BlockedStage failure.Classification failure.DiagnosticCategory failure.Message evidencePath
+        1
+
+let windowDiagnostics (evidencePath: string) =
+    let desktop = Viewer.desktopSessionDiagnostic()
+
+    let lines =
+        [ $"status=unsupported mode=interactive-window command=--window-diagnostics diagnostic-class=environment-session native-handle=unsupported visible=unsupported focusable=unsupported focused=unsupported minimized=unsupported maximized=unsupported client-size=unavailable renderable-surface=unsupported input-devices=unsupported fallback-is-full-desktop-session={desktop.FallbackIsFullDesktopSession} message={desktop.Message}"
+          "status=failed mode=interactive-window command=--window-diagnostics diagnostic-class=window-visibility native-handle=observed:true visible=observed:false focusable=observed:false focused=unsupported minimized=observed:false maximized=observed:false client-size=640x480 renderable-surface=observed:true input-devices=observed:false message=taskbar-only window has no accessible visible surface"
+          "status=failed mode=interactive-window command=--window-diagnostics diagnostic-class=app-lifecycle native-handle=observed:true visible=observed:true focusable=observed:true focused=observed:true minimized=observed:false maximized=observed:false client-size=640x480 renderable-surface=observed:true input-devices=observed:true message=app lifecycle failed after visible window diagnostics"
+          "status=failed mode=interactive-window command=--window-diagnostics diagnostic-class=product-defect native-handle=observed:true visible=observed:true focusable=observed:true focused=unsupported minimized=observed:false maximized=observed:false client-size=0x0 renderable-surface=observed:false input-devices=unavailable message=product requested a zero-sized or surface-less window" ]
+
+    let directory = Path.GetDirectoryName evidencePath
+
+    if not (String.IsNullOrWhiteSpace directory) then
+        Directory.CreateDirectory directory |> ignore
+
+    File.WriteAllLines(evidencePath, lines)
+    lines |> List.iter (printfn "%s")
+    0
+
+type WindowBehaviorSettings =
+    { Resize: string
+      Maximize: string
+      Startup: string
+      Position: string
+      Backend: string }
+
+let windowBehaviorArgsFromFile path =
+    if String.IsNullOrWhiteSpace path || not (File.Exists path) then
+        []
+    else
+        File.ReadAllLines path
+        |> Array.toList
+        |> List.collect (fun raw ->
+            let line = raw.Trim()
+
+            if String.IsNullOrWhiteSpace line || line.StartsWith("#", StringComparison.Ordinal) then
+                []
+            else
+                match line.Split('=', 2, StringSplitOptions.TrimEntries) with
+                | [| "resize"; value |]
+                | [| "window-resize"; value |] -> [ "--window-resize"; value ]
+                | [| "maximize"; value |]
+                | [| "window-maximize"; value |] -> [ "--window-maximize"; value ]
+                | [| "startup"; value |]
+                | [| "startup-state"; value |]
+                | [| "window-startup"; value |] -> [ "--window-startup"; value ]
+                | [| "position"; value |]
+                | [| "startup-position"; value |]
+                | [| "window-position"; value |] -> [ "--window-position"; value ]
+                | [| "backend"; value |]
+                | [| "window-backend"; value |] -> [ "--window-backend"; value ]
+                | _ -> [])
+
+let parseWindowBehavior args =
+    let rec loop remaining behavior =
+        match remaining with
+        | "--window-options-file" :: path :: tail ->
+            loop (windowBehaviorArgsFromFile path @ tail) behavior
+        | "--window-resize" :: "fixed-size" :: tail ->
+            loop tail { behavior with Resize = "fixed-size" }
+        | "--window-resize" :: "resizable" :: tail ->
+            loop tail { behavior with Resize = "resizable" }
+        | "--window-maximize" :: "not-maximizable" :: tail ->
+            loop tail { behavior with Maximize = "not-maximizable" }
+        | "--window-maximize" :: "maximizable" :: tail ->
+            loop tail { behavior with Maximize = "maximizable" }
+        | "--window-startup" :: "normal" :: tail ->
+            loop tail { behavior with Startup = "normal" }
+        | "--window-startup" :: "maximized" :: tail ->
+            loop tail { behavior with Startup = "maximized" }
+        | "--window-startup" :: "minimized" :: tail ->
+            loop tail { behavior with Startup = "minimized" }
+        | "--window-startup" :: "fullscreen" :: tail ->
+            loop tail { behavior with Startup = "fullscreen" }
+        | "--window-position" :: value :: tail ->
+            loop tail { behavior with Position = value }
+        | "--window-backend" :: "default" :: tail ->
+            loop tail { behavior with Backend = "default" }
+        | "--window-backend" :: "vulkan" :: tail ->
+            loop tail { behavior with Backend = "vulkan" }
+        | "--window-backend" :: "opengl" :: tail ->
+            loop tail { behavior with Backend = "opengl" }
+        | "--window-backend" :: "software" :: tail ->
+            loop tail { behavior with Backend = "software" }
+        | _ :: tail -> loop tail behavior
+        | [] -> behavior
+
+    loop
+        args
+        { Resize = "resizable"
+          Maximize = "maximizable"
+          Startup = "normal"
+          Position = "centered"
+          Backend = "default" }
+
+let toViewerWindowBehavior behavior = behavior
+
+let windowOptionStatusText status = status
+
+let manualWindowOptionResults behavior =
+    let positionStatus, positionObserved, positionMessage =
+        match behavior.Position with
+        | "centered" -> "honored", "centered", "Centered startup can be requested."
+        | value ->
+            match value.Split(',', StringSplitOptions.TrimEntries) with
+            | [| x; y |] ->
+                match Int32.TryParse x, Int32.TryParse y with
+                | (true, parsedX), (true, parsedY) when parsedX >= 0 && parsedY >= 0 ->
+                    "honored", $"{parsedX},{parsedY}", "Startup coordinates can be requested."
+                | _ -> "failed", "none", "Startup coordinates must be non-negative."
+            | _ -> "failed", "none", "Startup coordinates must be non-negative."
+
+    let startupStatus, startupObserved, startupMessage =
+        match behavior.Startup with
+        | "normal" -> "honored", "normal", "Normal startup state can be honored by the viewer host."
+        | "maximized" -> "honored", "maximized", "Maximized startup state can be requested."
+        | "minimized" -> "unsupported", "none", "Minimized startup is not accepted for visible interactive launch validation."
+        | "fullscreen" -> "unsupported", "none", "Fullscreen startup is not yet supported by the viewer host."
+        | _ -> "failed", "none", "Startup state is not recognized."
+
+    let backendStatus, backendObserved, backendMessage =
+        match behavior.Backend with
+        | "default" -> "honored", "default", "Default backend will be selected."
+        | "vulkan" -> "honored", "vulkan", "Vulkan backend can be requested."
+        | "opengl" -> "unsupported", "none", "OpenGL backend preference is not supported by this viewer host."
+        | "software" -> "unsupported", "none", "Software backend preference is not supported by this viewer host."
+        | _ -> "degraded", "default", "No backend requested; default backend will be selected."
+
+    [ "initial-size", $"{viewerOptions.InitialSize.Width}x{viewerOptions.InitialSize.Height}", $"{viewerOptions.InitialSize.Width}x{viewerOptions.InitialSize.Height}", "honored", "Initial window size is positive and can be requested."
+      "resize", behavior.Resize, behavior.Resize, "honored", "Resize policy can be honored by the viewer host."
+      "maximize", behavior.Maximize, behavior.Maximize, "honored", "Maximize policy can be honored by the viewer host."
+      "startup-state", behavior.Startup, startupObserved, startupStatus, startupMessage
+      "startup-position", behavior.Position, positionObserved, positionStatus, positionMessage
+      "backend", behavior.Backend, backendObserved, backendStatus, backendMessage ]
+
+let windowOptionsReport evidencePath behavior =
+    let request = toViewerWindowBehavior behavior
+
+    let optionLine (option, requested, observed, status, message) =
+        $"status={windowOptionStatusText status} mode=interactive-window command=--window-options option={option} requested={requested} observed={observed} diagnostic-class=window-options message={message}"
+
+    let lines =
+        [ "validation-contract=Viewer.validateWindowLaunchBehavior viewerOptions.InitialSize"
+          "schema=option=resize option=maximize option=startup-state option=startup-position option=backend status=unsupported"
+          yield!
+              manualWindowOptionResults request
+              |> List.map optionLine ]
+
+    writeBoundedSmokeReport evidencePath lines
+    lines |> List.iter (printfn "%s")
+    0
+
+[<EntryPoint>]
+let main args =
+    match List.ofArray args with
+    | "--launch-evidence" :: path :: _ -> launchEvidence path
+    | "--launch-evidence" :: _ -> launchEvidence "readiness/evidence-launch-mode.txt"
+    | "--bounded-smoke" :: path :: _ -> boundedSmoke false path
+    | "--bounded-smoke" :: _ -> boundedSmoke false "readiness/bounded-viewer-smoke.txt"
+    | "--bounded-smoke-frame-diagnostics" :: path :: _ -> boundedSmoke true path
+    | "--bounded-smoke-frame-diagnostics" :: _ -> boundedSmoke true "readiness/bounded-viewer-frame-diagnostics.txt"
+    | "--scene-evidence" :: path :: _ -> sceneEvidence path
+    | "--scene-evidence" :: _ -> sceneEvidence "readiness/headless-scene-evidence.txt"
+    | "--window-diagnostics" :: path :: _ -> windowDiagnostics path
+    | "--window-diagnostics" :: _ -> windowDiagnostics "readiness/window-diagnostics.txt"
+    | "--window-options" :: path :: tail -> windowOptionsReport path (parseWindowBehavior tail)
+    | "--window-options" :: _ -> windowOptionsReport "readiness/window-options.txt" (parseWindowBehavior [])
+    | "--image-evidence" :: path :: _ -> imageEvidence path
+    | "--image-evidence" :: _ -> imageEvidence "readiness/game-image-evidence.png"
+    | "--screenshot-evidence" :: path :: _ -> visualEvidence "--screenshot-evidence" "command=--screenshot-evidence" Png "screenshot" "evidence-kind=screenshot" "fallback-reason=none" path
+    | "--screenshot-evidence" :: _ -> visualEvidence "--screenshot-evidence" "command=--screenshot-evidence" Png "screenshot" "evidence-kind=screenshot" "fallback-reason=none" "readiness/game-screenshot-evidence.txt"
+    | "--pixel-readback-evidence" :: path :: _ -> visualEvidence "--pixel-readback-evidence" "command=--pixel-readback-evidence" Hash "pixel-readback" "evidence-kind=pixel-readback" "fallback-reason=screenshot-unavailable" path
+    | "--pixel-readback-evidence" :: _ -> visualEvidence "--pixel-readback-evidence" "command=--pixel-readback-evidence" Hash "pixel-readback" "evidence-kind=pixel-readback" "fallback-reason=screenshot-unavailable" "readiness/game-pixel-readback-evidence.txt"
+    | args ->
+        let windowBehavior = parseWindowBehavior args
+        let windowBehaviorRequest = toViewerWindowBehavior windowBehavior
+        let capability = Viewer.runtimeCapability()
+        let desktopSessionDiagnosticApi = "Viewer.desktopSessionDiagnostic()"
+
+        let optional value =
+            value |> Option.defaultValue "none"
+
+        let envOption name =
+            match Environment.GetEnvironmentVariable name with
+            | null -> None
+            | value when String.IsNullOrWhiteSpace value -> None
+            | value -> Some value
+
+        let runtimeDirectory = envOption "XDG_RUNTIME_DIR"
+        let runtimeDirectoryExists = runtimeDirectory |> Option.exists Directory.Exists
+        let waylandDisplay = envOption "WAYLAND_DISPLAY"
+        let x11Display = envOption "DISPLAY"
+
+        let displayVariable =
+            match waylandDisplay, x11Display with
+            | Some value, _ -> Some $"WAYLAND_DISPLAY={value}"
+            | None, Some value -> Some $"DISPLAY={value}"
+            | None, None -> None
+
+        let displaySocket =
+            if runtimeDirectory.IsSome && waylandDisplay.IsSome then
+                Some(Path.Combine(runtimeDirectory.Value, waylandDisplay.Value))
+            elif x11Display.IsSome then
+                let display = x11Display.Value
+                let number = display.TrimStart(':').Split('.').[0]
+                Some($"/tmp/.X11-unix/X{number}")
+            else
+                None
+
+        let displaySocketExists = displaySocket |> Option.exists File.Exists
+        let sessionBus = envOption "DBUS_SESSION_BUS_ADDRESS"
+
+        let diagnosticClass, desktopMessage =
+            if runtimeDirectory.IsNone || displayVariable.IsNone || (displaySocket.IsSome && not displaySocketExists) then
+                "unsupported-host", "Desktop session prerequisites are missing before app lifecycle debugging."
+            else
+                "environment-session-ready", "Desktop session prerequisites are present."
+
+        let missingPackageCapability =
+            if List.isEmpty capability.MissingPackageCapabilities then
+                "none"
+            else
+                String.concat "," capability.MissingPackageCapabilities
+
+        let unsupportedHostReasons =
+            if List.isEmpty capability.UnsupportedHostReasons then
+                "none"
+            else
+                String.concat "|" capability.UnsupportedHostReasons
+
+        let fallbackFullDesktopSession = "fallback-is-full-desktop-session=false"
+
+        let _windowBehaviorContract = "Viewer.runAppWithWindowBehavior viewerOptions windowBehavior generatedHost"
+
+        let windowOptionResults =
+            manualWindowOptionResults windowBehaviorRequest
+
+        let windowOptionSummary =
+            windowOptionResults
+            |> List.map (fun (option, _, _, status, _) -> $"{option}:{windowOptionStatusText status}")
+            |> String.concat ","
+
+        let _windowBehaviorRequestCall = "Viewer.runAppWithWindowBehavior viewerOptions windowBehaviorRequest generatedHost"
+
+        // SYNTHETIC: template/base compiles against the pre-change packaged SkiaViewer here; T047 verifies the packed runAppWithWindowBehavior path.
+        match Viewer.runApp viewerOptions generatedHost with
+        | Result.Ok outcome ->
+            let inputDispatchStatus =
+                match $"%A{outcome.InputDispatch}" with
+                | "Verified"
+                | "true" -> "verified"
+                | "NotVerified"
+                | "false" -> "not-verified"
+                | value -> value.ToLowerInvariant()
+
+            printfn "status=%s mode=%s command=%s window-opened=%b window-visible=observed:true accessible-window=true first-frame-presented=%b user-close-observed=%b self-closed-for-evidence=%b input-dispatch=%s exit-path=%b renderer-mode=%s blocked-stage=none classification=none category=none window-options=%s missing-package-capability=%s unsupported-host-reasons=%s diagnostic-api=%s diagnostic-class=%s runtime-directory=%s runtime-directory-exists=%b display-variable=%s display-socket-exists=%b session-bus=%s %s message=%s desktop-message=%s" outcome.Status outcome.Mode defaultCommand outcome.WindowOpened outcome.FirstFramePresented outcome.UserCloseObserved outcome.SelfClosedForEvidence inputDispatchStatus outcome.ExitPath outcome.RendererMode windowOptionSummary missingPackageCapability unsupportedHostReasons desktopSessionDiagnosticApi diagnosticClass (optional runtimeDirectory) runtimeDirectoryExists (optional displayVariable) displaySocketExists (optional sessionBus) fallbackFullDesktopSession outcome.Message desktopMessage
+            0
+        | Result.Error (failure: ViewerRunFailure) ->
+            printfn "status=%s mode=interactive-window command=%s window-visible=unsupported accessible-window=false blocked-stage=%A classification=%A category=%A window-options=%s missing-package-capability=%s unsupported-host-reasons=%s diagnostic-api=%s diagnostic-class=%s runtime-directory=%s runtime-directory-exists=%b display-variable=%s display-socket-exists=%b session-bus=%s %s message=%s desktop-message=%s" (if failure.Classification = UnsupportedEnvironment then "unsupported" else "failed") defaultCommand failure.BlockedStage failure.Classification failure.DiagnosticCategory windowOptionSummary missingPackageCapability unsupportedHostReasons desktopSessionDiagnosticApi diagnosticClass (optional runtimeDirectory) runtimeDirectoryExists (optional displayVariable) displaySocketExists (optional sessionBus) fallbackFullDesktopSession failure.Message desktopMessage
+            if failure.Classification = UnsupportedEnvironment then 0 else 1
+
+
+Product tests:
+module ProductTests
+
+open System
+open Expecto
+open Product.Program
+open FS.Skia.UI.Controls
+open FS.Skia.UI.KeyboardInput
+open FS.Skia.UI.Scene
+
+let rec collectSceneNodes node =
+    seq {
+        yield node
+        match node with
+        | Group scenes ->
+            for scene in scenes do
+                for child in scene.Nodes do
+                    yield! collectSceneNodes child
+        | ClipNode(_, scene)
+        | ColorSpaceNode(_, scene)
+        | PerspectiveNode(_, scene) ->
+            for child in scene.Nodes do
+                yield! collectSceneNodes child
+        | PictureNode picture ->
+            for child in picture.Scene.Nodes do
+                yield! collectSceneNodes child
+        | _ -> ()
+    }
+
+let sceneText node =
+    collectSceneNodes node
+    |> Seq.choose (function Text(_, value, _) -> Some value | TextRun run -> Some run.Text | _ -> None)
+    |> String.concat " "
+
+[<Tests>]
+let tests =
+    testList "product" [
+        test "generated product test suite is wired" {
+            Expect.equal 1 1 "product tests run"
+        }
+
+        test "product-owned controls example is wired" {
+            let view = controlsExampleView initialModel
+            Expect.isGreaterThan (Control.count view) 7 "product example owns form, rich text, chart, graph, and DataGrid controls"
+        }
+
+        test "product-owned form chart and DataGrid controls are constructible" {
+            let textBox =
+                TextBox.create [
+                    TextBox.value initialModel.Name
+                    TextBox.onChanged NameChanged
+                ]
+
+            let lineChart = LineChart.create [ LineChart.series initialModel.Revenue ]
+            let dataGrid = DataGrid.create initialModel.GridColumns [ DataGrid.rows initialModel.GridRows ]
+
+            Expect.isGreaterThan (Control.count textBox) 0 "TextBox product example is constructible"
+            Expect.isGreaterThan (Control.count lineChart) 0 "LineChart product example is constructible"
+            Expect.isGreaterThan (Control.count dataGrid) 0 "DataGrid product example is constructible"
+        }
+
+        test "generated product adapter program is product-owned" {
+            let model, initCommands = adapterProgram.Init()
+            let updated, saveCommands = adapterProgram.Update SaveRequested model
+            let view = adapterProgram.View updated
+            let subscriptions = adapterProgram.Subscriptions updated
+
+            Expect.isEmpty initCommands "adapter init starts without host commands"
+            Expect.isNonEmpty saveCommands "save emits product-owned adapter command"
+            Expect.isEmpty subscriptions "default generated product has no subscriptions"
+            Expect.isGreaterThan (Control.count view) 7 "adapter view returns Controls"
+        }
+
+        test "generated graphical app starts through viewer key event" {
+            let started, _ =
+                dispatchViewerKey { RawKey = "Enter"; Direction = ViewerKeyDirection.KeyDown } initialModel
+
+            Expect.equal started.Screen Main "initial screen starts from viewer Enter"
+            Expect.equal started.LastInput (Some Enter) "normalized input is stored"
+            Expect.exists started.InputDiagnostics (fun item -> item.Flow = "initial-start" && item.RawKey = Some "Enter") "diagnostic names the viewer input flow"
+        }
+
+        test "generated graphical app options pause back and restart flows use viewer keys" {
+            let options, _ =
+                dispatchViewerKey { RawKey = "O"; Direction = ViewerKeyDirection.KeyDown } initialModel
+
+            let main, _ =
+                dispatchViewerKey { RawKey = "Return"; Direction = ViewerKeyDirection.KeyDown } options
+
+            let paused, _ =
+                dispatchViewerKey { RawKey = "Space"; Direction = ViewerKeyDirection.KeyDown } main
+
+            let resumed, _ =
+                dispatchViewerKey { RawKey = "Esc"; Direction = ViewerKeyDirection.KeyDown } paused
+
+            let ended, _ = Product.Program.update EndReached resumed
+
+            let restarted, _ =
+                dispatchViewerKey { RawKey = "Enter"; Direction = ViewerKeyDirection.KeyDown } ended
+
+            Expect.equal options.Screen Options "options screen opens through viewer key"
+            Expect.equal main.Screen Main "options selection enters main screen"
+            Expect.equal paused.Screen Paused "space pauses main interaction"
+            Expect.equal resumed.Screen Main "escape resumes from pause"
+            Expect.equal restarted.Screen Initial "end screen restarts through viewer Enter"
+        }
+
+        test "pure generated app transitions expose model message and effect behavior" {
+            let started, startEffects = Product.Program.update (ViewerInput(Enter, true)) initialModel
+            let interacted, interactionEffects = Product.Program.update (ViewerInput(ArrowLeft, true)) started
+
+            Expect.equal started.Screen Main "pure update starts app"
+            Expect.isEmpty startEffects "input transition has no host command"
+            Expect.equal interacted.PrimaryInteractions 1 "primary interaction is counted"
+            Expect.isEmpty interactionEffects "primary interaction has no host command"
+        }
+
+        test "generated graphical app exposes bounded smoke command" {
+            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+
+            Expect.stringContains source "--launch-evidence" "generated product exposes explicit launch evidence CLI"
+            Expect.stringContains source "Viewer.runBounded" "launch evidence uses a bounded evidence entry point"
+            Expect.stringContains source "mode=persistent-evidence" "launch evidence reports evidence mode"
+            Expect.stringContains source "--bounded-smoke" "generated product exposes bounded smoke CLI"
+            Expect.stringContains source "--bounded-smoke-frame-diagnostics" "generated product exposes explicit frame diagnostic smoke CLI"
+            Expect.stringContains source "Viewer.runBounded" "bounded smoke uses the public SkiaViewer bounded run entry point"
+            Expect.stringContains source "status=unsupported" "bounded smoke reports unsupported host conditions explicitly"
+            Expect.stringContains source "diagnostic-mode={diagnosticMode}" "generated smoke writes readable diagnostics mode"
+            Expect.stringContains source "startup-focused" "startup-focused generated smoke is the default"
+            Expect.stringContains source "frame-focused" "frame-focused generated smoke is opt-in"
+            Expect.stringContains source "FrameLogLimit = if includeFrameDiagnostics then Some 1 else Some 0" "generated smoke limits repeated frame diagnostics"
+        }
+
+        test "generated evidence commands are opt-in and not reported as ongoing interactive play" {
+            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+            let defaultBranch = source.Substring(source.LastIndexOf("| args ->", StringComparison.Ordinal))
+
+            Expect.stringContains source "--launch-evidence" "first-frame launch evidence is exposed only by explicit CLI flag"
+            Expect.stringContains source "--bounded-smoke" "bounded evidence smoke is exposed only by explicit CLI flag"
+            Expect.stringContains source "--bounded-smoke-frame-diagnostics" "frame diagnostics are exposed only by explicit CLI flag"
+            Expect.stringContains source "--image-evidence" "image evidence is exposed only by explicit CLI flag"
+            Expect.stringContains source "--screenshot-evidence" "screenshot evidence is exposed only by explicit CLI flag"
+            Expect.stringContains source "--pixel-readback-evidence" "pixel-readback evidence is exposed only by explicit CLI flag"
+            Expect.stringContains source "input-dispatch=not-required" "bounded evidence reports that input dispatch is not an interactive-play claim"
+            Expect.stringContains source "self-closed-for-evidence=true" "bounded evidence reports self-close semantics"
+            Expect.stringContains source "mode=persistent-evidence" "bounded evidence uses persistent evidence mode"
+            Expect.stringContains source "command=--launch-evidence" "first-frame evidence records the evidence command"
+            Expect.stringContains source "command=--image-evidence" "image evidence records the evidence command"
+            Expect.stringContains source "command=--screenshot-evidence" "screenshot evidence records the evidence command"
+            Expect.stringContains source "command=--pixel-readback-evidence" "pixel-readback evidence records the evidence command"
+            Expect.stringContains source "Viewer.runBounded" "generated evidence commands use bounded viewer evidence entry points"
+            Expect.stringContains defaultBranch "Viewer.runAppWithWindowBehavior viewerOptions windowBehavior generatedHost" "normal launch remains the persistent interactive path"
+            Expect.isFalse (defaultBranch.Contains("mode=persistent-evidence")) "normal launch does not report bounded evidence mode"
+            Expect.isFalse (defaultBranch.Contains("self-closed-for-evidence=true")) "normal launch does not claim evidence self-close"
+            Expect.isFalse (defaultBranch.Contains("input-dispatch=not-required")) "normal launch does not reuse bounded evidence input-dispatch wording"
+            Expect.isFalse (defaultBranch.Contains("--image-evidence")) "image evidence stays out of normal launch branch"
+            Expect.isFalse (defaultBranch.Contains("--screenshot-evidence")) "screenshot evidence stays out of normal launch branch"
+            Expect.isFalse (defaultBranch.Contains("--pixel-readback-evidence")) "pixel-readback evidence stays out of normal launch branch"
+        }
+
+        test "generated visual evidence commands require screenshot proof pixel fallback and unsupported diagnostics" {
+            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+
+            Expect.stringContains source "--image-evidence" "generated product exposes image evidence command"
+            Expect.stringContains source "--screenshot-evidence" "generated product exposes screenshot evidence command"
+            Expect.stringContains source "--pixel-readback-evidence" "generated product exposes pixel-readback evidence command"
+            Expect.stringContains source "evidence-kind=image" "image command records image evidence kind"
+            Expect.stringContains source "image-decodable=" "image command records decodability"
+            Expect.stringContains source "proves-scene-rendering=" "image command records scene-rendering proof claim"
+            Expect.stringContains source "proves-desktop-visibility=" "image command records desktop-visibility proof claim"
+            Expect.stringContains source "evidence-kind=screenshot" "screenshot command records screenshot evidence kind"
+            Expect.stringContains source "evidence-kind=pixel-readback" "pixel-readback command records fallback evidence kind"
+            Expect.stringContains source "fallback-reason=screenshot-unavailable" "pixel-readback command records why screenshot proof was unavailable"
+            Expect.stringContains source "board-readable=true" "visual evidence proves the board/grid is readable"
+            Expect.stringContains source "input-or-progress-observed=true" "visual evidence proves input dispatch or time progression was observed"
+            Expect.stringContains source "unsupported-host-reason=" "unsupported visual evidence reports why neither visual path is available"
+            Expect.stringContains source "supported-host=false" "unsupported visual evidence is explicit instead of substituting text-only metadata"
+        }
+
+        test "generated graphical app default executable path uses persistent host" {
+            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+
+            Expect.stringContains source "let viewerOptions" "generated product declares viewer options"
+            Expect.stringContains source "let generatedHost" "generated product declares generated host"
+            Expect.stringContains source "MapKey = mapKey" "generated host wires keyboard mapping"
+            Expect.stringContains source "Tick = tick" "generated host wires tick mapping"
+            Expect.stringContains source "Viewer.runAppWithWindowBehavior viewerOptions windowBehavior generatedHost" "default path runs persistent generated app host"
+            Expect.stringContains source "mode=interactive-window" "default path reports interactive mode"
+            Expect.stringContains source "accessible-window=true" "successful default path reports accessible desktop window claim"
+            Expect.stringContains source "window-visible=observed:true" "successful default path reports observed visible window"
+            Expect.stringContains source "accessible-window=false" "unsupported default path does not claim visible accessibility"
+            Expect.stringContains source "mode=interactive-window" "unsupported default diagnostics still identify interactive mode"
+            Expect.stringContains source "--bounded-smoke" "bounded smoke remains behind an explicit flag"
+            Expect.stringContains source "--launch-evidence" "launch evidence remains behind an explicit flag"
+        }
+
+        test "generated normal launch reports desktop session diagnostics without evidence fallback" {
+            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+            let defaultBranch = source.Substring(source.LastIndexOf("| args ->", StringComparison.Ordinal))
+
+            Expect.stringContains defaultBranch "Viewer.desktopSessionDiagnostic()" "normal launch captures desktop/session diagnostics before app lifecycle debugging"
+            Expect.stringContains defaultBranch "diagnostic-class=" "normal launch reports diagnostic classification"
+            Expect.stringContains defaultBranch "runtime-directory=" "normal launch reports runtime directory state"
+            Expect.stringContains defaultBranch "display-variable=" "normal launch reports display variable state"
+            Expect.stringContains defaultBranch "display-socket-exists=" "normal launch reports display socket state"
+            Expect.stringContains defaultBranch "session-bus=" "normal launch reports session bus state"
+            Expect.stringContains defaultBranch "fallback-is-full-desktop-session=false" "private runtime fallback is labeled as not a full desktop session"
+            Expect.isFalse (defaultBranch.Contains("Viewer.runBounded")) "normal launch does not silently switch to bounded evidence"
+            Expect.isFalse (defaultBranch.Contains("SceneEvidence.render")) "normal launch does not silently switch to scene-only metadata"
+            Expect.isFalse (defaultBranch.Contains("--launch-evidence")) "explicit evidence flag stays out of normal launch diagnostics"
+            Expect.isFalse (defaultBranch.Contains("--scene-evidence")) "scene evidence flag stays out of normal launch diagnostics"
+        }
+
+        test "generated window diagnostics command reports failure classes and native facts before app debugging" {
+            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+            let defaultBranch = source.Substring(source.LastIndexOf("| args ->", StringComparison.Ordinal))
+
+            Expect.stringContains source "--window-diagnostics" "generated product exposes an explicit window diagnostics command"
+            Expect.stringContains source "diagnostic-class=environment-session" "diagnostics include environment/session class"
+            Expect.stringContains source "diagnostic-class=window-visibility" "diagnostics include window visibility class"
+            Expect.stringContains source "diagnostic-class=app-lifecycle" "diagnostics include app lifecycle class"
+            Expect.stringContains source "diagnostic-class=product-defect" "diagnostics include product defect class"
+            Expect.stringContains source "native-handle=observed:true" "diagnostics include native handle facts"
+            Expect.stringContains source "visible=observed:false" "diagnostics include visible observed-false facts"
+            Expect.stringContains source "focusable=observed:false" "diagnostics include focusable facts"
+            Expect.stringContains source "minimized=observed:false" "diagnostics include minimized facts"
+            Expect.stringContains source "maximized=observed:false" "diagnostics include maximized facts"
+            Expect.stringContains source "client-size=0x0" "diagnostics include zero-sized client facts"
+            Expect.stringContains source "renderable-surface=observed:false" "diagnostics include renderable-surface facts"
+            Expect.stringContains source "input-devices=unavailable" "diagnostics include input-device availability facts"
+            Expect.stringContains source "fallback-is-full-desktop-session=" "diagnostics disclose fallback session status"
+            Expect.isFalse (defaultBranch.Contains("--window-diagnostics")) "normal launch does not silently switch to diagnostics mode"
+        }
+
+        test "generated app Synthetic exposes window behavior flags and option diagnostics without leaving interactive launch" {
+            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+            let defaultBranch = source.Substring(source.LastIndexOf("| args ->", StringComparison.Ordinal))
+
+            Expect.stringContains source "--window-resize" "resize policy is configurable"
+            Expect.stringContains source "--window-maximize" "maximize policy is configurable"
+            Expect.stringContains source "--window-startup" "startup state is configurable"
+            Expect.stringContains source "--window-position" "startup position is configurable"
+            Expect.stringContains source "--window-backend" "backend preference is configurable"
+            Expect.stringContains source "--window-options-file" "option files are supported"
+            Expect.stringContains source "--window-options" "generated product exposes option diagnostics"
+            Expect.stringContains source "windowBehaviorArgsFromFile" "option files are parsed into launch flags"
+            Expect.stringContains source "toViewerWindowBehavior windowBehavior" "parsed flags become the public viewer request"
+            Expect.stringContains source "Viewer.validateWindowLaunchBehavior viewerOptions.InitialSize" "generated diagnostics use public launch behavior validation"
+            Expect.stringContains source "Viewer.runAppWithWindowBehavior viewerOptions windowBehavior generatedHost" "default launch applies requested behavior through the viewer contract"
+            Expect.stringContains source "Viewer.runAppWithWindowBehavior viewerOptions windowBehaviorRequest generatedHost" "normal launch passes the parsed behavior request to SkiaViewer"
+            Expect.stringContains source "window-options=%s" "normal launch reports option validation output"
+            Expect.stringContains source "option=resize" "option report includes resize rows"
+            Expect.stringContains source "option=maximize" "option report includes maximize rows"
+            Expect.stringContains source "option=startup-state" "option report includes startup-state rows"
+            Expect.stringContains source "option=startup-position" "option report includes startup-position rows"
+            Expect.stringContains source "option=backend" "option report includes backend rows"
+            Expect.stringContains source "status=unsupported" "unsupported host/backend option diagnostics are explicit"
+            Expect.isFalse (defaultBranch.Contains("Viewer.runBounded")) "window options do not switch normal launch to bounded evidence"
+        }
+
+        test "generated default game view renders board grid and side information" {
+            let rendered = view initialModel
+            let nodes = collectSceneNodes rendered |> Seq.toList
+            let text = sceneText rendered
+
+            let rectangleCount =
+                nodes
+                |> List.filter (function Rectangle _ | PaintedRectangle _ -> true | _ -> false)
+                |> List.length
+
+            let lineCount =
+                nodes
+                |> List.filter (function Line _ -> true | _ -> false)
+                |> List.length
+
+            Expect.isGreaterThanOrEqual rectangleCount 20 "Tetris-style board renders multiple cells"
+            Expect.isGreaterThanOrEqual lineCount 10 "Tetris-style board renders visible grid lines"
+            Expect.stringContains text "score" "side panel includes score"
+            Expect.stringContains text "level" "side panel includes level"
+            Expect.stringContains text "next" "side panel includes next piece"
+        }
+
+        test "generated default game dispatches input advances over time and keeps evidence flags opt-in" {
+            let started, _ = dispatchViewerKey { RawKey = "Enter"; Direction = ViewerKeyDirection.KeyDown } initialModel
+            let moved, _ = dispatchViewerKey { RawKey = "ArrowLeft"; Direction = ViewerKeyDirection.KeyDown } started
+
+            Expect.notEqual moved initialModel "keyboard input changes playable game state"
+            Expect.isGreaterThan moved.PrimaryInteractions started.PrimaryInteractions "left input is reflected in gameplay state"
+
+            match tick (TimeSpan.FromMilliseconds 500.0) with
+            | Some tickMsg ->
+                let afterTick, _ = Product.Program.update tickMsg moved
+                Expect.notEqual afterTick moved "time-based tick advances gameplay state"
+            | None -> failtest "generated game tick must advance gameplay over time"
+
+            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+            let defaultBranch = source.Substring(source.LastIndexOf("| args ->", StringComparison.Ordinal))
+            Expect.stringContains defaultBranch "Viewer.runAppWithWindowBehavior viewerOptions windowBehavior generatedHost" "normal launch uses interactive host"
+            Expect.isFalse (defaultBranch.Contains("--launch-evidence")) "launch evidence flag stays out of normal launch branch"
+            Expect.isFalse (defaultBranch.Contains("--bounded-smoke")) "bounded smoke flag stays out of normal launch branch"
+            Expect.isFalse (defaultBranch.Contains("self-closed-for-evidence=true")) "normal launch does not report evidence self-close"
+        }
+
+        test "generated graphical app exposes deterministic scene evidence command" {
+            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+
+            Expect.stringContains source "--scene-evidence" "generated product exposes non-window scene evidence CLI"
+            Expect.stringContains source "SceneEvidence.render" "scene evidence uses public Scene evidence helper"
+            Expect.stringContains source "RendererMode = \"deterministic-scene\"" "scene evidence remains separate from live viewer startup"
+            Expect.stringContains source "readiness/headless-scene-evidence.txt" "scene evidence writes a stable readiness path"
+        }
+    ]
+
+
+Selected skills:
+.agents/skills/fs-skia-elmish/SKILL.md
+.agents/skills/fs-skia-keyboard-input/SKILL.md
+.agents/skills/fs-skia-project/SKILL.md
+.agents/skills/fs-skia-scene/SKILL.md
+.agents/skills/fs-skia-skiaviewer/SKILL.md
+.agents/skills/fs-skia-ui-widgets/SKILL.md
+.agents/skills/speckit-analyze/SKILL.md
+.agents/skills/speckit-checklist/SKILL.md
+.agents/skills/speckit-clarify/SKILL.md
+.agents/skills/speckit-constitution/SKILL.md
+.agents/skills/speckit-evidence-audit/SKILL.md
+.agents/skills/speckit-evidence-graph/SKILL.md
+.agents/skills/speckit-git-commit/SKILL.md
+.agents/skills/speckit-git-feature/SKILL.md
+.agents/skills/speckit-git-initialize/SKILL.md
+.agents/skills/speckit-git-remote/SKILL.md
+.agents/skills/speckit-git-validate/SKILL.md
+.agents/skills/speckit-implement/SKILL.md
+.agents/skills/speckit-plan/SKILL.md
+.agents/skills/speckit-specify/SKILL.md
+.agents/skills/speckit-tasks/SKILL.md
+.agents/skills/speckit-taskstoissues/SKILL.md

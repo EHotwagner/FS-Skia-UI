@@ -11,6 +11,7 @@ It moves dependency placement into explicit package owners:
 
 | Package owner | Direct project references | Direct external packages | Boundary rule |
 |---------------|---------------------------|--------------------------|---------------|
+| `FS.Skia.UI.SkiaViewer` | `FS.Skia.UI`, `FS.Skia.UI.Scene`, `FS.Skia.UI.KeyboardInput` | `Fable.Elmish`, `Silk.NET.Input`, `Silk.NET.Vulkan`, `Silk.NET.Vulkan.Extensions.KHR`, `Silk.NET.Windowing`, `Silk.NET.Windowing.Extensions`, `SkiaSharp`, `SkiaSharp.NativeAssets.Linux`, `SkiaSharp.NativeAssets.Win32` | Owns public generated-app viewer contracts, persistent launch validation, and desktop window hosting. It may bridge to the legacy `FS.Skia.UI` Vulkan presenter to commit real swapchain frames for visible interactive launches. |
 | `FS.Skia.UI.Controls` | `FS.Skia.UI.Scene`, `FS.Skia.UI.Layout`, `FS.Skia.UI.KeyboardInput` | None | Owns form controls, rich rendering, chart controls, graph views, DataGrid, and product-owned `ControlRuntime` declarations without taking a direct Elmish or viewer dependency. |
 | `FS.Skia.UI.KeyboardInput` | `FS.Skia.UI.Scene` | `YamlDotNet` | Owns the rich keyboard input runtime, reducer/effect contracts, diagnostics, and YAML configuration parsing. |
 | `FS.Skia.UI.Controls.Elmish` | `FS.Skia.UI.Controls`, `FS.Skia.UI.KeyboardInput` | `Fable.Elmish` | Owns command, subscription, and program adapter integration so base Controls remains generic over product messages. |
@@ -45,7 +46,7 @@ general dependency policy.
 ## Local Generated Consumer Packages
 
 Generated graphical consumer validation for feature
-`013-tetris-demo-integration` must report the local feed path, package
+`019-fix-window-visibility` must report the local feed path, package
 identities, versions, consumer package configuration snippet, optional
 `nuget.config` snippet, restore command, and stale or missing feed diagnostics
 before build, input, or rendering failures are attributed to application code.

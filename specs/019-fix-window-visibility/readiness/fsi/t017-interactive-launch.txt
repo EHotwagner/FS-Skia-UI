@@ -1,0 +1,7 @@
+mode=interactive-window
+first-frame-state=FirstFramePresented
+first-frame-running=true
+self-closed-for-evidence=false
+user-close-state=UserCloseObservedState user-close-observed=true
+app-close-state=CloseRequested user-close-observed=false
+host-close-state=Closing user-close-observed=false

@@ -1,0 +1,18 @@
+The last restore is still up to date. Nothing left to do.
+Could not load types of compiled script:
+ - Could not load file or assembly 'netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'. General Exception (0x80131500)
+Starting target 'DependencyReport'
+Finished target 'DependencyReport'
+/home/developer/projects/FS-Skia-UI/build.fsx (1967,25)-(1967,55): Warning FS0052: The value has been copied to ensure the original is not mutated by this operation or because the copy is implicit when returning a struct from a member and another member is then accessed
+/home/developer/projects/FS-Skia-UI/build.fsx (2573,23)-(2573,28): Warning FS1182: The value 'model' is unused
+/home/developer/projects/FS-Skia-UI/build.fsx (3495,35)-(3495,47): Warning FS1182: The value 'templatePath' is unused
+/home/developer/projects/FS-Skia-UI/build.fsx (2064,16)-(2064,23): Warning FS3180: The mutable local 'current' is implicitly allocated as a reference cell because it has been captured by a closure. This warning is for informational purposes only to indicate where implicit allocations are performed.
+/home/developer/projects/FS-Skia-UI/build.fsx (2974,16)-(2974,24): Warning FS3180: The mutable local 'category' is implicitly allocated as a reference cell because it has been captured by a closure. This warning is for informational purposes only to indicate where implicit allocations are performed.
+Warning: The fake-runner has not been updated for at least 12 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 132 milliseconds
+ - Packages: 36 milliseconds
+ - Script analyzing: 35 milliseconds
+ - Script running: 1 second
+ - Script cleanup: 1 millisecond
+ - Runtime: 2 seconds

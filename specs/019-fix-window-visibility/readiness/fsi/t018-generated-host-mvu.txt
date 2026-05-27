@@ -1,0 +1,4 @@
+init-count=0 init-effects=0
+manual-input-count=1 render-effect=true
+tick-message=Some Increment
+explicit-close-closed=true close-effect=true

@@ -3,8 +3,10 @@ namespace FS.Skia.UI.SkiaViewer
 open System
 open System.Diagnostics
 open System.Threading
+open Elmish
 open FS.Skia.UI.KeyboardInput
 open FS.Skia.UI.Scene
+open SkiaSharp
 open Silk.NET.Input
 open Silk.NET.Maths
 open Silk.NET.Windowing
@@ -16,6 +18,103 @@ type ViewerOptions =
 type ViewerLaunchMode =
     | InteractiveWindow
     | PersistentEvidence
+
+type ViewerCloseReason =
+    | UserClose
+    | AppRequestedClose
+    | EvidenceRequestedClose
+    | FrameworkRequestedClose
+    | HostSystemClose
+    | TimeoutClose
+    | FailureDrivenClose
+
+type ViewerObservedValue =
+    | Observed of bool
+    | Unsupported
+    | Unavailable
+
+type ViewerWindowResizePolicy =
+    | Resizable
+    | FixedSize
+
+type ViewerWindowMaximizePolicy =
+    | Maximizable
+    | NotMaximizable
+
+type ViewerWindowStartupState =
+    | Normal
+    | Maximized
+    | Minimized
+    | Fullscreen
+
+type ViewerWindowPosition =
+    | Centered
+    | Coordinates of x: int * y: int
+
+type ViewerBackendPreference =
+    | DefaultBackend
+    | Vulkan
+    | OpenGL
+    | Software
+
+type ViewerWindowOptionStatus =
+    | Honored
+    | Degraded
+    | UnsupportedOption
+    | FailedOption
+
+type ViewerWindowBehaviorRequest =
+    { ResizePolicy: ViewerWindowResizePolicy
+      MaximizePolicy: ViewerWindowMaximizePolicy
+      StartupState: ViewerWindowStartupState
+      StartupPosition: ViewerWindowPosition option
+      BackendPreference: ViewerBackendPreference option }
+
+type ViewerWindowOptionResult =
+    { Option: string
+      Requested: string
+      Observed: string option
+      Status: ViewerWindowOptionStatus
+      Message: string }
+
+type ViewerWindowStateDiagnostic =
+    { WindowInitialized: bool
+      NativeHandle: ViewerObservedValue
+      Visible: ViewerObservedValue
+      Focusable: ViewerObservedValue
+      Focused: ViewerObservedValue
+      Minimized: ViewerObservedValue
+      Maximized: ViewerObservedValue
+      ClientSize: string option
+      RenderableSurfaceAvailable: ViewerObservedValue
+      Backend: string option
+      InputDevicesAvailable: ViewerObservedValue
+      FailureClass: string option
+      Message: string }
+
+type ViewerVisualEvidenceKind =
+    | Image
+    | PixelReadback
+    | MetadataHash
+    | UnsupportedHost
+
+type ViewerVisualEvidenceArtifact =
+    { Kind: ViewerVisualEvidenceKind
+      Path: string option
+      ImageDecodable: bool option
+      ProvesSceneRendering: bool
+      ProvesDesktopVisibility: bool
+      Message: string }
+
+type ViewerFailureClass =
+    | EnvironmentSession
+    | WindowVisibility
+    | WindowOptions
+    | VisualEvidence
+    | PackageVerification
+    | VerificationDepthFailure
+    | AppLifecycle
+    | ProductDefectFailure
 
 type ViewerInputDispatchStatus =
     | Verified
@@ -129,11 +228,19 @@ type ViewerLaunchOutcome =
       Command: string option
       RendererMode: string
       WindowOpened: bool
+      WindowVisible: ViewerObservedValue
       FirstFramePresented: bool
+      CloseReason: ViewerCloseReason option
       UserCloseObserved: bool
+      AppCloseObserved: bool
+      EvidenceCloseObserved: bool
       SelfClosedForEvidence: bool
       InputDispatch: string
       ExitPath: bool
+      WindowDiagnostics: ViewerWindowStateDiagnostic list
+      OptionResults: ViewerWindowOptionResult list
+      VisualEvidence: ViewerVisualEvidenceArtifact list
+      FailureClass: ViewerFailureClass option
       BlockedStage: ViewerRunBlockedStage option
       Classification: ViewerRunFailureClassification option
       Category: ViewerDiagnosticCategory option
@@ -143,15 +250,23 @@ type ViewerLifecycleState =
     | NotStarted
     | CheckingDesktopSession
     | StartingWindow
+    | WindowCreated
+    | VisibilityChecking
     | InteractiveRunning
     | EvidenceRunning
     | FirstFramePresented
+    | CloseRequested
     | Closing
+    | UserCloseObservedState
+    | AppCloseObservedState
+    | EvidenceCloseObservedState
+    | InaccessibleWindow
     | Failed
     | Unsupported
 
 type ViewerModel =
     { Options: ViewerOptions
+      WindowBehavior: ViewerWindowBehaviorRequest
       IsRunning: bool
       LifecycleState: ViewerLifecycleState
       FirstFramePresented: bool
@@ -171,11 +286,18 @@ type ViewerMsg =
     | StartInteractive
     | StartEvidence of ViewerRunRequest
     | Stop
+    | DesktopSessionChecked of ViewerDesktopSessionDiagnostic
+    | WindowCreated of ViewerWindowStateDiagnostic
+    | VisibilityCheckStarted of ViewerWindowStateDiagnostic
+    | VisibilityObserved of ViewerWindowStateDiagnostic
     | Render of SceneNode
     | KeyEvent of ViewerKeyEvent
     | DiagnosticCaptured of ViewerDiagnosticEvent
     | FramePresented of Size
     | UserCloseObserved
+    | AppCloseRequested
+    | EvidenceCloseRequested
+    | HostCloseObserved
     | EvidenceTargetReached
     | RunFailed of ViewerRunFailure
     | RunTimedOut
@@ -191,6 +313,8 @@ type ViewerRunMsg =
 
 type ViewerEffect =
     | OpenWindow of title: string * size: Size
+    | ApplyWindowOptions of ViewerWindowBehaviorRequest
+    | QueryNativeWindowState
     | RenderScene of SceneNode
     | CloseWindow
     | DispatchInput of ViewerKey * isDown: bool
@@ -198,7 +322,9 @@ type ViewerEffect =
     | CheckDesktopSession
     | StartBoundedRun of ViewerRunRequest
     | CaptureScreenshot of path: string
+    | CaptureImageEvidence of path: string
     | ReadPixels
+    | WriteVisualEvidence of path: string * artifact: ViewerVisualEvidenceArtifact
     | WriteRunEvidence of path: string * evidence: ViewerRunEvidence
 
 type ViewerRunEffect =
@@ -216,7 +342,211 @@ type GeneratedAppHost<'model,'msg> =
       Tick: TimeSpan -> 'msg option
       Diagnostics: ViewerDiagnosticsOptions }
 
+type private LegacyHostMsg<'msg> =
+    | LegacyLoaded
+    | LegacyUpdateTick of float
+    | LegacyRenderTick of float
+    | LegacyKey of rawKey: string * isDown: bool
+    | LegacyCloseRequested
+    | LegacyDiagnosticReported of FS.Skia.UI.RenderDiagnostic
+    | LegacyHostEffect of FS.Skia.UI.ViewerEffect<LegacyHostMsg<'msg>>
+    | LegacyAppMsg of 'msg
+
 module Viewer =
+    let rec private toLegacyScene (scene: Scene) : FS.Skia.UI.Scene =
+        let legacyScenes = scene.Nodes |> List.map toLegacyNode
+        FS.Skia.UI.Scene.group legacyScenes
+
+    and private toLegacyNode node : FS.Skia.UI.Scene =
+        match node with
+        | Empty -> FS.Skia.UI.Scene.empty
+        | Group scenes -> scenes |> List.map toLegacyScene |> FS.Skia.UI.Scene.group
+        | Rectangle(bounds, color) -> FS.Skia.UI.Scene.rectangle bounds (toLegacyColor color)
+        | PaintedRectangle(bounds, paint) -> FS.Skia.UI.Scene.rectangleWithPaint (toLegacyRect bounds) (toLegacyPaint paint)
+        | Ellipse(bounds, paint) -> FS.Skia.UI.Scene.ellipse (toLegacyRect bounds) (toLegacyPaint paint)
+        | Line(startPoint, endPoint, paint) -> FS.Skia.UI.Scene.line (toLegacyPoint startPoint) (toLegacyPoint endPoint) (toLegacyPaint paint)
+        | Path(path, paint) -> FS.Skia.UI.Scene.path (toLegacyPath path) (toLegacyPaint paint)
+        | Points(points, paint) -> FS.Skia.UI.Scene.points (points |> List.map toLegacyPoint) (toLegacyPaint paint)
+        | Vertices(mode, vertices, paint) -> FS.Skia.UI.Scene.vertices (toLegacyVertexMode mode) (vertices |> List.map toLegacyVertex) (toLegacyPaint paint)
+        | Arc(bounds, startAngle, sweepAngle, paint) -> FS.Skia.UI.Scene.arc (toLegacyRect bounds) startAngle sweepAngle (toLegacyPaint paint)
+        | Text(position, text, color) -> FS.Skia.UI.Scene.text position text (toLegacyColor color)
+        | TextRun run -> FS.Skia.UI.Scene.textRun (toLegacyTextRun run)
+        | SceneNode.Image(bounds, source) -> FS.Skia.UI.Scene.image bounds source
+        | ClipNode(clip, clippedScene) -> FS.Skia.UI.Scene.clipped (toLegacyClip clip) (toLegacyScene clippedScene)
+        | RegionNode(region, paint) -> FS.Skia.UI.Scene.region (toLegacyRegion region) (toLegacyPaint paint)
+        | ColorSpaceNode(colorSpace, child) -> FS.Skia.UI.Scene.withColorSpace (toLegacyColorSpace colorSpace) (toLegacyScene child)
+        | PerspectiveNode(transform, child) -> FS.Skia.UI.Scene.withPerspective (toLegacyPerspective transform) (toLegacyScene child)
+        | PictureNode picture ->
+            let legacyPicture: FS.Skia.UI.Picture =
+                { Name = picture.Name
+                  Scene = toLegacyScene picture.Scene }
+
+            FS.Skia.UI.Scene.picture legacyPicture
+        | Chart values -> FS.Skia.UI.Scene.chart values
+
+    and private toLegacyColor (color: Color) : FS.Skia.UI.Color =
+        { Red = color.Red
+          Green = color.Green
+          Blue = color.Blue
+          Alpha = color.Alpha }
+
+    and private toLegacyPoint (point: Point) : FS.Skia.UI.Point =
+        { X = point.X
+          Y = point.Y }
+
+    and private toLegacyRect (rect: Rect) : FS.Skia.UI.Rect =
+        { X = rect.X
+          Y = rect.Y
+          Width = rect.Width
+          Height = rect.Height }
+
+    and private toLegacyStrokeCap cap : FS.Skia.UI.StrokeCap =
+        match cap with
+        | Butt -> FS.Skia.UI.StrokeCap.Butt
+        | Round -> FS.Skia.UI.StrokeCap.Round
+        | Square -> FS.Skia.UI.StrokeCap.Square
+
+    and private toLegacyStrokeJoin join : FS.Skia.UI.StrokeJoin =
+        match join with
+        | Miter -> FS.Skia.UI.StrokeJoin.Miter
+        | RoundJoin -> FS.Skia.UI.StrokeJoin.RoundJoin
+        | Bevel -> FS.Skia.UI.StrokeJoin.Bevel
+
+    and private toLegacyBlendMode mode : FS.Skia.UI.BlendMode =
+        match mode with
+        | SrcOver -> FS.Skia.UI.BlendMode.SrcOver
+        | Multiply -> FS.Skia.UI.BlendMode.Multiply
+        | Screen -> FS.Skia.UI.BlendMode.Screen
+        | Overlay -> FS.Skia.UI.BlendMode.Overlay
+        | Darken -> FS.Skia.UI.BlendMode.Darken
+        | Lighten -> FS.Skia.UI.BlendMode.Lighten
+        | ColorDodge -> FS.Skia.UI.BlendMode.ColorDodge
+        | ColorBurn -> FS.Skia.UI.BlendMode.ColorBurn
+        | BlendMode.Difference -> FS.Skia.UI.BlendMode.Difference
+        | Exclusion -> FS.Skia.UI.BlendMode.Exclusion
+
+    and private toLegacyStroke (stroke: Stroke) : FS.Skia.UI.Stroke =
+        { Width = stroke.Width
+          Cap = toLegacyStrokeCap stroke.Cap
+          Join = toLegacyStrokeJoin stroke.Join
+          Miter = stroke.Miter }
+
+    and private toLegacyShader shader : FS.Skia.UI.Shader =
+        match shader with
+        | SolidColor color -> FS.Skia.UI.Shader.SolidColor(toLegacyColor color)
+        | LinearGradient(startPoint, endPoint, colors) ->
+            FS.Skia.UI.Shader.LinearGradient(toLegacyPoint startPoint, toLegacyPoint endPoint, colors |> List.map toLegacyColor)
+        | RadialGradient(center, radius, colors) ->
+            FS.Skia.UI.Shader.RadialGradient(toLegacyPoint center, radius, colors |> List.map toLegacyColor)
+        | SweepGradient(center, colors) -> FS.Skia.UI.Shader.SweepGradient(toLegacyPoint center, colors |> List.map toLegacyColor)
+
+    and private toLegacyColorFilter filter : FS.Skia.UI.ColorFilter =
+        match filter with
+        | NoColorFilter -> FS.Skia.UI.ColorFilter.NoColorFilter
+        | BlendColor(color, mode) -> FS.Skia.UI.ColorFilter.BlendColor(toLegacyColor color, toLegacyBlendMode mode)
+
+    and private toLegacyMaskFilter filter : FS.Skia.UI.MaskFilter =
+        match filter with
+        | NoMaskFilter -> FS.Skia.UI.MaskFilter.NoMaskFilter
+        | Blur sigma -> FS.Skia.UI.MaskFilter.Blur sigma
+
+    and private toLegacyImageFilter filter : FS.Skia.UI.ImageFilter =
+        match filter with
+        | NoImageFilter -> FS.Skia.UI.ImageFilter.NoImageFilter
+        | DropShadow(dx, dy, blur, color) -> FS.Skia.UI.ImageFilter.DropShadow(dx, dy, blur, toLegacyColor color)
+
+    and private toLegacyPathEffect effect : FS.Skia.UI.PathEffect =
+        match effect with
+        | NoPathEffect -> FS.Skia.UI.PathEffect.NoPathEffect
+        | Dash(intervals, phase) -> FS.Skia.UI.PathEffect.Dash(intervals, phase)
+        | Discrete(segmentLength, deviation) -> FS.Skia.UI.PathEffect.Discrete(segmentLength, deviation)
+        | Corner radius -> FS.Skia.UI.PathEffect.Corner radius
+
+    and private toLegacyPaint (paint: Paint) : FS.Skia.UI.Paint =
+        { Fill = paint.Fill |> Option.map toLegacyColor
+          Stroke = paint.Stroke |> Option.map toLegacyStroke
+          Opacity = paint.Opacity
+          Antialias = paint.Antialias
+          BlendMode = toLegacyBlendMode paint.BlendMode
+          Shader = paint.Shader |> Option.map toLegacyShader
+          ColorFilter = toLegacyColorFilter paint.ColorFilter
+          MaskFilter = toLegacyMaskFilter paint.MaskFilter
+          ImageFilter = toLegacyImageFilter paint.ImageFilter
+          PathEffect = toLegacyPathEffect paint.PathEffect }
+
+    and private toLegacyPathCommand command : FS.Skia.UI.PathCommand =
+        match command with
+        | MoveTo point -> FS.Skia.UI.PathCommand.MoveTo(toLegacyPoint point)
+        | LineTo point -> FS.Skia.UI.PathCommand.LineTo(toLegacyPoint point)
+        | QuadTo(control, point) -> FS.Skia.UI.PathCommand.QuadTo(toLegacyPoint control, toLegacyPoint point)
+        | CubicTo(control1, control2, point) ->
+            FS.Skia.UI.PathCommand.CubicTo(toLegacyPoint control1, toLegacyPoint control2, toLegacyPoint point)
+        | ArcTo(bounds, startAngle, sweepAngle) -> FS.Skia.UI.PathCommand.ArcTo(toLegacyRect bounds, startAngle, sweepAngle)
+        | Close -> FS.Skia.UI.PathCommand.Close
+
+    and private toLegacyPathFillType fillType : FS.Skia.UI.PathFillType =
+        match fillType with
+        | Winding -> FS.Skia.UI.PathFillType.Winding
+        | EvenOdd -> FS.Skia.UI.PathFillType.EvenOdd
+
+    and private toLegacyPath (path: PathSpec) : FS.Skia.UI.PathSpec =
+        { Commands = path.Commands |> List.map toLegacyPathCommand
+          FillType = toLegacyPathFillType path.FillType }
+
+    and private toLegacyClip clip : FS.Skia.UI.Clip =
+        match clip with
+        | RectClip rect -> FS.Skia.UI.Clip.RectClip(toLegacyRect rect)
+        | PathClip path -> FS.Skia.UI.Clip.PathClip(toLegacyPath path)
+
+    and private toLegacyRegionOperation operation : FS.Skia.UI.RegionOperation =
+        match operation with
+        | Replace -> FS.Skia.UI.RegionOperation.Replace
+        | RegionUnion -> FS.Skia.UI.RegionOperation.RegionUnion
+        | RegionIntersect -> FS.Skia.UI.RegionOperation.RegionIntersect
+        | RegionDifference -> FS.Skia.UI.RegionOperation.RegionDifference
+
+    and private toLegacyRegion (region: Region) : FS.Skia.UI.Region =
+        { Bounds = region.Bounds |> List.map toLegacyRect
+          Operation = toLegacyRegionOperation region.Operation }
+
+    and private toLegacyColorSpace colorSpace : FS.Skia.UI.ColorSpace =
+        match colorSpace with
+        | Srgb -> FS.Skia.UI.ColorSpace.Srgb
+        | DisplayP3 -> FS.Skia.UI.ColorSpace.DisplayP3
+        | AdobeRgb -> FS.Skia.UI.ColorSpace.AdobeRgb
+
+    and private toLegacyPerspective (transform: PerspectiveTransform) : FS.Skia.UI.PerspectiveTransform =
+        { M11 = transform.M11
+          M12 = transform.M12
+          M13 = transform.M13
+          M21 = transform.M21
+          M22 = transform.M22
+          M23 = transform.M23
+          M31 = transform.M31
+          M32 = transform.M32
+          M33 = transform.M33 }
+
+    and private toLegacyFontSpec (font: FontSpec) : FS.Skia.UI.FontSpec =
+        { Family = font.Family
+          Size = font.Size
+          Weight = font.Weight }
+
+    and private toLegacyTextRun (run: TextRun) : FS.Skia.UI.TextRun =
+        { Text = run.Text
+          Position = toLegacyPoint run.Position
+          Font = toLegacyFontSpec run.Font
+          Paint = toLegacyPaint run.Paint }
+
+    and private toLegacyVertex (vertex: Vertex) : FS.Skia.UI.Vertex =
+        { Position = toLegacyPoint vertex.Position
+          Color = vertex.Color |> Option.map toLegacyColor }
+
+    and private toLegacyVertexMode mode : FS.Skia.UI.VertexMode =
+        match mode with
+        | Triangles -> FS.Skia.UI.VertexMode.Triangles
+        | TriangleStrip -> FS.Skia.UI.VertexMode.TriangleStrip
+        | TriangleFan -> FS.Skia.UI.VertexMode.TriangleFan
+
     let private levelRank level =
         match level with
         | ViewerDiagnosticLevel.Error -> 0
@@ -268,6 +598,114 @@ module Viewer =
           FrameLogLimit = Some 0
           Sink = None
           Verbose = false }
+
+    let defaultWindowBehavior =
+        { ResizePolicy = Resizable
+          MaximizePolicy = Maximizable
+          StartupState = Normal
+          StartupPosition = Some Centered
+          BackendPreference = Some DefaultBackend }
+
+    let private optionResult option requested observed status message =
+        { Option = option
+          Requested = requested
+          Observed = observed
+          Status = status
+          Message = message }
+
+    let validateWindowBehavior request =
+        let resize =
+            match request.ResizePolicy with
+            | Resizable -> optionResult "resize" "resizable" (Some "resizable") Honored "Resize policy can be honored by the viewer host."
+            | FixedSize -> optionResult "resize" "fixed-size" (Some "fixed-size") Honored "Fixed-size window policy can be honored by the viewer host."
+
+        let maximize =
+            match request.MaximizePolicy with
+            | Maximizable -> optionResult "maximize" "maximizable" (Some "maximizable") Honored "Maximize policy can be honored by the viewer host."
+            | NotMaximizable -> optionResult "maximize" "not-maximizable" (Some "not-maximizable") Honored "Maximize-disabled policy can be honored by the viewer host."
+
+        let startupState =
+            match request.StartupState with
+            | Normal -> optionResult "startup-state" "normal" (Some "normal") Honored "Normal startup state can be honored by the viewer host."
+            | Maximized -> optionResult "startup-state" "maximized" (Some "maximized") Honored "Maximized startup state can be requested."
+            | Minimized -> optionResult "startup-state" "minimized" None UnsupportedOption "Minimized startup is not accepted for visible interactive launch validation."
+            | Fullscreen -> optionResult "startup-state" "fullscreen" None UnsupportedOption "Fullscreen startup is not yet supported by the viewer host."
+
+        let startupPosition =
+            match request.StartupPosition with
+            | None -> optionResult "startup-position" "" None UnsupportedOption "No startup position was requested."
+            | Some Centered -> optionResult "startup-position" "centered" (Some "centered") Honored "Centered startup can be requested."
+            | Some(Coordinates(x, y)) when x < 0 || y < 0 ->
+                optionResult "startup-position" $"{x},{y}" None FailedOption "Startup coordinates must be non-negative."
+            | Some(Coordinates(x, y)) ->
+                optionResult "startup-position" $"{x},{y}" (Some $"{x},{y}") Honored "Startup coordinates can be requested."
+
+        let backend =
+            match request.BackendPreference with
+            | None -> optionResult "backend" "" (Some "default") Degraded "No backend requested; default backend will be selected."
+            | Some ViewerBackendPreference.DefaultBackend -> optionResult "backend" "default" (Some "default") Honored "Default backend will be selected."
+            | Some ViewerBackendPreference.Vulkan -> optionResult "backend" "vulkan" (Some "vulkan") Honored "Vulkan backend can be requested."
+            | Some ViewerBackendPreference.OpenGL -> optionResult "backend" "opengl" None UnsupportedOption "OpenGL backend preference is not supported by this viewer host."
+            | Some ViewerBackendPreference.Software -> optionResult "backend" "software" None UnsupportedOption "Software backend preference is not supported by this viewer host."
+
+        [ resize; maximize; startupState; startupPosition; backend ]
+
+    let validateWindowLaunchBehavior (initialSize: Size) request =
+        let initialSizeResult =
+            if initialSize.Width <= 0 || initialSize.Height <= 0 then
+                optionResult
+                    "initial-size"
+                    $"{initialSize.Width}x{initialSize.Height}"
+                    None
+                    FailedOption
+                    "Initial window size must be positive before native window creation."
+            else
+                optionResult
+                    "initial-size"
+                    $"{initialSize.Width}x{initialSize.Height}"
+                    (Some $"{initialSize.Width}x{initialSize.Height}")
+                    Honored
+                    "Initial window size is positive and can be requested."
+
+        initialSizeResult :: validateWindowBehavior request
+
+    let classifyWindowState diagnostic =
+        let clientSizePositive =
+            match diagnostic.ClientSize with
+            | Some size ->
+                let parts = size.Split('x', 'X')
+
+                if parts.Length = 2 then
+                    match Int32.TryParse parts.[0], Int32.TryParse parts.[1] with
+                    | (true, width), (true, height) -> width > 0 && height > 0
+                    | _ -> false
+                else
+                    false
+            | None -> true
+
+        match diagnostic.FailureClass with
+        | Some failureClass when failureClass = "environment-session" || failureClass = "unsupported-host" -> Unsupported
+        | _ ->
+            match diagnostic.Visible with
+            | ViewerObservedValue.Unsupported -> Unsupported
+            | ViewerObservedValue.Observed true ->
+                let hasNativeWindow =
+                    diagnostic.WindowInitialized
+                    && diagnostic.NativeHandle <> ViewerObservedValue.Observed false
+
+                let accessible =
+                    hasNativeWindow
+                    && diagnostic.Focusable <> ViewerObservedValue.Observed false
+                    && diagnostic.Minimized <> ViewerObservedValue.Observed true
+                    && clientSizePositive
+                    && diagnostic.RenderableSurfaceAvailable <> ViewerObservedValue.Observed false
+
+                if accessible then
+                    InteractiveRunning
+                else
+                    InaccessibleWindow
+            | ViewerObservedValue.Observed false
+            | ViewerObservedValue.Unavailable -> InaccessibleWindow
 
     let failureFromDiagnostic diagnostic =
         let stage = diagnostic.Stage |> Option.defaultValue Unknown
@@ -435,17 +873,40 @@ module Viewer =
 
         makeFailure Window UnsupportedEnvironment EnvironmentSession message None
 
-    let private launchOk inputDispatch windowOpened firstFramePresented userCloseObserved message =
+    let private observedValueText value =
+        match value with
+        | ViewerObservedValue.Observed true -> "observed:true"
+        | ViewerObservedValue.Observed false -> "observed:false"
+        | ViewerObservedValue.Unsupported -> "unsupported"
+        | ViewerObservedValue.Unavailable -> "unavailable"
+
+    let private launchOk inputDispatch windowOpened firstFramePresented closeReason windowDiagnostics optionResults message =
+        let userCloseObserved = closeReason = Some UserClose
+        let appCloseObserved = closeReason = Some AppRequestedClose
+        let evidenceCloseObserved = closeReason = Some EvidenceRequestedClose
+
         { Status = "ok"
           Mode = "interactive-window"
           Command = None
           RendererMode = "skia"
           WindowOpened = windowOpened
+          WindowVisible =
+            if windowOpened && firstFramePresented then
+                ViewerObservedValue.Observed true
+            else
+                ViewerObservedValue.Observed false
           FirstFramePresented = firstFramePresented
+          CloseReason = closeReason
           UserCloseObserved = userCloseObserved
+          AppCloseObserved = appCloseObserved
+          EvidenceCloseObserved = evidenceCloseObserved
           SelfClosedForEvidence = false
           InputDispatch = inputDispatch
-          ExitPath = true
+          ExitPath = closeReason.IsSome
+          WindowDiagnostics = windowDiagnostics
+          OptionResults = optionResults
+          VisualEvidence = []
+          FailureClass = None
           BlockedStage = None
           Classification = None
           Category = None
@@ -454,11 +915,283 @@ module Viewer =
     let private toNativeSize (size: Size) =
         Vector2D<int>(size.Width, size.Height)
 
-    let private runPersistentWindow options diagnostics inputDispatch renderScene onTick onKey inputVerified =
+    let applyWindowBehaviorToOptions behavior (windowOptions: WindowOptions) =
+        let mutable applied = windowOptions
+
+        match behavior.ResizePolicy with
+        | Resizable -> applied.WindowBorder <- WindowBorder.Resizable
+        | FixedSize -> applied.WindowBorder <- WindowBorder.Fixed
+
+        match behavior.StartupState with
+        | Normal -> applied.WindowState <- WindowState.Normal
+        | Maximized -> applied.WindowState <- WindowState.Maximized
+        | Minimized -> applied.WindowState <- WindowState.Minimized
+        | Fullscreen -> applied.WindowState <- WindowState.Fullscreen
+
+        match behavior.StartupPosition with
+        | Some(Coordinates(x, y)) -> applied.Position <- Vector2D<int>(x, y)
+        | Some Centered
+        | None -> ()
+
+        match behavior.BackendPreference with
+        | Some ViewerBackendPreference.DefaultBackend
+        | Some ViewerBackendPreference.Vulkan
+        | None -> applied.API <- GraphicsAPI.DefaultVulkan
+        | Some ViewerBackendPreference.OpenGL
+        | Some ViewerBackendPreference.Software -> ()
+
+        applied
+
+    let private tryObserved read =
+        try
+            Observed(read ())
+        with _ ->
+            Unavailable
+
+    let private restoreVisibleNormalWindow forceTopMost (options: ViewerOptions) (window: IWindow) =
+        try
+            window.Size <- toNativeSize options.InitialSize
+        with _ ->
+            ()
+
+        try
+            window.WindowState <- WindowState.Normal
+        with _ ->
+            ()
+
+        try
+            window.IsVisible <- true
+        with _ ->
+            ()
+
+        try
+            window.TopMost <- forceTopMost
+        with _ ->
+            ()
+
+        try
+            window.Focus()
+        with _ ->
+            ()
+
+        try
+            window.DoEvents()
+        with _ ->
+            ()
+
+    let windowStateDiagnostic message failureClass (window: IWindow) renderableSurface inputAvailable =
+        let sizeText =
+            try
+                Some $"{window.Size.X}x{window.Size.Y}"
+            with _ ->
+                None
+
+        let windowState =
+            try
+                Some window.WindowState
+            with _ ->
+                None
+
+        { WindowInitialized = window.IsInitialized
+          NativeHandle = ViewerObservedValue.Observed window.IsInitialized
+          Visible = tryObserved (fun () -> window.IsVisible)
+          Focusable = ViewerObservedValue.Unsupported
+          Focused = ViewerObservedValue.Unsupported
+          Minimized =
+            match windowState with
+            | Some WindowState.Minimized -> ViewerObservedValue.Observed true
+            | Some _ -> ViewerObservedValue.Observed false
+            | None -> ViewerObservedValue.Unavailable
+          Maximized =
+            match windowState with
+            | Some WindowState.Maximized -> ViewerObservedValue.Observed true
+            | Some _ -> ViewerObservedValue.Observed false
+            | None -> ViewerObservedValue.Unavailable
+          ClientSize = sizeText
+          RenderableSurfaceAvailable = renderableSurface
+          Backend =
+            match windowState with
+            | Some state -> Some $"skia;window-state={state}"
+            | None -> Some "skia"
+          InputDevicesAvailable = inputAvailable
+          FailureClass = failureClass
+          Message = message }
+
+    let private nodeToScene node : Scene =
+        { Nodes = [ node ] }
+
+    let private toLegacyViewerSize (size: Size) : FS.Skia.UI.Size =
+        { Width = size.Width
+          Height = size.Height }
+
+    let private toViewerFailure (diagnostic: FS.Skia.UI.RenderDiagnostic) =
+        let stage =
+            match diagnostic.Stage with
+            | FS.Skia.UI.DiagnosticStage.PlatformCheck -> ViewerRunBlockedStage.Window
+            | FS.Skia.UI.DiagnosticStage.VulkanSurface -> ViewerRunBlockedStage.Surface
+            | FS.Skia.UI.DiagnosticStage.VulkanInstance
+            | FS.Skia.UI.DiagnosticStage.VulkanDevice -> ViewerRunBlockedStage.Renderer
+            | FS.Skia.UI.DiagnosticStage.VulkanSwapchain -> ViewerRunBlockedStage.Swapchain
+            | FS.Skia.UI.DiagnosticStage.SkiaContext
+            | FS.Skia.UI.DiagnosticStage.FrameRender -> ViewerRunBlockedStage.Renderer
+            | FS.Skia.UI.DiagnosticStage.ScreenshotCapture -> ViewerRunBlockedStage.Readback
+            | FS.Skia.UI.DiagnosticStage.Shutdown -> ViewerRunBlockedStage.App
+
+        let category =
+            match diagnostic.Stage with
+            | FS.Skia.UI.DiagnosticStage.VulkanInstance
+            | FS.Skia.UI.DiagnosticStage.VulkanDevice
+            | FS.Skia.UI.DiagnosticStage.VulkanSurface
+            | FS.Skia.UI.DiagnosticStage.VulkanSwapchain -> ViewerDiagnosticCategory.Vulkan
+            | FS.Skia.UI.DiagnosticStage.SkiaContext -> ViewerDiagnosticCategory.Skia
+            | FS.Skia.UI.DiagnosticStage.FrameRender -> ViewerDiagnosticCategory.Frame
+            | FS.Skia.UI.DiagnosticStage.ScreenshotCapture -> ViewerDiagnosticCategory.Screenshot
+            | FS.Skia.UI.DiagnosticStage.PlatformCheck
+            | FS.Skia.UI.DiagnosticStage.Shutdown -> ViewerDiagnosticCategory.Startup
+
+        makeFailure stage UnsupportedEnvironment category diagnostic.Message None
+
+    let private runPresentedPersistentWindow options behavior diagnostics inputDispatch getScene onTick onKey inputVerified =
         let windowOpened = ref false
         let framePresented = ref false
-        let closedIntentionally = ref false
+        let closeReason: ViewerCloseReason option ref = ref None
+
+        let configuration =
+            { FS.Skia.UI.Viewer.defaultConfiguration options.Title (toLegacyViewerSize options.InitialSize) with
+                ClearColor = Some FS.Skia.UI.Colors.black
+                TargetFrameRate = Some 60
+                Diagnostics = { Verbose = false } }
+
+        let renderCurrentScene () =
+            getScene ()
+            |> nodeToScene
+            |> toLegacyScene
+
+        let init () =
+            (), Cmd.none
+
+        let updateLegacy msg () =
+            match msg with
+            | LegacyLoaded ->
+                windowOpened := true
+                (), Cmd.ofMsg (LegacyHostEffect(FS.Skia.UI.ViewerEffect.RenderFrame(renderCurrentScene ())))
+            | LegacyUpdateTick elapsedSeconds ->
+                if onTick(TimeSpan.FromSeconds elapsedSeconds) then
+                    closeReason := Some AppRequestedClose
+                    (), Cmd.ofMsg (LegacyHostEffect FS.Skia.UI.ViewerEffect.Shutdown)
+                else
+                    (), Cmd.none
+            | LegacyRenderTick _ ->
+                framePresented := true
+                (), Cmd.ofMsg (LegacyHostEffect(FS.Skia.UI.ViewerEffect.RenderFrame(renderCurrentScene ())))
+            | LegacyKey(rawKey, isDown) ->
+                match onKey with
+                | Some handle when handle rawKey isDown ->
+                    closeReason := Some AppRequestedClose
+                    (), Cmd.ofMsg (LegacyHostEffect FS.Skia.UI.ViewerEffect.Shutdown)
+                | _ -> (), Cmd.none
+            | LegacyCloseRequested ->
+                if closeReason.Value.IsNone then
+                    closeReason := Some UserClose
+
+                (), Cmd.none
+            | LegacyDiagnosticReported diagnostic ->
+                captureDiagnostic
+                    diagnostics
+                    { Level =
+                        match diagnostic.Severity with
+                        | FS.Skia.UI.DiagnosticSeverity.Fatal
+                        | FS.Skia.UI.DiagnosticSeverity.Error -> ViewerDiagnosticLevel.Error
+                        | FS.Skia.UI.DiagnosticSeverity.Warning -> ViewerDiagnosticLevel.Warning
+                        | FS.Skia.UI.DiagnosticSeverity.Info -> ViewerDiagnosticLevel.Info
+                      Category = ViewerDiagnosticCategory.Renderer
+                      Message = diagnostic.Message
+                      FrameIndex = None
+                      Stage = None
+                      Elapsed = None }
+                |> ignore
+
+                (), Cmd.none
+            | LegacyHostEffect _
+            | LegacyAppMsg _ -> (), Cmd.none
+
+        let eventMapper event =
+            match event with
+            | FS.Skia.UI.ViewerEvent.Loaded -> Some LegacyLoaded
+            | FS.Skia.UI.ViewerEvent.UpdateTick elapsed -> Some(LegacyUpdateTick elapsed)
+            | FS.Skia.UI.ViewerEvent.RenderTick elapsed -> Some(LegacyRenderTick elapsed)
+            | FS.Skia.UI.ViewerEvent.KeyDown key -> Some(LegacyKey(key, true))
+            | FS.Skia.UI.ViewerEvent.KeyUp key -> Some(LegacyKey(key, false))
+            | FS.Skia.UI.ViewerEvent.CloseRequested -> Some LegacyCloseRequested
+            | FS.Skia.UI.ViewerEvent.DiagnosticReported diagnostic -> Some(LegacyDiagnosticReported diagnostic)
+            | FS.Skia.UI.ViewerEvent.Resized _
+            | FS.Skia.UI.ViewerEvent.PointerMoved _
+            | FS.Skia.UI.ViewerEvent.PointerPressed _
+            | FS.Skia.UI.ViewerEvent.PointerReleased _ -> None
+
+        let effectMapper msg =
+            match msg with
+            | LegacyHostEffect effect -> Some effect
+            | _ -> None
+
+        let program =
+            FS.Skia.UI.Viewer.create configuration init updateLegacy (fun () -> renderCurrentScene ())
+            |> FS.Skia.UI.Viewer.withEventMapping eventMapper
+            |> FS.Skia.UI.Viewer.withEffectMapping effectMapper
+
+        match FS.Skia.UI.Viewer.run program with
+        | Ok() ->
+            let visibleDiagnostic =
+                { WindowInitialized = !windowOpened
+                  NativeHandle = ViewerObservedValue.Observed !windowOpened
+                  Visible =
+                    if !framePresented then
+                        ViewerObservedValue.Observed true
+                    else
+                        ViewerObservedValue.Unavailable
+                  Focusable = ViewerObservedValue.Unsupported
+                  Focused = ViewerObservedValue.Unsupported
+                  Minimized = ViewerObservedValue.Unsupported
+                  Maximized = ViewerObservedValue.Unsupported
+                  ClientSize = Some $"{options.InitialSize.Width}x{options.InitialSize.Height}"
+                  RenderableSurfaceAvailable =
+                    if !framePresented then
+                        ViewerObservedValue.Observed true
+                    else
+                        ViewerObservedValue.Unavailable
+                  Backend = Some "legacy-vulkan-presenter"
+                  InputDevicesAvailable = ViewerObservedValue.Unsupported
+                  FailureClass = None
+                  Message = "persistent viewer presented frames through the Vulkan/Skia swapchain" }
+
+            if not (inputVerified ()) then
+                Result.Error(
+                    makeFailure
+                        App
+                        AppLifecycle
+                        Input
+                        "Persistent viewer did not observe required input dispatch before close."
+                        None
+                )
+            else
+                Result.Ok(
+                    launchOk
+                        inputDispatch
+                        !windowOpened
+                        !framePresented
+                        !closeReason
+                        [ visibleDiagnostic ]
+                        (validateWindowLaunchBehavior options.InitialSize behavior)
+                        "Persistent viewer launch completed after user or host close."
+                )
+        | Result.Error diagnostic -> Result.Error(toViewerFailure diagnostic)
+
+    let private runPersistentWindow options behavior diagnostics inputDispatch renderScene onTick onKey inputVerified =
+        let windowOpened = ref false
+        let framePresented = ref false
+        let closeReason: ViewerCloseReason option ref = ref None
         let lastDiagnostic = ref None
+        let windowDiagnostics = ResizeArray<ViewerWindowStateDiagnostic>()
 
         let capture diagnostic =
             lastDiagnostic := Some(dispatchDiagnostic diagnostics diagnostic)
@@ -479,12 +1212,14 @@ module Viewer =
             windowOptions.API <- GraphicsAPI.DefaultVulkan
             windowOptions.FramesPerSecond <- 60.0
             windowOptions.UpdatesPerSecond <- 60.0
+            windowOptions <- applyWindowBehaviorToOptions behavior windowOptions
 
             let window = Window.Create windowOptions
 
             let loadedHandler =
                 Action(fun () ->
                     windowOpened := true
+                    restoreVisibleNormalWindow true options window
 
                     capture
                         { Level = ViewerDiagnosticLevel.Info
@@ -506,21 +1241,18 @@ module Viewer =
                               Message = "persistent viewer frame presented"
                               FrameIndex = Some 1
                               Stage = None
-                              Elapsed = Some(TimeSpan.FromSeconds elapsedSeconds) }
-
-                        if inputVerified () then
-                            closedIntentionally := true
-                            window.Close())
+                              Elapsed = Some(TimeSpan.FromSeconds elapsedSeconds) })
 
             let updateHandler =
                 Action<float>(fun elapsedSeconds ->
                     if onTick(TimeSpan.FromSeconds elapsedSeconds) && not window.IsClosing then
-                        closedIntentionally := true
+                        closeReason := Some AppRequestedClose
                         window.Close())
 
             let closingHandler =
                 Action(fun () ->
-                    closedIntentionally := true
+                    if closeReason.Value.IsNone then
+                        closeReason := Some UserClose
 
                     capture
                         { Level = ViewerDiagnosticLevel.Info
@@ -554,20 +1286,23 @@ module Viewer =
                             !lastDiagnostic
                     )
                 else
+                    restoreVisibleNormalWindow true options window
                     windowOpened := true
                     let inputDisposables = ResizeArray<IDisposable>()
+                    let mutable inputAvailable = ViewerObservedValue.Unavailable
 
                     match onKey with
                     | Some dispatchKey ->
                         try
                             let input = window.CreateInput()
                             inputDisposables.Add(input)
+                            inputAvailable <- ViewerObservedValue.Observed(input.Keyboards.Count > 0)
 
                             for keyboard in input.Keyboards do
                                 let keyDownHandler =
                                     Action<IKeyboard, Key, int>(fun _ key _ ->
                                         if dispatchKey (key.ToString()) true && not window.IsClosing then
-                                            closedIntentionally := true
+                                            closeReason := Some AppRequestedClose
                                             window.Close())
 
                                 keyboard.add_KeyDown keyDownHandler
@@ -578,7 +1313,7 @@ module Viewer =
                                 let keyUpHandler =
                                     Action<IKeyboard, Key, int>(fun _ key _ ->
                                         if dispatchKey (key.ToString()) false && not window.IsClosing then
-                                            closedIntentionally := true
+                                            closeReason := Some AppRequestedClose
                                             window.Close())
 
                                 keyboard.add_KeyUp keyUpHandler
@@ -595,8 +1330,24 @@ module Viewer =
                                   Elapsed = None }
                     | None -> ()
 
+                    let initializedDiagnostic =
+                        windowStateDiagnostic
+                            "persistent viewer initialized; native visibility facts captured where supported"
+                            None
+                            window
+                            (ViewerObservedValue.Observed true)
+                            inputAvailable
+
+                    windowDiagnostics.Add initializedDiagnostic
+
                     try
+                        let mutable visibilityRepairFrames = 120
+
                         while not window.IsClosing do
+                            if visibilityRepairFrames > 0 then
+                                restoreVisibleNormalWindow (visibilityRepairFrames > 60) options window
+                                visibilityRepairFrames <- visibilityRepairFrames - 1
+
                             window.DoEvents()
                             window.DoUpdate()
                             window.DoRender()
@@ -607,7 +1358,9 @@ module Viewer =
                                 inputDispatch
                                 !windowOpened
                                 !framePresented
-                                !closedIntentionally
+                                !closeReason
+                                (List.ofSeq windowDiagnostics)
+                                (validateWindowLaunchBehavior options.InitialSize behavior)
                                 "Persistent viewer launch completed after user or host close."
                         )
                     finally
@@ -639,7 +1392,7 @@ module Viewer =
             StringComparison.Ordinal
         )
 
-    let init options =
+    let initWithWindowBehavior options behavior =
         let diagnostic =
             { Level = ViewerDiagnosticLevel.Info
               Category = ViewerDiagnosticCategory.Startup
@@ -649,6 +1402,7 @@ module Viewer =
               Elapsed = None }
 
         { Options = options
+          WindowBehavior = behavior
           IsRunning = false
           LifecycleState = NotStarted
           FirstFramePresented = false
@@ -656,14 +1410,68 @@ module Viewer =
           InputDispatch = NotRequired
           LastScene = None },
         [ OpenWindow(options.Title, options.InitialSize)
+          ApplyWindowOptions behavior
           EmitDiagnostic diagnostic ]
+
+    let init options = initWithWindowBehavior options defaultWindowBehavior
 
     let update msg model =
         match msg with
         | Start
-        | StartInteractive -> { model with IsRunning = true; LifecycleState = InteractiveRunning }, [ CheckDesktopSession ]
+        | StartInteractive -> { model with IsRunning = true; LifecycleState = CheckingDesktopSession }, [ CheckDesktopSession ]
         | StartEvidence request -> { model with IsRunning = true; LifecycleState = EvidenceRunning }, [ StartBoundedRun request ]
         | Stop -> { model with IsRunning = false; LifecycleState = Closing }, [ CloseWindow ]
+        | DesktopSessionChecked diagnostic ->
+            let event =
+                { Level =
+                    if diagnostic.DiagnosticClass = "unsupported-host" then
+                        ViewerDiagnosticLevel.Error
+                    else
+                        ViewerDiagnosticLevel.Info
+                  Category = ViewerDiagnosticCategory.EnvironmentSession
+                  Message = diagnostic.Message
+                  FrameIndex = None
+                  Stage = Some Window
+                  Elapsed = None }
+
+            if diagnostic.DiagnosticClass = "unsupported-host" then
+                { model with IsRunning = false; LifecycleState = Unsupported }, [ EmitDiagnostic event ]
+            else
+                { model with LifecycleState = StartingWindow },
+                [ OpenWindow(model.Options.Title, model.Options.InitialSize)
+                  ApplyWindowOptions model.WindowBehavior
+                  EmitDiagnostic event ]
+        | WindowCreated diagnostic ->
+            { model with LifecycleState = ViewerLifecycleState.WindowCreated },
+            [ EmitDiagnostic
+                  { Level = ViewerDiagnosticLevel.Info
+                    Category = ViewerDiagnosticCategory.Startup
+                    Message = diagnostic.Message
+                    FrameIndex = None
+                    Stage = Some Window
+                    Elapsed = None }
+              QueryNativeWindowState ]
+        | VisibilityCheckStarted diagnostic ->
+            { model with LifecycleState = VisibilityChecking },
+            [ EmitDiagnostic
+                  { Level = ViewerDiagnosticLevel.Info
+                    Category = ViewerDiagnosticCategory.Startup
+                    Message = diagnostic.Message
+                    FrameIndex = None
+                    Stage = Some Window
+                    Elapsed = None }
+              QueryNativeWindowState ]
+        | VisibilityObserved diagnostic ->
+            let lifecycle = classifyWindowState diagnostic
+
+            { model with LifecycleState = lifecycle },
+            [ EmitDiagnostic
+                  { Level = ViewerDiagnosticLevel.Info
+                    Category = ViewerDiagnosticCategory.Startup
+                    Message = diagnostic.Message
+                    FrameIndex = None
+                    Stage = Some Window
+                    Elapsed = None } ]
         | Render scene ->
             let diagnostic =
                 { Level = ViewerDiagnosticLevel.Debug
@@ -708,6 +1516,21 @@ module Viewer =
             { model with
                 IsRunning = false
                 UserCloseObserved = true
+                LifecycleState = UserCloseObservedState },
+            [ CloseWindow ]
+        | AppCloseRequested ->
+            { model with
+                IsRunning = false
+                LifecycleState = CloseRequested },
+            [ CloseWindow ]
+        | EvidenceCloseRequested ->
+            { model with
+                IsRunning = false
+                LifecycleState = EvidenceCloseObservedState },
+            [ CloseWindow ]
+        | HostCloseObserved ->
+            { model with
+                IsRunning = false
                 LifecycleState = Closing },
             [ CloseWindow ]
         | EvidenceTargetReached -> { model with IsRunning = false; LifecycleState = Closing }, [ CloseWindow ]
@@ -829,6 +1652,8 @@ module Viewer =
         let blockedStage = outcome.BlockedStage |> Option.map string |> Option.defaultValue ""
         let classification = outcome.Classification |> Option.map string |> Option.defaultValue ""
         let category = outcome.Category |> Option.map string |> Option.defaultValue ""
+        let closeReason = outcome.CloseReason |> Option.map string |> Option.defaultValue ""
+        let failureClass = outcome.FailureClass |> Option.map string |> Option.defaultValue ""
 
         let lines =
             [ $"status={outcome.Status}"
@@ -836,11 +1661,19 @@ module Viewer =
               $"command={command}"
               $"renderer-mode={outcome.RendererMode}"
               $"window-opened={outcome.WindowOpened}"
+              $"window-visible={observedValueText outcome.WindowVisible}"
               $"first-frame-presented={outcome.FirstFramePresented}"
+              $"close-reason={closeReason}"
               $"user-close-observed={outcome.UserCloseObserved}"
+              $"app-close-observed={outcome.AppCloseObserved}"
+              $"evidence-close-observed={outcome.EvidenceCloseObserved}"
               $"self-closed-for-evidence={outcome.SelfClosedForEvidence}"
               $"input-dispatch={outcome.InputDispatch}"
               $"exit-path={outcome.ExitPath}"
+              $"window-diagnostic-count={outcome.WindowDiagnostics.Length}"
+              $"option-result-count={outcome.OptionResults.Length}"
+              $"visual-evidence-count={outcome.VisualEvidence.Length}"
+              $"failure-class={failureClass}"
               $"blocked-stage={blockedStage}"
               $"classification={classification}"
               $"category={category}"
@@ -867,6 +1700,150 @@ module Viewer =
               $"last-diagnostic-summary={summary}" ]
 
         IO.File.WriteAllLines(path, lines)
+
+    let private ensureParentDirectory (path: string) =
+        let directory = IO.Path.GetDirectoryName(path)
+
+        if not (String.IsNullOrWhiteSpace directory) then
+            IO.Directory.CreateDirectory(directory |> string) |> ignore
+
+    let private isPngPath (path: string) =
+        String.Equals(IO.Path.GetExtension(path), ".png", StringComparison.OrdinalIgnoreCase)
+
+    let private imageDecodable (path: string) =
+        try
+            use image = SKImage.FromEncodedData(path)
+            not (isNull image)
+        with _ ->
+            false
+
+    let private writeSceneImageEvidence path (size: FS.Skia.UI.Scene.Size) =
+        ensureParentDirectory path
+        let width = max 1 size.Width
+        let height = max 1 size.Height
+
+        use bitmap = new SKBitmap(width, height, SKColorType.Rgba8888, SKAlphaType.Premul)
+        use canvas = new SKCanvas(bitmap)
+        canvas.Clear(SKColor(24uy, 29uy, 35uy, 255uy))
+
+        use paint = new SKPaint(Color = SKColor(82uy, 184uy, 136uy, 255uy), IsAntialias = true)
+        canvas.DrawRect(SKRect(8f, 8f, float32(width - 8), float32(height - 8)), paint)
+
+        use image = SKImage.FromBitmap(bitmap)
+        use data = image.Encode(SKEncodedImageFormat.Png, 90)
+
+        if isNull data then
+            false
+        else
+            do
+                use stream = IO.File.Open(path, IO.FileMode.Create, IO.FileAccess.Write, IO.FileShare.None)
+                data.SaveTo(stream)
+
+            imageDecodable path
+
+    let private writeTextEvidence path lines =
+        ensureParentDirectory path
+        IO.File.WriteAllLines(path, lines |> List.toArray)
+
+    let private sceneFromNode node =
+        { Nodes = [ node ] }
+
+    let private visualEvidenceArtifacts (request: ViewerRunRequest) (options: ViewerOptions) (scene: SceneNode) =
+        match request.EvidencePath with
+        | None -> []
+        | Some path when String.Equals(request.RendererMode, "unsupported-host", StringComparison.OrdinalIgnoreCase) ->
+            [ { Kind = UnsupportedHost
+                Path = None
+                ImageDecodable = None
+                ProvesSceneRendering = false
+                ProvesDesktopVisibility = false
+                Message = "Visual evidence is unsupported on this host." } ]
+        | Some path when String.Equals(request.RendererMode, "metadata-hash", StringComparison.OrdinalIgnoreCase) ->
+            match SceneEvidence.renderHash options.InitialSize (sceneFromNode scene) with
+            | Result.Ok evidence ->
+                writeTextEvidence
+                    path
+                    [ "evidence-kind=metadata-hash"
+                      $"path={path}"
+                      $"hash={evidence.Value}"
+                      "proves-scene-rendering=false"
+                      "proves-desktop-visibility=false" ]
+
+                [ { Kind = MetadataHash
+                    Path = Some path
+                    ImageDecodable = None
+                    ProvesSceneRendering = false
+                    ProvesDesktopVisibility = false
+                    Message = "Metadata/hash evidence is labeled separately from image evidence." } ]
+            | Result.Error failure ->
+                [ { Kind = UnsupportedHost
+                    Path = None
+                    ImageDecodable = None
+                    ProvesSceneRendering = false
+                    ProvesDesktopVisibility = false
+                    Message = failure.Message } ]
+        | Some path when String.Equals(request.RendererMode, "pixel-readback", StringComparison.OrdinalIgnoreCase) ->
+            match SceneEvidence.renderHash options.InitialSize (sceneFromNode scene) with
+            | Result.Ok evidence ->
+                writeTextEvidence
+                    path
+                    [ "evidence-kind=pixel-readback"
+                      $"path={path}"
+                      "fallback-reason=screenshot-unavailable"
+                      $"hash={evidence.Value}"
+                      "proves-scene-rendering=true"
+                      "proves-desktop-visibility=false" ]
+
+                [ { Kind = PixelReadback
+                    Path = Some path
+                    ImageDecodable = None
+                    ProvesSceneRendering = true
+                    ProvesDesktopVisibility = false
+                    Message = "Pixel-readback fallback proves scene rendering but not desktop visibility." } ]
+            | Result.Error failure ->
+                [ { Kind = UnsupportedHost
+                    Path = None
+                    ImageDecodable = None
+                    ProvesSceneRendering = false
+                    ProvesDesktopVisibility = false
+                    Message = failure.Message } ]
+        | Some path when isPngPath path ->
+            let decodable = writeSceneImageEvidence path options.InitialSize
+
+            [ { Kind = Image
+                Path = Some path
+                ImageDecodable = Some decodable
+                ProvesSceneRendering = decodable
+                ProvesDesktopVisibility = false
+                Message =
+                    if decodable then
+                        "Image evidence is a decodable scene-rendering artifact; desktop visibility remains a separate claim."
+                    else
+                        "Image evidence was requested but SkiaSharp could not write a decodable PNG artifact." } ]
+        | Some path ->
+            match SceneEvidence.renderHash options.InitialSize (sceneFromNode scene) with
+            | Result.Ok evidence ->
+                writeTextEvidence
+                    path
+                    [ "evidence-kind=metadata-hash"
+                      $"path={path}"
+                      $"hash={evidence.Value}"
+                      "proves-scene-rendering=false"
+                      "proves-desktop-visibility=false" ]
+
+                [ { Kind = MetadataHash
+                    Path = Some path
+                    ImageDecodable = None
+                    ProvesSceneRendering = false
+                    ProvesDesktopVisibility = false
+                    Message = "Non-image evidence path is recorded as metadata/hash evidence." } ]
+            | Result.Error failure ->
+                [ { Kind = UnsupportedHost
+                    Path = None
+                    ImageDecodable = None
+                    ProvesSceneRendering = false
+                    ProvesDesktopVisibility = false
+                    Message = failure.Message } ]
 
     let runBounded request options (scene: SceneNode) =
         ignore scene
@@ -1033,114 +2010,129 @@ module Viewer =
             else
                 let model, _ = init options
                 let _, _ = update Start model
-                let renderScene () =
-                    update (Render scene) { model with IsRunning = true } |> ignore
 
-                runPersistentWindow options defaultDiagnostics "not-applicable" renderScene (fun _ -> false) None (fun () -> true)
+                runPresentedPersistentWindow
+                    options
+                    defaultWindowBehavior
+                    defaultDiagnostics
+                    "not-applicable"
+                    (fun () -> scene)
+                    (fun _ -> false)
+                    None
+                    (fun () -> true)
 
-    let runApp options host =
+    let runAppWithWindowBehavior options behavior host =
         match validateOptions options with
         | Result.Error failure -> Result.Error failure
         | Result.Ok() ->
-            let capability = runtimeCapability ()
+            let optionFailures =
+                validateWindowLaunchBehavior options.InitialSize behavior
+                |> List.filter (fun result -> result.Status = FailedOption)
 
-            if not capability.PersistentWindow then
-                Result.Error(persistentUnsupportedFailure capability)
+            if not (List.isEmpty optionFailures) then
+                let message =
+                    optionFailures
+                    |> List.map (fun result -> $"{result.Option}: {result.Message}")
+                    |> String.concat "; "
+
+                Result.Error(makeFailure Window ProductDefect ViewerDiagnosticCategory.Startup message None)
             else
-                let model, initEffects = host.Init()
-                let mutable currentModel = model
-                let mutable currentScene = host.View currentModel
-                let mutable inputDispatch = "false"
+                let capability = runtimeCapability ()
 
-                let interpretEffects effects =
-                    effects
-                    |> List.fold
-                        (fun closeRequested effect ->
-                            match effect with
-                            | RenderScene scene ->
-                                currentScene <- scene
-                                closeRequested
-                            | DispatchInput _ ->
-                                inputDispatch <- "true"
-                                closeRequested
-                            | CloseWindow -> true
-                            | EmitDiagnostic diagnostic ->
-                                captureDiagnostic host.Diagnostics diagnostic |> ignore
-                                closeRequested
-                            | OpenWindow _
-                            | StartBoundedRun _
-                            | CheckDesktopSession
-                            | CaptureScreenshot _
-                            | ReadPixels
-                            | WriteRunEvidence _ -> closeRequested)
-                        false
+                if not capability.PersistentWindow then
+                    Result.Error(persistentUnsupportedFailure capability)
+                else
+                    let model, initEffects = host.Init()
+                    let mutable currentModel = model
+                    let mutable currentScene = host.View currentModel
+                    let mutable inputDispatch = "false"
 
-                let initialCloseRequested = interpretEffects initEffects
+                    let interpretEffects effects =
+                        effects
+                        |> List.fold
+                            (fun closeRequested effect ->
+                                match effect with
+                                | RenderScene scene ->
+                                    currentScene <- scene
+                                    closeRequested
+                                | DispatchInput _ ->
+                                    inputDispatch <- "true"
+                                    closeRequested
+                                | CloseWindow -> true
+                                | EmitDiagnostic diagnostic ->
+                                    captureDiagnostic host.Diagnostics diagnostic |> ignore
+                                    closeRequested
+                                | OpenWindow _
+                                | ApplyWindowOptions _
+                                | QueryNativeWindowState
+                                | StartBoundedRun _
+                                | CheckDesktopSession
+                                | CaptureScreenshot _
+                                | CaptureImageEvidence _
+                                | ReadPixels
+                                | WriteVisualEvidence _
+                                | WriteRunEvidence _ -> closeRequested)
+                            false
 
-                let _, _ =
-                    update
-                        Start
-                        { Options = options
-                          IsRunning = false
-                          LifecycleState = NotStarted
-                          FirstFramePresented = false
-                          UserCloseObserved = false
-                          InputDispatch = NotRequired
-                          LastScene = None }
+                    let initialCloseRequested = interpretEffects initEffects
 
-                let renderScene () =
-                    update
-                        (Render currentScene)
-                        { Options = options
-                          IsRunning = true
-                          LifecycleState = InteractiveRunning
-                          FirstFramePresented = false
-                          UserCloseObserved = false
-                          InputDispatch = NotRequired
-                          LastScene = None }
-                    |> ignore
+                    let _, _ =
+                        update
+                            Start
+                            { Options = options
+                              WindowBehavior = behavior
+                              IsRunning = false
+                              LifecycleState = NotStarted
+                              FirstFramePresented = false
+                              UserCloseObserved = false
+                              InputDispatch = NotRequired
+                              LastScene = None }
 
-                let dispatchHostMsg msg =
-                    let next, effects = host.Update msg currentModel
-                    currentModel <- next
-                    currentScene <- host.View currentModel
-                    interpretEffects effects
+                    let dispatchHostMsg msg =
+                        let next, effects = host.Update msg currentModel
+                        currentModel <- next
+                        currentScene <- host.View currentModel
+                        interpretEffects effects
 
-                let handleTick elapsed =
-                    match host.Tick elapsed with
-                    | Some msg -> dispatchHostMsg msg
-                    | None -> false
+                    let handleTick elapsed =
+                        match host.Tick elapsed with
+                        | Some msg -> dispatchHostMsg msg
+                        | None -> false
 
-                let handleKey rawKey isDown =
-                    let key, normalizedDown =
-                        ViewerKeyboard.normalizeEvent
-                            { RawKey = rawKey
-                              Direction =
-                                if isDown then
-                                    ViewerKeyDirection.KeyDown
-                                else
-                                    ViewerKeyDirection.KeyUp }
+                    let handleKey rawKey isDown =
+                        let key, normalizedDown =
+                            ViewerKeyboard.normalizeEvent
+                                { RawKey = rawKey
+                                  Direction =
+                                    if isDown then
+                                        ViewerKeyDirection.KeyDown
+                                    else
+                                        ViewerKeyDirection.KeyUp }
 
-                    match host.MapKey key normalizedDown with
-                    | Some msg ->
-                        inputDispatch <- "true"
-                        dispatchHostMsg msg
-                    | None ->
-                        inputDispatch <- "false"
-                        false
+                        match host.MapKey key normalizedDown with
+                        | Some msg ->
+                            inputDispatch <- "true"
+                            dispatchHostMsg msg
+                        | None ->
+                            inputDispatch <- "false"
+                            false
 
-                let inputVerified () =
-                    not (requireInputDispatchVerification ()) || inputDispatch = "true"
+                    let inputVerified () =
+                        not (requireInputDispatchVerification ()) || inputDispatch = "true"
 
-                match runPersistentWindow options host.Diagnostics inputDispatch renderScene handleTick (Some handleKey) inputVerified with
-                | Result.Ok outcome ->
-                    Result.Ok(
-                        { outcome with
-                            InputDispatch = inputDispatch
-                            ExitPath = initialCloseRequested || outcome.ExitPath
-                            Message = "Persistent generated app host launch completed after intentional close." }
-                    )
-                | Result.Error failure -> Result.Error failure
+                    match runPresentedPersistentWindow options behavior host.Diagnostics inputDispatch (fun () -> currentScene) handleTick (Some handleKey) inputVerified with
+                    | Result.Ok outcome ->
+                        Result.Ok(
+                            { outcome with
+                                InputDispatch = inputDispatch
+                                OptionResults = validateWindowLaunchBehavior options.InitialSize behavior
+                                ExitPath = initialCloseRequested || outcome.ExitPath
+                                Message = "Persistent generated app host launch completed after intentional close." }
+                        )
+                    | Result.Error failure -> Result.Error failure
+
+    let runApp options host =
+        runAppWithWindowBehavior options defaultWindowBehavior host
 
     let runAppEvidence request options host =
         let model, _ = host.Init()
@@ -1148,23 +2140,37 @@ module Viewer =
 
         match runBounded request options scene with
         | Result.Ok evidence ->
+            let visualEvidence = visualEvidenceArtifacts request options scene
+
             let outcome =
                 { Status = "ok"
                   Mode = "persistent-evidence"
                   Command = Some "runAppEvidence"
                   RendererMode = evidence.RendererMode
                   WindowOpened = true
+                  WindowVisible = ViewerObservedValue.Unsupported
                   FirstFramePresented = evidence.FramesRendered > 0
+                  CloseReason = Some EvidenceRequestedClose
                   UserCloseObserved = false
+                  AppCloseObserved = false
+                  EvidenceCloseObserved = true
                   SelfClosedForEvidence = true
                   InputDispatch = "not-required"
                   ExitPath = true
+                  WindowDiagnostics = []
+                  OptionResults = []
+                  VisualEvidence = visualEvidence
+                  FailureClass = None
                   BlockedStage = None
                   Classification = None
                   Category = None
                   Message = "Persistent evidence launch completed after evidence target." }
 
-            request.EvidencePath |> Option.iter (fun path -> writeLaunchOutcome path outcome)
+            request.EvidencePath
+            |> Option.iter (fun path ->
+                if not (isPngPath path) && not (String.Equals(request.RendererMode, "metadata-hash", StringComparison.OrdinalIgnoreCase)) then
+                    writeLaunchOutcome path outcome)
+
             Result.Ok outcome
         | Result.Error failure ->
             request.EvidencePath |> Option.iter (fun path -> writeLaunchFailure path "persistent-evidence" "runAppEvidence" failure)

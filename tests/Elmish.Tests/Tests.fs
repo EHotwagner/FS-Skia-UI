@@ -14,11 +14,13 @@ let tests =
 
             match effects with
             | [ DispatchViewer(OpenWindow(title, size))
+                DispatchViewer(ApplyWindowOptions behavior)
                 DispatchViewer(EmitDiagnostic diagnostic) ] ->
                 Expect.equal title "Product" "viewer title is mapped"
                 Expect.equal size { Width = 320; Height = 240 } "viewer size is mapped"
+                Expect.equal behavior Viewer.defaultWindowBehavior "viewer startup behavior is mapped"
                 Expect.equal diagnostic.Category Startup "startup diagnostic category is mapped"
                 Expect.equal diagnostic.Stage (Some Window) "startup diagnostic stage is mapped"
-            | other -> failtestf "Expected DispatchViewer OpenWindow and startup diagnostic effects, got %A" other
+            | other -> failtestf "Expected DispatchViewer OpenWindow, ApplyWindowOptions, and startup diagnostic effects, got %A" other
         }
     ]

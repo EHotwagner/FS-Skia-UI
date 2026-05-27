@@ -4,7 +4,9 @@ open System
 open System.Diagnostics
 open System.IO
 open Elmish
+open FS.Skia.UI.KeyboardInput
 open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer
 open FS.Skia.UI.Controls
 
 module LayoutDefaults = FS.Skia.UI.Layout.Defaults
@@ -27,7 +29,6 @@ type Model =
       ActionLog: string list }
 
 type Msg =
-    | ViewerInput of ViewerEvent
     | Advance of float
     | NextSlide
     | PreviousSlide
@@ -44,7 +45,8 @@ type Msg =
     | TabChanged of string
     | MenuSelected of string
     | CollectionMsg of CollectionMsg
-    | HostEffect of ViewerEffect<Msg>
+    | HostEffect of ViewerEffect
+    | Quit
     | NoOp
 
 let width = 1280.0
@@ -148,8 +150,8 @@ let background t =
     Scene.group [
         Scene.rectangle (0.0, 0.0, width, height) (rgba 7.0 10.0 21.0 255.0)
         yield! rays
-        Scene.ellipse { X = 872.0 + wave (t * 0.6) (-48.0) 44.0; Y = 88.0; Width = 250.0; Height = 250.0 } (Paint.fill (rgba 51.0 113.0 255.0 80.0) |> Paint.withMaskFilter (MaskFilter.Blur 18.0) |> Paint.withBlendMode BlendMode.Screen)
-        Scene.ellipse { X = 104.0; Y = 436.0 + wave (t * 0.5) (-30.0) 40.0; Width = 300.0; Height = 300.0 } (Paint.fill (rgba 58.0 214.0 148.0 55.0) |> Paint.withMaskFilter (MaskFilter.Blur 20.0) |> Paint.withBlendMode BlendMode.Screen)
+        Scene.ellipse { X = 872.0 + wave (t * 0.6) (-48.0) 44.0; Y = 88.0; Width = 250.0; Height = 250.0 } (Paint.fill (rgba 51.0 113.0 255.0 80.0) |> Paint.withBlendMode BlendMode.Screen)
+        Scene.ellipse { X = 104.0; Y = 436.0 + wave (t * 0.5) (-30.0) 40.0; Width = 300.0; Height = 300.0 } (Paint.fill (rgba 58.0 214.0 148.0 55.0) |> Paint.withBlendMode BlendMode.Screen)
     ]
 
 let header title subtitle =
@@ -195,7 +197,7 @@ let init () : Model * Cmd<Msg> =
       Collection = collection
       Diagnostics = []
       ActionLog = [ "Loaded Controls demo reel" ] },
-    Cmd.ofMsg (HostEffect InitializeRenderer)
+    Cmd.none
 
 let chartSeries t name phase =
     { Name = name
@@ -624,46 +626,16 @@ let sceneFor model =
 
 let view model = sceneFor model
 
+let sceneNode (scene: Scene) =
+    Group [ scene ]
+
 let render model =
-    Cmd.ofMsg (HostEffect(RenderFrame(view model)))
+    Cmd.ofMsg (HostEffect(RenderScene(sceneNode (view model))))
 
 let rec update msg model =
     let withRender next = next, render next
 
     match msg with
-    | ViewerInput event ->
-        match event with
-        | Loaded -> model, render model
-        | RenderTick elapsed
-        | UpdateTick elapsed -> update (Advance elapsed) model
-        | Resized size -> withRender { model with Size = size }
-        | ViewerEvent.KeyDown "Right"
-        | ViewerEvent.KeyDown "Space" -> update NextSlide model
-        | ViewerEvent.KeyDown "Left" -> update PreviousSlide model
-        | ViewerEvent.KeyDown "R" -> update Restart model
-        | ViewerEvent.KeyDown "Enter" -> update SaveRequested model
-        | ViewerEvent.KeyDown "T" ->
-            let nextName =
-                if model.Name.StartsWith("Ada", StringComparison.Ordinal) then
-                    "Grace Hopper"
-                else
-                    "Ada Lovelace"
-
-            update (NameChanged nextName) model
-        | ViewerEvent.KeyDown "S" -> update ToggleCanSave model
-        | ViewerEvent.KeyDown "D" -> update (DarkModeChanged(not model.DarkMode)) model
-        | ViewerEvent.KeyDown "Up" -> update (CollectionMsg(ScrollTo(max 0.0 (model.Collection.ScrollOffset - 240.0)))) model
-        | ViewerEvent.KeyDown "Down" -> update (CollectionMsg(ScrollTo(model.Collection.ScrollOffset + 240.0))) model
-        | ViewerEvent.KeyDown "Escape" -> model, Cmd.ofMsg (HostEffect Shutdown)
-        | CloseRequested -> model, Cmd.ofMsg (HostEffect Shutdown)
-        | DiagnosticReported diagnostic ->
-            { model with Diagnostics = diagnostic :: model.Diagnostics },
-            Cmd.ofMsg (HostEffect(ReportDiagnostic diagnostic))
-        | ViewerEvent.KeyDown _
-        | ViewerEvent.KeyUp _
-        | PointerMoved _
-        | PointerPressed _
-        | PointerReleased _ -> model, Cmd.none
     | Advance elapsed ->
         let next = { model with Time = (model.Time + max 0.0 elapsed) % totalDuration }
         withRender next
@@ -694,26 +666,75 @@ let rec update msg model =
     | CollectionMsg collectionMsg ->
         let collection, _ = Collections.update collectionMsg model.Collection
         withRender ({ model with Collection = collection } |> log $"range -> {collection.VisibleRange.FirstIndex}")
+    | Quit -> model, Cmd.ofMsg (HostEffect CloseWindow)
     | HostEffect _
     | NoOp -> model, Cmd.none
-
-let configuration =
-    { Viewer.defaultConfiguration "Controls Demo Reel" initialSize with
-        ClearColor = Some(rgba 7.0 10.0 21.0 255.0)
-        TargetFrameRate = Some 60
-        Diagnostics = { Verbose = false } }
-
-let program =
-    Viewer.create configuration init update view
-    |> Viewer.withEventMapping (ViewerInput >> Some)
-    |> Viewer.withEffectMapping (function
-        | HostEffect effect -> Some effect
-        | _ -> None)
 
 let collect cmd =
     let messages = ResizeArray<Msg>()
     cmd |> List.iter (fun effect -> effect messages.Add)
     List.ofSeq messages
+
+let hostUpdate msg model =
+    let next, cmd = update msg model
+
+    let effects =
+        collect cmd
+        |> List.choose (function
+            | HostEffect effect -> Some effect
+            | _ -> None)
+
+    next, effects
+
+let mapKey key isDown =
+    if not isDown then
+        None
+    else
+        match key with
+        | ViewerKey.ArrowRight
+        | ViewerKey.Space -> Some NextSlide
+        | ViewerKey.ArrowLeft -> Some PreviousSlide
+        | ViewerKey.ArrowUp -> Some(CollectionMsg(ScrollTo 0.0))
+        | ViewerKey.ArrowDown -> Some(CollectionMsg(ScrollTo(24.0 * 250.0)))
+        | ViewerKey.Enter -> Some SaveRequested
+        | ViewerKey.Escape -> Some Quit
+        | ViewerKey.Letter 'D'
+        | ViewerKey.Letter 'd' -> Some(DarkModeChanged true)
+        | ViewerKey.Letter 'R'
+        | ViewerKey.Letter 'r' -> Some Restart
+        | ViewerKey.Letter 'S'
+        | ViewerKey.Letter 's' -> Some ToggleCanSave
+        | ViewerKey.Letter 'T'
+        | ViewerKey.Letter 't' -> Some(NameChanged "Grace Hopper")
+        | _ -> None
+
+let host =
+    { Init =
+        fun () ->
+            let model, cmd = init ()
+
+            let effects =
+                collect cmd
+                |> List.choose (function
+                    | HostEffect effect -> Some effect
+                    | _ -> None)
+
+            model, effects
+      Update = hostUpdate
+      View = view >> sceneNode
+      MapKey = mapKey
+      Tick = fun elapsed -> Some(Advance elapsed.TotalSeconds)
+      Diagnostics = { Viewer.defaultDiagnostics with Verbose = true } }
+
+let viewerOptions title =
+    { Title = title
+      InitialSize = initialSize }
+
+let normalWindow =
+    { Viewer.defaultWindowBehavior with
+        StartupState = ViewerWindowStartupState.Normal
+        StartupPosition = Some Centered
+        BackendPreference = Some DefaultBackend }
 
 let runContractSmoke () =
     let model, initCmd = init ()
@@ -740,7 +761,7 @@ let runContractSmoke () =
     let renderEffects =
         effects
         |> List.filter (function
-            | HostEffect(RenderFrame _) -> true
+            | HostEffect(RenderScene _) -> true
             | _ -> false)
         |> List.length
 
@@ -769,48 +790,58 @@ let runContractSmoke () =
 
 let runSmoke () =
     let stopwatch = Stopwatch.StartNew()
+    let options = viewerOptions "Controls Demo Reel"
 
-    match Viewer.run program with
-    | Ok() ->
+    match Viewer.runAppWithWindowBehavior options normalWindow host with
+    | Result.Ok outcome ->
         stopwatch.Stop()
         printfn "status=ok"
         printfn "sample=DemoReel"
-        printfn "renderer=Vulkan"
+        printfn "renderer=%s" outcome.RendererMode
         printfn "mode=controls-live-window"
-        printfn "first-frame-ms=%d" stopwatch.ElapsedMilliseconds
+        printfn "window-opened=%b" outcome.WindowOpened
+        printfn "window-visible=%A" outcome.WindowVisible
+        printfn "first-frame-presented=%b" outcome.FirstFramePresented
+        printfn "elapsed-ms=%d" stopwatch.ElapsedMilliseconds
         0
-    | Result.Error diagnostic ->
+    | Result.Error failure ->
         stopwatch.Stop()
         printfn "status=error"
         printfn "sample=DemoReel"
-        printfn "diagnostic-stage=%A" diagnostic.Stage
-        printfn "diagnostic-message=%s" diagnostic.Message
+        printfn "diagnostic-stage=%A" failure.BlockedStage
+        printfn "diagnostic-message=%s" failure.Message
         2
 
-let screenshotProgram slide (destination: string) =
-    let initScreenshot () =
-        let model, _ = init ()
-        let slideModel =
-            { model with
-                ManualSlide = Some(Math.Clamp(slide, 0, slideCount - 1))
-                Time = float slide * (totalDuration / float slideCount) }
+let runMinimal () =
+    let options = viewerOptions "Minimal Demo Reel"
+    printfn "status=starting"
+    printfn "sample=DemoReel"
+    printfn "mode=minimal-live-window"
+    printfn "title=%s" options.Title
+    printfn "size=%dx%d" options.InitialSize.Width options.InitialSize.Height
 
-        slideModel,
-        Cmd.batch [
-            Cmd.ofMsg (HostEffect(RenderFrame(view slideModel)))
-            Cmd.ofMsg
-                (HostEffect(
-                    CaptureScreenshot
-                        { Destination = destination
-                          Format = Png }
-                ))
-            Cmd.ofMsg (HostEffect Shutdown)
-        ]
+    let stopwatch = Stopwatch.StartNew()
 
-    Viewer.create configuration initScreenshot update view
-    |> Viewer.withEffectMapping (function
-        | HostEffect effect -> Some effect
-        | _ -> None)
+    match Viewer.runAppWithWindowBehavior options normalWindow host with
+    | Result.Ok outcome ->
+        stopwatch.Stop()
+        printfn "status=ok"
+        printfn "sample=DemoReel"
+        printfn "mode=minimal-live-window"
+        printfn "window-opened=%b" outcome.WindowOpened
+        printfn "window-visible=%A" outcome.WindowVisible
+        printfn "first-frame-presented=%b" outcome.FirstFramePresented
+        printfn "elapsed-ms=%d" stopwatch.ElapsedMilliseconds
+        0
+    | Result.Error failure ->
+        stopwatch.Stop()
+        printfn "status=error"
+        printfn "sample=DemoReel"
+        printfn "mode=minimal-live-window"
+        printfn "elapsed-ms=%d" stopwatch.ElapsedMilliseconds
+        printfn "diagnostic-stage=%A" failure.BlockedStage
+        printfn "diagnostic-message=%s" failure.Message
+        2
 
 let runScreenshotSlide slide (destination: string) =
     match Path.GetDirectoryName destination with
@@ -821,19 +852,27 @@ let runScreenshotSlide slide (destination: string) =
     if File.Exists destination then
         File.Delete destination
 
-    match Viewer.run (screenshotProgram slide destination) with
-    | Ok() ->
+    let model, _ = init ()
+
+    let slideModel =
+        { model with
+            ManualSlide = Some(Math.Clamp(slide, 0, slideCount - 1))
+            Time = float slide * (totalDuration / float slideCount) }
+
+    match SceneEvidence.renderPng initialSize (view slideModel) with
+    | Result.Ok bytes ->
+        File.WriteAllBytes(destination, bytes)
         printfn "status=ok"
         printfn "sample=DemoReel"
         printfn "screenshot-slide=%d" slide
         printfn "screenshot-destination=%s" destination
         printfn "screenshot-exists=%b" (File.Exists destination)
         if File.Exists destination then 0 else 4
-    | Result.Error diagnostic ->
+    | Result.Error failure ->
         eprintfn "status=error"
         eprintfn "screenshot-slide=%d" slide
-        eprintfn "diagnostic-stage=%A" diagnostic.Stage
-        eprintfn "diagnostic-message=%s" diagnostic.Message
+        eprintfn "diagnostic-stage=%s" failure.BlockedStage
+        eprintfn "diagnostic-message=%s" failure.Message
         2
 
 let runScreenshotAll (outputDirectory: string) =
@@ -849,6 +888,8 @@ let runScreenshotAll (outputDirectory: string) =
 let main argv =
     if argv |> Array.contains "--contract-smoke" then
         runContractSmoke ()
+    elif argv |> Array.contains "--minimal" then
+        runMinimal ()
     elif argv |> Array.contains "--screenshot-all" then
         let outputDirectory =
             argv

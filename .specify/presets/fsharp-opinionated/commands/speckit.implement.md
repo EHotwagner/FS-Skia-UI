@@ -150,6 +150,9 @@ When you emit an `[S]` task, you MUST also:
    fields. If a declared skill is missing, unreadable, ambiguous, late-loaded,
    or missing evidence, block the task and report the task id plus unresolved
    skill id.
+   implementation batch records must preserve the red-green evidence log,
+   graph before/after paths before and after every status change, and the
+   skill-loading evidence used for the batch.
 4. Confirm all deps are `[X]`
    or `[S]`. If any dep is `[ ]`, `[F]`, or `[-]`, stop and raise it.
 5. Implement the task per the plan, applying the loaded capability skill

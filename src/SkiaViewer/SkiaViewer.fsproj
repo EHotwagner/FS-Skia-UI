@@ -17,8 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Lib\Lib.fsproj" />
     <ProjectReference Include="..\KeyboardInput\KeyboardInput.fsproj" />
     <ProjectReference Include="..\Scene\Scene.fsproj" />
+    <PackageReference Include="Fable.Elmish" />
     <PackageReference Include="Silk.NET.Input" />
     <PackageReference Include="Silk.NET.Vulkan" />
     <PackageReference Include="Silk.NET.Vulkan.Extensions.KHR" />

@@ -549,6 +549,303 @@ PYEOF
 PERSISTENT_GUI_RUNTIME_HITS=$(python3 -c "import json; print(len(json.load(open('$PERSISTENT_GUI_RUNTIME_HITS_JSON'))))")
 echo
 
+# --- 5b. window visibility readiness scan ----------------------------------
+echo "[2d/3] Window visibility readiness scan..."
+
+WINDOW_VISIBILITY_HITS_JSON="$READINESS_DIR/window-visibility-hits.json"
+python3 - "$FEATURE_DIR" "$READINESS_DIR" "$WINDOW_VISIBILITY_HITS_JSON" <<'PYEOF'
+import json, re, sys
+from pathlib import Path
+
+feature = Path(sys.argv[1])
+readiness = Path(sys.argv[2])
+out = Path(sys.argv[3])
+
+def read_text(path):
+    try:
+        return path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return ""
+
+def parse_key_values(text):
+    values = {}
+    for line in text.replace("\r\n", "\n").split("\n"):
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            continue
+        matches = list(re.finditer(r"(?<!\S)([A-Za-z0-9_-]+)=([^=]*?)(?=\s+[A-Za-z0-9_-]+=|$)", stripped))
+        if matches:
+            for match in matches:
+                values[match.group(1).strip().lower()] = match.group(2).strip()
+        else:
+            key, value = stripped.split("=", 1)
+            values[key.strip().lower()] = value.strip()
+    return values
+
+def missing_keys(values, required):
+    return [key for key in required if key not in values or not values.get(key, "").strip()]
+
+def truthy(value):
+    return value.lower() in {"true", "yes", "observed:true", "verified", "ok"}
+
+def falsy(value):
+    return value.lower() in {"false", "no", "observed:false", "missing", "none"}
+
+feature_text = "\n".join(read_text(feature / name) for name in ["spec.md", "plan.md", "tasks.md"]).lower()
+requires_window_visibility = any(
+    marker in feature_text
+    for marker in [
+        "fix window visibility",
+        "interactive-visible-window.md",
+        "close-reason-separation.md",
+        "real-image-evidence.md",
+        "generated-validation.md",
+    ]
+)
+
+required_files = [
+    "interactive-visible-window.md",
+    "close-reason-separation.md",
+    "window-state-diagnostics.md",
+    "window-options.md",
+    "real-image-evidence.md",
+    "generated-validation.md",
+    "evidence-audit.md",
+]
+
+hits = []
+if requires_window_visibility:
+    for file_name in required_files:
+        if not (readiness / file_name).exists():
+            hits.append({
+                "path": str(readiness / file_name),
+                "reason": "missing required window visibility readiness file",
+                "missing": [file_name],
+            })
+
+    interactive_path = readiness / "interactive-visible-window.md"
+    interactive_text = read_text(interactive_path)
+    interactive_lower = interactive_text.lower()
+    interactive_values = parse_key_values(interactive_text)
+    if interactive_path.exists():
+        missing = missing_keys(interactive_values, ["status", "mode", "window-visible", "accessible-window", "first-frame-presented", "self-closed-for-evidence"])
+        if missing:
+            hits.append({
+                "path": str(interactive_path),
+                "reason": "missing visible-window readiness fields",
+                "missing": missing,
+            })
+
+        status_ok = interactive_values.get("status", "").lower() in {"ok", "pass", "success"}
+        taskbar_only = truthy(interactive_values.get("taskbar-entry", "")) and (
+            falsy(interactive_values.get("window-visible", ""))
+            or falsy(interactive_values.get("accessible-window", ""))
+        )
+        process_only = truthy(interactive_values.get("process-running", "")) and (
+            "process/taskbar-only" in interactive_lower
+            or "taskbar-only" in interactive_lower
+            or truthy(interactive_values.get("process-only", ""))
+        )
+        if status_ok and (taskbar_only or process_only):
+            hits.append({
+                "path": str(interactive_path),
+                "reason": "process/taskbar-only visible-window substitution",
+            })
+
+    close_path = readiness / "close-reason-separation.md"
+    close_text = read_text(close_path)
+    close_values = parse_key_values(close_text)
+    if close_path.exists():
+        close_reason = close_values.get("close-reason", "").lower()
+        user_close = truthy(close_values.get("user-close-observed", ""))
+        evidence_close = truthy(close_values.get("evidence-close-observed", "")) or close_reason in {"evidence-close", "framework-close", "host-close", "bounded-evidence-close"}
+        if evidence_close and user_close:
+            hits.append({
+                "path": str(close_path),
+                "reason": "evidence close reported as user close",
+            })
+
+    diagnostics_path = readiness / "window-state-diagnostics.md"
+    diagnostics_text = read_text(diagnostics_path)
+    diagnostics_lower = diagnostics_text.lower()
+    diagnostics_values = parse_key_values(diagnostics_text)
+    if diagnostics_path.exists():
+        required_classes = ["environment-session", "window-visibility", "app-lifecycle", "product-defect"]
+        missing_classes = [
+            cls for cls in required_classes
+            if f"diagnostic-class={cls}" not in diagnostics_lower and f"failure-class={cls}" not in diagnostics_lower
+        ]
+        if missing_classes:
+            hits.append({
+                "path": str(diagnostics_path),
+                "reason": "missing diagnostic classes",
+                "missing": missing_classes,
+            })
+
+        required_facts = ["native-handle", "visible", "focusable", "renderable-surface", "input-devices"]
+        missing_facts = missing_keys(diagnostics_values, required_facts)
+        if missing_facts:
+            hits.append({
+                "path": str(diagnostics_path),
+                "reason": "missing observable-vs-unsupported native facts",
+                "missing": missing_facts,
+            })
+
+        status_ok = diagnostics_values.get("status", "").lower() in {"ok", "pass", "success"}
+        diagnostic_taskbar_only = truthy(diagnostics_values.get("taskbar-entry", "")) or "taskbar-only" in diagnostics_lower
+        if status_ok and diagnostic_taskbar_only:
+            hits.append({
+                "path": str(diagnostics_path),
+                "reason": "process/taskbar-only success claim",
+            })
+
+        unsupported_only = (
+            truthy(diagnostics_values.get("unsupported-host-only", ""))
+            or ("unsupported-host-only" in diagnostics_lower and "observed:true" not in diagnostics_lower)
+            or (
+                diagnostics_values.get("visible", "").lower() == "unsupported"
+                and diagnostics_values.get("renderable-surface", "").lower() == "unsupported"
+                and "observed:true" not in diagnostics_lower
+            )
+        )
+        interactive_status_ok = interactive_values.get("status", "").lower() in {"ok", "pass", "success"}
+        interactive_visible_unsupported = interactive_values.get("window-visible", "").lower() in {"unsupported", "unavailable"}
+        if unsupported_only and (interactive_status_ok or interactive_visible_unsupported):
+            hits.append({
+                "path": str(diagnostics_path),
+                "reason": "unsupported-host-only visible-window claim",
+            })
+
+    options_path = readiness / "window-options.md"
+    options_text = read_text(options_path)
+    options_lower = options_text.lower()
+    if options_path.exists():
+        required_options = ["resize", "maximize", "startup-state", "startup-position", "backend"]
+        missing_options = [
+            option for option in required_options
+            if f"option={option}" not in options_lower and f"{option}=" not in options_lower and f"{option.replace('-', '_')}=" not in options_lower
+        ]
+        if missing_options:
+            hits.append({
+                "path": str(options_path),
+                "reason": "missing option rows",
+                "missing": missing_options,
+            })
+
+        unsupported_requested = any(
+            token in options_lower
+            for token in [
+                "requested=opengl",
+                "requested=software",
+                "requested=minimized",
+                "requested=fullscreen",
+                "unsupported-setting=true",
+            ]
+        )
+        unsupported_diagnosed = any(
+            token in options_lower
+            for token in [
+                "status=unsupported",
+                "status=degraded",
+                "status=failed",
+                "diagnostic-class=window-options",
+                "failure-class=window-options",
+            ]
+        )
+        if unsupported_requested and not unsupported_diagnosed:
+            hits.append({
+                "path": str(options_path),
+                "reason": "silently ignored unsupported window option",
+            })
+
+        option_failure_hidden = (
+            ("status=failed" in options_lower or "failed=true" in options_lower)
+            and ("diagnostic-class=app-lifecycle" in options_lower or "failure-class=app-lifecycle" in options_lower)
+            and "diagnostic-class=window-options" not in options_lower
+            and "failure-class=window-options" not in options_lower
+        )
+        if option_failure_hidden:
+            hits.append({
+                "path": str(options_path),
+                "reason": "window-options failure hidden under app-lifecycle",
+            })
+
+    image_path = readiness / "real-image-evidence.md"
+    image_text = read_text(image_path)
+    image_lower = image_text.lower()
+    image_values = parse_key_values(image_text)
+    if image_path.exists():
+        image_kind = image_values.get("evidence-kind", "").lower()
+        requested = truthy(image_values.get("requested-image-evidence", "")) or image_kind in {"screenshot", "image"}
+        metadata_only = image_values.get("artifact-kind", "").lower() in {"metadata", "hash", "text", "text-only"} or "metadata-only screenshot" in image_lower
+        decodable_value = image_values.get("artifact-decodable", image_values.get("image-decodable", image_values.get("decodable", ""))).lower()
+        undecodable = falsy(decodable_value)
+        if requested and (metadata_only or undecodable):
+            hits.append({
+                "path": str(image_path),
+                "reason": "metadata-only screenshot claim",
+            })
+        if image_kind in {"image", "screenshot", "pixel-readback", "metadata-hash"}:
+            if "proves-scene-rendering" not in image_values or "proves-desktop-visibility" not in image_values:
+                hits.append({
+                    "path": str(image_path),
+                    "reason": "missing visual evidence proof fields",
+                })
+        if image_kind == "pixel-readback" and truthy(image_values.get("proves-desktop-visibility", "")):
+            hits.append({
+                "path": str(image_path),
+                "reason": "pixel-readback cannot prove desktop visibility",
+            })
+        if requested and decodable_value and not (truthy(decodable_value) or falsy(decodable_value)):
+            hits.append({
+                "path": str(image_path),
+                "reason": "corrupt image metadata record",
+            })
+        artifact_path = image_values.get("image-artifact", image_values.get("artifact-path", "")).strip()
+        if artifact_path and (Path(artifact_path).is_absolute() or ".." in Path(artifact_path).parts):
+            hits.append({
+                "path": str(image_path),
+                "reason": "hostile artifact path",
+            })
+
+    generated_path = readiness / "generated-validation.md"
+    generated_text = read_text(generated_path)
+    generated_lower = generated_text.lower()
+    generated_values = parse_key_values(generated_text)
+    if generated_path.exists():
+        missing = missing_keys(generated_values, ["exact-package-match", "generated-tests-ran", "authoritative", "failure-class"])
+        if missing:
+            hits.append({
+                "path": str(generated_path),
+                "reason": "missing generated validation fields",
+                "missing": missing,
+            })
+
+        exact = generated_values.get("exact-package-match", "").lower()
+        if exact not in {"true", "yes"} or "nu1603" in generated_lower or "package mismatch" in generated_lower:
+            hits.append({
+                "path": str(generated_path),
+                "reason": "unresolved package mismatch",
+            })
+
+        tests_exist = generated_values.get("generated-tests-exist", "").lower()
+        tests_ran = generated_values.get("generated-tests-ran", "").lower()
+        if tests_exist in {"true", "yes"} and tests_ran not in {"true", "yes"}:
+            hits.append({
+                "path": str(generated_path),
+                "reason": "missing generated test execution",
+            })
+
+out.write_text(json.dumps(hits, indent=2) + "\n", encoding="utf-8")
+print(f"  window-visibility: {len(hits)} blocking")
+for hit in hits:
+    missing = hit.get("missing")
+    detail = f" missing={','.join(missing)}" if missing else ""
+    print(f"    [BLOCK] {hit['path']} ({hit['reason']}){detail}", file=sys.stderr)
+PYEOF
+WINDOW_VISIBILITY_HITS=$(python3 -c "import json; print(len(json.load(open('$WINDOW_VISIBILITY_HITS_JSON'))))")
+echo
+
 # --- 6. diff scan -----------------------------------------------------------
 echo "[3/3] Diff scan against workspace feature base..."
 
@@ -802,7 +1099,7 @@ with open(out, "w") as f:
 PYEOF
 fi
 
-TOTAL_BLOCKERS=$((UNACCEPTED_SYNTHETIC_COUNT + INVALID_SEH_COUNT + BLOCK_HITS + READINESS_CONTRACT_HITS + PERSISTENT_LAUNCH_HITS + PERSISTENT_GUI_RUNTIME_HITS))
+TOTAL_BLOCKERS=$((UNACCEPTED_SYNTHETIC_COUNT + INVALID_SEH_COUNT + BLOCK_HITS + READINESS_CONTRACT_HITS + PERSISTENT_LAUNCH_HITS + PERSISTENT_GUI_RUNTIME_HITS + WINDOW_VISIBILITY_HITS))
 
 echo "=== Verdict ==="
 if [[ $TOTAL_BLOCKERS -eq 0 ]]; then
@@ -856,6 +1153,9 @@ if [[ $PERSISTENT_LAUNCH_HITS -gt 0 ]]; then
 fi
 if [[ $PERSISTENT_GUI_RUNTIME_HITS -gt 0 ]]; then
   echo "  persistent GUI runtime hits:     $PERSISTENT_GUI_RUNTIME_HITS"
+fi
+if [[ $WINDOW_VISIBILITY_HITS -gt 0 ]]; then
+  echo "  window visibility hits:          $WINDOW_VISIBILITY_HITS"
 fi
 if [[ $ADVISORY_HITS -gt 0 ]]; then
   echo "  advisory diff-scan hits:         $ADVISORY_HITS (printed, not blocking)"

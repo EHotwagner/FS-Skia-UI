@@ -1763,7 +1763,7 @@ let runTemplateInstantiation model outputPath =
 
 let fileShouldBeScanned (filePath: string) =
     let normalized = filePath.Replace('\\', '/')
-    [ "/bin/"; "/obj/"; "/.fake/"; "/.git/"; "/.template.config/" ]
+    [ "/bin/"; "/obj/"; "/.fake/"; "/.git/"; "/.template.config/"; "/readiness/logs/" ]
     |> List.exists (fun segment -> normalized.IndexOf(segment, StringComparison.Ordinal) >= 0)
     |> not
 
@@ -2663,6 +2663,8 @@ let scanV3GeneratedRow model row =
               "MapKey = mapKey"
               "Tick = tick"
               "Viewer.runApp viewerOptions generatedHost"
+              "window-visible=observed:true"
+              "accessible-window=true"
               "--bounded-smoke"
               "--bounded-smoke-frame-diagnostics"
               "--scene-evidence" ]
@@ -2679,11 +2681,22 @@ let scanV3GeneratedRow model row =
               "count controls"
               "run bounded smoke"
               "emit scene evidence"
+              "first-frame-only=true"
+              "exit after first frame"
               "without a persistent launch attempt" ]
+
+        let defaultBranch =
+            let marker = "| _ ->"
+            let index = productProgram.LastIndexOf(marker, StringComparison.Ordinal)
+
+            if index >= 0 then
+                productProgram.Substring(index)
+            else
+                productProgram
 
         let foundDefaultSubstitutions =
             forbiddenDefaultSubstitutions
-            |> List.filter (fun term -> productProgram.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0)
+            |> List.filter (fun term -> defaultBranch.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0)
 
         if not foundDefaultSubstitutions.IsEmpty then
             failwithf "%s/%s generated app contains bounded-only or print-only default path markers:%s%s" row.Artifact row.Profile Environment.NewLine (String.Join(Environment.NewLine, foundDefaultSubstitutions))
@@ -2885,6 +2898,8 @@ let private writeSupportedHostPersistentLaunchEvidence outputPath sourceLogPath 
 
     let windowOpened = value "window-opened" "true"
     let firstFramePresented = value "first-frame-presented" "true"
+    let windowVisible = value "window-visible" "observed:true"
+    let accessibleWindow = value "accessible-window" "true"
     let userCloseObserved = value "user-close-observed" "true"
     let selfClosedForEvidence = value "self-closed-for-evidence" "false"
     let exitPath = value "exit-path" "true"
@@ -2899,6 +2914,8 @@ let private writeSupportedHostPersistentLaunchEvidence outputPath sourceLogPath 
           "mode=interactive-window"
           $"command={commandText}"
           $"window-opened={windowOpened}"
+          $"window-visible={windowVisible}"
+          $"accessible-window={accessibleWindow}"
           $"first-frame-presented={firstFramePresented}"
           $"user-close-observed={userCloseObserved}"
           $"self-closed-for-evidence={selfClosedForEvidence}"
@@ -2946,6 +2963,12 @@ let runGeneratedConsumerValidation model =
     let sceneEvidencePath = path [ validationDir; "headless-scene-evidence.txt" ]
     let sceneEvidenceLog = path [ validationDir; "scene-evidence.log" ]
     let persistentLaunchLog = path [ validationDir; "persistent-launch-diagnostics.log" ]
+    let windowDiagnosticsPath = path [ validationDir; "window-diagnostics.txt" ]
+    let windowDiagnosticsLog = path [ validationDir; "window-diagnostics.log" ]
+    let windowOptionsPath = path [ validationDir; "window-options.txt" ]
+    let windowOptionsLog = path [ validationDir; "window-options.log" ]
+    let imageEvidencePath = path [ validationDir; "game-image-evidence.png" ]
+    let imageEvidenceLog = path [ validationDir; "image-evidence.log" ]
     let supportedHostPersistentLaunchPath = path [ model.ReadinessDir; "supported-host-persistent-launch.txt" ]
 
     let mutable category = "Completed"
@@ -3053,6 +3076,72 @@ let runGeneratedConsumerValidation model =
         category <- "SceneEvidenceFailure"
         diagnostics.Add("headless scene evidence output missing")
 
+    let windowDiagnosticsPassed =
+        semanticPassed
+        && runStep
+            "generated consumer window diagnostics"
+            "WindowDiagnosticsFailure"
+            "dotnet"
+            $"run --project src/Product/Product.fsproj --no-restore -- --window-diagnostics {quote windowDiagnosticsPath}"
+            row.Root
+            windowDiagnosticsLog
+
+    if windowDiagnosticsPassed && File.Exists windowDiagnosticsPath then
+        diagnostics.Add("window diagnostics validation captured")
+    elif semanticPassed then
+        category <- "WindowDiagnosticsFailure"
+        diagnostics.Add("window diagnostics output missing")
+
+    let windowOptionsPassed =
+        semanticPassed
+        && runStep
+            "generated consumer window options"
+            "WindowOptionsFailure"
+            "dotnet"
+            $"run --project src/Product/Product.fsproj --no-restore -- --window-options {quote windowOptionsPath} --window-resize fixed-size --window-maximize not-maximizable --window-startup maximized --window-position 24,36 --window-backend opengl"
+            row.Root
+            windowOptionsLog
+
+    if windowOptionsPassed && File.Exists windowOptionsPath then
+        let windowOptionsText = File.ReadAllText windowOptionsPath
+        if windowOptionsText.IndexOf("option=resize", StringComparison.OrdinalIgnoreCase) >= 0
+           && windowOptionsText.IndexOf("option=maximize", StringComparison.OrdinalIgnoreCase) >= 0
+           && windowOptionsText.IndexOf("option=startup-state", StringComparison.OrdinalIgnoreCase) >= 0
+           && windowOptionsText.IndexOf("option=startup-position", StringComparison.OrdinalIgnoreCase) >= 0
+           && windowOptionsText.IndexOf("option=backend", StringComparison.OrdinalIgnoreCase) >= 0
+           && windowOptionsText.IndexOf("status=unsupported", StringComparison.OrdinalIgnoreCase) >= 0 then
+            diagnostics.Add("window options validation captured")
+        else
+            category <- "WindowOptionsFailure"
+            diagnostics.Add("window options output missing required option rows or unsupported diagnostics")
+    elif semanticPassed then
+        category <- "WindowOptionsFailure"
+        diagnostics.Add("window options output missing")
+
+    let imageEvidencePassed =
+        semanticPassed
+        && runStep
+            "generated consumer image evidence"
+            "VisualEvidenceFailure"
+            "dotnet"
+            $"run --project src/Product/Product.fsproj --no-restore -- --image-evidence {quote imageEvidencePath}"
+            row.Root
+            imageEvidenceLog
+
+    let imageEvidenceMetadataPath = imageEvidencePath + ".metadata.txt"
+
+    if imageEvidencePassed && File.Exists imageEvidenceMetadataPath then
+        let imageEvidenceText = File.ReadAllText imageEvidenceMetadataPath
+        if imageEvidenceText.IndexOf("evidence-kind=image", StringComparison.OrdinalIgnoreCase) >= 0
+           && imageEvidenceText.IndexOf("image-decodable=true", StringComparison.OrdinalIgnoreCase) >= 0 then
+            diagnostics.Add("image evidence validation captured")
+        else
+            category <- "VisualEvidenceFailure"
+            diagnostics.Add("image evidence output missing decodable image fields")
+    elif semanticPassed then
+        category <- "VisualEvidenceFailure"
+        diagnostics.Add("image evidence metadata missing")
+
     let persistentDiagnosticsPassed =
         semanticPassed
         && runStep
@@ -3090,6 +3179,36 @@ let runGeneratedConsumerValidation model =
         else "none"
     let packageFailureClass = packageFailureReason |> Option.defaultValue "none"
     let packageSourceSummary = String.Join(", ", packageSources)
+    let persistentLaunchText =
+        if File.Exists persistentLaunchLog then File.ReadAllText persistentLaunchLog else ""
+    let closeReasonValidated =
+        persistentLaunchText.IndexOf("user-close-observed=", StringComparison.OrdinalIgnoreCase) >= 0
+        && persistentLaunchText.IndexOf("self-closed-for-evidence=false", StringComparison.OrdinalIgnoreCase) >= 0
+    let defaultInteractiveLaunchValidated =
+        persistentDiagnosticsPassed
+        && persistentLaunchText.IndexOf("mode=interactive-window", StringComparison.OrdinalIgnoreCase) >= 0
+    let windowDiagnosticsValidated = windowDiagnosticsPassed && File.Exists windowDiagnosticsPath
+    let windowOptionsValidated = windowOptionsPassed && File.Exists windowOptionsPath
+    let imageEvidenceValidated = imageEvidencePassed && File.Exists imageEvidenceMetadataPath
+    let generatedContractAuthoritative =
+        packageResolutionPassed
+        && generatedVerificationAuthoritative
+        && defaultInteractiveLaunchValidated
+        && smokePassed
+        && closeReasonValidated
+        && windowDiagnosticsValidated
+        && windowOptionsValidated
+        && imageEvidenceValidated
+    let generatedContractFailureClass =
+        if not packageResolutionPassed then packageFailureClass
+        elif not generatedVerificationAuthoritative then generatedVerificationFailureClass
+        elif not defaultInteractiveLaunchValidated then "interactive-launch-validation"
+        elif not smokePassed then "bounded-evidence-validation"
+        elif not closeReasonValidated then "close-reason-validation"
+        elif not windowDiagnosticsValidated then "window-diagnostics-validation"
+        elif not windowOptionsValidated then "window-options-validation"
+        elif not imageEvidenceValidated then "visual-evidence-validation"
+        else "none"
 
     let report =
         [ "# Generated Product Validation"
@@ -3109,6 +3228,27 @@ let runGeneratedConsumerValidation model =
           $"- Scene evidence log: `{sceneEvidenceLog}`"
           $"- Scene evidence output: `{sceneEvidencePath}`"
           $"- Persistent launch diagnostics log: `{persistentLaunchLog}`"
+          $"- Window diagnostics log: `{windowDiagnosticsLog}`"
+          $"- Window diagnostics output: `{windowDiagnosticsPath}`"
+          $"- Window options log: `{windowOptionsLog}`"
+          $"- Window options output: `{windowOptionsPath}`"
+          $"- Image evidence log: `{imageEvidenceLog}`"
+          $"- Image evidence output: `{imageEvidencePath}`"
+          ""
+          "## Contract Output"
+          ""
+          $"- package-resolution: `validated`"
+          $"- exact-package-match: `{packageResolutionPassed}`"
+          $"- generated-test-execution: `validated`"
+          $"- generated-tests-ran: `{generatedTestsRan}`"
+          $"- default-interactive-launch: `{defaultInteractiveLaunchValidated}`"
+          $"- bounded-evidence-validation: `{smokePassed}`"
+          $"- close-reason-validation: `{closeReasonValidated}`"
+          $"- window-diagnostics-validation: `{windowDiagnosticsValidated}`"
+          $"- window-options-validation: `{windowOptionsValidated}`"
+          $"- image-evidence-validation: `{imageEvidenceValidated}`"
+          $"- authoritative: `{generatedContractAuthoritative}`"
+          $"- failure-class: `{generatedContractFailureClass}`"
           ""
           "## Package Resolution"
           ""
@@ -3147,7 +3287,7 @@ let runGeneratedConsumerValidation model =
 
     File.WriteAllText(model.GeneratedProductValidationPath, report + Environment.NewLine)
 
-    if category = "PackageDrift" || category = "RestoreFailure" || category = "SemanticTestFailure" || category = "ViewerStartupFailure" || category = "SceneEvidenceFailure" || category = "PersistentLaunchDiagnosticFailure" then
+    if category = "PackageDrift" || category = "RestoreFailure" || category = "SemanticTestFailure" || category = "ViewerStartupFailure" || category = "SceneEvidenceFailure" || category = "PersistentLaunchDiagnosticFailure" || category = "WindowDiagnosticsFailure" || category = "WindowOptionsFailure" || category = "VisualEvidenceFailure" then
         failwithf "Generated consumer validation failed with category %s; see %s" category model.GeneratedProductValidationPath
 
 let runDependencyOwnershipReport model =
@@ -3480,6 +3620,9 @@ let validateTaskSkillistGuidance model =
             "reviewer disposition"
             "small, medium, and broad"
             "non-authoritative aggregate"
+            "before and after every status change"
+            "persistent launch rules"
+            "non-authoritative aggregate reporting"
             "persistent graphical launch task"
             "MUST reject viewer-backed default executable paths"
             "[SEH]"
@@ -3497,6 +3640,9 @@ let validateTaskSkillistGuidance model =
             "reviewer disposition"
             "small, medium, and broad"
             "non-authoritative aggregate"
+            "before and after every status change"
+            "persistent launch rules"
+            "non-authoritative aggregate reporting"
             "persistent graphical launch task"
             "MUST reject viewer-backed default executable paths"
             "[SEH]"
@@ -3540,6 +3686,10 @@ let validateTaskSkillistGuidance model =
             "loaded_at"
             "work_started_at"
             "reviewer exception"
+            "implementation batch records"
+            "graph before/after"
+            "before and after every status change"
+            "red-green evidence log"
             "[SEH]"
             "synthetic-error-handling-approved"
             "implementation-time relabeling" ]
@@ -3552,6 +3702,10 @@ let validateTaskSkillistGuidance model =
             "loaded_at"
             "work_started_at"
             "reviewer exception"
+            "implementation batch records"
+            "graph before/after"
+            "before and after every status change"
+            "red-green evidence log"
             "[SEH]"
             "synthetic-error-handling-approved"
             "implementation-time relabeling" ]

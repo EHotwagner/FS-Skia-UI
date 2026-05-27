@@ -52,6 +52,15 @@ type GeneratedProductLaunchValidationResult =
     { InteractiveLaunchRequired: bool
       Diagnostics: string list }
 
+type GeneratedWindowDiagnosticCheck =
+    { Output: string
+      RequiredFailureClasses: string list
+      RequiredNativeFacts: string list }
+
+type GeneratedWindowDiagnosticValidationResult =
+    { DiagnosticsComplete: bool
+      Diagnostics: string list }
+
 type PackageResolutionCheck =
     { RequestedPackages: LocalConsumerPackage list
       ResolvedPackages: LocalConsumerPackage list
@@ -93,6 +102,32 @@ type VisualEvidenceResult =
       UnsupportedReason: string option
       Diagnostics: string list }
 
+type GeneratedVisualEvidenceCommandCheck =
+    { Output: string
+      RequestedImageEvidence: bool }
+
+type GeneratedVisualEvidenceCommandResult =
+    { Accepted: bool
+      EvidenceKind: string option
+      FailureReason: string option
+      Diagnostics: string list }
+
+type GeneratedValidationContractCheck =
+    { PackageResolution: PackageResolutionCheckResult
+      GeneratedTests: GeneratedTestExecutionResult
+      DefaultInteractiveLaunch: GeneratedProductLaunchValidationResult
+      BoundedEvidenceValidated: bool
+      CloseReasonValidated: bool
+      WindowDiagnostics: GeneratedWindowDiagnosticValidationResult
+      WindowOptionsValidated: bool
+      ImageEvidence: GeneratedVisualEvidenceCommandResult }
+
+type GeneratedValidationContractResult =
+    { Output: string
+      Authoritative: bool
+      FailureClass: string
+      Diagnostics: string list }
+
 module GeneratedProductAssertions =
     let summarize expectation =
         let packages =
@@ -120,8 +155,12 @@ module GeneratedProductAssertions =
                   "default executable must call Viewer.runApp viewerOptions generatedHost"
               if not (contains "mode=interactive-window") then
                   "default executable must report mode=interactive-window"
+              if not (contains "accessible-window=true" || contains "window-visible=observed:true") then
+                  "default executable must claim an accessible desktop window"
               if contains "Viewer.runBounded" then
                   "default executable must not use Viewer.runBounded bounded evidence"
+              if contains "first-frame-only=true" || contains "exit after first frame" then
+                  "default executable must not exit after first frame"
               if contains "SceneEvidence.render" then
                   "default executable must not substitute scene-only metadata"
               if contains "self-closed-for-evidence=true" then
@@ -132,6 +171,33 @@ module GeneratedProductAssertions =
                   "default executable must keep persistent-evidence behind explicit flags" ]
 
         { InteractiveLaunchRequired = List.isEmpty diagnostics
+          Diagnostics = diagnostics }
+
+    let validateWindowDiagnostics (check: GeneratedWindowDiagnosticCheck) =
+        let contains (value: string) =
+            check.Output.Contains(value, StringComparison.OrdinalIgnoreCase)
+
+        let statusIsFailureClass =
+            contains "status=degraded" || contains "status=unsupported" || contains "status=failed"
+
+        let diagnostics =
+            [ if not statusIsFailureClass then
+                  "window diagnostics must report degraded unsupported or failed status"
+              for failureClass in check.RequiredFailureClasses do
+                  if not (contains $"diagnostic-class={failureClass}" || contains $"failure-class={failureClass}") then
+                      $"missing generated diagnostic failure class: {failureClass}"
+              for fact in check.RequiredNativeFacts do
+                  if not (contains $"{fact}=observed:true"
+                          || contains $"{fact}=observed:false"
+                          || contains $"{fact}=unsupported"
+                          || contains $"{fact}=unavailable") then
+                      $"missing observable-vs-unsupported native fact: {fact}"
+              if contains "private runtime fallback" && not (contains "fallback-full-desktop-session=false") then
+                  "private runtime fallback must be disclosed as not a full desktop session"
+              if contains "taskbar-only" && contains "status=ok" then
+                  "taskbar-only launch must not be reported as status=ok" ]
+
+        { DiagnosticsComplete = List.isEmpty diagnostics
           Diagnostics = diagnostics }
 
 module LocalConsumerPackages =
@@ -253,3 +319,135 @@ module GeneratedConsumerValidation =
               FallbackReason = None
               UnsupportedReason = Some reason
               Diagnostics = [ $"unsupported-host visual evidence: {reason}" ] }
+
+    let private outputField name (output: string) =
+        output.Split([| '\n'; '\r' |], StringSplitOptions.RemoveEmptyEntries)
+        |> Array.tryPick (fun line ->
+            let prefix = name + "="
+
+            if line.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) then
+                Some(line.Substring(prefix.Length).Trim())
+            else
+                None)
+
+    let private outputContains (value: string) (output: string) =
+        output.Contains(value, StringComparison.OrdinalIgnoreCase)
+
+    let validateVisualEvidenceCommandOutput (check: GeneratedVisualEvidenceCommandCheck) =
+        let kind = outputField "evidence-kind" check.Output
+        let imageDecodable = outputField "image-decodable" check.Output
+        let provesScene = outputField "proves-scene-rendering" check.Output
+        let provesDesktop = outputField "proves-desktop-visibility" check.Output
+        let unsupportedReason = outputField "unsupported-reason" check.Output
+
+        let diagnostics =
+            [ match kind with
+              | None -> "visual evidence command output must include evidence-kind"
+              | Some "image" ->
+                  if imageDecodable <> Some "true" then
+                      "requested image evidence must be a decodable image, not metadata/hash text"
+                  if outputContains "hash=" check.Output && imageDecodable <> Some "true" then
+                      "metadata/hash output must be labeled metadata-hash instead of image"
+                  if provesScene.IsNone then
+                      "image evidence must state whether it proves scene rendering"
+                  if provesDesktop.IsNone then
+                      "image evidence must state whether it proves desktop visibility"
+              | Some "pixel-readback" ->
+                  if not (outputContains "fallback-reason=screenshot-unavailable" check.Output) then
+                      "pixel-readback evidence must name the screenshot-unavailable fallback reason"
+                  if provesScene <> Some "true" then
+                      "pixel-readback evidence must prove scene rendering"
+                  if provesDesktop <> Some "false" then
+                      "pixel-readback evidence must not claim desktop visibility"
+              | Some "metadata-hash" ->
+                  if provesDesktop <> Some "false" then
+                      "metadata/hash evidence must not claim desktop visibility"
+              | Some "unsupported-host" ->
+                  if unsupportedReason.IsNone then
+                      "unsupported-host evidence must include unsupported-reason"
+              | Some other -> $"unsupported visual evidence kind: {other}"
+
+              if check.RequestedImageEvidence && kind = Some "metadata-hash" then
+                  "requested image evidence cannot be satisfied by metadata/hash output" ]
+
+        let failureReason =
+            if diagnostics.IsEmpty then
+                None
+            elif kind = Some "image" && imageDecodable <> Some "true" then
+                Some "metadata-only-image-evidence"
+            elif check.RequestedImageEvidence && kind = Some "metadata-hash" then
+                Some "metadata-only-image-evidence"
+            elif kind = Some "unsupported-host" then
+                Some "unsupported-host"
+            else
+                Some "visual-evidence-incomplete"
+
+        { Accepted = diagnostics.IsEmpty
+          EvidenceKind = kind
+          FailureReason = failureReason
+          Diagnostics = diagnostics }
+
+    let buildValidationContractOutput check =
+        let diagnostics =
+            [ if not check.PackageResolution.ExactMatch then
+                  yield! check.PackageResolution.Diagnostics
+              if not check.GeneratedTests.Authoritative then
+                  yield! check.GeneratedTests.Diagnostics
+              if not check.DefaultInteractiveLaunch.InteractiveLaunchRequired then
+                  yield! check.DefaultInteractiveLaunch.Diagnostics
+              if not check.BoundedEvidenceValidated then
+                  "bounded evidence validation did not run"
+              if not check.CloseReasonValidated then
+                  "close reason validation did not run"
+              if not check.WindowDiagnostics.DiagnosticsComplete then
+                  yield! check.WindowDiagnostics.Diagnostics
+              if not check.WindowOptionsValidated then
+                  "window options validation did not run"
+              if not check.ImageEvidence.Accepted then
+                  yield! check.ImageEvidence.Diagnostics ]
+
+        let failureClass =
+            if not check.PackageResolution.ExactMatch then
+                check.PackageResolution.FailureReason |> Option.defaultValue "package-verification"
+            elif not check.GeneratedTests.Authoritative then
+                check.GeneratedTests.NonAuthoritativeReason |> Option.defaultValue "generated-test-execution"
+            elif not check.DefaultInteractiveLaunch.InteractiveLaunchRequired then
+                "interactive-launch-validation"
+            elif not check.BoundedEvidenceValidated then
+                "bounded-evidence-validation"
+            elif not check.CloseReasonValidated then
+                "close-reason-validation"
+            elif not check.WindowDiagnostics.DiagnosticsComplete then
+                "window-diagnostics-validation"
+            elif not check.WindowOptionsValidated then
+                "window-options-validation"
+            elif not check.ImageEvidence.Accepted then
+                check.ImageEvidence.FailureReason |> Option.defaultValue "visual-evidence-validation"
+            else
+                "none"
+
+        let authoritative = List.isEmpty diagnostics
+
+        let diagnosticText = String.concat "; " diagnostics
+
+        let output =
+            [ $"exact-package-match={check.PackageResolution.ExactMatch.ToString().ToLowerInvariant()}"
+              "package-resolution=validated"
+              $"generated-tests-ran={(check.GeneratedTests.Authoritative && check.GeneratedTests.NonAuthoritativeReason.IsNone).ToString().ToLowerInvariant()}"
+              "generated-test-execution=validated"
+              $"default-interactive-launch={check.DefaultInteractiveLaunch.InteractiveLaunchRequired.ToString().ToLowerInvariant()}"
+              $"bounded-evidence-validation={check.BoundedEvidenceValidated.ToString().ToLowerInvariant()}"
+              $"close-reason-validation={check.CloseReasonValidated.ToString().ToLowerInvariant()}"
+              $"window-diagnostics-validation={check.WindowDiagnostics.DiagnosticsComplete.ToString().ToLowerInvariant()}"
+              $"window-options-validation={check.WindowOptionsValidated.ToString().ToLowerInvariant()}"
+              $"image-evidence-validation={check.ImageEvidence.Accepted.ToString().ToLowerInvariant()}"
+              $"authoritative={authoritative.ToString().ToLowerInvariant()}"
+              $"failure-class={failureClass}"
+              if not diagnostics.IsEmpty then
+                  $"diagnostics={diagnosticText}" ]
+            |> String.concat Environment.NewLine
+
+        { Output = output
+          Authoritative = authoritative
+          FailureClass = failureClass
+          Diagnostics = diagnostics }

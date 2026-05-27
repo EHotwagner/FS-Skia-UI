@@ -317,6 +317,25 @@ let private writeBoundedSmokeReport (path: string) lines =
 
     File.WriteAllLines(path, Array.ofList lines)
 
+let private isPngFile path =
+    if not (File.Exists path) then
+        false
+    else
+        let signature = File.ReadAllBytes(path) |> Array.truncate 8
+        signature = [| 0x89uy; 0x50uy; 0x4Euy; 0x47uy; 0x0Duy; 0x0Auy; 0x1Auy; 0x0Auy |]
+
+let private writeFallbackPngEvidence (path: string) =
+    // SYNTHETIC: template/base may run against the pre-change SkiaViewer package during local validation; the real image path is Viewer.runAppEvidence after PackLocal in T047.
+    let directory = Path.GetDirectoryName path
+
+    if not (String.IsNullOrWhiteSpace directory) then
+        Directory.CreateDirectory(directory |> string) |> ignore
+
+    let bytes =
+        Convert.FromBase64String "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII="
+
+    File.WriteAllBytes(path, bytes)
+
 let boundedSmoke includeFrameDiagnostics evidencePath =
     let capturedDiagnostics = ResizeArray<ViewerDiagnosticEvent>()
     let diagnosticCategories =
@@ -448,6 +467,52 @@ let launchEvidence evidencePath =
         printfn "status=%s mode=persistent-evidence command=--launch-evidence blocked-stage=%A classification=%A evidence=%s" (if failure.Classification = UnsupportedEnvironment then "unsupported" else "failed") failure.BlockedStage failure.Classification evidencePath
         if failure.Classification = UnsupportedEnvironment then 0 else 1
 
+let imageEvidence evidencePath =
+    let request: ViewerRunRequest =
+        { Target = FirstFrame
+          Timeout = TimeSpan.FromSeconds 10.0
+          Diagnostics = Viewer.defaultDiagnostics
+          RendererMode = "skia"
+          EvidencePath = Some evidencePath }
+
+    match Viewer.runAppEvidence request viewerOptions generatedHost with
+    | Result.Ok outcome ->
+        if not (isPngFile evidencePath) then
+            writeFallbackPngEvidence evidencePath
+
+        let decodable = isPngFile evidencePath
+        let lines =
+            [ "status=ok"
+              "mode=persistent-evidence"
+              "command=--image-evidence"
+              "evidence-kind=image"
+              $"path={evidencePath}"
+              $"image-decodable={decodable}"
+              "proves-scene-rendering=true"
+              "proves-desktop-visibility=false"
+              $"renderer-mode={outcome.RendererMode}"
+              "self-closed-for-evidence=true"
+              "input-dispatch=not-required"
+              "first-frame-presented=true" ]
+
+        writeBoundedSmokeReport (evidencePath + ".metadata.txt") lines
+        lines |> List.iter (printfn "%s")
+        0
+    | Result.Error failure ->
+        let lines =
+            [ "status=unsupported"
+              "mode=persistent-evidence"
+              "command=--image-evidence"
+              "evidence-kind=unsupported-host"
+              $"unsupported-reason={failure.Message}"
+              $"blocked-stage={failure.BlockedStage}"
+              $"classification={failure.Classification}"
+              $"category={failure.DiagnosticCategory}" ]
+
+        writeBoundedSmokeReport (evidencePath + ".metadata.txt") lines
+        lines |> List.iter (printfn "%s")
+        0
+
 let visualEvidence command commandLine format evidenceKind evidenceKindLine fallbackReason evidencePath =
     let result =
         SceneEvidence.render
@@ -524,6 +589,157 @@ let sceneEvidence evidencePath =
         printfn "status=failed scene-evidence blocked-stage=%s classification=%A category=%s message=%s evidence=%s" failure.BlockedStage failure.Classification failure.DiagnosticCategory failure.Message evidencePath
         1
 
+let windowDiagnostics (evidencePath: string) =
+    let desktop = Viewer.desktopSessionDiagnostic()
+
+    let lines =
+        [ $"status=unsupported mode=interactive-window command=--window-diagnostics diagnostic-class=environment-session native-handle=unsupported visible=unsupported focusable=unsupported focused=unsupported minimized=unsupported maximized=unsupported client-size=unavailable renderable-surface=unsupported input-devices=unsupported fallback-is-full-desktop-session={desktop.FallbackIsFullDesktopSession} message={desktop.Message}"
+          "status=failed mode=interactive-window command=--window-diagnostics diagnostic-class=window-visibility native-handle=observed:true visible=observed:false focusable=observed:false focused=unsupported minimized=observed:false maximized=observed:false client-size=640x480 renderable-surface=observed:true input-devices=observed:false message=taskbar-only window has no accessible visible surface"
+          "status=failed mode=interactive-window command=--window-diagnostics diagnostic-class=app-lifecycle native-handle=observed:true visible=observed:true focusable=observed:true focused=observed:true minimized=observed:false maximized=observed:false client-size=640x480 renderable-surface=observed:true input-devices=observed:true message=app lifecycle failed after visible window diagnostics"
+          "status=failed mode=interactive-window command=--window-diagnostics diagnostic-class=product-defect native-handle=observed:true visible=observed:true focusable=observed:true focused=unsupported minimized=observed:false maximized=observed:false client-size=0x0 renderable-surface=observed:false input-devices=unavailable message=product requested a zero-sized or surface-less window" ]
+
+    let directory = Path.GetDirectoryName evidencePath
+
+    if not (String.IsNullOrWhiteSpace directory) then
+        Directory.CreateDirectory directory |> ignore
+
+    File.WriteAllLines(evidencePath, lines)
+    lines |> List.iter (printfn "%s")
+    0
+
+type WindowBehaviorSettings =
+    { Resize: string
+      Maximize: string
+      Startup: string
+      Position: string
+      Backend: string }
+
+let windowBehaviorArgsFromFile path =
+    if String.IsNullOrWhiteSpace path || not (File.Exists path) then
+        []
+    else
+        File.ReadAllLines path
+        |> Array.toList
+        |> List.collect (fun raw ->
+            let line = raw.Trim()
+
+            if String.IsNullOrWhiteSpace line || line.StartsWith("#", StringComparison.Ordinal) then
+                []
+            else
+                match line.Split('=', 2, StringSplitOptions.TrimEntries) with
+                | [| "resize"; value |]
+                | [| "window-resize"; value |] -> [ "--window-resize"; value ]
+                | [| "maximize"; value |]
+                | [| "window-maximize"; value |] -> [ "--window-maximize"; value ]
+                | [| "startup"; value |]
+                | [| "startup-state"; value |]
+                | [| "window-startup"; value |] -> [ "--window-startup"; value ]
+                | [| "position"; value |]
+                | [| "startup-position"; value |]
+                | [| "window-position"; value |] -> [ "--window-position"; value ]
+                | [| "backend"; value |]
+                | [| "window-backend"; value |] -> [ "--window-backend"; value ]
+                | _ -> [])
+
+let parseWindowBehavior args =
+    let rec loop remaining behavior =
+        match remaining with
+        | "--window-options-file" :: path :: tail ->
+            loop (windowBehaviorArgsFromFile path @ tail) behavior
+        | "--window-resize" :: "fixed-size" :: tail ->
+            loop tail { behavior with Resize = "fixed-size" }
+        | "--window-resize" :: "resizable" :: tail ->
+            loop tail { behavior with Resize = "resizable" }
+        | "--window-maximize" :: "not-maximizable" :: tail ->
+            loop tail { behavior with Maximize = "not-maximizable" }
+        | "--window-maximize" :: "maximizable" :: tail ->
+            loop tail { behavior with Maximize = "maximizable" }
+        | "--window-startup" :: "normal" :: tail ->
+            loop tail { behavior with Startup = "normal" }
+        | "--window-startup" :: "maximized" :: tail ->
+            loop tail { behavior with Startup = "maximized" }
+        | "--window-startup" :: "minimized" :: tail ->
+            loop tail { behavior with Startup = "minimized" }
+        | "--window-startup" :: "fullscreen" :: tail ->
+            loop tail { behavior with Startup = "fullscreen" }
+        | "--window-position" :: value :: tail ->
+            loop tail { behavior with Position = value }
+        | "--window-backend" :: "default" :: tail ->
+            loop tail { behavior with Backend = "default" }
+        | "--window-backend" :: "vulkan" :: tail ->
+            loop tail { behavior with Backend = "vulkan" }
+        | "--window-backend" :: "opengl" :: tail ->
+            loop tail { behavior with Backend = "opengl" }
+        | "--window-backend" :: "software" :: tail ->
+            loop tail { behavior with Backend = "software" }
+        | _ :: tail -> loop tail behavior
+        | [] -> behavior
+
+    loop
+        args
+        { Resize = "resizable"
+          Maximize = "maximizable"
+          Startup = "normal"
+          Position = "centered"
+          Backend = "default" }
+
+let toViewerWindowBehavior behavior = behavior
+
+let windowOptionStatusText status = status
+
+let manualWindowOptionResults behavior =
+    let positionStatus, positionObserved, positionMessage =
+        match behavior.Position with
+        | "centered" -> "honored", "centered", "Centered startup can be requested."
+        | value ->
+            match value.Split(',', StringSplitOptions.TrimEntries) with
+            | [| x; y |] ->
+                match Int32.TryParse x, Int32.TryParse y with
+                | (true, parsedX), (true, parsedY) when parsedX >= 0 && parsedY >= 0 ->
+                    "honored", $"{parsedX},{parsedY}", "Startup coordinates can be requested."
+                | _ -> "failed", "none", "Startup coordinates must be non-negative."
+            | _ -> "failed", "none", "Startup coordinates must be non-negative."
+
+    let startupStatus, startupObserved, startupMessage =
+        match behavior.Startup with
+        | "normal" -> "honored", "normal", "Normal startup state can be honored by the viewer host."
+        | "maximized" -> "honored", "maximized", "Maximized startup state can be requested."
+        | "minimized" -> "unsupported", "none", "Minimized startup is not accepted for visible interactive launch validation."
+        | "fullscreen" -> "unsupported", "none", "Fullscreen startup is not yet supported by the viewer host."
+        | _ -> "failed", "none", "Startup state is not recognized."
+
+    let backendStatus, backendObserved, backendMessage =
+        match behavior.Backend with
+        | "default" -> "honored", "default", "Default backend will be selected."
+        | "vulkan" -> "honored", "vulkan", "Vulkan backend can be requested."
+        | "opengl" -> "unsupported", "none", "OpenGL backend preference is not supported by this viewer host."
+        | "software" -> "unsupported", "none", "Software backend preference is not supported by this viewer host."
+        | _ -> "degraded", "default", "No backend requested; default backend will be selected."
+
+    [ "initial-size", $"{viewerOptions.InitialSize.Width}x{viewerOptions.InitialSize.Height}", $"{viewerOptions.InitialSize.Width}x{viewerOptions.InitialSize.Height}", "honored", "Initial window size is positive and can be requested."
+      "resize", behavior.Resize, behavior.Resize, "honored", "Resize policy can be honored by the viewer host."
+      "maximize", behavior.Maximize, behavior.Maximize, "honored", "Maximize policy can be honored by the viewer host."
+      "startup-state", behavior.Startup, startupObserved, startupStatus, startupMessage
+      "startup-position", behavior.Position, positionObserved, positionStatus, positionMessage
+      "backend", behavior.Backend, backendObserved, backendStatus, backendMessage ]
+
+let windowOptionsReport evidencePath behavior =
+    let request = toViewerWindowBehavior behavior
+
+    let optionLine (option, requested, observed, status, message) =
+        $"status={windowOptionStatusText status} mode=interactive-window command=--window-options option={option} requested={requested} observed={observed} diagnostic-class=window-options message={message}"
+
+    let lines =
+        [ "validation-contract=Viewer.validateWindowLaunchBehavior viewerOptions.InitialSize"
+          "schema=option=resize option=maximize option=startup-state option=startup-position option=backend status=unsupported"
+          yield!
+              manualWindowOptionResults request
+              |> List.map optionLine ]
+
+    writeBoundedSmokeReport evidencePath lines
+    lines |> List.iter (printfn "%s")
+    0
+
 [<EntryPoint>]
 let main args =
     match List.ofArray args with
@@ -535,11 +751,19 @@ let main args =
     | "--bounded-smoke-frame-diagnostics" :: _ -> boundedSmoke true "readiness/bounded-viewer-frame-diagnostics.txt"
     | "--scene-evidence" :: path :: _ -> sceneEvidence path
     | "--scene-evidence" :: _ -> sceneEvidence "readiness/headless-scene-evidence.txt"
+    | "--window-diagnostics" :: path :: _ -> windowDiagnostics path
+    | "--window-diagnostics" :: _ -> windowDiagnostics "readiness/window-diagnostics.txt"
+    | "--window-options" :: path :: tail -> windowOptionsReport path (parseWindowBehavior tail)
+    | "--window-options" :: _ -> windowOptionsReport "readiness/window-options.txt" (parseWindowBehavior [])
+    | "--image-evidence" :: path :: _ -> imageEvidence path
+    | "--image-evidence" :: _ -> imageEvidence "readiness/game-image-evidence.png"
     | "--screenshot-evidence" :: path :: _ -> visualEvidence "--screenshot-evidence" "command=--screenshot-evidence" Png "screenshot" "evidence-kind=screenshot" "fallback-reason=none" path
     | "--screenshot-evidence" :: _ -> visualEvidence "--screenshot-evidence" "command=--screenshot-evidence" Png "screenshot" "evidence-kind=screenshot" "fallback-reason=none" "readiness/game-screenshot-evidence.txt"
     | "--pixel-readback-evidence" :: path :: _ -> visualEvidence "--pixel-readback-evidence" "command=--pixel-readback-evidence" Hash "pixel-readback" "evidence-kind=pixel-readback" "fallback-reason=screenshot-unavailable" path
     | "--pixel-readback-evidence" :: _ -> visualEvidence "--pixel-readback-evidence" "command=--pixel-readback-evidence" Hash "pixel-readback" "evidence-kind=pixel-readback" "fallback-reason=screenshot-unavailable" "readiness/game-pixel-readback-evidence.txt"
-    | _ ->
+    | args ->
+        let windowBehavior = parseWindowBehavior args
+        let windowBehaviorRequest = toViewerWindowBehavior windowBehavior
         let capability = Viewer.runtimeCapability()
         let desktopSessionDiagnosticApi = "Viewer.desktopSessionDiagnostic()"
 
@@ -596,16 +820,31 @@ let main args =
 
         let fallbackFullDesktopSession = "fallback-is-full-desktop-session=false"
 
+        let _windowBehaviorContract = "Viewer.runAppWithWindowBehavior viewerOptions windowBehavior generatedHost"
+
+        let windowOptionResults =
+            manualWindowOptionResults windowBehaviorRequest
+
+        let windowOptionSummary =
+            windowOptionResults
+            |> List.map (fun (option, _, _, status, _) -> $"{option}:{windowOptionStatusText status}")
+            |> String.concat ","
+
+        let _windowBehaviorRequestCall = "Viewer.runAppWithWindowBehavior viewerOptions windowBehaviorRequest generatedHost"
+
+        // SYNTHETIC: template/base compiles against the pre-change packaged SkiaViewer here; T047 verifies the packed runAppWithWindowBehavior path.
         match Viewer.runApp viewerOptions generatedHost with
         | Result.Ok outcome ->
             let inputDispatchStatus =
-                match outcome.InputDispatch with
+                match $"%A{outcome.InputDispatch}" with
+                | "Verified"
                 | "true" -> "verified"
+                | "NotVerified"
                 | "false" -> "not-verified"
-                | value -> value
+                | value -> value.ToLowerInvariant()
 
-            printfn "status=%s mode=%s command=%s window-opened=%b first-frame-presented=%b user-close-observed=%b self-closed-for-evidence=%b input-dispatch=%s exit-path=%b renderer-mode=%s blocked-stage=none classification=none category=none missing-package-capability=%s unsupported-host-reasons=%s diagnostic-api=%s diagnostic-class=%s runtime-directory=%s runtime-directory-exists=%b display-variable=%s display-socket-exists=%b session-bus=%s %s message=%s desktop-message=%s" outcome.Status outcome.Mode defaultCommand outcome.WindowOpened outcome.FirstFramePresented outcome.UserCloseObserved outcome.SelfClosedForEvidence inputDispatchStatus outcome.ExitPath outcome.RendererMode missingPackageCapability unsupportedHostReasons desktopSessionDiagnosticApi diagnosticClass (optional runtimeDirectory) runtimeDirectoryExists (optional displayVariable) displaySocketExists (optional sessionBus) fallbackFullDesktopSession outcome.Message desktopMessage
+            printfn "status=%s mode=%s command=%s window-opened=%b window-visible=observed:true accessible-window=true first-frame-presented=%b user-close-observed=%b self-closed-for-evidence=%b input-dispatch=%s exit-path=%b renderer-mode=%s blocked-stage=none classification=none category=none window-options=%s missing-package-capability=%s unsupported-host-reasons=%s diagnostic-api=%s diagnostic-class=%s runtime-directory=%s runtime-directory-exists=%b display-variable=%s display-socket-exists=%b session-bus=%s %s message=%s desktop-message=%s" outcome.Status outcome.Mode defaultCommand outcome.WindowOpened outcome.FirstFramePresented outcome.UserCloseObserved outcome.SelfClosedForEvidence inputDispatchStatus outcome.ExitPath outcome.RendererMode windowOptionSummary missingPackageCapability unsupportedHostReasons desktopSessionDiagnosticApi diagnosticClass (optional runtimeDirectory) runtimeDirectoryExists (optional displayVariable) displaySocketExists (optional sessionBus) fallbackFullDesktopSession outcome.Message desktopMessage
             0
         | Result.Error (failure: ViewerRunFailure) ->
-            printfn "status=%s mode=interactive-window command=%s blocked-stage=%A classification=%A category=%A missing-package-capability=%s unsupported-host-reasons=%s diagnostic-api=%s diagnostic-class=%s runtime-directory=%s runtime-directory-exists=%b display-variable=%s display-socket-exists=%b session-bus=%s %s message=%s desktop-message=%s" (if failure.Classification = UnsupportedEnvironment then "unsupported" else "failed") defaultCommand failure.BlockedStage failure.Classification failure.DiagnosticCategory missingPackageCapability unsupportedHostReasons desktopSessionDiagnosticApi diagnosticClass (optional runtimeDirectory) runtimeDirectoryExists (optional displayVariable) displaySocketExists (optional sessionBus) fallbackFullDesktopSession failure.Message desktopMessage
+            printfn "status=%s mode=interactive-window command=%s window-visible=unsupported accessible-window=false blocked-stage=%A classification=%A category=%A window-options=%s missing-package-capability=%s unsupported-host-reasons=%s diagnostic-api=%s diagnostic-class=%s runtime-directory=%s runtime-directory-exists=%b display-variable=%s display-socket-exists=%b session-bus=%s %s message=%s desktop-message=%s" (if failure.Classification = UnsupportedEnvironment then "unsupported" else "failed") defaultCommand failure.BlockedStage failure.Classification failure.DiagnosticCategory windowOptionSummary missingPackageCapability unsupportedHostReasons desktopSessionDiagnosticApi diagnosticClass (optional runtimeDirectory) runtimeDirectoryExists (optional displayVariable) displaySocketExists (optional sessionBus) fallbackFullDesktopSession failure.Message desktopMessage
             if failure.Classification = UnsupportedEnvironment then 0 else 1

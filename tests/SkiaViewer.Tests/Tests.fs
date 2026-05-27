@@ -35,6 +35,13 @@ let withEnvironment variables action =
             for name, value in previous do
                 Environment.SetEnvironmentVariable(name, value))
 
+let isPngFile path =
+    if not (IO.File.Exists path) then
+        false
+    else
+        let signature = IO.File.ReadAllBytes(path) |> Array.truncate 8
+        signature = [| 0x89uy; 0x50uy; 0x4Euy; 0x47uy; 0x0Duy; 0x0Auy; 0x1Auy; 0x0Auy |]
+
 [<Tests>]
 let tests =
     testList "SkiaViewer MVU contract" [
@@ -262,7 +269,7 @@ let tests =
             Expect.exists initEffects (function OpenWindow("Product", { Width = 640; Height = 480 }) -> true | _ -> false) "init requests window opening at the edge"
 
             let started, startEffects = Viewer.update StartInteractive model
-            Expect.equal started.LifecycleState InteractiveRunning "interactive start updates model state"
+            Expect.equal started.LifecycleState CheckingDesktopSession "interactive start enters desktop-session precheck state"
             Expect.exists startEffects (function CheckDesktopSession -> true | _ -> false) "interactive start requests desktop preflight as an effect"
 
             let framed, frameEffects = Viewer.update (FramePresented { Width = 640; Height = 480 }) started
@@ -280,7 +287,7 @@ let tests =
 
             let closing, closeEffects = Viewer.update ViewerMsg.UserCloseObserved keyed
             Expect.equal closing.UserCloseObserved true "user close is recorded in the model"
-            Expect.equal closing.LifecycleState Closing "user close transitions to closing"
+            Expect.equal closing.LifecycleState UserCloseObservedState "user close remains distinct from framework or evidence close"
             Expect.exists closeEffects (function CloseWindow -> true | _ -> false) "user close requests window close"
         }
 
@@ -296,9 +303,290 @@ let tests =
             Expect.exists startEffects (function CheckDesktopSession -> true | _ -> false) "interactive launch still runs desktop precheck at the edge"
 
             let closed, closeEffects = Viewer.update ViewerMsg.UserCloseObserved firstFrame
-            Expect.equal closed.LifecycleState Closing "explicit user close is the completion path"
+            Expect.equal closed.LifecycleState UserCloseObservedState "explicit user close is the completion path"
             Expect.isTrue closed.UserCloseObserved "explicit close is recorded"
             Expect.exists closeEffects (function CloseWindow -> true | _ -> false) "explicit close emits close effect"
+        }
+
+        test "interactive launch close reasons complete only after explicit user app host or failure close" {
+            let model, _ = Viewer.init { Title = "Product"; InitialSize = { Width = 640; Height = 480 } }
+            let running, _ = Viewer.update StartInteractive model
+            let firstFrame, frameEffects = Viewer.update (FramePresented { Width = 640; Height = 480 }) running
+
+            Expect.equal firstFrame.LifecycleState ViewerLifecycleState.FirstFramePresented "first frame does not complete the interactive launch"
+            Expect.isTrue firstFrame.IsRunning "interactive launch remains open after first frame"
+            Expect.isFalse firstFrame.UserCloseObserved "first frame is not reported as user close"
+            Expect.isFalse (frameEffects |> List.exists (function CloseWindow -> true | _ -> false)) "first frame does not request evidence close"
+
+            let userClosed, userEffects = Viewer.update ViewerMsg.UserCloseObserved firstFrame
+            Expect.equal userClosed.LifecycleState UserCloseObservedState "user close completes through user-close state"
+            Expect.isTrue userClosed.UserCloseObserved "user close is the only user-close-observed path"
+            Expect.exists userEffects (function CloseWindow -> true | _ -> false) "user close closes the window"
+
+            let appClosed, appEffects = Viewer.update AppCloseRequested firstFrame
+            Expect.equal appClosed.LifecycleState CloseRequested "app close completes through app close-requested state"
+            Expect.isFalse appClosed.UserCloseObserved "app close is not user close"
+            Expect.exists appEffects (function CloseWindow -> true | _ -> false) "app close closes the window"
+
+            let hostClosed, hostEffects = Viewer.update HostCloseObserved firstFrame
+            Expect.equal hostClosed.LifecycleState Closing "host close completes through host closing state"
+            Expect.isFalse hostClosed.UserCloseObserved "host close is not user close"
+            Expect.exists hostEffects (function CloseWindow -> true | _ -> false) "host close closes the window"
+
+            let failure =
+                { BlockedStage = Window
+                  Classification = UnsupportedEnvironment
+                  DiagnosticCategory = EnvironmentSession
+                  Message = "window host failed"
+                  LastDiagnosticSummary = Some "window host failed" }
+
+            let failed, failureEffects = Viewer.update (RunFailed failure) firstFrame
+            Expect.equal failed.LifecycleState Failed "failure close completes through failed state"
+            Expect.isFalse failed.UserCloseObserved "failure close is not user close"
+            Expect.exists failureEffects (function EmitDiagnostic diagnostic when diagnostic.Message = "window host failed" -> true | _ -> false) "failure emits diagnostics instead of evidence close"
+        }
+
+        test "visibility diagnostics classify taskbar-only inaccessible windows before app lifecycle debugging" {
+            let model, _ = Viewer.init { Title = "Product"; InitialSize = { Width = 640; Height = 480 } }
+
+            let created =
+                { WindowInitialized = true
+                  NativeHandle = ViewerObservedValue.Observed true
+                  Visible = ViewerObservedValue.Unavailable
+                  Focusable = ViewerObservedValue.Unavailable
+                  Focused = ViewerObservedValue.Unavailable
+                  Minimized = ViewerObservedValue.Unavailable
+                  Maximized = ViewerObservedValue.Unavailable
+                  ClientSize = Some "640x480"
+                  RenderableSurfaceAvailable = ViewerObservedValue.Unavailable
+                  Backend = Some "skia"
+                  InputDevicesAvailable = ViewerObservedValue.Unavailable
+                  FailureClass = None
+                  Message = "native handle created" }
+
+            let windowCreated, createdEffects = Viewer.update (WindowCreated created) model
+            Expect.equal windowCreated.LifecycleState ViewerLifecycleState.WindowCreated "window creation is modeled before visibility success"
+            Expect.exists createdEffects (function QueryNativeWindowState -> true | _ -> false) "window creation asks the interpreter for native state"
+
+            let taskbarOnly =
+                { created with
+                    Visible = ViewerObservedValue.Observed false
+                    Focusable = ViewerObservedValue.Observed false
+                    RenderableSurfaceAvailable = ViewerObservedValue.Observed true
+                    FailureClass = Some "window-visibility"
+                    Message = "window has taskbar entry but no accessible visible surface" }
+
+            let inaccessible, diagnosticEffects = Viewer.update (VisibilityObserved taskbarOnly) windowCreated
+            Expect.equal inaccessible.LifecycleState InaccessibleWindow "taskbar-only state is degraded before app lifecycle debugging"
+            Expect.exists diagnosticEffects (function EmitDiagnostic diagnostic when diagnostic.Message.Contains "taskbar entry" -> true | _ -> false) "visibility diagnostic is emitted"
+        }
+
+        test "visibility diagnostics classify inaccessible observed window states as degraded or failed" {
+            let visibleBase =
+                { WindowInitialized = true
+                  NativeHandle = ViewerObservedValue.Observed true
+                  Visible = ViewerObservedValue.Observed true
+                  Focusable = ViewerObservedValue.Observed true
+                  Focused = ViewerObservedValue.Unsupported
+                  Minimized = ViewerObservedValue.Observed false
+                  Maximized = ViewerObservedValue.Observed false
+                  ClientSize = Some "640x480"
+                  RenderableSurfaceAvailable = ViewerObservedValue.Observed true
+                  Backend = Some "skia"
+                  InputDevicesAvailable = ViewerObservedValue.Observed true
+                  FailureClass = None
+                  Message = "visible window surface observed" }
+
+            let cases =
+                [ "taskbar-only",
+                  { visibleBase with
+                      Visible = ViewerObservedValue.Observed false
+                      Focusable = ViewerObservedValue.Observed false
+                      FailureClass = Some "window-visibility"
+                      Message = "taskbar-only window has no accessible visible surface" }
+                  "hidden",
+                  { visibleBase with
+                      Visible = ViewerObservedValue.Observed false
+                      FailureClass = Some "window-visibility"
+                      Message = "hidden window is not a visible launch" }
+                  "minimized-only",
+                  { visibleBase with
+                      Minimized = ViewerObservedValue.Observed true
+                      FailureClass = Some "window-visibility"
+                      Message = "minimized-only window is not accessible" }
+                  "off-screen",
+                  { visibleBase with
+                      Focusable = ViewerObservedValue.Observed false
+                      FailureClass = Some "window-visibility"
+                      Message = "off-screen window cannot be selected" }
+                  "unmapped",
+                  { visibleBase with
+                      WindowInitialized = false
+                      NativeHandle = ViewerObservedValue.Observed false
+                      Visible = ViewerObservedValue.Observed false
+                      FailureClass = Some "window-visibility"
+                      Message = "unmapped window never became visible" }
+                  "zero-sized",
+                  { visibleBase with
+                      ClientSize = Some "0x0"
+                      FailureClass = Some "window-visibility"
+                      Message = "zero-sized window has no usable client surface" }
+                  "surface-less",
+                  { visibleBase with
+                      RenderableSurfaceAvailable = ViewerObservedValue.Observed false
+                      FailureClass = Some "window-visibility"
+                      Message = "surface-less window cannot present frames" } ]
+
+            for label, diagnostic in cases do
+                let model, _ = Viewer.init { Title = "Product"; InitialSize = { Width = 640; Height = 480 } }
+                let checking, _ = Viewer.update (VisibilityCheckStarted diagnostic) model
+                let next, effects = Viewer.update (VisibilityObserved diagnostic) checking
+                Expect.equal next.LifecycleState InaccessibleWindow $"{label} must not be reported as visible interactive success"
+                Expect.exists effects (function EmitDiagnostic event when event.Message.Contains diagnostic.Message -> true | _ -> false) $"{label} emits the native visibility diagnostic"
+        }
+
+        test "visibility diagnostics classify unsupported or unavailable native state separately from visible success" {
+            let baseDiagnostic =
+                { WindowInitialized = true
+                  NativeHandle = ViewerObservedValue.Unsupported
+                  Visible = ViewerObservedValue.Unsupported
+                  Focusable = ViewerObservedValue.Unsupported
+                  Focused = ViewerObservedValue.Unsupported
+                  Minimized = ViewerObservedValue.Unsupported
+                  Maximized = ViewerObservedValue.Unsupported
+                  ClientSize = None
+                  RenderableSurfaceAvailable = ViewerObservedValue.Unsupported
+                  Backend = None
+                  InputDevicesAvailable = ViewerObservedValue.Unsupported
+                  FailureClass = Some "environment-session"
+                  Message = "native window-state fields are unsupported on this host" }
+
+            let model, _ = Viewer.init { Title = "Product"; InitialSize = { Width = 640; Height = 480 } }
+            let unsupported, unsupportedEffects = Viewer.update (VisibilityObserved baseDiagnostic) model
+            Expect.equal unsupported.LifecycleState Unsupported "unsupported native visibility facts are not visible launch success"
+            Expect.exists unsupportedEffects (function EmitDiagnostic event when event.Message.Contains "unsupported" -> true | _ -> false) "unsupported state emits a diagnostic"
+
+            let unavailable =
+                { baseDiagnostic with
+                    NativeHandle = ViewerObservedValue.Unavailable
+                    Visible = ViewerObservedValue.Unavailable
+                    RenderableSurfaceAvailable = ViewerObservedValue.Unavailable
+                    FailureClass = Some "window-visibility"
+                    Message = "native window-state fields are unavailable before app lifecycle debugging" }
+
+            let unavailableModel, _ = Viewer.update (VisibilityObserved unavailable) model
+            Expect.equal unavailableModel.LifecycleState InaccessibleWindow "unavailable observable facts degrade rather than report visible success"
+        }
+
+        test "launch outcomes separate evidence close from user close and expose visibility fields" {
+            let host =
+                { Init = fun () -> { Count = 0; Closed = false }, []
+                  Update = fun _ model -> model, []
+                  View = fun _ -> Group []
+                  MapKey = fun _ _ -> None
+                  Tick = fun _ -> None
+                  Diagnostics = Viewer.defaultDiagnostics }
+
+            let request =
+                { Target = FirstFrame
+                  Timeout = TimeSpan.FromSeconds 2.0
+                  Diagnostics = Viewer.defaultDiagnostics
+                  RendererMode = "skia"
+                  EvidencePath = None }
+
+            match Viewer.runAppEvidence request { Title = "Product"; InitialSize = { Width = 640; Height = 480 } } host with
+            | Result.Ok outcome ->
+                Expect.equal outcome.Mode "persistent-evidence" "explicit evidence runs do not report interactive mode"
+                Expect.equal outcome.CloseReason (Some EvidenceRequestedClose) "evidence close has its own close reason"
+                Expect.isFalse outcome.UserCloseObserved "evidence close is not user close"
+                Expect.isTrue outcome.EvidenceCloseObserved "evidence close compatibility field is true"
+                Expect.equal outcome.WindowVisible ViewerObservedValue.Unsupported "bounded evidence does not claim desktop visibility"
+            | Result.Error failure ->
+                Expect.equal failure.Classification UnsupportedEnvironment "unsupported hosts fail before claiming an evidence close"
+                Expect.equal failure.BlockedStage Window "unsupported hosts are blocked at window/session setup"
+                Expect.equal failure.DiagnosticCategory EnvironmentSession "unsupported hosts keep environment diagnostics separate from app lifecycle"
+        }
+
+        test "MVU lifecycle transitions emit effects for session window visibility close timeout and failure states" {
+            let options = { Title = "Product"; InitialSize = { Width = 640; Height = 480 } }
+            let model, _ = Viewer.init options
+
+            let started, startEffects = Viewer.update StartInteractive model
+            Expect.equal started.LifecycleState CheckingDesktopSession "start enters session precheck"
+            Expect.exists startEffects (function CheckDesktopSession -> true | _ -> false) "session precheck is an effect"
+
+            let sessionReady =
+                { RuntimeDirectory = Some "/tmp/runtime"
+                  RuntimeDirectoryExists = true
+                  RuntimeDirectoryOwnerSuitable = true
+                  RuntimeDirectoryPermissionsSuitable = true
+                  DisplayVariable = Some "DISPLAY=:99"
+                  DisplaySocket = Some "/tmp/.X11-unix/X99"
+                  DisplaySocketExists = true
+                  SessionBus = Some "unix:path=/tmp/bus"
+                  FallbackRuntimeDirectory = None
+                  FallbackIsFullDesktopSession = false
+                  DiagnosticClass = "environment-session-ready"
+                  Message = "Desktop session prerequisites are present." }
+
+            let starting, startingEffects = Viewer.update (DesktopSessionChecked sessionReady) started
+            Expect.equal starting.LifecycleState StartingWindow "ready session starts window creation"
+            Expect.exists startingEffects (function OpenWindow("Product", { Width = 640; Height = 480 }) -> true | _ -> false) "window opening stays at interpreter edge"
+
+            let diagnostic =
+                { WindowInitialized = true
+                  NativeHandle = ViewerObservedValue.Observed true
+                  Visible = ViewerObservedValue.Observed true
+                  Focusable = ViewerObservedValue.Observed true
+                  Focused = ViewerObservedValue.Unsupported
+                  Minimized = ViewerObservedValue.Observed false
+                  Maximized = ViewerObservedValue.Observed false
+                  ClientSize = Some "640x480"
+                  RenderableSurfaceAvailable = ViewerObservedValue.Observed true
+                  Backend = Some "skia"
+                  InputDevicesAvailable = ViewerObservedValue.Observed true
+                  FailureClass = None
+                  Message = "visible window surface observed" }
+
+            let created, createdEffects = Viewer.update (WindowCreated diagnostic) starting
+            Expect.equal created.LifecycleState ViewerLifecycleState.WindowCreated "window-created state is represented"
+            Expect.exists createdEffects (function QueryNativeWindowState -> true | _ -> false) "window creation queries native state"
+
+            let checking, checkingEffects = Viewer.update (VisibilityCheckStarted diagnostic) created
+            Expect.equal checking.LifecycleState VisibilityChecking "visibility-checking state is represented"
+            Expect.exists checkingEffects (function QueryNativeWindowState -> true | _ -> false) "visibility check requests native state"
+
+            let running, runningEffects = Viewer.update (VisibilityObserved diagnostic) checking
+            Expect.equal running.LifecycleState InteractiveRunning "visible surface transitions to interactive running"
+            Expect.exists runningEffects (function EmitDiagnostic event when event.Message.Contains "visible window" -> true | _ -> false) "visibility observation emits diagnostics"
+
+            let requestedClose, requestCloseEffects = Viewer.update AppCloseRequested running
+            Expect.equal requestedClose.LifecycleState CloseRequested "app close requests are distinct from user close"
+            Expect.exists requestCloseEffects (function CloseWindow -> true | _ -> false) "app close emits close effect"
+
+            let unsupportedSession = { sessionReady with DiagnosticClass = "unsupported-host"; Message = "DISPLAY is missing" }
+            let unsupported, unsupportedEffects = Viewer.update (DesktopSessionChecked unsupportedSession) started
+            Expect.equal unsupported.LifecycleState Unsupported "unsupported session is explicit"
+            Expect.exists unsupportedEffects (function EmitDiagnostic event when event.Category = EnvironmentSession -> true | _ -> false) "unsupported session emits environment diagnostic"
+
+            let inaccessibleDiagnostic = { diagnostic with Visible = ViewerObservedValue.Observed false; FailureClass = Some "window-visibility"; Message = "taskbar only" }
+            let inaccessible, _ = Viewer.update (VisibilityObserved inaccessibleDiagnostic) checking
+            Expect.equal inaccessible.LifecycleState InaccessibleWindow "inaccessible native windows are not success"
+
+            let timedOut, timeoutEffects = Viewer.update RunTimedOut running
+            Expect.equal timedOut.LifecycleState Failed "timeout is a failure transition"
+            Expect.exists timeoutEffects (function EmitDiagnostic event when event.Stage = Some Timeout -> true | _ -> false) "timeout emits diagnostic"
+
+            let failure =
+                { BlockedStage = Window
+                  Classification = UnsupportedEnvironment
+                  DiagnosticCategory = Startup
+                  Message = "window failed"
+                  LastDiagnosticSummary = Some "window failed" }
+
+            let failed, failureEffects = Viewer.update (RunFailed failure) running
+            Expect.equal failed.LifecycleState Failed "run failure is a failure transition"
+            Expect.exists failureEffects (function EmitDiagnostic event when event.Message = "window failed" -> true | _ -> false) "failure emits diagnostic"
         }
 
         test "runApp semantic outcome reports interactive mode and never evidence self-close" {
@@ -472,6 +760,90 @@ let tests =
                 Expect.isFalse (capability.MissingPackageCapabilities |> List.contains reason) "unsupported host reasons are not reported as missing package capabilities")
         }
 
+        test "window behavior validation reports resize maximize startup state position and backend results" {
+            let results =
+                Viewer.validateWindowBehavior
+                    { Viewer.defaultWindowBehavior with
+                        ResizePolicy = FixedSize
+                        MaximizePolicy = NotMaximizable
+                        StartupState = Maximized
+                        StartupPosition = Some(Coordinates(20, 30))
+                        BackendPreference = Some ViewerBackendPreference.Vulkan }
+
+            Expect.hasLength results 5 "one result is returned for each supported option family"
+            Expect.exists results (fun item -> item.Option = "resize" && item.Status = Honored && item.Observed = Some "fixed-size") "resize policy is reported"
+            Expect.exists results (fun item -> item.Option = "maximize" && item.Status = Honored && item.Observed = Some "not-maximizable") "maximize policy is reported"
+            Expect.exists results (fun item -> item.Option = "startup-state" && item.Status = Honored && item.Observed = Some "maximized") "startup state is reported"
+            Expect.exists results (fun item -> item.Option = "startup-position" && item.Status = Honored && item.Observed = Some "20,30") "startup position is reported"
+            Expect.exists results (fun item -> item.Option = "backend" && item.Status = Honored && item.Observed = Some "vulkan") "backend preference is reported"
+        }
+
+        test "window behavior validation rejects invalid coordinates and unsupported backend settings with diagnostics" {
+            let results =
+                Viewer.validateWindowBehavior
+                    { Viewer.defaultWindowBehavior with
+                        StartupState = Minimized
+                        StartupPosition = Some(Coordinates(-1, 10))
+                        BackendPreference = Some ViewerBackendPreference.OpenGL }
+
+            Expect.exists results (fun item -> item.Option = "startup-state" && item.Status = UnsupportedOption && item.Message.Contains "visible interactive") "minimized startup is unsupported for visible launch validation"
+            Expect.exists results (fun item -> item.Option = "startup-position" && item.Status = FailedOption && item.Message.Contains "non-negative") "invalid coordinates fail validation"
+            Expect.exists results (fun item -> item.Option = "backend" && item.Status = UnsupportedOption && item.Message.Contains "not supported") "unsupported backend is explicit"
+        }
+
+        test "window launch behavior validation includes positive size constraints and all public option families" {
+            let behavior =
+                { Viewer.defaultWindowBehavior with
+                    ResizePolicy = FixedSize
+                    MaximizePolicy = NotMaximizable
+                    StartupState = Normal
+                    StartupPosition = Some Centered
+                    BackendPreference = Some ViewerBackendPreference.DefaultBackend }
+
+            let valid = Viewer.validateWindowLaunchBehavior { Width = 640; Height = 480 } behavior
+            let invalid = Viewer.validateWindowLaunchBehavior { Width = 0; Height = 480 } behavior
+
+            Expect.hasLength valid 6 "initial size is validated with the five window behavior option families"
+            Expect.exists valid (fun item -> item.Option = "initial-size" && item.Status = Honored && item.Observed = Some "640x480") "positive initial size is honored"
+            Expect.exists valid (fun item -> item.Option = "resize" && item.Status = Honored && item.Observed = Some "fixed-size") "resize policy remains part of launch validation"
+            Expect.exists valid (fun item -> item.Option = "maximize" && item.Status = Honored && item.Observed = Some "not-maximizable") "maximize policy remains part of launch validation"
+            Expect.exists valid (fun item -> item.Option = "startup-state" && item.Status = Honored && item.Observed = Some "normal") "startup state remains part of launch validation"
+            Expect.exists valid (fun item -> item.Option = "startup-position" && item.Status = Honored && item.Observed = Some "centered") "startup position remains part of launch validation"
+            Expect.exists valid (fun item -> item.Option = "backend" && item.Status = Honored && item.Observed = Some "default") "backend preference remains part of launch validation"
+            Expect.exists invalid (fun item -> item.Option = "initial-size" && item.Status = FailedOption && item.Message.Contains "positive") "non-positive size fails before native launch"
+        }
+
+        test "init and start effects carry public window behavior through the MVU boundary" {
+            let behavior =
+                { Viewer.defaultWindowBehavior with
+                    ResizePolicy = FixedSize
+                    MaximizePolicy = NotMaximizable
+                    StartupState = Maximized
+                    StartupPosition = Some(Coordinates(32, 48))
+                    BackendPreference = Some ViewerBackendPreference.Vulkan }
+
+            let model, initEffects = Viewer.initWithWindowBehavior { Title = "Product"; InitialSize = { Width = 640; Height = 480 } } behavior
+            let sessionReady =
+                { RuntimeDirectory = Some "/run/user/1000"
+                  RuntimeDirectoryExists = true
+                  RuntimeDirectoryOwnerSuitable = true
+                  RuntimeDirectoryPermissionsSuitable = true
+                  DisplayVariable = Some "DISPLAY=:0"
+                  DisplaySocket = Some "/tmp/.X11-unix/X0"
+                  DisplaySocketExists = true
+                  SessionBus = Some "unix:path=/run/user/1000/bus"
+                  FallbackRuntimeDirectory = None
+                  FallbackIsFullDesktopSession = false
+                  DiagnosticClass = "desktop-session"
+                  Message = "desktop session ready" }
+
+            let _, readyEffects = Viewer.update (DesktopSessionChecked sessionReady) model
+
+            Expect.equal model.WindowBehavior behavior "model owns the requested behavior"
+            Expect.exists initEffects (function ApplyWindowOptions request -> request = behavior | _ -> false) "init emits option application for interpreter startup"
+            Expect.exists readyEffects (function ApplyWindowOptions request -> request = behavior | _ -> false) "desktop-session transition applies requested options before visibility checks"
+        }
+
         test "persistent run preserves bounded APIs as explicit separate helpers" {
             let options = { Title = "Product"; InitialSize = { Width = 320; Height = 200 } }
             let scene = Group []
@@ -605,6 +977,64 @@ let tests =
             Expect.exists closeEffects (function CloseWindow -> true | _ -> false) "explicit close emits close effect"
         }
 
+        test "generated host observes input availability and native close through viewer lifecycle" {
+            let host =
+                { Init = fun () -> { Count = 0; Closed = false }, []
+                  Update =
+                    fun msg model ->
+                        match msg with
+                        | Increment -> { model with Count = model.Count + 1 }, [ RenderScene(Group []) ]
+                        | Close -> { model with Closed = true }, [ CloseWindow ]
+                  View = fun model -> Text((0.0, 0.0), $"count {model.Count}", { Red = 255uy; Green = 255uy; Blue = 255uy; Alpha = 255uy })
+                  MapKey = fun key isDown -> if isDown && key = Space then Some Increment else None
+                  Tick = fun _ -> None
+                  Diagnostics = Viewer.defaultDiagnostics }
+
+            let initial, initEffects = host.Init()
+            Expect.equal initial.Count 0 "generated host init is pure and returns initial state"
+            Expect.isEmpty initEffects "generated host init has no native side effects"
+
+            let afterKey, keyEffects =
+                GeneratedAppHost.dispatchKey
+                    host
+                    { RawKey = "Space"
+                      Direction = ViewerKeyDirection.KeyDown }
+                    initial
+
+            Expect.equal afterKey.Count 1 "manual keyboard input is available through generated host mapping"
+            Expect.exists keyEffects (function RenderScene _ -> true | _ -> false) "manual input emits render refresh effect"
+
+            let diagnostic =
+                { WindowInitialized = true
+                  NativeHandle = ViewerObservedValue.Observed true
+                  Visible = ViewerObservedValue.Observed true
+                  Focusable = ViewerObservedValue.Observed true
+                  Focused = ViewerObservedValue.Observed true
+                  Minimized = ViewerObservedValue.Observed false
+                  Maximized = ViewerObservedValue.Observed false
+                  ClientSize = Some "640x480"
+                  RenderableSurfaceAvailable = ViewerObservedValue.Observed true
+                  Backend = Some "skia"
+                  InputDevicesAvailable = ViewerObservedValue.Observed true
+                  FailureClass = None
+                  Message = "visible window with keyboard input observed" }
+
+            let viewer, _ = Viewer.init { Title = "Product"; InitialSize = { Width = 640; Height = 480 } }
+            let running, _ = Viewer.update StartInteractive viewer
+            let visible, visibilityEffects = Viewer.update (VisibilityObserved diagnostic) running
+            Expect.equal visible.LifecycleState InteractiveRunning "input-capable visible window reaches interactive running"
+            Expect.exists visibilityEffects (function EmitDiagnostic event when event.Message.Contains "keyboard input" -> true | _ -> false) "input-device observation is diagnostic evidence"
+
+            let firstFrame, frameEffects = Viewer.update (FramePresented { Width = 640; Height = 480 }) visible
+            Expect.equal firstFrame.LifecycleState ViewerLifecycleState.FirstFramePresented "first frame is modeled after input-capable visibility"
+            Expect.isFalse (frameEffects |> List.exists (function CloseWindow -> true | _ -> false)) "first frame does not close interactive host"
+
+            let nativeClosed, nativeCloseEffects = Viewer.update HostCloseObserved firstFrame
+            Expect.equal nativeClosed.LifecycleState Closing "native host close is explicit and distinct from user close"
+            Expect.isFalse nativeClosed.UserCloseObserved "native close does not claim manual user close"
+            Expect.exists nativeCloseEffects (function CloseWindow -> true | _ -> false) "native close emits close effect"
+        }
+
         test "runAppEvidence is explicit and keeps invalid evidence requests separate from interactive launch" {
             let host =
                 { Init = fun () -> { Count = 0; Closed = false }, []
@@ -667,6 +1097,71 @@ let tests =
                 Expect.stringContains evidenceText "input-dispatch=not-required" "serialized evidence records input-dispatch status"
                 Expect.stringContains evidenceText "first-frame-presented=True" "serialized evidence records first-frame status"
             | Result.Error failure -> failtestf "expected explicit evidence launch success, got %A" failure
+        }
+
+        test "requested image evidence writes decodable image artifact and explicit proof claims" {
+            let host =
+                { Init = fun () -> { Count = 0; Closed = false }, []
+                  Update = fun _ model -> model, []
+                  View = fun _ -> Group []
+                  MapKey = fun _ _ -> None
+                  Tick = fun _ -> None
+                  Diagnostics = Viewer.defaultDiagnostics }
+
+            let imagePath =
+                IO.Path.Combine(IO.Path.GetTempPath(), $"fs-skia-requested-image-evidence-{Guid.NewGuid():N}.png")
+
+            let request =
+                { Target = FirstFrame
+                  Timeout = TimeSpan.FromSeconds 2.0
+                  Diagnostics = Viewer.defaultDiagnostics
+                  RendererMode = "skia"
+                  EvidencePath = Some imagePath }
+
+            try
+                match Viewer.runAppEvidence request { Title = "Product"; InitialSize = { Width = 640; Height = 480 } } host with
+                | Result.Ok outcome ->
+                    Expect.equal outcome.Mode "persistent-evidence" "image evidence is an explicit evidence launch mode"
+                    Expect.exists outcome.VisualEvidence (fun item -> item.Kind = ViewerVisualEvidenceKind.Image) "requested image evidence records an image artifact"
+                    Expect.exists outcome.VisualEvidence (fun item -> item.ImageDecodable = Some true) "requested image evidence records decodability"
+                    Expect.exists outcome.VisualEvidence (fun item -> item.ProvesSceneRendering && item.ProvesDesktopVisibility = false) "scene-rendering and desktop-visibility claims are explicit"
+                    Expect.isTrue (isPngFile imagePath) "requested image evidence path contains a decodable PNG image"
+                | Result.Error failure -> failtestf "expected requested image evidence result, got %A" failure
+            finally
+                if IO.File.Exists imagePath then
+                    IO.File.Delete imagePath
+        }
+
+        test "metadata hash evidence is labeled separately and never written as screenshot image" {
+            let host =
+                { Init = fun () -> { Count = 0; Closed = false }, []
+                  Update = fun _ model -> model, []
+                  View = fun _ -> Group []
+                  MapKey = fun _ _ -> None
+                  Tick = fun _ -> None
+                  Diagnostics = Viewer.defaultDiagnostics }
+
+            let metadataPath =
+                IO.Path.Combine(IO.Path.GetTempPath(), $"fs-skia-metadata-hash-evidence-{Guid.NewGuid():N}.txt")
+
+            let request =
+                { Target = FirstFrame
+                  Timeout = TimeSpan.FromSeconds 2.0
+                  Diagnostics = Viewer.defaultDiagnostics
+                  RendererMode = "metadata-hash"
+                  EvidencePath = Some metadataPath }
+
+            try
+                match Viewer.runAppEvidence request { Title = "Product"; InitialSize = { Width = 640; Height = 480 } } host with
+                | Result.Ok outcome ->
+                    Expect.exists outcome.VisualEvidence (fun item -> item.Kind = ViewerVisualEvidenceKind.MetadataHash) "metadata evidence is labeled metadata-hash"
+                    Expect.isFalse (outcome.VisualEvidence |> List.exists (fun item -> item.Kind = ViewerVisualEvidenceKind.Image && item.Path = Some metadataPath)) "metadata/hash artifacts are not mislabeled as image evidence"
+                    Expect.exists outcome.VisualEvidence (fun item -> item.Kind = ViewerVisualEvidenceKind.MetadataHash && not item.ProvesDesktopVisibility) "metadata/hash evidence does not claim desktop visibility"
+                    Expect.isFalse (isPngFile metadataPath) "metadata/hash output is not a screenshot image"
+                | Result.Error failure -> failtestf "expected metadata/hash evidence result, got %A" failure
+            finally
+                if IO.File.Exists metadataPath then
+                    IO.File.Delete metadataPath
         }
 
         test "evidence launch timeout and failure paths are explicit and bounded" {

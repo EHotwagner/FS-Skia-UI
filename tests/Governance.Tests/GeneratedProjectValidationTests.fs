@@ -86,14 +86,19 @@ let generatedProjectValidationTests =
                 "build.fsx"
                 [ "requiredPersistentHostTerms"
                   "Viewer.runApp viewerOptions generatedHost"
+                  "window-visible=observed:true"
+                  "accessible-window=true"
                   "generated app is missing persistent viewer host wiring"
                   "forbiddenDefaultSubstitutions"
                   "print metadata"
                   "count controls"
                   "run bounded smoke"
                   "emit scene evidence"
+                  "first-frame-only=true"
+                  "exit after first frame"
                   "without a persistent launch attempt"
-                  "bounded-only or print-only default path markers" ]
+                  "bounded-only or print-only default path markers"
+                  "/readiness/logs/" ]
         }
 
         test "generated app default diagnostics report command capability blocked stage category and message" {
@@ -118,6 +123,25 @@ let generatedProjectValidationTests =
                   "persistent launch diagnostics captured separately from bounded evidence"
                   "Persistent launch diagnostics log"
                   "PersistentLaunchDiagnosticFailure" ]
+        }
+
+        test "GeneratedProductCheck records full window visibility validation contract output" {
+            expectFileContains
+                "build.fsx"
+                [ "generated consumer window diagnostics"
+                  "generated consumer window options"
+                  "generated consumer image evidence"
+                  "WindowDiagnosticsFailure"
+                  "WindowOptionsFailure"
+                  "VisualEvidenceFailure"
+                  "default-interactive-launch"
+                  "bounded-evidence-validation"
+                  "close-reason-validation"
+                  "window-diagnostics-validation"
+                  "window-options-validation"
+                  "image-evidence-validation"
+                  "authoritative"
+                  "failure-class" ]
         }
 
         test "V3 generated product checks enforce Controls ownership and stale reference diagnostics" {

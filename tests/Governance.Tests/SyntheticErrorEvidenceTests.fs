@@ -84,6 +84,30 @@ let private writePersistentRuntimeReadiness root packageResolution generatedVeri
     writeFixtureFile root "readiness/task-workflow-guidance.md" "implementation batch records red-green evidence log graph before/after skill-loading notes non-authoritative aggregate" |> ignore
     writeFixtureFile root "readiness/evidence-audit.md" "EvidenceGraph EvidenceAudit PASS required readiness acceptance keywords" |> ignore
 
+let private writeWindowVisibilityReadiness root overridesByFile =
+    writeFeature
+        root
+        "- [X] T001 [skillist: []] Record window visibility validation fixture\n- [X] T002 [skillist: []] Document window visibility validation fixture"
+        ""
+
+    writeFixtureFile root "spec.md" "Fix Window Visibility interactive-visible-window.md close-reason-separation.md real-image-evidence.md generated-validation.md" |> ignore
+    writeFixtureFile root "plan.md" "Fix Window Visibility generated-validation.md real-image-evidence.md" |> ignore
+
+    let defaults =
+        [ "interactive-visible-window.md", "status=ok\nmode=interactive-window\nwindow-visible=observed:true\naccessible-window=true\nfirst-frame-presented=true\nself-closed-for-evidence=false\n"
+          "close-reason-separation.md", "close-reason=user-close\nuser-close-observed=true\nevidence-close-observed=false\n"
+          "window-state-diagnostics.md", "failure-class=none\nvisible=observed:true\nfocusable=observed:true\nsurface=observed:true\n"
+          "window-options.md", "resize-policy=requested observed honored\nstartup-state=normal observed honored\n"
+          "real-image-evidence.md", "requested-image-evidence=true\nevidence-kind=screenshot\nartifact-kind=image\nartifact-decodable=true\nimage-artifact=readiness/artifacts/window.png\n"
+          "generated-validation.md", "exact-package-match=true\ngenerated-tests-exist=true\ngenerated-tests-ran=true\nauthoritative=true\nfailure-class=none\n"
+          "evidence-audit.md", "verdict=fixture\n" ]
+
+    let overrideMap = overridesByFile |> Map.ofList
+
+    defaults
+    |> List.iter (fun (fileName, content) ->
+        writeFixtureFile root $"readiness/{fileName}" (overrideMap |> Map.tryFind fileName |> Option.defaultValue content) |> ignore)
+
 [<Tests>]
 let syntheticErrorEvidenceTests =
     testList "Synthetic error evidence governance" [
@@ -234,5 +258,41 @@ tasks:
                       "malformed parser input"
                       "convenience mocks"
                       "implementation-time relabeling" ])
+        }
+
+        test "EvidenceAudit Synthetic rejects corrupt image metadata records" {
+            use fixture = new TempFixtureDirectory("seh-corrupt-image-metadata")
+
+            writeWindowVisibilityReadiness
+                fixture.Root
+                [ "real-image-evidence.md", "requested-image-evidence=true\nevidence-kind=screenshot\nartifact-kind=image\nartifact-decodable={not-json}\nimage-artifact=readiness/artifacts/window.png\n" ]
+
+            let code, stdout, stderr = runAudit fixture.Root
+            Expect.equal code 2 $"audit fails: {stdout} {stderr}"
+            Expect.stringContains (stdout + stderr) "corrupt image metadata record" "audit reports corrupt image metadata"
+        }
+
+        test "EvidenceAudit Synthetic rejects missing generated-validation fields" {
+            use fixture = new TempFixtureDirectory("seh-missing-generated-validation")
+
+            writeWindowVisibilityReadiness
+                fixture.Root
+                [ "generated-validation.md", "exact-package-match=true\nauthoritative=true\n" ]
+
+            let code, stdout, stderr = runAudit fixture.Root
+            Expect.equal code 2 $"audit fails: {stdout} {stderr}"
+            Expect.stringContains (stdout + stderr) "missing generated validation fields" "audit reports missing generated-validation fields"
+        }
+
+        test "EvidenceAudit Synthetic rejects hostile artifact paths" {
+            use fixture = new TempFixtureDirectory("seh-hostile-artifact-path")
+
+            writeWindowVisibilityReadiness
+                fixture.Root
+                [ "real-image-evidence.md", "requested-image-evidence=true\nevidence-kind=screenshot\nartifact-kind=image\nartifact-decodable=true\nimage-artifact=../../outside-readiness/window.png\n" ]
+
+            let code, stdout, stderr = runAudit fixture.Root
+            Expect.equal code 2 $"audit fails: {stdout} {stderr}"
+            Expect.stringContains (stdout + stderr) "hostile artifact path" "audit reports hostile artifact paths"
         }
     ]

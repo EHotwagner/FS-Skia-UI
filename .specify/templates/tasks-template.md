@@ -91,9 +91,13 @@ or valid-empty cases.
 
 Keep `tasks.deps.yml`, the `skillist` mirror, and the
 `speckit.evidence.graph` status refresh requirements in generated task lists.
-Generated tasks should also name the small, medium, and broad governance risk
-level, focused validation required for the selected level, when broad validation
-is required, and how non-authoritative aggregate results are recorded.
+Generated implementation batch records must include a red-green evidence log,
+graph before/after paths before and after every status change, skill-loading notes,
+persistent launch rules for graphical defaults, and non-authoritative aggregate reporting.
+Generated tasks should also name the small, medium, and broad
+governance risk level, focused validation required for the selected level, when
+broad validation is required, and how non-authoritative aggregate results are
+recorded.
 
 For malformed-input and explicit error-path tasks, generated task lists MAY use
 `[SEH]` only when the task itself validates an error behavior and real input is

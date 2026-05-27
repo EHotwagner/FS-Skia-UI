@@ -1,0 +1,5 @@
+[37m[[37m02:21:33 [37mINF[37m] [37mEXPECTO? Running tests...[37m [37m<[37mExpecto[37m>[37m
+[0m[1000D[?25h[37m[[37m02:21:34 [37mINF[37m] [37mEXPECTO! [36m1[37m tests run in [32m00:00:00.5928549[37m for [36mpersistent viewer evidence contracts.EvidenceAudit rejects visual evidence missing proof fields[37m – [36m1[37m passed, [36m0[37m ignored, [36m0[37m failed, [36m0[37m errored. [36mSuccess![37m [37m<[37mExpecto[37m>[37m
+[0m[37m[[37m02:21:35 [37mINF[37m] [37mEXPECTO? Running tests...[37m [37m<[37mExpecto[37m>[37m
+[0m[1000D[?25h[37m[[37m02:21:36 [37mINF[37m] [37mEXPECTO! [36m1[37m tests run in [32m00:00:00.5804283[37m for [36mpersistent viewer evidence contracts.EvidenceAudit rejects pixel readback desktop visibility claims[37m – [36m1[37m passed, [36m0[37m ignored, [36m0[37m failed, [36m0[37m errored. [36mSuccess![37m [37m<[37mExpecto[37m>[37m
+[0m

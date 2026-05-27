@@ -52,6 +52,15 @@ type GeneratedProductLaunchValidationResult =
     { InteractiveLaunchRequired: bool
       Diagnostics: string list }
 
+type GeneratedWindowDiagnosticCheck =
+    { Output: string
+      RequiredFailureClasses: string list
+      RequiredNativeFacts: string list }
+
+type GeneratedWindowDiagnosticValidationResult =
+    { DiagnosticsComplete: bool
+      Diagnostics: string list }
+
 type PackageResolutionCheck =
     { RequestedPackages: LocalConsumerPackage list
       ResolvedPackages: LocalConsumerPackage list
@@ -93,9 +102,36 @@ type VisualEvidenceResult =
       UnsupportedReason: string option
       Diagnostics: string list }
 
+type GeneratedVisualEvidenceCommandCheck =
+    { Output: string
+      RequestedImageEvidence: bool }
+
+type GeneratedVisualEvidenceCommandResult =
+    { Accepted: bool
+      EvidenceKind: string option
+      FailureReason: string option
+      Diagnostics: string list }
+
+type GeneratedValidationContractCheck =
+    { PackageResolution: PackageResolutionCheckResult
+      GeneratedTests: GeneratedTestExecutionResult
+      DefaultInteractiveLaunch: GeneratedProductLaunchValidationResult
+      BoundedEvidenceValidated: bool
+      CloseReasonValidated: bool
+      WindowDiagnostics: GeneratedWindowDiagnosticValidationResult
+      WindowOptionsValidated: bool
+      ImageEvidence: GeneratedVisualEvidenceCommandResult }
+
+type GeneratedValidationContractResult =
+    { Output: string
+      Authoritative: bool
+      FailureClass: string
+      Diagnostics: string list }
+
 module GeneratedProductAssertions =
     val summarize: expectation: GeneratedProductExpectation -> string
     val validateDefaultInteractiveLaunch: source: string -> GeneratedProductLaunchValidationResult
+    val validateWindowDiagnostics: check: GeneratedWindowDiagnosticCheck -> GeneratedWindowDiagnosticValidationResult
 
 module LocalConsumerPackages =
     val report: feedPath: string -> packages: LocalConsumerPackage list -> LocalConsumerPackageReport
@@ -106,3 +142,5 @@ module GeneratedConsumerValidation =
     val verifyPackageResolution: check: PackageResolutionCheck -> PackageResolutionCheckResult
     val verifyGeneratedTests: check: GeneratedTestExecutionCheck -> GeneratedTestExecutionResult
     val selectVisualEvidence: request: VisualEvidenceRequest -> VisualEvidenceResult
+    val validateVisualEvidenceCommandOutput: check: GeneratedVisualEvidenceCommandCheck -> GeneratedVisualEvidenceCommandResult
+    val buildValidationContractOutput: check: GeneratedValidationContractCheck -> GeneratedValidationContractResult

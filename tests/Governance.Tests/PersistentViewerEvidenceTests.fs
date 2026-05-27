@@ -57,6 +57,32 @@ let private writePersistentGuiRuntimeFixture root overridesByFile =
     |> List.iter (fun (fileName, content) ->
         writeReadiness root fileName (overrideMap |> Map.tryFind fileName |> Option.defaultValue content))
 
+let private writeWindowVisibilityFixture root overridesByFile omittedFiles =
+    writeFixtureFile root "spec.md" "# Fix Window Visibility\n\nRequires interactive-visible-window.md close-reason-separation.md real-image-evidence.md generated-validation.md\n" |> ignore
+    writeFixtureFile root "plan.md" "# Fix Window Visibility Plan\n" |> ignore
+    writeFixtureFile root "tasks.md" "# Tasks\n\n- [X] T001 [skillist: []] Window visibility audit fixture\n" |> ignore
+    writeFixtureFile root "tasks.deps.yml" "schema_version: \"1.0\"\n\ntasks:\n  T001:\n    deps: []\n    skillist: []\n" |> ignore
+
+    let defaults =
+        [ "governance-risk-levels.md", "small medium broad required evidence broad validation\n"
+          "aggregate-hang-diagnostics.md", "verdict stage elapsed duration last observed command focused rerun non-authoritative aggregate\n"
+          "runtime-limitations.md", ".NET 10 desktop Vulkan SkiaSharp preview unsupported macOS/mobile/browser no software-renderer fallback\n"
+          "interactive-visible-window.md", "status=ok\nmode=interactive-window\nwindow-visible=observed:true\naccessible-window=true\nfirst-frame-presented=true\nself-closed-for-evidence=false\nprocess-running=true\ntaskbar-entry=true\n"
+          "close-reason-separation.md", "close-reason=user-close\nuser-close-observed=true\nevidence-close-observed=false\n"
+          "window-state-diagnostics.md", "status=degraded\ndiagnostic-class=environment-session\nnative-handle=unsupported\nvisible=unsupported\nfocusable=unsupported\nfocused=unsupported\nminimized=unsupported\nmaximized=unsupported\nclient-size=unavailable\nrenderable-surface=unsupported\ninput-devices=unsupported\nstatus=failed\ndiagnostic-class=window-visibility\nnative-handle=observed:true\nvisible=observed:false\nfocusable=observed:false\nfocused=unsupported\nminimized=observed:false\nmaximized=observed:false\nclient-size=640x480\nrenderable-surface=observed:true\ninput-devices=observed:false\nstatus=failed\ndiagnostic-class=app-lifecycle\nnative-handle=observed:true\nvisible=observed:true\nfocusable=observed:true\nfocused=observed:true\nminimized=observed:false\nmaximized=observed:false\nclient-size=640x480\nrenderable-surface=observed:true\ninput-devices=observed:true\nstatus=failed\ndiagnostic-class=product-defect\nnative-handle=observed:true\nvisible=observed:true\nfocusable=observed:true\nfocused=unsupported\nminimized=observed:false\nmaximized=observed:false\nclient-size=0x0\nrenderable-surface=observed:false\ninput-devices=unavailable\n"
+          "window-options.md", "status=honored diagnostic-class=window-options option=resize requested=resizable observed=resizable\nstatus=honored diagnostic-class=window-options option=maximize requested=maximizable observed=maximizable\nstatus=honored diagnostic-class=window-options option=startup-state requested=normal observed=normal\nstatus=honored diagnostic-class=window-options option=startup-position requested=centered observed=centered\nstatus=honored diagnostic-class=window-options option=backend requested=default observed=default\n"
+          "real-image-evidence.md", "requested-image-evidence=true\nevidence-kind=screenshot\nartifact-kind=image\nartifact-decodable=true\nimage-artifact=readiness/artifacts/window.png\n"
+          "generated-validation.md", "exact-package-match=true\ngenerated-tests-exist=true\ngenerated-tests-ran=true\nauthoritative=true\nfailure-class=none\n"
+          "evidence-audit.md", "verdict=fixture\n" ]
+
+    let overrideMap = overridesByFile |> Map.ofList
+    let omitted = omittedFiles |> Set.ofList
+
+    defaults
+    |> List.iter (fun (fileName, content) ->
+        if not (omitted.Contains fileName) then
+            writeReadiness root fileName (overrideMap |> Map.tryFind fileName |> Option.defaultValue content))
+
 [<Tests>]
 let persistentViewerEvidenceTests =
     testList "persistent viewer evidence contracts" [
@@ -216,6 +242,203 @@ let persistentViewerEvidenceTests =
 
             Expect.equal code 2 "audit rejects readiness records missing acceptance keywords"
             Expect.stringContains output "missing readiness acceptance keywords" "audit reports missing package/generated/visual acceptance keywords"
+        }
+
+        test "EvidenceAudit rejects missing window visibility readiness files" {
+            use fixture = new TempFixtureDirectory("window-visibility-missing-readiness")
+            writeWindowVisibilityFixture fixture.Root [] [ "interactive-visible-window.md"; "real-image-evidence.md" ]
+
+            let code, stdout, stderr = runEvidenceAudit fixture.Root
+            let output = stdout + stderr
+
+            Expect.equal code 2 "audit rejects missing 019 readiness files"
+            Expect.stringContains output "window-visibility:" "audit prints window visibility scan summary"
+            Expect.stringContains output "missing required window visibility readiness file" "audit reports missing required files"
+        }
+
+        test "EvidenceAudit rejects process taskbar-only visible-window substitution" {
+            use fixture = new TempFixtureDirectory("window-visibility-taskbar-only")
+            writeWindowVisibilityFixture
+                fixture.Root
+                [ "interactive-visible-window.md", "status=ok\nmode=interactive-window\nwindow-visible=observed:false\naccessible-window=false\nfirst-frame-presented=true\nself-closed-for-evidence=false\nprocess-running=true\ntaskbar-entry=true\nclassification=process/taskbar-only\n" ]
+                []
+
+            let code, stdout, stderr = runEvidenceAudit fixture.Root
+            let output = stdout + stderr
+
+            Expect.equal code 2 "audit rejects taskbar-only substitution"
+            Expect.stringContains output "process/taskbar-only visible-window substitution" "audit reports taskbar-only visible-window substitution"
+        }
+
+        test "EvidenceAudit rejects missing window diagnostic classes" {
+            use fixture = new TempFixtureDirectory("window-visibility-missing-diagnostic-classes")
+            writeWindowVisibilityFixture
+                fixture.Root
+                [ "window-state-diagnostics.md", "status=failed\ndiagnostic-class=window-visibility\nnative-handle=observed:true\nvisible=observed:false\nfocusable=observed:false\nrenderable-surface=observed:true\ninput-devices=observed:false\n" ]
+                []
+
+            let code, stdout, stderr = runEvidenceAudit fixture.Root
+            let output = stdout + stderr
+
+            Expect.equal code 2 "audit rejects missing diagnostic classes"
+            Expect.stringContains output "missing diagnostic classes" "audit reports missing diagnostic classes"
+            Expect.stringContains output "environment-session" "audit names missing environment/session class"
+        }
+
+        test "EvidenceAudit rejects unsupported-host-only window diagnostics as visible readiness" {
+            use fixture = new TempFixtureDirectory("window-visibility-unsupported-only")
+            writeWindowVisibilityFixture
+                fixture.Root
+                [ "interactive-visible-window.md", "status=ok\nmode=interactive-window\nwindow-visible=unsupported\naccessible-window=false\nfirst-frame-presented=true\nself-closed-for-evidence=false\nunsupported-host-only=true\n"
+                  "window-state-diagnostics.md", "status=unsupported\ndiagnostic-class=environment-session\nnative-handle=unsupported\nvisible=unsupported\nfocusable=unsupported\nrenderable-surface=unsupported\ninput-devices=unsupported\nunsupported-host-only=true\n" ]
+                []
+
+            let code, stdout, stderr = runEvidenceAudit fixture.Root
+            let output = stdout + stderr
+
+            Expect.equal code 2 "audit rejects unsupported-host-only visible readiness"
+            Expect.stringContains output "unsupported-host-only visible-window claim" "audit reports unsupported-host-only claim"
+        }
+
+        test "EvidenceAudit rejects taskbar-only success in window diagnostics" {
+            use fixture = new TempFixtureDirectory("window-visibility-diagnostic-taskbar-success")
+            writeWindowVisibilityFixture
+                fixture.Root
+                [ "window-state-diagnostics.md", "status=ok\ndiagnostic-class=window-visibility\ntaskbar-entry=true\nnative-handle=observed:true\nvisible=observed:false\nfocusable=observed:false\nrenderable-surface=observed:true\ninput-devices=observed:false\n" ]
+                []
+
+            let code, stdout, stderr = runEvidenceAudit fixture.Root
+            let output = stdout + stderr
+
+            Expect.equal code 2 "audit rejects taskbar-only success diagnostics"
+            Expect.stringContains output "process/taskbar-only success claim" "audit reports taskbar-only diagnostic success"
+        }
+
+        test "EvidenceAudit rejects evidence close reported as user close" {
+            use fixture = new TempFixtureDirectory("window-visibility-evidence-close")
+            writeWindowVisibilityFixture
+                fixture.Root
+                [ "close-reason-separation.md", "close-reason=evidence-close\nuser-close-observed=true\nevidence-close-observed=true\n" ]
+                []
+
+            let code, stdout, stderr = runEvidenceAudit fixture.Root
+            let output = stdout + stderr
+
+            Expect.equal code 2 "audit rejects evidence close as user close"
+            Expect.stringContains output "evidence close reported as user close" "audit reports close reason conflation"
+        }
+
+        test "EvidenceAudit rejects metadata-only screenshot claims" {
+            use fixture = new TempFixtureDirectory("window-visibility-metadata-screenshot")
+            writeWindowVisibilityFixture
+                fixture.Root
+                [ "real-image-evidence.md", "requested-image-evidence=true\nevidence-kind=screenshot\nartifact-kind=metadata\nartifact-decodable=false\nmetadata-only screenshot claim\n" ]
+                []
+
+            let code, stdout, stderr = runEvidenceAudit fixture.Root
+            let output = stdout + stderr
+
+            Expect.equal code 2 "audit rejects metadata-only screenshot evidence"
+            Expect.stringContains output "metadata-only screenshot claim" "audit reports metadata-only screenshot claim"
+        }
+
+        test "EvidenceAudit rejects visual evidence missing proof fields" {
+            use fixture = new TempFixtureDirectory("window-visibility-image-missing-proof-fields")
+            writeWindowVisibilityFixture
+                fixture.Root
+                [ "real-image-evidence.md", "requested-image-evidence=true\nevidence-kind=image\npath=readiness/artifacts/window.png\nimage-decodable=true\n" ]
+                []
+
+            let code, stdout, stderr = runEvidenceAudit fixture.Root
+            let output = stdout + stderr
+
+            Expect.equal code 2 "audit rejects image evidence without proof fields"
+            Expect.stringContains output "missing visual evidence proof fields" "audit reports missing proof fields"
+        }
+
+        test "EvidenceAudit rejects pixel readback desktop visibility claims" {
+            use fixture = new TempFixtureDirectory("window-visibility-pixel-desktop-claim")
+            writeWindowVisibilityFixture
+                fixture.Root
+                [ "real-image-evidence.md", "requested-image-evidence=false\nevidence-kind=pixel-readback\npath=readiness/artifacts/readback.txt\nfallback-reason=screenshot-unavailable\nproves-scene-rendering=true\nproves-desktop-visibility=true\n" ]
+                []
+
+            let code, stdout, stderr = runEvidenceAudit fixture.Root
+            let output = stdout + stderr
+
+            Expect.equal code 2 "audit rejects scene-only pixel readback as desktop visibility proof"
+            Expect.stringContains output "pixel-readback cannot prove desktop visibility" "audit reports pixel-readback desktop visibility claim"
+        }
+
+        test "EvidenceAudit rejects unresolved generated validation package mismatch" {
+            use fixture = new TempFixtureDirectory("window-visibility-package-mismatch")
+            writeWindowVisibilityFixture
+                fixture.Root
+                [ "generated-validation.md", "exact-package-match=false\ngenerated-tests-exist=true\ngenerated-tests-ran=true\nauthoritative=true\nfailure-class=package/verification\nwarning=NU1603\npackage mismatch\n" ]
+                []
+
+            let code, stdout, stderr = runEvidenceAudit fixture.Root
+            let output = stdout + stderr
+
+            Expect.equal code 2 "audit rejects unresolved generated validation package mismatch"
+            Expect.stringContains output "unresolved package mismatch" "audit reports package mismatch"
+        }
+
+        test "EvidenceAudit rejects missing generated validation test execution" {
+            use fixture = new TempFixtureDirectory("window-visibility-missing-generated-tests")
+            writeWindowVisibilityFixture
+                fixture.Root
+                [ "generated-validation.md", "exact-package-match=true\ngenerated-tests-exist=true\ngenerated-tests-ran=false\nauthoritative=true\nfailure-class=generated-validation\n" ]
+                []
+
+            let code, stdout, stderr = runEvidenceAudit fixture.Root
+            let output = stdout + stderr
+
+            Expect.equal code 2 "audit rejects missing generated test execution"
+            Expect.stringContains output "missing generated test execution" "audit reports missing generated tests"
+        }
+
+        test "EvidenceAudit rejects missing window option rows" {
+            use fixture = new TempFixtureDirectory("window-visibility-missing-window-options")
+            writeWindowVisibilityFixture
+                fixture.Root
+                [ "window-options.md", "status=honored diagnostic-class=window-options option=resize requested=resizable observed=resizable\n" ]
+                []
+
+            let code, stdout, stderr = runEvidenceAudit fixture.Root
+            let output = stdout + stderr
+
+            Expect.equal code 2 "audit rejects incomplete window option readiness"
+            Expect.stringContains output "missing option rows" "audit reports missing option rows"
+            Expect.stringContains output "backend" "audit names missing backend option"
+        }
+
+        test "EvidenceAudit rejects silently ignored unsupported window options" {
+            use fixture = new TempFixtureDirectory("window-visibility-ignored-unsupported-options")
+            writeWindowVisibilityFixture
+                fixture.Root
+                [ "window-options.md", "option=resize requested=resizable observed=resizable\noption=maximize requested=maximizable observed=maximizable\noption=startup-state requested=normal observed=normal\noption=startup-position requested=centered observed=centered\noption=backend requested=opengl observed=default\n" ]
+                []
+
+            let code, stdout, stderr = runEvidenceAudit fixture.Root
+            let output = stdout + stderr
+
+            Expect.equal code 2 "audit rejects unsupported options without explicit diagnostics"
+            Expect.stringContains output "silently ignored unsupported window option" "audit reports ignored unsupported option"
+        }
+
+        test "EvidenceAudit rejects window option failures hidden as app lifecycle" {
+            use fixture = new TempFixtureDirectory("window-visibility-option-failure-hidden")
+            writeWindowVisibilityFixture
+                fixture.Root
+                [ "window-options.md", "status=failed diagnostic-class=app-lifecycle option=resize requested=fixed-size observed=none\noption=maximize requested=maximizable observed=maximizable\noption=startup-state requested=normal observed=normal\noption=startup-position requested=centered observed=centered\noption=backend requested=default observed=default\n" ]
+                []
+
+            let code, stdout, stderr = runEvidenceAudit fixture.Root
+            let output = stdout + stderr
+
+            Expect.equal code 2 "audit rejects option failures hidden under app lifecycle"
+            Expect.stringContains output "window-options failure hidden under app-lifecycle" "audit reports hidden window-options failure"
         }
 
         test "bounded viewer docs label helper commands as non-readiness substitutes" {
