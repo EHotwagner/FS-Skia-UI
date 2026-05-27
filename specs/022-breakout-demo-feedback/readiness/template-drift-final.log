@@ -1,0 +1,10 @@
+The last restore is still up to date. Nothing left to do.
+Starting target 'TemplateDrift'
+Finished target 'TemplateDrift'
+Performance:
+ - Cli parsing: 138 milliseconds
+ - Packages: 37 milliseconds
+ - Script analyzing: 35 milliseconds
+ - Script running: 1 second
+ - Script cleanup: 1 millisecond
+ - Runtime: 2 seconds

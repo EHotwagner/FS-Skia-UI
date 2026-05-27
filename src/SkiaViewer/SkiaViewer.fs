@@ -209,6 +209,33 @@ type ViewerRunFailure =
       Message: string
       LastDiagnosticSummary: string option }
 
+type ScreenshotEvidenceStatus =
+    | ScreenshotOk
+    | ScreenshotUnsupported
+    | ScreenshotFailed
+
+type ScreenshotEvidenceRequest =
+    { Command: string
+      OutputPath: string
+      Width: int
+      Height: int
+      RendererMode: string
+      Timeout: TimeSpan }
+
+type ScreenshotEvidenceResult =
+    { Status: ScreenshotEvidenceStatus
+      Command: string
+      EvidenceKind: string
+      OutputPath: string option
+      ScreenshotPath: string option
+      Width: int option
+      Height: int option
+      RendererMode: string
+      FramesRendered: int option
+      UnsupportedHostReason: string option
+      Fallback: string option
+      Diagnostics: string list }
+
 type ViewerRuntimeCapability =
     { PersistentWindow: bool
       BoundedSmoke: bool
@@ -389,6 +416,15 @@ module Viewer =
         | Group scenes -> scenes |> List.map toLegacyScene |> FS.Skia.UI.Scene.group
         | Rectangle(bounds, color) -> FS.Skia.UI.Scene.rectangle bounds (toLegacyColor color)
         | PaintedRectangle(bounds, paint) -> FS.Skia.UI.Scene.rectangleWithPaint (toLegacyRect bounds) (toLegacyPaint paint)
+        | Circle(center, radius, fill) ->
+            let bounds =
+                { X = center.X - radius
+                  Y = center.Y - radius
+                  Width = radius * 2.0
+                  Height = radius * 2.0 }
+
+            FS.Skia.UI.Scene.ellipse (toLegacyRect bounds) (FS.Skia.UI.Paint.fill (toLegacyColor fill))
+        | FilledEllipse(bounds, fill) -> FS.Skia.UI.Scene.ellipse (toLegacyRect bounds) (FS.Skia.UI.Paint.fill (toLegacyColor fill))
         | Ellipse(bounds, paint) -> FS.Skia.UI.Scene.ellipse (toLegacyRect bounds) (toLegacyPaint paint)
         | Line(startPoint, endPoint, paint) -> FS.Skia.UI.Scene.line (toLegacyPoint startPoint) (toLegacyPoint endPoint) (toLegacyPaint paint)
         | Path(path, paint) -> FS.Skia.UI.Scene.path (toLegacyPath path) (toLegacyPaint paint)
@@ -837,7 +873,7 @@ module Viewer =
           MissingFacts = missingFacts
           Message = message }
 
-    let private validateRequest request =
+    let private validateRequest (request: ViewerRunRequest) =
         if request.Timeout <= TimeSpan.Zero then
             Result.Error(makeFailure App ProductDefect Startup "Viewer run timeout must be positive." None)
         else
@@ -1657,7 +1693,7 @@ module Viewer =
 
             { model with LifecycleState = Failed }, [ EmitDiagnostic failureDiagnostic ]
 
-    let initRun request =
+    let initRun (request: ViewerRunRequest) =
         { Request = request
           FramesRendered = 0
           StartedAt = None
@@ -1947,7 +1983,7 @@ module Viewer =
                     ProvesDesktopVisibility = false
                     Message = failure.Message } ]
 
-    let runBounded request options (scene: SceneNode) =
+    let runBounded (request: ViewerRunRequest) options (scene: SceneNode) =
         ignore scene
         match validateRequest request with
         | Result.Error failure -> Result.Error failure
@@ -2082,7 +2118,7 @@ module Viewer =
                         )
 
     let runUntilFirstFrame options (scene: SceneNode) =
-        let request =
+        let request: ViewerRunRequest =
             { Target = FirstFrame
               Timeout = TimeSpan.FromSeconds 10.0
               Diagnostics = defaultDiagnostics
@@ -2092,7 +2128,7 @@ module Viewer =
         runBounded request options scene
 
     let runForFrames frameCount options (scene: SceneNode) =
-        let request =
+        let request: ViewerRunRequest =
             { Target = FrameCount frameCount
               Timeout = TimeSpan.FromSeconds 10.0
               Diagnostics = defaultDiagnostics
@@ -2236,7 +2272,7 @@ module Viewer =
     let runApp options host =
         runAppWithWindowBehavior options defaultWindowBehavior host
 
-    let runAppEvidence request options host =
+    let runAppEvidence (request: ViewerRunRequest) options host =
         let model, _ = host.Init()
         let scene = host.View model
 
@@ -2278,6 +2314,53 @@ module Viewer =
             request.EvidencePath |> Option.iter (fun path -> writeLaunchFailure path "persistent-evidence" "runAppEvidence" failure)
             Result.Error failure
 
+    let captureScreenshotEvidence (request: ScreenshotEvidenceRequest) (options: ViewerOptions) scene : ScreenshotEvidenceResult =
+        let diagnostics =
+            [ if request.Width <= 0 then
+                  "screenshot width must be positive"
+              if request.Height <= 0 then
+                  "screenshot height must be positive"
+              if request.Timeout <= TimeSpan.Zero then
+                  "screenshot timeout must be positive" ]
+
+        if not diagnostics.IsEmpty then
+            { Status = ScreenshotFailed
+              Command = request.Command
+              EvidenceKind = "screenshot"
+              OutputPath = Some request.OutputPath
+              ScreenshotPath = None
+              Width = None
+              Height = None
+              RendererMode = request.RendererMode
+              FramesRendered = None
+              UnsupportedHostReason = None
+              Fallback = None
+              Diagnostics = diagnostics }
+        else
+            let capability = runtimeCapability ()
+
+            { Status = ScreenshotUnsupported
+              Command = request.Command
+              EvidenceKind = "screenshot"
+              OutputPath = Some request.OutputPath
+              ScreenshotPath = None
+              Width = None
+              Height = None
+              RendererMode = request.RendererMode
+              FramesRendered = None
+              UnsupportedHostReason =
+                  Some
+                      (if not capability.PersistentWindow then
+                           capability.UnsupportedHostReasons |> String.concat "; "
+                       else
+                           "screenshot capture is unavailable for this viewer host")
+              Fallback = Some "deterministic-scene-evidence"
+              Diagnostics =
+                  [ "status=unsupported"
+                    "evidence-kind=screenshot"
+                    "fallback=deterministic-scene-evidence"
+                    $"scene-capabilities={Scene.describe { Nodes = [ scene ] } |> List.length}" ] }
+
 module GeneratedAppHost =
     let dispatchKey host raw model =
         let key, isDown = ViewerKeyboard.normalizeEvent raw
@@ -2286,7 +2369,7 @@ module GeneratedAppHost =
         | Some msg -> host.Update msg model
         | None -> model, [ DispatchInput(key, isDown) ]
 
-    let smoke host request =
+    let smoke host (request: ViewerRunRequest) =
         let model, _ = host.Init()
         let scene = host.View model
         let size =

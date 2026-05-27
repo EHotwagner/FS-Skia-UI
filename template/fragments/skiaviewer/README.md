@@ -15,3 +15,8 @@ supported-host persistent graphical launch readiness. Successful default launch
 output must include `mode=interactive-window`, `window-visible=observed:true`,
 and `accessible-window=true`; unsupported hosts must report diagnostics instead
 of claiming accessibility.
+
+Screenshot evidence is a separate command/report kind from deterministic scene
+metadata and persistent launch evidence. Unsupported screenshot capture should
+name `fallback=deterministic-scene-evidence` and must not claim screenshot
+proof.

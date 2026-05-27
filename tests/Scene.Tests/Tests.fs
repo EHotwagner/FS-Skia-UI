@@ -16,6 +16,45 @@ let tests =
             Expect.contains (Scene.describe node) RectangleElement "scene description includes rectangle kind"
         }
 
+        test "filled circle and ellipse constructors are public and describe deterministic shape kinds" {
+            let circle =
+                Scene.circle
+                    { X = 32.0; Y = 24.0 }
+                    12.0
+                    (Colors.rgb 240uy 64uy 32uy)
+
+            let ellipse =
+                Scene.filledEllipse
+                    { X = 8.0; Y = 12.0; Width = 48.0; Height = 20.0 }
+                    (Colors.rgb 32uy 160uy 220uy)
+
+            Expect.contains (Scene.describe circle) CircleElement "circle is a first-class scene element"
+            Expect.contains (Scene.describe ellipse) EllipseElement "filled ellipse is a first-class scene element"
+        }
+
+        test "shape evidence records fill bounds and partial out-of-bounds placement" {
+            let fill = Colors.rgb 255uy 128uy 0uy
+
+            let circle =
+                Scene.circleEvidence
+                    { Width = 64; Height = 48 }
+                    { X = 4.0; Y = 8.0 }
+                    12.0
+                    fill
+
+            let ellipse =
+                Scene.ellipseEvidence
+                    { Width = 64; Height = 48 }
+                    { X = 16.0; Y = 20.0; Width = 24.0; Height = 12.0 }
+                    fill
+
+            Expect.equal circle.Fill fill "circle evidence records fill"
+            Expect.equal circle.Bounds { X = -8.0; Y = -4.0; Width = 24.0; Height = 24.0 } "circle evidence derives bounds from center/radius"
+            Expect.equal circle.Placement PartiallyOutOfBounds "circle evidence classifies partial clipping"
+            Expect.equal ellipse.Fill fill "ellipse evidence records fill"
+            Expect.equal ellipse.Placement FullyInside "ellipse evidence records placement"
+        }
+
         test "scene evidence helper returns deterministic hash without a viewer window" {
             let scene = Scene.rectangle (0.0, 0.0, 10.0, 20.0) (Colors.rgb 1uy 2uy 3uy)
 

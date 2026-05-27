@@ -70,6 +70,30 @@ let surfaceAreaTests =
             assertBaseline "FS.Skia.UI.Layout" typeof<FS.Skia.UI.Layout.GraphDefinition>.Assembly
         }
 
+        test "SkiaViewer package exposes selected generated persistent viewer entry point" {
+            let assemblyPath =
+                Path.Combine(repositoryRoot, "src", "SkiaViewer", "bin", "Debug", "net10.0", "FS.Skia.UI.SkiaViewer.dll")
+
+            Expect.isTrue (File.Exists assemblyPath) "SkiaViewer assembly has been built"
+
+            let assembly = Assembly.LoadFrom assemblyPath
+
+            let viewerModule =
+                match assembly.GetType("FS.Skia.UI.SkiaViewer.Viewer") |> Option.ofObj with
+                | Some value -> value
+                | None ->
+                    failtest "SkiaViewer package exports Viewer module"
+                    typeof<obj>
+
+            let methodNames =
+                viewerModule.GetMethods(BindingFlags.Public ||| BindingFlags.Static)
+                |> Array.map _.Name
+                |> Set.ofArray
+
+            Expect.contains methodNames "runApp" "selected generated persistent launch contract is packaged"
+            Expect.contains methodNames "runAppWithWindowBehavior" "window-behavior overload remains packaged but is not the generated default"
+        }
+
         test "FS.Skia.UI.Controls baseline exports expected contract names" {
             assertBaseline "FS.Skia.UI.Controls" typeof<FS.Skia.UI.Controls.Control<int>>.Assembly
         }

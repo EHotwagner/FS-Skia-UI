@@ -1,0 +1,10 @@
+The last restore is still up to date. Nothing left to do.
+Starting target 'FsiTranscripts'
+Finished target 'FsiTranscripts'
+Performance:
+ - Cli parsing: 174 milliseconds
+ - Packages: 45 milliseconds
+ - Script analyzing: 60 milliseconds
+ - Script running: 10 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 11 seconds

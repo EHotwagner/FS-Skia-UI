@@ -1,0 +1,14 @@
+circle-kind=[CircleElement]
+circle-bounds={ X = 4.0
+  Y = 8.0
+  Width = 16.0
+  Height = 16.0 } placement=FullyInside
+ellipse-kind=[EllipseElement]
+ellipse-bounds={ X = 2.0
+  Y = 4.0
+  Width = 24.0
+  Height = 12.0 } placement=FullyInside
+screenshot-status=ScreenshotUnsupported fallback=Some "deterministic-scene-evidence"
+report-lines=["status=unsupported"; "command=fsi"; "output=readiness/report.txt";
+ "unsupported-host-reason=capture unavailable";
+ "fallback=deterministic-scene-evidence"] exit=0

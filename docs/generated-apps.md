@@ -8,6 +8,9 @@ the generated app guidance must name:
   describing it as returning `FS.Skia.UI.Scene.Scene`.
 - Generated host value: `Product.Program.generatedHost`.
 - App reducer: `Product.Program.update`.
+- App-command boundary: pure reducers return app commands such as
+  `DispatchHostCommand`; viewer effects such as `RenderScene` are produced by
+  the host boundary and must not be appended to app command lists.
 - Interactive run command: `dotnet run --project src/Product/Product.fsproj`.
 - Persistent host default: `Viewer.runApp viewerOptions Product.Program.generatedHost`.
 - Viewer-key driven start, options, primary interaction, pause/back, and
@@ -20,6 +23,13 @@ the generated app guidance must name:
   frame category with an explicit sample limit.
 - Deterministic scene-level visual evidence command:
   `dotnet run --project src/Product/Product.fsproj -- --scene-evidence <path>`.
+- Screenshot evidence command:
+  `dotnet run --project src/Product/Product.fsproj -- --screenshot-evidence <path>`.
+  This is screenshot proof only when the report contains `status=ok`,
+  `evidence-kind=screenshot`, dimensions, and a screenshot artifact path.
+  Unsupported hosts must report `status=unsupported`,
+  `unsupported-host-reason`, and `fallback=deterministic-scene-evidence`
+  without claiming screenshot proof.
 - Layout readability evidence command:
   `dotnet run --project src/Product/Product.fsproj -- --layout-evidence <path> 1280 720`.
   Generated game products must also validate the documented constrained size
@@ -42,6 +52,21 @@ only print metadata, count controls, run bounded smoke, emit scene evidence, or
 exit without a persistent launch attempt are diagnostic helpers only. Tests that
 exercise the reducer should call `Product.Program.update`, not an unqualified
 or framework-owned update helper.
+
+Generated evidence reports must keep deterministic render proof, persistent
+launch proof, and screenshot proof as separate evidence kinds. A deterministic
+scene hash or pixel fallback can support diagnosis, but it must not be relabeled
+as persistent-window or screenshot evidence.
+Generated layout, image, screenshot, and pixel-readback evidence commands should
+share the `FS.Skia.UI.Testing.EvidenceReports` convention without forcing the
+default app profile to reference the Testing package: `status`, `command`,
+`output`, stable key ordering, normalized `ok`/`unsupported`/`failed` status
+vocabulary, and unsupported-host `unsupported-host-reason` plus
+`fallback=deterministic-scene-evidence`.
+Generated gameplay examples should reuse shared Scene geometry for layout,
+containment, collision, and rendering evidence when the Scene shape model
+already fits; do not introduce local duplicate bounds records for the same
+entities.
 
 Generated smoke reports should include a diagnostic mode and captured
 diagnostic categories so startup failures can be read without repeated

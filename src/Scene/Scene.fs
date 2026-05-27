@@ -173,6 +173,7 @@ type SceneElementKind =
     | EmptyElement
     | GroupElement
     | RectangleElement
+    | CircleElement
     | EllipseElement
     | LineElement
     | PathElement
@@ -194,6 +195,23 @@ type RenderReadbackEvidence =
       CapabilityCount: int
       Capabilities: string list
       DeterministicHash: string }
+
+type ShapePlacement =
+    | FullyInside
+    | PartiallyOutOfBounds
+    | FullyOutOfBounds
+
+type CircleShapeEvidence =
+    { Center: Point
+      Radius: float
+      Bounds: Rect
+      Fill: Color
+      Placement: ShapePlacement }
+
+type EllipseShapeEvidence =
+    { Bounds: Rect
+      Fill: Color
+      Placement: ShapePlacement }
 
 type LayoutProofLevel =
     | ReadableLayout
@@ -260,6 +278,8 @@ type SceneNode =
     | Group of Scene list
     | Rectangle of (float * float * float * float) * Color
     | PaintedRectangle of Rect * Paint
+    | Circle of center: Point * radius: float * fill: Color
+    | FilledEllipse of bounds: Rect * fill: Color
     | Ellipse of Rect * Paint
     | Line of Point * Point * Paint
     | Path of PathSpec * Paint
@@ -369,6 +389,12 @@ module Scene =
     let rectangleWithPaint bounds paint =
         { Nodes = [ PaintedRectangle(bounds, paint) ] }
 
+    let circle center radius fill =
+        { Nodes = [ Circle(center, radius, fill) ] }
+
+    let filledEllipse bounds fill =
+        { Nodes = [ FilledEllipse(bounds, fill) ] }
+
     let ellipse bounds paint =
         { Nodes = [ Ellipse(bounds, paint) ] }
 
@@ -429,6 +455,8 @@ module Scene =
             | Group scenes -> GroupElement :: (scenes |> List.collect describe)
             | Rectangle _ -> [ RectangleElement ]
             | PaintedRectangle _ -> [ RectangleElement ]
+            | Circle _ -> [ CircleElement ]
+            | FilledEllipse _ -> [ EllipseElement ]
             | Ellipse _ -> [ EllipseElement ]
             | Line _ -> [ LineElement ]
             | Path _ -> [ PathElement ]
@@ -464,7 +492,17 @@ module Scene =
         let rec nodeDiagnostics node =
             match node with
             | Group scenes -> scenes |> List.collect diagnostics
-            | PaintedRectangle(_, paint)
+            | PaintedRectangle(_, paint) -> paintDiagnostics paint
+            | FilledEllipse(_, fill) ->
+                if fill.Alpha = 0uy then
+                    [ diagnostic Warning "Filled ellipse is transparent." (Some "fill") ]
+                else
+                    []
+            | Circle(_, radius, fill) ->
+                [ if radius <= 0.0 then
+                      diagnostic Error "Circle radius must be positive." (Some "radius")
+                  if fill.Alpha = 0uy then
+                      diagnostic Warning "Circle fill is transparent." (Some "fill") ]
             | Ellipse(_, paint)
             | Line(_, _, paint)
             | Path(_, paint)
@@ -496,6 +534,47 @@ module Scene =
           CapabilityCount = capabilities.Length
           Capabilities = capabilities
           DeterministicHash = Convert.ToHexString(hashBytes).ToLowerInvariant() }
+
+    let private classifyPlacement (outputSize: Size) bounds =
+        let output =
+            { X = 0.0
+              Y = 0.0
+              Width = float outputSize.Width
+              Height = float outputSize.Height }
+
+        let intersects =
+            bounds.X < output.X + output.Width
+            && bounds.X + bounds.Width > output.X
+            && bounds.Y < output.Y + output.Height
+            && bounds.Y + bounds.Height > output.Y
+
+        let inside =
+            bounds.X >= output.X
+            && bounds.Y >= output.Y
+            && bounds.X + bounds.Width <= output.X + output.Width
+            && bounds.Y + bounds.Height <= output.Y + output.Height
+
+        if inside then FullyInside
+        elif intersects then PartiallyOutOfBounds
+        else FullyOutOfBounds
+
+    let circleEvidence (outputSize: Size) (center: Point) radius fill : CircleShapeEvidence =
+        let bounds =
+            { X = center.X - radius
+              Y = center.Y - radius
+              Width = radius * 2.0
+              Height = radius * 2.0 }
+
+        { Center = center
+          Radius = radius
+          Bounds = bounds
+          Fill = fill
+          Placement = classifyPlacement outputSize bounds }
+
+    let ellipseEvidence (outputSize: Size) (bounds: Rect) fill : EllipseShapeEvidence =
+        { Bounds = bounds
+          Fill = fill
+          Placement = classifyPlacement outputSize bounds }
 
 type SceneEvidenceFormat =
     | Hash

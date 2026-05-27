@@ -46,6 +46,60 @@ let tests =
                 Expect.stringContains item.RemediationCommand "PackLocal" "drift diagnostics name PackLocal remediation")
         }
 
+        test "evidence report helper writes stable ordered fields and validates unsupported fallback" {
+            let root = IO.Path.Combine(IO.Path.GetTempPath(), $"fs-skia-evidence-report-{Guid.NewGuid():N}")
+            let path = IO.Path.Combine(root, "nested", "fs-skia-evidence-report.txt")
+            let originalOut = Console.Out
+            use capturedOut = new IO.StringWriter()
+
+            let report =
+                try
+                    Console.SetOut capturedOut
+                    EvidenceReports.write
+                        { Status = EvidenceUnsupported
+                          Command = "dotnet run -- --screenshot-evidence readiness/screenshot-evidence.md"
+                          OutputPath = Some path
+                          Fields =
+                            [ EvidenceReports.field "evidence-kind" "screenshot"
+                              EvidenceReports.field "unsupported-host-reason" "viewer host does not expose screenshot capture"
+                              EvidenceReports.field "fallback" "deterministic-scene-evidence" ] }
+                finally
+                    Console.SetOut originalOut
+
+            Expect.equal report.ExitCode 0 "unsupported host facts are classified without product failure"
+            Expect.equal (report.Lines |> List.take 3) [ "status=unsupported"; $"command={report.Command}"; $"output={path}" ] "standard fields lead the report"
+            Expect.isTrue (IO.Directory.Exists(IO.Path.GetDirectoryName path)) "parent directories are created"
+            Expect.sequenceEqual (IO.File.ReadAllLines path) report.Lines "file output matches echoed report lines"
+            Expect.sequenceEqual (capturedOut.ToString().Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries)) report.Lines "stdout output matches report lines"
+            Expect.equal (EvidenceReports.statusText EvidenceOk) "ok" "ok status vocabulary is normalized"
+            Expect.equal (EvidenceReports.statusText EvidenceUnsupported) "unsupported" "unsupported status vocabulary is normalized"
+            Expect.equal (EvidenceReports.statusText EvidenceFailed) "failed" "failed status vocabulary is normalized"
+
+            let validation = EvidenceReports.validate report
+            Expect.isTrue validation.Accepted "unsupported evidence report includes required fields"
+            Expect.isEmpty validation.MissingFields "all unsupported fields are present"
+
+            let invalidUnsupported =
+                EvidenceReports.build
+                    { Status = EvidenceUnsupported
+                      Command = "--screenshot-evidence"
+                      OutputPath = None
+                      Fields = [ EvidenceReports.field "evidence-kind" "screenshot" ] }
+
+            let invalidValidation = EvidenceReports.validate invalidUnsupported
+            Expect.isFalse invalidValidation.Accepted "unsupported reports must name reason and fallback"
+            Expect.containsAll invalidValidation.MissingFields [ "unsupported-host-reason"; "fallback" ] "unsupported required fields are reported"
+
+            let failed =
+                EvidenceReports.build
+                    { Status = EvidenceFailed
+                      Command = "--scene-evidence"
+                      OutputPath = None
+                      Fields = [] }
+
+            Expect.equal failed.ExitCode 1 "failed reports use non-zero exit"
+        }
+
         test "generated consumer validation summaries expose category elapsed command and evidence" {
             let result =
                 { Category = Completed

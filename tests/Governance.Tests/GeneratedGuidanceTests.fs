@@ -33,6 +33,16 @@ let planTemplates =
     [ ".specify/templates/plan-template.md"
       ".specify/presets/fsharp-opinionated/templates/plan-template.md" ]
 
+let selectedPersistentLaunchContract =
+    "Viewer.runApp viewerOptions Product.Program.generatedHost"
+
+let unqualifiedSelectedPersistentLaunchContract =
+    "Viewer.runApp viewerOptions generatedHost"
+
+let alternatePersistentLaunchContracts =
+    [ "Viewer.runAppWithWindowBehavior viewerOptions windowBehavior generatedHost"
+      "Viewer.runAppWithWindowBehavior viewerOptions windowBehaviorRequest generatedHost" ]
+
 [<Tests>]
 let generatedGuidanceTests =
     testList "Generated guidance hardening" [
@@ -192,5 +202,85 @@ let generatedGuidanceTests =
                 [ "Product.Program.view"
                   "Product.Program.generatedHost"
                   "Product.Program.update" ]
+        }
+
+        test "generated guidance keeps app commands distinct from viewer effects" {
+            [ "docs/generated-apps.md"
+              "template/base/docs/product.md" ]
+            |> List.iter (fun path ->
+                expectFileContains
+                    path
+                    [ "DispatchHostCommand"
+                      "RenderScene"
+                      "viewer effects"
+                      "app command" ])
+
+            expectFileContains
+                "template/base/src/Product/Program.fs"
+                [ "let interpretAtHostBoundary"
+                  "let viewerEffectsForModel"
+                  "let appCommandName"
+                  "RenderScene(view model)" ]
+
+            let source = read "template/base/src/Product/Program.fs"
+            Expect.isFalse (source.Contains("[ DispatchHostCommand \"save:Product\"; RenderScene", System.StringComparison.Ordinal)) "generated viewer effects are not appended to app command lists"
+        }
+
+        test "generated guidance reuses shared Scene geometry instead of local duplicates" {
+            [ "template/fragments/scene/README.md"
+              "docs/generated-apps.md"
+              "template/base/docs/product.md" ]
+            |> List.iter (fun path ->
+                expectFileContains
+                    path
+                    [ "shared Scene geometry"
+                      "layout"
+                      "collision" ])
+
+            let source = read "template/base/src/Product/Program.fs"
+            [ "type LocalGeometry"
+              "type LocalBounds"
+              "type CollisionRect"
+              "type RenderBounds" ]
+            |> List.iter (fun duplicateType ->
+                Expect.isFalse (source.Contains(duplicateType, System.StringComparison.Ordinal)) $"generated source does not introduce duplicate geometry record {duplicateType}")
+        }
+
+        test "generated viewer guidance scans one selected persistent launch contract across owned artifacts" {
+            [ "docs/generated-apps.md"
+              "template/fragments/skiaviewer/README.md"
+              "specs/022-breakout-demo-feedback/quickstart.md" ]
+            |> List.iter (fun path ->
+                let content = read path
+                Expect.stringContains content selectedPersistentLaunchContract $"{path} names the selected persistent launch contract"
+
+                alternatePersistentLaunchContracts
+                |> List.iter (fun alternate ->
+                    Expect.isFalse (content.Contains(alternate)) $"{path} does not drift to alternate persistent launch contract {alternate}"))
+
+            let source = read "template/base/src/Product/Program.fs"
+            let tests = read "template/base/tests/Product.Tests/Tests.fs"
+
+            Expect.stringContains source unqualifiedSelectedPersistentLaunchContract "generated source calls the selected persistent launch contract"
+            Expect.stringContains tests unqualifiedSelectedPersistentLaunchContract "generated tests assert the selected persistent launch contract"
+
+            alternatePersistentLaunchContracts
+            |> List.iter (fun alternate ->
+                Expect.isFalse (source.Contains(alternate)) $"generated source does not retain alternate launch contract {alternate}"
+                Expect.isFalse (tests.Contains(alternate)) $"generated tests do not retain alternate launch contract {alternate}")
+        }
+
+        test "generated viewer guidance readiness report records selected contract and distinct evidence kinds" {
+            let report = read "specs/022-breakout-demo-feedback/readiness/generated-viewer-guidance.md"
+
+            [ "package-version="
+              "selected-entry-point=Viewer.runApp"
+              "selected-contract=Viewer.runApp viewerOptions Product.Program.generatedHost"
+              "files-scanned="
+              "deterministic-render-evidence="
+              "persistent-launch-evidence="
+              "screenshot-evidence=" ]
+            |> List.iter (fun required ->
+                Expect.stringContains report required $"generated viewer guidance report includes {required}")
         }
     ]

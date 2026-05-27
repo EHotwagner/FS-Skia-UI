@@ -59,6 +59,25 @@ let tests =
             Expect.exists effects (function RenderScene rendered when rendered = scene -> true | _ -> false) "render effect is emitted"
         }
 
+        test "screenshot evidence reports explicit unsupported capture without claiming proof" {
+            let result =
+                Viewer.captureScreenshotEvidence
+                    { Command = "dotnet run -- --screenshot-evidence readiness/screenshot-evidence.md"
+                      OutputPath = "readiness/screenshot-evidence.md"
+                      Width = 320
+                      Height = 200
+                      RendererMode = "skia"
+                      Timeout = TimeSpan.FromSeconds 2.0 }
+                    { Title = "Product"; InitialSize = { Width = 320; Height = 200 } }
+                    (Rectangle((0.0, 0.0, 16.0, 16.0), Colors.white))
+
+            Expect.equal result.Status ScreenshotUnsupported "unavailable capture is an unsupported-host fact"
+            Expect.equal result.EvidenceKind "screenshot" "result names screenshot evidence kind"
+            Expect.isNone result.ScreenshotPath "unsupported result does not claim a screenshot artifact"
+            Expect.equal result.Fallback (Some "deterministic-scene-evidence") "unsupported screenshot points to deterministic fallback"
+            Expect.isSome result.UnsupportedHostReason "unsupported result names the missing capability"
+        }
+
         test "bounded run init and update expose pure lifecycle effects" {
             let request =
                 { Target = FirstFrame

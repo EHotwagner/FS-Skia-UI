@@ -80,7 +80,9 @@ let tests =
     ]
 //#else
 open FS.Skia.UI.Controls
+open FS.Skia.UI.Controls.Elmish
 open FS.Skia.UI.KeyboardInput
+open FS.Skia.UI.SkiaViewer
 
 [<Tests>]
 let tests =
@@ -175,6 +177,22 @@ let tests =
             Expect.isEmpty interactionEffects "primary interaction has no host command"
         }
 
+        test "generated host boundary keeps app commands separate from viewer effects" {
+            let unchanged, appCommands = Product.Program.update SaveRequested initialModel
+            let hosted, observedAppCommands, viewerEffects = Product.Program.interpretAtHostBoundary SaveRequested initialModel
+            let hostUpdated, hostViewerEffects = Product.Program.generatedHost.Update SaveRequested initialModel
+
+            Expect.equal unchanged initialModel "save command does not mutate the app model"
+            Expect.equal hosted initialModel "host boundary preserves pure update result"
+            Expect.equal hostUpdated initialModel "generated host uses the same pure update result"
+            Expect.exists appCommands (function DispatchHostCommand "save:Product" -> true | _ -> false) "pure update emits an app command"
+            Expect.equal observedAppCommands appCommands "host boundary exposes app commands before interpretation"
+            Expect.exists (observedAppCommands |> List.map Product.Program.appCommandName) ((=) "app-command:dispatch-host-command:save:Product") "app command category is named separately"
+            Expect.exists viewerEffects (function RenderScene _ -> true | _ -> false) "host boundary emits viewer render effect separately"
+            Expect.equal hostViewerEffects.Length viewerEffects.Length "generated host returns the same number of viewer effects to SkiaViewer"
+            Expect.exists hostViewerEffects (function RenderScene _ -> true | _ -> false) "generated host returns render effects to SkiaViewer"
+        }
+
         test "generated graphical app exposes bounded smoke command" {
             let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
 
@@ -205,11 +223,11 @@ let tests =
             Expect.stringContains source "self-closed-for-evidence=true" "bounded evidence reports self-close semantics"
             Expect.stringContains source "mode=persistent-evidence" "bounded evidence uses persistent evidence mode"
             Expect.stringContains source "command=--launch-evidence" "first-frame evidence records the evidence command"
-            Expect.stringContains source "command=--image-evidence" "image evidence records the evidence command"
-            Expect.stringContains source "command=--screenshot-evidence" "screenshot evidence records the evidence command"
-            Expect.stringContains source "command=--pixel-readback-evidence" "pixel-readback evidence records the evidence command"
+            Expect.stringContains source "\"--image-evidence\"" "image evidence records the evidence command"
+            Expect.stringContains source "\"--screenshot-evidence\"" "screenshot evidence records the evidence command"
+            Expect.stringContains source "\"--pixel-readback-evidence\"" "pixel-readback evidence records the evidence command"
             Expect.stringContains source "Viewer.runBounded" "generated evidence commands use bounded viewer evidence entry points"
-            Expect.stringContains defaultBranch "Viewer.runAppWithWindowBehavior viewerOptions windowBehavior generatedHost" "normal launch remains the persistent interactive path"
+            Expect.stringContains defaultBranch "Viewer.runApp viewerOptions generatedHost" "normal launch remains the persistent interactive path"
             Expect.isFalse (defaultBranch.Contains("mode=persistent-evidence")) "normal launch does not report bounded evidence mode"
             Expect.isFalse (defaultBranch.Contains("self-closed-for-evidence=true")) "normal launch does not claim evidence self-close"
             Expect.isFalse (defaultBranch.Contains("input-dispatch=not-required")) "normal launch does not reuse bounded evidence input-dispatch wording"
@@ -224,17 +242,34 @@ let tests =
             Expect.stringContains source "--image-evidence" "generated product exposes image evidence command"
             Expect.stringContains source "--screenshot-evidence" "generated product exposes screenshot evidence command"
             Expect.stringContains source "--pixel-readback-evidence" "generated product exposes pixel-readback evidence command"
-            Expect.stringContains source "evidence-kind=image" "image command records image evidence kind"
-            Expect.stringContains source "image-decodable=" "image command records decodability"
-            Expect.stringContains source "proves-scene-rendering=" "image command records scene-rendering proof claim"
-            Expect.stringContains source "proves-desktop-visibility=" "image command records desktop-visibility proof claim"
-            Expect.stringContains source "evidence-kind=screenshot" "screenshot command records screenshot evidence kind"
-            Expect.stringContains source "evidence-kind=pixel-readback" "pixel-readback command records fallback evidence kind"
-            Expect.stringContains source "fallback-reason=screenshot-unavailable" "pixel-readback command records why screenshot proof was unavailable"
-            Expect.stringContains source "board-readable=true" "visual evidence proves the board/grid is readable"
-            Expect.stringContains source "input-or-progress-observed=true" "visual evidence proves input dispatch or time progression was observed"
-            Expect.stringContains source "unsupported-host-reason=" "unsupported visual evidence reports why neither visual path is available"
-            Expect.stringContains source "supported-host=false" "unsupported visual evidence is explicit instead of substituting text-only metadata"
+            Expect.stringContains source "evidenceField \"evidence-kind\" \"image\"" "image command records image evidence kind"
+            Expect.stringContains source "evidenceField \"image-decodable\"" "image command records decodability"
+            Expect.stringContains source "evidenceField \"proves-scene-rendering\" \"true\"" "image command records scene-rendering proof claim"
+            Expect.stringContains source "evidenceField \"proves-desktop-visibility\" \"false\"" "image command records desktop-visibility proof claim"
+            Expect.stringContains source "evidenceField \"evidence-kind\" \"screenshot\"" "screenshot command records screenshot evidence kind"
+            Expect.stringContains source "Viewer.captureScreenshotEvidence" "screenshot command uses the viewer screenshot evidence contract"
+            Expect.stringContains source "deterministic-scene-evidence" "unsupported screenshot command records deterministic fallback"
+            Expect.stringContains source "evidenceField \"evidence-kind\" evidenceKind" "pixel-readback command records fallback evidence kind"
+            Expect.stringContains source "evidenceField \"fallback-reason\" fallbackReason" "pixel-readback command records why screenshot proof was unavailable"
+            Expect.stringContains source "screenshot-unavailable" "pixel-readback command names screenshot unavailability"
+            Expect.stringContains source "evidenceField \"board-readable\" \"true\"" "visual evidence proves the board/grid is readable"
+            Expect.stringContains source "evidenceField \"input-or-progress-observed\" \"true\"" "visual evidence proves input dispatch or time progression was observed"
+            Expect.stringContains source "evidenceField \"unsupported-host-reason\"" "unsupported visual evidence reports why neither visual path is available"
+            Expect.stringContains source "evidenceField \"supported-host\" \"false\"" "unsupported visual evidence is explicit instead of substituting text-only metadata"
+        }
+
+        test "generated evidence commands share Testing report conventions" {
+            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+
+            Expect.stringContains source "let writeEvidenceReport" "generated product defines one local report wrapper"
+            Expect.stringContains source "generatedEvidenceStatusText" "generated product shares normalized report status vocabulary"
+            Expect.stringContains source "writeEvidenceReport" "shared report wrapper is called by generated evidence commands"
+            Expect.stringContains source "evidenceField \"command\" command" "report wrapper preserves command field"
+            Expect.stringContains source "evidenceField \"output\" evidencePath" "report wrapper preserves output field"
+            Expect.stringContains source "\"--layout-evidence\"" "layout command reports through the shared convention"
+            Expect.stringContains source "\"--image-evidence\"" "image command reports through the shared convention"
+            Expect.stringContains source "\"--screenshot-evidence\"" "screenshot command reports through the shared convention"
+            Expect.stringContains source "\"--pixel-readback-evidence\"" "pixel-readback command reports through the shared convention"
         }
 
         test "generated graphical app default executable path uses persistent host" {
@@ -244,7 +279,7 @@ let tests =
             Expect.stringContains source "let generatedHost" "generated product declares generated host"
             Expect.stringContains source "MapKey = mapKey" "generated host wires keyboard mapping"
             Expect.stringContains source "Tick = tick" "generated host wires tick mapping"
-            Expect.stringContains source "Viewer.runAppWithWindowBehavior viewerOptions windowBehavior generatedHost" "default path runs persistent generated app host"
+            Expect.stringContains source "Viewer.runApp viewerOptions generatedHost" "default path runs persistent generated app host"
             Expect.stringContains source "mode=interactive-window" "default path reports interactive mode"
             Expect.stringContains source "accessible-window=true" "successful default path reports accessible desktop window claim"
             Expect.stringContains source "window-visible=observed:true" "successful default path reports observed visible window"
@@ -306,8 +341,8 @@ let tests =
             Expect.stringContains source "windowBehaviorArgsFromFile" "option files are parsed into launch flags"
             Expect.stringContains source "toViewerWindowBehavior windowBehavior" "parsed flags become the public viewer request"
             Expect.stringContains source "Viewer.validateWindowLaunchBehavior viewerOptions.InitialSize" "generated diagnostics use public launch behavior validation"
-            Expect.stringContains source "Viewer.runAppWithWindowBehavior viewerOptions windowBehavior generatedHost" "default launch applies requested behavior through the viewer contract"
-            Expect.stringContains source "Viewer.runAppWithWindowBehavior viewerOptions windowBehaviorRequest generatedHost" "normal launch passes the parsed behavior request to SkiaViewer"
+            Expect.stringContains source "Viewer.runApp viewerOptions generatedHost" "default launch applies the selected persistent viewer contract"
+            Expect.stringContains source "manualWindowOptionResults windowBehaviorRequest" "normal launch validates parsed behavior request before calling SkiaViewer"
             Expect.stringContains source "window-options=%s" "normal launch reports option validation output"
             Expect.stringContains source "option=resize" "option report includes resize rows"
             Expect.stringContains source "option=maximize" "option report includes maximize rows"
@@ -338,6 +373,20 @@ let tests =
             Expect.stringContains text "score" "side panel includes score"
             Expect.stringContains text "level" "side panel includes level"
             Expect.stringContains text "next" "side panel includes next piece"
+        }
+
+        test "generated default game view uses circular and elliptical entities without rectangle substitution" {
+            let rendered = view initialModel
+            let nodes = collectSceneNodes rendered |> Seq.toList
+
+            let roundEntityCount =
+                nodes
+                |> List.filter (function Circle _ | FilledEllipse _ | Ellipse _ -> true | _ -> false)
+                |> List.length
+
+            Expect.isGreaterThanOrEqual roundEntityCount 3 "generated scene renders at least three circular or elliptical entities"
+            Expect.contains (Scene.describe { Nodes = nodes }) CircleElement "generated scene contains public circle element"
+            Expect.contains (Scene.describe { Nodes = nodes }) EllipseElement "generated scene contains public ellipse element"
         }
 
         test "generated game layout evidence separates HUD and gameplay at default and constrained sizes" {
@@ -399,7 +448,7 @@ let tests =
 
             let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
             let defaultBranch = source.Substring(source.LastIndexOf("| args ->", StringComparison.Ordinal))
-            Expect.stringContains defaultBranch "Viewer.runAppWithWindowBehavior viewerOptions windowBehavior generatedHost" "normal launch uses interactive host"
+            Expect.stringContains defaultBranch "Viewer.runApp viewerOptions generatedHost" "normal launch uses interactive host"
             Expect.isFalse (defaultBranch.Contains("--launch-evidence")) "launch evidence flag stays out of normal launch branch"
             Expect.isFalse (defaultBranch.Contains("--bounded-smoke")) "bounded smoke flag stays out of normal launch branch"
             Expect.isFalse (defaultBranch.Contains("self-closed-for-evidence=true")) "normal launch does not report evidence self-close"

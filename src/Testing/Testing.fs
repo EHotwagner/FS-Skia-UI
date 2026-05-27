@@ -192,6 +192,34 @@ type ReadinessFileDiscoveryResult =
       MissingFiles: string list
       Diagnostics: string list }
 
+type EvidenceReportStatus =
+    | EvidenceOk
+    | EvidenceUnsupported
+    | EvidenceFailed
+
+type EvidenceReportField =
+    { Name: string
+      Value: string }
+
+type EvidenceReport =
+    { Status: EvidenceReportStatus
+      Command: string
+      OutputPath: string option
+      Fields: EvidenceReportField list
+      Lines: string list
+      ExitCode: int }
+
+type EvidenceReportRequest =
+    { Status: EvidenceReportStatus
+      Command: string
+      OutputPath: string option
+      Fields: EvidenceReportField list }
+
+type EvidenceReportValidationResult =
+    { Accepted: bool
+      MissingFields: string list
+      Diagnostics: string list }
+
 module GeneratedProductAssertions =
     let summarize expectation =
         let packages =
@@ -692,7 +720,7 @@ module PersistentLaunchArtifactValidation =
                     "scene"
                     "screenshot" ] ]
 
-    let validate check =
+    let validate (check: PersistentLaunchArtifactCheck) =
         let fields = parseFields check.Lines
 
         let missing =
@@ -747,7 +775,7 @@ module PersistentLaunchArtifactValidation =
           Diagnostics = diagnostics }
 
 module ReadinessFileDiscovery =
-    let validate check =
+    let validate (check: ReadinessFileDiscoveryCheck) =
         let existing =
             check.ExistingFiles
             |> List.map (fun path -> path.Trim().Replace('\\', '/'))
@@ -766,4 +794,86 @@ module ReadinessFileDiscovery =
 
         { Complete = missing.IsEmpty
           MissingFiles = missing
+          Diagnostics = diagnostics }
+
+module EvidenceReports =
+    let statusText status =
+        match status with
+        | EvidenceOk -> "ok"
+        | EvidenceUnsupported -> "unsupported"
+        | EvidenceFailed -> "failed"
+
+    let field name value =
+        { Name = name
+          Value = value }
+
+    let private statusExitCode status =
+        match status with
+        | EvidenceOk
+        | EvidenceUnsupported -> 0
+        | EvidenceFailed -> 1
+
+    let private normalizeFields fields =
+        fields
+        |> List.filter (fun item -> not (String.IsNullOrWhiteSpace item.Name))
+        |> List.map (fun item -> { item with Name = item.Name.Trim(); Value = item.Value.Trim() })
+
+    let build (request: EvidenceReportRequest) =
+        let standardFields =
+            [ field "status" (statusText request.Status)
+              field "command" request.Command ]
+            @ (request.OutputPath |> Option.map (field "output") |> Option.toList)
+
+        let merged =
+            standardFields @ normalizeFields request.Fields
+            |> List.distinctBy (fun item -> item.Name.ToLowerInvariant())
+
+        let lines = merged |> List.map (fun item -> $"{item.Name}={item.Value}")
+
+        { Status = request.Status
+          Command = request.Command
+          OutputPath = request.OutputPath
+          Fields = merged
+          Lines = lines
+          ExitCode = statusExitCode request.Status }
+
+    let write (request: EvidenceReportRequest) =
+        let report = build request
+
+        match report.OutputPath with
+        | Some path ->
+            match IO.Path.GetDirectoryName path with
+            | null
+            | "" -> ()
+            | directory -> IO.Directory.CreateDirectory(directory) |> ignore
+
+            IO.File.WriteAllLines(path, report.Lines)
+        | None -> ()
+
+        report.Lines |> List.iter Console.WriteLine
+        report
+
+    let validate (report: EvidenceReport) =
+        let names =
+            report.Fields
+            |> List.map (fun field -> field.Name.ToLowerInvariant())
+            |> Set.ofList
+
+        let required =
+            [ "status"; "command" ]
+            @ (if report.OutputPath.IsSome then [ "output" ] else [])
+            @ (if report.Status = EvidenceUnsupported then [ "unsupported-host-reason"; "fallback" ] else [])
+
+        let missing = required |> List.filter (fun name -> not (names.Contains name))
+
+        let diagnostics =
+            [ if report.Lines <> (report.Fields |> List.map (fun item -> $"{item.Name}={item.Value}")) then
+                  "stdout/file lines must match report field ordering"
+              if report.Status = EvidenceFailed && report.ExitCode = 0 then
+                  "failed reports must use non-zero exit code"
+              for item in missing do
+                  $"missing-field={item}" ]
+
+        { Accepted = missing.IsEmpty && diagnostics.IsEmpty
+          MissingFields = missing
           Diagnostics = diagnostics }

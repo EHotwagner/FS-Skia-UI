@@ -1,0 +1,18 @@
+The last restore is still up to date. Nothing left to do.
+Starting target 'TemplatePack'
+Finished target 'TemplatePack'
+Starting target 'TemplateInstallSource'
+Finished target 'TemplateInstallSource'
+Starting target 'TemplateInstallPackage'
+Finished target 'TemplateInstallPackage'
+Starting target 'TemplateInstantiate'
+Finished target 'TemplateInstantiate'
+Starting target 'TemplateSmoke'
+Hint: To further diagnose the problem you can run fake in verbose mode `fake -v run ...` or set the 'FAKE_DETAILED_ERRORS' environment variable to 'true'
+Performance:
+ - Cli parsing: 130 milliseconds
+ - Packages: 36 milliseconds
+ - Script analyzing: 33 milliseconds
+ - Script running: 12 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 12 seconds

@@ -1,0 +1,10 @@
+The last restore is still up to date. Nothing left to do.
+Starting target 'GeneratedGuidanceCheck'
+Finished target 'GeneratedGuidanceCheck'
+Performance:
+ - Cli parsing: 188 milliseconds
+ - Packages: 45 milliseconds
+ - Script analyzing: 42 milliseconds
+ - Script running: 50 milliseconds
+ - Script cleanup: 1 millisecond
+ - Runtime: 853 milliseconds

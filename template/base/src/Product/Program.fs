@@ -526,6 +526,41 @@ let private writeLayoutEvidenceLines (path: string) lines =
 
     File.WriteAllLines(path, Array.ofList lines)
 
+type GeneratedEvidenceReportStatus =
+    | GeneratedEvidenceOk
+    | GeneratedEvidenceUnsupported
+    | GeneratedEvidenceFailed
+
+let generatedEvidenceStatusText status =
+    match status with
+    | GeneratedEvidenceOk -> "ok"
+    | GeneratedEvidenceUnsupported -> "unsupported"
+    | GeneratedEvidenceFailed -> "failed"
+
+let generatedEvidenceExitCode status =
+    match status with
+    | GeneratedEvidenceOk
+    | GeneratedEvidenceUnsupported -> 0
+    | GeneratedEvidenceFailed -> 1
+
+let evidenceField name value =
+    name, value
+
+let writeEvidenceReport evidencePath status command fields =
+    let standardFields =
+        [ evidenceField "status" (generatedEvidenceStatusText status)
+          evidenceField "command" command
+          evidenceField "output" evidencePath ]
+
+    let lines =
+        (standardFields @ fields)
+        |> List.distinctBy (fun (name, _) -> name.ToLowerInvariant())
+        |> List.map (fun (name, value) -> $"{name}={value}")
+
+    writeLayoutEvidenceLines evidencePath lines
+    lines |> List.iter (printfn "%s")
+    generatedEvidenceExitCode status
+
 let layoutEvidenceCommand evidencePath width height =
     let size = { Width = width; Height = height }
     let report = layoutEvidenceForSize size initialModel
@@ -540,27 +575,26 @@ let layoutEvidenceCommand evidencePath width height =
         |> Option.map (fun region -> $"{region.Name}:{region.Bounds.X},{region.Bounds.Y},{region.Bounds.Width},{region.Bounds.Height}")
         |> Option.defaultValue "missing"
 
-    let status = if validation.Accepted then "ok" else "failed"
+    let status = if validation.Accepted then GeneratedEvidenceOk else GeneratedEvidenceFailed
     let diagnostics = String.concat "|" (report.Diagnostics @ validation.Diagnostics)
 
-    let lines =
-        [ $"status={status}"
-          "command=--layout-evidence"
-          $"scene=Product.Program.view"
-          $"output-size={size.Width}x{size.Height}"
-          $"proof-level={report.ProofLevel}"
-          $"hud-region={hud}"
-          $"gameplay-region={gameplay}"
-          $"text-bounds={report.TextBounds.Length}"
-          $"gameplay-bounds={report.GameplayBounds.Length}"
-          $"overlap-status={report.OverlapStatus}"
-          $"measurement-mode={report.MeasurementMode}"
-          $"accepted={validation.Accepted}"
-          $"diagnostics={diagnostics}" ]
-
-    writeLayoutEvidenceLines evidencePath lines
-    lines |> List.iter (printfn "%s")
-    if validation.Accepted then 0 else 1
+    let report =
+        writeEvidenceReport
+            evidencePath
+            status
+            "--layout-evidence"
+            [ evidenceField "scene" "Product.Program.view"
+              evidenceField "output-size" $"{size.Width}x{size.Height}"
+              evidenceField "proof-level" $"{report.ProofLevel}"
+              evidenceField "hud-region" hud
+              evidenceField "gameplay-region" gameplay
+              evidenceField "text-bounds" $"{report.TextBounds.Length}"
+              evidenceField "gameplay-bounds" $"{report.GameplayBounds.Length}"
+              evidenceField "overlap-status" $"{report.OverlapStatus}"
+              evidenceField "measurement-mode" $"{report.MeasurementMode}"
+              evidenceField "accepted" $"{validation.Accepted}"
+              evidenceField "diagnostics" diagnostics ]
+    report
 
 let view (model: Model) =
     let outputSize = { Width = 640; Height = 480 }
@@ -608,11 +642,18 @@ let view (model: Model) =
           Text((sideX, boardY + 144.0), $"moves: {model.PrimaryInteractions}", textColor) ]
         |> List.map (fun node -> { Nodes = [ node ] })
 
+    let circularMarkers =
+        [ Circle({ X = sideX + 18.0; Y = boardY + 186.0 }, 10.0, activeColor)
+          Circle({ X = sideX + 48.0; Y = boardY + 186.0 }, 8.0, textColor)
+          FilledEllipse({ X = sideX + 72.0; Y = boardY + 176.0; Width = 34.0; Height = 20.0 }, gridColor) ]
+        |> List.map (fun node -> { Nodes = [ node ] })
+
     Group(
         [ yield { Nodes = [ Rectangle((boardX, boardY, boardWidth, boardHeight), boardColor) ] }
           yield! boardCells
           yield! gridLines
-          yield! sideInfo ]
+          yield! sideInfo
+          yield! circularMarkers ]
     )
 
 let mapKey key isDown =
@@ -628,12 +669,27 @@ let viewerOptions =
     { Title = "Generated Product"
       InitialSize = { Width = 640; Height = 480 } }
 
+let appCommandName command =
+    match command with
+    | DispatchControlRuntimeMessage _ -> "app-command:dispatch-control-runtime-message"
+    | DispatchKeyboardMessage _ -> "app-command:dispatch-keyboard-message"
+    | DispatchHostCommand name -> $"app-command:dispatch-host-command:{name}"
+    | ReportAdapterDiagnostic diagnostic -> $"app-command:report-adapter-diagnostic:{diagnostic.Code}"
+    | _ -> "app-command:dispatch-product-message"
+
+let viewerEffectsForModel model =
+    [ RenderScene(view model) ]
+
+let interpretAtHostBoundary msg model =
+    let next, appCommands = update msg model
+    next, appCommands, viewerEffectsForModel next
+
 let generatedHost =
     { Init = fun () -> initialModel, []
       Update =
         fun msg model ->
-            let next, _ = update msg model
-            next, [ RenderScene(view next) ]
+            let next, _, viewerEffects = interpretAtHostBoundary msg model
+            next, viewerEffects
       View = view
       MapKey = mapKey
       Tick = tick
@@ -813,39 +869,74 @@ let imageEvidence evidencePath =
             writeFallbackPngEvidence evidencePath
 
         let decodable = isPngFile evidencePath
-        let lines =
-            [ "status=ok"
-              "mode=persistent-evidence"
-              "command=--image-evidence"
-              "evidence-kind=image"
-              $"path={evidencePath}"
-              $"image-decodable={decodable}"
-              "proves-scene-rendering=true"
-              "proves-desktop-visibility=false"
-              $"renderer-mode={outcome.RendererMode}"
-              "self-closed-for-evidence=true"
-              "input-dispatch=not-required"
-              "first-frame-presented=true" ]
-
-        writeBoundedSmokeReport (evidencePath + ".metadata.txt") lines
-        lines |> List.iter (printfn "%s")
-        0
+        let report =
+            writeEvidenceReport
+                (evidencePath + ".metadata.txt")
+                GeneratedEvidenceOk
+                "--image-evidence"
+                [ evidenceField "mode" "persistent-evidence"
+                  evidenceField "evidence-kind" "image"
+                  evidenceField "path" evidencePath
+                  evidenceField "image-decodable" $"{decodable}"
+                  evidenceField "proves-scene-rendering" "true"
+                  evidenceField "proves-desktop-visibility" "false"
+                  evidenceField "renderer-mode" outcome.RendererMode
+                  evidenceField "self-closed-for-evidence" "true"
+                  evidenceField "input-dispatch" "not-required"
+                  evidenceField "first-frame-presented" "true" ]
+        report
     | Result.Error failure ->
-        let lines =
-            [ "status=unsupported"
-              "mode=persistent-evidence"
-              "command=--image-evidence"
-              "evidence-kind=unsupported-host"
-              $"unsupported-reason={failure.Message}"
-              $"blocked-stage={failure.BlockedStage}"
-              $"classification={failure.Classification}"
-              $"category={failure.DiagnosticCategory}" ]
+        let report =
+            writeEvidenceReport
+                (evidencePath + ".metadata.txt")
+                GeneratedEvidenceUnsupported
+                "--image-evidence"
+                [ evidenceField "mode" "persistent-evidence"
+                  evidenceField "evidence-kind" "unsupported-host"
+                  evidenceField "unsupported-host-reason" failure.Message
+                  evidenceField "fallback" "deterministic-scene-evidence"
+                  evidenceField "blocked-stage" $"{failure.BlockedStage}"
+                  evidenceField "classification" $"{failure.Classification}"
+                  evidenceField "category" $"{failure.DiagnosticCategory}" ]
+        report
 
-        writeBoundedSmokeReport (evidencePath + ".metadata.txt") lines
-        lines |> List.iter (printfn "%s")
-        0
+let screenshotEvidence evidencePath =
+    let deterministicFallback = "deterministic-scene-evidence"
+    let result =
+        Viewer.captureScreenshotEvidence
+            { Command = "--screenshot-evidence"
+              OutputPath = evidencePath
+              Width = viewerOptions.InitialSize.Width
+              Height = viewerOptions.InitialSize.Height
+              RendererMode = "skia"
+              Timeout = TimeSpan.FromSeconds 10.0 }
+            viewerOptions
+            (view initialModel)
 
-let visualEvidence command commandLine format evidenceKind evidenceKindLine fallbackReason evidencePath =
+    let reportStatus =
+        match result.Status with
+        | ScreenshotOk -> GeneratedEvidenceOk
+        | ScreenshotUnsupported -> GeneratedEvidenceUnsupported
+        | ScreenshotFailed -> GeneratedEvidenceFailed
+
+    let report =
+        writeEvidenceReport
+            evidencePath
+            reportStatus
+            "--screenshot-evidence"
+            [ evidenceField "mode" "persistent-evidence"
+              evidenceField "evidence-kind" "screenshot"
+              evidenceField "renderer-mode" result.RendererMode
+              evidenceField "unsupported-host-reason" (result.UnsupportedHostReason |> Option.defaultValue "none")
+              evidenceField "fallback" (result.Fallback |> Option.defaultValue deterministicFallback)
+              evidenceField "screenshot-path" (result.ScreenshotPath |> Option.defaultValue "none")
+              evidenceField "width" (result.Width |> Option.map string |> Option.defaultValue "none")
+              evidenceField "height" (result.Height |> Option.map string |> Option.defaultValue "none")
+              evidenceField "frames-rendered" (result.FramesRendered |> Option.map string |> Option.defaultValue "none")
+              evidenceField "diagnostics" (String.concat "|" result.Diagnostics) ]
+    report
+
+let visualEvidence command _commandLine format evidenceKind _evidenceKindLine fallbackReason evidencePath =
     let result =
         SceneEvidence.render
             { Scene = { Nodes = [ view initialModel ] }
@@ -856,43 +947,42 @@ let visualEvidence command commandLine format evidenceKind evidenceKindLine fall
 
     match result with
     | Result.Ok evidence ->
-        let lines =
-            [ "status=ok"
-              "mode=persistent-evidence"
-              commandLine
-              evidenceKindLine
-              "supported-host=true"
-              fallbackReason
-              "board-readable=true"
-              "input-or-progress-observed=true"
-              "self-closed-for-evidence=true"
-              "input-dispatch=not-required"
-              "first-frame-presented=true"
-              $"renderer-mode={evidence.RendererMode}"
-              $"scene-evidence-format={evidence.Format}"
-              $"value={evidence.Value}" ]
-
-        writeBoundedSmokeReport evidencePath lines
-        printfn "status=ok mode=persistent-evidence command=%s evidence-kind=%s self-closed-for-evidence=true input-dispatch=not-required evidence=%s" command evidenceKind evidencePath
-        0
+        let report =
+            writeEvidenceReport
+                evidencePath
+                GeneratedEvidenceOk
+                command
+                [ evidenceField "mode" "persistent-evidence"
+                  evidenceField "evidence-kind" evidenceKind
+                  evidenceField "supported-host" "true"
+                  evidenceField "fallback-reason" fallbackReason
+                  evidenceField "board-readable" "true"
+                  evidenceField "input-or-progress-observed" "true"
+                  evidenceField "self-closed-for-evidence" "true"
+                  evidenceField "input-dispatch" "not-required"
+                  evidenceField "first-frame-presented" "true"
+                  evidenceField "renderer-mode" evidence.RendererMode
+                  evidenceField "scene-evidence-format" $"{evidence.Format}"
+                  evidenceField "value" evidence.Value ]
+        report
     | Result.Error failure ->
         let unsupportedReason = if String.IsNullOrWhiteSpace failure.Message then "visual evidence unavailable" else failure.Message
 
-        let lines =
-            [ "status=unsupported"
-              "mode=persistent-evidence"
-              commandLine
-              evidenceKindLine
-              "supported-host=false"
-              $"unsupported-host-reason={unsupportedReason}"
-              $"blocked-stage={failure.BlockedStage}"
-              $"classification={failure.Classification}"
-              $"category={failure.DiagnosticCategory}"
-              $"message={failure.Message}" ]
-
-        writeBoundedSmokeReport evidencePath lines
-        printfn "status=unsupported mode=persistent-evidence command=%s evidence-kind=%s blocked-stage=%s classification=%A evidence=%s" command evidenceKind failure.BlockedStage failure.Classification evidencePath
-        0
+        let report =
+            writeEvidenceReport
+                evidencePath
+                GeneratedEvidenceUnsupported
+                command
+                [ evidenceField "mode" "persistent-evidence"
+                  evidenceField "evidence-kind" evidenceKind
+                  evidenceField "supported-host" "false"
+                  evidenceField "unsupported-host-reason" unsupportedReason
+                  evidenceField "fallback" "deterministic-scene-evidence"
+                  evidenceField "blocked-stage" $"{failure.BlockedStage}"
+                  evidenceField "classification" $"{failure.Classification}"
+                  evidenceField "category" $"{failure.DiagnosticCategory}"
+                  evidenceField "message" failure.Message ]
+        report
 
 let sceneEvidence evidencePath =
     let scene =
@@ -1097,10 +1187,10 @@ let main args =
     | "--window-options" :: _ -> windowOptionsReport "readiness/window-options.txt" (parseWindowBehavior [])
     | "--image-evidence" :: path :: _ -> imageEvidence path
     | "--image-evidence" :: _ -> imageEvidence "readiness/game-image-evidence.png"
-    | "--screenshot-evidence" :: path :: _ -> visualEvidence "--screenshot-evidence" "command=--screenshot-evidence" Png "screenshot" "evidence-kind=screenshot" "fallback-reason=none" path
-    | "--screenshot-evidence" :: _ -> visualEvidence "--screenshot-evidence" "command=--screenshot-evidence" Png "screenshot" "evidence-kind=screenshot" "fallback-reason=none" "readiness/game-screenshot-evidence.txt"
-    | "--pixel-readback-evidence" :: path :: _ -> visualEvidence "--pixel-readback-evidence" "command=--pixel-readback-evidence" Hash "pixel-readback" "evidence-kind=pixel-readback" "fallback-reason=screenshot-unavailable" path
-    | "--pixel-readback-evidence" :: _ -> visualEvidence "--pixel-readback-evidence" "command=--pixel-readback-evidence" Hash "pixel-readback" "evidence-kind=pixel-readback" "fallback-reason=screenshot-unavailable" "readiness/game-pixel-readback-evidence.txt"
+    | "--screenshot-evidence" :: path :: _ -> screenshotEvidence path
+    | "--screenshot-evidence" :: _ -> screenshotEvidence "readiness/game-screenshot-evidence.txt"
+    | "--pixel-readback-evidence" :: path :: _ -> visualEvidence "--pixel-readback-evidence" "command=--pixel-readback-evidence" Hash "pixel-readback" "evidence-kind=pixel-readback" "screenshot-unavailable" path
+    | "--pixel-readback-evidence" :: _ -> visualEvidence "--pixel-readback-evidence" "command=--pixel-readback-evidence" Hash "pixel-readback" "evidence-kind=pixel-readback" "screenshot-unavailable" "readiness/game-pixel-readback-evidence.txt"
     | args ->
         let windowBehavior = parseWindowBehavior args
         let windowBehaviorRequest = toViewerWindowBehavior windowBehavior
@@ -1160,8 +1250,6 @@ let main args =
 
         let fallbackFullDesktopSession = "fallback-is-full-desktop-session=false"
 
-        let _windowBehaviorContract = "Viewer.runAppWithWindowBehavior viewerOptions windowBehavior generatedHost"
-
         let windowOptionResults =
             manualWindowOptionResults windowBehaviorRequest
 
@@ -1170,9 +1258,6 @@ let main args =
             |> List.map (fun (option, _, _, status, _) -> $"{option}:{windowOptionStatusText status}")
             |> String.concat ","
 
-        let _windowBehaviorRequestCall = "Viewer.runAppWithWindowBehavior viewerOptions windowBehaviorRequest generatedHost"
-
-        // SYNTHETIC: template/base compiles against the pre-change packaged SkiaViewer here; T047 verifies the packed runAppWithWindowBehavior path.
         match Viewer.runApp viewerOptions generatedHost with
         | Result.Ok outcome ->
             let inputDispatchStatus =

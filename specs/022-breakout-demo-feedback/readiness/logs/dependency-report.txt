@@ -1,0 +1,15 @@
+
+## dependency report
+$ dotnet fsi scripts/dependency-report.fsx "/home/developer/projects/FS-Skia-UI/specs/022-breakout-demo-feedback/readiness/dependencies.md"
+
+exit-code=0
+
+## dependency report
+$ dotnet fsi scripts/dependency-report.fsx "/home/developer/projects/FS-Skia-UI/specs/022-breakout-demo-feedback/readiness/dependencies.md"
+
+exit-code=0
+
+## dependency report
+$ dotnet fsi scripts/dependency-report.fsx "/home/developer/projects/FS-Skia-UI/specs/022-breakout-demo-feedback/readiness/dependencies.md"
+
+exit-code=0
