@@ -1,0 +1,4 @@
+interface:
+  display_name: "FS Skia Template Update"
+  short_description: "Update and verify the fs-skia-ui dotnet new template."
+  default_prompt: "Update the fs-skia-ui template to the current package versions, pack/install it, and verify dotnet new output."
