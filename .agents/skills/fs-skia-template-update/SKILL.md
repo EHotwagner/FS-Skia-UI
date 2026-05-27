@@ -57,17 +57,42 @@ Primary files:
      ./fake.sh build -t TemplatePack
      ```
    - Do not delete source files or reset the repo to fix FAKE cache problems.
+   - After package version bumps, also verify that every current repo package
+     exists in the local feed before validating generated projects. Check the
+     exact package IDs and versions detected in step 2, for example:
+     ```bash
+     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.Scene.<version>.nupkg"
+     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.SkiaViewer.<version>.nupkg"
+     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.Elmish.<version>.nupkg"
+     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.KeyboardInput.<version>.nupkg"
+     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.Layout.<version>.nupkg"
+     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.Controls.<version>.nupkg"
+     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.Controls.Elmish.<version>.nupkg"
+     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.Testing.<version>.nupkg"
+     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.<version>.nupkg"
+     ```
+   - If solution-level `dotnet pack` or a prior merge pack missed a packable
+     repo package, pack that project explicitly before running generated
+     restore/test validation. This has happened for
+     `FS.Skia.UI.Controls.Elmish`, so prefer:
+     ```bash
+     dotnet pack src/Controls.Elmish/Controls.Elmish.fsproj -c Release -o ~/.local/share/nuget-local
+     ```
 
 6. Install the new template package.
    - Use the package created under `artifacts/templates/`.
-   - If the SDK reports duplicate `FS.Skia.UI.Template` identities, uninstall the old template package and reinstall the new one:
+   - Prefer uninstalling any currently installed `FS.Skia.UI.Template` before
+     installing the freshly packed package. This keeps local validation
+     deterministic and also handles duplicate template identities:
      ```bash
      dotnet new uninstall FS.Skia.UI.Template
      dotnet new install artifacts/templates/FS.Skia.UI.Template.<version>.nupkg
      ```
+   - If no existing template is installed, `dotnet new uninstall` may report
+     that there is nothing to uninstall; continue with the install.
 
 7. Verify `dotnet new fs-skia-ui`.
-   - Instantiate into `/tmp` with git init disabled:
+   - Instantiate the default `app` profile into `/tmp` with git init disabled:
      ```bash
      rm -rf /tmp/fs-skia-ui-template-update-check
      dotnet new fs-skia-ui \
@@ -76,7 +101,16 @@ Primary files:
        --allow-scripts yes \
        --skipGitInit true
      ```
-   - Inspect `/tmp/fs-skia-ui-template-update-check/Directory.Packages.props` and confirm the `FS.Skia.UI*` versions match the current package versions.
+   - Inspect `/tmp/fs-skia-ui-template-update-check/Directory.Packages.props`
+     and confirm the default `app` profile pins match the current package
+     versions:
+     - `FS.Skia.UI.Scene`
+     - `FS.Skia.UI.SkiaViewer`
+     - `FS.Skia.UI.Elmish`
+     - `FS.Skia.UI.KeyboardInput`
+     - `FS.Skia.UI.Layout`
+     - `FS.Skia.UI.Controls`
+     - `FS.Skia.UI.Controls.Elmish`
    - The template does not necessarily create a `.sln`; restore project files directly:
      ```bash
      dotnet restore /tmp/fs-skia-ui-template-update-check/src/TemplateUpdateCheck/TemplateUpdateCheck.fsproj \
@@ -85,6 +119,28 @@ Primary files:
      dotnet test /tmp/fs-skia-ui-template-update-check/tests/TemplateUpdateCheck.Tests/TemplateUpdateCheck.Tests.fsproj \
        --no-restore \
        --logger "console;verbosity=minimal"
+     ```
+   - Instantiate the `governed` profile as a required second check because it
+     is the profile that carries `FS.Skia.UI.Testing`:
+     ```bash
+     rm -rf /tmp/fs-skia-ui-template-update-governed-check
+     dotnet new fs-skia-ui \
+       --name TemplateGovernedCheck \
+       --profile governed \
+       --output /tmp/fs-skia-ui-template-update-governed-check \
+       --allow-scripts yes \
+       --skipGitInit true
+     ```
+   - Inspect
+     `/tmp/fs-skia-ui-template-update-governed-check/Directory.Packages.props`
+     and confirm the governed profile pins match the current package versions:
+     - `FS.Skia.UI.Scene`
+     - `FS.Skia.UI.Testing`
+   - Optionally instantiate `headless-scene` and `sample-pack` for a lighter
+     package-pin smoke check when template conditionals changed:
+     ```bash
+     dotnet new fs-skia-ui --name TemplateHeadlessCheck --profile headless-scene --output /tmp/fs-skia-ui-template-update-headless-check --allow-scripts yes --skipGitInit true
+     dotnet new fs-skia-ui --name TemplateSamplePackCheck --profile sample-pack --output /tmp/fs-skia-ui-template-update-sample-pack-check --allow-scripts yes --skipGitInit true
      ```
 
 8. Commit and push only if requested.
