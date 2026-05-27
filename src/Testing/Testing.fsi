@@ -164,8 +164,32 @@ type HostWarningClassificationCheck =
 
 type HostWarningClassificationResult =
     { WarningClass: HostWarningClass
+      RawMessage: string
       Fatal: bool
       EvidencePath: string option
+      SupportingFacts: string list
+      Diagnostics: string list }
+
+type PersistentLaunchArtifactCheck =
+    { ArtifactPath: string
+      Lines: string list
+      SyntheticFixture: bool
+      SupportedHostPassClaimed: bool }
+
+type PersistentLaunchArtifactValidationResult =
+    { Accepted: bool
+      MissingFields: string list
+      Contradictions: string list
+      Diagnostics: string list }
+
+type ReadinessFileDiscoveryCheck =
+    { ReadinessDirectory: string
+      RequiredFiles: string list
+      ExistingFiles: string list }
+
+type ReadinessFileDiscoveryResult =
+    { Complete: bool
+      MissingFiles: string list
       Diagnostics: string list }
 
 module GeneratedProductAssertions =
@@ -190,3 +214,9 @@ module GeneratedLayoutValidation =
 
 module HostWarningClassification =
     val classify: check: HostWarningClassificationCheck -> HostWarningClassificationResult
+
+module PersistentLaunchArtifactValidation =
+    val validate: check: PersistentLaunchArtifactCheck -> PersistentLaunchArtifactValidationResult
+
+module ReadinessFileDiscovery =
+    val validate: check: ReadinessFileDiscoveryCheck -> ReadinessFileDiscoveryResult

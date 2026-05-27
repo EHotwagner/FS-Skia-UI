@@ -1,0 +1,14 @@
+The last restore is still up to date. Nothing left to do.
+Starting target 'Restore'
+Finished target 'Restore'
+Starting target 'Build'
+Finished target 'Build'
+Starting target 'RefreshSurfaceBaselines'
+Finished target 'RefreshSurfaceBaselines'
+Performance:
+ - Cli parsing: 128 milliseconds
+ - Packages: 37 milliseconds
+ - Script analyzing: 33 milliseconds
+ - Script running: 27 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 27 seconds

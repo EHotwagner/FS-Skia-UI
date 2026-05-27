@@ -1,0 +1,8 @@
+
+## generated consumer persistent launch diagnostics
+$ dotnet run --project src/Product/Product.fsproj --no-restore -- --launch-evidence "/home/developer/projects/FS-Skia-UI/specs/021-persistent-launch-evidence/readiness/generated-consumer-validation/persistent-launch-evidence.txt"
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=/home/developer/projects/FS-Skia-UI/specs/021-persistent-launch-evidence/readiness/generated-consumer-validation/persistent-launch-evidence.txt
+Gtk-Message: 19:09:57.856: Failed to load module "colorreload-gtk-module"
+Gtk-Message: 19:09:57.856: Failed to load module "window-decorations-gtk-module"
+
+exit-code=0

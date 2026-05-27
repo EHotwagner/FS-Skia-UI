@@ -443,6 +443,75 @@ status=failed mode=interactive-window diagnostic-class=product-defect native-han
             Expect.exists result.Diagnostics (fun item -> item.Contains "metadata") "diagnostic names metadata/hash mislabeling"
         }
 
+        test "PersistentLaunchArtifactValidation_Synthetic rejects missing required fields" {
+            // SYNTHETIC: malformed readiness artifact validates parser diagnostics; real launch artifact path is readiness/window-observation-diagnostics.md.
+            let result =
+                PersistentLaunchArtifactValidation.validate
+                    { ArtifactPath = "readiness/synthetic-missing-fields.txt"
+                      Lines =
+                        [ "status=failed"
+                          "mode=interactive-window"
+                          "command=synthetic-fixture" ]
+                      SyntheticFixture = true
+                      SupportedHostPassClaimed = false }
+
+            Expect.isFalse result.Accepted "synthetic malformed artifact with missing fields is rejected"
+            Expect.contains result.MissingFields "window-opened" "missing window-opened is reported"
+            Expect.contains result.MissingFields "input-dispatch" "missing input-dispatch is reported"
+            Expect.exists result.Diagnostics (fun item -> item = "synthetic-fixture=true") "synthetic fixture is disclosed in diagnostics"
+        }
+
+        test "PersistentLaunchArtifactValidation_Synthetic rejects invalid field values" {
+            // SYNTHETIC: invalid enum values validate rejection behavior; real launch artifact path is readiness/window-observation-diagnostics.md.
+            let result =
+                PersistentLaunchArtifactValidation.validate
+                    { ArtifactPath = "readiness/synthetic-invalid-values.txt"
+                      Lines =
+                        [ "status=maybe"
+                          "mode=headless-only"
+                          "command=synthetic-fixture"
+                          "window-opened=yes"
+                          "input-dispatch=magic"
+                          "exit-path=no"
+                          "blocked-stage=somewhere"
+                          "classification=headless-only"
+                          "category=unknown-category"
+                          "message=invalid enum fixture" ]
+                      SyntheticFixture = true
+                      SupportedHostPassClaimed = false }
+
+            Expect.isFalse result.Accepted "invalid artifact enum/string values are rejected"
+            Expect.exists result.Contradictions (fun item -> item = "status=maybe") "invalid status is reported"
+            Expect.exists result.Contradictions (fun item -> item = "classification=headless-only") "headless-only classification is rejected"
+            Expect.exists result.Diagnostics (fun item -> item = "invalid-field=mode=headless-only") "invalid mode diagnostic is actionable"
+        }
+
+        test "PersistentLaunchArtifactValidation_Synthetic rejects contradictory supported-host pass claims" {
+            // SYNTHETIC: contradictory pass claims validate rejection behavior; real launch artifact path is readiness/window-observation-diagnostics.md.
+            let result =
+                PersistentLaunchArtifactValidation.validate
+                    { ArtifactPath = "readiness/synthetic-contradictory-pass.txt"
+                      Lines =
+                        [ "status=ok"
+                          "mode=interactive-window"
+                          "command=synthetic-fixture"
+                          "window-opened=false"
+                          "first-frame-presented=false"
+                          "input-dispatch=not-required"
+                          "exit-path=false"
+                          "blocked-stage=observation"
+                          "classification=ok"
+                          "category=startup"
+                          "message=contradictory pass fixture" ]
+                      SyntheticFixture = true
+                      SupportedHostPassClaimed = true }
+
+            Expect.isFalse result.Accepted "synthetic contradictory pass claim is rejected"
+            Expect.exists result.Contradictions (fun item -> item.Contains "synthetic fixture cannot satisfy") "synthetic pass claim is rejected"
+            Expect.exists result.Contradictions (fun item -> item.Contains "window-opened=true") "window contradiction is reported"
+            Expect.exists result.Contradictions (fun item -> item.Contains "blocked-stage=none") "blocked-stage contradiction is reported"
+        }
+
         test "generated validation contract output includes all required validation fields" {
             let packageResolution =
                 GeneratedConsumerValidation.verifyPackageResolution

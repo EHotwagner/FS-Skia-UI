@@ -1,0 +1,311 @@
+
+## dotnet test tests/Lib.Tests/Lib.Tests.fsproj
+$ dotnet test tests/Lib.Tests/Lib.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/Lib.Tests.fsproj (in 290 ms).
+  1 of 2 projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Lib.Tests -> /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    42, Skipped:     0, Total:    42, Duration: 11 s - Lib.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet test tests/Scene.Tests/Scene.Tests.fsproj
+$ dotnet test tests/Scene.Tests/Scene.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/tests/Scene.Tests/Scene.Tests.fsproj (in 267 ms).
+  1 of 2 projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Scene.Tests -> /home/developer/projects/FS-Skia-UI/tests/Scene.Tests/bin/Debug/net10.0/Scene.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Scene.Tests/bin/Debug/net10.0/Scene.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     9, Skipped:     0, Total:     9, Duration: 40 ms - Scene.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet test tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj
+$ dotnet test tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Debug/net10.0/FS.Skia.UI.SkiaViewer.dll
+  SkiaViewer.Tests -> /home/developer/projects/FS-Skia-UI/tests/SkiaViewer.Tests/bin/Debug/net10.0/SkiaViewer.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/SkiaViewer.Tests/bin/Debug/net10.0/SkiaViewer.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    44, Skipped:     0, Total:    44, Duration: 264 ms - SkiaViewer.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet test tests/Elmish.Tests/Elmish.Tests.fsproj
+$ dotnet test tests/Elmish.Tests/Elmish.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/tests/Elmish.Tests/Elmish.Tests.fsproj (in 280 ms).
+  8 of 9 projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Debug/net10.0/FS.Skia.UI.SkiaViewer.dll
+  Elmish -> /home/developer/projects/FS-Skia-UI/src/Elmish/bin/Debug/net10.0/FS.Skia.UI.Elmish.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Debug/net10.0/FS.Skia.UI.Controls.dll
+  Controls.Elmish -> /home/developer/projects/FS-Skia-UI/src/Controls.Elmish/bin/Debug/net10.0/FS.Skia.UI.Controls.Elmish.dll
+  Elmish.Tests -> /home/developer/projects/FS-Skia-UI/tests/Elmish.Tests/bin/Debug/net10.0/Elmish.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Elmish.Tests/bin/Debug/net10.0/Elmish.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     4, Skipped:     0, Total:     4, Duration: 28 ms - Elmish.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet test tests/KeyboardInput.Tests/KeyboardInput.Tests.fsproj
+$ dotnet test tests/KeyboardInput.Tests/KeyboardInput.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/tests/KeyboardInput.Tests/KeyboardInput.Tests.fsproj (in 276 ms).
+  2 of 3 projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  KeyboardInput.Tests -> /home/developer/projects/FS-Skia-UI/tests/KeyboardInput.Tests/bin/Debug/net10.0/KeyboardInput.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/KeyboardInput.Tests/bin/Debug/net10.0/KeyboardInput.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     7, Skipped:     0, Total:     7, Duration: 35 ms - KeyboardInput.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet test tests/Layout.Tests/Layout.Tests.fsproj
+$ dotnet test tests/Layout.Tests/Layout.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/tests/Layout.Tests/Layout.Tests.fsproj (in 261 ms).
+  2 of 3 projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  Layout.Tests -> /home/developer/projects/FS-Skia-UI/tests/Layout.Tests/bin/Debug/net10.0/Layout.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Layout.Tests/bin/Debug/net10.0/Layout.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    23, Skipped:     0, Total:    23, Duration: 80 ms - Layout.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet test tests/Controls.Tests/Controls.Tests.fsproj
+$ dotnet test tests/Controls.Tests/Controls.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/tests/Controls.Tests/Controls.Tests.fsproj (in 282 ms).
+  4 of 5 projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Debug/net10.0/FS.Skia.UI.Controls.dll
+  Controls.Tests -> /home/developer/projects/FS-Skia-UI/tests/Controls.Tests/bin/Debug/net10.0/Controls.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Controls.Tests/bin/Debug/net10.0/Controls.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    29, Skipped:     0, Total:    29, Duration: 90 ms - Controls.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet test tests/Testing.Tests/Testing.Tests.fsproj
+$ dotnet test tests/Testing.Tests/Testing.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Testing -> /home/developer/projects/FS-Skia-UI/src/Testing/bin/Debug/net10.0/FS.Skia.UI.Testing.dll
+  Testing.Tests -> /home/developer/projects/FS-Skia-UI/tests/Testing.Tests/bin/Debug/net10.0/Testing.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Testing.Tests/bin/Debug/net10.0/Testing.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    27, Skipped:     0, Total:    27, Duration: 57 ms - Testing.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet test tests/Parity.Tests/Parity.Tests.fsproj
+$ dotnet test tests/Parity.Tests/Parity.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/tests/Parity.Tests/Parity.Tests.fsproj (in 288 ms).
+  1 of 2 projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Parity.Tests -> /home/developer/projects/FS-Skia-UI/tests/Parity.Tests/bin/Debug/net10.0/Parity.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Parity.Tests/bin/Debug/net10.0/Parity.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     5, Skipped:     0, Total:     5, Duration: 1 s - Parity.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet run tests/Smoke.Tests/Smoke.Tests.fsproj
+$ dotnet run --project tests/Smoke.Tests/Smoke.Tests.fsproj --no-restore
+[37m[[37m17:22:26 [37mINF[37m] [37mEXPECTO? Running tests...[37m [37m<[37mExpecto[37m>[37m
+[0m[1000D[?25h[37m[[37m17:22:31 [37mINF[37m] [37mEXPECTO! [36m3[37m tests run in [32m00:00:05.2122881[37m for [36mSample smoke contract[37m – [36m3[37m passed, [36m0[37m ignored, [36m0[37m failed, [36m0[37m errored. [36mSuccess![37m [37m<[37mExpecto[37m>[37m
+[0m
+exit-code=0
+
+## dotnet test tests/Governance.Tests/Governance.Tests.fsproj
+$ dotnet test tests/Governance.Tests/Governance.Tests.fsproj -m:1 --filter "FullyQualifiedName!~workflow self-check&FullyQualifiedName!~fixture" -- --sequenced
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Governance.Tests -> /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   145, Skipped:     0, Total:   145, Duration: 3 s - Governance.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet test tests/Lib.Tests/Lib.Tests.fsproj
+$ dotnet test tests/Lib.Tests/Lib.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Lib.Tests -> /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Lib.Tests/bin/Debug/net10.0/Lib.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    42, Skipped:     0, Total:    42, Duration: 10 s - Lib.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet test tests/Scene.Tests/Scene.Tests.fsproj
+$ dotnet test tests/Scene.Tests/Scene.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Scene.Tests -> /home/developer/projects/FS-Skia-UI/tests/Scene.Tests/bin/Debug/net10.0/Scene.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Scene.Tests/bin/Debug/net10.0/Scene.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     9, Skipped:     0, Total:     9, Duration: 40 ms - Scene.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet test tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj
+$ dotnet test tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Debug/net10.0/FS.Skia.UI.SkiaViewer.dll
+  SkiaViewer.Tests -> /home/developer/projects/FS-Skia-UI/tests/SkiaViewer.Tests/bin/Debug/net10.0/SkiaViewer.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/SkiaViewer.Tests/bin/Debug/net10.0/SkiaViewer.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    44, Skipped:     0, Total:    44, Duration: 249 ms - SkiaViewer.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet test tests/Elmish.Tests/Elmish.Tests.fsproj
+$ dotnet test tests/Elmish.Tests/Elmish.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Debug/net10.0/FS.Skia.UI.SkiaViewer.dll
+  Elmish -> /home/developer/projects/FS-Skia-UI/src/Elmish/bin/Debug/net10.0/FS.Skia.UI.Elmish.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Debug/net10.0/FS.Skia.UI.Controls.dll
+  Controls.Elmish -> /home/developer/projects/FS-Skia-UI/src/Controls.Elmish/bin/Debug/net10.0/FS.Skia.UI.Controls.Elmish.dll
+  Elmish.Tests -> /home/developer/projects/FS-Skia-UI/tests/Elmish.Tests/bin/Debug/net10.0/Elmish.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Elmish.Tests/bin/Debug/net10.0/Elmish.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     4, Skipped:     0, Total:     4, Duration: 25 ms - Elmish.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet test tests/KeyboardInput.Tests/KeyboardInput.Tests.fsproj
+$ dotnet test tests/KeyboardInput.Tests/KeyboardInput.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  KeyboardInput.Tests -> /home/developer/projects/FS-Skia-UI/tests/KeyboardInput.Tests/bin/Debug/net10.0/KeyboardInput.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/KeyboardInput.Tests/bin/Debug/net10.0/KeyboardInput.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     7, Skipped:     0, Total:     7, Duration: 34 ms - KeyboardInput.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet test tests/Layout.Tests/Layout.Tests.fsproj
+$ dotnet test tests/Layout.Tests/Layout.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  Layout.Tests -> /home/developer/projects/FS-Skia-UI/tests/Layout.Tests/bin/Debug/net10.0/Layout.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Layout.Tests/bin/Debug/net10.0/Layout.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    23, Skipped:     0, Total:    23, Duration: 81 ms - Layout.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet test tests/Controls.Tests/Controls.Tests.fsproj
+$ dotnet test tests/Controls.Tests/Controls.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Debug/net10.0/FS.Skia.UI.Controls.dll
+  Controls.Tests -> /home/developer/projects/FS-Skia-UI/tests/Controls.Tests/bin/Debug/net10.0/Controls.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Controls.Tests/bin/Debug/net10.0/Controls.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    29, Skipped:     0, Total:    29, Duration: 91 ms - Controls.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet test tests/Testing.Tests/Testing.Tests.fsproj
+$ dotnet test tests/Testing.Tests/Testing.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Testing -> /home/developer/projects/FS-Skia-UI/src/Testing/bin/Debug/net10.0/FS.Skia.UI.Testing.dll
+  Testing.Tests -> /home/developer/projects/FS-Skia-UI/tests/Testing.Tests/bin/Debug/net10.0/Testing.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Testing.Tests/bin/Debug/net10.0/Testing.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    27, Skipped:     0, Total:    27, Duration: 61 ms - Testing.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet test tests/Parity.Tests/Parity.Tests.fsproj
+$ dotnet test tests/Parity.Tests/Parity.Tests.fsproj -m:1 -- --sequenced
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Parity.Tests -> /home/developer/projects/FS-Skia-UI/tests/Parity.Tests/bin/Debug/net10.0/Parity.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Parity.Tests/bin/Debug/net10.0/Parity.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     5, Skipped:     0, Total:     5, Duration: 1 s - Parity.Tests.dll (net10.0)
+
+exit-code=0
+
+## dotnet run tests/Smoke.Tests/Smoke.Tests.fsproj
+$ dotnet run --project tests/Smoke.Tests/Smoke.Tests.fsproj --no-restore
+[37m[[37m19:06:18 [37mINF[37m] [37mEXPECTO? Running tests...[37m [37m<[37mExpecto[37m>[37m
+[0m[1000D[?25h[37m[[37m19:06:23 [37mINF[37m] [37mEXPECTO! [36m3[37m tests run in [32m00:00:04.8524778[37m for [36mSample smoke contract[37m – [36m3[37m passed, [36m0[37m ignored, [36m0[37m failed, [36m0[37m errored. [36mSuccess![37m [37m<[37mExpecto[37m>[37m
+[0m
+exit-code=0
+
+## dotnet test tests/Governance.Tests/Governance.Tests.fsproj
+$ dotnet test tests/Governance.Tests/Governance.Tests.fsproj -m:1 --filter "FullyQualifiedName!~workflow self-check&FullyQualifiedName!~fixture" -- --sequenced
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Governance.Tests -> /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/bin/Debug/net10.0/Governance.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   145, Skipped:     0, Total:   145, Duration: 3 s - Governance.Tests.dll (net10.0)
+
+exit-code=0

@@ -134,6 +134,15 @@ type ViewerDiagnosticCategory =
     | Screenshot
 
 type ViewerRunBlockedStage =
+    | DesktopPrerequisite
+    | ProcessLaunch
+    | WindowCreation
+    | FirstFrameRender
+    | Observation
+    | Capture
+    | InputVerification
+    | ControlledExit
+    | ArtifactWrite
     | Window
     | Surface
     | Renderer
@@ -237,6 +246,23 @@ type ViewerLaunchOutcome =
       BlockedStage: ViewerRunBlockedStage option
       Classification: ViewerRunFailureClassification option
       Category: ViewerDiagnosticCategory option
+      Message: string }
+
+type ViewerWindowObservationResult =
+    { DiagnosticSource: string
+      Command: string option
+      HostFacts: string list
+      ViewerFacts: string list
+      ViewerWindowOpened: bool
+      ViewerFirstFramePresented: bool
+      ViewerWindowVisible: ViewerObservedValue
+      ExternalObservationAttempted: bool
+      ExternalWindowMatched: bool option
+      CaptureAttempted: bool
+      CaptureSucceeded: bool option
+      BlockedStage: ViewerRunBlockedStage option
+      Classification: ViewerRunFailureClassification option
+      MissingFacts: string list
       Message: string }
 
 type ViewerLifecycleState =
@@ -349,6 +375,7 @@ module Viewer =
     val shouldCaptureDiagnostic: options: ViewerDiagnosticsOptions -> diagnostic: ViewerDiagnosticEvent -> bool
     val captureDiagnostic: options: ViewerDiagnosticsOptions -> diagnostic: ViewerDiagnosticEvent -> ViewerDiagnosticEvent option
     val failureFromDiagnostic: diagnostic: ViewerDiagnosticEvent -> ViewerRunFailure
+    val classifyWindowObservation: outcome: ViewerLaunchOutcome -> externalObservationAttempted: bool -> externalWindowMatched: bool option -> captureAttempted: bool -> captureSucceeded: bool option -> ViewerWindowObservationResult
     val desktopSessionDiagnostic: unit -> ViewerDesktopSessionDiagnostic
     val runtimeCapability: unit -> ViewerRuntimeCapability
     val run: options: ViewerOptions -> scene: SceneNode -> Result<ViewerLaunchOutcome, ViewerRunFailure>

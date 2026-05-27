@@ -1,0 +1,123 @@
+schema_version: "1.0"
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: ["fs-skia-skiaviewer", "fs-skia-elmish"]
+  T006:
+    deps: []
+    skillist: ["fs-skia-testing", "fs-skia-layout-evidence"]
+  T007:
+    deps: []
+    skillist: ["fs-skia-skiaviewer", "fs-skia-layout-evidence"]
+  T008:
+    deps: []
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T009:
+    deps: [T005, T006]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing", "fs-skia-elmish"]
+  T010:
+    deps: [T005, T006]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing"]
+  T011:
+    deps: []
+    skillist: []
+  T012:
+    deps: [T005]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-elmish"]
+  T013:
+    deps: [T005]
+    skillist: ["fs-skia-skiaviewer"]
+  T014:
+    deps: [T007]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-layout-evidence"]
+  T015:
+    deps: [T012]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-elmish"]
+  T016:
+    deps: [T013, T015]
+    skillist: ["fs-skia-skiaviewer"]
+  T017:
+    deps: [T014, T016]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-layout-evidence"]
+  T018:
+    deps: [T016, T017]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-layout-evidence"]
+  T019:
+    deps: [T005]
+    skillist: ["fs-skia-skiaviewer"]
+  T020:
+    deps: [T005, T007]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-layout-evidence"]
+  T021:
+    deps: [T006]
+    skillist: ["fs-skia-testing"]
+  T022:
+    deps: [T019]
+    skillist: ["fs-skia-skiaviewer"]
+  T023:
+    deps: [T020, T022]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-layout-evidence"]
+  T024:
+    deps: [T021]
+    skillist: ["fs-skia-testing"]
+  T025:
+    deps: [T023, T024]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-layout-evidence"]
+  T026:
+    deps: [T006]
+    skillist: ["fs-skia-testing", "fs-skia-layout-evidence"]
+  T027:
+    deps: [T006]
+    skillist: ["fs-skia-testing", "fs-skia-layout-evidence"]
+  T028:
+    deps: [T026, T027]
+    skillist: ["fs-skia-testing", "fs-skia-layout-evidence"]
+  T029:
+    deps: [T028]
+    skillist: ["fs-skia-testing", "fs-skia-layout-evidence"]
+  T030:
+    deps: [T007]
+    skillist: ["fs-skia-layout-evidence"]
+  T031:
+    deps: [T007]
+    skillist: ["fs-skia-layout-evidence"]
+  T032:
+    deps: [T030]
+    skillist: ["fs-skia-layout-evidence"]
+  T033:
+    deps: [T031]
+    skillist: ["fs-skia-layout-evidence"]
+  T034:
+    deps: [T032, T033]
+    skillist: ["fs-skia-layout-evidence"]
+  T035:
+    deps: [T010, T016, T024, T028]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing"]
+  T036:
+    deps: [T018, T025, T029, T034, T035]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing", "fs-skia-layout-evidence"]
+  T037:
+    deps: [T036]
+    skillist: ["speckit-evidence-graph"]
+  T038:
+    deps: [T037]
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T039:
+    deps: [T038]
+    skillist: []
+  T040:
+    deps: [T018]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-layout-evidence"]

@@ -1,0 +1,30 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Testing -> /home/developer/projects/FS-Skia-UI/src/Testing/bin/Debug/net10.0/FS.Skia.UI.Testing.dll
+  Testing.Tests -> /home/developer/projects/FS-Skia-UI/tests/Testing.Tests/bin/Debug/net10.0/Testing.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Testing.Tests/bin/Debug/net10.0/Testing.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Passed Testing helper contract.PersistentLaunchArtifactValidation_Synthetic rejects contradictory supported-host pass claims [12 ms]
+  Passed Testing helper contract.PersistentLaunchArtifactValidation_Synthetic rejects invalid field values [12 ms]
+  Passed Testing helper contract.PersistentLaunchArtifactValidation_Synthetic rejects missing required fields [12 ms]
+
+Test Run Successful.
+Total tests: 3
+     Passed: 3
+ Total time: 0.7802 Seconds
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Testing -> /home/developer/projects/FS-Skia-UI/src/Testing/bin/Debug/net10.0/FS.Skia.UI.Testing.dll
+  Testing.Tests -> /home/developer/projects/FS-Skia-UI/tests/Testing.Tests/bin/Debug/net10.0/Testing.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Testing.Tests/bin/Debug/net10.0/Testing.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Passed Testing helper contract.PersistentLaunchArtifactValidation_Synthetic rejects invalid field values [11 ms]
+  Passed Testing helper contract.PersistentLaunchArtifactValidation_Synthetic rejects missing required fields [11 ms]
+  Passed Testing helper contract.PersistentLaunchArtifactValidation_Synthetic rejects contradictory supported-host pass claims [11 ms]
+
+Test Run Successful.
+Total tests: 3
+     Passed: 3
+ Total time: 0.7988 Seconds

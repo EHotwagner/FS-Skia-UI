@@ -2377,6 +2377,62 @@ let writeProductProject model row capabilities =
 
     File.WriteAllText(path [ row.Root; "src"; "Product"; "Product.fsproj" ], content)
 
+type TemplateConditionalFrame =
+    { ParentActive: bool
+      BranchMatched: bool }
+
+let private evaluateProfileCondition profile expression =
+    let evaluateAtom (atom: string) =
+        let trimmed = atom.Trim()
+        let profileEquals = Regex.Match(trimmed, "^profile\\s*==\\s*\"([^\"]+)\"$")
+
+        if profileEquals.Success then
+            profile = profileEquals.Groups.[1].Value
+        else
+            failwithf "Unsupported generated product template condition: %s" expression
+
+    expression.Trim().TrimStart('(').TrimEnd(')').Split([| "||" |], StringSplitOptions.None)
+    |> Array.exists evaluateAtom
+
+let private applyGeneratedProfileConditionals profile filePath =
+    let mutable frames: TemplateConditionalFrame list = []
+    let mutable active = true
+    let output = ResizeArray<string>()
+
+    for line in File.ReadAllLines filePath do
+        let trimmed = line.Trim()
+
+        if trimmed.StartsWith("//#if", StringComparison.Ordinal) then
+            let expression = trimmed.Substring("//#if".Length).Trim()
+            let matched = evaluateProfileCondition profile expression
+            let current = active && matched
+            frames <- { ParentActive = active; BranchMatched = matched } :: frames
+            active <- current
+        elif trimmed.StartsWith("//#else", StringComparison.Ordinal) then
+            match frames with
+            | frame :: rest ->
+                let current = frame.ParentActive && not frame.BranchMatched
+                frames <- { frame with BranchMatched = true } :: rest
+                active <- current
+            | [] -> failwithf "Unmatched //#else in %s" filePath
+        elif trimmed.StartsWith("//#endif", StringComparison.Ordinal) then
+            match frames with
+            | frame :: rest ->
+                frames <- rest
+                active <- frame.ParentActive
+            | [] -> failwithf "Unmatched //#endif in %s" filePath
+        elif active then
+            output.Add line
+
+    if not frames.IsEmpty then
+        failwithf "Unclosed generated product template conditional in %s" filePath
+
+    File.WriteAllLines(filePath, output.ToArray())
+
+let applyGeneratedProductProfile row =
+    Directory.EnumerateFiles(row.Root, "*.fs", SearchOption.AllDirectories)
+    |> Seq.iter (applyGeneratedProfileConditionals row.Profile)
+
 let writeSceneOnlyProductFiles row =
     let program =
         """module Product.Program
@@ -2547,6 +2603,7 @@ let generateV3Product model row =
     cleanDirectoryContents row.EvidenceDir
     let templateRoot = templatePayloadRoot model row
     copyDirectory (path [ templateRoot; "base" ]) row.Root
+    applyGeneratedProductProfile row
     copySpecKitInstall model row.Root
 
     let resolved = resolveCapabilities model row.Capabilities

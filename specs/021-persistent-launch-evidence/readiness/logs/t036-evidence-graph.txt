@@ -1,0 +1,10 @@
+The last restore is still up to date. Nothing left to do.
+Starting target 'EvidenceGraph'
+Finished target 'EvidenceGraph'
+Performance:
+ - Cli parsing: 127 milliseconds
+ - Packages: 34 milliseconds
+ - Script analyzing: 34 milliseconds
+ - Script running: 97 milliseconds
+ - Script cleanup: 1 millisecond
+ - Runtime: 763 milliseconds

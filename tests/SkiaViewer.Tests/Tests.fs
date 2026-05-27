@@ -182,7 +182,16 @@ let tests =
 
         test "forced pre-frame failures classify blocked stages and unsupported host capabilities" {
             let cases: (ViewerRunBlockedStage * ViewerRunFailureClassification * ViewerDiagnosticCategory) list =
-                [ Window, UnsupportedEnvironment, Startup
+                [ DesktopPrerequisite, UnsupportedEnvironment, EnvironmentSession
+                  ProcessLaunch, UnsupportedEnvironment, Startup
+                  WindowCreation, UnsupportedEnvironment, Startup
+                  FirstFrameRender, UnsupportedEnvironment, Frame
+                  Observation, UnsupportedEnvironment, Startup
+                  Capture, UnsupportedEnvironment, Screenshot
+                  InputVerification, UnsupportedEnvironment, Input
+                  ControlledExit, UnsupportedEnvironment, Startup
+                  ArtifactWrite, UnsupportedEnvironment, Startup
+                  Window, UnsupportedEnvironment, Startup
                   Surface, UnsupportedEnvironment, Startup
                   ViewerRunBlockedStage.Renderer, UnsupportedEnvironment, ViewerDiagnosticCategory.Renderer
                   ViewerRunBlockedStage.Swapchain, UnsupportedEnvironment, ViewerDiagnosticCategory.Swapchain
@@ -207,6 +216,92 @@ let tests =
                 Expect.equal failure.Classification classification $"{stage} classification is preserved"
                 Expect.equal failure.DiagnosticCategory category $"{stage} diagnostic category is preserved"
                 Expect.equal failure.LastDiagnosticSummary (Some diagnostic.Message) $"{stage} keeps summary")
+        }
+
+        test "external observation failure preserves viewer-owned launch facts instead of headless classification" {
+            let outcome =
+                { Status = "ok"
+                  Mode = "interactive-window"
+                  Command = Some "dotnet run -- --launch-evidence readiness/persistent-launch-evidence.md"
+                  RendererMode = "skia"
+                  WindowOpened = true
+                  WindowVisible = ViewerObservedValue.Observed true
+                  FirstFramePresented = true
+                  CloseReason = Some EvidenceRequestedClose
+                  UserCloseObserved = false
+                  AppCloseObserved = false
+                  EvidenceCloseObserved = true
+                  SelfClosedForEvidence = true
+                  InputDispatch = "not-required"
+                  ExitPath = true
+                  WindowDiagnostics = []
+                  OptionResults = []
+                  VisualEvidence = []
+                  FailureClass = None
+                  BlockedStage = None
+                  Classification = None
+                  Category = None
+                  Message = "viewer-owned facts passed" }
+
+            let observation =
+                Viewer.classifyWindowObservation
+                    outcome
+                    true
+                    (Some false)
+                    false
+                    None
+
+            Expect.equal observation.ViewerWindowOpened true "viewer-owned window-opened fact is preserved"
+            Expect.equal observation.ViewerFirstFramePresented true "viewer-owned first-frame fact is preserved"
+            Expect.equal observation.DiagnosticSource "real-launch" "observation diagnostics name real launch as source"
+            Expect.equal observation.Command outcome.Command "observation diagnostics preserve command"
+            Expect.contains observation.HostFacts "mode=interactive-window" "host facts include mode"
+            Expect.contains observation.ViewerFacts "window-opened=True" "viewer facts include window-opened"
+            Expect.equal observation.BlockedStage (Some Observation) "external title/window miss is observation-blocked"
+            Expect.notEqual observation.BlockedStage (Some DesktopPrerequisite) "external observation miss is not a desktop-prerequisite/headless classification"
+            Expect.isFalse (observation.Message.Contains("headless-only", StringComparison.OrdinalIgnoreCase)) "message does not claim headless-only"
+            Expect.contains observation.MissingFacts "external-window-match" "missing external fact is named"
+        }
+
+        test "window observation diagnostics include capture facts and missing fact names" {
+            let outcome =
+                { Status = "ok"
+                  Mode = "interactive-window"
+                  Command = Some "dotnet run -- --launch-evidence readiness/persistent-launch-evidence.md"
+                  RendererMode = "skia"
+                  WindowOpened = true
+                  WindowVisible = ViewerObservedValue.Observed true
+                  FirstFramePresented = true
+                  CloseReason = Some EvidenceRequestedClose
+                  UserCloseObserved = false
+                  AppCloseObserved = false
+                  EvidenceCloseObserved = true
+                  SelfClosedForEvidence = true
+                  InputDispatch = "not-required"
+                  ExitPath = true
+                  WindowDiagnostics = []
+                  OptionResults = []
+                  VisualEvidence = []
+                  FailureClass = None
+                  BlockedStage = None
+                  Classification = None
+                  Category = None
+                  Message = "viewer-owned facts passed" }
+
+            let observation =
+                Viewer.classifyWindowObservation
+                    outcome
+                    false
+                    None
+                    true
+                    (Some false)
+
+            Expect.equal observation.BlockedStage (Some Capture) "capture failure is capture-blocked when viewer facts pass"
+            Expect.equal observation.Classification (Some UnsupportedEnvironment) "capture failure is a host observation limitation"
+            Expect.equal observation.CaptureAttempted true "capture attempt is recorded"
+            Expect.equal observation.CaptureSucceeded (Some false) "capture failure fact is recorded"
+            Expect.contains observation.MissingFacts "capture-succeeded" "missing capture fact is named"
+            Expect.contains observation.ViewerFacts "first-frame-presented=True" "viewer facts include first frame"
         }
 
         test "bounded run timeout uses last diagnostic summary and stops without shell timeout" {
@@ -1092,10 +1187,18 @@ let tests =
                 Expect.isNone outcome.Classification "successful evidence has no classification"
 
                 let evidenceText = IO.File.ReadAllText evidencePath
+                Expect.stringContains evidenceText "status=ok" "serialized evidence records status"
                 Expect.stringContains evidenceText "mode=persistent-evidence" "serialized evidence records persistent evidence mode"
+                Expect.stringContains evidenceText "command=runAppEvidence" "serialized evidence records command"
+                Expect.stringContains evidenceText "window-opened=True" "serialized evidence records window-opened status"
                 Expect.stringContains evidenceText "self-closed-for-evidence=True" "serialized evidence records self-close semantics"
                 Expect.stringContains evidenceText "input-dispatch=not-required" "serialized evidence records input-dispatch status"
                 Expect.stringContains evidenceText "first-frame-presented=True" "serialized evidence records first-frame status"
+                Expect.stringContains evidenceText "exit-path=True" "serialized evidence records exit path"
+                Expect.stringContains evidenceText "blocked-stage=" "serialized evidence records blocked stage field"
+                Expect.stringContains evidenceText "classification=" "serialized evidence records classification field"
+                Expect.stringContains evidenceText "category=" "serialized evidence records category field"
+                Expect.stringContains evidenceText "message=" "serialized evidence records message field"
             | Result.Error failure -> failtestf "expected explicit evidence launch success, got %A" failure
         }
 

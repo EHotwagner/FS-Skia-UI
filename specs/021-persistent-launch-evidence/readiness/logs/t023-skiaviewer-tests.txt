@@ -1,0 +1,17 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Debug/net10.0/FS.Skia.UI.SkiaViewer.dll
+  SkiaViewer.Tests -> /home/developer/projects/FS-Skia-UI/tests/SkiaViewer.Tests/bin/Debug/net10.0/SkiaViewer.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/SkiaViewer.Tests/bin/Debug/net10.0/SkiaViewer.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Passed SkiaViewer MVU contract.window observation diagnostics include capture facts and missing fact names [15 ms]
+  Passed SkiaViewer MVU contract.diagnostic sink captures startup input renderer and frame categories in-process [16 ms]
+  Passed SkiaViewer MVU contract.external observation failure preserves viewer-owned launch facts instead of headless classification [28 ms]
+
+Test Run Successful.
+Total tests: 3
+     Passed: 3
+ Total time: 1.0464 Seconds

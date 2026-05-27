@@ -1,0 +1,50 @@
+## attempt 01
+Gtk-Message: 17:27:12.900: Failed to load module "colorreload-gtk-module"
+Gtk-Message: 17:27:12.900: Failed to load module "window-decorations-gtk-module"
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-01.txt
+## attempt 02
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-02.txt
+## attempt 03
+Gtk-Message: 17:27:16.794: Failed to load module "colorreload-gtk-module"
+Gtk-Message: 17:27:16.794: Failed to load module "window-decorations-gtk-module"
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-03.txt
+## attempt 04
+Gtk-Message: 17:27:18.763: Failed to load module "colorreload-gtk-module"
+Gtk-Message: 17:27:18.763: Failed to load module "window-decorations-gtk-module"
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-04.txt
+## attempt 05
+Gtk-Message: 17:27:20.772: Failed to load module "colorreload-gtk-module"
+Gtk-Message: 17:27:20.772: Failed to load module "window-decorations-gtk-module"
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-05.txt
+## attempt 06
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-06.txt
+## attempt 07
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-07.txt
+## attempt 08
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-08.txt
+## attempt 09
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-09.txt
+## attempt 10
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-10.txt
+## attempt 11
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-11.txt
+## attempt 12
+Gtk-Message: 17:27:34.043: Failed to load module "colorreload-gtk-module"
+Gtk-Message: 17:27:34.043: Failed to load module "window-decorations-gtk-module"
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-12.txt
+## attempt 13
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-13.txt
+## attempt 14
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-14.txt
+## attempt 15
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-15.txt
+## attempt 16
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-16.txt
+## attempt 17
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-17.txt
+## attempt 18
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-18.txt
+## attempt 19
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-19.txt
+## attempt 20
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=specs/021-persistent-launch-evidence/readiness/repeated-launches/launch-20.txt

@@ -1,0 +1,214 @@
+
+## dotnet pack FS.Skia.UI.Scene
+$ dotnet pack src/Scene/Scene.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  The package FS.Skia.UI.Scene.0.1.21-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Scene.0.1.21-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.SkiaViewer
+$ dotnet pack src/SkiaViewer/SkiaViewer.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Release/net10.0/FS.Skia.UI.SkiaViewer.dll
+  The package FS.Skia.UI.SkiaViewer.0.1.20-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.SkiaViewer.0.1.20-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Elmish
+$ dotnet pack src/Elmish/Elmish.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Release/net10.0/FS.Skia.UI.SkiaViewer.dll
+  Elmish -> /home/developer/projects/FS-Skia-UI/src/Elmish/bin/Release/net10.0/FS.Skia.UI.Elmish.dll
+  The package FS.Skia.UI.Elmish.0.1.20-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Elmish.0.1.20-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.KeyboardInput
+$ dotnet pack src/KeyboardInput/KeyboardInput.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+  The package FS.Skia.UI.KeyboardInput.0.1.20-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.KeyboardInput.0.1.20-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Controls.Elmish
+$ dotnet pack src/Controls.Elmish/Controls.Elmish.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Release/net10.0/FS.Skia.UI.Controls.dll
+  Controls.Elmish -> /home/developer/projects/FS-Skia-UI/src/Controls.Elmish/bin/Release/net10.0/FS.Skia.UI.Controls.Elmish.dll
+  The package FS.Skia.UI.Controls.Elmish.0.1.20-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Controls.Elmish.0.1.20-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Testing
+$ dotnet pack src/Testing/Testing.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  Testing -> /home/developer/projects/FS-Skia-UI/src/Testing/bin/Release/net10.0/FS.Skia.UI.Testing.dll
+  The package FS.Skia.UI.Testing.0.1.21-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Testing.0.1.21-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI
+$ dotnet pack src/Lib/Lib.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  The package FS.Skia.UI.0.1.20-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.0.1.20-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Layout
+$ dotnet pack src/Layout/Layout.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+  The package FS.Skia.UI.Layout.0.1.20-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Layout.0.1.20-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Controls
+$ dotnet pack src/Controls/Controls.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Release/net10.0/FS.Skia.UI.Controls.dll
+  The package FS.Skia.UI.Controls.0.1.20-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Controls.0.1.20-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Scene
+$ dotnet pack src/Scene/Scene.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  The package FS.Skia.UI.Scene.0.1.21-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Scene.0.1.21-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.SkiaViewer
+$ dotnet pack src/SkiaViewer/SkiaViewer.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Release/net10.0/FS.Skia.UI.SkiaViewer.dll
+  The package FS.Skia.UI.SkiaViewer.0.1.20-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.SkiaViewer.0.1.20-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Elmish
+$ dotnet pack src/Elmish/Elmish.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Release/net10.0/FS.Skia.UI.SkiaViewer.dll
+  Elmish -> /home/developer/projects/FS-Skia-UI/src/Elmish/bin/Release/net10.0/FS.Skia.UI.Elmish.dll
+  The package FS.Skia.UI.Elmish.0.1.20-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Elmish.0.1.20-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.KeyboardInput
+$ dotnet pack src/KeyboardInput/KeyboardInput.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+  The package FS.Skia.UI.KeyboardInput.0.1.20-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.KeyboardInput.0.1.20-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Controls.Elmish
+$ dotnet pack src/Controls.Elmish/Controls.Elmish.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Release/net10.0/FS.Skia.UI.Controls.dll
+  Controls.Elmish -> /home/developer/projects/FS-Skia-UI/src/Controls.Elmish/bin/Release/net10.0/FS.Skia.UI.Controls.Elmish.dll
+  The package FS.Skia.UI.Controls.Elmish.0.1.20-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Controls.Elmish.0.1.20-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Testing
+$ dotnet pack src/Testing/Testing.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  Testing -> /home/developer/projects/FS-Skia-UI/src/Testing/bin/Release/net10.0/FS.Skia.UI.Testing.dll
+  The package FS.Skia.UI.Testing.0.1.21-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Testing.0.1.21-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI
+$ dotnet pack src/Lib/Lib.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  The package FS.Skia.UI.0.1.20-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.0.1.20-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Layout
+$ dotnet pack src/Layout/Layout.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+  The package FS.Skia.UI.Layout.0.1.20-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Layout.0.1.20-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Controls
+$ dotnet pack src/Controls/Controls.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Release/net10.0/FS.Skia.UI.Controls.dll
+  The package FS.Skia.UI.Controls.0.1.20-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Controls.0.1.20-preview.1.nupkg'.
+
+exit-code=0

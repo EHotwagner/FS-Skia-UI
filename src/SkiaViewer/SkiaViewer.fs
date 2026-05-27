@@ -141,6 +141,15 @@ type ViewerDiagnosticCategory =
     | Screenshot
 
 type ViewerRunBlockedStage =
+    | DesktopPrerequisite
+    | ProcessLaunch
+    | WindowCreation
+    | FirstFrameRender
+    | Observation
+    | Capture
+    | InputVerification
+    | ControlledExit
+    | ArtifactWrite
     | Window
     | Surface
     | Renderer
@@ -244,6 +253,23 @@ type ViewerLaunchOutcome =
       BlockedStage: ViewerRunBlockedStage option
       Classification: ViewerRunFailureClassification option
       Category: ViewerDiagnosticCategory option
+      Message: string }
+
+type ViewerWindowObservationResult =
+    { DiagnosticSource: string
+      Command: string option
+      HostFacts: string list
+      ViewerFacts: string list
+      ViewerWindowOpened: bool
+      ViewerFirstFramePresented: bool
+      ViewerWindowVisible: ViewerObservedValue
+      ExternalObservationAttempted: bool
+      ExternalWindowMatched: bool option
+      CaptureAttempted: bool
+      CaptureSucceeded: bool option
+      BlockedStage: ViewerRunBlockedStage option
+      Classification: ViewerRunFailureClassification option
+      MissingFacts: string list
       Message: string }
 
 type ViewerLifecycleState =
@@ -712,10 +738,19 @@ module Viewer =
 
         let classification =
             match stage with
+            | DesktopPrerequisite
+            | ProcessLaunch
+            | WindowCreation
+            | Observation
+            | Capture
+            | InputVerification
+            | ControlledExit
+            | ArtifactWrite
             | Window
             | Surface
             | Renderer
             | Swapchain
+            | FirstFrameRender
             | Readback -> UnsupportedEnvironment
             | Scene
             | App
@@ -734,6 +769,73 @@ module Viewer =
           DiagnosticCategory = category
           Message = message
           LastDiagnosticSummary = lastDiagnostic |> Option.map _.Message }
+
+    let classifyWindowObservation outcome externalObservationAttempted externalWindowMatched captureAttempted captureSucceeded =
+        let viewerFactsPresent = outcome.WindowOpened && outcome.FirstFramePresented
+
+        let externalObservationMissing =
+            externalObservationAttempted
+            && externalWindowMatched <> Some true
+
+        let captureMissing =
+            captureAttempted
+            && captureSucceeded <> Some true
+
+        let missingFacts =
+            [ if not outcome.WindowOpened then
+                  "viewer-window-opened"
+              if not outcome.FirstFramePresented then
+                  "viewer-first-frame-presented"
+              if externalObservationMissing then
+                  "external-window-match"
+              if captureMissing then
+                  "capture-succeeded" ]
+
+        let blockedStage, classification, message =
+            if viewerFactsPresent && externalObservationMissing then
+                Some Observation,
+                Some UnsupportedEnvironment,
+                "External window observation did not match, but viewer-owned window and first-frame facts are present."
+            elif viewerFactsPresent && captureMissing then
+                Some Capture,
+                Some UnsupportedEnvironment,
+                "Capture did not succeed, but viewer-owned window and first-frame facts are present."
+            else
+                outcome.BlockedStage, outcome.Classification, outcome.Message
+
+        let hostFacts =
+            [ $"mode={outcome.Mode}"
+              $"renderer-mode={outcome.RendererMode}"
+              $"exit-path={outcome.ExitPath}" ]
+
+        let observedText =
+            match outcome.WindowVisible with
+            | ViewerObservedValue.Observed true -> "observed:true"
+            | ViewerObservedValue.Observed false -> "observed:false"
+            | ViewerObservedValue.Unsupported -> "unsupported"
+            | ViewerObservedValue.Unavailable -> "unavailable"
+
+        let viewerFacts =
+            [ $"window-opened={outcome.WindowOpened}"
+              $"first-frame-presented={outcome.FirstFramePresented}"
+              $"window-visible={observedText}"
+              $"input-dispatch={outcome.InputDispatch}" ]
+
+        { DiagnosticSource = "real-launch"
+          Command = outcome.Command
+          HostFacts = hostFacts
+          ViewerFacts = viewerFacts
+          ViewerWindowOpened = outcome.WindowOpened
+          ViewerFirstFramePresented = outcome.FirstFramePresented
+          ViewerWindowVisible = outcome.WindowVisible
+          ExternalObservationAttempted = externalObservationAttempted
+          ExternalWindowMatched = externalWindowMatched
+          CaptureAttempted = captureAttempted
+          CaptureSucceeded = captureSucceeded
+          BlockedStage = blockedStage
+          Classification = classification
+          MissingFacts = missingFacts
+          Message = message }
 
     let private validateRequest request =
         if request.Timeout <= TimeSpan.Zero then

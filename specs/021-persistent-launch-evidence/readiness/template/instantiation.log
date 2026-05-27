@@ -1,0 +1,71 @@
+# Template Instantiation
+
+## source template install for instantiation uninstall
+$ dotnet new uninstall "/home/developer/projects/FS-Skia-UI"
+The template package '/home/developer/projects/FS-Skia-UI' is not found.
+To list installed template packages use:
+   dotnet new uninstall
+
+
+For details on the exit code, refer to https://aka.ms/templating-exit-codes#103
+
+exit-code=103
+
+## source template install for instantiation uninstall
+$ dotnet new uninstall "FS.Skia.UI.Template"
+Success: FS.Skia.UI.Template@0.1.16-preview.1 was uninstalled.
+
+exit-code=0
+
+## source template install for instantiation
+$ dotnet new install "/home/developer/projects/FS-Skia-UI"
+The following template packages will be installed:
+   /home/developer/projects/FS-Skia-UI
+
+Success: /home/developer/projects/FS-Skia-UI installed the following templates:
+Template Name                Short Name  Language  Tags                   
+---------------------------  ----------  --------  -----------------------
+FS Skia UI Governed Project  fs-skia-ui            F#/Skia/Elmish/Template
+
+
+exit-code=0
+
+## package template install for instantiation uninstall
+$ dotnet new uninstall "/home/developer/projects/FS-Skia-UI"
+Success: /home/developer/projects/FS-Skia-UI was uninstalled.
+
+exit-code=0
+
+## package template install for instantiation uninstall
+$ dotnet new uninstall "FS.Skia.UI.Template"
+The template package 'FS.Skia.UI.Template' is not found.
+To list installed template packages use:
+   dotnet new uninstall
+
+
+For details on the exit code, refer to https://aka.ms/templating-exit-codes#103
+
+exit-code=103
+
+## package template install for instantiation
+$ dotnet new install "/home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.16-preview.1.nupkg"
+The following template packages will be installed:
+   /home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.16-preview.1.nupkg
+
+Success: FS.Skia.UI.Template@0.1.16-preview.1 installed the following templates:
+Template Name                Short Name  Language  Tags                   
+---------------------------  ----------  --------  -----------------------
+FS Skia UI Governed Project  fs-skia-ui            F#/Skia/Elmish/Template
+
+
+exit-code=0
+
+Generated rows:
+- source/app: `/home/developer/projects/FS-Skia-UI/artifacts/template-check/021-persistent-launch-evidence/source-app`
+- source/headless-scene: `/home/developer/projects/FS-Skia-UI/artifacts/template-check/021-persistent-launch-evidence/source-headless-scene`
+- source/governed: `/home/developer/projects/FS-Skia-UI/artifacts/template-check/021-persistent-launch-evidence/source-governed`
+- source/sample-pack: `/home/developer/projects/FS-Skia-UI/artifacts/template-check/021-persistent-launch-evidence/source-sample-pack`
+- package/app: `/home/developer/projects/FS-Skia-UI/artifacts/template-check/021-persistent-launch-evidence/package-app`
+- package/headless-scene: `/home/developer/projects/FS-Skia-UI/artifacts/template-check/021-persistent-launch-evidence/package-headless-scene`
+- package/governed: `/home/developer/projects/FS-Skia-UI/artifacts/template-check/021-persistent-launch-evidence/package-governed`
+- package/sample-pack: `/home/developer/projects/FS-Skia-UI/artifacts/template-check/021-persistent-launch-evidence/package-sample-pack`

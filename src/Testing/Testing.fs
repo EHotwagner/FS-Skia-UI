@@ -164,8 +164,32 @@ type HostWarningClassificationCheck =
 
 type HostWarningClassificationResult =
     { WarningClass: HostWarningClass
+      RawMessage: string
       Fatal: bool
       EvidencePath: string option
+      SupportingFacts: string list
+      Diagnostics: string list }
+
+type PersistentLaunchArtifactCheck =
+    { ArtifactPath: string
+      Lines: string list
+      SyntheticFixture: bool
+      SupportedHostPassClaimed: bool }
+
+type PersistentLaunchArtifactValidationResult =
+    { Accepted: bool
+      MissingFields: string list
+      Contradictions: string list
+      Diagnostics: string list }
+
+type ReadinessFileDiscoveryCheck =
+    { ReadinessDirectory: string
+      RequiredFiles: string list
+      ExistingFiles: string list }
+
+type ReadinessFileDiscoveryResult =
+    { Complete: bool
+      MissingFiles: string list
       Diagnostics: string list }
 
 module GeneratedProductAssertions =
@@ -553,9 +577,22 @@ module HostWarningClassification =
             | BenignEnvironmentWarning -> false
             | _ -> true
 
+        let layoutReadable =
+            check.LayoutReadable
+            |> Option.map (fun value -> value.ToString().ToLowerInvariant())
+            |> Option.defaultValue "none"
+
+        let supportingFacts =
+            [ $"launch-succeeded={check.LaunchSucceeded.ToString().ToLowerInvariant()}"
+              $"rendering-succeeded={check.RenderingSucceeded.ToString().ToLowerInvariant()}"
+              $"layout-readable={layoutReadable}"
+              $"unsupported-without-readability-claim={check.ExplicitlyUnsupportedWithoutReadabilityClaim.ToString().ToLowerInvariant()}"
+              $"package-succeeded={check.PackageSucceeded.ToString().ToLowerInvariant()}" ]
+
         let diagnostics =
             [ $"warning-class={warningClass}"
               $"fatal={fatal}"
+              yield! supportingFacts
               if String.IsNullOrWhiteSpace check.RawMessage then
                   "raw-message=missing"
               if not known && warningClass = UnknownWarning then
@@ -570,6 +607,163 @@ module HostWarningClassification =
                   "package evidence failed" ]
 
         { WarningClass = warningClass
+          RawMessage = check.RawMessage
           Fatal = fatal
           EvidencePath = check.EvidencePath
+          SupportingFacts = supportingFacts
+          Diagnostics = diagnostics }
+
+module PersistentLaunchArtifactValidation =
+    let private requiredFields =
+        [ "status"
+          "mode"
+          "command"
+          "window-opened"
+          "input-dispatch"
+          "exit-path"
+          "blocked-stage"
+          "classification"
+          "category"
+          "message" ]
+
+    let private parseFields (lines: string list) =
+        lines
+        |> List.collect (fun (line: string) ->
+            line.Split([| ' '; '\t'; '\r'; '\n' |], StringSplitOptions.RemoveEmptyEntries)
+            |> Array.choose (fun (token: string) ->
+                let equals = token.IndexOf('=')
+
+                if equals <= 0 then
+                    None
+                else
+                    Some(token.Substring(0, equals).Trim().ToLowerInvariant(), token.Substring(equals + 1).Trim()))
+            |> Array.toList)
+        |> Map.ofList
+
+    let private validValues =
+        Map.ofList
+            [ "status", Set.ofList [ "ok"; "failed"; "unsupported" ]
+              "mode", Set.ofList [ "interactive-window"; "persistent-evidence" ]
+              "input-dispatch", Set.ofList [ "verified"; "not-verified"; "not-required"; "failed"; "true"; "false" ]
+              "exit-path", Set.ofList [ "true"; "false" ]
+              "window-opened", Set.ofList [ "true"; "false" ]
+              "first-frame-presented", Set.ofList [ "true"; "false" ]
+              "blocked-stage",
+              Set.ofList
+                  [ "none"
+                    "desktopprerequisite"
+                    "processlaunch"
+                    "windowcreation"
+                    "firstframerender"
+                    "observation"
+                    "capture"
+                    "inputverification"
+                    "controlledexit"
+                    "artifactwrite"
+                    "window"
+                    "surface"
+                    "renderer"
+                    "swapchain"
+                    "scene"
+                    "readback"
+                    "app"
+                    "timeout"
+                    "unknown" ]
+              "classification",
+              Set.ofList
+                  [ "none"
+                    "ok"
+                    "unsupportedenvironment"
+                    "packageresolution"
+                    "verificationdepth"
+                    "applifecycle"
+                    "productdefect" ]
+              "category",
+              Set.ofList
+                  [ "none"
+                    "startup"
+                    "environmentsession"
+                    "input"
+                    "frame"
+                    "renderer"
+                    "vulkan"
+                    "skia"
+                    "swapchain"
+                    "scene"
+                    "screenshot" ] ]
+
+    let validate check =
+        let fields = parseFields check.Lines
+
+        let missing =
+            requiredFields
+            |> List.filter (fun field -> not (fields.ContainsKey field))
+
+        let field name = fields |> Map.tryFind name
+
+        let invalidFields =
+            validValues
+            |> Map.toList
+            |> List.choose (fun (name, allowed) ->
+                field name
+                |> Option.bind (fun value ->
+                    let normalized = value.Trim().ToLowerInvariant()
+
+                    if allowed.Contains normalized then
+                        None
+                    else
+                        Some $"{name}={value}"))
+
+        let passClaim =
+            check.SupportedHostPassClaimed
+            || field "status" = Some "ok"
+            || field "classification" = Some "ok"
+
+        let contradictions =
+            [ if check.SyntheticFixture && passClaim then
+                  "synthetic fixture cannot satisfy supported-host persistent launch"
+              if passClaim && field "window-opened" <> Some "true" then
+                  "status=ok requires window-opened=true"
+              if passClaim && field "first-frame-presented" <> Some "true" then
+                  "status=ok requires first-frame-presented=true"
+              if passClaim && field "exit-path" <> Some "true" then
+                  "status=ok requires exit-path=true"
+              if passClaim && field "blocked-stage" <> Some "none" then
+                  "status=ok requires blocked-stage=none" ]
+
+        let diagnostics =
+            [ $"artifact-path={check.ArtifactPath}"
+              if check.SyntheticFixture then
+                  "synthetic-fixture=true"
+              for item in missing do
+                  $"missing-field={item}"
+              for item in invalidFields do
+                  $"invalid-field={item}"
+              yield! contradictions ]
+
+        { Accepted = missing.IsEmpty && invalidFields.IsEmpty && contradictions.IsEmpty
+          MissingFields = missing
+          Contradictions = invalidFields @ contradictions
+          Diagnostics = diagnostics }
+
+module ReadinessFileDiscovery =
+    let validate check =
+        let existing =
+            check.ExistingFiles
+            |> List.map (fun path -> path.Trim().Replace('\\', '/'))
+            |> Set.ofList
+
+        let missing =
+            check.RequiredFiles
+            |> List.filter (fun file ->
+                let normalized = file.Trim().Replace('\\', '/')
+                not (existing.Contains normalized))
+
+        let diagnostics =
+            [ $"readiness-directory={check.ReadinessDirectory}"
+              for item in missing do
+                  $"missing-readiness-file={item}" ]
+
+        { Complete = missing.IsEmpty
+          MissingFiles = missing
           Diagnostics = diagnostics }
