@@ -1,0 +1,7 @@
+schema_version: "1.0"
+
+# SYNTHETIC FIXTURE: graph-valid package with missing audit readiness files.
+tasks:
+  T001:
+    deps: []
+    skillist: []

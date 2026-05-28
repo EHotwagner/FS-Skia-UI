@@ -1,0 +1,30 @@
+[37m[[37m16:15:40 [37mINF[37m] [37mEXPECTO? Running tests...[37m [37m<[37mExpecto[37m>[37m
+[0m[1000D[?25h[37m[[37m16:15:40 [37mINF[37m] [37mEXPECTO! [36m22[37m tests run in [32m00:00:00.0624683[37m for [36mGenerated guidance hardening[37m – [36m22[37m passed, [36m0[37m ignored, [36m0[37m failed, [36m0[37m errored. [36mSuccess![37m [37m<[37mExpecto[37m>[37m
+[0m[1000D[?25h[37m[[37m16:15:40 [37mINF[37m] [37mEXPECTO?! Summary...
+Passed: [36m 22
+	Generated guidance hardening.generated viewer guidance readiness report records selected contract and distinct evidence kinds
+	Generated guidance hardening.generated viewer guidance scans one selected persistent launch contract across owned artifacts
+	Generated guidance hardening.generated Linux detached launch guidance preserves logs stderr and stdin detachment
+	Generated guidance hardening.generated screenshot evidence command writes capability detail fields
+	Generated guidance hardening.generated evidence guidance separates semantic scene facts from screenshot and pixel-readback claims
+	Generated guidance hardening.generated game guidance qualifies CloseRequested and converts app vectors to scene points
+	Generated guidance hardening.generated screenshot wording requires live-window proof and keeps deterministic fallback separate
+	Generated guidance hardening.generated guidance recommends domain geometry names and not primitive collisions
+	Generated guidance hardening.generated guidance reuses shared Scene geometry instead of local duplicates
+	Generated guidance hardening.generated guidance keeps app commands distinct from viewer effects
+	Generated guidance hardening.generated app source and tests keep public contract names app-qualified
+	Generated guidance hardening.generated app guidance names qualified app-owned scene host and update values
+	Generated guidance hardening.V3 generated product docs describe selected capabilities without framework architecture copy
+	Generated guidance hardening.Spec Kit docs distinguish V2 obligations from deferred roadmap work
+	Generated guidance hardening.implementation guidance requires pre-work skill loading and graph refresh evidence
+	Generated guidance hardening.generated task guidance requires implementation workflow evidence records
+	Generated guidance hardening.generated task guidance rejects print-only and bounded-only default graphical viewer paths
+	Generated guidance hardening.generated task guidance requires persistent viewer launch evidence separately from bounded helpers
+	Generated guidance hardening.active and preset prompt classes remain semantically aligned
+	Generated guidance hardening.section parser rejects prompts that appear only in deferred scope
+	Generated guidance hardening.active and preset plan templates include decisions in the repository governance section
+	Generated guidance hardening.active and preset spec templates include prompts in the governance section[37m
+Ignored: [36m 0[37m
+Failed: [36m  0[37m
+Errored: [36m 0[37m [37m<[37mExpecto[37m>[37m
+[0m

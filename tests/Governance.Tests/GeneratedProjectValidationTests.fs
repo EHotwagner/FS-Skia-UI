@@ -242,6 +242,57 @@ let generatedProjectValidationTests =
                 Expect.isFalse (directoryExists ".template.config") "generated products do not run source-only V3 generated-product checks"
         }
 
+        test "generated evidence targets reject placeholder-only completion logs and delegate to authoritative validation" {
+            let build = read "template/base/build.fsx"
+            let evidenceCommands = read "template/base/src/Product/EvidenceCommands.fs"
+
+            Expect.isFalse (build.Contains("| \"EvidenceGraph\"\n    | \"EvidenceAudit\" -> writeLog target")) "generated evidence targets must not share the completion-only placeholder logger"
+
+            [ "runGeneratedEvidenceGraph"
+              "runGeneratedEvidenceAudit"
+              "delegated-authoritative"
+              "validation-area"
+              "exit-code"
+              "let graphExitCode, graphStdout, graphStderr = runAuthoritativeEvidence \"EvidenceGraph\" featureDir true"
+              "if graphExitCode <> 0 then"
+              "runAuthoritativeEvidence \"EvidenceAudit\" featureDir false"
+              "readiness-contract"
+              "synthetic-evidence"
+              "unsupported-host-classification"
+              "EvidenceAudit\", [ \"EvidenceGraph\" ]" ]
+            |> List.iter (fun required ->
+                Expect.stringContains build required $"generated evidence target contract includes {required}")
+
+            [ "type GeneratedEvidenceCommandReport"
+              "Command: string"
+              "Target: string"
+              "GeneratedAppIdentity: string"
+              "Authority: string"
+              "Status: string"
+              "ExitCode: int"
+              "ValidationArea: string"
+              "ReportPath: string"
+              "Diagnostics: string list" ]
+            |> List.iter (fun required ->
+                Expect.stringContains evidenceCommands required $"generated evidence command report includes {required}")
+        }
+
+        test "generated normal launch stays separate from evidence graph and audit commands" {
+            let program = read "template/base/src/Product/Program.fs"
+            let defaultBranch = program.Substring(program.IndexOf("| _ ->", System.StringComparison.Ordinal))
+
+            Expect.stringContains defaultBranch "Viewer.runApp viewerOptions generatedHost" "normal launch remains the persistent interactive host"
+
+            [ "EvidenceGraph"
+              "EvidenceAudit"
+              "runGeneratedEvidenceGraph"
+              "runGeneratedEvidenceAudit"
+              "readiness/evidence-graph"
+              "readiness/evidence-audit" ]
+            |> List.iter (fun forbidden ->
+                Expect.isFalse (defaultBranch.Contains(forbidden, System.StringComparison.OrdinalIgnoreCase)) $"normal launch must not run evidence command surface {forbidden}")
+        }
+
         test "V3 source and package generated validation roots prove Controls usage and framework-source exclusions" {
             if fileExists "specs/011-controls-boundary-refactor/readiness/generated-file-lists/app-source.txt" then
                 [ "app-source"; "app-package" ]

@@ -292,6 +292,41 @@ let generatedGuidanceTests =
                       "must not claim screenshot proof" ])
         }
 
+        test "generated game guidance qualifies CloseRequested and converts app vectors to scene points" {
+            [ "template/base/docs/product.md"
+              "template/fragments/scene/README.md"
+              "docs/generated-apps.md" ]
+            |> List.iter (fun path ->
+                expectFileContains
+                    path
+                    [ "Product.Program.Msg.CloseRequested"
+                      "CloseRequested"
+                      "app-owned message"
+                      "toScenePoint"
+                      "domain vector"
+                      "Scene.Point"
+                      "explicit conversion" ])
+        }
+
+        test "generated evidence guidance separates semantic scene facts from screenshot and pixel-readback claims" {
+            [ "template/base/docs/product.md"
+              "template/fragments/testing/README.md"
+              "docs/evidence.md" ]
+            |> List.iter (fun path ->
+                expectFileContains
+                    path
+                    [ "semantic scene facts"
+                      "deterministic-scene-evidence"
+                      "does not prove semantic object presence"
+                      "lander"
+                      "terrain"
+                      "landing pad"
+                      "HUD metrics"
+                      "pixel-readback fallback"
+                      "fallback-reason"
+                      "proves-screenshot=false" ])
+        }
+
         test "generated screenshot evidence command writes capability detail fields" {
             let source = read "template/base/src/Product/EvidenceCommands.fs"
 

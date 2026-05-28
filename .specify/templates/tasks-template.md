@@ -99,6 +99,17 @@ governance risk level, focused validation required for the selected level, when
 broad validation is required, and how non-authoritative aggregate results are
 recorded.
 
+Generated task lists must make audit-enforced readiness files discoverable
+before implementation starts. Setup or foundation work should create placeholders
+or explicit tasks for the active feature's required readiness files, including
+`readiness/governance-risk-levels.md`, `readiness/aggregate-hang-diagnostics.md`,
+`readiness/runtime-limitations.md`, `readiness/generated-validation-authority.md`,
+`readiness/skill-loading-evidence-workflow.md`, `readiness/audit-diagnostics.md`,
+`readiness/readiness-contract-discovery.md`, `readiness/framework-guidance.md`,
+`readiness/evidence-vocabulary.md`, `readiness/evidence-graph.md`, and
+`readiness/evidence-audit.md` when those contracts apply. Do not leave
+readiness discovery to the final audit.
+
 For malformed-input and explicit error-path tasks, generated task lists MAY use
 `[SEH]` only when the task itself validates an error behavior and real input is
 infeasible, unsafe, impossible, or not representative of the error path.
@@ -127,7 +138,7 @@ Template source: `.specify/presets/fsharp-opinionated/templates/tasks-template.m
 
 - [ ] T001 [skillist: []] Scaffold the feature directory and link spec + plan
 - [ ] T002 [P] [skillist: []] Add baseline install or adoption documentation for the selected profile
-- [ ] T003 [P] [skillist: []] Add readiness artifact scaffolding (`specs/[FEATURE_ID]/readiness/`)
+- [ ] T003 [P] [skillist: []] Add readiness artifact scaffolding (`specs/[FEATURE_ID]/readiness/`) with audit-enforced placeholder files discoverable before implementation
 - [ ] T004 [skillist: []] Record feature Tier, affected layer, public-API impact, Elmish/MVU applicability, and required evidence obligations
 
 ---

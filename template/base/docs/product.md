@@ -44,6 +44,19 @@ domain-specific names such as `WorldRect`, `WorldPoint`, `TrackBounds`,
 `CarPose`, and `CheckpointBounds`. Keep generic `Rect`, `Point`, and `Size`
 available for Scene and layout primitives.
 
+Generated app message examples must qualify app-owned messages such as
+`Product.Program.Msg.CloseRequested`. Treat `CloseRequested` as an app-owned
+message, not a viewer lifecycle shortcut. When product simulation state stores a
+domain vector, convert it explicitly with a helper such as `toScenePoint` before
+passing it to `Scene.Point`; the conversion from domain vector to scene point
+must be visible in the generated source or evidence notes as an explicit conversion.
+
+Generated evidence may report semantic scene facts such as lander, terrain,
+landing pad, and HUD metrics. deterministic-scene-evidence does not prove semantic object presence in a live screenshot by itself. A
+pixel-readback fallback must include `fallback-reason` and
+`proves-screenshot=false` unless live viewer-window screenshot capture
+succeeded.
+
 For Linux desktop review sessions where the generated viewer should keep
 running after the terminal closes, preserve launch diagnostics with:
 

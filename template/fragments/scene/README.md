@@ -12,3 +12,10 @@ When product code needs app-owned geometry types, use domain names such as
 `WorldRect`, `WorldPoint`, `TrackBounds`, `CarPose`, or `CheckpointBounds`.
 Avoid using bare `Rect`, `Point`, or `Size` for app-domain concepts while Scene
 and layout primitives are in scope.
+
+Generated app message examples must qualify app-owned messages such as
+`Product.Program.Msg.CloseRequested`. `CloseRequested` remains an app-owned
+message even when the viewer reports a close request. Convert domain vector
+values explicitly with a helper such as `toScenePoint` before constructing a
+`Scene.Point`, so the domain vector to scene point boundary is visible in
+generated code and review evidence as an explicit conversion.

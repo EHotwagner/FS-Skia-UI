@@ -1,0 +1,6 @@
+
+VALIDATION FAILED
+  T001: skill speckit-tasks loaded_at must be earlier than work_started_at (loaded_at=2026-05-28T15:00:02+02:00 work_started_at=2026-05-28T15:00:01+02:00)
+task-graph: 1 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/skill-loading-fixtures/late/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/skill-loading-fixtures/late/readiness/task-graph.md

@@ -110,6 +110,18 @@ let governanceEvidenceTests =
                   "matched signals"
                   "reviewer disposition"
                   "small, medium, and broad"
-                  "non-authoritative aggregate" ]
+                  "non-authoritative aggregate"
+                  "audit-enforced readiness files"
+                  "readiness/governance-risk-levels.md"
+                  "readiness/aggregate-hang-diagnostics.md"
+                  "readiness/runtime-limitations.md"
+                  "readiness/generated-validation-authority.md"
+                  "readiness/skill-loading-evidence-workflow.md"
+                  "readiness/audit-diagnostics.md"
+                  "readiness/readiness-contract-discovery.md"
+                  "readiness/framework-guidance.md"
+                  "readiness/evidence-vocabulary.md"
+                  "readiness/evidence-graph.md"
+                  "readiness/evidence-audit.md" ]
         }
     ]

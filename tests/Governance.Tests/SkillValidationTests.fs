@@ -110,4 +110,34 @@ let skillValidationTests =
             Expect.isTrue (requiresLayoutEvidenceSkill malformedLine) "fixture describes layout evidence work"
             Expect.isFalse (malformedLine.Contains("fs-skia-layout-evidence", StringComparison.Ordinal)) "fixture omits required skill and would be rejected"
         }
+
+        test "skill-loading evidence workflow derives one required row per real task skill pairing" {
+            let deps = read "specs/027-generated-evidence-workflow/tasks.deps.yml"
+            let graphSource = read ".specify/extensions/evidence/scripts/python/compute-task-graph.py"
+
+            [ "T001:"
+              "skillist: [\"speckit-tasks\", \"speckit-implement\"]"
+              "T021:"
+              "skillist: [\"speckit-tasks\", \"speckit-implement\", \"speckit-evidence-graph\"]" ]
+            |> List.iter (fun needle -> Expect.stringContains deps needle $"real task metadata includes {needle}")
+
+            [ "expected_skill_loading_rows"
+              "generate_skill_loading_evidence_template"
+              "missing_skill_loading_rows"
+              "one row per task and skill pairing" ]
+            |> List.iter (fun needle ->
+                Expect.stringContains graphSource needle $"graph helper source exposes {needle}")
+        }
+
+        test "skill-loading evidence workflow Synthetic rejects duplicate masking and invalid timestamp ordering" {
+            let graphSource = read ".specify/extensions/evidence/scripts/python/compute-task-graph.py"
+
+            [ "duplicate skill-loading evidence row"
+              "collapsed task range"
+              "multi-skill prose row"
+              "loaded_at must be earlier than work_started_at"
+              "equal timestamps" ]
+            |> List.iter (fun needle ->
+                Expect.stringContains graphSource needle $"skill-loading validator diagnoses {needle}")
+        }
     ]

@@ -1,0 +1,7 @@
+schema_version: "1.0"
+
+# SYNTHETIC FIXTURE: dangling reference for T006 graph rejection evidence.
+tasks:
+  T001:
+    deps: [T999]
+    skillist: []

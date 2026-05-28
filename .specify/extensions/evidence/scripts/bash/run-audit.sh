@@ -207,16 +207,39 @@ hits = []
 for file_name, terms, reason in checks:
     path = readiness / file_name
     if not path.exists():
-        hits.append({"path": str(path), "reason": f"missing {file_name}"})
+        hits.append({
+            "path": str(path),
+            "status": "missing",
+            "reason": f"missing {file_name}",
+            "missing_terms": terms,
+            "missing_sections": [],
+            "blocking": True,
+            "validation_area": "readiness-contract",
+        })
         continue
     text = path.read_text(encoding="utf-8")
     missing = [term for term in terms if term.lower() not in text.lower()]
     if missing:
-        hits.append({"path": str(path), "reason": reason, "missing": missing})
+        hits.append({
+            "path": str(path),
+            "status": "incomplete",
+            "reason": reason,
+            "missing": missing,
+            "missing_terms": missing,
+            "missing_sections": [],
+            "blocking": True,
+            "validation_area": "readiness-contract",
+        })
 out.write_text(json.dumps(hits, indent=2) + "\n", encoding="utf-8")
 print(f"  readiness-contract: {len(hits)} blocking")
 for hit in hits:
-    print(f"    [BLOCK] {hit['path']} ({hit['reason']})", file=sys.stderr)
+    missing_terms = ",".join(hit.get("missing_terms") or [])
+    missing_sections = ",".join(hit.get("missing_sections") or [])
+    print(
+        f"    [BLOCK] validation-area=readiness-contract path={hit['path']} status={hit['status']} "
+        f"reason={hit['reason']} missing-terms={missing_terms} missing-sections={missing_sections} blocking=true",
+        file=sys.stderr,
+    )
 PYEOF
 READINESS_CONTRACT_HITS=$(python3 -c "import json; print(len(json.load(open('$READINESS_CONTRACT_HITS_JSON'))))")
 echo

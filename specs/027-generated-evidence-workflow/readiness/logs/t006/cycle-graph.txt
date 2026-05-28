@@ -1,0 +1,12 @@
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/generated-validation-fixtures/cycle
+
+[1/3] Computing task graph...
+
+VALIDATION FAILED
+  cycle: T001 -> T002 -> T001
+task-graph: 2 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/generated-validation-fixtures/cycle/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/generated-validation-fixtures/cycle/readiness/task-graph.md
+
+✗ Graph compute failed. See /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/generated-validation-fixtures/cycle/readiness/task-graph.md for details.

@@ -17,7 +17,7 @@ FAIL
 
 - Changed alignment classes: `template-drift-docs`
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/026-working-screenshot-taking`
+- Active feature evidence: `specs/027-generated-evidence-workflow`
 
 ## Controls Boundary Guidance
 

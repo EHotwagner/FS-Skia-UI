@@ -76,6 +76,15 @@ default app profile to reference the Testing package: `status`, `command`,
 `output`, stable key ordering, normalized `ok`/`unsupported`/`failed` status
 vocabulary, and unsupported-host `unsupported-host-reason` plus
 `fallback=deterministic-scene-evidence`.
+Generated app message examples must qualify app-owned messages such as
+`Product.Program.Msg.CloseRequested`; `CloseRequested` is an app-owned message.
+When generated code stores a domain vector, use an explicit conversion helper
+such as `toScenePoint` before passing the value as a `Scene.Point`.
+Generated evidence can record semantic scene facts for lander, terrain, landing
+pad, and HUD metrics, but deterministic-scene-evidence does not prove semantic
+object presence in a live screenshot. Pixel-readback fallback evidence must
+include `fallback-reason` and `proves-screenshot=false` unless live
+viewer-window screenshot capture succeeded.
 Generated gameplay examples should reuse shared Scene geometry for layout,
 containment, collision, and rendering evidence when the Scene shape model
 already fits; do not introduce local duplicate bounds records for the same

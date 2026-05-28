@@ -1,0 +1,63 @@
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/generated-validation-fixtures/missing-readiness
+
+[1/3] Computing task graph...
+task-graph: 1 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/generated-validation-fixtures/missing-readiness/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/generated-validation-fixtures/missing-readiness/readiness/task-graph.md
+  status: 1[X]
+
+graph-only mode; skipping diff scan.
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/generated-validation-fixtures/missing-readiness
+
+[1/3] Computing task graph...
+task-graph: 1 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/generated-validation-fixtures/missing-readiness/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/generated-validation-fixtures/missing-readiness/readiness/task-graph.md
+  status: 1[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 3 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 1 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=1
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+  synthetic tasks (declared):     0
+  auto-synthetic tasks (computed): 0
+  accepted [SEH] tasks:           0
+  unaccepted synthetic tasks:      0
+  late [SEH] tasks:                0
+  readiness contract hits:         3
+  advisory diff-scan hits:         1 (printed, not blocking)
+
+  To override, rerun with:  --accept-synthetic "justification"
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/generated-validation-fixtures/missing-readiness/readiness/governance-risk-levels.md (missing governance-risk-levels.md)
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/generated-validation-fixtures/missing-readiness/readiness/aggregate-hang-diagnostics.md (missing aggregate-hang-diagnostics.md)
+    [BLOCK] /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/generated-validation-fixtures/missing-readiness/readiness/runtime-limitations.md (missing runtime-limitations.md)
+    [adv]   synthetic-banner at template/base/build.fsx:91  (Synthetic-evidence disclosure (Principle V))
+System.Exception: EvidenceAudit failed with exit code 2; see readiness/evidence-audit.md
+   at Microsoft.FSharp.Core.PrintfModule.PrintFormatToStringThenFail@1447.Invoke(String message)
+   at FSI_0001.run(String target) in /home/developer/projects/FS-Skia-UI/template/base/build.fsx:line 262
+   at <StartupCode$FSI_0001>.$FSI_0001.main@() in /home/developer/projects/FS-Skia-UI/template/base/build.fsx:line 278
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+Stopped due to error

@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-specs/026-working-screenshot-taking/plan.md
+specs/027-generated-evidence-workflow/plan.md
 <!-- SPECKIT END -->

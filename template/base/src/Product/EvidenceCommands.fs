@@ -76,6 +76,17 @@ type GeneratedEvidenceReportStatus =
     | GeneratedEvidenceUnsupported
     | GeneratedEvidenceFailed
 
+type GeneratedEvidenceCommandReport =
+    { Command: string
+      Target: string
+      GeneratedAppIdentity: string
+      Authority: string
+      Status: string
+      ExitCode: int
+      ValidationArea: string
+      ReportPath: string
+      Diagnostics: string list }
+
 let generatedEvidenceStatusText status =
     match status with
     | GeneratedEvidenceOk -> "ok"
@@ -90,6 +101,17 @@ let generatedEvidenceExitCode status =
 
 let evidenceField name value =
     name, value
+
+let generatedEvidenceCommandReportFields report =
+    [ evidenceField "command" report.Command
+      evidenceField "target" report.Target
+      evidenceField "generated-project-identity" report.GeneratedAppIdentity
+      evidenceField "authority" report.Authority
+      evidenceField "status" report.Status
+      evidenceField "exit-code" (string report.ExitCode)
+      evidenceField "validation-area" report.ValidationArea
+      evidenceField "report-path" report.ReportPath
+      evidenceField "diagnostics" (String.Join("; ", report.Diagnostics)) ]
 
 let writeEvidenceReport evidencePath status command fields =
     let standardFields =

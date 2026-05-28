@@ -518,5 +518,22 @@ let tests =
             Expect.stringContains source "RendererMode = \"deterministic-scene\"" "scene evidence remains separate from live viewer startup"
             Expect.stringContains source "readiness/headless-scene-evidence.txt" "scene evidence writes a stable readiness path"
         }
+
+        test "generated evidence graph command delegates to authoritative validation" {
+            let build = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "build.fsx"))
+
+            Expect.stringContains build "let runGeneratedEvidenceGraph" "generated build exposes graph command runner"
+            Expect.stringContains build ".specify/extensions/evidence/scripts/bash/run-audit.sh" "graph command delegates to copied Spec Kit audit script"
+            Expect.stringContains build "--graph-only" "graph command selects graph-only authoritative validation"
+            Expect.stringContains build "authority=delegated-authoritative" "graph report records delegated authority"
+            Expect.stringContains build "status=failed" "graph report has an explicit failed status path"
+            Expect.stringContains build "authoritative validation failed" "graph failure is reported before any pass claim"
+            Expect.stringContains build "let runGeneratedEvidenceAudit" "generated build exposes audit command runner"
+            Expect.stringContains build "let graphExitCode, graphStdout, graphStderr = runAuthoritativeEvidence \"EvidenceGraph\" featureDir true" "audit command requires graph validation first"
+            Expect.stringContains build "runAuthoritativeEvidence \"EvidenceAudit\" featureDir false" "audit command delegates full audit validation"
+            Expect.stringContains build "readiness-contract" "audit report distinguishes readiness contract failures"
+            Expect.stringContains build "synthetic-evidence" "audit report distinguishes synthetic evidence failures"
+            Expect.isFalse (build.Contains("| \"EvidenceGraph\"\n    | \"EvidenceAudit\" -> writeLog target")) "evidence commands are not completion-only logs"
+        }
     ]
 //#endif

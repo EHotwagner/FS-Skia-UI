@@ -1,0 +1,6 @@
+
+VALIDATION FAILED
+  T001: skill speckit-tasks equal timestamps are invalid; loaded_at must be earlier than work_started_at
+task-graph: 1 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/skill-loading-fixtures/equal/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/skill-loading-fixtures/equal/readiness/task-graph.md

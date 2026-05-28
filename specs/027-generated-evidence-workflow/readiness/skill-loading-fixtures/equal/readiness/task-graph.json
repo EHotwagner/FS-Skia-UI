@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0",
+  "verdict": "error",
+  "errors": [
+    "T001: skill speckit-tasks equal timestamps are invalid; loaded_at must be earlier than work_started_at"
+  ],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Synthetic equal timestamp fixture task",
+      "skillist": [
+        "speckit-tasks"
+      ],
+      "skillist_mirror": [
+        "speckit-tasks"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T001",
+          "declared_skillist": [
+            "speckit-tasks"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T001: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    }
+  ]
+}

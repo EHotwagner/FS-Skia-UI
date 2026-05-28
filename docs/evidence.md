@@ -75,6 +75,10 @@ synthetic placeholders, blank images, and unreadable files must not claim
 screenshot proof.
 
 Fallback and diagnostic-only evidence must not claim screenshot proof.
+semantic scene facts such as lander, terrain, landing pad, and HUD metrics may
+be reported as deterministic-scene-evidence, but deterministic scene metadata
+does not prove semantic object presence in a live screenshot. pixel-readback fallback records must include `fallback-reason` and `proves-screenshot=false`
+unless live viewer-window screenshot capture succeeded.
 
 Viewer diagnostics evidence should record both startup-focused and
 frame-focused paths. Startup-focused runs keep frame-loop diagnostics disabled

@@ -1,0 +1,14 @@
+[
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/generated-validation-fixtures/missing-readiness/readiness/governance-risk-levels.md",
+    "reason": "missing governance-risk-levels.md"
+  },
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/generated-validation-fixtures/missing-readiness/readiness/aggregate-hang-diagnostics.md",
+    "reason": "missing aggregate-hang-diagnostics.md"
+  },
+  {
+    "path": "/home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/generated-validation-fixtures/missing-readiness/readiness/runtime-limitations.md",
+    "reason": "missing runtime-limitations.md"
+  }
+]

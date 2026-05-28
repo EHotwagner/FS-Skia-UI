@@ -567,14 +567,15 @@ def validate_and_merge(
     return errors
 
 
-def parse_skill_loading_evidence(path: Path) -> List[dict]:
+def parse_skill_loading_evidence(path: Path) -> Tuple[List[dict], List[str]]:
     if not path.exists():
-        return []
+        return [], []
     rows: List[dict] = []
+    errors: List[str] = []
     try:
         text = path.read_text(encoding="utf-8")
     except OSError:
-        return []
+        return [], []
     for line in text.splitlines():
         trimmed = line.strip()
         if not trimmed.startswith("|") or "---" in trimmed or "Task | Skill id" in trimmed:
@@ -582,10 +583,18 @@ def parse_skill_loading_evidence(path: Path) -> List[dict]:
         cells = [cell.strip().strip("`") for cell in trimmed.strip("|").split("|")]
         if len(cells) < 8:
             continue
+        task_id = cells[0]
+        skill_id = cells[1]
+        if re.search(r"\bT\d{3,4}\s*-\s*T\d{3,4}\b", task_id):
+            errors.append(f"collapsed task range row is invalid: {task_id}")
+        if "," in task_id or re.search(r"\bT\d{3,4}\b.*\bT\d{3,4}\b", task_id):
+            errors.append(f"multi-task prose row is invalid: {task_id}")
+        if "," in skill_id or re.search(r"\b(and|or)\b", skill_id, re.IGNORECASE):
+            errors.append(f"multi-skill prose row is invalid: {skill_id}")
         rows.append(
             {
-                "task_id": cells[0],
-                "declared_skill_id": cells[1],
+                "task_id": task_id,
+                "declared_skill_id": skill_id,
                 "resolved_skill_path": cells[2],
                 "load_result": cells[3],
                 "loaded_at": cells[4],
@@ -594,7 +603,7 @@ def parse_skill_loading_evidence(path: Path) -> List[dict]:
                 "exception": cells[7],
             }
         )
-    return rows
+    return rows, errors
 
 
 def parse_utc(value: str) -> Optional[datetime]:
@@ -604,21 +613,65 @@ def parse_utc(value: str) -> Optional[datetime]:
         return None
 
 
+def expected_skill_loading_rows(tasks: Dict[str, Task], completed_only: bool = True) -> List[Tuple[str, str]]:
+    """Return one row per task and skill pairing required by skillist metadata."""
+    expected: List[Tuple[str, str]] = []
+    for task in tasks.values():
+        if completed_only and task.declared not in ("done", "synthetic"):
+            continue
+        for skill_id in task.skillist:
+            expected.append((task.id, skill_id))
+    return expected
+
+
+def missing_skill_loading_rows(expected: List[Tuple[str, str]], observed: Set[Tuple[str, str]]) -> List[Tuple[str, str]]:
+    return [row for row in expected if row not in observed]
+
+
+def generate_skill_loading_evidence_template(tasks: Dict[str, Task], skills: Dict[str, List[Path]]) -> str:
+    lines = [
+        "# Skill Loading Evidence",
+        "",
+        "| Task | Skill id | Resolved path | Load result | loaded_at | work_started_at | Evidence path | Reviewer exception |",
+        "|------|----------|---------------|-------------|-----------|-----------------|---------------|--------------------|",
+    ]
+    for task_id, skill_id in expected_skill_loading_rows(tasks, completed_only=False):
+        paths = skills.get(skill_id, [])
+        resolved = str(paths[0]) if len(paths) == 1 else "(unresolved)"
+        lines.append(
+            f"| {task_id} | {skill_id} | `{resolved}` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |"
+        )
+    return "\n".join(lines) + "\n"
+
+
 def validate_skill_loading_evidence(tasks: Dict[str, Task], repo_root: Path, feature_dir: Path) -> List[str]:
     errors: List[str] = []
     evidence_path = feature_dir / "readiness" / "skill-loading-evidence.md"
-    rows = parse_skill_loading_evidence(evidence_path)
-    row_by_key = {(row["task_id"], row["declared_skill_id"]): row for row in rows}
+    rows, row_errors = parse_skill_loading_evidence(evidence_path)
+    errors.extend(row_errors)
+    row_by_key: Dict[Tuple[str, str], dict] = {}
+    duplicate_keys: Set[Tuple[str, str]] = set()
+    for row in rows:
+        key = (row["task_id"], row["declared_skill_id"])
+        if key in row_by_key:
+            duplicate_keys.add(key)
+        else:
+            row_by_key[key] = row
+    for task_id, skill_id in sorted(duplicate_keys):
+        errors.append(f"{task_id}: duplicate skill-loading evidence row for {skill_id}; duplicate rows do not mask missing required rows")
     skills, skill_warnings = discover_skills(repo_root)
     errors.extend(skill_warnings)
 
-    for task in tasks.values():
-        if task.declared not in ("done", "synthetic"):
-            continue
-        for skill_id in task.skillist:
+    expected_rows = expected_skill_loading_rows(tasks)
+    observed_rows = set(row_by_key.keys())
+
+    for task_id, skill_id in missing_skill_loading_rows(expected_rows, observed_rows):
+        errors.append(f"{task_id}: declared skill {skill_id} has no pre-work load evidence")
+
+    for task_id, skill_id in expected_rows:
+            task = tasks[task_id]
             row = row_by_key.get((task.id, skill_id))
             if row is None:
-                errors.append(f"{task.id}: declared skill {skill_id} has no pre-work load evidence")
                 continue
             if row["load_result"] != "loaded" and not row["exception"]:
                 errors.append(f"{task.id}: declared skill {skill_id} has incomplete reviewer exception")
@@ -626,8 +679,10 @@ def validate_skill_loading_evidence(tasks: Dict[str, Task], repo_root: Path, fea
             work_started_at = parse_utc(row["work_started_at"])
             if loaded_at is None or work_started_at is None:
                 errors.append(f"{task.id}: declared skill {skill_id} has invalid load/work timestamp")
-            elif loaded_at >= work_started_at:
-                errors.append(f"{task.id}: skill {skill_id} loaded after work started")
+            elif loaded_at == work_started_at:
+                errors.append(f"{task.id}: skill {skill_id} equal timestamps are invalid; loaded_at must be earlier than work_started_at")
+            elif loaded_at > work_started_at:
+                errors.append(f"{task.id}: skill {skill_id} loaded_at must be earlier than work_started_at (loaded_at={row['loaded_at']} work_started_at={row['work_started_at']})")
             resolved = Path(row["resolved_skill_path"])
             resolved_path = resolved if resolved.is_absolute() else repo_root / resolved
             matches = skills.get(skill_id, [])
@@ -1012,6 +1067,15 @@ def main(argv: List[str]) -> int:
                 break
         errors.extend(validate_and_merge(tasks, deps, repo_root))
         errors.extend(validate_skill_loading_evidence(tasks, repo_root, feature_dir))
+        skills, skill_warnings = discover_skills(repo_root)
+        warnings.extend(skill_warnings)
+        try:
+            (readiness_dir / "skill-loading-evidence.template.md").write_text(
+                generate_skill_loading_evidence_template(tasks, skills),
+                encoding="utf-8",
+            )
+        except OSError as e:
+            errors.append(f"failed to write skill-loading evidence template: {e}")
 
     cycles: List[List[str]] = []
     root_cause: Dict[str, List[str]] = {}
