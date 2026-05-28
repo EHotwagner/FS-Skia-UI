@@ -1,0 +1,14 @@
+status=ScreenshotFailed
+command=dotnet fsi specs/026-working-screenshot-taking/readiness/fsi/screenshot-failure-smoke.fsx
+app-or-sample=working-screenshot-taking-failure-smoke
+capture-mode=ViewerRenderTargetPng
+evidence-kind=screenshot
+artifact-path=None
+pixel-content-validation=PixelContentNotValidated "request validation failed before capture"
+capture-source=NoCaptureSource
+proves-screenshot=false
+blocked-stage=Some Capture
+classification=Some ProductDefect
+category=Some Screenshot
+message=Screenshot evidence request validation failed.
+diagnostics=["screenshot width must be positive"]

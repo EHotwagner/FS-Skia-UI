@@ -2,6 +2,7 @@ namespace FS.Skia.UI.Testing
 
 open System
 open FS.Skia.UI.Scene
+open SkiaSharp
 
 type PackageReferenceExpectation =
     { PackageId: string
@@ -222,14 +223,26 @@ type EvidenceReportValidationResult =
 
 type ScreenshotEvidenceReportCheck =
     { Status: string
+      Command: string option
+      AppOrSample: string option
+      HostFacts: string list
+      CaptureMode: string option
       EvidenceKind: string option
+      ArtifactPath: string option
       ScreenshotPath: string option
       Width: int option
       Height: int option
+      PixelContentValidation: string option
+      CaptureSource: string option
+      ProvesScreenshot: bool option
+      BlockedStage: string option
+      Classification: string option
+      Category: string option
+      Message: string option
+      Timestamp: DateTimeOffset option
       ViewerOpenStatus: string option
       FirstFrameStatus: string option
       CaptureAvailability: string option
-      CaptureSource: string option
       UnsupportedHostReason: string option
       Fallback: string option
       Diagnostics: string list }
@@ -238,6 +251,26 @@ type ScreenshotEvidenceReportValidationResult =
     { Accepted: bool
       MissingFields: string list
       FailureClass: string option
+      Diagnostics: string list }
+
+type ScreenshotArtifactValidationCheck =
+    { ReadinessDirectory: string
+      ArtifactPath: string
+      ExpectedWidth: int option
+      ExpectedHeight: int option
+      RequireNonBlank: bool }
+
+type ScreenshotArtifactValidationResult =
+    { Accepted: bool
+      DecodedWidth: int option
+      DecodedHeight: int option
+      PixelContentValidation: string
+      FailureClass: string option
+      Diagnostics: string list }
+
+type ScreenshotEvidenceRecord =
+    { Fields: EvidenceReportField list
+      ArtifactPath: string option
       Diagnostics: string list }
 
 module GeneratedProductAssertions =
@@ -910,12 +943,95 @@ module EvidenceReports =
           MissingFields = missing
           Diagnostics = diagnostics }
 
+    let parseScreenshotEvidenceRecord (lines: string list) =
+        let fields =
+            lines
+            |> List.choose (fun line ->
+                let index = line.IndexOf('=', StringComparison.Ordinal)
+                if index <= 0 then
+                    None
+                else
+                    Some(field (line.Substring(0, index)) (line.Substring(index + 1))))
+
+        let value name =
+            fields
+            |> List.tryFind (fun item -> String.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase))
+            |> Option.map _.Value
+
+        let diagnostics =
+            [ for line in lines do
+                  if line.IndexOf('=', StringComparison.Ordinal) <= 0 then
+                      $"malformed-line={line}" ]
+
+        { Fields = fields
+          ArtifactPath = value "artifact-path" |> Option.orElse (value "screenshot-path")
+          Diagnostics = diagnostics }
+
+    let private readPngArtifact path =
+        try
+            if not (IO.File.Exists path) then
+                None, "missing"
+            else
+                use bitmap = SKBitmap.Decode(path)
+
+                if Object.ReferenceEquals(bitmap, null) then
+                    None, "unreadable"
+                else
+                    let mutable nonBlank = false
+                    let mutable y = 0
+
+                    while y < bitmap.Height && not nonBlank do
+                        let mutable x = 0
+
+                        while x < bitmap.Width && not nonBlank do
+                            if bitmap.GetPixel(x, y).Alpha > 0uy then
+                                nonBlank <- true
+                            x <- x + 1
+
+                        y <- y + 1
+
+                    Some(bitmap.Width, bitmap.Height), if nonBlank then "non-blank" else "blank"
+        with _ ->
+            None, "unreadable"
+
+    let validateScreenshotArtifact (check: ScreenshotArtifactValidationCheck) =
+        let normalizedReadiness = IO.Path.GetFullPath check.ReadinessDirectory
+        let artifactFullPath = IO.Path.GetFullPath check.ArtifactPath
+        let insideReadiness =
+            artifactFullPath.StartsWith(normalizedReadiness.TrimEnd(IO.Path.DirectorySeparatorChar) + string IO.Path.DirectorySeparatorChar, StringComparison.Ordinal)
+            || String.Equals(artifactFullPath, normalizedReadiness, StringComparison.Ordinal)
+
+        let dimensions, pixelValidation = readPngArtifact artifactFullPath
+        let expectedMatches =
+            match dimensions, check.ExpectedWidth, check.ExpectedHeight with
+            | Some(width, height), Some expectedWidth, Some expectedHeight -> width = expectedWidth && height = expectedHeight
+            | Some _, _, _ -> true
+            | None, _, _ -> false
+
+        let diagnostics =
+            [ if not insideReadiness then
+                  "artifact path must stay inside readiness directory"
+              if dimensions.IsNone then
+                  "artifact is missing or not a readable PNG"
+              if not expectedMatches then
+                  "artifact dimensions do not match expected dimensions"
+              if check.RequireNonBlank && pixelValidation <> "non-blank" then
+                  "artifact pixel content is blank" ]
+
+        { Accepted = diagnostics.IsEmpty
+          DecodedWidth = dimensions |> Option.map fst
+          DecodedHeight = dimensions |> Option.map snd
+          PixelContentValidation = pixelValidation
+          FailureClass = if diagnostics.IsEmpty then None else Some "invalid-screenshot-artifact"
+          Diagnostics = diagnostics }
+
     let validateScreenshotEvidence (check: ScreenshotEvidenceReportCheck) =
         let normalizedStatus = check.Status.Trim().ToLowerInvariant()
         let normalizedKind = check.EvidenceKind |> Option.map (fun value -> value.Trim().ToLowerInvariant())
         let normalizedSource = check.CaptureSource |> Option.map (fun value -> value.Trim().ToLowerInvariant())
+        let normalizedPixelValidation = check.PixelContentValidation |> Option.map (fun value -> value.Trim().ToLowerInvariant())
         let hostilePath =
-            check.ScreenshotPath
+            (check.ArtifactPath |> Option.orElse check.ScreenshotPath)
             |> Option.exists (fun path ->
                 let normalized = path.Replace('\\', '/')
                 IO.Path.IsPathRooted path
@@ -934,8 +1050,32 @@ module EvidenceReports =
             | _ -> false
 
         let missing =
-            [ if normalizedKind.IsNone then
+            [ if check.Command.IsNone then
+                  "command"
+              if check.AppOrSample.IsNone then
+                  "app-or-sample"
+              if check.HostFacts.IsEmpty then
+                  "host-facts"
+              if check.CaptureMode.IsNone then
+                  "capture-mode"
+              if normalizedKind.IsNone then
                   "evidence-kind"
+              if check.ArtifactPath.IsNone then
+                  "artifact-path"
+              if check.PixelContentValidation.IsNone then
+                  "pixel-content-validation"
+              if check.ProvesScreenshot.IsNone then
+                  "proves-screenshot"
+              if check.BlockedStage.IsNone then
+                  "blocked-stage"
+              if check.Classification.IsNone then
+                  "classification"
+              if check.Category.IsNone then
+                  "category"
+              if check.Message.IsNone then
+                  "message"
+              if check.Timestamp.IsNone then
+                  "timestamp"
               if check.ViewerOpenStatus.IsNone then
                   "viewer-open-status"
               if check.FirstFrameStatus.IsNone then
@@ -945,8 +1085,8 @@ module EvidenceReports =
               if normalizedSource.IsNone then
                   "capture-source"
               if normalizedStatus = "ok" then
-                  if check.ScreenshotPath.IsNone then
-                      "screenshot-path"
+                  if check.ArtifactPath.IsNone && check.ScreenshotPath.IsNone then
+                      "artifact-path"
                   if check.Width.IsNone then
                       "width"
                   if check.Height.IsNone then
@@ -966,6 +1106,10 @@ module EvidenceReports =
                       "successful screenshot evidence requires positive dimensions"
                   if normalizedSource <> Some "live-viewer-window" then
                       "successful screenshot evidence requires capture-source=live-viewer-window"
+                  if check.ProvesScreenshot <> Some true then
+                      "successful screenshot evidence requires proves-screenshot=true"
+                  if normalizedPixelValidation <> Some "non-blank" && normalizedPixelValidation <> Some "pixel-content-non-blank" then
+                      "successful screenshot evidence requires non-blank pixel validation"
                   if check.Fallback.IsSome then
                       "successful screenshot evidence must not require deterministic fallback"
                   if hostilePath then
@@ -973,10 +1117,12 @@ module EvidenceReports =
                   if hiddenWarning then
                       "successful screenshot evidence must not hide warning diagnostics"
               | "unsupported" ->
-                  if check.ScreenshotPath.IsSome then
+                  if check.ScreenshotPath.IsSome || (check.ArtifactPath |> Option.exists (fun value -> value <> "none")) then
                       "unsupported screenshot evidence must not claim screenshot-path"
                   if normalizedSource = Some "live-viewer-window" then
                       "unsupported screenshot evidence must not claim live viewer capture"
+                  if check.ProvesScreenshot = Some true then
+                      "unsupported screenshot evidence must not claim screenshot proof"
               | "failed" -> ()
               | other -> $"unsupported screenshot status: {other}"
               yield! check.Diagnostics ]

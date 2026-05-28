@@ -1,0 +1,17 @@
+status=ScreenshotOk
+command=dotnet fsi specs/026-working-screenshot-taking/readiness/fsi/screenshot-smoke.fsx
+app-or-sample=working-screenshot-taking-smoke
+host-facts=os=Unix,machine=496df07cd6e9
+capture-mode=ViewerRenderTargetPng
+evidence-kind=screenshot
+artifact-path=specs/026-working-screenshot-taking/readiness/artifacts/working-screenshot-record.png
+image-width=320
+image-height=200
+pixel-content-validation=PixelContentNonBlank
+capture-source=LiveViewerWindow
+proves-screenshot=True
+blocked-stage=none
+classification=none
+category=none
+message=Screenshot artifact captured from viewer render target.
+timestamp=2026-05-28T11:59:39.7321456+00:00

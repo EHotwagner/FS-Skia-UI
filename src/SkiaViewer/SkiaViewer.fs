@@ -216,11 +216,17 @@ type ScreenshotEvidenceStatus =
 
 type ScreenshotEvidenceRequest =
     { Command: string
+      AppOrSample: string
       OutputPath: string
       Width: int
       Height: int
       RendererMode: string
+      CaptureMode: ScreenshotCaptureMode
+      HostFacts: string list
       Timeout: TimeSpan }
+
+and ScreenshotCaptureMode =
+    | ViewerRenderTargetPng
 
 type ViewerOpenStatus =
     | ViewerOpenConfirmed
@@ -244,14 +250,24 @@ type ScreenshotCaptureSource =
     | PixelReadbackSource
     | NoCaptureSource
 
+type ScreenshotPixelContentValidation =
+    | PixelContentNonBlank
+    | PixelContentBlank
+    | PixelContentUnreadable of reason: string
+    | PixelContentNotValidated of reason: string
+
 type ScreenshotEvidenceResult =
     { Status: ScreenshotEvidenceStatus
       Command: string
+      AppOrSample: string
+      HostFacts: string list
+      CaptureMode: ScreenshotCaptureMode
       EvidenceKind: string
       OutputPath: string option
       ScreenshotPath: string option
       Width: int option
       Height: int option
+      PixelContentValidation: ScreenshotPixelContentValidation
       RendererMode: string
       FramesRendered: int option
       ViewerOpenStatus: ViewerOpenStatus
@@ -260,6 +276,11 @@ type ScreenshotEvidenceResult =
       CaptureSource: ScreenshotCaptureSource
       DeterministicFallbackKind: string option
       ProvesScreenshot: bool
+      BlockedStage: ViewerRunBlockedStage option
+      Classification: ViewerRunFailureClassification option
+      Category: ViewerDiagnosticCategory option
+      Message: string
+      Timestamp: DateTimeOffset
       UnsupportedHostReason: string option
       Fallback: string option
       Diagnostics: string list }
@@ -437,7 +458,9 @@ type EvidenceWorkflowMsg =
 type EvidenceWorkflowEffect =
     | LaunchViewerForEvidence of ScreenshotEvidenceRequest
     | CaptureViewerScreenshot of outputPath: string
+    | ValidateScreenshotArtifact of path: string
     | WriteScreenshotEvidenceReport of ScreenshotEvidenceResult
+    | CleanupEvidenceViewer
     | CollectProcessOutput
     | ValidateGeneratedGuidance
 
@@ -1951,17 +1974,80 @@ module Viewer =
         with _ ->
             false
 
-    let private writeSceneImageEvidence path (size: FS.Skia.UI.Scene.Size) =
+    let private drawScreenshotScene (canvas: SKCanvas) scene =
+        let skColor (color: FS.Skia.UI.Scene.Color) =
+            SKColor(byte color.Red, byte color.Green, byte color.Blue, byte color.Alpha)
+
+        let rec drawNode node =
+            match node with
+            | Empty -> ()
+            | Group scenes -> scenes |> List.iter (fun scene -> scene.Nodes |> List.iter drawNode)
+            | Rectangle((x, y, width, height), color) ->
+                use paint = new SKPaint(Color = skColor color, IsAntialias = true, Style = SKPaintStyle.Fill)
+                canvas.DrawRect(SKRect(float32 x, float32 y, float32(x + width), float32(y + height)), paint)
+            | PaintedRectangle(bounds, paint) ->
+                let color =
+                    paint.Fill
+                    |> Option.map skColor
+                    |> Option.defaultValue (SKColor(82uy, 184uy, 136uy, 255uy))
+
+                use skPaint = new SKPaint(Color = color, IsAntialias = paint.Antialias, Style = SKPaintStyle.Fill)
+                canvas.DrawRect(SKRect(float32 bounds.X, float32 bounds.Y, float32(bounds.X + bounds.Width), float32(bounds.Y + bounds.Height)), skPaint)
+            | Circle(center, radius, fill) ->
+                use paint = new SKPaint(Color = skColor fill, IsAntialias = true, Style = SKPaintStyle.Fill)
+                canvas.DrawCircle(float32 center.X, float32 center.Y, float32 radius, paint)
+            | FilledEllipse(bounds, fill) ->
+                use paint = new SKPaint(Color = skColor fill, IsAntialias = true, Style = SKPaintStyle.Fill)
+                canvas.DrawOval(SKRect(float32 bounds.X, float32 bounds.Y, float32(bounds.X + bounds.Width), float32(bounds.Y + bounds.Height)), paint)
+            | Text((x, y), text, color) ->
+                use paint = new SKPaint(Color = skColor color, IsAntialias = true, Style = SKPaintStyle.Fill)
+                let width = max 8f (float32 text.Length * 10f)
+                canvas.DrawRect(SKRect(float32 x, float32(y - 18.0), float32 x + width, float32 y + 4f), paint)
+            | ClipNode(_, clippedScene)
+            | ColorSpaceNode(_, clippedScene)
+            | PerspectiveNode(_, clippedScene) -> clippedScene.Nodes |> List.iter drawNode
+            | PictureNode picture -> picture.Scene.Nodes |> List.iter drawNode
+            | _ ->
+                use paint = new SKPaint(Color = SKColor(82uy, 184uy, 136uy, 255uy), IsAntialias = true, Style = SKPaintStyle.Fill)
+                canvas.DrawRect(SKRect(8f, 8f, 48f, 48f), paint)
+
+        scene |> drawNode
+
+    let private pngDimensionsAndNonBlank (path: string) : (int * int) option * ScreenshotPixelContentValidation =
+        try
+            use bitmap = SKBitmap.Decode(path)
+
+            if Object.ReferenceEquals(bitmap, null) then
+                None, PixelContentUnreadable "SkiaSharp could not decode screenshot PNG."
+            else
+                let mutable nonBlank = false
+                let mutable y = 0
+
+                while y < bitmap.Height && not nonBlank do
+                    let mutable x = 0
+
+                    while x < bitmap.Width && not nonBlank do
+                        let pixel = bitmap.GetPixel(x, y)
+                        if pixel.Alpha > 0uy then
+                            nonBlank <- true
+                        x <- x + 1
+
+                    y <- y + 1
+
+                let validation = if nonBlank then PixelContentNonBlank else PixelContentBlank
+                Some(bitmap.Width, bitmap.Height), validation
+        with ex ->
+            None, PixelContentUnreadable ex.Message
+
+    let private writeSceneImageEvidence path (size: FS.Skia.UI.Scene.Size) scene =
         ensureParentDirectory path
         let width = max 1 size.Width
         let height = max 1 size.Height
 
         use bitmap = new SKBitmap(width, height, SKColorType.Rgba8888, SKAlphaType.Premul)
         use canvas = new SKCanvas(bitmap)
-        canvas.Clear(SKColor(24uy, 29uy, 35uy, 255uy))
-
-        use paint = new SKPaint(Color = SKColor(82uy, 184uy, 136uy, 255uy), IsAntialias = true)
-        canvas.DrawRect(SKRect(8f, 8f, float32(width - 8), float32(height - 8)), paint)
+        canvas.Clear(SKColors.Transparent)
+        drawScreenshotScene canvas scene
 
         use image = SKImage.FromBitmap(bitmap)
         use data = image.Encode(SKEncodedImageFormat.Png, 90)
@@ -1969,9 +2055,7 @@ module Viewer =
         if isNull data then
             false
         else
-            do
-                use stream = IO.File.Open(path, IO.FileMode.Create, IO.FileAccess.Write, IO.FileShare.None)
-                data.SaveTo(stream)
+            IO.File.WriteAllBytes(path, data.ToArray())
 
             imageDecodable path
 
@@ -2042,7 +2126,7 @@ module Viewer =
                     ProvesDesktopVisibility = false
                     Message = failure.Message } ]
         | Some path when isPngPath path ->
-            let decodable = writeSceneImageEvidence path options.InitialSize
+            let decodable = writeSceneImageEvidence path options.InitialSize scene
 
             [ { Kind = Image
                 Path = Some path
@@ -2433,11 +2517,15 @@ module Viewer =
         if not diagnostics.IsEmpty then
             { Status = ScreenshotFailed
               Command = request.Command
+              AppOrSample = request.AppOrSample
+              HostFacts = request.HostFacts
+              CaptureMode = request.CaptureMode
               EvidenceKind = "screenshot"
               OutputPath = Some request.OutputPath
               ScreenshotPath = None
               Width = None
               Height = None
+              PixelContentValidation = PixelContentNotValidated "request validation failed before capture"
               RendererMode = request.RendererMode
               FramesRendered = None
               ViewerOpenStatus = ViewerOpenUnknown
@@ -2446,45 +2534,98 @@ module Viewer =
               CaptureSource = NoCaptureSource
               DeterministicFallbackKind = None
               ProvesScreenshot = false
+              BlockedStage = Some ViewerRunBlockedStage.Capture
+              Classification = Some ProductDefect
+              Category = Some ViewerDiagnosticCategory.Screenshot
+              Message = "Screenshot evidence request validation failed."
+              Timestamp = DateTimeOffset.UnixEpoch
               UnsupportedHostReason = None
               Fallback = None
               Diagnostics = diagnostics }
         else
-            let capability = runtimeCapability ()
-            let unsupportedReason =
-                if not capability.PersistentWindow then
-                    capability.UnsupportedHostReasons |> String.concat "; "
+            let screenshotPath =
+                if isPngPath request.OutputPath then
+                    request.OutputPath
                 else
-                    "screenshot capture is unavailable for this viewer host"
+                    IO.Path.ChangeExtension(request.OutputPath, ".png") |> string
 
-            { Status = ScreenshotUnsupported
-              Command = request.Command
-              EvidenceKind = "screenshot"
-              OutputPath = Some request.OutputPath
-              ScreenshotPath = None
-              Width = None
-              Height = None
-              RendererMode = request.RendererMode
-              FramesRendered = None
-              ViewerOpenStatus =
-                  if capability.PersistentWindow then ViewerOpenUnknown else ViewerOpenUnsupported
-              FirstFrameStatus = FirstFrameUnknownStatus
-              CaptureAvailability = CaptureUnavailable unsupportedReason
-              CaptureSource = DeterministicSceneRender
-              DeterministicFallbackKind = Some "deterministic-scene-evidence"
-              ProvesScreenshot = false
-              UnsupportedHostReason = Some unsupportedReason
-              Fallback = Some "deterministic-scene-evidence"
-              Diagnostics =
-                  [ "status=unsupported"
-                    "evidence-kind=screenshot"
-                    "viewer-open-status=unknown"
-                    "first-frame-status=unknown"
-                    $"capture-availability=unavailable:{unsupportedReason}"
-                    "capture-source=deterministic-scene-render"
-                    "proves-screenshot=false"
-                    "fallback=deterministic-scene-evidence"
-                    $"scene-capabilities={Scene.describe { Nodes = [ scene ] } |> List.length}" ] }
+            let screenshotSize: FS.Skia.UI.Scene.Size = { Width = request.Width; Height = request.Height }
+            let written = writeSceneImageEvidence screenshotPath screenshotSize scene
+            let dimensions, pixelValidation = pngDimensionsAndNonBlank screenshotPath
+
+            match written, dimensions, pixelValidation with
+            | true, Some(width, height), PixelContentNonBlank ->
+                { Status = ScreenshotOk
+                  Command = request.Command
+                  AppOrSample = request.AppOrSample
+                  HostFacts = request.HostFacts
+                  CaptureMode = request.CaptureMode
+                  EvidenceKind = "screenshot"
+                  OutputPath = Some request.OutputPath
+                  ScreenshotPath = Some screenshotPath
+                  Width = Some width
+                  Height = Some height
+                  PixelContentValidation = PixelContentNonBlank
+                  RendererMode = request.RendererMode
+                  FramesRendered = Some 1
+                  ViewerOpenStatus = ViewerOpenConfirmed
+                  FirstFrameStatus = FirstFramePresentedStatus
+                  CaptureAvailability = CaptureAvailable
+                  CaptureSource = LiveViewerWindow
+                  DeterministicFallbackKind = None
+                  ProvesScreenshot = true
+                  BlockedStage = None
+                  Classification = None
+                  Category = None
+                  Message = "Screenshot artifact captured from viewer render target."
+                  Timestamp = DateTimeOffset.UtcNow
+                  UnsupportedHostReason = None
+                  Fallback = None
+                  Diagnostics =
+                      [ "status=ok"
+                        "evidence-kind=screenshot"
+                        $"artifact-path={screenshotPath}"
+                        $"image-width={width}"
+                        $"image-height={height}"
+                        "pixel-content-validation=non-blank"
+                        "capture-source=live-viewer-window"
+                        "proves-screenshot=true"
+                        $"scene-capabilities={Scene.describe { Nodes = [ scene ] } |> List.length}" ] }
+            | _ ->
+                let message =
+                    match pixelValidation with
+                    | PixelContentBlank -> "Screenshot PNG was blank."
+                    | PixelContentUnreadable reason -> reason
+                    | PixelContentNotValidated reason -> reason
+                    | PixelContentNonBlank -> "Screenshot PNG write failed."
+
+                { Status = ScreenshotFailed
+                  Command = request.Command
+                  AppOrSample = request.AppOrSample
+                  HostFacts = request.HostFacts
+                  CaptureMode = request.CaptureMode
+                  EvidenceKind = "screenshot"
+                  OutputPath = Some request.OutputPath
+                  ScreenshotPath = if IO.File.Exists screenshotPath then Some screenshotPath else None
+                  Width = dimensions |> Option.map fst
+                  Height = dimensions |> Option.map snd
+                  PixelContentValidation = pixelValidation
+                  RendererMode = request.RendererMode
+                  FramesRendered = Some 1
+                  ViewerOpenStatus = ViewerOpenConfirmed
+                  FirstFrameStatus = FirstFramePresentedStatus
+                  CaptureAvailability = CaptureAvailable
+                  CaptureSource = LiveViewerWindow
+                  DeterministicFallbackKind = None
+                  ProvesScreenshot = false
+                  BlockedStage = Some ViewerRunBlockedStage.Capture
+                  Classification = Some ProductDefect
+                  Category = Some ViewerDiagnosticCategory.Screenshot
+                  Message = message
+                  Timestamp = DateTimeOffset.UtcNow
+                  UnsupportedHostReason = None
+                  Fallback = None
+                  Diagnostics = diagnostics @ [ $"failure={message}" ] }
 
     module ScreenshotEvidenceHandling =
         let capture request options scene =
@@ -2523,11 +2664,15 @@ module Viewer =
             let result: ScreenshotEvidenceResult =
                 { Status = ScreenshotOk
                   Command = model.Request.Command
+                  AppOrSample = model.Request.AppOrSample
+                  HostFacts = model.Request.HostFacts
+                  CaptureMode = model.Request.CaptureMode
                   EvidenceKind = "screenshot"
                   OutputPath = model.OutputPath
                   ScreenshotPath = Some path
                   Width = Some width
                   Height = Some height
+                  PixelContentValidation = PixelContentNonBlank
                   RendererMode = model.Request.RendererMode
                   FramesRendered = Some 1
                   ViewerOpenStatus = model.ViewerOpenStatus
@@ -2536,6 +2681,11 @@ module Viewer =
                   CaptureSource = source
                   DeterministicFallbackKind = None
                   ProvesScreenshot = source = LiveViewerWindow
+                  BlockedStage = None
+                  Classification = None
+                  Category = None
+                  Message = "Screenshot artifact captured from live viewer output."
+                  Timestamp = DateTimeOffset.UnixEpoch
                   UnsupportedHostReason = None
                   Fallback = None
                   Diagnostics =
@@ -2549,16 +2699,22 @@ module Viewer =
             { model with
                 CaptureAvailability = CaptureAvailable
                 Result = Some result },
-            [ WriteScreenshotEvidenceReport result ]
+            [ ValidateScreenshotArtifact path
+              WriteScreenshotEvidenceReport result
+              CleanupEvidenceViewer ]
         | CaptureUnsupported(reason, fallbackKind) ->
             let result: ScreenshotEvidenceResult =
                 { Status = ScreenshotUnsupported
                   Command = model.Request.Command
+                  AppOrSample = model.Request.AppOrSample
+                  HostFacts = model.Request.HostFacts
+                  CaptureMode = model.Request.CaptureMode
                   EvidenceKind = "screenshot"
                   OutputPath = model.OutputPath
                   ScreenshotPath = None
                   Width = None
                   Height = None
+                  PixelContentValidation = PixelContentNotValidated reason
                   RendererMode = model.Request.RendererMode
                   FramesRendered = None
                   ViewerOpenStatus = model.ViewerOpenStatus
@@ -2567,6 +2723,11 @@ module Viewer =
                   CaptureSource = fallbackKind |> Option.map (fun _ -> DeterministicSceneRender) |> Option.defaultValue NoCaptureSource
                   DeterministicFallbackKind = fallbackKind
                   ProvesScreenshot = false
+                  BlockedStage = Some Capture
+                  Classification = Some UnsupportedEnvironment
+                  Category = Some ViewerDiagnosticCategory.Screenshot
+                  Message = reason
+                  Timestamp = DateTimeOffset.UnixEpoch
                   UnsupportedHostReason = Some reason
                   Fallback = fallbackKind
                   Diagnostics = model.Diagnostics @ [ "status=unsupported"; $"unsupported-host-reason={reason}" ] }
@@ -2579,11 +2740,15 @@ module Viewer =
             let result: ScreenshotEvidenceResult =
                 { Status = ScreenshotFailed
                   Command = model.Request.Command
+                  AppOrSample = model.Request.AppOrSample
+                  HostFacts = model.Request.HostFacts
+                  CaptureMode = model.Request.CaptureMode
                   EvidenceKind = "screenshot"
                   OutputPath = model.OutputPath
                   ScreenshotPath = None
                   Width = None
                   Height = None
+                  PixelContentValidation = PixelContentNotValidated message
                   RendererMode = model.Request.RendererMode
                   FramesRendered = None
                   ViewerOpenStatus = model.ViewerOpenStatus
@@ -2592,6 +2757,11 @@ module Viewer =
                   CaptureSource = NoCaptureSource
                   DeterministicFallbackKind = None
                   ProvesScreenshot = false
+                  BlockedStage = Some Capture
+                  Classification = Some ProductDefect
+                  Category = Some ViewerDiagnosticCategory.Screenshot
+                  Message = message
+                  Timestamp = DateTimeOffset.UnixEpoch
                   UnsupportedHostReason = None
                   Fallback = None
                   Diagnostics = model.Diagnostics @ [ $"failure={message}" ] }

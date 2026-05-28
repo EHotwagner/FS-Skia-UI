@@ -1,0 +1,22 @@
+
+## template drift
+$ dotnet fsi scripts/template-drift.fsx "/home/developer/projects/FS-Skia-UI/specs/026-working-screenshot-taking/readiness/template-drift.md"
+System.Exception: Template drift failed:
+.template.package/FS.Skia.UI.Template.fsproj: path class `template-manifest` is missing same-diff required alignment class `template-profile`.
+   at Microsoft.FSharp.Core.PrintfModule.PrintFormatToStringThenFail@1447.Invoke(String message)
+   at <StartupCode$FSI_0001>.$FSI_0001.main@() in /home/developer/projects/FS-Skia-UI/scripts/template-drift.fsx:line 405
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+Stopped due to error
+
+exit-code=1
+
+## template drift
+$ dotnet fsi scripts/template-drift.fsx "/home/developer/projects/FS-Skia-UI/specs/026-working-screenshot-taking/readiness/template-drift.md"
+
+exit-code=0
+
+## template drift
+$ dotnet fsi scripts/template-drift.fsx "/home/developer/projects/FS-Skia-UI/specs/026-working-screenshot-taking/readiness/template-drift.md"
+
+exit-code=0

@@ -61,9 +61,20 @@ evidence. Unsupported-host diagnostics must remain separate from supported-host
 persistent launch evidence.
 
 Screenshot evidence is a distinct proof kind. A report with
-`evidence-kind=screenshot` is valid screenshot proof only when it records live viewer-window capture after first-frame presentation. Unsupported hosts may
-record `deterministic-scene-evidence` as fallback diagnostics, but
-deterministic-scene-evidence must not claim screenshot proof.
+`evidence-kind=screenshot` is valid screenshot proof only when it records
+live viewer-window capture after first-frame presentation, `proves-screenshot=true`,
+a readiness-local PNG artifact, positive decoded dimensions, and non-blank
+pixel validation. The record must also include command, app/sample identity,
+host facts, capture mode, blocked stage, classification, category, message, and
+timestamp so reviewers can trace the artifact without a local rerun.
+
+Unsupported hosts may record fallback diagnostics such as
+`deterministic-scene-evidence`, but deterministic scene evidence, layout facts,
+launch logs, metadata hashes, pixel-readback diagnostics, manual descriptions,
+synthetic placeholders, blank images, and unreadable files must not claim
+screenshot proof.
+
+Fallback and diagnostic-only evidence must not claim screenshot proof.
 
 Viewer diagnostics evidence should record both startup-focused and
 frame-focused paths. Startup-focused runs keep frame-loop diagnostics disabled

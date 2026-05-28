@@ -1,0 +1,48 @@
+init-viewer-open=ViewerOpenUnknown effects=[LaunchViewerForEvidence
+   { Command =
+      "dotnet run -- --screenshot-evidence readiness/screenshot-evidence.md"
+     AppOrSample = "fsi-contract-sample"
+     OutputPath = "readiness/screenshot-evidence.md"
+     Width = 64
+     Height = 64
+     RendererMode = "skia"
+     CaptureMode = ViewerRenderTargetPng
+     HostFacts = ["host=fsi"; "desktop-session=not-launched"]
+     Timeout = 00:00:02 }]
+launch-viewer-open=ViewerOpenConfirmed effects=[]
+first-frame=FirstFramePresentedStatus effects=[CaptureViewerScreenshot "readiness/screenshot-evidence.md"]
+result-status=ScreenshotOk proves-screenshot=true pixel-validation=PixelContentNonBlank effects=[ValidateScreenshotArtifact "readiness/artifacts/fsi-screenshot.png";
+ WriteScreenshotEvidenceReport
+   { Status = ScreenshotOk
+     Command =
+      "dotnet run -- --screenshot-evidence readiness/screenshot-evidence.md"
+     AppOrSample = "fsi-contract-sample"
+     HostFacts = ["host=fsi"; "desktop-session=not-launched"]
+     CaptureMode = ViewerRenderTargetPng
+     EvidenceKind = "screenshot"
+     OutputPath = Some "readiness/screenshot-evidence.md"
+     ScreenshotPath = Some "readiness/artifacts/fsi-screenshot.png"
+     Width = Some 64
+     Height = Some 64
+     PixelContentValidation = PixelContentNonBlank
+     RendererMode = "skia"
+     FramesRendered = Some 1
+     ViewerOpenStatus = ViewerOpenConfirmed
+     FirstFrameStatus = FirstFramePresentedStatus
+     CaptureAvailability = CaptureAvailable
+     CaptureSource = LiveViewerWindow
+     DeterministicFallbackKind = None
+     ProvesScreenshot = true
+     BlockedStage = None
+     Classification = None
+     Category = None
+     Message = "Screenshot artifact captured from live viewer output."
+     Timestamp = 01/01/1970 00:00:00 +00:00
+     UnsupportedHostReason = None
+     Fallback = None
+     Diagnostics =
+      ["status=ok"; "evidence-kind=screenshot";
+       "screenshot-path=readiness/artifacts/fsi-screenshot.png";
+       "dimensions=64x64"; "capture-source=LiveViewerWindow"] };
+ CleanupEvidenceViewer]
+testing-validation-accepted=true missing=[]

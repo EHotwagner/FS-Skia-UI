@@ -1,0 +1,134 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Every Tnnn id that appears in tasks.md MUST appear as a key here. Each task
+# value MUST include:
+#   deps: ordered list of explicit non-phase dependencies
+#   skillist: ordered list of applicable capability skill identifiers
+# Use skillist: [] when no capability skill applies.
+#
+# Phase-checkpoint edges are auto-injected by the evidence script. Only
+# non-phase cross-edges are listed here.
+
+tasks:
+  T001:
+    deps: []
+    skillist: ["speckit-evidence-graph"]
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: ["fs-skia-skiaviewer"]
+  T005:
+    deps: []
+    skillist: ["fs-skia-testing"]
+  T006:
+    deps: [T004, T005]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing"]
+  T007:
+    deps: [T004, T005]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing"]
+  T008:
+    deps: []
+    skillist: []
+  T009:
+    deps: []
+    skillist: []
+  T010:
+    deps: [T004]
+    skillist: ["fs-skia-skiaviewer"]
+  T011:
+    deps: [T004]
+    skillist: ["fs-skia-skiaviewer"]
+  T012:
+    deps: [T004]
+    skillist: ["fs-skia-skiaviewer"]
+  T013:
+    deps: [T010]
+    skillist: ["fs-skia-skiaviewer"]
+  T014:
+    deps: [T010, T011, T013]
+    skillist: ["fs-skia-skiaviewer"]
+  T015:
+    deps: [T010, T011, T013, T014]
+    skillist: ["fs-skia-skiaviewer"]
+  T016:
+    deps: [T012, T014, T015]
+    skillist: ["fs-skia-skiaviewer"]
+  T017:
+    deps: [T005]
+    skillist: ["fs-skia-testing"]
+  T018:
+    deps: [T005]
+    skillist: ["fs-skia-testing"]
+  T019:
+    deps: [T017, T018]
+    skillist: ["fs-skia-testing"]
+  T020:
+    deps: [T017, T019]
+    skillist: ["fs-skia-testing"]
+  T021:
+    deps: [T017, T019]
+    skillist: ["fs-skia-testing"]
+  T022:
+    deps: [T004, T005]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing"]
+  T023:
+    deps: [T004]
+    skillist: ["fs-skia-skiaviewer"]
+  T024:
+    deps: [T022, T023]
+    skillist: ["fs-skia-skiaviewer"]
+  T025:
+    deps: [T019, T022, T024]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing"]
+  T026:
+    deps: [T009]
+    skillist: []
+  T027:
+    deps: [T005]
+    skillist: ["fs-skia-testing"]
+  T028:
+    deps: [T004, T005]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing", "fs-skia-template-update"]
+  T029:
+    deps: [T013, T015, T028]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing", "fs-skia-template-update"]
+  T030:
+    deps: [T028]
+    skillist: ["fs-skia-template-update"]
+  T031:
+    deps: [T019, T027]
+    skillist: ["fs-skia-testing", "speckit-evidence-graph", "speckit-evidence-audit"]
+  T032:
+    deps: [T029, T030]
+    skillist: ["fs-skia-template-update"]
+  T033:
+    deps: [T006, T007, T013, T019]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing"]
+  T034:
+    deps: [T013, T014, T015, T024]
+    skillist: ["fs-skia-skiaviewer"]
+  T035:
+    deps: [T019, T020, T021, T025, T027]
+    skillist: ["fs-skia-testing"]
+  T036:
+    deps: [T029, T030, T031, T032, T033]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-testing", "fs-skia-template-update"]
+  T037:
+    deps: [T001, T033, T034, T035, T036]
+    skillist: ["speckit-evidence-graph"]
+  T038:
+    deps: [T016, T034]
+    skillist: ["fs-skia-skiaviewer"]
+  T039:
+    deps: [T016, T025, T032, T037, T038]
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T040:
+    deps: [T034, T035, T036, T039]
+    skillist: []

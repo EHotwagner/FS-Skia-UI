@@ -60,35 +60,43 @@ let tests =
         }
 
         test "screenshot evidence reports explicit unsupported capture without claiming proof" {
+            let outputPath = IO.Path.Combine(IO.Path.GetTempPath(), $"skia-viewer-screenshot-{Guid.NewGuid():N}.md")
             let result =
                 Viewer.captureScreenshotEvidence
                     { Command = "dotnet run -- --screenshot-evidence readiness/screenshot-evidence.md"
-                      OutputPath = "readiness/screenshot-evidence.md"
+                      AppOrSample = "skia-viewer-test"
+                      OutputPath = outputPath
                       Width = 320
                       Height = 200
                       RendererMode = "skia"
+                      CaptureMode = ViewerRenderTargetPng
+                      HostFacts = [ "host=test" ]
                       Timeout = TimeSpan.FromSeconds 2.0 }
                     { Title = "Product"; InitialSize = { Width = 320; Height = 200 } }
                     (Rectangle((0.0, 0.0, 16.0, 16.0), Colors.white))
 
-            Expect.equal result.Status ScreenshotUnsupported "unavailable capture is an unsupported-host fact"
+            Expect.equal result.Status ScreenshotOk "viewer render-target capture is accepted as screenshot proof"
             Expect.equal result.EvidenceKind "screenshot" "result names screenshot evidence kind"
-            Expect.isNone result.ScreenshotPath "unsupported result does not claim a screenshot artifact"
-            Expect.equal result.ViewerOpenStatus ViewerOpenUnknown "viewer open status is explicit when capture is checked without launching"
-            Expect.equal result.FirstFrameStatus FirstFrameUnknownStatus "first-frame status remains explicit when not observed"
-            Expect.equal result.CaptureSource DeterministicSceneRender "unsupported capture names deterministic fallback source"
-            Expect.isFalse result.ProvesScreenshot "deterministic fallback is not screenshot proof"
-            Expect.equal result.Fallback (Some "deterministic-scene-evidence") "unsupported screenshot points to deterministic fallback"
-            Expect.isSome result.UnsupportedHostReason "unsupported result names the missing capability"
+            Expect.isSome result.ScreenshotPath "accepted result claims a screenshot artifact"
+            Expect.equal result.ViewerOpenStatus ViewerOpenConfirmed "viewer open status is explicit"
+            Expect.equal result.FirstFrameStatus FirstFramePresentedStatus "first-frame status is explicit"
+            Expect.equal result.CaptureSource LiveViewerWindow "capture source is live viewer render target"
+            Expect.isTrue result.ProvesScreenshot "live viewer render target proves screenshot"
+            Expect.equal result.PixelContentValidation PixelContentNonBlank "accepted screenshot is non-blank"
+            Expect.isNone result.Fallback "accepted screenshot does not use deterministic fallback"
+            Expect.isNone result.UnsupportedHostReason "accepted screenshot has no unsupported-host reason"
         }
 
         test "evidence workflow init and update emit pure screenshot effects and success fields" {
             let request =
                 { Command = "dotnet run -- --screenshot-evidence readiness/screenshot-evidence.md"
+                  AppOrSample = "skia-viewer-test"
                   OutputPath = "readiness/screenshot-evidence.md"
                   Width = 320
                   Height = 200
                   RendererMode = "skia"
+                  CaptureMode = ViewerRenderTargetPng
+                  HostFacts = [ "host=test" ]
                   Timeout = TimeSpan.FromSeconds 2.0 }
 
             let model, effects = Viewer.initEvidenceWorkflow request
@@ -115,6 +123,10 @@ let tests =
                 Expect.equal result.ScreenshotPath (Some "readiness/artifacts/screenshot.png") "successful result has PNG artifact path"
                 Expect.equal result.Width (Some 320) "successful result has positive width"
                 Expect.equal result.Height (Some 200) "successful result has positive height"
+                Expect.equal result.AppOrSample "skia-viewer-test" "successful result preserves app/sample identity"
+                Expect.equal result.CaptureMode ViewerRenderTargetPng "successful result preserves capture mode"
+                Expect.equal result.HostFacts [ "host=test" ] "successful result preserves host facts"
+                Expect.equal result.PixelContentValidation PixelContentNonBlank "successful result records non-blank pixel validation"
                 Expect.equal result.ViewerOpenStatus ViewerOpenConfirmed "successful result preserves viewer-open fact"
                 Expect.equal result.FirstFrameStatus FirstFramePresentedStatus "successful result preserves first-frame fact"
                 Expect.equal result.CaptureAvailability CaptureAvailable "successful result records capture availability"
@@ -127,10 +139,13 @@ let tests =
         test "evidence workflow unsupported result separates viewer and capture capability facts" {
             let request =
                 { Command = "--screenshot-evidence"
+                  AppOrSample = "skia-viewer-test"
                   OutputPath = "readiness/screenshot-evidence.md"
                   Width = 320
                   Height = 200
                   RendererMode = "skia"
+                  CaptureMode = ViewerRenderTargetPng
+                  HostFacts = [ "host=test" ]
                   Timeout = TimeSpan.FromSeconds 2.0 }
 
             let model, _ = Viewer.initEvidenceWorkflow request
@@ -157,6 +172,7 @@ let tests =
         test "viewer boundary guardrails preserve screenshot visual capability and window diagnostics" {
             let scene = Rectangle((0.0, 0.0, 24.0, 24.0), Colors.white)
             let options = { Title = "Product"; InitialSize = { Width = 320; Height = 200 } }
+            let outputPath = IO.Path.Combine(IO.Path.GetTempPath(), $"skia-viewer-screenshot-{Guid.NewGuid():N}.md")
 
             let capability = Viewer.runtimeCapability()
             Expect.isTrue capability.BoundedSmoke "bounded smoke capability stays available for evidence runs"
@@ -166,18 +182,21 @@ let tests =
             let screenshot =
                 Viewer.captureScreenshotEvidence
                     { Command = "dotnet run -- --screenshot-evidence readiness/screenshot-evidence.md"
-                      OutputPath = "readiness/screenshot-evidence.md"
+                      AppOrSample = "skia-viewer-test"
+                      OutputPath = outputPath
                       Width = 320
                       Height = 200
                       RendererMode = "skia"
+                      CaptureMode = ViewerRenderTargetPng
+                      HostFacts = [ "host=test" ]
                       Timeout = TimeSpan.FromSeconds 2.0 }
                     options
                     scene
 
-            Expect.equal screenshot.Status ScreenshotUnsupported "screenshot capture remains an explicit unsupported-host result"
-            Expect.equal screenshot.Fallback (Some "deterministic-scene-evidence") "unsupported screenshots keep deterministic fallback"
-            Expect.isNone screenshot.ScreenshotPath "unsupported screenshots do not claim an image path"
-            Expect.contains screenshot.Diagnostics "status=unsupported" "unsupported screenshot diagnostics keep stable status field"
+            Expect.equal screenshot.Status ScreenshotOk "screenshot capture writes a real PNG artifact"
+            Expect.isNone screenshot.Fallback "accepted screenshots do not use deterministic fallback"
+            Expect.isSome screenshot.ScreenshotPath "accepted screenshots claim an image path"
+            Expect.contains screenshot.Diagnostics "status=ok" "accepted screenshot diagnostics keep stable status field"
             Expect.exists screenshot.Diagnostics (fun item -> item.StartsWith("scene-capabilities=", StringComparison.Ordinal)) "unsupported screenshot diagnostics include scene capability facts"
 
             let windowResults =

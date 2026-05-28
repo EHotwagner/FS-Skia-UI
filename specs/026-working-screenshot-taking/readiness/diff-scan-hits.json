@@ -1,0 +1,30 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "tests/Testing.Tests/Tests.fs",
+      "line": 169,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: malformed screenshot report fixture approved by T018 SEH; real path is live screenshot evidence validation"
+    },
+    {
+      "file": "tests/Testing.Tests/Tests.fs",
+      "line": 203,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: hidden-warning fixture approved by T018 SEH; real path is captured launch output classification."
+    },
+    {
+      "file": "tests/Testing.Tests/Tests.fs",
+      "line": 236,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: hostile artifact path fixture approved by T018 SEH; real path is generated report path validation."
+    }
+  ]
+}

@@ -104,14 +104,26 @@ let tests =
             let result =
                 EvidenceReports.validateScreenshotEvidence
                     { Status = "ok"
+                      Command = Some "--screenshot-evidence"
+                      AppOrSample = Some "testing-sample"
+                      HostFacts = [ "host=test" ]
+                      CaptureMode = Some "viewer-render-target-png"
                       EvidenceKind = Some "screenshot"
+                      ArtifactPath = Some "readiness/artifacts/screenshot.png"
                       ScreenshotPath = Some "readiness/artifacts/screenshot.png"
                       Width = Some 320
                       Height = Some 200
+                      PixelContentValidation = Some "non-blank"
+                      CaptureSource = Some "live-viewer-window"
+                      ProvesScreenshot = Some true
+                      BlockedStage = Some "none"
+                      Classification = Some "none"
+                      Category = Some "none"
+                      Message = Some "ok"
+                      Timestamp = Some DateTimeOffset.UnixEpoch
                       ViewerOpenStatus = Some "confirmed"
                       FirstFrameStatus = Some "presented"
                       CaptureAvailability = Some "available"
-                      CaptureSource = Some "live-viewer-window"
                       UnsupportedHostReason = None
                       Fallback = None
                       Diagnostics = [] }
@@ -124,14 +136,26 @@ let tests =
             let result =
                 EvidenceReports.validateScreenshotEvidence
                     { Status = "unsupported"
+                      Command = Some "--screenshot-evidence"
+                      AppOrSample = Some "testing-sample"
+                      HostFacts = [ "host=test" ]
+                      CaptureMode = Some "viewer-render-target-png"
                       EvidenceKind = Some "screenshot"
+                      ArtifactPath = Some "none"
                       ScreenshotPath = Some "readiness/artifacts/screenshot.png"
                       Width = None
                       Height = None
+                      PixelContentValidation = Some "not-validated"
+                      CaptureSource = Some "live-viewer-window"
+                      ProvesScreenshot = Some false
+                      BlockedStage = Some "capture"
+                      Classification = Some "unsupported"
+                      Category = Some "screenshot"
+                      Message = Some "unsupported"
+                      Timestamp = Some DateTimeOffset.UnixEpoch
                       ViewerOpenStatus = Some "confirmed"
                       FirstFrameStatus = Some "presented"
                       CaptureAvailability = None
-                      CaptureSource = Some "live-viewer-window"
                       UnsupportedHostReason = None
                       Fallback = None
                       Diagnostics = [] }
@@ -142,40 +166,64 @@ let tests =
         }
 
         test "ScreenshotEvidenceReport_Synthetic rejects invalid success proof fields" {
-            // SYNTHETIC: malformed screenshot report fixture approved by T008 SEH; real path is live screenshot evidence validation.
+            // SYNTHETIC: malformed screenshot report fixture approved by T018 SEH; real path is live screenshot evidence validation.
             let result =
                 EvidenceReports.validateScreenshotEvidence
                     { Status = "ok"
+                      Command = Some "--screenshot-evidence"
+                      AppOrSample = Some "testing-sample"
+                      HostFacts = [ "host=test" ]
+                      CaptureMode = Some "viewer-render-target-png"
                       EvidenceKind = Some "screenshot"
+                      ArtifactPath = None
                       ScreenshotPath = None
                       Width = Some 0
                       Height = Some 200
+                      PixelContentValidation = Some "blank"
+                      CaptureSource = Some "deterministic-scene-render"
+                      ProvesScreenshot = Some false
+                      BlockedStage = Some "none"
+                      Classification = Some "none"
+                      Category = Some "none"
+                      Message = Some "invalid"
+                      Timestamp = Some DateTimeOffset.UnixEpoch
                       ViewerOpenStatus = Some "confirmed"
                       FirstFrameStatus = Some "presented"
                       CaptureAvailability = Some "available"
-                      CaptureSource = Some "deterministic-scene-render"
                       UnsupportedHostReason = None
                       Fallback = Some "deterministic-scene-evidence"
                       Diagnostics = [] }
 
             Expect.isFalse result.Accepted "invalid success proof fields are rejected"
-            Expect.contains result.MissingFields "screenshot-path" "success proof must name artifact path"
+            Expect.contains result.MissingFields "artifact-path" "success proof must name artifact path"
             Expect.equal result.FailureClass (Some "missing-screenshot-evidence-fields") "missing success field has stable failure class"
         }
 
         test "ScreenshotEvidenceReport_Synthetic rejects hidden warnings in successful proof" {
-            // SYNTHETIC: hidden-warning fixture approved by T008 SEH; real path is captured launch output classification.
+            // SYNTHETIC: hidden-warning fixture approved by T018 SEH; real path is captured launch output classification.
             let result =
                 EvidenceReports.validateScreenshotEvidence
                     { Status = "ok"
+                      Command = Some "--screenshot-evidence"
+                      AppOrSample = Some "testing-sample"
+                      HostFacts = [ "host=test" ]
+                      CaptureMode = Some "viewer-render-target-png"
                       EvidenceKind = Some "screenshot"
+                      ArtifactPath = Some "readiness/artifacts/screenshot.png"
                       ScreenshotPath = Some "readiness/artifacts/screenshot.png"
                       Width = Some 320
                       Height = Some 200
+                      PixelContentValidation = Some "non-blank"
+                      CaptureSource = Some "live-viewer-window"
+                      ProvesScreenshot = Some true
+                      BlockedStage = Some "none"
+                      Classification = Some "none"
+                      Category = Some "none"
+                      Message = Some "ok"
+                      Timestamp = Some DateTimeOffset.UnixEpoch
                       ViewerOpenStatus = Some "confirmed"
                       FirstFrameStatus = Some "presented"
                       CaptureAvailability = Some "available"
-                      CaptureSource = Some "live-viewer-window"
                       UnsupportedHostReason = None
                       Fallback = None
                       Diagnostics = [ "Gtk-Message: Failed to load module \"colorreload-gtk-module\"" ] }
@@ -185,18 +233,30 @@ let tests =
         }
 
         test "ScreenshotEvidenceReport_Synthetic rejects hostile artifact paths" {
-            // SYNTHETIC: hostile artifact path fixture approved by T008 SEH; real path is generated report path validation.
+            // SYNTHETIC: hostile artifact path fixture approved by T018 SEH; real path is generated report path validation.
             let result =
                 EvidenceReports.validateScreenshotEvidence
                     { Status = "ok"
+                      Command = Some "--screenshot-evidence"
+                      AppOrSample = Some "testing-sample"
+                      HostFacts = [ "host=test" ]
+                      CaptureMode = Some "viewer-render-target-png"
                       EvidenceKind = Some "screenshot"
+                      ArtifactPath = Some "../outside-readiness.png"
                       ScreenshotPath = Some "../outside-readiness.png"
                       Width = Some 320
                       Height = Some 200
+                      PixelContentValidation = Some "non-blank"
+                      CaptureSource = Some "live-viewer-window"
+                      ProvesScreenshot = Some true
+                      BlockedStage = Some "none"
+                      Classification = Some "none"
+                      Category = Some "none"
+                      Message = Some "ok"
+                      Timestamp = Some DateTimeOffset.UnixEpoch
                       ViewerOpenStatus = Some "confirmed"
                       FirstFrameStatus = Some "presented"
                       CaptureAvailability = Some "available"
-                      CaptureSource = Some "live-viewer-window"
                       UnsupportedHostReason = None
                       Fallback = None
                       Diagnostics = [] }

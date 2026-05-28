@@ -374,10 +374,13 @@ let screenshotEvidence evidencePath =
     let result =
         Viewer.captureScreenshotEvidence
             { Command = "--screenshot-evidence"
+              AppOrSample = "Generated Product"
               OutputPath = evidencePath
               Width = viewerOptions.InitialSize.Width
               Height = viewerOptions.InitialSize.Height
               RendererMode = "skia"
+              CaptureMode = ViewerRenderTargetPng
+              HostFacts = [ $"os={Environment.OSVersion.Platform}"; $"machine={Environment.MachineName}" ]
               Timeout = TimeSpan.FromSeconds 10.0 }
             viewerOptions
             (view initialModel)
@@ -398,9 +401,16 @@ let screenshotEvidence evidencePath =
               evidenceField "renderer-mode" result.RendererMode
               evidenceField "unsupported-host-reason" (result.UnsupportedHostReason |> Option.defaultValue "none")
               evidenceField "fallback" (result.Fallback |> Option.defaultValue deterministicFallback)
+              evidenceField "app-or-sample" result.AppOrSample
+              evidenceField "host-facts" (String.concat "," result.HostFacts)
+              evidenceField "capture-mode" $"{result.CaptureMode}"
+              evidenceField "artifact-path" (result.ScreenshotPath |> Option.defaultValue "none")
               evidenceField "screenshot-path" (result.ScreenshotPath |> Option.defaultValue "none")
+              evidenceField "image-width" (result.Width |> Option.map string |> Option.defaultValue "none")
+              evidenceField "image-height" (result.Height |> Option.map string |> Option.defaultValue "none")
               evidenceField "width" (result.Width |> Option.map string |> Option.defaultValue "none")
               evidenceField "height" (result.Height |> Option.map string |> Option.defaultValue "none")
+              evidenceField "pixel-content-validation" $"{result.PixelContentValidation}"
               evidenceField "frames-rendered" (result.FramesRendered |> Option.map string |> Option.defaultValue "none")
               evidenceField "viewer-open-status" $"{result.ViewerOpenStatus}"
               evidenceField "first-frame-status" $"{result.FirstFrameStatus}"
@@ -408,6 +418,11 @@ let screenshotEvidence evidencePath =
               evidenceField "capture-source" $"{result.CaptureSource}"
               evidenceField "deterministic-fallback-kind" (result.DeterministicFallbackKind |> Option.defaultValue "none")
               evidenceField "proves-screenshot" $"{result.ProvesScreenshot}"
+              evidenceField "blocked-stage" (result.BlockedStage |> Option.map string |> Option.defaultValue "none")
+              evidenceField "classification" (result.Classification |> Option.map string |> Option.defaultValue "none")
+              evidenceField "category" (result.Category |> Option.map string |> Option.defaultValue "none")
+              evidenceField "message" result.Message
+              evidenceField "timestamp" $"{result.Timestamp:O}"
               evidenceField "diagnostics" (String.concat "|" result.Diagnostics) ]
     report
 

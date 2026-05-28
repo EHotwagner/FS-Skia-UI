@@ -54,6 +54,21 @@ the stable package surface baselines in `readiness/surface-baselines/*.txt`.
 The target verifies that the current exported public names still satisfy the
 reviewed baseline.
 
+## Screenshot Evidence Validation
+
+Screenshot evidence is validated through `FS.Skia.UI.Testing.EvidenceReports`.
+Accepted records must include `status=ok`, `evidence-kind=screenshot`,
+`capture-source=live-viewer-window`, `proves-screenshot=true`, command,
+app/sample identity, host facts, capture mode, artifact path, positive decoded
+dimensions, `pixel-content-validation=non-blank`, blocked stage,
+classification, category, message, and timestamp.
+
+`validateScreenshotArtifact` decodes the PNG artifact and rejects missing,
+unreadable, out-of-readiness, dimension-mismatched, or blank images. Structural
+layout reports, deterministic scene hashes, launch logs, manual descriptions,
+fallback diagnostics, and metadata-only records do not satisfy screenshot
+evidence requirements.
+
 `FsiTranscripts` runs:
 
 | Script | Transcript |

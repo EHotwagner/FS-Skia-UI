@@ -222,14 +222,26 @@ type EvidenceReportValidationResult =
 
 type ScreenshotEvidenceReportCheck =
     { Status: string
+      Command: string option
+      AppOrSample: string option
+      HostFacts: string list
+      CaptureMode: string option
       EvidenceKind: string option
+      ArtifactPath: string option
       ScreenshotPath: string option
       Width: int option
       Height: int option
+      PixelContentValidation: string option
+      CaptureSource: string option
+      ProvesScreenshot: bool option
+      BlockedStage: string option
+      Classification: string option
+      Category: string option
+      Message: string option
+      Timestamp: DateTimeOffset option
       ViewerOpenStatus: string option
       FirstFrameStatus: string option
       CaptureAvailability: string option
-      CaptureSource: string option
       UnsupportedHostReason: string option
       Fallback: string option
       Diagnostics: string list }
@@ -238,6 +250,26 @@ type ScreenshotEvidenceReportValidationResult =
     { Accepted: bool
       MissingFields: string list
       FailureClass: string option
+      Diagnostics: string list }
+
+type ScreenshotArtifactValidationCheck =
+    { ReadinessDirectory: string
+      ArtifactPath: string
+      ExpectedWidth: int option
+      ExpectedHeight: int option
+      RequireNonBlank: bool }
+
+type ScreenshotArtifactValidationResult =
+    { Accepted: bool
+      DecodedWidth: int option
+      DecodedHeight: int option
+      PixelContentValidation: string
+      FailureClass: string option
+      Diagnostics: string list }
+
+type ScreenshotEvidenceRecord =
+    { Fields: EvidenceReportField list
+      ArtifactPath: string option
       Diagnostics: string list }
 
 module GeneratedProductAssertions =
@@ -275,4 +307,6 @@ module EvidenceReports =
     val build: request: EvidenceReportRequest -> EvidenceReport
     val write: request: EvidenceReportRequest -> EvidenceReport
     val validate: report: EvidenceReport -> EvidenceReportValidationResult
+    val parseScreenshotEvidenceRecord: lines: string list -> ScreenshotEvidenceRecord
+    val validateScreenshotArtifact: check: ScreenshotArtifactValidationCheck -> ScreenshotArtifactValidationResult
     val validateScreenshotEvidence: check: ScreenshotEvidenceReportCheck -> ScreenshotEvidenceReportValidationResult

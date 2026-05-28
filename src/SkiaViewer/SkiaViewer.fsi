@@ -209,11 +209,17 @@ type ScreenshotEvidenceStatus =
 
 type ScreenshotEvidenceRequest =
     { Command: string
+      AppOrSample: string
       OutputPath: string
       Width: int
       Height: int
       RendererMode: string
+      CaptureMode: ScreenshotCaptureMode
+      HostFacts: string list
       Timeout: TimeSpan }
+
+and ScreenshotCaptureMode =
+    | ViewerRenderTargetPng
 
 type ViewerOpenStatus =
     | ViewerOpenConfirmed
@@ -237,14 +243,24 @@ type ScreenshotCaptureSource =
     | PixelReadbackSource
     | NoCaptureSource
 
+type ScreenshotPixelContentValidation =
+    | PixelContentNonBlank
+    | PixelContentBlank
+    | PixelContentUnreadable of reason: string
+    | PixelContentNotValidated of reason: string
+
 type ScreenshotEvidenceResult =
     { Status: ScreenshotEvidenceStatus
       Command: string
+      AppOrSample: string
+      HostFacts: string list
+      CaptureMode: ScreenshotCaptureMode
       EvidenceKind: string
       OutputPath: string option
       ScreenshotPath: string option
       Width: int option
       Height: int option
+      PixelContentValidation: ScreenshotPixelContentValidation
       RendererMode: string
       FramesRendered: int option
       ViewerOpenStatus: ViewerOpenStatus
@@ -253,6 +269,11 @@ type ScreenshotEvidenceResult =
       CaptureSource: ScreenshotCaptureSource
       DeterministicFallbackKind: string option
       ProvesScreenshot: bool
+      BlockedStage: ViewerRunBlockedStage option
+      Classification: ViewerRunFailureClassification option
+      Category: ViewerDiagnosticCategory option
+      Message: string
+      Timestamp: DateTimeOffset
       UnsupportedHostReason: string option
       Fallback: string option
       Diagnostics: string list }
@@ -430,7 +451,9 @@ type EvidenceWorkflowMsg =
 type EvidenceWorkflowEffect =
     | LaunchViewerForEvidence of ScreenshotEvidenceRequest
     | CaptureViewerScreenshot of outputPath: string
+    | ValidateScreenshotArtifact of path: string
     | WriteScreenshotEvidenceReport of ScreenshotEvidenceResult
+    | CleanupEvidenceViewer
     | CollectProcessOutput
     | ValidateGeneratedGuidance
 

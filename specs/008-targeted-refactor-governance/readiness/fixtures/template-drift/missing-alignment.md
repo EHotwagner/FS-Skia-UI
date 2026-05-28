@@ -17,7 +17,7 @@ FAIL
 
 - Changed alignment classes: ``
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/025-upgrade-skia-speckit`
+- Active feature evidence: `specs/026-working-screenshot-taking`
 
 ## Controls Boundary Guidance
 

@@ -101,6 +101,13 @@ For feature `025-upgrade-skia-speckit`, the template manifest
 metadata refresh. The matching active feature evidence is
 `specs/025-upgrade-skia-speckit/readiness/template-version-alignment.md`.
 
+For feature `026-working-screenshot-taking`, the template manifest
+`.template.package/FS.Skia.UI.Template.fsproj` was updated to
+`0.1.27-preview.1` so generated products consume the additive screenshot
+contracts in `FS.Skia.UI.SkiaViewer` and `FS.Skia.UI.Testing`. The matching
+active feature evidence is
+`specs/026-working-screenshot-taking/readiness/template-version-alignment.md`.
+
 Accepted deferrals require `id`, `paths`, `rationale`, `owner`, and
 `target_phase`.
 
