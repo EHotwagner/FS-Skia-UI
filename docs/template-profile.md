@@ -95,6 +95,12 @@ template metadata. A template-owned change must be aligned by at least one of:
 - command-surface docs or build target updates
 - `readiness/template-deferrals.yml`
 
+For feature `025-upgrade-skia-speckit`, the template manifest
+`.template.package/FS.Skia.UI.Template.fsproj` was updated to
+`0.1.24-preview.1` to align package metadata with the SkiaSharp and Spec Kit
+metadata refresh. The matching active feature evidence is
+`specs/025-upgrade-skia-speckit/readiness/template-version-alignment.md`.
+
 Accepted deferrals require `id`, `paths`, `rationale`, `owner`, and
 `target_phase`.
 

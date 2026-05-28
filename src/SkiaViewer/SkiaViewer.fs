@@ -2209,14 +2209,20 @@ module Viewer =
 
                                 window.Dispose()
                         with ex ->
-                            Result.Error(
-                                makeFailure
-                                    Window
-                                    UnsupportedEnvironment
-                                    Startup
-                                    $"Silk.NET bounded viewer launch failed: {ex.Message}"
-                                    current.LastDiagnostic
-                            ))
+                            match current.Completed with
+                            | Some(Result.Ok evidence) ->
+                                request.EvidencePath |> Option.iter (fun path -> writeEvidence path evidence)
+                                Result.Ok evidence
+                            | Some(Result.Error failure) -> Result.Error failure
+                            | None ->
+                                Result.Error(
+                                    makeFailure
+                                        Window
+                                        UnsupportedEnvironment
+                                        Startup
+                                        $"Silk.NET bounded viewer launch failed: {ex.Message}"
+                                        current.LastDiagnostic
+                                ))
 
     let runUntilFirstFrame options (scene: SceneNode) =
         let request: ViewerRunRequest =

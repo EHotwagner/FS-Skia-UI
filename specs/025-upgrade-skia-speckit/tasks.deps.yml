@@ -1,0 +1,120 @@
+schema_version: "1.0"
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: ["fs-skia-template-update", "fs-skia-skiaviewer", "fs-skia-testing"]
+  T004:
+    deps: [T001, T002, T003]
+    skillist: []
+  T005:
+    deps: []
+    skillist: []
+  T006:
+    deps: []
+    skillist: ["fs-skia-testing"]
+  T007:
+    deps: []
+    skillist: ["fs-skia-template-update", "fs-skia-testing"]
+  T008:
+    deps: []
+    skillist: ["fs-skia-testing"]
+  T009:
+    deps: []
+    skillist: []
+  T010:
+    deps: [T008]
+    skillist: []
+  T011:
+    deps: [T006]
+    skillist: ["fs-skia-testing"]
+  T012:
+    deps: [T007]
+    skillist: ["fs-skia-template-update", "fs-skia-testing"]
+  T013:
+    deps: [T005]
+    skillist: []
+  T014:
+    deps: [T011, T013]
+    skillist: ["fs-skia-skiaviewer"]
+  T015:
+    deps: [T012, T013]
+    skillist: ["fs-skia-template-update"]
+  T016:
+    deps: [T014, T015]
+    skillist: ["fs-skia-testing"]
+  T017:
+    deps: [T009]
+    skillist: ["fs-skia-testing"]
+  T018:
+    deps: [T008, T010]
+    skillist: ["fs-skia-testing"]
+  T019:
+    deps: [T017]
+    skillist: []
+  T020:
+    deps: [T018, T019]
+    skillist: []
+  T021:
+    deps: [T019, T020]
+    skillist: []
+  T022:
+    deps: [T020, T021]
+    skillist: []
+  T023:
+    deps: [T007]
+    skillist: ["fs-skia-template-update", "fs-skia-testing"]
+  T024:
+    deps: [T007]
+    skillist: ["fs-skia-template-update", "fs-skia-testing"]
+  T025:
+    deps: [T015, T023, T024]
+    skillist: ["fs-skia-template-update"]
+  T026:
+    deps: [T025]
+    skillist: ["fs-skia-template-update"]
+  T027:
+    deps: [T026]
+    skillist: ["fs-skia-template-update"]
+  T028:
+    deps: []
+    skillist: []
+  T029:
+    deps: []
+    skillist: ["fs-skia-skiaviewer"]
+  T030:
+    deps: [T013, T022, T027, T028]
+    skillist: []
+  T031:
+    deps: [T014, T029]
+    skillist: ["fs-skia-skiaviewer"]
+  T032:
+    deps: [T016, T020]
+    skillist: ["fs-skia-testing"]
+  T033:
+    deps: [T016, T027, T030]
+    skillist: ["fs-skia-template-update", "fs-skia-testing"]
+  T034:
+    deps: [T013, T016, T019, T020, T021, T022, T027, T030, T031, T032]
+    skillist: []
+  T035:
+    deps: [T021, T026, T032]
+    skillist: []
+  T036:
+    deps: []
+    skillist: ["speckit-evidence-graph"]
+  T037:
+    deps: [T033, T034, T035]
+    skillist: []
+  T038:
+    deps: [T019, T020, T021, T022, T034]
+    skillist: []
+  T039:
+    deps: [T033, T034, T035, T036, T037, T038]
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]

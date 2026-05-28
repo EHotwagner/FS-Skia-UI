@@ -28,9 +28,9 @@ It moves dependency placement into explicit package owners:
 | Silk.NET.Vulkan.Extensions.KHR | 2.23.0 | Vulkan KHR extension bindings. | Runtime framework | OSS package accepted for runtime use. | Keep version-aligned with Silk.NET.Vulkan. | None. |
 | Silk.NET.Windowing | 2.23.0 | Window lifecycle and presentation surface integration. | Runtime framework | OSS package accepted for runtime use. | Review with desktop host changes. | None. |
 | Silk.NET.Windowing.Extensions | 2.23.0 | Windowing extension helpers. | Runtime framework | OSS package accepted for runtime use. | Keep version-aligned with Silk.NET.Windowing. | None. |
-| SkiaSharp | 4.147.0-preview.2.1 | Skia drawing APIs used by the renderer. | Runtime framework | OSS package accepted with preview review. | Reassess at each SkiaSharp 4 preview/stable change. | Preview package: package shape and native behavior may change. |
-| SkiaSharp.NativeAssets.Linux | 4.147.0-preview.2.1 | Linux native Skia assets. | Runtime framework | OSS package accepted with preview review. | Keep version-aligned with SkiaSharp. | Preview native asset package. |
-| SkiaSharp.NativeAssets.Win32 | 4.147.0-preview.2.1 | Windows native Skia assets. | Runtime framework | OSS package accepted with preview review. | Keep version-aligned with SkiaSharp. | Preview native asset package. |
+| SkiaSharp | 4.147.0-preview.3.1 | Skia drawing APIs used by the renderer. | Runtime framework | OSS package accepted with preview review. | Reassess at each SkiaSharp 4 preview/stable change. | Preview package: package shape and native behavior may change. |
+| SkiaSharp.NativeAssets.Linux | 4.147.0-preview.3.1 | Linux native Skia assets. | Runtime framework | OSS package accepted with preview review. | Keep version-aligned with SkiaSharp. | Preview native asset package. |
+| SkiaSharp.NativeAssets.Win32 | 4.147.0-preview.3.1 | Windows native Skia assets. | Runtime framework | OSS package accepted with preview review. | Keep version-aligned with SkiaSharp. | Preview native asset package. |
 | YamlDotNet | 17.1.0 | YAML parsing for keyboard input configuration. | Runtime framework | OSS package accepted for runtime use. | Review with schema changes. | None. |
 | Yoga.Net | 3.2.3 | Yoga layout engine bindings. | Layout package | OSS package accepted for layout use. | Review with layout engine updates. | None. |
 | YoloDev.Expecto.TestSdk | 0.15.3 | Expecto test SDK adapter for `dotnet test`. | Test infrastructure | OSS package accepted for tests. | Keep compatible with Expecto and test SDK versions. | None. |
@@ -60,3 +60,20 @@ version, actual version when present, feed path, and remediation command.
 Generated product source must reference FS.Skia.UI capabilities with
 `PackageReference`; it must not copy repository implementation source as a
 substitute for package consumption.
+
+## 2026-05-28 SkiaSharp And Compatibility Posture
+
+SkiaSharp managed and native asset packages are version-aligned at
+`4.147.0-preview.3.1`, selected from official NuGet package metadata during
+feature `025-upgrade-skia-speckit`.
+
+FS.Skia.UI remains a stable compatibility surface for existing broad-package
+consumers. Prefer focused packages for new generated products:
+`FS.Skia.UI.Scene`, `FS.Skia.UI.SkiaViewer`, `FS.Skia.UI.Elmish`,
+`FS.Skia.UI.KeyboardInput`, `FS.Skia.UI.Layout`, `FS.Skia.UI.Controls`,
+`FS.Skia.UI.Controls.Elmish`, and `FS.Skia.UI.Testing`.
+
+The deferred compatibility-package direction is deliberate: this upgrade does
+not remove public APIs, collapse generated profiles, or decide permanent
+facade/deprecation policy beyond the conservative broad-package guidance in the
+feature readiness artifacts.

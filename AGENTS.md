@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-specs/024-racer-feedback-followups/plan.md
+specs/025-upgrade-skia-speckit/plan.md
 <!-- SPECKIT END -->

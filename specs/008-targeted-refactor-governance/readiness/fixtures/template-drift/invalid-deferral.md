@@ -17,7 +17,7 @@ FAIL
 
 - Changed alignment classes: `template-drift-docs`
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/024-racer-feedback-followups`
+- Active feature evidence: `specs/025-upgrade-skia-speckit`
 
 ## Controls Boundary Guidance
 

@@ -1,0 +1,90 @@
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit --graph-only
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit
+
+[1/3] Computing task graph...
+task-graph: 39 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit/readiness/task-graph.md
+  status: 35[X], 4[ ]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit --graph-only
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit
+
+[1/3] Computing task graph...
+task-graph: 39 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit/readiness/task-graph.md
+  status: 36[X], 3[ ]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit --graph-only
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit
+
+[1/3] Computing task graph...
+task-graph: 39 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit/readiness/task-graph.md
+  status: 37[X], 2[ ]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit --graph-only
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit
+
+[1/3] Computing task graph...
+task-graph: 39 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit/readiness/task-graph.md
+  status: 37[X], 2[ ]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit --graph-only
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit
+
+[1/3] Computing task graph...
+task-graph: 39 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit/readiness/task-graph.md
+  status: 38[X], 1[ ]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit --graph-only
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit
+
+[1/3] Computing task graph...
+task-graph: 39 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/025-upgrade-skia-speckit/readiness/task-graph.md
+  status: 39[X]
+
+graph-only mode; skipping diff scan.
+
+exit-code=0
