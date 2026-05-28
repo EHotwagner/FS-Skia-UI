@@ -100,6 +100,168 @@ let tests =
             Expect.equal failed.ExitCode 1 "failed reports use non-zero exit"
         }
 
+        test "screenshot evidence report validator accepts live-window success fields" {
+            let result =
+                EvidenceReports.validateScreenshotEvidence
+                    { Status = "ok"
+                      EvidenceKind = Some "screenshot"
+                      ScreenshotPath = Some "readiness/artifacts/screenshot.png"
+                      Width = Some 320
+                      Height = Some 200
+                      ViewerOpenStatus = Some "confirmed"
+                      FirstFrameStatus = Some "presented"
+                      CaptureAvailability = Some "available"
+                      CaptureSource = Some "live-viewer-window"
+                      UnsupportedHostReason = None
+                      Fallback = None
+                      Diagnostics = [] }
+
+            Expect.isTrue result.Accepted "complete live-window screenshot proof is accepted"
+            Expect.isNone result.FailureClass "accepted report has no failure class"
+        }
+
+        test "screenshot evidence report validator rejects unsupported records that hide capability detail" {
+            let result =
+                EvidenceReports.validateScreenshotEvidence
+                    { Status = "unsupported"
+                      EvidenceKind = Some "screenshot"
+                      ScreenshotPath = Some "readiness/artifacts/screenshot.png"
+                      Width = None
+                      Height = None
+                      ViewerOpenStatus = Some "confirmed"
+                      FirstFrameStatus = Some "presented"
+                      CaptureAvailability = None
+                      CaptureSource = Some "live-viewer-window"
+                      UnsupportedHostReason = None
+                      Fallback = None
+                      Diagnostics = [] }
+
+            Expect.isFalse result.Accepted "unsupported screenshot records must keep capability details visible"
+            Expect.containsAll result.MissingFields [ "capture-availability"; "unsupported-host-reason"; "fallback" ] "missing capability fields are named"
+            Expect.equal result.FailureClass (Some "missing-screenshot-evidence-fields") "missing fields get stable failure class"
+        }
+
+        test "ScreenshotEvidenceReport_Synthetic rejects invalid success proof fields" {
+            // SYNTHETIC: malformed screenshot report fixture approved by T008 SEH; real path is live screenshot evidence validation.
+            let result =
+                EvidenceReports.validateScreenshotEvidence
+                    { Status = "ok"
+                      EvidenceKind = Some "screenshot"
+                      ScreenshotPath = None
+                      Width = Some 0
+                      Height = Some 200
+                      ViewerOpenStatus = Some "confirmed"
+                      FirstFrameStatus = Some "presented"
+                      CaptureAvailability = Some "available"
+                      CaptureSource = Some "deterministic-scene-render"
+                      UnsupportedHostReason = None
+                      Fallback = Some "deterministic-scene-evidence"
+                      Diagnostics = [] }
+
+            Expect.isFalse result.Accepted "invalid success proof fields are rejected"
+            Expect.contains result.MissingFields "screenshot-path" "success proof must name artifact path"
+            Expect.equal result.FailureClass (Some "missing-screenshot-evidence-fields") "missing success field has stable failure class"
+        }
+
+        test "ScreenshotEvidenceReport_Synthetic rejects hidden warnings in successful proof" {
+            // SYNTHETIC: hidden-warning fixture approved by T008 SEH; real path is captured launch output classification.
+            let result =
+                EvidenceReports.validateScreenshotEvidence
+                    { Status = "ok"
+                      EvidenceKind = Some "screenshot"
+                      ScreenshotPath = Some "readiness/artifacts/screenshot.png"
+                      Width = Some 320
+                      Height = Some 200
+                      ViewerOpenStatus = Some "confirmed"
+                      FirstFrameStatus = Some "presented"
+                      CaptureAvailability = Some "available"
+                      CaptureSource = Some "live-viewer-window"
+                      UnsupportedHostReason = None
+                      Fallback = None
+                      Diagnostics = [ "Gtk-Message: Failed to load module \"colorreload-gtk-module\"" ] }
+
+            Expect.isFalse result.Accepted "successful screenshot proof must not hide warning diagnostics"
+            Expect.equal result.FailureClass (Some "invalid-screenshot-evidence-fields") "hidden warnings have stable failure class"
+        }
+
+        test "ScreenshotEvidenceReport_Synthetic rejects hostile artifact paths" {
+            // SYNTHETIC: hostile artifact path fixture approved by T008 SEH; real path is generated report path validation.
+            let result =
+                EvidenceReports.validateScreenshotEvidence
+                    { Status = "ok"
+                      EvidenceKind = Some "screenshot"
+                      ScreenshotPath = Some "../outside-readiness.png"
+                      Width = Some 320
+                      Height = Some 200
+                      ViewerOpenStatus = Some "confirmed"
+                      FirstFrameStatus = Some "presented"
+                      CaptureAvailability = Some "available"
+                      CaptureSource = Some "live-viewer-window"
+                      UnsupportedHostReason = None
+                      Fallback = None
+                      Diagnostics = [] }
+
+            Expect.isFalse result.Accepted "hostile artifact paths are rejected"
+            Expect.equal result.FailureClass (Some "invalid-screenshot-evidence-fields") "hostile paths have stable failure class"
+        }
+
+        test "known GTK module warnings are benign only with first-frame launch evidence and preserved raw text" {
+            let raw = "Gtk-Message: Failed to load module \"colorreload-gtk-module\""
+            let check =
+                { RawMessage = raw
+                  KnownBenignMarkers = [ "colorreload-gtk-module"; "window-decorations-gtk-module" ]
+                  LaunchSucceeded = true
+                  RenderingSucceeded = true
+                  LayoutReadable = Some true
+                  ExplicitlyUnsupportedWithoutReadabilityClaim = false
+                  PackageSucceeded = true
+                  EvidencePath = Some "readiness/host-warning-classification.md" }
+
+            let result = HostWarningClassification.classify check
+            Expect.equal result.WarningClass BenignEnvironmentWarning "known GTK warning is benign when launch/render/layout/package facts passed"
+            Expect.isFalse result.Fatal "benign warning is not fatal"
+            Expect.equal result.RawMessage raw "raw warning text is preserved"
+
+            let missingFirstFrame = HostWarningClassification.classify { check with RenderingSucceeded = false }
+            Expect.equal missingFirstFrame.WarningClass RenderingFailure "missing first-frame/render evidence is not hidden by benign marker"
+            Expect.isTrue missingFirstFrame.Fatal "rendering failure remains fatal"
+        }
+
+        test "known GTK module warning variants are benign with first-frame success" {
+            [ "Gtk-Message: Failed to load module \"colorreload-gtk-module\""
+              "Gtk-Message: Failed to load module \"window-decorations-gtk-module\"" ]
+            |> List.iter (fun raw ->
+                let result =
+                    HostWarningClassification.classify
+                        { RawMessage = raw
+                          KnownBenignMarkers = [ "colorreload-gtk-module"; "window-decorations-gtk-module" ]
+                          LaunchSucceeded = true
+                          RenderingSucceeded = true
+                          LayoutReadable = Some true
+                          ExplicitlyUnsupportedWithoutReadabilityClaim = false
+                          PackageSucceeded = true
+                          EvidencePath = Some "readiness/host-warning-classification.md" }
+
+                Expect.equal result.WarningClass BenignEnvironmentWarning $"{raw} is benign after first-frame success"
+                Expect.equal result.RawMessage raw "raw GTK warning text is preserved")
+        }
+
+        test "known GTK module warnings do not hide mixed unrelated failures" {
+            let result =
+                HostWarningClassification.classify
+                    { RawMessage = "Gtk-Message: Failed to load module \"colorreload-gtk-module\"\nUnhandled renderer exception"
+                      KnownBenignMarkers = [ "colorreload-gtk-module"; "window-decorations-gtk-module" ]
+                      LaunchSucceeded = true
+                      RenderingSucceeded = true
+                      LayoutReadable = Some true
+                      ExplicitlyUnsupportedWithoutReadabilityClaim = false
+                      PackageSucceeded = true
+                      EvidencePath = Some "readiness/host-warning-classification.md" }
+
+            Expect.equal result.WarningClass UnknownWarning "mixed unrelated warning/error text remains visible"
+            Expect.isTrue result.Fatal "mixed warning result is fatal"
+        }
+
         test "generated consumer validation summaries expose category elapsed command and evidence" {
             let result =
                 { Category = Completed

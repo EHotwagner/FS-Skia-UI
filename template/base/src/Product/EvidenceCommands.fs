@@ -402,6 +402,12 @@ let screenshotEvidence evidencePath =
               evidenceField "width" (result.Width |> Option.map string |> Option.defaultValue "none")
               evidenceField "height" (result.Height |> Option.map string |> Option.defaultValue "none")
               evidenceField "frames-rendered" (result.FramesRendered |> Option.map string |> Option.defaultValue "none")
+              evidenceField "viewer-open-status" $"{result.ViewerOpenStatus}"
+              evidenceField "first-frame-status" $"{result.FirstFrameStatus}"
+              evidenceField "capture-availability" $"{result.CaptureAvailability}"
+              evidenceField "capture-source" $"{result.CaptureSource}"
+              evidenceField "deterministic-fallback-kind" (result.DeterministicFallbackKind |> Option.defaultValue "none")
+              evidenceField "proves-screenshot" $"{result.ProvesScreenshot}"
               evidenceField "diagnostics" (String.concat "|" result.Diagnostics) ]
     report
 

@@ -60,6 +60,11 @@ runs persistent source/wiring checks, bounded smoke, and deterministic scene
 evidence. Unsupported-host diagnostics must remain separate from supported-host
 persistent launch evidence.
 
+Screenshot evidence is a distinct proof kind. A report with
+`evidence-kind=screenshot` is valid screenshot proof only when it records live viewer-window capture after first-frame presentation. Unsupported hosts may
+record `deterministic-scene-evidence` as fallback diagnostics, but
+deterministic-scene-evidence must not claim screenshot proof.
+
 Viewer diagnostics evidence should record both startup-focused and
 frame-focused paths. Startup-focused runs keep frame-loop diagnostics disabled
 or sampled to zero; frame-focused runs must enable the frame category

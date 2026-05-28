@@ -1,0 +1,20 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Testing -> /home/developer/projects/FS-Skia-UI/src/Testing/bin/Debug/net10.0/FS.Skia.UI.Testing.dll
+  Testing.Tests -> /home/developer/projects/FS-Skia-UI/tests/Testing.Tests/bin/Debug/net10.0/Testing.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/tests/Testing.Tests/bin/Debug/net10.0/Testing.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed Testing helper contract.known GTK module warnings do not hide mixed unrelated failures [27 ms]
+  Error Message:
+   
+mixed unrelated warning/error text remains visible.
+expected: UnknownWarning
+  actual: BenignEnvironmentWarning
+   at TestingCapabilityTests.tests@250-14.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Testing.Tests/Tests.fs:line 261
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112
+
+
+Failed!  - Failed:     1, Passed:    35, Skipped:     0, Total:    36, Duration: 83 ms - Testing.Tests.dll (net10.0)

@@ -220,6 +220,26 @@ type EvidenceReportValidationResult =
       MissingFields: string list
       Diagnostics: string list }
 
+type ScreenshotEvidenceReportCheck =
+    { Status: string
+      EvidenceKind: string option
+      ScreenshotPath: string option
+      Width: int option
+      Height: int option
+      ViewerOpenStatus: string option
+      FirstFrameStatus: string option
+      CaptureAvailability: string option
+      CaptureSource: string option
+      UnsupportedHostReason: string option
+      Fallback: string option
+      Diagnostics: string list }
+
+type ScreenshotEvidenceReportValidationResult =
+    { Accepted: bool
+      MissingFields: string list
+      FailureClass: string option
+      Diagnostics: string list }
+
 module GeneratedProductAssertions =
     val summarize: expectation: GeneratedProductExpectation -> string
     val validateDefaultInteractiveLaunch: source: string -> GeneratedProductLaunchValidationResult
@@ -255,3 +275,4 @@ module EvidenceReports =
     val build: request: EvidenceReportRequest -> EvidenceReport
     val write: request: EvidenceReportRequest -> EvidenceReport
     val validate: report: EvidenceReport -> EvidenceReportValidationResult
+    val validateScreenshotEvidence: check: ScreenshotEvidenceReportCheck -> ScreenshotEvidenceReportValidationResult

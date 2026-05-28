@@ -215,6 +215,28 @@ type ScreenshotEvidenceRequest =
       RendererMode: string
       Timeout: TimeSpan }
 
+type ViewerOpenStatus =
+    | ViewerOpenConfirmed
+    | ViewerOpenUnsupported
+    | ViewerOpenFailed
+    | ViewerOpenUnknown
+
+type FirstFrameStatus =
+    | FirstFramePresentedStatus
+    | FirstFrameNotPresentedStatus
+    | FirstFrameUnknownStatus
+
+type ScreenshotCaptureAvailability =
+    | CaptureAvailable
+    | CaptureUnavailable of reason: string
+    | CaptureAvailabilityUnknown of reason: string
+
+type ScreenshotCaptureSource =
+    | LiveViewerWindow
+    | DeterministicSceneRender
+    | PixelReadbackSource
+    | NoCaptureSource
+
 type ScreenshotEvidenceResult =
     { Status: ScreenshotEvidenceStatus
       Command: string
@@ -225,6 +247,12 @@ type ScreenshotEvidenceResult =
       Height: int option
       RendererMode: string
       FramesRendered: int option
+      ViewerOpenStatus: ViewerOpenStatus
+      FirstFrameStatus: FirstFrameStatus
+      CaptureAvailability: ScreenshotCaptureAvailability
+      CaptureSource: ScreenshotCaptureSource
+      DeterministicFallbackKind: string option
+      ProvesScreenshot: bool
       UnsupportedHostReason: string option
       Fallback: string option
       Diagnostics: string list }
@@ -380,6 +408,32 @@ type ViewerRunEffect =
     | StopBoundedRun
     | PersistRunEvidence of ViewerRunEvidence
 
+type EvidenceWorkflowModel =
+    { Request: ScreenshotEvidenceRequest
+      ViewerOpenStatus: ViewerOpenStatus
+      FirstFrameStatus: FirstFrameStatus
+      CaptureAvailability: ScreenshotCaptureAvailability
+      OutputPath: string option
+      Result: ScreenshotEvidenceResult option
+      Diagnostics: string list }
+
+type EvidenceWorkflowMsg =
+    | LaunchStarted
+    | LaunchCompleted of ViewerOpenStatus
+    | FirstFrameObserved of FirstFrameStatus
+    | CaptureCapabilityKnown of ScreenshotCaptureAvailability
+    | CaptureSucceeded of path: string * width: int * height: int * source: ScreenshotCaptureSource
+    | CaptureUnsupported of reason: string * fallbackKind: string option
+    | CaptureFailed of message: string
+    | EvidenceReportWritten of path: string
+
+type EvidenceWorkflowEffect =
+    | LaunchViewerForEvidence of ScreenshotEvidenceRequest
+    | CaptureViewerScreenshot of outputPath: string
+    | WriteScreenshotEvidenceReport of ScreenshotEvidenceResult
+    | CollectProcessOutput
+    | ValidateGeneratedGuidance
+
 type GeneratedAppHost<'model,'msg> =
     { Init: unit -> 'model * ViewerEffect list
       Update: 'msg -> 'model -> 'model * ViewerEffect list
@@ -413,6 +467,8 @@ module Viewer =
     val runUntilFirstFrame: options: ViewerOptions -> scene: SceneNode -> Result<ViewerRunEvidence, ViewerRunFailure>
     val runForFrames: frameCount: int -> options: ViewerOptions -> scene: SceneNode -> Result<ViewerRunEvidence, ViewerRunFailure>
     val captureScreenshotEvidence: request: ScreenshotEvidenceRequest -> options: ViewerOptions -> scene: SceneNode -> ScreenshotEvidenceResult
+    val initEvidenceWorkflow: request: ScreenshotEvidenceRequest -> EvidenceWorkflowModel * EvidenceWorkflowEffect list
+    val updateEvidenceWorkflow: msg: EvidenceWorkflowMsg -> model: EvidenceWorkflowModel -> EvidenceWorkflowModel * EvidenceWorkflowEffect list
 
 module GeneratedAppHost =
     val dispatchKey: host: GeneratedAppHost<'model,'msg> -> raw: ViewerKeyEvent -> model: 'model -> 'model * ViewerEffect list

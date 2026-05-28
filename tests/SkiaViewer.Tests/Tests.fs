@@ -74,8 +74,84 @@ let tests =
             Expect.equal result.Status ScreenshotUnsupported "unavailable capture is an unsupported-host fact"
             Expect.equal result.EvidenceKind "screenshot" "result names screenshot evidence kind"
             Expect.isNone result.ScreenshotPath "unsupported result does not claim a screenshot artifact"
+            Expect.equal result.ViewerOpenStatus ViewerOpenUnknown "viewer open status is explicit when capture is checked without launching"
+            Expect.equal result.FirstFrameStatus FirstFrameUnknownStatus "first-frame status remains explicit when not observed"
+            Expect.equal result.CaptureSource DeterministicSceneRender "unsupported capture names deterministic fallback source"
+            Expect.isFalse result.ProvesScreenshot "deterministic fallback is not screenshot proof"
             Expect.equal result.Fallback (Some "deterministic-scene-evidence") "unsupported screenshot points to deterministic fallback"
             Expect.isSome result.UnsupportedHostReason "unsupported result names the missing capability"
+        }
+
+        test "evidence workflow init and update emit pure screenshot effects and success fields" {
+            let request =
+                { Command = "dotnet run -- --screenshot-evidence readiness/screenshot-evidence.md"
+                  OutputPath = "readiness/screenshot-evidence.md"
+                  Width = 320
+                  Height = 200
+                  RendererMode = "skia"
+                  Timeout = TimeSpan.FromSeconds 2.0 }
+
+            let model, effects = Viewer.initEvidenceWorkflow request
+            Expect.equal model.ViewerOpenStatus ViewerOpenUnknown "workflow starts before launch facts are known"
+            Expect.exists effects (function LaunchViewerForEvidence launched when launched = request -> true | _ -> false) "workflow requests viewer launch at interpreter edge"
+
+            let launched, launchEffects = Viewer.updateEvidenceWorkflow (LaunchCompleted ViewerOpenConfirmed) model
+            Expect.equal launched.ViewerOpenStatus ViewerOpenConfirmed "launch completion updates model"
+            Expect.isEmpty launchEffects "launch fact alone emits no filesystem or capture work"
+
+            let firstFrame, captureEffects = Viewer.updateEvidenceWorkflow (FirstFrameObserved FirstFramePresentedStatus) launched
+            Expect.equal firstFrame.FirstFrameStatus FirstFramePresentedStatus "first-frame fact is preserved"
+            Expect.exists captureEffects (function CaptureViewerScreenshot "readiness/screenshot-evidence.md" -> true | _ -> false) "first frame requests screenshot capture"
+
+            let completed, writeEffects =
+                Viewer.updateEvidenceWorkflow
+                    (CaptureSucceeded("readiness/artifacts/screenshot.png", 320, 200, LiveViewerWindow))
+                    firstFrame
+
+            match completed.Result with
+            | Some result ->
+                Expect.equal result.Status ScreenshotOk "successful workflow result is ok"
+                Expect.equal result.EvidenceKind "screenshot" "successful workflow result is screenshot evidence"
+                Expect.equal result.ScreenshotPath (Some "readiness/artifacts/screenshot.png") "successful result has PNG artifact path"
+                Expect.equal result.Width (Some 320) "successful result has positive width"
+                Expect.equal result.Height (Some 200) "successful result has positive height"
+                Expect.equal result.ViewerOpenStatus ViewerOpenConfirmed "successful result preserves viewer-open fact"
+                Expect.equal result.FirstFrameStatus FirstFramePresentedStatus "successful result preserves first-frame fact"
+                Expect.equal result.CaptureAvailability CaptureAvailable "successful result records capture availability"
+                Expect.equal result.CaptureSource LiveViewerWindow "successful result records live-window source"
+                Expect.isTrue result.ProvesScreenshot "live-window source proves screenshot evidence"
+                Expect.exists writeEffects (function WriteScreenshotEvidenceReport written when written = result -> true | _ -> false) "successful result is handed to report writer effect"
+            | None -> failtest "expected screenshot workflow result"
+        }
+
+        test "evidence workflow unsupported result separates viewer and capture capability facts" {
+            let request =
+                { Command = "--screenshot-evidence"
+                  OutputPath = "readiness/screenshot-evidence.md"
+                  Width = 320
+                  Height = 200
+                  RendererMode = "skia"
+                  Timeout = TimeSpan.FromSeconds 2.0 }
+
+            let model, _ = Viewer.initEvidenceWorkflow request
+            let launched, _ = Viewer.updateEvidenceWorkflow (LaunchCompleted ViewerOpenConfirmed) model
+            let firstFrame, _ = Viewer.updateEvidenceWorkflow (FirstFrameObserved FirstFramePresentedStatus) launched
+            let completed, effects =
+                Viewer.updateEvidenceWorkflow
+                    (CaptureUnsupported("viewer host does not expose screenshot capture", Some "deterministic-scene-evidence"))
+                    firstFrame
+
+            match completed.Result with
+            | Some result ->
+                Expect.equal result.Status ScreenshotUnsupported "unsupported capture stays unsupported"
+                Expect.equal result.ViewerOpenStatus ViewerOpenConfirmed "viewer open fact is not collapsed into capture support"
+                Expect.equal result.FirstFrameStatus FirstFramePresentedStatus "first-frame fact is retained"
+                Expect.equal result.CaptureAvailability (CaptureUnavailable "viewer host does not expose screenshot capture") "capture availability has reason"
+                Expect.equal result.CaptureSource DeterministicSceneRender "fallback source is deterministic render"
+                Expect.equal result.DeterministicFallbackKind (Some "deterministic-scene-evidence") "fallback kind is explicit"
+                Expect.isFalse result.ProvesScreenshot "unsupported fallback does not prove screenshot"
+                Expect.exists effects (function WriteScreenshotEvidenceReport written when written = result -> true | _ -> false) "unsupported result is still reportable"
+            | None -> failtest "expected unsupported screenshot workflow result"
         }
 
         test "viewer boundary guardrails preserve screenshot visual capability and window diagnostics" {

@@ -252,6 +252,90 @@ let generatedGuidanceTests =
                 Expect.isFalse (source.Contains(duplicateType, System.StringComparison.Ordinal)) $"generated source does not introduce duplicate geometry record {duplicateType}")
         }
 
+        test "generated guidance recommends domain geometry names and not primitive collisions" {
+            let guidancePaths =
+                [ "docs/generated-apps.md"
+                  "template/base/docs/product.md"
+                  "template/fragments/scene/README.md" ]
+
+            let combined =
+                guidancePaths
+                |> List.map read
+                |> String.concat System.Environment.NewLine
+
+            [ "WorldRect"; "WorldPoint"; "TrackBounds" ]
+            |> List.iter (fun required ->
+                Expect.stringContains combined required $"generated guidance includes domain geometry example {required}")
+
+            [ "domain Rect"
+              "domain Point"
+              "domain Size"
+              "app Rect"
+              "app Point"
+              "app Size" ]
+            |> List.iter (fun stalePattern ->
+                Expect.isFalse (combined.Contains(stalePattern, System.StringComparison.OrdinalIgnoreCase)) $"generated guidance rejects stale primitive collision pattern {stalePattern}")
+        }
+
+        test "generated screenshot wording requires live-window proof and keeps deterministic fallback separate" {
+            [ "docs/generated-apps.md"
+              "docs/evidence.md"
+              "template/base/docs/product.md"
+              "template/fragments/skiaviewer/README.md" ]
+            |> List.iter (fun path ->
+                expectFileContains
+                    path
+                    [ "live viewer-window capture"
+                      "first-frame"
+                      "evidence-kind=screenshot"
+                      "deterministic-scene-evidence"
+                      "must not claim screenshot proof" ])
+        }
+
+        test "generated screenshot evidence command writes capability detail fields" {
+            let source = read "template/base/src/Product/EvidenceCommands.fs"
+
+            [ "Viewer.captureScreenshotEvidence"
+              "evidenceField \"viewer-open-status\""
+              "evidenceField \"first-frame-status\""
+              "evidenceField \"capture-availability\""
+              "evidenceField \"capture-source\""
+              "evidenceField \"deterministic-fallback-kind\""
+              "evidenceField \"proves-screenshot\"" ]
+            |> List.iter (fun required ->
+                Expect.stringContains source required $"generated screenshot evidence command includes {required}")
+
+            Expect.isFalse (source.Contains("evidenceField \"capture-source\" \"pixel-readback\"", System.StringComparison.Ordinal)) "pixel readback is not relabeled as screenshot proof"
+            Expect.isFalse (source.Contains("evidenceField \"capture-source\" \"deterministic-scene-render\"\n              evidenceField \"proves-screenshot\" \"true\"", System.StringComparison.Ordinal)) "deterministic scene fallback is not relabeled as screenshot proof"
+        }
+
+        test "generated Linux detached launch guidance preserves logs stderr and stdin detachment" {
+            [ "docs/generated-apps.md"
+              "template/base/docs/product.md"
+              "template/fragments/skiaviewer/README.md" ]
+            |> List.iter (fun path ->
+                expectFileContains
+                    path
+                    [ "setsid"
+                      "> readiness/logs/"
+                      "2>&1"
+                      "< /dev/null"
+                      "&" ])
+
+            let combined =
+                [ "docs/generated-apps.md"
+                  "template/base/docs/product.md"
+                  "template/fragments/skiaviewer/README.md" ]
+                |> List.map read
+                |> String.concat System.Environment.NewLine
+
+            [ "nohup dotnet run"
+              "dotnet run &"
+              "simple backgrounding" ]
+            |> List.iter (fun stalePattern ->
+                Expect.isFalse (combined.Contains(stalePattern, System.StringComparison.OrdinalIgnoreCase)) $"generated guidance rejects stale detached launch pattern {stalePattern}")
+        }
+
         test "generated viewer guidance scans one selected persistent launch contract across owned artifacts" {
             [ "docs/generated-apps.md"
               "template/fragments/skiaviewer/README.md"

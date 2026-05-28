@@ -26,10 +26,12 @@ the generated app guidance must name:
 - Screenshot evidence command:
   `dotnet run --project src/Product/Product.fsproj -- --screenshot-evidence <path>`.
   This is screenshot proof only when the report contains `status=ok`,
-  `evidence-kind=screenshot`, dimensions, and a screenshot artifact path.
+  `evidence-kind=screenshot`, dimensions, a screenshot artifact path, and
+  live viewer-window capture after first-frame presentation.
   Unsupported hosts must report `status=unsupported`,
   `unsupported-host-reason`, and `fallback=deterministic-scene-evidence`
-  without claiming screenshot proof.
+  without claiming screenshot proof. Deterministic scene output
+  `deterministic-scene-evidence` must not claim screenshot proof.
 - Layout readability evidence command:
   `dotnet run --project src/Product/Product.fsproj -- --layout-evidence <path> 1280 720`.
   Generated game products must also validate the documented constrained size
@@ -53,6 +55,17 @@ exit without a persistent launch attempt are diagnostic helpers only. Tests that
 exercise the reducer should call `Product.Program.update`, not an unqualified
 or framework-owned update helper.
 
+For Linux desktop review sessions where the generated viewer should outlive the
+shell, launch it in a detached session while preserving diagnostics:
+
+```bash
+setsid dotnet run --project src/Product/Product.fsproj > readiness/logs/generated-viewer.log 2>&1 < /dev/null &
+```
+
+Keep the `readiness/logs/generated-viewer.log` path with the review notes so
+stderr, stdout, and startup diagnostics remain inspectable after the shell
+exits.
+
 Generated evidence reports must keep deterministic render proof, persistent
 launch proof, and screenshot proof as separate evidence kinds. A deterministic
 scene hash or pixel fallback can support diagnosis, but it must not be relabeled
@@ -67,6 +80,11 @@ Generated gameplay examples should reuse shared Scene geometry for layout,
 containment, collision, and rendering evidence when the Scene shape model
 already fits; do not introduce local duplicate bounds records for the same
 entities.
+When an app needs domain-owned geometry aliases or records, use names that
+describe the product space, such as `WorldRect`, `WorldPoint`, `TrackBounds`,
+`CarPose`, or `CheckpointBounds`. Reserve generic `Rect`, `Point`, and `Size`
+for shared Scene/layout primitives so generated code does not need
+ambiguity-driven type annotations.
 
 Generated smoke reports should include a diagnostic mode and captured
 diagnostic categories so startup failures can be read without repeated

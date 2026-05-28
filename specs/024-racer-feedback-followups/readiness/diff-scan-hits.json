@@ -1,0 +1,54 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "tests/Testing.Tests/Tests.fs",
+      "line": 144,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"ScreenshotEvidenceReport_Synthetic rejects invalid success proof fields\" {"
+    },
+    {
+      "file": "tests/Testing.Tests/Tests.fs",
+      "line": 145,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: malformed screenshot report fixture approved by T008 SEH; real path is live screenshot evidence validation"
+    },
+    {
+      "file": "tests/Testing.Tests/Tests.fs",
+      "line": 166,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"ScreenshotEvidenceReport_Synthetic rejects hidden warnings in successful proof\" {"
+    },
+    {
+      "file": "tests/Testing.Tests/Tests.fs",
+      "line": 167,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: hidden-warning fixture approved by T008 SEH; real path is captured launch output classification."
+    },
+    {
+      "file": "tests/Testing.Tests/Tests.fs",
+      "line": 187,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"ScreenshotEvidenceReport_Synthetic rejects hostile artifact paths\" {"
+    },
+    {
+      "file": "tests/Testing.Tests/Tests.fs",
+      "line": 188,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: hostile artifact path fixture approved by T008 SEH; real path is generated report path validation."
+    }
+  ]
+}

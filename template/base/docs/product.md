@@ -29,7 +29,9 @@ as the persistent interactive launch contract. Deterministic scene evidence,
 persistent launch evidence, and screenshot evidence are separate report kinds:
 scene evidence does not prove a persistent window, and unsupported screenshot
 capture must report `fallback=deterministic-scene-evidence` without claiming a
-screenshot artifact.
+screenshot artifact. A report with `evidence-kind=screenshot` is screenshot
+proof only when it records live viewer-window capture after first-frame
+presentation; deterministic-scene-evidence must not claim screenshot proof.
 Generated evidence commands use the `FS.Skia.UI.Testing.EvidenceReports`
 convention for stable key ordering, stdout/file parity, parent-directory
 creation, normalized status vocabulary, and unsupported-host reason/fallback
@@ -37,6 +39,20 @@ fields without forcing the default app profile to reference the Testing package.
 Game entities reuse shared Scene geometry for layout, containment, collision,
 and rendering evidence when the Scene model fits, rather than introducing local
 duplicate bounds records.
+If a generated product introduces its own geometry vocabulary, prefer
+domain-specific names such as `WorldRect`, `WorldPoint`, `TrackBounds`,
+`CarPose`, and `CheckpointBounds`. Keep generic `Rect`, `Point`, and `Size`
+available for Scene and layout primitives.
+
+For Linux desktop review sessions where the generated viewer should keep
+running after the terminal closes, preserve launch diagnostics with:
+
+```bash
+setsid dotnet run --project src/Product/Product.fsproj > readiness/logs/product-viewer.log 2>&1 < /dev/null &
+```
+
+Keep the `readiness/logs/product-viewer.log` path with the review notes so
+stdout, stderr, and startup facts remain available.
 
 Users migrating from the legacy Charts package should replace chart, graph, and
 DataGrid authoring with Controls declarations. Generated products do not

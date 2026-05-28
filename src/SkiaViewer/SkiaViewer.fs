@@ -222,6 +222,28 @@ type ScreenshotEvidenceRequest =
       RendererMode: string
       Timeout: TimeSpan }
 
+type ViewerOpenStatus =
+    | ViewerOpenConfirmed
+    | ViewerOpenUnsupported
+    | ViewerOpenFailed
+    | ViewerOpenUnknown
+
+type FirstFrameStatus =
+    | FirstFramePresentedStatus
+    | FirstFrameNotPresentedStatus
+    | FirstFrameUnknownStatus
+
+type ScreenshotCaptureAvailability =
+    | CaptureAvailable
+    | CaptureUnavailable of reason: string
+    | CaptureAvailabilityUnknown of reason: string
+
+type ScreenshotCaptureSource =
+    | LiveViewerWindow
+    | DeterministicSceneRender
+    | PixelReadbackSource
+    | NoCaptureSource
+
 type ScreenshotEvidenceResult =
     { Status: ScreenshotEvidenceStatus
       Command: string
@@ -232,6 +254,12 @@ type ScreenshotEvidenceResult =
       Height: int option
       RendererMode: string
       FramesRendered: int option
+      ViewerOpenStatus: ViewerOpenStatus
+      FirstFrameStatus: FirstFrameStatus
+      CaptureAvailability: ScreenshotCaptureAvailability
+      CaptureSource: ScreenshotCaptureSource
+      DeterministicFallbackKind: string option
+      ProvesScreenshot: bool
       UnsupportedHostReason: string option
       Fallback: string option
       Diagnostics: string list }
@@ -386,6 +414,32 @@ type ViewerRunEffect =
     | CaptureOutputSize
     | StopBoundedRun
     | PersistRunEvidence of ViewerRunEvidence
+
+type EvidenceWorkflowModel =
+    { Request: ScreenshotEvidenceRequest
+      ViewerOpenStatus: ViewerOpenStatus
+      FirstFrameStatus: FirstFrameStatus
+      CaptureAvailability: ScreenshotCaptureAvailability
+      OutputPath: string option
+      Result: ScreenshotEvidenceResult option
+      Diagnostics: string list }
+
+type EvidenceWorkflowMsg =
+    | LaunchStarted
+    | LaunchCompleted of ViewerOpenStatus
+    | FirstFrameObserved of FirstFrameStatus
+    | CaptureCapabilityKnown of ScreenshotCaptureAvailability
+    | CaptureSucceeded of path: string * width: int * height: int * source: ScreenshotCaptureSource
+    | CaptureUnsupported of reason: string * fallbackKind: string option
+    | CaptureFailed of message: string
+    | EvidenceReportWritten of path: string
+
+type EvidenceWorkflowEffect =
+    | LaunchViewerForEvidence of ScreenshotEvidenceRequest
+    | CaptureViewerScreenshot of outputPath: string
+    | WriteScreenshotEvidenceReport of ScreenshotEvidenceResult
+    | CollectProcessOutput
+    | ValidateGeneratedGuidance
 
 type GeneratedAppHost<'model,'msg> =
     { Init: unit -> 'model * ViewerEffect list
@@ -1743,12 +1797,12 @@ module Viewer =
           Completed = None },
         [ OpenBoundedWindow request ]
 
-    let private elapsedForCompletion model =
+    let private elapsedForCompletion (model: ViewerRunModel) =
         model.LastDiagnostic
         |> Option.bind _.Elapsed
         |> Option.defaultValue (TimeSpan.FromMilliseconds 1.0)
 
-    let completeEvidence size model =
+    let completeEvidence size (model: ViewerRunModel) : ViewerRunEvidence =
         { FramesRendered = model.FramesRendered
           Elapsed = elapsedForCompletion model
           InitialOutputSize = size
@@ -1756,13 +1810,13 @@ module Viewer =
           LastDiagnosticSummary = model.LastDiagnostic |> Option.map _.Message
           EvidencePath = model.Request.EvidencePath }
 
-    let private targetReached model =
+    let private targetReached (model: ViewerRunModel) =
         match model.Request.Target with
         | FirstFrame -> model.FramesRendered >= 1
         | FrameCount count -> count > 0 && model.FramesRendered >= count
         | Duration duration -> elapsedForCompletion model >= duration
 
-    let updateRun msg model =
+    let updateRun (msg: ViewerRunMsg) (model: ViewerRunModel) =
         match msg with
         | BeginRun -> model, [ OpenBoundedWindow model.Request ]
         | RunStarted instant -> { model with StartedAt = Some instant }, [ RequestFrame ]
@@ -2055,7 +2109,7 @@ module Viewer =
                     let model, _ = updateRun (RunStarted start) model
 
                     let startup = dispatchDiagnostic request.Diagnostics (startupDiagnostic TimeSpan.Zero "bounded viewer run started")
-                    let mutable current = updateRun (RecordDiagnostic startup) model |> fst
+                    let mutable current: ViewerRunModel = updateRun (RecordDiagnostic startup) model |> fst
                     let mutable frame = 0
                     let stopwatch = Stopwatch.StartNew()
 
@@ -2380,11 +2434,22 @@ module Viewer =
               Height = None
               RendererMode = request.RendererMode
               FramesRendered = None
+              ViewerOpenStatus = ViewerOpenUnknown
+              FirstFrameStatus = FirstFrameUnknownStatus
+              CaptureAvailability = CaptureAvailabilityUnknown "request validation failed before host launch"
+              CaptureSource = NoCaptureSource
+              DeterministicFallbackKind = None
+              ProvesScreenshot = false
               UnsupportedHostReason = None
               Fallback = None
               Diagnostics = diagnostics }
         else
             let capability = runtimeCapability ()
+            let unsupportedReason =
+                if not capability.PersistentWindow then
+                    capability.UnsupportedHostReasons |> String.concat "; "
+                else
+                    "screenshot capture is unavailable for this viewer host"
 
             { Status = ScreenshotUnsupported
               Command = request.Command
@@ -2395,16 +2460,23 @@ module Viewer =
               Height = None
               RendererMode = request.RendererMode
               FramesRendered = None
-              UnsupportedHostReason =
-                  Some
-                      (if not capability.PersistentWindow then
-                           capability.UnsupportedHostReasons |> String.concat "; "
-                       else
-                           "screenshot capture is unavailable for this viewer host")
+              ViewerOpenStatus =
+                  if capability.PersistentWindow then ViewerOpenUnknown else ViewerOpenUnsupported
+              FirstFrameStatus = FirstFrameUnknownStatus
+              CaptureAvailability = CaptureUnavailable unsupportedReason
+              CaptureSource = DeterministicSceneRender
+              DeterministicFallbackKind = Some "deterministic-scene-evidence"
+              ProvesScreenshot = false
+              UnsupportedHostReason = Some unsupportedReason
               Fallback = Some "deterministic-scene-evidence"
               Diagnostics =
                   [ "status=unsupported"
                     "evidence-kind=screenshot"
+                    "viewer-open-status=unknown"
+                    "first-frame-status=unknown"
+                    $"capture-availability=unavailable:{unsupportedReason}"
+                    "capture-source=deterministic-scene-render"
+                    "proves-screenshot=false"
                     "fallback=deterministic-scene-evidence"
                     $"scene-capabilities={Scene.describe { Nodes = [ scene ] } |> List.length}" ] }
 
@@ -2414,6 +2486,115 @@ module Viewer =
 
     let captureScreenshotEvidence request options scene =
         ScreenshotEvidenceHandling.capture request options scene
+
+    let initEvidenceWorkflow (request: ScreenshotEvidenceRequest) =
+        let model: EvidenceWorkflowModel =
+            { Request = request
+              ViewerOpenStatus = ViewerOpenUnknown
+              FirstFrameStatus = FirstFrameUnknownStatus
+              CaptureAvailability = CaptureAvailabilityUnknown "capture capability not yet checked"
+              OutputPath = Some request.OutputPath
+              Result = None
+              Diagnostics = [] }
+
+        model, [ LaunchViewerForEvidence request ]
+
+    let updateEvidenceWorkflow (msg: EvidenceWorkflowMsg) (model: EvidenceWorkflowModel) =
+        match msg with
+        | LaunchStarted ->
+            { model with Diagnostics = model.Diagnostics @ [ "launch-started=true" ] },
+            [ CollectProcessOutput ]
+        | LaunchCompleted status ->
+            { model with ViewerOpenStatus = status },
+            []
+        | FirstFrameObserved status ->
+            { model with FirstFrameStatus = status },
+            [ CaptureViewerScreenshot model.Request.OutputPath ]
+        | CaptureCapabilityKnown availability ->
+            { model with CaptureAvailability = availability },
+            []
+        | CaptureSucceeded(path, width, height, source) ->
+            let result: ScreenshotEvidenceResult =
+                { Status = ScreenshotOk
+                  Command = model.Request.Command
+                  EvidenceKind = "screenshot"
+                  OutputPath = model.OutputPath
+                  ScreenshotPath = Some path
+                  Width = Some width
+                  Height = Some height
+                  RendererMode = model.Request.RendererMode
+                  FramesRendered = Some 1
+                  ViewerOpenStatus = model.ViewerOpenStatus
+                  FirstFrameStatus = model.FirstFrameStatus
+                  CaptureAvailability = CaptureAvailable
+                  CaptureSource = source
+                  DeterministicFallbackKind = None
+                  ProvesScreenshot = source = LiveViewerWindow
+                  UnsupportedHostReason = None
+                  Fallback = None
+                  Diagnostics =
+                      model.Diagnostics
+                      @ [ "status=ok"
+                          "evidence-kind=screenshot"
+                          $"screenshot-path={path}"
+                          $"dimensions={width}x{height}"
+                          $"capture-source={source}" ] }
+
+            { model with
+                CaptureAvailability = CaptureAvailable
+                Result = Some result },
+            [ WriteScreenshotEvidenceReport result ]
+        | CaptureUnsupported(reason, fallbackKind) ->
+            let result: ScreenshotEvidenceResult =
+                { Status = ScreenshotUnsupported
+                  Command = model.Request.Command
+                  EvidenceKind = "screenshot"
+                  OutputPath = model.OutputPath
+                  ScreenshotPath = None
+                  Width = None
+                  Height = None
+                  RendererMode = model.Request.RendererMode
+                  FramesRendered = None
+                  ViewerOpenStatus = model.ViewerOpenStatus
+                  FirstFrameStatus = model.FirstFrameStatus
+                  CaptureAvailability = CaptureUnavailable reason
+                  CaptureSource = fallbackKind |> Option.map (fun _ -> DeterministicSceneRender) |> Option.defaultValue NoCaptureSource
+                  DeterministicFallbackKind = fallbackKind
+                  ProvesScreenshot = false
+                  UnsupportedHostReason = Some reason
+                  Fallback = fallbackKind
+                  Diagnostics = model.Diagnostics @ [ "status=unsupported"; $"unsupported-host-reason={reason}" ] }
+
+            { model with
+                CaptureAvailability = CaptureUnavailable reason
+                Result = Some result },
+            [ WriteScreenshotEvidenceReport result ]
+        | CaptureFailed message ->
+            let result: ScreenshotEvidenceResult =
+                { Status = ScreenshotFailed
+                  Command = model.Request.Command
+                  EvidenceKind = "screenshot"
+                  OutputPath = model.OutputPath
+                  ScreenshotPath = None
+                  Width = None
+                  Height = None
+                  RendererMode = model.Request.RendererMode
+                  FramesRendered = None
+                  ViewerOpenStatus = model.ViewerOpenStatus
+                  FirstFrameStatus = model.FirstFrameStatus
+                  CaptureAvailability = model.CaptureAvailability
+                  CaptureSource = NoCaptureSource
+                  DeterministicFallbackKind = None
+                  ProvesScreenshot = false
+                  UnsupportedHostReason = None
+                  Fallback = None
+                  Diagnostics = model.Diagnostics @ [ $"failure={message}" ] }
+
+            { model with Result = Some result },
+            [ WriteScreenshotEvidenceReport result ]
+        | EvidenceReportWritten path ->
+            { model with OutputPath = Some path; Diagnostics = model.Diagnostics @ [ $"report-written={path}" ] },
+            []
 
 module GeneratedAppHost =
     let dispatchKey host raw model =

@@ -220,6 +220,26 @@ type EvidenceReportValidationResult =
       MissingFields: string list
       Diagnostics: string list }
 
+type ScreenshotEvidenceReportCheck =
+    { Status: string
+      EvidenceKind: string option
+      ScreenshotPath: string option
+      Width: int option
+      Height: int option
+      ViewerOpenStatus: string option
+      FirstFrameStatus: string option
+      CaptureAvailability: string option
+      CaptureSource: string option
+      UnsupportedHostReason: string option
+      Fallback: string option
+      Diagnostics: string list }
+
+type ScreenshotEvidenceReportValidationResult =
+    { Accepted: bool
+      MissingFields: string list
+      FailureClass: string option
+      Diagnostics: string list }
+
 module GeneratedProductAssertions =
     let summarize expectation =
         let packages =
@@ -584,10 +604,20 @@ module GeneratedLayoutValidation =
           Diagnostics = diagnostics }
 
 module HostWarningClassification =
-    let classify check =
-        let known =
+    let classify (check: HostWarningClassificationCheck) =
+        let warningLines =
+            check.RawMessage.Split([| '\r'; '\n' |], StringSplitOptions.RemoveEmptyEntries)
+            |> Array.map _.Trim()
+            |> Array.filter (fun line -> not (String.IsNullOrWhiteSpace line))
+            |> Array.toList
+
+        let lineHasKnownMarker (line: string) =
             check.KnownBenignMarkers
-            |> List.exists (fun marker -> check.RawMessage.Contains(marker, StringComparison.OrdinalIgnoreCase))
+            |> List.exists (fun (marker: string) -> line.Contains(marker, StringComparison.OrdinalIgnoreCase))
+
+        let known =
+            not warningLines.IsEmpty
+            && warningLines |> List.forall lineHasKnownMarker
 
         let layoutAccepted =
             check.LayoutReadable = Some true || check.ExplicitlyUnsupportedWithoutReadabilityClaim
@@ -625,6 +655,8 @@ module HostWarningClassification =
                   "raw-message=missing"
               if not known && warningClass = UnknownWarning then
                   "unknown warning marker"
+              if warningLines |> List.exists (lineHasKnownMarker >> not) then
+                  "unrelated warning or error text present"
               if not check.LaunchSucceeded then
                   "launch evidence failed"
               if not check.RenderingSucceeded then
@@ -876,4 +908,88 @@ module EvidenceReports =
 
         { Accepted = missing.IsEmpty && diagnostics.IsEmpty
           MissingFields = missing
+          Diagnostics = diagnostics }
+
+    let validateScreenshotEvidence (check: ScreenshotEvidenceReportCheck) =
+        let normalizedStatus = check.Status.Trim().ToLowerInvariant()
+        let normalizedKind = check.EvidenceKind |> Option.map (fun value -> value.Trim().ToLowerInvariant())
+        let normalizedSource = check.CaptureSource |> Option.map (fun value -> value.Trim().ToLowerInvariant())
+        let hostilePath =
+            check.ScreenshotPath
+            |> Option.exists (fun path ->
+                let normalized = path.Replace('\\', '/')
+                IO.Path.IsPathRooted path
+                || normalized.StartsWith("../", StringComparison.Ordinal)
+                || normalized.Contains("/../", StringComparison.Ordinal))
+
+        let hiddenWarning =
+            check.Diagnostics
+            |> List.exists (fun diagnostic ->
+                diagnostic.Contains("warning", StringComparison.OrdinalIgnoreCase)
+                || diagnostic.Contains("Gtk-Message", StringComparison.OrdinalIgnoreCase))
+
+        let positiveDimensions =
+            match check.Width, check.Height with
+            | Some width, Some height -> width > 0 && height > 0
+            | _ -> false
+
+        let missing =
+            [ if normalizedKind.IsNone then
+                  "evidence-kind"
+              if check.ViewerOpenStatus.IsNone then
+                  "viewer-open-status"
+              if check.FirstFrameStatus.IsNone then
+                  "first-frame-status"
+              if check.CaptureAvailability.IsNone then
+                  "capture-availability"
+              if normalizedSource.IsNone then
+                  "capture-source"
+              if normalizedStatus = "ok" then
+                  if check.ScreenshotPath.IsNone then
+                      "screenshot-path"
+                  if check.Width.IsNone then
+                      "width"
+                  if check.Height.IsNone then
+                      "height"
+              if normalizedStatus = "unsupported" then
+                  if check.UnsupportedHostReason.IsNone then
+                      "unsupported-host-reason"
+                  if check.Fallback.IsNone then
+                      "fallback" ]
+
+        let diagnostics =
+            [ if normalizedKind <> Some "screenshot" then
+                  "screenshot evidence report must use evidence-kind=screenshot"
+              match normalizedStatus with
+              | "ok" ->
+                  if not positiveDimensions then
+                      "successful screenshot evidence requires positive dimensions"
+                  if normalizedSource <> Some "live-viewer-window" then
+                      "successful screenshot evidence requires capture-source=live-viewer-window"
+                  if check.Fallback.IsSome then
+                      "successful screenshot evidence must not require deterministic fallback"
+                  if hostilePath then
+                      "screenshot artifact path must stay within the requested readiness artifact tree"
+                  if hiddenWarning then
+                      "successful screenshot evidence must not hide warning diagnostics"
+              | "unsupported" ->
+                  if check.ScreenshotPath.IsSome then
+                      "unsupported screenshot evidence must not claim screenshot-path"
+                  if normalizedSource = Some "live-viewer-window" then
+                      "unsupported screenshot evidence must not claim live viewer capture"
+              | "failed" -> ()
+              | other -> $"unsupported screenshot status: {other}"
+              yield! check.Diagnostics ]
+
+        let failureClass =
+            if not missing.IsEmpty then
+                Some "missing-screenshot-evidence-fields"
+            elif not diagnostics.IsEmpty then
+                Some "invalid-screenshot-evidence-fields"
+            else
+                None
+
+        { Accepted = failureClass.IsNone
+          MissingFields = missing
+          FailureClass = failureClass
           Diagnostics = diagnostics }
