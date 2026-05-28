@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Model.fs" />
+    <Compile Include="View.fs" />
+    <Compile Include="LayoutEvidence.fs" />
+    <Compile Include="EvidenceCommands.fs" />
+    <!--#if (profile == "app" || profile == "sample-pack") -->
+    <Compile Include="WindowOptions.fs" />
+    <!--#endif -->
     <Compile Include="Program.fs" />
   </ItemGroup>
 

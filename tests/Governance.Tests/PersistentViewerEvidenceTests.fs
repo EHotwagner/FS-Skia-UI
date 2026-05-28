@@ -342,6 +342,34 @@ let persistentViewerEvidenceTests =
             Expect.stringContains output "metadata-only screenshot claim" "audit reports metadata-only screenshot claim"
         }
 
+        test "EvidenceAudit rejects unsupported screenshot hosts that claim proof" {
+            use fixture = new TempFixtureDirectory("window-visibility-unsupported-screenshot-proof")
+            writeWindowVisibilityFixture
+                fixture.Root
+                [ "real-image-evidence.md", "requested-image-evidence=true\nstatus=unsupported\nevidence-kind=screenshot\nunsupported-host-reason=DISPLAY is missing\nfallback=deterministic-scene-evidence\nscreenshot-path=none\nartifact-kind=image\nartifact-decodable=true\nproves-scene-rendering=false\nproves-desktop-visibility=true\n" ]
+                []
+
+            let code, stdout, stderr = runEvidenceAudit fixture.Root
+            let output = stdout + stderr
+
+            Expect.equal code 2 "audit rejects unsupported screenshot proof claims"
+            Expect.stringContains output "unsupported screenshot cannot prove desktop visibility" "audit reports unsupported screenshot proof claim"
+        }
+
+        test "EvidenceAudit rejects unsupported screenshot hosts without explicit reason" {
+            use fixture = new TempFixtureDirectory("window-visibility-unsupported-screenshot-reason")
+            writeWindowVisibilityFixture
+                fixture.Root
+                [ "real-image-evidence.md", "requested-image-evidence=true\nstatus=unsupported\nevidence-kind=screenshot\nfallback=deterministic-scene-evidence\nscreenshot-path=none\nproves-scene-rendering=false\nproves-desktop-visibility=false\n" ]
+                []
+
+            let code, stdout, stderr = runEvidenceAudit fixture.Root
+            let output = stdout + stderr
+
+            Expect.equal code 2 "audit rejects unsupported screenshot records without unsupported-host reason"
+            Expect.stringContains output "unsupported screenshot missing unsupported-host reason" "audit reports missing unsupported-host reason"
+        }
+
         test "EvidenceAudit rejects visual evidence missing proof fields" {
             use fixture = new TempFixtureDirectory("window-visibility-image-missing-proof-fields")
             writeWindowVisibilityFixture

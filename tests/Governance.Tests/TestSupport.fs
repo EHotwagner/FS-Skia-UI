@@ -29,6 +29,21 @@ let directoryExists relativePath =
 let read (relativePath: string) =
     File.ReadAllText(fullPath relativePath)
 
+let readBuildGovernanceSources () =
+    let buildSource = read "build.fsx"
+    let scriptsDir = fullPath "scripts/build"
+
+    if Directory.Exists scriptsDir then
+        let scriptSources =
+            Directory.GetFiles(scriptsDir, "*.fsx")
+            |> Array.sort
+            |> Array.map File.ReadAllText
+            |> String.concat Environment.NewLine
+
+        buildSource + Environment.NewLine + scriptSources
+    else
+        buildSource
+
 let readJson (relativePath: string) =
     JsonDocument.Parse(read relativePath)
 

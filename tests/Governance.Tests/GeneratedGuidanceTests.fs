@@ -219,10 +219,16 @@ let generatedGuidanceTests =
                 "template/base/src/Product/Program.fs"
                 [ "let interpretAtHostBoundary"
                   "let viewerEffectsForModel"
+                  "let appCommandName" ]
+
+            expectFileContains
+                "template/base/src/Product/EvidenceCommands.fs"
+                [ "let interpretAtHostBoundary"
+                  "let viewerEffectsForModel"
                   "let appCommandName"
                   "RenderScene(view model)" ]
 
-            let source = read "template/base/src/Product/Program.fs"
+            let source = read "template/base/src/Product/EvidenceCommands.fs"
             Expect.isFalse (source.Contains("[ DispatchHostCommand \"save:Product\"; RenderScene", System.StringComparison.Ordinal)) "generated viewer effects are not appended to app command lists"
         }
 

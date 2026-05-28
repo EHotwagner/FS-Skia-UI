@@ -154,6 +154,36 @@ let commandContractTests =
                 expectContains content $"\"{verifyDependency}\"" $"Verify includes {verifyDependency}")
         }
 
+        test "build governance targets preserve report outputs readiness paths and actionable artifact failures" {
+            let content = readBuildGovernanceSources ()
+
+            [ "Dev"
+              "Verify"
+              "Ci"
+              "PackLocal"
+              "DependencyReport"
+              "TemplateCheck"
+              "GeneratedGuidanceCheck"
+              "TemplateDrift"
+              "EvidenceGraph"
+              "EvidenceAudit" ]
+            |> List.iter expectFakeTarget
+
+            [ "DependencyReportPath"
+              "GeneratedGuidanceReportPath"
+              "TemplateDriftReportPath"
+              "EvidenceGraphReportPath"
+              "EvidenceAuditReportPath"
+              "RequireFiles(\"dependency report output\", [ model.DependencyReportPath ])"
+              "RequireFiles(\"generated guidance report output\", [ model.GeneratedGuidanceReportPath ])"
+              "RequireFiles(\"template drift report output\", [ model.TemplateDriftReportPath ])"
+              "RequireFiles(\"task graph output\""
+              "RequireFiles(\"evidence audit output\""
+              "failwithf \"Missing %s:%s%s\""
+              "See %s" ]
+            |> List.iter (fun needle -> expectContains content needle $"build governance preserves {needle}")
+        }
+
         test "workflow self-check exercises pure transition and emitted effect assertions" {
             let exitCode, stdout, stderr = runFakeTarget "BuildWorkflowCheck"
             let output = stdout + stderr

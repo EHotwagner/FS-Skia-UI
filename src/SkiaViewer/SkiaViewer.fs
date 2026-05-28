@@ -609,37 +609,44 @@ module Viewer =
         | TriangleStrip -> FS.Skia.UI.VertexMode.TriangleStrip
         | TriangleFan -> FS.Skia.UI.VertexMode.TriangleFan
 
-    let private levelRank level =
-        match level with
-        | ViewerDiagnosticLevel.Error -> 0
-        | ViewerDiagnosticLevel.Warning -> 1
-        | ViewerDiagnosticLevel.Info -> 2
-        | ViewerDiagnosticLevel.Debug -> 3
-        | ViewerDiagnosticLevel.Trace -> 4
+    module DiagnosticsFiltering =
+        let levelRank level =
+            match level with
+            | ViewerDiagnosticLevel.Error -> 0
+            | ViewerDiagnosticLevel.Warning -> 1
+            | ViewerDiagnosticLevel.Info -> 2
+            | ViewerDiagnosticLevel.Debug -> 3
+            | ViewerDiagnosticLevel.Trace -> 4
 
-    let private frameAllowed options (diagnostic: ViewerDiagnosticEvent) =
-        match diagnostic.Category, options.FrameLogLimit, diagnostic.FrameIndex with
-        | ViewerDiagnosticCategory.Frame, Some limit, Some frameIndex -> limit > 0 && frameIndex <= limit
-        | ViewerDiagnosticCategory.Frame, Some limit, None -> limit <> 0
-        | ViewerDiagnosticCategory.Frame, None, _ -> true
-        | _ -> true
+        let frameAllowed options (diagnostic: ViewerDiagnosticEvent) =
+            match diagnostic.Category, options.FrameLogLimit, diagnostic.FrameIndex with
+            | ViewerDiagnosticCategory.Frame, Some limit, Some frameIndex -> limit > 0 && frameIndex <= limit
+            | ViewerDiagnosticCategory.Frame, Some limit, None -> limit <> 0
+            | ViewerDiagnosticCategory.Frame, None, _ -> true
+            | _ -> true
 
-    let shouldCaptureDiagnostic options (diagnostic: ViewerDiagnosticEvent) =
-        let categoryAllowed =
-            options.Verbose
-            || Set.isEmpty options.Categories
-            || Set.contains diagnostic.Category options.Categories
+        let shouldCapture options (diagnostic: ViewerDiagnosticEvent) =
+            let categoryAllowed =
+                options.Verbose
+                || Set.isEmpty options.Categories
+                || Set.contains diagnostic.Category options.Categories
 
-        levelRank diagnostic.Level <= levelRank options.MinimumLevel
-        && categoryAllowed
-        && frameAllowed options diagnostic
+            levelRank diagnostic.Level <= levelRank options.MinimumLevel
+            && categoryAllowed
+            && frameAllowed options diagnostic
 
-    let captureDiagnostic options (diagnostic: ViewerDiagnosticEvent) =
-        if shouldCaptureDiagnostic options diagnostic then
-            options.Sink |> Option.iter (fun sink -> sink diagnostic)
-            Some diagnostic
-        else
-            None
+        let capture options (diagnostic: ViewerDiagnosticEvent) =
+            if shouldCapture options diagnostic then
+                options.Sink |> Option.iter (fun sink -> sink diagnostic)
+                Some diagnostic
+            else
+                None
+
+    let shouldCaptureDiagnostic options diagnostic =
+        DiagnosticsFiltering.shouldCapture options diagnostic
+
+    let captureDiagnostic options diagnostic =
+        DiagnosticsFiltering.capture options diagnostic
 
     let private dispatchDiagnostic options (diagnostic: ViewerDiagnosticEvent) =
         captureDiagnostic options diagnostic |> Option.defaultValue diagnostic
@@ -668,68 +675,75 @@ module Viewer =
           StartupPosition = Some Centered
           BackendPreference = Some DefaultBackend }
 
-    let private optionResult option requested observed status message =
-        { Option = option
-          Requested = requested
-          Observed = observed
-          Status = status
-          Message = message }
+    module WindowBehaviorValidation =
+        let optionResult option requested observed status message =
+            { Option = option
+              Requested = requested
+              Observed = observed
+              Status = status
+              Message = message }
+
+        let validateBehavior (request: ViewerWindowBehaviorRequest) =
+            let resize =
+                match request.ResizePolicy with
+                | Resizable -> optionResult "resize" "resizable" (Some "resizable") Honored "Resize policy can be honored by the viewer host."
+                | FixedSize -> optionResult "resize" "fixed-size" (Some "fixed-size") Honored "Fixed-size window policy can be honored by the viewer host."
+
+            let maximize =
+                match request.MaximizePolicy with
+                | Maximizable -> optionResult "maximize" "maximizable" (Some "maximizable") Honored "Maximize policy can be honored by the viewer host."
+                | NotMaximizable -> optionResult "maximize" "not-maximizable" (Some "not-maximizable") Honored "Maximize-disabled policy can be honored by the viewer host."
+
+            let startupState =
+                match request.StartupState with
+                | Normal -> optionResult "startup-state" "normal" (Some "normal") Honored "Normal startup state can be honored by the viewer host."
+                | Maximized -> optionResult "startup-state" "maximized" (Some "maximized") Honored "Maximized startup state can be requested."
+                | Minimized -> optionResult "startup-state" "minimized" None UnsupportedOption "Minimized startup is not accepted for visible interactive launch validation."
+                | Fullscreen -> optionResult "startup-state" "fullscreen" None UnsupportedOption "Fullscreen startup is not yet supported by the viewer host."
+
+            let startupPosition =
+                match request.StartupPosition with
+                | None -> optionResult "startup-position" "" None UnsupportedOption "No startup position was requested."
+                | Some Centered -> optionResult "startup-position" "centered" (Some "centered") Honored "Centered startup can be requested."
+                | Some(Coordinates(x, y)) when x < 0 || y < 0 ->
+                    optionResult "startup-position" $"{x},{y}" None FailedOption "Startup coordinates must be non-negative."
+                | Some(Coordinates(x, y)) ->
+                    optionResult "startup-position" $"{x},{y}" (Some $"{x},{y}") Honored "Startup coordinates can be requested."
+
+            let backend =
+                match request.BackendPreference with
+                | None -> optionResult "backend" "" (Some "default") Degraded "No backend requested; default backend will be selected."
+                | Some ViewerBackendPreference.DefaultBackend -> optionResult "backend" "default" (Some "default") Honored "Default backend will be selected."
+                | Some ViewerBackendPreference.Vulkan -> optionResult "backend" "vulkan" (Some "vulkan") Honored "Vulkan backend can be requested."
+                | Some ViewerBackendPreference.OpenGL -> optionResult "backend" "opengl" None UnsupportedOption "OpenGL backend preference is not supported by this viewer host."
+                | Some ViewerBackendPreference.Software -> optionResult "backend" "software" None UnsupportedOption "Software backend preference is not supported by this viewer host."
+
+            [ resize; maximize; startupState; startupPosition; backend ]
+
+        let validateLaunch (initialSize: Size) request =
+            let initialSizeResult =
+                if initialSize.Width <= 0 || initialSize.Height <= 0 then
+                    optionResult
+                        "initial-size"
+                        $"{initialSize.Width}x{initialSize.Height}"
+                        None
+                        FailedOption
+                        "Initial window size must be positive before native window creation."
+                else
+                    optionResult
+                        "initial-size"
+                        $"{initialSize.Width}x{initialSize.Height}"
+                        (Some $"{initialSize.Width}x{initialSize.Height}")
+                        Honored
+                        "Initial window size is positive and can be requested."
+
+            initialSizeResult :: validateBehavior request
 
     let validateWindowBehavior request =
-        let resize =
-            match request.ResizePolicy with
-            | Resizable -> optionResult "resize" "resizable" (Some "resizable") Honored "Resize policy can be honored by the viewer host."
-            | FixedSize -> optionResult "resize" "fixed-size" (Some "fixed-size") Honored "Fixed-size window policy can be honored by the viewer host."
-
-        let maximize =
-            match request.MaximizePolicy with
-            | Maximizable -> optionResult "maximize" "maximizable" (Some "maximizable") Honored "Maximize policy can be honored by the viewer host."
-            | NotMaximizable -> optionResult "maximize" "not-maximizable" (Some "not-maximizable") Honored "Maximize-disabled policy can be honored by the viewer host."
-
-        let startupState =
-            match request.StartupState with
-            | Normal -> optionResult "startup-state" "normal" (Some "normal") Honored "Normal startup state can be honored by the viewer host."
-            | Maximized -> optionResult "startup-state" "maximized" (Some "maximized") Honored "Maximized startup state can be requested."
-            | Minimized -> optionResult "startup-state" "minimized" None UnsupportedOption "Minimized startup is not accepted for visible interactive launch validation."
-            | Fullscreen -> optionResult "startup-state" "fullscreen" None UnsupportedOption "Fullscreen startup is not yet supported by the viewer host."
-
-        let startupPosition =
-            match request.StartupPosition with
-            | None -> optionResult "startup-position" "" None UnsupportedOption "No startup position was requested."
-            | Some Centered -> optionResult "startup-position" "centered" (Some "centered") Honored "Centered startup can be requested."
-            | Some(Coordinates(x, y)) when x < 0 || y < 0 ->
-                optionResult "startup-position" $"{x},{y}" None FailedOption "Startup coordinates must be non-negative."
-            | Some(Coordinates(x, y)) ->
-                optionResult "startup-position" $"{x},{y}" (Some $"{x},{y}") Honored "Startup coordinates can be requested."
-
-        let backend =
-            match request.BackendPreference with
-            | None -> optionResult "backend" "" (Some "default") Degraded "No backend requested; default backend will be selected."
-            | Some ViewerBackendPreference.DefaultBackend -> optionResult "backend" "default" (Some "default") Honored "Default backend will be selected."
-            | Some ViewerBackendPreference.Vulkan -> optionResult "backend" "vulkan" (Some "vulkan") Honored "Vulkan backend can be requested."
-            | Some ViewerBackendPreference.OpenGL -> optionResult "backend" "opengl" None UnsupportedOption "OpenGL backend preference is not supported by this viewer host."
-            | Some ViewerBackendPreference.Software -> optionResult "backend" "software" None UnsupportedOption "Software backend preference is not supported by this viewer host."
-
-        [ resize; maximize; startupState; startupPosition; backend ]
+        WindowBehaviorValidation.validateBehavior request
 
     let validateWindowLaunchBehavior (initialSize: Size) request =
-        let initialSizeResult =
-            if initialSize.Width <= 0 || initialSize.Height <= 0 then
-                optionResult
-                    "initial-size"
-                    $"{initialSize.Width}x{initialSize.Height}"
-                    None
-                    FailedOption
-                    "Initial window size must be positive before native window creation."
-            else
-                optionResult
-                    "initial-size"
-                    $"{initialSize.Width}x{initialSize.Height}"
-                    (Some $"{initialSize.Width}x{initialSize.Height}")
-                    Honored
-                    "Initial window size is positive and can be requested."
-
-        initialSizeResult :: validateWindowBehavior request
+        WindowBehaviorValidation.validateLaunch initialSize request
 
     let classifyWindowState diagnostic =
         let clientSizePositive =
@@ -892,6 +906,23 @@ module Viewer =
         else
             Result.Ok()
 
+    let private nativeWindowEnvironmentLock = obj()
+
+    let private withNativeWindowEnvironment action =
+        if OperatingSystem.IsLinux()
+           && not (String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable "DISPLAY"))
+           && not (String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable "WAYLAND_DISPLAY")) then
+            lock nativeWindowEnvironmentLock (fun () ->
+                let previousWayland = Environment.GetEnvironmentVariable "WAYLAND_DISPLAY"
+
+                try
+                    Environment.SetEnvironmentVariable("WAYLAND_DISPLAY", null)
+                    action()
+                finally
+                    Environment.SetEnvironmentVariable("WAYLAND_DISPLAY", previousWayland))
+        else
+            action()
+
     let private unsupportedHostFailure () =
         let isSupportedOs = OperatingSystem.IsWindows() || OperatingSystem.IsLinux()
 
@@ -904,104 +935,114 @@ module Viewer =
         else
             None
 
-    let desktopSessionDiagnostic () =
+    module HostCapability =
         let envOption name : string option =
             match Environment.GetEnvironmentVariable name with
             | null -> None
             | value when String.IsNullOrWhiteSpace value -> None
             | value -> Some value
 
-        let runtimeDirectory = envOption "XDG_RUNTIME_DIR"
+        let desktopSessionDiagnostic () =
+            let runtimeDirectory = envOption "XDG_RUNTIME_DIR"
 
-        let runtimeDirectoryExists =
-            runtimeDirectory |> Option.exists IO.Directory.Exists
+            let runtimeDirectoryExists =
+                runtimeDirectory |> Option.exists IO.Directory.Exists
 
-        let displayVariable =
-            let wayland = envOption "WAYLAND_DISPLAY"
-            let x11 = envOption "DISPLAY"
+            let displayVariable =
+                let wayland = envOption "WAYLAND_DISPLAY"
+                let x11 = envOption "DISPLAY"
 
-            match wayland, x11 with
-            | Some value, _ -> Some $"WAYLAND_DISPLAY={value}"
-            | None, Some value -> Some $"DISPLAY={value}"
-            | None, None -> None
+                match wayland, x11 with
+                | Some value, _ -> Some $"WAYLAND_DISPLAY={value}"
+                | None, Some value -> Some $"DISPLAY={value}"
+                | None, None -> None
 
-        let displaySocket =
-            let wayland = envOption "WAYLAND_DISPLAY"
-            let x11 = envOption "DISPLAY"
+            let displaySocket =
+                let wayland = envOption "WAYLAND_DISPLAY"
+                let x11 = envOption "DISPLAY"
 
-            match runtimeDirectory, wayland, x11 with
-            | Some runtimeDir, Some wayland, _ ->
-                Some(IO.Path.Combine(runtimeDir, wayland))
-            | _, _, Some display ->
-                let number = display.TrimStart(':').Split('.').[0]
-                Some($"/tmp/.X11-unix/X{number}")
-            | _ -> None
+                match runtimeDirectory, wayland, x11 with
+                | Some runtimeDir, Some wayland, _ ->
+                    Some(IO.Path.Combine(runtimeDir, wayland))
+                | _, _, Some display ->
+                    let number = display.TrimStart(':').Split('.').[0]
+                    Some($"/tmp/.X11-unix/X{number}")
+                | _ -> None
 
-        let displaySocketExists =
-            displaySocket |> Option.exists IO.File.Exists
+            let displaySocketExists =
+                displaySocket |> Option.exists IO.File.Exists
 
-        let sessionBus = envOption "DBUS_SESSION_BUS_ADDRESS"
+            let sessionBus = envOption "DBUS_SESSION_BUS_ADDRESS"
 
-        let fallback = IO.Path.Combine(IO.Path.GetTempPath(), "fs-skia-ui-runtime")
+            let fallback = IO.Path.Combine(IO.Path.GetTempPath(), "fs-skia-ui-runtime")
 
-        let blockedReason =
-            if not (OperatingSystem.IsLinux()) then
-                None
-            elif runtimeDirectory.IsNone then
-                Some "XDG_RUNTIME_DIR is missing; interactive Linux launch is blocked before app lifecycle debugging."
-            elif not runtimeDirectoryExists then
-                Some "XDG_RUNTIME_DIR does not exist; interactive Linux launch is blocked before app lifecycle debugging."
-            elif displayVariable.IsNone then
-                Some "DISPLAY or WAYLAND_DISPLAY is missing; interactive Linux launch is blocked before app lifecycle debugging."
-            elif displaySocket.IsSome && not displaySocketExists then
-                Some "Display socket is missing; interactive Linux launch is blocked before app lifecycle debugging."
-            else
-                None
+            let blockedReason =
+                if not (OperatingSystem.IsLinux()) then
+                    None
+                elif runtimeDirectory.IsNone then
+                    Some "XDG_RUNTIME_DIR is missing; interactive Linux launch is blocked before app lifecycle debugging."
+                elif not runtimeDirectoryExists then
+                    Some "XDG_RUNTIME_DIR does not exist; interactive Linux launch is blocked before app lifecycle debugging."
+                elif displayVariable.IsNone then
+                    Some "DISPLAY or WAYLAND_DISPLAY is missing; interactive Linux launch is blocked before app lifecycle debugging."
+                elif displaySocket.IsSome && not displaySocketExists then
+                    Some "Display socket is missing; interactive Linux launch is blocked before app lifecycle debugging."
+                else
+                    None
 
-        let diagnosticClass, message =
-            if not (OperatingSystem.IsLinux()) then
-                "environment-session-not-required", "Desktop session diagnostic is not required on this host."
-            else
-                match blockedReason with
-                | Some reason -> "unsupported-host", reason
-                | None -> "environment-session-ready", "Desktop session prerequisites are present."
+            let diagnosticClass, message =
+                if not (OperatingSystem.IsLinux()) then
+                    "environment-session-not-required", "Desktop session diagnostic is not required on this host."
+                else
+                    match blockedReason with
+                    | Some reason -> "unsupported-host", reason
+                    | None -> "environment-session-ready", "Desktop session prerequisites are present."
 
-        { RuntimeDirectory = runtimeDirectory
-          RuntimeDirectoryExists = runtimeDirectoryExists
-          RuntimeDirectoryOwnerSuitable = runtimeDirectoryExists
-          RuntimeDirectoryPermissionsSuitable = runtimeDirectoryExists
-          DisplayVariable = displayVariable
-          DisplaySocket = displaySocket
-          DisplaySocketExists = displaySocketExists
-          SessionBus = sessionBus
-          FallbackRuntimeDirectory = Some fallback
-          FallbackIsFullDesktopSession = false
-          DiagnosticClass = diagnosticClass
-          Message = message }
+            { RuntimeDirectory = runtimeDirectory
+              RuntimeDirectoryExists = runtimeDirectoryExists
+              RuntimeDirectoryOwnerSuitable = runtimeDirectoryExists
+              RuntimeDirectoryPermissionsSuitable = runtimeDirectoryExists
+              DisplayVariable = displayVariable
+              DisplaySocket = displaySocket
+              DisplaySocketExists = displaySocketExists
+              SessionBus = sessionBus
+              FallbackRuntimeDirectory = Some fallback
+              FallbackIsFullDesktopSession = false
+              DiagnosticClass = diagnosticClass
+              Message = message }
+
+        let unsupportedHostReasons () =
+            let reasons = ResizeArray<string>()
+
+            if not (OperatingSystem.IsWindows() || OperatingSystem.IsLinux()) then
+                reasons.Add($"persistent windows are unsupported on {Environment.OSVersion.Platform}")
+
+            if OperatingSystem.IsLinux() then
+                let diagnostic = desktopSessionDiagnostic()
+
+                if diagnostic.DiagnosticClass = "unsupported-host" then
+                    reasons.Add(diagnostic.Message)
+
+            List.ofSeq reasons
+
+        let runtimeCapability () =
+            let unsupportedReasons = unsupportedHostReasons ()
+
+            { PersistentWindow = List.isEmpty unsupportedReasons
+              BoundedSmoke = true
+              KeyboardInput = true
+              RendererMode = "skia"
+              UnsupportedHostReasons = unsupportedReasons
+              MissingPackageCapabilities = [] }
+
+    let desktopSessionDiagnostic () =
+        HostCapability.desktopSessionDiagnostic ()
 
     let private unsupportedHostReasons () =
-        let reasons = ResizeArray<string>()
-
-        if not (OperatingSystem.IsWindows() || OperatingSystem.IsLinux()) then
-            reasons.Add($"persistent windows are unsupported on {Environment.OSVersion.Platform}")
-
-        if OperatingSystem.IsLinux() then
-            let diagnostic = desktopSessionDiagnostic()
-
-            if diagnostic.DiagnosticClass = "unsupported-host" then
-                reasons.Add(diagnostic.Message)
-
-        List.ofSeq reasons
+        HostCapability.unsupportedHostReasons ()
 
     let runtimeCapability () =
-        let unsupportedReasons = unsupportedHostReasons ()
-
-        { PersistentWindow = List.isEmpty unsupportedReasons
-          BoundedSmoke = true
-          KeyboardInput = true
-          RendererMode = "skia"
-          UnsupportedHostReasons = unsupportedReasons
-          MissingPackageCapabilities = [] }
+        HostCapability.runtimeCapability ()
 
     let private persistentUnsupportedFailure capability =
         let message =
@@ -1203,7 +1244,7 @@ module Viewer =
         let renderCurrentScene () =
             getScene ()
             |> nodeToScene
-            |> toLegacyScene
+            |> SceneConversion.toLegacyScene
 
         let init () =
             (), Cmd.none
@@ -1277,7 +1318,7 @@ module Viewer =
             |> FS.Skia.UI.Viewer.withEventMapping eventMapper
             |> FS.Skia.UI.Viewer.withEffectMapping effectMapper
 
-        match FS.Skia.UI.Viewer.run program with
+        match withNativeWindowEnvironment (fun () -> FS.Skia.UI.Viewer.run program) with
         | Ok() ->
             let visibleDiagnostic =
                 { WindowInitialized = !windowOpened
@@ -1342,180 +1383,181 @@ module Viewer =
                 with _ ->
                     ())
 
-        try
-            let mutable windowOptions = WindowOptions.DefaultVulkan
-            windowOptions.Title <- options.Title
-            windowOptions.Size <- toNativeSize options.InitialSize
-            windowOptions.IsVisible <- true
-            windowOptions.API <- GraphicsAPI.DefaultVulkan
-            windowOptions.FramesPerSecond <- 60.0
-            windowOptions.UpdatesPerSecond <- 60.0
-            windowOptions <- applyWindowBehaviorToOptions behavior windowOptions
+        withNativeWindowEnvironment (fun () ->
+            try
+                let mutable windowOptions = WindowOptions.DefaultVulkan
+                windowOptions.Title <- options.Title
+                windowOptions.Size <- toNativeSize options.InitialSize
+                windowOptions.IsVisible <- true
+                windowOptions.API <- GraphicsAPI.DefaultVulkan
+                windowOptions.FramesPerSecond <- 60.0
+                windowOptions.UpdatesPerSecond <- 60.0
+                windowOptions <- applyWindowBehaviorToOptions behavior windowOptions
 
-            let window = Window.Create windowOptions
+                let window = Window.Create windowOptions
 
-            let loadedHandler =
-                Action(fun () ->
-                    windowOpened := true
-                    restoreVisibleNormalWindow true options window
-
-                    capture
-                        { Level = ViewerDiagnosticLevel.Info
-                          Category = ViewerDiagnosticCategory.Startup
-                          Message = $"persistent viewer window opened for '{options.Title}'"
-                          FrameIndex = None
-                          Stage = Some Window
-                          Elapsed = Some TimeSpan.Zero })
-
-            let renderHandler =
-                Action<float>(fun elapsedSeconds ->
-                    if not !framePresented then
-                        framePresented := true
-                        renderScene ()
+                let loadedHandler =
+                    Action(fun () ->
+                        windowOpened := true
+                        restoreVisibleNormalWindow true options window
 
                         capture
                             { Level = ViewerDiagnosticLevel.Info
-                              Category = ViewerDiagnosticCategory.Frame
-                              Message = "persistent viewer frame presented"
-                              FrameIndex = Some 1
-                              Stage = None
-                              Elapsed = Some(TimeSpan.FromSeconds elapsedSeconds) })
+                              Category = ViewerDiagnosticCategory.Startup
+                              Message = $"persistent viewer window opened for '{options.Title}'"
+                              FrameIndex = None
+                              Stage = Some Window
+                              Elapsed = Some TimeSpan.Zero })
 
-            let updateHandler =
-                Action<float>(fun elapsedSeconds ->
-                    if onTick(TimeSpan.FromSeconds elapsedSeconds) && not window.IsClosing then
-                        closeReason := Some AppRequestedClose
-                        window.Close())
+                let renderHandler =
+                    Action<float>(fun elapsedSeconds ->
+                        if not !framePresented then
+                            framePresented := true
+                            renderScene ()
 
-            let closingHandler =
-                Action(fun () ->
-                    if closeReason.Value.IsNone then
-                        closeReason := Some UserClose
-
-                    capture
-                        { Level = ViewerDiagnosticLevel.Info
-                          Category = ViewerDiagnosticCategory.Startup
-                          Message = "persistent viewer close requested"
-                          FrameIndex = None
-                          Stage = Some Window
-                          Elapsed = None })
-
-            window.add_Load loadedHandler
-            window.add_Update updateHandler
-            window.add_Render renderHandler
-            window.add_Closing closingHandler
-
-            let handlers =
-                [ fun (w: IWindow) -> w.remove_Load loadedHandler
-                  fun (w: IWindow) -> w.remove_Update updateHandler
-                  fun (w: IWindow) -> w.remove_Render renderHandler
-                  fun (w: IWindow) -> w.remove_Closing closingHandler ]
-
-            try
-                window.Initialize()
-
-                if not window.IsInitialized then
-                    Result.Error(
-                        makeFailure
-                            Window
-                            UnsupportedEnvironment
-                            Startup
-                            "Silk.NET persistent viewer window did not initialize."
-                            !lastDiagnostic
-                    )
-                else
-                    restoreVisibleNormalWindow true options window
-                    windowOpened := true
-                    let inputDisposables = ResizeArray<IDisposable>()
-                    let mutable inputAvailable = ViewerObservedValue.Unavailable
-
-                    match onKey with
-                    | Some dispatchKey ->
-                        try
-                            let input = window.CreateInput()
-                            inputDisposables.Add(input)
-                            inputAvailable <- ViewerObservedValue.Observed(input.Keyboards.Count > 0)
-
-                            for keyboard in input.Keyboards do
-                                let keyDownHandler =
-                                    Action<IKeyboard, Key, int>(fun _ key _ ->
-                                        if dispatchKey (key.ToString()) true && not window.IsClosing then
-                                            closeReason := Some AppRequestedClose
-                                            window.Close())
-
-                                keyboard.add_KeyDown keyDownHandler
-                                inputDisposables.Add
-                                    { new IDisposable with
-                                        member _.Dispose() = keyboard.remove_KeyDown keyDownHandler }
-
-                                let keyUpHandler =
-                                    Action<IKeyboard, Key, int>(fun _ key _ ->
-                                        if dispatchKey (key.ToString()) false && not window.IsClosing then
-                                            closeReason := Some AppRequestedClose
-                                            window.Close())
-
-                                keyboard.add_KeyUp keyUpHandler
-                                inputDisposables.Add
-                                    { new IDisposable with
-                                        member _.Dispose() = keyboard.remove_KeyUp keyUpHandler }
-                        with ex ->
                             capture
-                                { Level = ViewerDiagnosticLevel.Warning
-                                  Category = ViewerDiagnosticCategory.Input
-                                  Message = $"persistent viewer input mapping unavailable: {ex.Message}"
-                                  FrameIndex = None
-                                  Stage = Some App
-                                  Elapsed = None }
-                    | None -> ()
+                                { Level = ViewerDiagnosticLevel.Info
+                                  Category = ViewerDiagnosticCategory.Frame
+                                  Message = "persistent viewer frame presented"
+                                  FrameIndex = Some 1
+                                  Stage = None
+                                  Elapsed = Some(TimeSpan.FromSeconds elapsedSeconds) })
 
-                    let initializedDiagnostic =
-                        windowStateDiagnostic
-                            "persistent viewer initialized; native visibility facts captured where supported"
-                            None
-                            window
-                            (ViewerObservedValue.Observed true)
-                            inputAvailable
+                let updateHandler =
+                    Action<float>(fun elapsedSeconds ->
+                        if onTick(TimeSpan.FromSeconds elapsedSeconds) && not window.IsClosing then
+                            closeReason := Some AppRequestedClose
+                            window.Close())
 
-                    windowDiagnostics.Add initializedDiagnostic
+                let closingHandler =
+                    Action(fun () ->
+                        if closeReason.Value.IsNone then
+                            closeReason := Some UserClose
 
-                    try
-                        let mutable visibilityRepairFrames = 120
+                        capture
+                            { Level = ViewerDiagnosticLevel.Info
+                              Category = ViewerDiagnosticCategory.Startup
+                              Message = "persistent viewer close requested"
+                              FrameIndex = None
+                              Stage = Some Window
+                              Elapsed = None })
 
-                        while not window.IsClosing do
-                            if visibilityRepairFrames > 0 then
-                                restoreVisibleNormalWindow (visibilityRepairFrames > 60) options window
-                                visibilityRepairFrames <- visibilityRepairFrames - 1
+                window.add_Load loadedHandler
+                window.add_Update updateHandler
+                window.add_Render renderHandler
+                window.add_Closing closingHandler
 
-                            window.DoEvents()
-                            window.DoUpdate()
-                            window.DoRender()
-                            Thread.Sleep(1)
+                let handlers =
+                    [ fun (w: IWindow) -> w.remove_Load loadedHandler
+                      fun (w: IWindow) -> w.remove_Update updateHandler
+                      fun (w: IWindow) -> w.remove_Render renderHandler
+                      fun (w: IWindow) -> w.remove_Closing closingHandler ]
 
-                        Result.Ok(
-                            launchOk
-                                inputDispatch
-                                !windowOpened
-                                !framePresented
-                                !closeReason
-                                (List.ofSeq windowDiagnostics)
-                                (validateWindowLaunchBehavior options.InitialSize behavior)
-                                "Persistent viewer launch completed after user or host close."
+                try
+                    window.Initialize()
+
+                    if not window.IsInitialized then
+                        Result.Error(
+                            makeFailure
+                                Window
+                                UnsupportedEnvironment
+                                Startup
+                                "Silk.NET persistent viewer window did not initialize."
+                                !lastDiagnostic
                         )
-                    finally
-                        for disposable in Seq.rev inputDisposables do
-                            disposable.Dispose()
-            finally
-                removeHandlers window handlers
-                window.Dispose()
-        with ex ->
-            Result.Error(
-                makeFailure
-                    Window
-                    UnsupportedEnvironment
-                    Startup
-                    $"Silk.NET persistent viewer launch failed: {ex.Message}"
-                    !lastDiagnostic
-            )
+                    else
+                        restoreVisibleNormalWindow true options window
+                        windowOpened := true
+                        let inputDisposables = ResizeArray<IDisposable>()
+                        let mutable inputAvailable = ViewerObservedValue.Unavailable
+
+                        match onKey with
+                        | Some dispatchKey ->
+                            try
+                                let input = window.CreateInput()
+                                inputDisposables.Add(input)
+                                inputAvailable <- ViewerObservedValue.Observed(input.Keyboards.Count > 0)
+
+                                for keyboard in input.Keyboards do
+                                    let keyDownHandler =
+                                        Action<IKeyboard, Key, int>(fun _ key _ ->
+                                            if dispatchKey (key.ToString()) true && not window.IsClosing then
+                                                closeReason := Some AppRequestedClose
+                                                window.Close())
+
+                                    keyboard.add_KeyDown keyDownHandler
+                                    inputDisposables.Add
+                                        { new IDisposable with
+                                            member _.Dispose() = keyboard.remove_KeyDown keyDownHandler }
+
+                                    let keyUpHandler =
+                                        Action<IKeyboard, Key, int>(fun _ key _ ->
+                                            if dispatchKey (key.ToString()) false && not window.IsClosing then
+                                                closeReason := Some AppRequestedClose
+                                                window.Close())
+
+                                    keyboard.add_KeyUp keyUpHandler
+                                    inputDisposables.Add
+                                        { new IDisposable with
+                                            member _.Dispose() = keyboard.remove_KeyUp keyUpHandler }
+                            with ex ->
+                                capture
+                                    { Level = ViewerDiagnosticLevel.Warning
+                                      Category = ViewerDiagnosticCategory.Input
+                                      Message = $"persistent viewer input mapping unavailable: {ex.Message}"
+                                      FrameIndex = None
+                                      Stage = Some App
+                                      Elapsed = None }
+                        | None -> ()
+
+                        let initializedDiagnostic =
+                            windowStateDiagnostic
+                                "persistent viewer initialized; native visibility facts captured where supported"
+                                None
+                                window
+                                (ViewerObservedValue.Observed true)
+                                inputAvailable
+
+                        windowDiagnostics.Add initializedDiagnostic
+
+                        try
+                            let mutable visibilityRepairFrames = 120
+
+                            while not window.IsClosing do
+                                if visibilityRepairFrames > 0 then
+                                    restoreVisibleNormalWindow (visibilityRepairFrames > 60) options window
+                                    visibilityRepairFrames <- visibilityRepairFrames - 1
+
+                                window.DoEvents()
+                                window.DoUpdate()
+                                window.DoRender()
+                                Thread.Sleep(1)
+
+                            Result.Ok(
+                                launchOk
+                                    inputDispatch
+                                    !windowOpened
+                                    !framePresented
+                                    !closeReason
+                                    (List.ofSeq windowDiagnostics)
+                                    (validateWindowLaunchBehavior options.InitialSize behavior)
+                                    "Persistent viewer launch completed after user or host close."
+                            )
+                        finally
+                            for disposable in Seq.rev inputDisposables do
+                                disposable.Dispose()
+                finally
+                    removeHandlers window handlers
+                    window.Dispose()
+            with ex ->
+                Result.Error(
+                    makeFailure
+                        Window
+                        UnsupportedEnvironment
+                        Startup
+                        $"Silk.NET persistent viewer launch failed: {ex.Message}"
+                        !lastDiagnostic
+                ))
 
     let private effectsContainClose effects =
         effects
@@ -1983,6 +2025,10 @@ module Viewer =
                     ProvesDesktopVisibility = false
                     Message = failure.Message } ]
 
+    module VisualEvidenceHandling =
+        let artifacts request options scene =
+            visualEvidenceArtifacts request options scene
+
     let runBounded (request: ViewerRunRequest) options (scene: SceneNode) =
         ignore scene
         match validateRequest request with
@@ -2013,109 +2059,110 @@ module Viewer =
                     let mutable frame = 0
                     let stopwatch = Stopwatch.StartNew()
 
-                    try
-                        let mutable windowOptions = WindowOptions.DefaultVulkan
-                        windowOptions.Title <- options.Title
-                        windowOptions.Size <- toNativeSize options.InitialSize
-                        windowOptions.IsVisible <- true
-                        windowOptions.API <- GraphicsAPI.DefaultVulkan
-                        windowOptions.FramesPerSecond <- 60.0
-                        windowOptions.UpdatesPerSecond <- 60.0
-
-                        let window = Window.Create windowOptions
-
-                        let loadedHandler =
-                            Action(fun () ->
-                                let diagnostic =
-                                    dispatchDiagnostic
-                                        request.Diagnostics
-                                        { Level = ViewerDiagnosticLevel.Info
-                                          Category = ViewerDiagnosticCategory.Startup
-                                          Message = $"bounded viewer window opened for '{options.Title}'"
-                                          FrameIndex = None
-                                          Stage = Some Window
-                                          Elapsed = Some stopwatch.Elapsed }
-
-                                current <- updateRun (RecordDiagnostic diagnostic) current |> fst)
-
-                        let renderHandler =
-                            Action<float>(fun _ ->
-                                if current.Completed.IsNone then
-                                    frame <- frame + 1
-                                    let elapsed = stopwatch.Elapsed
-                                    let diagnostic = dispatchDiagnostic request.Diagnostics (frameDiagnostic frame elapsed)
-                                    let withDiagnostic, _ = updateRun (RecordDiagnostic diagnostic) current
-
-                                    if elapsed > request.Timeout then
-                                        current <- updateRun TimeoutRun withDiagnostic |> fst
-                                    else
-                                        current <- updateRun (RecordFrame options.InitialSize) withDiagnostic |> fst
-
-                                    if current.Completed.IsSome && not window.IsClosing then
-                                        window.Close())
-
-                        window.add_Load loadedHandler
-                        window.add_Render renderHandler
-
-                        let handlers =
-                            [ fun (w: IWindow) -> w.remove_Load loadedHandler
-                              fun (w: IWindow) -> w.remove_Render renderHandler ]
-
+                    withNativeWindowEnvironment (fun () ->
                         try
-                            window.Initialize()
+                            let mutable windowOptions = WindowOptions.DefaultVulkan
+                            windowOptions.Title <- options.Title
+                            windowOptions.Size <- toNativeSize options.InitialSize
+                            windowOptions.IsVisible <- true
+                            windowOptions.API <- GraphicsAPI.DefaultVulkan
+                            windowOptions.FramesPerSecond <- 60.0
+                            windowOptions.UpdatesPerSecond <- 60.0
 
-                            if not window.IsInitialized then
-                                Result.Error(
-                                    makeFailure
-                                        Window
-                                        UnsupportedEnvironment
-                                        Startup
-                                        "Silk.NET bounded viewer window did not initialize."
-                                        current.LastDiagnostic
-                                )
-                            else
-                                while not window.IsClosing && current.Completed.IsNone do
-                                    if stopwatch.Elapsed > request.Timeout then
-                                        current <- updateRun TimeoutRun current |> fst
-                                        window.Close()
-                                    else
-                                        window.DoEvents()
-                                        window.DoUpdate()
-                                        window.DoRender()
-                                        Thread.Sleep(1)
+                            let window = Window.Create windowOptions
 
-                                match current.Completed with
-                                | Some(Result.Ok evidence) ->
-                                    request.EvidencePath |> Option.iter (fun path -> writeEvidence path evidence)
-                                    Result.Ok evidence
-                                | Some(Result.Error failure) -> Result.Error failure
-                                | None ->
+                            let loadedHandler =
+                                Action(fun () ->
+                                    let diagnostic =
+                                        dispatchDiagnostic
+                                            request.Diagnostics
+                                            { Level = ViewerDiagnosticLevel.Info
+                                              Category = ViewerDiagnosticCategory.Startup
+                                              Message = $"bounded viewer window opened for '{options.Title}'"
+                                              FrameIndex = None
+                                              Stage = Some Window
+                                              Elapsed = Some stopwatch.Elapsed }
+
+                                    current <- updateRun (RecordDiagnostic diagnostic) current |> fst)
+
+                            let renderHandler =
+                                Action<float>(fun _ ->
+                                    if current.Completed.IsNone then
+                                        frame <- frame + 1
+                                        let elapsed = stopwatch.Elapsed
+                                        let diagnostic = dispatchDiagnostic request.Diagnostics (frameDiagnostic frame elapsed)
+                                        let withDiagnostic, _ = updateRun (RecordDiagnostic diagnostic) current
+
+                                        if elapsed > request.Timeout then
+                                            current <- updateRun TimeoutRun withDiagnostic |> fst
+                                        else
+                                            current <- updateRun (RecordFrame options.InitialSize) withDiagnostic |> fst
+
+                                        if current.Completed.IsSome && not window.IsClosing then
+                                            window.Close())
+
+                            window.add_Load loadedHandler
+                            window.add_Render renderHandler
+
+                            let handlers =
+                                [ fun (w: IWindow) -> w.remove_Load loadedHandler
+                                  fun (w: IWindow) -> w.remove_Render renderHandler ]
+
+                            try
+                                window.Initialize()
+
+                                if not window.IsInitialized then
                                     Result.Error(
                                         makeFailure
-                                            Timeout
-                                            ProductDefect
+                                            Window
+                                            UnsupportedEnvironment
                                             Startup
-                                            "Viewer run timed out before requested evidence was collected."
+                                            "Silk.NET bounded viewer window did not initialize."
                                             current.LastDiagnostic
                                     )
-                        finally
-                            handlers
-                            |> List.iter (fun remove ->
-                                try
-                                    remove window
-                                with _ ->
-                                    ())
+                                else
+                                    while not window.IsClosing && current.Completed.IsNone do
+                                        if stopwatch.Elapsed > request.Timeout then
+                                            current <- updateRun TimeoutRun current |> fst
+                                            window.Close()
+                                        else
+                                            window.DoEvents()
+                                            window.DoUpdate()
+                                            window.DoRender()
+                                            Thread.Sleep(1)
 
-                            window.Dispose()
-                    with ex ->
-                        Result.Error(
-                            makeFailure
-                                Window
-                                UnsupportedEnvironment
-                                Startup
-                                $"Silk.NET bounded viewer launch failed: {ex.Message}"
-                                current.LastDiagnostic
-                        )
+                                    match current.Completed with
+                                    | Some(Result.Ok evidence) ->
+                                        request.EvidencePath |> Option.iter (fun path -> writeEvidence path evidence)
+                                        Result.Ok evidence
+                                    | Some(Result.Error failure) -> Result.Error failure
+                                    | None ->
+                                        Result.Error(
+                                            makeFailure
+                                                Timeout
+                                                ProductDefect
+                                                Startup
+                                                "Viewer run timed out before requested evidence was collected."
+                                                current.LastDiagnostic
+                                        )
+                            finally
+                                handlers
+                                |> List.iter (fun remove ->
+                                    try
+                                        remove window
+                                    with _ ->
+                                        ())
+
+                                window.Dispose()
+                        with ex ->
+                            Result.Error(
+                                makeFailure
+                                    Window
+                                    UnsupportedEnvironment
+                                    Startup
+                                    $"Silk.NET bounded viewer launch failed: {ex.Message}"
+                                    current.LastDiagnostic
+                            ))
 
     let runUntilFirstFrame options (scene: SceneNode) =
         let request: ViewerRunRequest =
@@ -2278,7 +2325,7 @@ module Viewer =
 
         match runBounded request options scene with
         | Result.Ok evidence ->
-            let visualEvidence = visualEvidenceArtifacts request options scene
+            let visualEvidence = VisualEvidenceHandling.artifacts request options scene
 
             let outcome =
                 { Status = "ok"
@@ -2314,7 +2361,7 @@ module Viewer =
             request.EvidencePath |> Option.iter (fun path -> writeLaunchFailure path "persistent-evidence" "runAppEvidence" failure)
             Result.Error failure
 
-    let captureScreenshotEvidence (request: ScreenshotEvidenceRequest) (options: ViewerOptions) scene : ScreenshotEvidenceResult =
+    let private captureScreenshotEvidenceResult (request: ScreenshotEvidenceRequest) (options: ViewerOptions) scene : ScreenshotEvidenceResult =
         let diagnostics =
             [ if request.Width <= 0 then
                   "screenshot width must be positive"
@@ -2360,6 +2407,13 @@ module Viewer =
                     "evidence-kind=screenshot"
                     "fallback=deterministic-scene-evidence"
                     $"scene-capabilities={Scene.describe { Nodes = [ scene ] } |> List.length}" ] }
+
+    module ScreenshotEvidenceHandling =
+        let capture request options scene =
+            captureScreenshotEvidenceResult request options scene
+
+    let captureScreenshotEvidence request options scene =
+        ScreenshotEvidenceHandling.capture request options scene
 
 module GeneratedAppHost =
     let dispatchKey host raw model =

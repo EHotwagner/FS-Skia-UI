@@ -21,6 +21,7 @@ entry point for maintainers and contributors.
 | [Runtime Design](runtime-design.md) | Viewer program shape, event/effect flow, rendering, screenshots, diagnostics, and supported platform boundary in [src/Lib/Library.fsi](../src/Lib/Library.fsi) and [src/Lib/Library.fs](../src/Lib/Library.fs). |
 | [Subsystem Design](subsystem-design.md) | Scene model, keyboard input, Controls-owned charts/DataGrid, layout, graph, samples, tests, and template governance linked to their source modules. |
 | [Design Decisions](design-decisions.md) | Rationale for the major architectural choices and rejected alternatives. |
+| [Refactoring Analysis](2026-05-27-2204-refactoring-analysis.md) | Maintainability hotspots, duplication inventory, and phased cleanup plan for generated evidence, build automation, viewer internals, and compatibility surfaces. |
 
 ## Source Map
 

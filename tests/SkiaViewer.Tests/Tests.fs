@@ -78,6 +78,44 @@ let tests =
             Expect.isSome result.UnsupportedHostReason "unsupported result names the missing capability"
         }
 
+        test "viewer boundary guardrails preserve screenshot visual capability and window diagnostics" {
+            let scene = Rectangle((0.0, 0.0, 24.0, 24.0), Colors.white)
+            let options = { Title = "Product"; InitialSize = { Width = 320; Height = 200 } }
+
+            let capability = Viewer.runtimeCapability()
+            Expect.isTrue capability.BoundedSmoke "bounded smoke capability stays available for evidence runs"
+            Expect.isTrue capability.KeyboardInput "keyboard input capability remains part of the viewer contract"
+            Expect.equal capability.RendererMode "skia" "renderer mode is reported as a host capability"
+
+            let screenshot =
+                Viewer.captureScreenshotEvidence
+                    { Command = "dotnet run -- --screenshot-evidence readiness/screenshot-evidence.md"
+                      OutputPath = "readiness/screenshot-evidence.md"
+                      Width = 320
+                      Height = 200
+                      RendererMode = "skia"
+                      Timeout = TimeSpan.FromSeconds 2.0 }
+                    options
+                    scene
+
+            Expect.equal screenshot.Status ScreenshotUnsupported "screenshot capture remains an explicit unsupported-host result"
+            Expect.equal screenshot.Fallback (Some "deterministic-scene-evidence") "unsupported screenshots keep deterministic fallback"
+            Expect.isNone screenshot.ScreenshotPath "unsupported screenshots do not claim an image path"
+            Expect.contains screenshot.Diagnostics "status=unsupported" "unsupported screenshot diagnostics keep stable status field"
+            Expect.exists screenshot.Diagnostics (fun item -> item.StartsWith("scene-capabilities=", StringComparison.Ordinal)) "unsupported screenshot diagnostics include scene capability facts"
+
+            let windowResults =
+                Viewer.validateWindowLaunchBehavior
+                    { Width = 0; Height = 200 }
+                    { Viewer.defaultWindowBehavior with
+                        StartupState = Fullscreen
+                        BackendPreference = Some ViewerBackendPreference.Software }
+
+            Expect.exists windowResults (fun item -> item.Option = "initial-size" && item.Status = FailedOption && item.Message.Contains "positive") "window launch diagnostics keep positive-size validation"
+            Expect.exists windowResults (fun item -> item.Option = "startup-state" && item.Status = UnsupportedOption && item.Message.Contains "Fullscreen") "unsupported startup states remain explicit diagnostics"
+            Expect.exists windowResults (fun item -> item.Option = "backend" && item.Status = UnsupportedOption && item.Message.Contains "not supported") "unsupported backend preferences remain explicit diagnostics"
+        }
+
         test "bounded run init and update expose pure lifecycle effects" {
             let request =
                 { Target = FirstFrame

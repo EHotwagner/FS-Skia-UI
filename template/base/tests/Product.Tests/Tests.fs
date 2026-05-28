@@ -3,6 +3,7 @@ module ProductTests
 open System
 open Expecto
 open Product.Program
+open Product.Model
 open FS.Skia.UI.Scene
 
 let rec collectSceneNodes node =
@@ -29,6 +30,12 @@ let sceneText node =
     |> Seq.choose (function Text(_, value, _) -> Some value | TextRun run -> Some run.Text | _ -> None)
     |> String.concat " "
 
+let productSource file =
+    System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", file))
+
+let productSources files =
+    files |> List.map productSource |> String.concat "\n"
+
 //#if (profile == "governed" || profile == "headless-scene")
 [<Tests>]
 let tests =
@@ -45,7 +52,7 @@ let tests =
         }
 
         test "generated headless product exposes deterministic scene evidence command" {
-            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+            let source = productSources [ "Program.fs"; "EvidenceCommands.fs" ]
 
             Expect.stringContains source "--scene-evidence" "headless profile exposes scene evidence"
             Expect.stringContains source "SceneEvidence.render" "scene evidence uses public Scene evidence helper"
@@ -89,6 +96,33 @@ let tests =
     testList "product" [
         test "generated product test suite is wired" {
             Expect.equal 1 1 "product tests run"
+        }
+
+        test "generated product source is split by responsibility in compile order" {
+            let productDir = System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product")
+            let project = System.IO.File.ReadAllText(System.IO.Path.Combine(productDir, "Product.fsproj"))
+
+            [ "Model.fs"; "View.fs"; "LayoutEvidence.fs"; "EvidenceCommands.fs"; "Program.fs" ]
+            |> List.iter (fun file ->
+                Expect.isTrue (System.IO.File.Exists(System.IO.Path.Combine(productDir, file))) $"{file} exists in generated product source"
+                Expect.stringContains project $"Compile Include=\"{file}\"" $"{file} is included in compile order")
+
+            let modelIndex = project.IndexOf("Model.fs", StringComparison.Ordinal)
+            let viewIndex = project.IndexOf("View.fs", StringComparison.Ordinal)
+            let layoutIndex = project.IndexOf("LayoutEvidence.fs", StringComparison.Ordinal)
+            let evidenceIndex = project.IndexOf("EvidenceCommands.fs", StringComparison.Ordinal)
+            let programIndex = project.IndexOf("Program.fs", StringComparison.Ordinal)
+
+            Expect.isLessThan modelIndex viewIndex "model compiles before view"
+            Expect.isLessThan viewIndex layoutIndex "view compiles before layout evidence"
+            Expect.isLessThan layoutIndex evidenceIndex "layout evidence compiles before evidence commands"
+            Expect.isLessThan evidenceIndex programIndex "evidence commands compile before entrypoint"
+
+            let program = System.IO.File.ReadAllText(System.IO.Path.Combine(productDir, "Program.fs"))
+            Expect.stringContains program "[<EntryPoint>]" "Program.fs keeps the entrypoint"
+            Expect.stringContains program "match List.ofArray args" "Program.fs owns command dispatch"
+            Expect.isFalse (program.Contains("let writeGeneratedEvidenceLines", StringComparison.Ordinal)) "Program.fs does not own report writing"
+            Expect.isFalse (program.Contains("let layoutEvidenceForSize size model : LayoutEvidenceReport", StringComparison.Ordinal)) "Program.fs does not own layout evidence implementation"
         }
 
         test "generated public contract exposes qualified app-owned names" {
@@ -194,7 +228,7 @@ let tests =
         }
 
         test "generated graphical app exposes bounded smoke command" {
-            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+            let source = productSources [ "Program.fs"; "EvidenceCommands.fs" ]
 
             Expect.stringContains source "--launch-evidence" "generated product exposes explicit launch evidence CLI"
             Expect.stringContains source "Viewer.runBounded" "launch evidence uses a bounded evidence entry point"
@@ -210,8 +244,9 @@ let tests =
         }
 
         test "generated evidence commands are opt-in and not reported as ongoing interactive play" {
-            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
-            let defaultBranch = source.Substring(source.LastIndexOf("| args ->", StringComparison.Ordinal))
+            let source = productSources [ "Program.fs"; "EvidenceCommands.fs" ]
+            let program = productSource "Program.fs"
+            let defaultBranch = program.Substring(program.LastIndexOf("| args ->", StringComparison.Ordinal))
 
             Expect.stringContains source "--launch-evidence" "first-frame launch evidence is exposed only by explicit CLI flag"
             Expect.stringContains source "--bounded-smoke" "bounded evidence smoke is exposed only by explicit CLI flag"
@@ -237,7 +272,7 @@ let tests =
         }
 
         test "generated visual evidence commands require screenshot proof pixel fallback and unsupported diagnostics" {
-            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+            let source = productSources [ "Program.fs"; "EvidenceCommands.fs" ]
 
             Expect.stringContains source "--image-evidence" "generated product exposes image evidence command"
             Expect.stringContains source "--screenshot-evidence" "generated product exposes screenshot evidence command"
@@ -259,21 +294,30 @@ let tests =
         }
 
         test "generated evidence commands share Testing report conventions" {
-            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+            let source = productSources [ "Program.fs"; "EvidenceCommands.fs" ]
 
             Expect.stringContains source "let writeEvidenceReport" "generated product defines one local report wrapper"
             Expect.stringContains source "generatedEvidenceStatusText" "generated product shares normalized report status vocabulary"
+            Expect.stringContains source "| GeneratedEvidenceOk -> \"ok\"" "generated product preserves ok status vocabulary"
+            Expect.stringContains source "| GeneratedEvidenceUnsupported -> \"unsupported\"" "generated product preserves unsupported status vocabulary"
+            Expect.stringContains source "| GeneratedEvidenceFailed -> \"failed\"" "generated product preserves failed status vocabulary"
+            Expect.stringContains source "generatedEvidenceExitCode" "generated product keeps report status to exit-code semantics local"
+            Expect.stringContains source "| GeneratedEvidenceUnsupported -> 0" "unsupported generated evidence remains a non-failing host fact"
+            Expect.stringContains source "| GeneratedEvidenceFailed -> 1" "failed generated evidence remains a failing command result"
             Expect.stringContains source "writeEvidenceReport" "shared report wrapper is called by generated evidence commands"
             Expect.stringContains source "evidenceField \"command\" command" "report wrapper preserves command field"
             Expect.stringContains source "evidenceField \"output\" evidencePath" "report wrapper preserves output field"
+            Expect.stringContains source "writeGeneratedEvidenceLines evidencePath true (generatedEvidenceExitCode status) lines" "report wrapper creates parent directories, writes the requested output path, and preserves exit-code semantics"
+            Expect.stringContains source "lines |> List.iter (printfn \"%s\")" "report wrapper echoes report fields to stdout"
             Expect.stringContains source "\"--layout-evidence\"" "layout command reports through the shared convention"
+            Expect.stringContains source "\"--launch-evidence\"" "launch command preserves its public command name"
             Expect.stringContains source "\"--image-evidence\"" "image command reports through the shared convention"
             Expect.stringContains source "\"--screenshot-evidence\"" "screenshot command reports through the shared convention"
             Expect.stringContains source "\"--pixel-readback-evidence\"" "pixel-readback command reports through the shared convention"
         }
 
         test "generated graphical app default executable path uses persistent host" {
-            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+            let source = productSources [ "Program.fs"; "EvidenceCommands.fs" ]
 
             Expect.stringContains source "let viewerOptions" "generated product declares viewer options"
             Expect.stringContains source "let generatedHost" "generated product declares generated host"
@@ -290,7 +334,7 @@ let tests =
         }
 
         test "generated normal launch reports desktop session diagnostics without evidence fallback" {
-            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+            let source = productSource "Program.fs"
             let defaultBranch = source.Substring(source.LastIndexOf("| args ->", StringComparison.Ordinal))
 
             Expect.stringContains defaultBranch "Viewer.desktopSessionDiagnostic()" "normal launch captures desktop/session diagnostics before app lifecycle debugging"
@@ -307,8 +351,9 @@ let tests =
         }
 
         test "generated window diagnostics command reports failure classes and native facts before app debugging" {
-            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
-            let defaultBranch = source.Substring(source.LastIndexOf("| args ->", StringComparison.Ordinal))
+            let source = productSources [ "Program.fs"; "EvidenceCommands.fs" ]
+            let program = productSource "Program.fs"
+            let defaultBranch = program.Substring(program.LastIndexOf("| args ->", StringComparison.Ordinal))
 
             Expect.stringContains source "--window-diagnostics" "generated product exposes an explicit window diagnostics command"
             Expect.stringContains source "diagnostic-class=environment-session" "diagnostics include environment/session class"
@@ -328,8 +373,9 @@ let tests =
         }
 
         test "generated app Synthetic exposes window behavior flags and option diagnostics without leaving interactive launch" {
-            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
-            let defaultBranch = source.Substring(source.LastIndexOf("| args ->", StringComparison.Ordinal))
+            let source = productSources [ "Program.fs"; "WindowOptions.fs" ]
+            let program = productSource "Program.fs"
+            let defaultBranch = program.Substring(program.LastIndexOf("| args ->", StringComparison.Ordinal))
 
             Expect.stringContains source "--window-resize" "resize policy is configurable"
             Expect.stringContains source "--window-maximize" "maximize policy is configurable"
@@ -400,7 +446,9 @@ let tests =
                 Expect.isSome report.GameplayRegion "gameplay region is named"
                 Expect.isNonEmpty report.TextBounds "HUD text bounds are present"
                 Expect.isNonEmpty report.GameplayBounds "active gameplay bounds are present"
-                Expect.equal report.OverlapStatus NoLayoutOverlap "HUD and gameplay bounds do not overlap")
+                Expect.equal report.OverlapStatus NoLayoutOverlap "HUD and gameplay bounds do not overlap"
+                Expect.equal report.MeasurementMode ApproximateTextBounds "generated layout evidence reports the measurement mode"
+                Expect.isEmpty report.UnsupportedReasons "readable generated layout does not use unsupported-host classification")
         }
 
         test "generated game layout validation fails broken HUD and gameplay layouts" {
@@ -455,7 +503,7 @@ let tests =
         }
 
         test "generated graphical app exposes deterministic scene evidence command" {
-            let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
+            let source = productSources [ "Program.fs"; "EvidenceCommands.fs" ]
 
             Expect.stringContains source "--scene-evidence" "generated product exposes non-window scene evidence CLI"
             Expect.stringContains source "SceneEvidence.render" "scene evidence uses public Scene evidence helper"

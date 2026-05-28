@@ -202,10 +202,18 @@ type BuildEffect =
     | RequireFiles of artifactClass: string * paths: string list
     | WorkflowSelfCheck
 
-let repositoryRoot = __SOURCE_DIRECTORY__
+#load "scripts/build/Paths.fsx"
+#load "scripts/build/Process.fsx"
+#load "scripts/build/Reports.fsx"
+#load "scripts/build/GeneratedScanning.fsx"
+#load "scripts/build/PackageResolution.fsx"
+#load "scripts/build/TemplateValidation.fsx"
+#load "scripts/build/ProcessHealth.fsx"
 
-let path segments =
-    segments |> Array.ofList |> Path.Combine
+open BuildPaths
+open BuildProcess
+
+let repositoryRoot = __SOURCE_DIRECTORY__
 
 let activeFeatureId root =
     let featureJson = path [ root; ".specify"; "feature.json" ]
@@ -1040,103 +1048,6 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
     | StartTarget target ->
         model, [ WriteFile(path [ model.LogDir; $"{target}-unknown.txt" ], $"Unknown target: {target}\n") ]
 
-let ensureParent (filePath: string) =
-    match Path.GetDirectoryName filePath |> Option.ofObj with
-    | Some directory when directory <> "" -> Directory.CreateDirectory directory |> ignore
-    | _ -> ()
-
-let cleanDirectoryContents directory =
-    if Directory.Exists directory then
-        Directory.GetFiles(directory)
-        |> Array.iter File.Delete
-
-        Directory.GetDirectories(directory)
-        |> Array.iter (fun child -> Directory.Delete(child, true))
-    else
-        Directory.CreateDirectory directory |> ignore
-
-let appendLine outputPath line =
-    ensureParent outputPath
-    File.AppendAllText(outputPath, line + Environment.NewLine)
-
-let runProcessWithAllowedExitCodes (label: string) (fileName: string) (arguments: string) (workingDirectory: string) (outputPath: string) (environment: Map<string, string>) (allowedExitCodes: Set<int>) =
-    ensureParent outputPath
-    File.AppendAllText(outputPath, $"\n## {label}\n$ {fileName} {arguments}\n")
-
-    let startInfo = ProcessStartInfo(fileName, arguments)
-    startInfo.WorkingDirectory <- workingDirectory
-    startInfo.RedirectStandardOutput <- true
-    startInfo.RedirectStandardError <- true
-    startInfo.UseShellExecute <- false
-
-    environment
-    |> Map.iter (fun key value -> startInfo.Environment.[key] <- value)
-
-    use proc =
-        match Process.Start startInfo |> Option.ofObj with
-        | Some proc -> proc
-        | None -> failwithf "Could not start %s %s" fileName arguments
-
-    let stdoutTask = proc.StandardOutput.ReadToEndAsync()
-    let stderrTask = proc.StandardError.ReadToEndAsync()
-
-    if proc.WaitForExit(30 * 60 * 1000) then
-        let stdout = stdoutTask.Result
-        let stderr = stderrTask.Result
-        File.AppendAllText(outputPath, stdout)
-        File.AppendAllText(outputPath, stderr)
-        File.AppendAllText(outputPath, $"\nexit-code={proc.ExitCode}\n")
-
-        if allowedExitCodes |> Set.contains proc.ExitCode |> not then
-            failwithf "%s failed with exit code %d. See %s" label proc.ExitCode outputPath
-    else
-        proc.Kill()
-        failwithf "%s timed out. See %s" label outputPath
-
-let runProcess label fileName arguments workingDirectory outputPath environment =
-    runProcessWithAllowedExitCodes label fileName arguments workingDirectory outputPath environment (Set.singleton 0)
-
-let existingProjects root projects =
-    projects
-    |> List.filter (fun project -> File.Exists(path [ root; project ]))
-
-let solutionFor root preferredSolution =
-    let preferred = path [ root; preferredSolution ]
-
-    if File.Exists preferred then
-        Some preferredSolution
-    else
-        Directory.GetFiles(root, "*.sln")
-        |> Array.tryHead
-        |> Option.map Path.GetFileName
-
-let runDotnetAction label action solutionFile projects extraArguments outputPath root =
-    let existing = existingProjects root projects
-
-    if List.isEmpty existing then
-        match solutionFor root solutionFile with
-        | Some solution ->
-            let arguments =
-                [ action; quote solution; extraArguments ]
-                |> List.filter (fun part -> part <> "")
-                |> String.concat " "
-
-            runProcess label "dotnet" arguments root outputPath Map.empty
-        | None ->
-            failwithf "No projects were found for %s. Checked: %s" label (String.Join(", ", projects))
-    else
-        existing
-        |> List.iter (fun project ->
-            if action = "test" && project.Replace('\\', '/').EndsWith("tests/Smoke.Tests/Smoke.Tests.fsproj", StringComparison.Ordinal) then
-                runProcess $"{label} {project}" "dotnet" $"run --project {quote project} --no-restore" root outputPath Map.empty
-            else
-                let arguments =
-                    [ action; quote project; extraArguments ]
-                    |> List.filter (fun part -> part <> "")
-                    |> String.concat " "
-
-                runProcess $"{label} {project}" "dotnet" arguments root outputPath Map.empty)
-
 let requireFiles (artifactClass: string) (paths: string list) =
     let missing =
         paths
@@ -1147,154 +1058,39 @@ let requireFiles (artifactClass: string) (paths: string list) =
         failwithf "Missing %s:%s%s" artifactClass Environment.NewLine detail
 
 let tryParseInt64 value =
-    let mutable parsed = 0L
-
-    if Int64.TryParse(value, &parsed) then
-        Some parsed
-    else
-        None
+    BuildProcessHealth.tryParseInt64 value
 
 let tryReadLinuxMemAvailableMb () =
-    let meminfo = "/proc/meminfo"
-
-    if File.Exists meminfo then
-        File.ReadAllLines meminfo
-        |> Array.tryPick (fun line ->
-            if line.StartsWith("MemAvailable:", StringComparison.Ordinal) then
-                line.Split([| ' '; '\t' |], StringSplitOptions.RemoveEmptyEntries)
-                |> Array.tryItem 1
-                |> Option.bind tryParseInt64
-                |> Option.map (fun kb -> kb / 1024L)
-            else
-                None)
-    else
-        None
+    BuildProcessHealth.tryReadLinuxMemAvailableMb ()
 
 let tryReadProcLimit (name: string) =
-    let limits = "/proc/self/limits"
-
-    if File.Exists limits then
-        File.ReadAllLines limits
-        |> Array.tryPick (fun line ->
-            if line.StartsWith(name, StringComparison.Ordinal) then
-                let remainder = line.Substring(name.Length).Trim()
-                let soft =
-                    remainder.Split([| ' '; '\t' |], StringSplitOptions.RemoveEmptyEntries)
-                    |> Array.tryHead
-
-                match soft with
-                | Some "unlimited" -> None
-                | Some value -> tryParseInt64 value
-                | None -> None
-            else
-                None)
-    else
-        None
+    BuildProcessHealth.tryReadProcLimit name
 
 let tryCountOpenFileDescriptors () =
-    let fd = "/proc/self/fd"
-
-    if Directory.Exists fd then
-        try
-            Directory.GetFiles(fd).Length |> int64 |> Some
-        with _ ->
-            None
-    else
-        None
+    BuildProcessHealth.tryCountOpenFileDescriptors ()
 
 let tryZombieProcessCount () =
-    let proc = "/proc"
-
-    if Directory.Exists proc then
-        try
-            Directory.GetDirectories proc
-            |> Array.choose (fun directory ->
-                let name = Path.GetFileName directory
-                let isPid = name |> Seq.forall Char.IsDigit
-
-                if isPid then
-                    let statPath = path [ directory; "stat" ]
-
-                    try
-                        if File.Exists statPath then
-                            let stat = File.ReadAllText statPath
-                            let closeParen = stat.LastIndexOf(')')
-
-                            if closeParen >= 0 && stat.Length > closeParen + 2 && stat.[closeParen + 2] = 'Z' then
-                                Some 1
-                            else
-                                Some 0
-                        else
-                            Some 0
-                    with _ ->
-                        Some 0
-                else
-                    None)
-            |> Array.sum
-            |> Some
-        with _ ->
-            None
-    else
-        None
+    BuildProcessHealth.tryZombieProcessCount ()
 
 let runShortCommand workingDirectory fileName arguments timeoutMs =
-    let startInfo = ProcessStartInfo(fileName, arguments)
-    startInfo.WorkingDirectory <- workingDirectory
-    startInfo.RedirectStandardOutput <- true
-    startInfo.RedirectStandardError <- true
-    startInfo.UseShellExecute <- false
-
-    try
-        use proc =
-            match Process.Start startInfo |> Option.ofObj with
-            | Some proc -> proc
-            | None -> failwithf "Could not start %s %s" fileName arguments
-
-        let stdoutTask = proc.StandardOutput.ReadToEndAsync()
-        let stderrTask = proc.StandardError.ReadToEndAsync()
-
-        if proc.WaitForExit timeoutMs then
-            proc.ExitCode, stdoutTask.Result + stderrTask.Result
-        else
-            proc.Kill()
-            -1, $"Timed out after {timeoutMs}ms"
-    with ex ->
-        -1, ex.Message
+    BuildProcessHealth.runShortCommand workingDirectory fileName arguments timeoutMs
 
 let thresholdDecision ruleId signal defaultValue comparison actualValue envVar platform =
-    let overrideText = Environment.GetEnvironmentVariable envVar
-    let reasonText = Environment.GetEnvironmentVariable(envVar + "_REASON")
-
-    let overrideValue, overrideSource, overrideReason, overrideDiagnostic =
-        if String.IsNullOrWhiteSpace overrideText then
-            None, None, None, None
-        else
-            match tryParseInt64 overrideText with
-            | None ->
-                None,
-                Some envVar,
-                (if String.IsNullOrWhiteSpace reasonText then None else Some reasonText),
-                Some $"malformed threshold override {envVar}={overrideText}"
-            | Some value when String.IsNullOrWhiteSpace reasonText ->
-                Some value, Some envVar, None, Some $"threshold override {envVar} requires {envVar}_REASON"
-            | Some value -> Some value, Some envVar, Some reasonText, None
-
-    let threshold = overrideValue |> Option.defaultValue defaultValue
-
-    let passed =
-        match overrideDiagnostic, actualValue with
-        | Some _, _ -> Some false
-        | None, None -> None
-        | None, Some actual when comparison = ">=" -> Some(actual >= threshold)
-        | None, Some actual when comparison = "<=" -> Some(actual <= threshold)
-        | None, Some _ -> Some false
-
-    let diagnostic =
-        match overrideDiagnostic, actualValue, passed with
-        | Some diagnostic, _, _ -> Some diagnostic
-        | None, None, _ -> Some $"unsupported signal {signal} on {platform}"
-        | None, Some actual, Some false -> Some $"{ruleId} failed: {signal} actual {actual} must be {comparison} {threshold}"
-        | _ -> None
+    // Process-health policy keeps stable diagnostics such as malformed threshold override and env var _REASON checks.
+    let (
+        ruleId,
+        signal,
+        defaultValue,
+        comparison,
+        actualValue,
+        overrideValue,
+        overrideSource,
+        overrideReason,
+        platform,
+        passed,
+        diagnostic
+        ) =
+        BuildProcessHealth.thresholdDecision ruleId signal defaultValue comparison actualValue envVar platform
 
     { RuleId = ruleId
       SignalName = signal
@@ -1309,9 +1105,7 @@ let thresholdDecision ruleId signal defaultValue comparison actualValue envVar p
       Diagnostic = diagnostic }
 
 let markdownOption value unit =
-    match value with
-    | Some number -> $"{number}{unit}"
-    | None -> "unsupported"
+    BuildProcessHealth.markdownOption value unit
 
 let writeVerificationVerdictReport outputPath verdict =
     ensureParent outputPath
@@ -1335,10 +1129,7 @@ let writeVerificationVerdictReport outputPath verdict =
           "" ]
         |> String.concat Environment.NewLine
 
-    if File.Exists outputPath && File.ReadAllText(outputPath).StartsWith("# Verification Verdict Evidence", StringComparison.Ordinal) then
-        File.AppendAllText(outputPath, content + Environment.NewLine)
-    else
-        File.WriteAllText(outputPath, "# Verification Verdict Evidence" + Environment.NewLine + Environment.NewLine + content + Environment.NewLine)
+    BuildReports.appendOrCreateSection outputPath "# Verification Verdict Evidence" [ content ]
 
 let collectProcessHealth root target outputPath verdictPath =
     let stopwatch = Stopwatch.StartNew()
@@ -1607,10 +1398,7 @@ let appendFocusedGateSummary outputPath (contract: FocusedGateContract) =
           "" ]
         |> String.concat Environment.NewLine
 
-    if File.Exists outputPath && File.ReadAllText(outputPath).StartsWith("# Focused Gates Evidence", StringComparison.Ordinal) then
-        File.AppendAllText(outputPath, content + Environment.NewLine)
-    else
-        File.WriteAllText(outputPath, "# Focused Gates Evidence" + Environment.NewLine + Environment.NewLine + content + Environment.NewLine)
+    BuildReports.appendOrCreateSection outputPath "# Focused Gates Evidence" [ content ]
 
 let relativePathFrom root filePath =
     let rootPath =
@@ -1622,32 +1410,19 @@ let relativePathFrom root filePath =
     Uri.UnescapeDataString(relative).Replace('\\', '/')
 
 let latestTemplatePackage artifactDir =
-    let packages =
-        if Directory.Exists artifactDir then
-            Directory.GetFiles(artifactDir, "FS.Skia.UI.Template.*.nupkg")
-        else
-            Array.empty
-
-    packages
-    |> Array.sortByDescending File.GetLastWriteTimeUtc
-    |> Array.tryHead
+    BuildTemplateValidation.latestTemplatePackage artifactDir
 
 let validateTemplatePackage model outputPath =
-    let package =
-        latestTemplatePackage model.TemplateArtifactDir
-        |> Option.defaultWith (fun () -> failwithf "No template package found in %s" model.TemplateArtifactDir)
-
-    use archive = ZipFile.OpenRead package
-
-    let entries =
-        archive.Entries
-        |> Seq.map (fun entry -> entry.FullName.Replace('\\', '/'))
-        |> Seq.toList
-
     let required =
         [ "content/.template.config/template.json"
           "content/template/base/build.fsx"
           "content/template/base/src/Product/Product.fsproj"
+          "content/template/base/src/Product/Model.fs"
+          "content/template/base/src/Product/View.fs"
+          "content/template/base/src/Product/LayoutEvidence.fs"
+          "content/template/base/src/Product/EvidenceCommands.fs"
+          "content/template/base/src/Product/WindowOptions.fs"
+          "content/template/base/src/Product/Program.fs"
           "content/template/base/tests/Product.Tests/Product.Tests.fsproj"
           "content/template/base/Directory.Packages.props"
           "content/template/profiles/app.yml"
@@ -1673,31 +1448,7 @@ let validateTemplatePackage model outputPath =
           "content/specs/006-"
           "content/specs/007-" ]
 
-    required
-    |> List.iter (fun requiredEntry ->
-        if entries |> List.contains requiredEntry |> not then
-            failwithf "Template package is missing %s" requiredEntry)
-
-    entries
-    |> List.iter (fun entry ->
-        forbiddenPrefixes
-        |> List.iter (fun prefix ->
-            if entry.StartsWith(prefix, StringComparison.Ordinal) then
-                failwithf "Template package contains excluded source-only artifact %s" entry))
-
-    let report =
-        [ "# Template Package Contents"
-          ""
-          $"Package: `{package}`"
-          ""
-          "Required entries verified:"
-          yield! required |> List.map (fun entry -> $"- `{entry}`")
-          ""
-          $"Total entries: {entries.Length}" ]
-        |> String.concat Environment.NewLine
-
-    ensureParent outputPath
-    File.WriteAllText(outputPath, report + Environment.NewLine)
+    BuildTemplateValidation.validateTemplatePackageEntries model.TemplateArtifactDir outputPath required forbiddenPrefixes
 
 let runTemplateInstall model label source outputPath =
     if source = SourceDirectory then
@@ -1766,10 +1517,7 @@ let runTemplateInstantiation model outputPath =
     File.AppendAllText(outputPath, Environment.NewLine + "Generated rows:" + Environment.NewLine + rows + Environment.NewLine)
 
 let fileShouldBeScanned (filePath: string) =
-    let normalized = filePath.Replace('\\', '/')
-    [ "/bin/"; "/obj/"; "/.fake/"; "/.git/"; "/.template.config/"; "/readiness/logs/" ]
-    |> List.exists (fun segment -> normalized.IndexOf(segment, StringComparison.Ordinal) >= 0)
-    |> not
+    BuildGeneratedScanning.fileShouldBeScanned filePath
 
 let generatedShellScripts (row: TemplateRow) =
     Directory.EnumerateFiles(row.Root, "*.sh", SearchOption.AllDirectories)
@@ -1777,23 +1525,10 @@ let generatedShellScripts (row: TemplateRow) =
     |> Seq.toList
 
 let isWindows =
-    Path.DirectorySeparatorChar = '\\'
+    BuildGeneratedScanning.isWindows
 
 let hasUserExecutePermission filePath =
-    if isWindows then
-        true
-    else
-        let startInfo = ProcessStartInfo("test", $"-x {quote filePath}")
-        startInfo.RedirectStandardOutput <- true
-        startInfo.RedirectStandardError <- true
-        startInfo.UseShellExecute <- false
-
-        use proc =
-            match Process.Start startInfo |> Option.ofObj with
-            | Some proc -> proc
-            | None -> failwith "Could not start test -x"
-
-        proc.WaitForExit(30 * 1000) && proc.ExitCode = 0
+    BuildGeneratedScanning.hasUserExecutePermission filePath
 
 let scanGeneratedRow (row: TemplateRow) =
     let files =
@@ -2023,24 +1758,13 @@ let scanGeneratedProjects model outputPath =
 // BUILD SECTION: V3 capability validation
 
 let trimQuotes (value: string) =
-    value.Trim().Trim('"').Trim('\'')
+    BuildPackageResolution.trimQuotes value
 
 let parseScalar (line: string) =
-    match line.IndexOf(':') with
-    | index when index >= 0 -> line.Substring(index + 1) |> trimQuotes
-    | _ -> ""
+    BuildPackageResolution.parseScalar line
 
 let parseInlineList (value: string) =
-    let trimmed = value.Trim()
-
-    if trimmed.StartsWith("[") && trimmed.EndsWith("]") then
-        trimmed.Trim('[', ']').Split([| ',' |], StringSplitOptions.RemoveEmptyEntries)
-        |> Array.map trimQuotes
-        |> Array.toList
-    elif String.IsNullOrWhiteSpace trimmed then
-        []
-    else
-        [ trimQuotes trimmed ]
+    BuildPackageResolution.parseInlineList value
 
 let emptyCapability id =
     { Id = id
@@ -2356,6 +2080,19 @@ let writeProductProject model row capabilities =
         |> List.map (fun packageId -> $"    <PackageReference Include=\"{packageId}\" />")
         |> String.concat Environment.NewLine
 
+    let compileItems =
+        if capabilities |> List.contains "controls" then
+            [ "Model.fs"
+              "View.fs"
+              "LayoutEvidence.fs"
+              "EvidenceCommands.fs"
+              "WindowOptions.fs"
+              "Program.fs" ]
+        else
+            [ "Program.fs" ]
+        |> List.map (fun file -> $"    <Compile Include=\"{file}\" />")
+        |> String.concat Environment.NewLine
+
     let content =
         $"""<Project Sdk="Microsoft.NET.Sdk">
 
@@ -2365,7 +2102,7 @@ let writeProductProject model row capabilities =
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Program.fs" />
+{compileItems}
   </ItemGroup>
 
   <ItemGroup>
@@ -2707,6 +2444,8 @@ let scanV3GeneratedRow model row =
 
     let productProject = File.ReadAllText(path [ row.Root; "src"; "Product"; "Product.fsproj" ])
     let productProgram = File.ReadAllText(path [ row.Root; "src"; "Product"; "Program.fs" ])
+    let productEvidenceCommands = File.ReadAllText(path [ row.Root; "src"; "Product"; "EvidenceCommands.fs" ])
+    let productLaunchSource = productProgram + Environment.NewLine + productEvidenceCommands
     let productTests = File.ReadAllText(path [ row.Root; "tests"; "Product.Tests"; "Tests.fs" ])
     let removedChartsPackage = "FS.Skia.UI." + "Charts"
 
@@ -2732,7 +2471,7 @@ let scanV3GeneratedRow model row =
 
         let missingPersistentHostTerms =
             requiredPersistentHostTerms
-            |> List.filter (fun term -> productProgram.IndexOf(term, StringComparison.Ordinal) < 0)
+            |> List.filter (fun term -> productLaunchSource.IndexOf(term, StringComparison.Ordinal) < 0)
 
         if not missingPersistentHostTerms.IsEmpty then
             failwithf "%s/%s generated app is missing persistent viewer host wiring:%s%s" row.Artifact row.Profile Environment.NewLine (String.Join(Environment.NewLine, missingPersistentHostTerms))
@@ -2870,26 +2609,10 @@ let private readRequestedGeneratedPackages root =
     |> Seq.toList
 
 let private readNuGetPackageSources root =
-    let configPath = path [ root; "NuGet.config" ]
-
-    if not (File.Exists configPath) then
-        []
-    else
-        let content = File.ReadAllText configPath
-
-        Regex.Matches(content, "<add\\s+key=\"[^\"]+\"\\s+value=\"([^\"]+)\"")
-        |> Seq.cast<Match>
-        |> Seq.map (fun m -> m.Groups.[1].Value)
-        |> Seq.toList
+    BuildPackageResolution.readNuGetPackageSources root
 
 let private readRestoreWarnings logPath =
-    if not (File.Exists logPath) then
-        []
-    else
-        File.ReadAllLines logPath
-        |> Array.filter (fun line -> line.IndexOf("NU1603", StringComparison.OrdinalIgnoreCase) >= 0)
-        |> Array.distinct
-        |> Array.toList
+    BuildPackageResolution.readRestoreWarnings logPath
 
 let private readResolvedGeneratedPackages root =
     let assetsPath = path [ root; "tests"; "Product.Tests"; "obj"; "project.assets.json" ]
@@ -2908,34 +2631,7 @@ let private readResolvedGeneratedPackages root =
         |> Seq.toList
 
 let private packageResolutionDiagnostics (requested: (string * string) list) (resolved: (string * string) list) (sources: string list) (restoreWarnings: string list) =
-    let resolvedMap = resolved |> Map.ofList
-
-    let drift =
-        requested
-        |> List.choose (fun (packageId, version) ->
-            match resolvedMap |> Map.tryFind packageId with
-            | Some actual when actual = version -> None
-            | Some actual -> Some $"package mismatch: {packageId} requested={version} resolved={actual}"
-            | None -> Some $"package mismatch: {packageId} requested={version} resolved=missing")
-
-    let diagnostics =
-        [ if List.isEmpty sources then
-              "missing package sources"
-          for warning in restoreWarnings do
-              $"restore warning: {warning}"
-          yield! drift ]
-
-    let failureReason =
-        if restoreWarnings |> List.exists (fun warning -> warning.IndexOf("NU1603", StringComparison.OrdinalIgnoreCase) >= 0) then
-            Some "NU1603"
-        elif not drift.IsEmpty then
-            Some "version-mismatch"
-        elif List.isEmpty sources then
-            Some "missing-package-sources"
-        else
-            None
-
-    failureReason, diagnostics
+    BuildPackageResolution.packageResolutionDiagnostics requested resolved sources restoreWarnings
 
 let private readKeyValueFromText key text =
     let escapedKey = Regex.Escape key

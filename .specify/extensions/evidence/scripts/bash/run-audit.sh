@@ -776,14 +776,31 @@ if requires_window_visibility:
     image_values = parse_key_values(image_text)
     if image_path.exists():
         image_kind = image_values.get("evidence-kind", "").lower()
+        image_status = image_values.get("status", "").lower()
         requested = truthy(image_values.get("requested-image-evidence", "")) or image_kind in {"screenshot", "image"}
         metadata_only = image_values.get("artifact-kind", "").lower() in {"metadata", "hash", "text", "text-only"} or "metadata-only screenshot" in image_lower
         decodable_value = image_values.get("artifact-decodable", image_values.get("image-decodable", image_values.get("decodable", ""))).lower()
         undecodable = falsy(decodable_value)
+        unsupported_screenshot = image_kind == "screenshot" and image_status == "unsupported"
         if requested and (metadata_only or undecodable):
             hits.append({
                 "path": str(image_path),
                 "reason": "metadata-only screenshot claim",
+            })
+        if unsupported_screenshot and not image_values.get("unsupported-host-reason", "").strip():
+            hits.append({
+                "path": str(image_path),
+                "reason": "unsupported screenshot missing unsupported-host reason",
+            })
+        if unsupported_screenshot and (
+            truthy(image_values.get("proves-desktop-visibility", ""))
+            or truthy(decodable_value)
+            or image_values.get("artifact-kind", "").lower() == "image"
+            or image_values.get("image-artifact", "").strip()
+        ):
+            hits.append({
+                "path": str(image_path),
+                "reason": "unsupported screenshot cannot prove desktop visibility",
             })
         if image_kind in {"image", "screenshot", "pixel-readback", "metadata-hash"}:
             if "proves-scene-rendering" not in image_values or "proves-desktop-visibility" not in image_values:

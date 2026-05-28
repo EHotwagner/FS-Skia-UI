@@ -1,6 +1,7 @@
 module ProcessReliabilityContractTests
 
 open System
+open System.IO
 open Expecto
 open GovernanceTestSupport
 
@@ -17,6 +18,9 @@ let focusedGates =
       "TemplateDrift"
       "EvidenceGraph"
       "EvidenceAudit" ]
+
+let buildGovernanceSource () =
+    readBuildGovernanceSources ()
 
 [<Tests>]
 let processReliabilityContractTests =
@@ -56,6 +60,33 @@ let processReliabilityContractTests =
               "ValidateRunnerBootstrap(\"Verify\""
               "ValidateRunnerBootstrap(\"Ci\"" ]
             |> List.iter (fun needle -> Expect.stringContains content needle $"build.fsx contains {needle}")
+        }
+
+        test "build helper contracts cover path process report scan package template and health behavior" {
+            let source = buildGovernanceSource ()
+
+            [ "let path"
+              "let ensureParent"
+              "let cleanDirectoryContents"
+              "let appendLine"
+              "let runProcessWithAllowedExitCodes"
+              "let runProcess"
+              "let runDotnetAction"
+              "File.AppendAllText(outputPath"
+              "exit-code={proc.ExitCode}"
+              "timed out. See"
+              "let parseScalar"
+              "let parseInlineList"
+              "WriteStructuredReport"
+              "ScanV3GeneratedProducts"
+              "GeneratedGuidanceScan"
+              "let latestTemplatePackage"
+              "let validateTemplatePackage"
+              "expectedPackages"
+              "ProcessHealthThreshold"
+              "ProcessHealthSnapshot"
+              "malformed threshold override" ]
+            |> List.iter (fun needle -> Expect.stringContains source needle $"build helper source preserves {needle}")
         }
 
         test "verification verdict reports expose environment product degraded and success categories" {
@@ -143,7 +174,7 @@ let processReliabilityContractTests =
         }
 
         test "smoke tests run through direct Expecto executable instead of VSTest adapter" {
-            let content = read "build.fsx"
+            let content = buildGovernanceSource ()
 
             Expect.stringContains
                 content

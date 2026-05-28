@@ -5,7 +5,11 @@ open Expecto
 open GovernanceTestSupport
 
 let expectControlsOnlyComposition relativePath =
-    let source = read relativePath
+    let source =
+        if relativePath = "template/base/src/Product/View.fs" then
+            read relativePath + "\n" + read "template/base/src/Product/Model.fs"
+        else
+            read relativePath
 
     [ "open FS.Skia.UI.Controls"
       "TextBox.create"
@@ -81,12 +85,12 @@ let controlsBoundaryCompositionTests =
         }
 
         test "generated product template composes form chart and DataGrid through Controls only" {
-            expectControlsOnlyComposition "template/base/src/Product/Program.fs"
+            expectControlsOnlyComposition "template/base/src/Product/View.fs"
             expectProjectUsesControlsOnly "template/base/src/Product/Product.fsproj"
         }
 
         test "generated product template keeps Controls package references and source product-owned" {
-            expectControlsOnlyComposition "template/base/src/Product/Program.fs"
+            expectControlsOnlyComposition "template/base/src/Product/View.fs"
             expectProjectUsesControlsOnly "template/base/src/Product/Product.fsproj"
             expectNoCopiedFrameworkAssets "template/base"
         }

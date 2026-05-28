@@ -1,0 +1,127 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+# Phase-checkpoint edges are auto-injected by the evidence graph script.
+# Only explicit non-phase or same-phase implementation dependencies are listed.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: ["speckit-tasks"]
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: [T001, T003]
+    skillist: []
+  T005:
+    deps: []
+    skillist: []
+  T006:
+    deps: []
+    skillist: ["fs-skia-testing"]
+  T007:
+    deps: []
+    skillist: []
+  T008:
+    deps: []
+    skillist: ["fs-skia-skiaviewer"]
+  T009:
+    deps: [T005, T006, T007, T008]
+    skillist: []
+  T010:
+    deps: []
+    skillist: ["fs-skia-testing"]
+  T011:
+    deps: []
+    skillist: ["fs-skia-layout-evidence"]
+  T012:
+    deps: [T010]
+    skillist: ["fs-skia-testing"]
+  T013:
+    deps: [T010, T011, T012]
+    skillist: ["fs-skia-testing", "fs-skia-layout-evidence"]
+  T014:
+    deps: [T013]
+    skillist: ["fs-skia-testing"]
+  T015:
+    deps: [T013, T014]
+    skillist: ["fs-skia-testing", "fs-skia-layout-evidence"]
+  T016:
+    deps: []
+    skillist: ["fs-skia-scene", "fs-skia-skiaviewer", "fs-skia-testing"]
+  T017:
+    deps: []
+    skillist: ["fs-skia-testing"]
+  T018:
+    deps: [T016]
+    skillist: ["fs-skia-scene"]
+  T019:
+    deps: [T016]
+    skillist: ["fs-skia-layout-evidence"]
+  T020:
+    deps: [T016]
+    skillist: ["fs-skia-skiaviewer"]
+  T021:
+    deps: [T016, T017, T018, T019, T020]
+    skillist: ["fs-skia-testing"]
+  T022:
+    deps: [T018, T019, T020, T021]
+    skillist: ["fs-skia-template-update"]
+  T023:
+    deps: [T017, T021, T022]
+    skillist: ["fs-skia-testing"]
+  T024:
+    deps: [T019, T021, T022, T023]
+    skillist: ["fs-skia-testing", "fs-skia-layout-evidence"]
+  T025:
+    deps: []
+    skillist: []
+  T026:
+    deps: []
+    skillist: []
+  T027:
+    deps: [T025, T026]
+    skillist: []
+  T028:
+    deps: [T025, T026]
+    skillist: []
+  T029:
+    deps: [T027, T028]
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T030:
+    deps: [T029]
+    skillist: ["speckit-evidence-graph"]
+  T031:
+    deps: []
+    skillist: ["fs-skia-skiaviewer"]
+  T032:
+    deps: []
+    skillist: ["fs-skia-skiaviewer", "fs-skia-layout-evidence"]
+  T033:
+    deps: [T031]
+    skillist: ["fs-skia-skiaviewer"]
+  T034:
+    deps: [T031]
+    skillist: ["fs-skia-skiaviewer"]
+  T035:
+    deps: [T031, T032, T033, T034]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-layout-evidence"]
+  T036:
+    deps: [T033, T034, T035]
+    skillist: ["fs-skia-skiaviewer"]
+  T037:
+    deps: [T035, T036]
+    skillist: ["fs-skia-skiaviewer", "speckit-evidence-audit"]
+  T038:
+    deps: []
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T039:
+    deps: []
+    skillist: []
+  T040:
+    deps: [T038, T039]
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]

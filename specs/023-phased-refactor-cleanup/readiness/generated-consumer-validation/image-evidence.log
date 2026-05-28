@@ -1,0 +1,18 @@
+
+## generated consumer image evidence
+$ dotnet run --project src/Product/Product.fsproj --no-restore -- --image-evidence "/home/developer/projects/FS-Skia-UI/specs/023-phased-refactor-cleanup/readiness/generated-consumer-validation/game-image-evidence.png"
+status=ok
+command=--image-evidence
+output=/home/developer/projects/FS-Skia-UI/specs/023-phased-refactor-cleanup/readiness/generated-consumer-validation/game-image-evidence.png.metadata.txt
+mode=persistent-evidence
+evidence-kind=image
+path=/home/developer/projects/FS-Skia-UI/specs/023-phased-refactor-cleanup/readiness/generated-consumer-validation/game-image-evidence.png
+image-decodable=True
+proves-scene-rendering=true
+proves-desktop-visibility=false
+renderer-mode=skia
+self-closed-for-evidence=true
+input-dispatch=not-required
+first-frame-presented=true
+
+exit-code=0
