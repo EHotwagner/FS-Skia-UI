@@ -9,6 +9,8 @@ description: Timestamped analysis of FS.Skia.UI as a Spec Kit agent-consumed fra
 # Agent Consumer Framework Analysis
 
 Timestamp: 2026-05-28T15:57:01+0200
+Updated: 2026-05-28 after the `027-generated-evidence-workflow` merge and
+follow-up package/template pin commits.
 
 This analysis evaluates FS.Skia.UI as a framework whose primary generated
 consumer is an autonomous agent running Spec Kit, not a human developer typing
@@ -86,7 +88,8 @@ Agent-first questions:
 This repository already answers several of those questions better than a
 minimal app template would. The current harness gives agents stable FAKE
 targets, readiness directories, command logs, generated product validation,
-evidence graph and audit outputs, and synthetic-evidence disclosure.
+focused-gate summaries, evidence graph and audit outputs, and
+synthetic-evidence disclosure.
 
 The improvement target should therefore be "more deterministic and cheaper for
 agents" rather than "less governed".
@@ -125,10 +128,18 @@ that an agent can run and cite:
 - `CapabilityCheck`
 - `SkillCheck`
 - `GeneratedProductCheck`
+- `ControlsCatalogCheck`
+- `ControlsInteractionCheck`
+- `ControlsRenderingCheck`
+- `DependencyReport`
 - `GeneratedGuidanceCheck`
 - `TemplateDrift`
 - `EvidenceGraph`
 - `EvidenceAudit`
+- `VerifyPreflight`
+- `CiPreflight`
+- `StaleBoundaryScan`
+- `FinalReadiness`
 - `Verify`
 - `Ci`
 
@@ -137,6 +148,20 @@ readiness Markdown files, JSON outputs, package surfaces, generated product
 file lists, and focused-gate summaries. This is a strong design for an agentic
 workflow because it creates durable evidence instead of relying on the final
 assistant response.
+
+After `027-generated-evidence-workflow`, generated `EvidenceGraph` and
+`EvidenceAudit` targets are no longer completion-only placeholders. Generated
+projects delegate to the authoritative Spec Kit evidence script, record
+`authority=delegated-authoritative`, surface the generated project identity,
+exit code, validation area, diagnostics, and write command reports under
+`readiness/`.
+
+Focused gates also have stronger in-repository metadata than the original
+analysis observed: command, direct prerequisites, log path, readiness path,
+stale build/restore assumptions, and verdict category are represented in the
+build workflow and documented in [docs/build.md](build.md). This improves
+direct invocation and evidence review, but it is still not a changed-path
+validation manifest.
 
 ### 3. Unsupported Host Behavior Is Treated As A Contract
 
@@ -596,44 +621,14 @@ The goal is not to make the renderer generic over many typed control records.
 The goal is to give agents typed constructors that lower into the existing
 representation.
 
-### Recommendation 6: Reconcile The Custom Build Model With FAKE
+### Recommendation 6: Use Native FAKE Targets
 
-There are three viable designs.
+The chosen build-graph direction is native FAKE target registration with pure
+planning functions retained for testability. The repository should stop
+treating the current custom traversal as a long-term target interpreter and
+move target ownership back to FAKE.
 
-#### Option A: Keep The Custom Runner, Add A Manifest Layer
-
-Keep `BuildModel`, `BuildMsg`, `BuildEffect`, and `runWithDependencies`.
-Add explicit machine-readable metadata:
-
-- target id
-- description
-- tier
-- dependencies
-- direct prerequisites
-- output artifacts
-- stale assumptions
-- timeout class
-- failure owner
-
-Generate docs and agent verdicts from that metadata.
-
-Pros:
-
-- preserves current testable build algebra
-- smallest change
-- keeps existing governance tests mostly intact
-
-Cons:
-
-- still not idiomatic FAKE
-- still bypasses native target listing and runner options
-- the repository owns target traversal semantics forever
-
-This is the pragmatic near-term path.
-
-#### Option B: Use Native FAKE Targets, Keep Pure Planning Functions
-
-Refactor so FAKE owns target registration and traversal:
+Register targets through FAKE:
 
 ```fsharp
 Target.create "Dev" (fun _ -> runEffects (planTarget "Dev"))
@@ -652,47 +647,33 @@ val planTarget: BuildModel -> TargetId -> BuildEffect list
 val targetMetadata: TargetId -> TargetMetadata
 ```
 
-Pros:
+Add explicit machine-readable metadata alongside native registration:
+
+- target id
+- description
+- tier
+- dependencies
+- direct prerequisites
+- output artifacts
+- stale assumptions
+- timeout class
+- failure owner
+
+Expected benefits:
 
 - restores native FAKE conventions
 - enables `--list`, `--single-target`, target arguments, and FAKE context
 - reduces custom traversal code
 - preserves testability of target planning
+- makes the validation manifest and target metadata easier for external tools
+  to reconcile with the actual runnable target graph
 
-Cons:
+Migration constraints:
 
 - medium migration
 - governance tests around custom traversal need updates
 - target metadata must be kept in sync with FAKE registrations unless generated
-
-This is the best medium-term design.
-
-#### Option C: Move Build Orchestration Out Of FAKE
-
-Use a purpose-built F# command-line executable for validation, and keep FAKE
-only as a thin compatibility wrapper.
-
-Pros:
-
-- full control over agent manifest, JSON output, command routing, and failure
-  classification
-- easier to test as normal compiled code
-
-Cons:
-
-- larger change
-- loses much of the benefit of choosing FAKE
-- increases bootstrapping surface
-
-This is only worth considering if the validation engine becomes too complex
-for script-based FAKE.
-
-Recommended path:
-
-1. Near term: Option A plus target metadata and `agent-verdict.json`.
-2. Medium term: Option B, native FAKE targets that call pure planning
-   functions.
-3. Avoid Option C unless FAKE script constraints become a direct blocker.
+- current command wrappers must stay stable while target registration changes
 
 ### Recommendation 7: Add Gate Cost And Authority Metadata
 
@@ -748,18 +729,20 @@ Agent benefit:
 
 ## Proposed Implementation Sequence
 
-### Phase 1: Metadata Without Behavior Change
+### Phase 1: Native FAKE Registration And Metadata
 
-Add `validation.contract.yml` and target metadata. Teach existing
-`GeneratedGuidanceCheck` or a new focused gate to validate:
+Register existing targets with native FAKE `Target.create` definitions while
+keeping pure planning functions for effect tests. Add `validation.contract.yml`
+and target metadata. Teach existing `GeneratedGuidanceCheck` or a new focused
+gate to validate:
 
 - every documented target has metadata
-- every metadata target exists in `requiredTargets`
+- every metadata target has a native FAKE registration
 - every focused gate declares outputs
 - every changed path class maps to at least one validation rule
 - `Verify` and `Ci` are not required as focused-gate prerequisites
 
-No target behavior changes in this phase.
+Command names and wrappers remain stable in this phase.
 
 ### Phase 2: AgentReady Target
 
@@ -805,16 +788,12 @@ Update public module constructors first:
 Keep `Attr.create` for advanced/custom cases, but move generated template code
 to typed constructors.
 
-### Phase 4: Native FAKE Target Registration
+### Phase 4: Remove Custom Traversal
 
-Introduce native `Target.create` wrappers around the pure target planner. This
-can be done incrementally:
-
-1. keep `planTarget` pure
-2. register targets through FAKE
-3. generate `targetDependencies` from metadata or remove custom traversal
-4. keep command wrappers stable
-5. update build workflow tests to assert native registration plus planning
+After native FAKE registration has covered the target graph, remove or reduce
+the custom `targetDependencies` and `runWithDependencies` traversal. Generate
+docs from target metadata or validate metadata against FAKE registrations so
+the documented graph and runnable graph cannot drift.
 
 ## Recommendation Summary
 
@@ -832,7 +811,8 @@ Highest-value changes:
 4. Move generated evidence policy out of the product entrypoint where possible.
 5. Add typed Controls front doors while keeping the current lowered
    representation.
-6. Reconcile the custom build graph with native FAKE targets over time.
+6. Move the build graph to native FAKE targets while preserving pure planning
+   functions for tests.
 
 These changes preserve the core advantage of FS.Skia.UI for agent consumers:
 the framework can prove its own generated products. The improvement is to make
