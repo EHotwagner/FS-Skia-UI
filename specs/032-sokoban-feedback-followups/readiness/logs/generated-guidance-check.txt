@@ -1,0 +1,29 @@
+The last full restore is still up to date. Nothing left to do.
+run GeneratedGuidanceCheck
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target GeneratedGuidanceCheck:
+<== GeneratedGuidanceCheck
+
+The running order is:
+Group - 1
+  - GeneratedGuidanceCheck
+Starting target 'GeneratedGuidanceCheck'
+Finished (Success) 'GeneratedGuidanceCheck' in 00:00:00.0467475
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                   Duration
+------                   --------
+GeneratedGuidanceCheck   00:00:00.0447649
+Total:                   00:00:00.1203048
+Status:                  Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 202 milliseconds
+ - Packages: 58 milliseconds
+ - Script analyzing: 21 milliseconds
+ - Script running: 276 milliseconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 second

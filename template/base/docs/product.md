@@ -52,6 +52,38 @@ forcing the default app profile to reference the Testing package.
 Game entities reuse shared Scene geometry for layout, containment, collision,
 and rendering evidence when the Scene model fits, rather than introducing local
 duplicate bounds records.
+
+## Compact Consumer API Map
+
+Generated products expose a compact consumer API map before app-specific code:
+keyboard input uses `FS.Skia.UI.KeyboardInput.ViewerKey` cases `ArrowLeft`,
+`ArrowRight`, `ArrowUp`, `ArrowDown`, `Enter`, `Space`, `Escape`, `Backspace`,
+`Letter`, `Digit`, `Function`, and `Unknown`, with
+`ViewerKeyboard.normalize`, `ViewerKeyboard.normalizeEvent`, and
+`ViewerKeyboard.toKeyId` for raw events. `Viewer.GeneratedAppHost` supplies
+`Init`, `Update`, `View`, `OnTick`, `OnKey`, and `ShouldClose`; host boundaries
+translate app commands such as `DispatchHostCommand` into viewer effects such
+as `OpenWindow`, `ApplyWindowOptions`, `RenderScene`, `DispatchInput`,
+`CloseWindow`, `EmitDiagnostic`, `CaptureScreenshot`, `CaptureImageEvidence`,
+and `ReadPixels`. Elmish adapter commands such as `DispatchViewer` belong at
+the edge. Common scene construction uses `Scene.empty`, `Scene.group`,
+`Scene.rectangle`, `Scene.circle`, `Scene.text`, `Scene.textRun`, `Scene.line`,
+and `Scene.path`. Default text is readable evidence text, not a typography
+contract; use `TextRun.Font` and explicit fonts for brand or typography
+guarantees.
+
+The authoritative readiness contract for a feature is the feature-scoped
+directory, for example `specs/032-sokoban-feedback-followups/readiness/`.
+Repository-level output such as package surface baselines or generated consumer
+logs is supporting evidence only. Prepare `default-text-glyph-capture.md`,
+`interactive-window-close-evidence.md`, `consumer-guidance-scan.md`,
+`readiness-contract-scan.md`, and `task-guidance-scan.md` before audit. These
+files should name governance risk levels, aggregate hang diagnostics, runtime
+limitations, supported-host persistent launch evidence, required scan terms,
+and follow-up classification as framework behavior, generated-app guidance,
+Spec Kit guidance, or consumer-author mistake.
+Keep runtime limitations visible in readiness notes even when the host is
+supported.
 If a generated product introduces its own geometry vocabulary, prefer
 domain-specific names such as `WorldRect`, `WorldPoint`, `TrackBounds`,
 `CarPose`, and `CheckpointBounds`. Keep generic `Rect`, `Point`, and `Size`

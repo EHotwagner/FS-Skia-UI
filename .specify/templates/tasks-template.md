@@ -115,6 +115,17 @@ governance risk level, focused validation required for the selected level, when
 broad validation is required, and how non-authoritative aggregate results are
 recorded.
 
+Task graph validator pitfall guidance must be visible before authors run
+`EvidenceGraph`. Avoid title trigger phrases that accidentally imply unrelated
+capabilities, for example "persistent GUI runtime" on a guidance-only task or
+"window visibility validation fixture" on a non-viewer task. Keep
+`tasks.deps.yml` in object shape with exactly one key per task id:
+`T001: { deps: [], skillist: [] }` is invalid YAML style for this repo; use
+indented object fields instead. Every task id in `tasks.md` must appear once in
+`tasks.deps.yml`, dependency lists must use exact `Tnnn` ids, and the visible
+`[skillist: ...]` mirror in `tasks.md` must match the structured `skillist`
+list exactly and in order.
+
 Generated task lists must make audit-enforced readiness files discoverable
 before implementation starts. Setup or foundation work should create placeholders
 or explicit tasks for the active feature's required readiness files, including

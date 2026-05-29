@@ -1,0 +1,48 @@
+The last full restore is still up to date. Nothing left to do.
+run PackageSurfaceCheck
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target PackageSurfaceCheck:
+<== PackageSurfaceCheck
+   <== Build
+      <== Restore
+
+The running order is:
+Group - 1
+  - Restore
+Group - 2
+  - Build
+Group - 3
+  - PackageSurfaceCheck
+Starting target 'Restore'
+Finished (Success) 'Restore' in 00:00:35.1744529
+Starting target 'Build'
+Finished (Success) 'Build' in 00:00:38.5447792
+Starting target 'PackageSurfaceCheck'
+Finished (Success) 'PackageSurfaceCheck' in 00:00:05.0378500
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                Duration
+------                --------
+Restore               00:00:35.1720122
+Build                 00:00:38.5446845
+PackageSurfaceCheck   00:00:05.0378090
+Total:                00:01:18.8391410
+Status:               Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 186 milliseconds
+ - Packages: 59 milliseconds
+ - Script analyzing: 20 milliseconds
+ - Script running: 1 minute, 18 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 minute, 20 seconds
+ts.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 70 ms - Package.Tests.dll (net10.0)
+
+exit-code=0

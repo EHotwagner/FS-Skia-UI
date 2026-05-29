@@ -81,6 +81,16 @@ pixel validation. The record must also include command, app/sample identity,
 host facts, capture mode, blocked stage, classification, category, message, and
 timestamp so reviewers can trace the artifact without a local rerun.
 
+Default text glyph evidence is a screenshot capability check layered on top of
+screenshot proof. A passing `default-text-glyph-capture.md` record for a
+supported Linux desktop host must name the command, host platform, font
+resolution, fallback-used, screenshot path, dimensions, glyph coverage metric,
+solid-block metric, placeholder/tofu metric, status, diagnostics, and runtime
+limitations. The classifier must reject undecodable screenshots, blank regions,
+solid-block-only default text, and placeholder/tofu-only coverage. Unsupported
+hosts must include `unsupported-host-reason` and must not claim supported-host
+default text readability.
+
 Unsupported hosts may record fallback diagnostics such as
 `deterministic-scene-evidence`, but deterministic scene evidence, layout facts,
 launch logs, metadata hashes, pixel-readback diagnostics, manual descriptions,
@@ -98,6 +108,16 @@ frame-focused paths. Startup-focused runs keep frame-loop diagnostics disabled
 or sampled to zero; frame-focused runs must enable the frame category
 explicitly and cap repeated frame messages. In-process diagnostic sink evidence
 is preferred over process stderr scraping.
+
+Readiness contract evidence is read from the active feature-scoped readiness
+directory, such as `specs/032-sokoban-feedback-followups/readiness/`, while
+repository-level evidence directories remain supporting outputs. Feature
+readiness notes should prepare `default-text-glyph-capture.md`,
+`interactive-window-close-evidence.md`, `consumer-guidance-scan.md`,
+`readiness-contract-scan.md`, and `task-guidance-scan.md`. Those files should
+list governance risk levels, aggregate hang diagnostics, runtime limitations,
+supported-host persistent launch evidence, and the deterministic sequential
+order for FAKE-backed commands.
 
 Historical feature readiness folders remain repository evidence. They are not
 the source of truth for current package baselines and should not be patched to

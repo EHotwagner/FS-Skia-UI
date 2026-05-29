@@ -53,6 +53,20 @@ derived from the spec and plan.
   structured `skillist` value as `[skillist: ...]`. Use `[skillist: []]` for
   an empty list. Non-empty mirrors preserve the exact structured order, for
   example `[skillist: speckit-tasks, speckit-evidence-graph]`.
+- **Task graph pitfall guidance.** Warn authors before graph validation about
+  title trigger phrases and dependency formatting mistakes. Avoid wording such
+  as "persistent GUI runtime" on a guidance-only task or "window visibility
+  validation fixture" on a non-viewer task when those phrases would imply
+  unrelated capability requirements. `tasks.deps.yml` MUST use one object-shaped
+  entry per task id with indented `deps` and `skillist` fields; inline maps such
+  as `T001: { deps: [], skillist: [] }`, duplicate keys, bare task lists,
+  malformed indentation, dangling dependency ids, and mismatched visible
+  `skillist` mirrors are invalid. The exact phrase
+  "window visibility validation fixture" is a known title trigger phrase
+  pitfall. Record window visibility validation fixture examples only when the
+  task really owns viewer window evidence. The dependency file uses one key per
+  task id. Preserve one key per task id in `tasks.deps.yml`; the required
+  object shape uses indented `deps` and `skillist` fields.
 - **Phase-checkpoint edges are implicit.** The graph compute script
   auto-injects an edge from every task in Phase N+1 to the last foundation
   task of Phase N. You do NOT repeat those edges in the yml — write only

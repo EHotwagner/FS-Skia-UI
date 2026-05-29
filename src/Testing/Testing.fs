@@ -268,6 +268,26 @@ type ScreenshotArtifactValidationResult =
       FailureClass: string option
       Diagnostics: string list }
 
+type DefaultTextGlyphEvidenceCheck =
+    { ReadinessDirectory: string
+      ScreenshotPath: string
+      TextRegion: Rect option
+      ExpectedWidth: int option
+      ExpectedHeight: int option
+      Status: string
+      FontResolution: string option
+      FallbackUsed: bool option
+      UnsupportedHostReason: string option
+      Diagnostics: string list }
+
+type DefaultTextGlyphEvidenceValidationResult =
+    { Accepted: bool
+      GlyphCoverageMetric: float
+      SolidBlockMetric: float
+      PlaceholderMetric: float
+      FailureClass: string option
+      Diagnostics: string list }
+
 type ScreenshotEvidenceRecord =
     { Fields: EvidenceReportField list
       ArtifactPath: string option
@@ -859,6 +879,174 @@ module ReadinessFileDiscovery =
 
         { Complete = missing.IsEmpty
           MissingFiles = missing
+          Diagnostics = diagnostics }
+
+module DefaultTextGlyphEvidence =
+    let pixelDistance (a: SKColor) (b: SKColor) =
+        abs (int a.Red - int b.Red)
+        + abs (int a.Green - int b.Green)
+        + abs (int a.Blue - int b.Blue)
+        + abs (int a.Alpha - int b.Alpha)
+
+    let regionBounds (bitmap: SKBitmap) (region: Rect option) =
+        match region with
+        | Some bounds ->
+            let x = Math.Clamp(int (Math.Floor bounds.X), 0, bitmap.Width - 1)
+            let y = Math.Clamp(int (Math.Floor bounds.Y), 0, bitmap.Height - 1)
+            let maxX = Math.Clamp(int (Math.Ceiling(bounds.X + bounds.Width)), x + 1, bitmap.Width)
+            let maxY = Math.Clamp(int (Math.Ceiling(bounds.Y + bounds.Height)), y + 1, bitmap.Height)
+            x, y, maxX, maxY
+        | None -> 0, 0, bitmap.Width, bitmap.Height
+
+    let validate (check: DefaultTextGlyphEvidenceCheck) =
+        let status = check.Status.Trim().ToLowerInvariant()
+        let normalizedReadiness = IO.Path.GetFullPath check.ReadinessDirectory
+        let screenshotFullPath = IO.Path.GetFullPath check.ScreenshotPath
+        let insideReadiness =
+            screenshotFullPath.StartsWith(normalizedReadiness.TrimEnd(IO.Path.DirectorySeparatorChar) + string IO.Path.DirectorySeparatorChar, StringComparison.Ordinal)
+            || String.Equals(screenshotFullPath, normalizedReadiness, StringComparison.Ordinal)
+
+        let mutable glyphCoverageMetric = 0.0
+        let mutable solidBlockMetric = 1.0
+        let mutable placeholderMetric = 1.0
+
+        let artifactDiagnostics =
+            try
+                if not (IO.File.Exists screenshotFullPath) then
+                    [ "screenshot artifact is missing" ]
+                else
+                    use bitmap = SKBitmap.Decode(screenshotFullPath)
+
+                    if Object.ReferenceEquals(bitmap, null) then
+                        [ "screenshot artifact is not decodable" ]
+                    else
+                        let expectedDiagnostics =
+                            [ match check.ExpectedWidth with
+                              | Some width when bitmap.Width <> width -> $"screenshot width {bitmap.Width} does not match expected {width}"
+                              | _ -> ()
+                              match check.ExpectedHeight with
+                              | Some height when bitmap.Height <> height -> $"screenshot height {bitmap.Height} does not match expected {height}"
+                              | _ -> () ]
+
+                        let background = bitmap.GetPixel(0, 0)
+                        let x0, y0, x1, y1 = regionBounds bitmap check.TextRegion
+                        let mutable foreground = 0
+                        let mutable transitions = 0
+                        let mutable edgeForeground = 0
+                        let mutable interiorForeground = 0
+                        let mutable minForegroundX = Int32.MaxValue
+                        let mutable minForegroundY = Int32.MaxValue
+                        let mutable maxForegroundX = Int32.MinValue
+                        let mutable maxForegroundY = Int32.MinValue
+                        let mutable previousInRow = false
+                        let mutable hasPrevious = false
+
+                        for y in y0 .. y1 - 1 do
+                            previousInRow <- false
+                            hasPrevious <- false
+
+                            for x in x0 .. x1 - 1 do
+                                let isForeground = pixelDistance (bitmap.GetPixel(x, y)) background > 48
+
+                                if isForeground then
+                                    foreground <- foreground + 1
+                                    minForegroundX <- min minForegroundX x
+                                    minForegroundY <- min minForegroundY y
+                                    maxForegroundX <- max maxForegroundX x
+                                    maxForegroundY <- max maxForegroundY y
+
+                                    if x = x0 || x = x1 - 1 || y = y0 || y = y1 - 1 then
+                                        edgeForeground <- edgeForeground + 1
+                                    else
+                                        interiorForeground <- interiorForeground + 1
+
+                                if hasPrevious && previousInRow <> isForeground then
+                                    transitions <- transitions + 1
+
+                                previousInRow <- isForeground
+                                hasPrevious <- true
+
+                        let area = max 1 ((x1 - x0) * (y1 - y0))
+                        let foregroundRatio = float foreground / float area
+                        let transitionRatio = float transitions / float area
+                        let edgeRatio = float edgeForeground / float (max 1 foreground)
+                        let interiorRatio = float interiorForeground / float (max 1 foreground)
+                        let boundingBoxPlaceholder =
+                            if foreground = 0 then
+                                1.0
+                            else
+                                let mutable boundingEdgeForeground = 0
+                                let mutable boundingInteriorForeground = 0
+
+                                for y in minForegroundY .. maxForegroundY do
+                                    for x in minForegroundX .. maxForegroundX do
+                                        let isForeground = pixelDistance (bitmap.GetPixel(x, y)) background > 48
+
+                                        if isForeground then
+                                            if x = minForegroundX || x = maxForegroundX || y = minForegroundY || y = maxForegroundY then
+                                                boundingEdgeForeground <- boundingEdgeForeground + 1
+                                            else
+                                                boundingInteriorForeground <- boundingInteriorForeground + 1
+
+                                let boundingEdgeRatio = float boundingEdgeForeground / float foreground
+                                let boundingInteriorRatio = float boundingInteriorForeground / float foreground
+                                boundingEdgeRatio * (1.0 - boundingInteriorRatio)
+
+                        glyphCoverageMetric <- transitionRatio
+                        solidBlockMetric <- foregroundRatio
+                        placeholderMetric <- max (if foreground = 0 then 1.0 else edgeRatio * (1.0 - interiorRatio)) boundingBoxPlaceholder
+
+                        [ yield! expectedDiagnostics
+                          if foreground = 0 then
+                              "default text region has no foreground coverage"
+                          if transitionRatio < 0.015 then
+                              "default text region lacks glyph-shaped interior/background transitions"
+                          if foregroundRatio > 0.25 && transitionRatio < 0.015 then
+                              "default text region looks like a solid block"
+                          if placeholderMetric > 0.55 || (foregroundRatio <= 0.25 && transitionRatio < 0.025 && foreground > 0) then
+                              "default text region looks like placeholder/tofu box coverage" ]
+            with ex ->
+                [ $"screenshot glyph validation failed: {ex.Message}" ]
+
+        let statusDiagnostics =
+            [ if not insideReadiness then
+                  "screenshot path must stay inside readiness directory"
+              match status with
+              | "ok" ->
+                  if check.FontResolution |> Option.exists String.IsNullOrWhiteSpace then
+                      "font-resolution must not be blank"
+                  if check.FallbackUsed.IsNone then
+                      "fallback-used must be recorded"
+                  if check.UnsupportedHostReason.IsSome then
+                      "successful glyph evidence must not carry unsupported-host-reason"
+              | "unsupported" ->
+                  if check.UnsupportedHostReason.IsNone then
+                      "unsupported glyph evidence must include unsupported-host-reason"
+              | "failed" -> ()
+              | other -> $"unsupported default text glyph status: {other}" ]
+
+        let diagnostics = statusDiagnostics @ artifactDiagnostics @ check.Diagnostics
+        let accepted = status = "ok" && diagnostics.IsEmpty
+
+        let failureClass =
+            if accepted then
+                None
+            elif artifactDiagnostics |> List.exists (fun item -> item.Contains("missing") || item.Contains("decodable")) then
+                Some "undecodable-screenshot"
+            elif artifactDiagnostics |> List.exists (fun item -> item.Contains("solid block")) then
+                Some "solid-block-default-text"
+            elif artifactDiagnostics |> List.exists (fun item -> item.Contains("placeholder") || item.Contains("tofu")) then
+                Some "placeholder-default-text"
+            elif status = "unsupported" then
+                Some "unsupported-host"
+            else
+                Some "glyph-coverage-incomplete"
+
+        { Accepted = accepted
+          GlyphCoverageMetric = glyphCoverageMetric
+          SolidBlockMetric = solidBlockMetric
+          PlaceholderMetric = placeholderMetric
+          FailureClass = failureClass
           Diagnostics = diagnostics }
 
 module EvidenceReports =

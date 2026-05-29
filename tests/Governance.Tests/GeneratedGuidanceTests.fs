@@ -408,4 +408,66 @@ let generatedGuidanceTests =
             |> List.iter (fun required ->
                 Expect.stringContains report required $"generated viewer guidance report includes {required}")
         }
+
+        test "generated guidance contains compact consumer API map before coding" {
+            [ "docs/generated-apps.md"
+              "template/base/docs/product.md" ]
+            |> List.iter (fun path ->
+                expectFileContains
+                    path
+                    [ "Compact Consumer API Map"
+                      "FS.Skia.UI.KeyboardInput.ViewerKey"
+                      "ArrowLeft"
+                      "ArrowRight"
+                      "Escape"
+                      "ViewerKeyboard.normalize"
+                      "Viewer.GeneratedAppHost"
+                      "ShouldClose"
+                      "OpenWindow"
+                      "RenderScene"
+                      "CloseWindow"
+                      "DispatchViewer"
+                      "Scene.rectangle"
+                      "Scene.textRun"
+                      "explicit fonts"
+                      "brand or typography" ])
+        }
+
+        test "readiness guidance names feature scoped contracts and mandatory terms" {
+            [ "docs/generated-apps.md"
+              "template/base/docs/product.md"
+              "docs/evidence.md" ]
+            |> List.iter (fun path ->
+                expectFileContains
+                    path
+                    [ "specs/032-sokoban-feedback-followups/readiness/"
+                      "default-text-glyph-capture.md"
+                      "interactive-window-close-evidence.md"
+                      "consumer-guidance-scan.md"
+                      "readiness-contract-scan.md"
+                      "task-guidance-scan.md"
+                      "governance risk levels"
+                      "aggregate hang diagnostics"
+                      "runtime limitations"
+                      "supported-host persistent launch evidence" ])
+        }
+
+        test "task generation guidance names graph validator pitfalls and dependency shape" {
+            [ ".specify/templates/tasks-template.md"
+              ".specify/presets/fsharp-opinionated/templates/tasks-template.md"
+              ".agents/skills/speckit-tasks/SKILL.md" ]
+            |> List.iter (fun path ->
+                expectFileContains
+                    path
+                    [ "title trigger phrases"
+                      "persistent GUI runtime"
+                      "window visibility validation fixture"
+                      "one key per task id"
+                      "tasks.deps.yml"
+                      "object shape"
+                      "indented"
+                      "deps"
+                      "skillist"
+                      "[skillist: ...]" ])
+        }
     ]

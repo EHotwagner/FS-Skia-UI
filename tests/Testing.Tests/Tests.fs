@@ -4,6 +4,42 @@ open System
 open Expecto
 open FS.Skia.UI.Scene
 open FS.Skia.UI.Testing
+open SkiaSharp
+
+let writePng (path: string) (width: int) (height: int) draw =
+    match IO.Path.GetDirectoryName path with
+    | null
+    | "" -> ()
+    | directory -> IO.Directory.CreateDirectory directory |> ignore
+    use bitmap = new SKBitmap(width, height)
+    use canvas = new SKCanvas(bitmap)
+    canvas.Clear(SKColors.White)
+    draw canvas
+    use image = SKImage.FromBitmap(bitmap)
+    use data = image.Encode(SKEncodedImageFormat.Png, 100)
+    use stream = IO.File.Open(path, IO.FileMode.Create, IO.FileAccess.Write)
+    data.SaveTo(stream)
+
+let drawGlyphText (canvas: SKCanvas) (x0: float32) (y0: float32) (scale: float32) (text: string) =
+    let patterns =
+        Map.ofList
+            [ 'H', [ "10001"; "10001"; "10001"; "11111"; "10001"; "10001"; "10001" ]
+              'U', [ "10001"; "10001"; "10001"; "10001"; "10001"; "10001"; "01110" ]
+              'D', [ "11110"; "10001"; "10001"; "10001"; "10001"; "10001"; "11110" ] ]
+
+    use paint = new SKPaint(Color = SKColors.Black, IsAntialias = false, Style = SKPaintStyle.Fill)
+
+    text
+    |> Seq.iteri (fun index character ->
+        let pattern = patterns[character]
+        let x = x0 + float32 index * scale * 6.0f
+
+        pattern
+        |> List.iteri (fun row line ->
+            line
+            |> Seq.iteri (fun column value ->
+                if value = '1' then
+                    canvas.DrawRect(SKRect.Create(x + float32 column * scale, y0 + float32 row * scale, scale * 0.86f, scale * 0.86f), paint))))
 
 [<Tests>]
 let tests =
@@ -264,6 +300,68 @@ let tests =
 
             Expect.isFalse result.Accepted "hostile artifact paths are rejected"
             Expect.equal result.FailureClass (Some "invalid-screenshot-evidence-fields") "hostile paths have stable failure class"
+        }
+
+        test "default text glyph evidence accepts glyph-shaped PNG coverage" {
+            let root = IO.Path.Combine(IO.Path.GetTempPath(), $"fs-skia-default-text-{Guid.NewGuid():N}")
+            let screenshot = IO.Path.Combine(root, "artifacts", "default-text.png")
+
+            writePng screenshot 160 80 (fun canvas -> drawGlyphText canvas 12.0f 12.0f 7.0f "HUD")
+
+            let result =
+                DefaultTextGlyphEvidence.validate
+                    { ReadinessDirectory = root
+                      ScreenshotPath = screenshot
+                      TextRegion = Some { X = 0.0; Y = 0.0; Width = 150.0; Height = 72.0 }
+                      ExpectedWidth = Some 160
+                      ExpectedHeight = Some 80
+                      Status = "ok"
+                      FontResolution = Some "SKTypeface.Default"
+                      FallbackUsed = Some false
+                      UnsupportedHostReason = None
+                      Diagnostics = [] }
+
+            let diagnostics = String.concat "; " result.Diagnostics
+            Expect.isTrue result.Accepted $"glyph-shaped text should pass: {diagnostics}"
+            Expect.isGreaterThan result.GlyphCoverageMetric 0.015 "glyph coverage metric records shape transitions"
+            Expect.isLessThan result.SolidBlockMetric 0.82 "glyph text is not classified as a solid block"
+            Expect.isLessThan result.PlaceholderMetric 0.55 "glyph text is not classified as tofu-only"
+        }
+
+        test "default text glyph evidence rejects solid block and tofu-like screenshots" {
+            let root = IO.Path.Combine(IO.Path.GetTempPath(), $"fs-skia-default-text-negative-{Guid.NewGuid():N}")
+            let solid = IO.Path.Combine(root, "artifacts", "solid.png")
+            let tofu = IO.Path.Combine(root, "artifacts", "tofu.png")
+
+            writePng solid 120 80 (fun canvas ->
+                use paint = new SKPaint(Color = SKColors.Black, IsAntialias = false)
+                canvas.DrawRect(SKRect.Create(8.0f, 8.0f, 96.0f, 48.0f), paint))
+
+            writePng tofu 120 80 (fun canvas ->
+                use paint = new SKPaint(Color = SKColors.Black, IsAntialias = false, Style = SKPaintStyle.Stroke, StrokeWidth = 4.0f)
+                canvas.DrawRect(SKRect.Create(20.0f, 12.0f, 80.0f, 48.0f), paint))
+
+            let validate path =
+                DefaultTextGlyphEvidence.validate
+                    { ReadinessDirectory = root
+                      ScreenshotPath = path
+                      TextRegion = Some { X = 0.0; Y = 0.0; Width = 120.0; Height = 80.0 }
+                      ExpectedWidth = Some 120
+                      ExpectedHeight = Some 80
+                      Status = "ok"
+                      FontResolution = Some "synthetic-negative-fixture"
+                      FallbackUsed = Some false
+                      UnsupportedHostReason = None
+                      Diagnostics = [] }
+
+            let solidResult = validate solid
+            Expect.isFalse solidResult.Accepted "solid blocks do not satisfy default text glyph evidence"
+            Expect.equal solidResult.FailureClass (Some "solid-block-default-text") "solid block gets stable failure class"
+
+            let tofuResult = validate tofu
+            let tofuDiagnostics = String.concat "; " tofuResult.Diagnostics
+            Expect.isFalse tofuResult.Accepted $"tofu-like boxes do not satisfy default text glyph evidence: glyph={tofuResult.GlyphCoverageMetric}; solid={tofuResult.SolidBlockMetric}; placeholder={tofuResult.PlaceholderMetric}; diagnostics={tofuDiagnostics}"
+            Expect.equal tofuResult.FailureClass (Some "placeholder-default-text") "tofu box gets stable failure class"
         }
 
         test "known GTK module warnings are benign only with first-frame launch evidence and preserved raw text" {

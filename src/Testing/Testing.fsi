@@ -267,6 +267,26 @@ type ScreenshotArtifactValidationResult =
       FailureClass: string option
       Diagnostics: string list }
 
+type DefaultTextGlyphEvidenceCheck =
+    { ReadinessDirectory: string
+      ScreenshotPath: string
+      TextRegion: Rect option
+      ExpectedWidth: int option
+      ExpectedHeight: int option
+      Status: string
+      FontResolution: string option
+      FallbackUsed: bool option
+      UnsupportedHostReason: string option
+      Diagnostics: string list }
+
+type DefaultTextGlyphEvidenceValidationResult =
+    { Accepted: bool
+      GlyphCoverageMetric: float
+      SolidBlockMetric: float
+      PlaceholderMetric: float
+      FailureClass: string option
+      Diagnostics: string list }
+
 type ScreenshotEvidenceRecord =
     { Fields: EvidenceReportField list
       ArtifactPath: string option
@@ -300,6 +320,9 @@ module PersistentLaunchArtifactValidation =
 
 module ReadinessFileDiscovery =
     val validate: check: ReadinessFileDiscoveryCheck -> ReadinessFileDiscoveryResult
+
+module DefaultTextGlyphEvidence =
+    val validate: check: DefaultTextGlyphEvidenceCheck -> DefaultTextGlyphEvidenceValidationResult
 
 module EvidenceReports =
     val statusText: status: EvidenceReportStatus -> string

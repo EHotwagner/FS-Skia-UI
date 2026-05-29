@@ -1,0 +1,100 @@
+The last full restore is still up to date. Nothing left to do.
+run GeneratedProductCheck
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target GeneratedProductCheck:
+<== GeneratedProductCheck
+   <== CapabilityCheck
+   <== SkillCheck
+   <== Dev
+      <== Test
+         <== Build
+            <== Restore
+         <== SampleContractSmoke
+   <== TemplateCheck
+      <== TemplatePack
+      <== TemplateInstallSource
+      <== TemplateInstallPackage
+      <== TemplateInstantiate
+      <== TemplateSmoke
+
+The running order is:
+Group - 1
+  - Restore
+  - TemplatePack
+  - TemplateInstallSource
+  - CapabilityCheck
+Group - 2
+  - Build
+  - TemplateInstallPackage
+  - SkillCheck
+Group - 3
+  - SampleContractSmoke
+  - TemplateInstantiate
+Group - 4
+  - Test
+Group - 5
+  - TemplateSmoke
+  - Dev
+Group - 6
+  - TemplateCheck
+Group - 7
+  - GeneratedProductCheck
+Starting target 'Restore'
+Finished (Success) 'Restore' in 00:00:34.0081610
+Starting target 'TemplatePack'
+Finished (Success) 'TemplatePack' in 00:00:01.7259311
+Starting target 'TemplateInstallSource'
+Finished (Success) 'TemplateInstallSource' in 00:00:01.7682253
+Starting target 'CapabilityCheck'
+Finished (Success) 'CapabilityCheck' in 00:00:00.0148838
+Starting target 'Build'
+Finished (Success) 'Build' in 00:00:36.4410493
+Starting target 'TemplateInstallPackage'
+Finished (Success) 'TemplateInstallPackage' in 00:00:01.6052202
+Starting target 'SkillCheck'
+Finished (Success) 'SkillCheck' in 00:00:00.0042084
+Starting target 'SampleContractSmoke'
+Finished (Success) 'SampleContractSmoke' in 00:00:08.2164830
+Starting target 'TemplateInstantiate'
+Finished (Success) 'TemplateInstantiate' in 00:00:08.2936210
+Starting target 'Test'
+Finished (Success) 'Test' in 00:00:26.3854889
+Starting target 'TemplateSmoke'
+Finished (Success) 'TemplateSmoke' in 00:00:14.3301570
+Starting target 'Dev'
+Finished (Success) 'Dev' in 00:00:00.0006509
+Starting target 'TemplateCheck'
+Finished (Success) 'TemplateCheck' in 00:00:00.0043438
+Starting target 'GeneratedProductCheck'
+Finished (Success) 'GeneratedProductCheck' in 00:01:39.4524330
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                   Duration
+------                   --------
+Restore                  00:00:34.0061377
+TemplatePack             00:00:01.7258610
+TemplateInstallSource    00:00:01.7681645
+CapabilityCheck          00:00:00.0148521
+Build                    00:00:36.4410153
+TemplateInstallPackage   00:00:01.6051876
+SkillCheck               00:00:00.0041742
+SampleContractSmoke      00:00:08.2162925
+TemplateInstantiate      00:00:08.2935914
+Test                     00:00:26.3853095
+TemplateSmoke            00:00:14.3301233
+Dev                      00:00:00.0006293
+TemplateCheck            00:00:00.0043204
+GeneratedProductCheck    00:01:39.4524125
+Total:                   00:03:52.3260095
+Status:                  Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 170 milliseconds
+ - Packages: 57 milliseconds
+ - Script analyzing: 20 milliseconds
+ - Script running: 3 minutes, 52 seconds
+ - Script cleanup: 1 millisecond
+ - Runtime: 3 minutes, 53 seconds

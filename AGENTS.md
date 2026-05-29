@@ -1,7 +1,7 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-specs/031-serialize-fake-runs/plan.md
+specs/032-sokoban-feedback-followups/plan.md
 <!-- SPECKIT END -->
 
 FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`) share

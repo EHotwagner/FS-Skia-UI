@@ -1,0 +1,53 @@
+The last full restore is still up to date. Nothing left to do.
+run Dev
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target Dev:
+<== Dev
+   <== Test
+      <== Build
+         <== Restore
+      <== SampleContractSmoke
+
+The running order is:
+Group - 1
+  - Restore
+Group - 2
+  - Build
+Group - 3
+  - SampleContractSmoke
+Group - 4
+  - Test
+Group - 5
+  - Dev
+Starting target 'Restore'
+Finished (Success) 'Restore' in 00:00:34.6233267
+Starting target 'Build'
+Finished (Success) 'Build' in 00:01:24.5386381
+Starting target 'SampleContractSmoke'
+Finished (Success) 'SampleContractSmoke' in 00:00:09.3713811
+Starting target 'Test'
+Finished (Success) 'Test' in 00:00:27.4053132
+Starting target 'Dev'
+Finished (Success) 'Dev' in 00:00:00.0008197
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                Duration
+------                --------
+Restore               00:00:34.6210849
+Build                 00:01:24.5385255
+SampleContractSmoke   00:00:09.3713081
+Test                  00:00:27.4052780
+Dev                   00:00:00.0007894
+Total:                00:02:36.0108457
+Status:               Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 174 milliseconds
+ - Packages: 55 milliseconds
+ - Script analyzing: 19 milliseconds
+ - Script running: 2 minutes, 36 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 2 minutes, 37 seconds

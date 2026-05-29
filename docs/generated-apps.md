@@ -40,6 +40,59 @@ the generated app guidance must name:
 - Local package restore setup, including feed path, package identities,
   versions, consumer package configuration, and restore command.
 
+## Compact Consumer API Map
+
+Generated demo authors should be able to find the public API shape before
+coding:
+
+- Keyboard keys: use `FS.Skia.UI.KeyboardInput.ViewerKey` cases
+  `ArrowLeft`, `ArrowRight`, `ArrowUp`, `ArrowDown`, `Enter`, `Space`,
+  `Escape`, `Backspace`, `Letter`, `Digit`, `Function`, and `Unknown`; normalize
+  raw viewer events with `ViewerKeyboard.normalize`,
+  `ViewerKeyboard.normalizeEvent`, and `ViewerKeyboard.toKeyId`.
+- Host callbacks: a generated `Viewer.GeneratedAppHost` owns `Init`,
+  `Update`, `View`, `OnTick`, `OnKey`, and `ShouldClose` while product reducers
+  stay pure.
+- Viewer effects: host boundaries emit `OpenWindow`, `ApplyWindowOptions`,
+  `RenderScene`, `DispatchInput`, `CloseWindow`, `EmitDiagnostic`,
+  `StartBoundedRun`, `CaptureScreenshot`, `CaptureImageEvidence`, `ReadPixels`,
+  and write evidence effects.
+- Adapter commands: generated app commands remain product-owned values such as
+  `DispatchHostCommand`; Elmish adapter commands such as
+  `DispatchViewer` bridge to viewer effects at the edge.
+- Scene nodes: common scenes use `Scene.empty`, `Scene.group`,
+  `Scene.rectangle`, `Scene.circle`, `Scene.text`, `Scene.textRun`,
+  `Scene.line`, `Scene.path`, and shared `Scene.Point`, `Scene.Rect`, and
+  `Scene.Color` records.
+
+Default text is intended to be readable in evidence screenshots on supported
+Linux desktop hosts with common Latin fonts. Specify explicit fonts with
+`TextRun.Font` when brand, typography, or exact font selection matters beyond
+default readability. Use explicit fonts for brand or typography guarantees.
+
+## Readiness Contract
+
+For feature-scoped audits, the authoritative readiness directory is the active
+feature path such as `specs/032-sokoban-feedback-followups/readiness/`, not a
+repository-level output directory. Repository evidence directories like
+`readiness/surface-baselines/` and generated consumer logs remain supporting
+artifacts. Current generated-app follow-up readiness should prepare:
+
+- `default-text-glyph-capture.md` with glyph coverage metrics, screenshot
+  artifact path, font resolution, fallback-used, runtime limitations, and
+  supported-host or unsupported-host classification.
+- `interactive-window-close-evidence.md` with `mode=interactive-window`,
+  first-frame, window-opened, close request source, input dispatch, clean exit
+  path, elapsed time, aggregate hang diagnostics, and supported-host persistent
+  launch evidence. This is the supported-host persistent launch evidence gate.
+- `consumer-guidance-scan.md`, `readiness-contract-scan.md`, and
+  `task-guidance-scan.md` with governance risk levels, aggregate hang
+  diagnostics, runtime limitations, and scan results for required terms.
+
+Follow-up classifications should distinguish framework behavior, generated-app
+guidance, Spec Kit guidance, and consumer-author mistake so backlog ownership
+stays clear.
+
 Generated app tests should drive keyboard flows through normalized viewer key
 events, not backend-specific raw string comparisons. Validation failures must
 identify the app flow, input value, screen, rendering stage, diagnostic
