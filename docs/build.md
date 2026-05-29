@@ -3,19 +3,22 @@
 The repository command surface is the FAKE target graph invoked through the
 repo-local wrappers:
 
-```bash
-./fake.sh build -t Dev
-./fake.sh build -t Verify
-./fake.sh build -t Ci
-```
+1. `./fake.sh build -t Dev`
+2. `./fake.sh build -t Verify`
+3. `./fake.sh build -t Ci`
 
 On Windows command prompts, use:
 
-```cmd
-fake.cmd build -t Dev
-fake.cmd build -t Verify
-fake.cmd build -t Ci
-```
+1. `fake.cmd build -t Dev`
+2. `fake.cmd build -t Verify`
+3. `fake.cmd build -t Ci`
+
+FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`) share
+repository `.fake` state and are not safe to run concurrently. When a workflow
+needs more than one FAKE-backed target, run one command to completion before
+starting the next and preserve that order in readiness evidence. Non-FAKE
+checks may still run in parallel when they do not invoke FAKE or depend on
+`.fake`.
 
 The wrappers restore the local `fake-cli` tool from `.config/dotnet-tools.json`
 and run the shared `build.fsx` target graph. Automation should call
@@ -107,6 +110,11 @@ preflight or bootstrap failure is an `environment-failure`: it fails the broad
 aggregate, records non-authoritative product evidence, and recommends rerunning
 in a fresh shell, fresh container, or CI runner. `Ci` runs its own preflight and
 then delegates to `Verify`.
+
+If a FAKE-backed command fails with a race-like or unexplained setup symptom,
+record whether another FAKE-backed command was running. When the concurrent
+context is suspected or unknown, rerun the affected FAKE-backed commands
+sequentially before classifying the result as a product regression.
 
 Focused gates remain direct entry points. Each focused gate writes or appends a
 row to `readiness/focused-gates.md` with its direct prerequisites, command, log

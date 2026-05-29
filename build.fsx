@@ -1780,6 +1780,10 @@ let appendFocusedGateSummary outputPath (contract: FocusedGateContract) =
           $"- verdict-category: `{categoryName contract.VerdictCategory}`"
           $"- stale-build-restore-assumptions: {assumptions}"
           $"- failure-rule: `stale-build-restore-assumption`"
+          $"- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active"
+          $"- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists"
+          $"- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared"
+          $"- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure"
           $"- affected-gate: `{contract.TargetName}`"
           $"- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale"
           "" ]
@@ -3684,6 +3688,68 @@ let generatedGuidanceRequirements =
 let containsText (needle: string) (haystack: string) =
     haystack.IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0
 
+let serializedRunnerRequiredTerms =
+    [ "FAKE-backed"
+      ".fake"
+      "sequential"
+      "not safe to run concurrently" ]
+
+let buildRunnerCommandRegex =
+    Regex(@"(\./fake\.sh|fake\.cmd|dotnet fake)\b", RegexOptions.IgnoreCase)
+
+let numberedBuildRunnerCommandRegex =
+    Regex(@"(?m)^\s*(\d+\.|-)\s+(`)?(\./fake\.sh|fake\.cmd|dotnet fake)\b", RegexOptions.IgnoreCase)
+
+let validateSerializedRunnerGuidancePath model relativePath =
+    let filePath = path [ model.RepositoryRoot; relativePath ]
+
+    if not (File.Exists filePath) then
+        [ $"{relativePath}: missing file [sequential-fake-guidance]" ]
+    else
+        let content = File.ReadAllText filePath
+
+        if not (buildRunnerCommandRegex.IsMatch content) then
+            []
+        else
+            [ yield!
+                  serializedRunnerRequiredTerms
+                  |> List.choose (fun term ->
+                      if containsText term content then
+                          None
+                      else
+                          Some $"{relativePath}: missing `{term}` [sequential-fake-guidance]")
+
+              if buildRunnerCommandRegex.Matches(content).Count > 1
+                 && numberedBuildRunnerCommandRegex.Matches(content).Count < 2 then
+                  $"{relativePath}: multiple FAKE-backed commands require deterministic sequential order [sequential-fake-guidance]"
+
+              if containsText "parallel" content
+                 && not (containsText "non-FAKE" content || containsText "do not invoke FAKE" content) then
+                  $"{relativePath}: parallelism guidance must distinguish safe non-FAKE checks [sequential-fake-guidance]" ]
+
+let validateSerializedRunnerGuidance model =
+    [ "README.md"
+      "docs/build.md"
+      "docs/testing.md"
+      "docs/evidence.md"
+      "AGENTS.md"
+      "CLAUDE.md"
+      ".agents/skills/speckit-implement/SKILL.md"
+      ".agents/skills/speckit-evidence-graph/SKILL.md"
+      ".agents/skills/speckit-evidence-audit/SKILL.md"
+      ".claude/skills/speckit-implement/SKILL.md"
+      ".claude/skills/speckit-evidence-graph/SKILL.md"
+      ".claude/skills/speckit-evidence-audit/SKILL.md"
+      ".specify/templates/tasks-template.md"
+      ".specify/presets/fsharp-opinionated/templates/tasks-template.md"
+      ".specify/templates/plan-template.md"
+      ".specify/presets/fsharp-opinionated/templates/plan-template.md"
+      "template/base/README.md"
+      "template/base/docs/product.md"
+      "template/base/.agents/skills/fs-skia-project/SKILL.md"
+      "template/base/.claude/skills/fs-skia-project/SKILL.md" ]
+    |> List.collect (validateSerializedRunnerGuidancePath model)
+
 let tryHeading (line: string) =
     let trimmed = line.TrimStart()
 
@@ -3996,6 +4062,7 @@ let runGeneratedGuidanceScan model outputPath =
         @ validateGuidanceParity validationRows
         @ validateControlsBoundaryGuidance model
         @ validateTaskSkillistGuidance model
+        @ validateSerializedRunnerGuidance model
 
     if not (List.isEmpty findings) then
         failwithf "Generated guidance check failed:%s%s" Environment.NewLine (String.Join(Environment.NewLine, findings))
@@ -4006,6 +4073,7 @@ let runGeneratedGuidanceScan model outputPath =
           "PASS: active and preset-owned spec/plan templates include required governance prompts in the expected Markdown sections."
           "PASS: generated Controls guidance covers Skia-rendered controls, rich text, chart controls, graph controls, DataGrid, Controls.Elmish adapter wiring, and legacy Charts replacement notes without stale generated terms."
           "PASS: task templates, task metadata templates, implementation guidance, and constitution guidance require `skillist` evaluation, confidence review, risk-level evidence, and implementation-time skill loading."
+          "PASS: repository, agent, template, and generated-product guidance serialize FAKE-backed commands because `.fake` state is shared, while preserving safe non-FAKE parallelism."
           ""
           "Validated prompt classes:"
           yield!

@@ -39,8 +39,8 @@ let claudeCodeReadyTests =
             let claude = read "CLAUDE.md"
             Expect.stringContains claude "@AGENTS.md" "CLAUDE imports AGENTS"
             Expect.stringContains claude ".claude/skills/" "CLAUDE points to project skills"
-            Expect.isFalse (claude.Contains("specs/030-claude-code-ready/plan.md")) "CLAUDE does not duplicate the active AGENTS plan line"
-            expectFileContains "AGENTS.md" [ "specs/030-claude-code-ready/plan.md" ]
+            Expect.isFalse (claude.Contains("specs/031-serialize-fake-runs/plan.md")) "CLAUDE does not duplicate the active AGENTS plan line"
+            expectFileContains "AGENTS.md" [ "specs/031-serialize-fake-runs/plan.md" ]
         }
 
         test "repository Claude skills exist for every Codex workflow with identical content" {

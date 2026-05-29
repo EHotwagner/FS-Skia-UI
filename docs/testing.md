@@ -3,6 +3,12 @@
 Use `./fake.sh build -t Dev` for the normal local check. It restores tools and
 packages, builds the solution, and runs the default non-visual test projects:
 
+FAKE-backed test and validation commands share repository `.fake` state and are
+not safe to run concurrently. Run multiple FAKE-backed tests or targets
+sequentially in a deterministic order, even when they look independent.
+Non-FAKE checks may still be parallelized when they do not invoke FAKE or
+depend on `.fake`.
+
 | Test Scope | Project |
 |------------|---------|
 | Core library semantics | `tests/Lib.Tests/Lib.Tests.fsproj` |
@@ -122,21 +128,23 @@ signals are classified as environment evidence.
 
 Focused gates should be run directly when isolating a failure:
 
-```bash
-./fake.sh build -t PackageSurfaceCheck
-./fake.sh build -t ControlsCatalogCheck
-./fake.sh build -t ControlsInteractionCheck
-./fake.sh build -t ControlsRenderingCheck
-./fake.sh build -t CapabilityCheck
-./fake.sh build -t SkillCheck
-./fake.sh build -t GeneratedProductCheck
-./fake.sh build -t DependencyReport
-./fake.sh build -t GeneratedGuidanceCheck
-./fake.sh build -t TemplateDrift
-./fake.sh build -t TargetMetadataDrift
-./fake.sh build -t EvidenceGraph
-./fake.sh build -t EvidenceAudit
-```
+1. `./fake.sh build -t PackageSurfaceCheck`
+2. `./fake.sh build -t ControlsCatalogCheck`
+3. `./fake.sh build -t ControlsInteractionCheck`
+4. `./fake.sh build -t ControlsRenderingCheck`
+5. `./fake.sh build -t CapabilityCheck`
+6. `./fake.sh build -t SkillCheck`
+7. `./fake.sh build -t GeneratedProductCheck`
+8. `./fake.sh build -t DependencyReport`
+9. `./fake.sh build -t GeneratedGuidanceCheck`
+10. `./fake.sh build -t TemplateDrift`
+11. `./fake.sh build -t TargetMetadataDrift`
+12. `./fake.sh build -t EvidenceGraph`
+13. `./fake.sh build -t EvidenceAudit`
+
+If the failure looks race-like or the concurrent FAKE context is unknown,
+record that classification and rerun the affected FAKE-backed commands in the
+same sequential order before product debugging.
 
 If a focused gate relies on restored or built artifacts, stale assumptions must
 produce a diagnostic naming the affected gate and the remediation command.

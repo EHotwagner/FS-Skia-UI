@@ -22,6 +22,7 @@
     <Compile Include="GeneratedProjectValidationTests.fs" />
     <Compile Include="DependencyGovernanceTests.fs" />
     <Compile Include="GeneratedGuidanceTests.fs" />
+    <Compile Include="SequentialFakeGuidanceTests.fs" />
     <Compile Include="UpgradeSkiaSpecKitTests.fs" />
     <Compile Include="ControlsBoundaryGeneratedGuidanceTests.fs" />
     <Compile Include="ControlsBoundaryCompositionTests.fs" />

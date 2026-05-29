@@ -1,0 +1,6 @@
+start=2026-05-29T14:11:04Z
+Tool 'fake-cli' (version '6.1.4') was restored. Available commands: fake
+
+Restore was successful.
+end=2026-05-29T14:11:05Z
+exit_code=0

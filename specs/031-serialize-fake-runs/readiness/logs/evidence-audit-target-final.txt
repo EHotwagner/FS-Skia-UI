@@ -1,0 +1,38 @@
+start=2026-05-29T14:31:22Z
+The last full restore is still up to date. Nothing left to do.
+run EvidenceAudit
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target EvidenceAudit:
+<== EvidenceAudit
+   <== EvidenceGraph
+
+The running order is:
+Group - 1
+  - EvidenceGraph
+Group - 2
+  - EvidenceAudit
+Starting target 'EvidenceGraph'
+Finished (Success) 'EvidenceGraph' in 00:00:00.1135156
+Starting target 'EvidenceAudit'
+Finished (Success) 'EvidenceAudit' in 00:00:00.7007691
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target          Duration
+------          --------
+EvidenceGraph   00:00:00.1110988
+EvidenceAudit   00:00:00.7007065
+Total:          00:00:00.8871526
+Status:         Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 185 milliseconds
+ - Packages: 59 milliseconds
+ - Script analyzing: 20 milliseconds
+ - Script running: 1 second
+ - Script cleanup: 0 milliseconds
+ - Runtime: 2 seconds
+end=2026-05-29T14:31:25Z
+exit_code=0

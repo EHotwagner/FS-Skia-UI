@@ -187,7 +187,9 @@ let runProcessUnlocked (fileName: string) (arguments: string) =
             -1, stdout, stderr
 
 let runProcess (fileName: string) (arguments: string) =
-    if fileName = "./fake.sh" || fileName = "fake.sh" then
+    if fileName = "./fake.sh"
+       || fileName = "fake.sh"
+       || (fileName = "dotnet" && arguments.StartsWith("fake ", StringComparison.OrdinalIgnoreCase)) then
         lock fakeProcessLock (fun () -> runProcessUnlocked fileName arguments)
     else
         runProcessUnlocked fileName arguments

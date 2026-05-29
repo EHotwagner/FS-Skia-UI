@@ -1,0 +1,82 @@
+start=2026-05-29T14:16:10Z
+The last full restore is still up to date. Nothing left to do.
+run TemplateCheck
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target TemplateCheck:
+<== TemplateCheck
+   <== TemplatePack
+   <== TemplateInstallSource
+   <== TemplateInstallPackage
+   <== TemplateInstantiate
+   <== TemplateSmoke
+      <== Test
+         <== Build
+            <== Restore
+         <== SampleContractSmoke
+
+The running order is:
+Group - 1
+  - Restore
+  - TemplatePack
+  - TemplateInstallSource
+Group - 2
+  - Build
+  - TemplateInstallPackage
+Group - 3
+  - SampleContractSmoke
+  - TemplateInstantiate
+Group - 4
+  - Test
+Group - 5
+  - TemplateSmoke
+Group - 6
+  - TemplateCheck
+Starting target 'Restore'
+Finished (Success) 'Restore' in 00:00:35.3539241
+Starting target 'TemplatePack'
+Finished (Success) 'TemplatePack' in 00:00:03.3018365
+Starting target 'TemplateInstallSource'
+Finished (Success) 'TemplateInstallSource' in 00:00:01.7331494
+Starting target 'Build'
+Finished (Success) 'Build' in 00:00:39.0178900
+Starting target 'TemplateInstallPackage'
+Finished (Success) 'TemplateInstallPackage' in 00:00:01.6996654
+Starting target 'SampleContractSmoke'
+Finished (Success) 'SampleContractSmoke' in 00:00:09.2611169
+Starting target 'TemplateInstantiate'
+Finished (Success) 'TemplateInstantiate' in 00:00:08.0761322
+Starting target 'Test'
+Finished (Success) 'Test' in 00:00:28.3955363
+Starting target 'TemplateSmoke'
+Finished (Success) 'TemplateSmoke' in 00:00:15.8457497
+Starting target 'TemplateCheck'
+Finished (Success) 'TemplateCheck' in 00:00:00.0071805
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                   Duration
+------                   --------
+Restore                  00:00:35.3519006
+TemplatePack             00:00:03.3017870
+TemplateInstallSource    00:00:01.7330971
+Build                    00:00:39.0178480
+TemplateInstallPackage   00:00:01.6996262
+SampleContractSmoke      00:00:09.2610766
+TemplateInstantiate      00:00:08.0758607
+Test                     00:00:28.3953152
+TemplateSmoke            00:00:15.8457088
+TemplateCheck            00:00:00.0071537
+Total:                   00:02:22.7676055
+Status:                  Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 194 milliseconds
+ - Packages: 57 milliseconds
+ - Script analyzing: 21 milliseconds
+ - Script running: 2 minutes, 22 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 2 minutes, 23 seconds
+end=2026-05-29T14:18:34Z
+exit_code=0

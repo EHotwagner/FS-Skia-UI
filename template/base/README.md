@@ -14,18 +14,24 @@ The selected capabilities are controlled by `--profile`:
 
 Run the generated product governance checks:
 
-```bash
-./fake.sh build -t Dev
-./fake.sh build -t Test
-./fake.sh build -t Verify
-```
+Generated FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`)
+share `.fake` state and are not safe to run concurrently. Run multiple
+FAKE-backed validation commands sequentially, and record that order in
+readiness evidence. Non-FAKE checks may still run in parallel when they do not
+invoke FAKE or depend on `.fake`.
+
+1. `./fake.sh build -t Dev`
+2. `./fake.sh build -t Test`
+3. `./fake.sh build -t Verify`
 
 Run Spec Kit evidence checks through the generated FAKE targets:
 
-```bash
-./fake.sh build -t EvidenceGraph
-./fake.sh build -t EvidenceAudit
-```
+1. `./fake.sh build -t EvidenceGraph`
+2. `./fake.sh build -t EvidenceAudit`
+
+If a generated FAKE-backed command fails with race-like symptoms or unknown
+concurrent context, rerun the affected FAKE-backed commands sequentially before
+classifying the failure as a product regression.
 
 The generated targets delegate to the copied Spec Kit audit script through
 `bash`, so the workflow does not depend on executable file mode being preserved

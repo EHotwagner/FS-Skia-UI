@@ -4,6 +4,18 @@ Repository evidence is produced by the canonical FAKE targets. Current package
 surface baselines live at a stable root path, while feature-specific evidence
 remains under the active feature readiness directory.
 
+FAKE-backed evidence commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`) share
+repository `.fake` state and are not safe to run concurrently. Readiness
+evidence that cites more than one FAKE-backed command must record a
+deterministic sequential order, with start/end ordering and exit code for each
+command. Non-FAKE checks may run in parallel only when they do not invoke FAKE
+or depend on `.fake`.
+
+Default evidence-gate order:
+
+1. `./fake.sh build -t EvidenceGraph`
+2. `./fake.sh build -t EvidenceAudit`
+
 | Artifact Class | Stable Path |
 |----------------|-------------|
 | Package surface baselines | `readiness/surface-baselines/*.txt` |
@@ -113,6 +125,10 @@ name the failing stage, health or bootstrap diagnostics, affected log/report
 paths, and the recommended rerun environment. After an aggregate
 `environment-failure`, final readiness remains blocked until a later healthy
 `Verify` or `Ci` pass is recorded.
+
+Race-like FAKE failures must name the failed command, whether another
+FAKE-backed command was running, the suspected `.fake` race status, the
+sequential rerun order, and the follow-up classification after that rerun.
 
 ## Focused Gates And Scanners
 

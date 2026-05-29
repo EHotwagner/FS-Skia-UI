@@ -87,3 +87,13 @@ Walk the report top to bottom:
   findings (blocking + advisory).
 - `specs/<FEATURE_ID>/readiness/synthetic-evidence.json` — written only
   when `--accept-synthetic` is used.
+
+## Sequential FAKE Commands
+
+FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`) share
+repository `.fake` state and are not safe to run concurrently. Non-FAKE audit
+file reads may run in parallel when they do not invoke FAKE or depend on
+`.fake`, but graph and audit targets must run sequentially:
+
+1. `./fake.sh build -t EvidenceGraph`
+2. `./fake.sh build -t EvidenceAudit`

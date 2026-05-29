@@ -17,7 +17,16 @@ belong in product `.fsi` files when public surfaces are introduced.
 
 ## Build Commands
 
-Run `./fake.sh build -t Dev`, `./fake.sh build -t Test`, and `./fake.sh build -t Verify`.
+Generated FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`)
+share `.fake` state and are not safe to run concurrently. Run multiple
+FAKE-backed commands sequentially:
+
+1. `./fake.sh build -t Dev`
+2. `./fake.sh build -t Test`
+3. `./fake.sh build -t Verify`
+
+Non-FAKE checks may run in parallel when they do not invoke FAKE or depend on
+`.fake`.
 
 ## Test Commands
 

@@ -1,0 +1,108 @@
+start=2026-05-29T14:19:09Z
+The last full restore is still up to date. Nothing left to do.
+run GeneratedProductCheck
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target GeneratedProductCheck:
+<== GeneratedProductCheck
+   <== CapabilityCheck
+   <== SkillCheck
+   <== Dev
+      <== Test
+         <== Build
+            <== Restore
+         <== SampleContractSmoke
+   <== TemplateCheck
+      <== TemplatePack
+      <== TemplateInstallSource
+      <== TemplateInstallPackage
+      <== TemplateInstantiate
+      <== TemplateSmoke
+
+The running order is:
+Group - 1
+  - Restore
+  - TemplatePack
+  - TemplateInstallSource
+  - CapabilityCheck
+Group - 2
+  - Build
+  - TemplateInstallPackage
+  - SkillCheck
+Group - 3
+  - SampleContractSmoke
+  - TemplateInstantiate
+Group - 4
+  - Test
+Group - 5
+  - TemplateSmoke
+  - Dev
+Group - 6
+  - TemplateCheck
+Group - 7
+  - GeneratedProductCheck
+Starting target 'Restore'
+Finished (Success) 'Restore' in 00:00:33.9386637
+Starting target 'TemplatePack'
+Finished (Success) 'TemplatePack' in 00:00:01.6108886
+Starting target 'TemplateInstallSource'
+Finished (Success) 'TemplateInstallSource' in 00:00:01.6774901
+Starting target 'CapabilityCheck'
+Finished (Success) 'CapabilityCheck' in 00:00:00.0145117
+Starting target 'Build'
+Finished (Success) 'Build' in 00:00:35.4551161
+Starting target 'TemplateInstallPackage'
+Finished (Success) 'TemplateInstallPackage' in 00:00:01.5630288
+Starting target 'SkillCheck'
+Finished (Success) 'SkillCheck' in 00:00:00.0036455
+Starting target 'SampleContractSmoke'
+Finished (Success) 'SampleContractSmoke' in 00:00:08.4099898
+Starting target 'TemplateInstantiate'
+Finished (Success) 'TemplateInstantiate' in 00:00:08.3089284
+Starting target 'Test'
+Finished (Success) 'Test' in 00:00:25.8556900
+Starting target 'TemplateSmoke'
+Finished (Success) 'TemplateSmoke' in 00:00:14.2374304
+Starting target 'Dev'
+Finished (Success) 'Dev' in 00:00:00.0005790
+Starting target 'TemplateCheck'
+Finished (Success) 'TemplateCheck' in 00:00:00.0046008
+Starting target 'GeneratedProductCheck'
+Finished (Failed) 'GeneratedProductCheck' in 00:00:15.2621165
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                   Duration
+------                   --------
+Restore                  00:00:33.9363760
+TemplatePack             00:00:01.6108352
+TemplateInstallSource    00:00:01.6774358
+CapabilityCheck          00:00:00.0144841
+Build                    00:00:35.4550787
+TemplateInstallPackage   00:00:01.5629951
+SkillCheck               00:00:00.0036197
+SampleContractSmoke      00:00:08.4098265
+TemplateInstantiate      00:00:08.3089034
+Test                     00:00:25.8555249
+TemplateSmoke            00:00:14.2373982
+Dev                      00:00:00.0005585
+TemplateCheck            00:00:00.0045821
+GeneratedProductCheck    00:00:15.2620489   (app/source generated Verify failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/031-serialize-fake-runs/readiness/generated-product-verify/app-source/verify.log)
+Total:                   00:02:26.4216466
+Status:                  Failure
+---------------------------------------------------------------------
+Script reported an error:
+-> BuildFailedException: Target 'GeneratedProductCheck' failed.
+-> One or more errors occurred. (app/source generated Verify failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/031-serialize-fake-runs/readiness/generated-product-verify/app-source/verify.log)
+-> app/source generated Verify failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/031-serialize-fake-runs/readiness/generated-product-verify/app-source/verify.log
+Hint: To further diagnose the problem you can run fake in verbose mode `fake -v run ...` or set the 'FAKE_DETAILED_ERRORS' environment variable to 'true'
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 189 milliseconds
+ - Packages: 63 milliseconds
+ - Script analyzing: 20 milliseconds
+ - Script running: 2 minutes, 26 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 2 minutes, 27 seconds
+end=2026-05-29T14:21:37Z
+exit_code=1

@@ -203,3 +203,20 @@ Stop and ask the user when:
   adding `[<Skip>]` to pass. Never weaken; surface the failure.
 - A dependency in `tasks.deps.yml` points to a task that doesn't exist.
   Fix the yml before proceeding.
+
+## Sequential FAKE Commands
+
+FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`) share
+repository `.fake` state and are not safe to run concurrently. You may
+parallelize safe non-FAKE reads and checks, but run multiple FAKE-backed tests
+or targets sequentially:
+
+1. `./fake.sh build -t Dev`
+2. `./fake.sh build -t GeneratedGuidanceCheck`
+3. `./fake.sh build -t TemplateCheck`
+4. `./fake.sh build -t GeneratedProductCheck`
+5. `./fake.sh build -t EvidenceGraph`
+6. `./fake.sh build -t EvidenceAudit`
+
+If a FAKE-backed failure looks race-like or concurrent context is unknown,
+rerun the affected FAKE-backed commands sequentially before product debugging.

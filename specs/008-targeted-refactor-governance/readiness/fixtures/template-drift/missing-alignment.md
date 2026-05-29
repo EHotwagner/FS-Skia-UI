@@ -17,7 +17,7 @@ FAIL
 
 - Changed alignment classes: ``
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/030-claude-code-ready`
+- Active feature evidence: `specs/031-serialize-fake-runs`
 
 ## Controls Boundary Guidance
 

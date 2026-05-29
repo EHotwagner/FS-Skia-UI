@@ -29,7 +29,14 @@
 - **Command-surface impact**: Decide whether `build.fsx`, wrappers, `Dev`,
   `Verify`, `Ci`, `TemplateCheck`, `DependencyReport`,
   `GeneratedGuidanceCheck`, `TemplateDrift`, `EvidenceGraph`, or
-  `EvidenceAudit` must change.
+  `EvidenceAudit` must change. FAKE-backed commands (`./fake.sh`, `fake.cmd`,
+  or `dotnet fake`) share `.fake` state and are not safe to run concurrently;
+  require sequential execution and deterministic order when multiple
+  FAKE-backed targets or tests are needed, while preserving safe non-FAKE
+  parallelism when checks do not invoke FAKE or depend on `.fake`.
+  Example order:
+  1. `./fake.sh build -t Dev`
+  2. `./fake.sh build -t Verify`
 - **Generated project impact**: Decide whether default/minimal generated
   contents, selected Controls guidance, local skills, validation logs,
   placeholder scans, excluded-history scans, or generated `Dev` behavior must

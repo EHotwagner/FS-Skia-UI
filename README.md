@@ -43,6 +43,12 @@ dotnet tool restore
 ./fake.sh build -t Dev
 ```
 
+FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`) share
+repository `.fake` state and are not safe to run concurrently. When more than
+one FAKE-backed target is needed, run them sequentially in a deterministic
+order. Non-FAKE reads and checks may still run in parallel when they do not
+invoke FAKE or depend on `.fake`.
+
 Pack the current preview capability packages locally, then install the V3
 template and generate a product:
 
@@ -129,17 +135,18 @@ not provide an OpenGL, CPU, software, or fallback renderer.
 
 ## Build And Test
 
-```bash
-./fake.sh build -t Dev
-./fake.sh build -t Verify
-./fake.sh build -t TemplateCheck
-./fake.sh build -t CapabilityCheck
-./fake.sh build -t SkillCheck
-./fake.sh build -t GeneratedProductCheck
-./fake.sh build -t DependencyReport
-./fake.sh build -t GeneratedGuidanceCheck
-./fake.sh build -t TemplateDrift
-```
+Run FAKE-backed validation targets one at a time:
+
+1. `./fake.sh build -t Dev`
+2. `./fake.sh build -t GeneratedGuidanceCheck`
+3. `./fake.sh build -t TemplateCheck`
+4. `./fake.sh build -t GeneratedProductCheck`
+5. `./fake.sh build -t DependencyReport`
+6. `./fake.sh build -t TemplateDrift`
+7. `./fake.sh build -t Verify`
+
+Use the same serialized rule for `CapabilityCheck`, `SkillCheck`, evidence
+targets, or any other FAKE target added to the sequence.
 
 Use `fake.cmd build -t Dev` or `fake.cmd build -t Verify` from Windows command
 prompts. See [docs/build.md](docs/build.md), [docs/testing.md](docs/testing.md),
@@ -207,10 +214,8 @@ source-only active feature state such as `.specify/feature.json` is omitted.
 
 Maintainers validate source and packaged template paths with:
 
-```bash
-./fake.sh build -t TemplateCheck
-./fake.sh build -t GeneratedProductCheck
-```
+1. `./fake.sh build -t TemplateCheck`
+2. `./fake.sh build -t GeneratedProductCheck`
 
 See [docs/template-profile.md](docs/template-profile.md),
 [docs/dependencies.md](docs/dependencies.md), and

@@ -1,0 +1,6 @@
+
+## generated consumer bounded smoke
+$ dotnet run --project src/Product/Product.fsproj --no-restore -- --bounded-smoke "/home/developer/projects/FS-Skia-UI/specs/031-serialize-fake-runs/readiness/generated-consumer-validation/bounded-smoke.txt"
+status=ok smoke=bounded-viewer frames-rendered=1 renderer-mode=vulkan evidence=/home/developer/projects/FS-Skia-UI/specs/031-serialize-fake-runs/readiness/generated-consumer-validation/bounded-smoke.txt
+
+exit-code=0

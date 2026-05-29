@@ -1,0 +1,109 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+# Phase-checkpoint edges are auto-injected by the evidence graph script; only
+# non-phase cross-edges are listed here.
+
+tasks:
+  T001:
+    deps: []
+    skillist: ["speckit-tasks", "speckit-implement"]
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: []
+  T006:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+  T007:
+    deps: []
+    skillist: []
+  T008:
+    deps: []
+    skillist: []
+  T009:
+    deps: []
+    skillist: []
+  T010:
+    deps: []
+    skillist: []
+  T011:
+    deps: []
+    skillist: []
+  T012:
+    deps: [T003, T005, T010]
+    skillist: []
+  T013:
+    deps: [T009, T011]
+    skillist: []
+  T014:
+    deps: [T012, T013]
+    skillist: []
+  T015:
+    deps: [T014]
+    skillist: []
+  T016:
+    deps: []
+    skillist: []
+  T017:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+  T018:
+    deps: [T003, T016]
+    skillist: []
+  T019:
+    deps: [T006, T017]
+    skillist: ["fs-skia-template-update"]
+  T020:
+    deps: [T018, T019]
+    skillist: []
+  T021:
+    deps: []
+    skillist: []
+  T022:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+  T023:
+    deps: [T009, T021]
+    skillist: []
+  T024:
+    deps: [T022]
+    skillist: ["fs-skia-template-update"]
+  T025:
+    deps: [T015, T023, T024]
+    skillist: []
+  T026:
+    deps: []
+    skillist: []
+  T027:
+    deps: [T015, T020, T025]
+    skillist: []
+  T028:
+    deps: [T027]
+    skillist: []
+  T029:
+    deps: [T028]
+    skillist: ["fs-skia-template-update"]
+  T030:
+    deps: [T029]
+    skillist: ["fs-skia-template-update"]
+  T031:
+    deps: [T030]
+    skillist: ["speckit-evidence-graph"]
+  T032:
+    deps: [T031]
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T033:
+    deps: [T032]
+    skillist: []
+  T034:
+    deps: [T033]
+    skillist: []

@@ -80,6 +80,22 @@ restore/build/test/package/evidence command order:
 - `./fake.sh build -t EvidenceGraph` and `./fake.sh build -t EvidenceAudit`
   for graph and synthetic-evidence gates.
 
+FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`) share
+repository `.fake` state and are not safe to run concurrently. Generated task
+lists must serialize multiple FAKE-backed tests or targets in deterministic
+order, for example:
+
+1. `./fake.sh build -t Dev`
+2. `./fake.sh build -t GeneratedGuidanceCheck`
+3. `./fake.sh build -t TemplateCheck`
+4. `./fake.sh build -t GeneratedProductCheck`
+5. `./fake.sh build -t EvidenceGraph`
+6. `./fake.sh build -t EvidenceAudit`
+
+Non-FAKE checks may be marked parallel-safe when they do not invoke FAKE or
+depend on `.fake`. Race-like or unknown concurrent FAKE failures require a
+sequential rerun order before product-regression claims.
+
 After task generation, evaluate every task against available local capability
 skills (`.agents/skills/*/SKILL.md`, `src/*/skill/SKILL.md`, and template
 capability skills). Write the minimal ordered skill set to structured

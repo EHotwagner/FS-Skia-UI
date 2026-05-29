@@ -92,3 +92,13 @@ Common failure modes and their fixes:
   view, status counts, propagation report with root-cause annotations.
 
 Commit both files alongside the feature's other artifacts.
+
+## Sequential FAKE Commands
+
+FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`) share
+repository `.fake` state and are not safe to run concurrently. Non-FAKE graph
+file reads may run in parallel when they do not invoke FAKE or depend on
+`.fake`, but multiple FAKE-backed targets must run sequentially:
+
+1. `./fake.sh build -t EvidenceGraph`
+2. `./fake.sh build -t EvidenceAudit`

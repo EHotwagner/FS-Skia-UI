@@ -66,10 +66,14 @@ must be visible in the generated source or evidence notes as an explicit convers
 
 Evidence graph and audit checks are exposed as generated FAKE targets:
 
-```bash
-./fake.sh build -t EvidenceGraph
-./fake.sh build -t EvidenceAudit
-```
+Generated FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`)
+share `.fake` state and are not safe to run concurrently. Run multiple
+FAKE-backed validation commands sequentially, preserve the command order in
+readiness notes, and parallelize only non-FAKE checks that do not invoke FAKE
+or depend on `.fake`.
+
+1. `./fake.sh build -t EvidenceGraph`
+2. `./fake.sh build -t EvidenceAudit`
 
 These targets launch `.specify/extensions/evidence/scripts/bash/run-audit.sh`
 through `bash`; do not repair executable bits as part of normal evidence
@@ -77,6 +81,10 @@ collection. Use `./fake.sh build -t Verify > readiness/logs/verify.txt 2>&1`
 when capturing review logs. The generated build writes redirected stdout/stderr
 as text, preserving command diagnostics and exit-code context without binary
 padding.
+
+If a generated FAKE-backed failure looks race-like or the concurrent FAKE
+context is unknown, record the failed command, suspected `.fake` race status,
+sequential rerun order, and follow-up classification before product debugging.
 
 Generated evidence may report semantic scene facts such as lander, terrain,
 landing pad, and HUD metrics. deterministic-scene-evidence does not prove semantic object presence in a live screenshot by itself. A
