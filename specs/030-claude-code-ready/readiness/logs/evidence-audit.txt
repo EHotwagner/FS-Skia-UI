@@ -1,0 +1,432 @@
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+
+[1/3] Computing task graph...
+task-graph: 51 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.md
+  status: 51[ ]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 3 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 7 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=0
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+  synthetic tasks (declared):     0
+  auto-synthetic tasks (computed): 0
+  accepted [SEH] tasks:           0
+  unaccepted synthetic tasks:      0
+  late [SEH] tasks:                0
+  readiness contract hits:         3
+  advisory diff-scan hits:         7 (printed, not blocking)
+
+  To override, rerun with:  --accept-synthetic "justification"
+    [BLOCK] validation-area=readiness-contract path=/home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/governance-risk-levels.md status=incomplete reason=governance risk level evidence is incomplete missing-terms=small,medium,required evidence,broad validation missing-sections= blocking=true
+    [BLOCK] validation-area=readiness-contract path=/home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/aggregate-hang-diagnostics.md status=missing reason=missing aggregate-hang-diagnostics.md missing-terms=verdict,stage,elapsed duration,last observed command,focused rerun,non-authoritative aggregate missing-sections= blocking=true
+    [BLOCK] validation-area=readiness-contract path=/home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/runtime-limitations.md status=incomplete reason=runtime limitation evidence is incomplete missing-terms=.NET 10 desktop,Vulkan,SkiaSharp preview,unsupported macOS/mobile/browser,no software-renderer fallback missing-sections= blocking=true
+    [adv]   agent-readiness-artifacts at build.fsx:1814  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1815  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1816  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1826  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1827  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1828  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at scripts/template-drift.fsx:398  (Agent-facing readiness artifact touched)
+
+exit-code=2
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+
+[1/3] Computing task graph...
+task-graph: 51 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.md
+  status: 51[ ]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 7 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=0
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+    [adv]   agent-readiness-artifacts at build.fsx:1814  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1815  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1816  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1826  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1827  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1828  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at scripts/template-drift.fsx:398  (Agent-facing readiness artifact touched)
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+
+[1/3] Computing task graph...
+task-graph: 51 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.md
+  status: 50[X], 1[F]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 7 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=50
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+    [adv]   agent-readiness-artifacts at build.fsx:1814  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1815  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1816  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1826  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1827  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1828  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at scripts/template-drift.fsx:398  (Agent-facing readiness artifact touched)
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+
+[1/3] Computing task graph...
+task-graph: 51 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.md
+  status: 51[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 7 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=51
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+    [adv]   agent-readiness-artifacts at build.fsx:1814  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1815  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1816  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1826  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1827  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1828  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at scripts/template-drift.fsx:398  (Agent-facing readiness artifact touched)
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+
+[1/3] Computing task graph...
+task-graph: 51 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.md
+  status: 51[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 7 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=51
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+    [adv]   agent-readiness-artifacts at build.fsx:1814  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1815  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1816  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1826  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1827  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1828  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at scripts/template-drift.fsx:398  (Agent-facing readiness artifact touched)
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+
+[1/3] Computing task graph...
+task-graph: 51 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.md
+  status: 51[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 7 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=51
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+    [adv]   agent-readiness-artifacts at build.fsx:1814  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1815  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1816  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1826  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1827  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1828  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at scripts/template-drift.fsx:398  (Agent-facing readiness artifact touched)
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+
+[1/3] Computing task graph...
+task-graph: 51 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.md
+  status: 51[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 3 blocking, 7 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=51
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=3
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+  synthetic tasks (declared):     0
+  auto-synthetic tasks (computed): 0
+  accepted [SEH] tasks:           0
+  unaccepted synthetic tasks:      0
+  late [SEH] tasks:                0
+  blocking diff-scan hits:         (see above)
+  advisory diff-scan hits:         7 (printed, not blocking)
+
+  To override, rerun with:  --accept-synthetic "justification"
+    [BLOCK] mock-identifiers at build.fsx:1671  (Mock/stub/fake identifier)
+            let fakeExit, fakeOutput = runShortCommand root "dotnet" "fake --version" 60000
+    [BLOCK] mock-identifiers at build.fsx:1673  (Mock/stub/fake identifier)
+            let passed = dotnetExit = 0 && toolExit = 0 && fakeExit = 0 && wrapperExists
+    [BLOCK] mock-identifiers at build.fsx:1686  (Mock/stub/fake identifier)
+            PackageCacheStatus = if fakeExit = 0 then "pass" else $"failed: FAKE runner did not start after tool restore: {fakeOutpu
+    [adv]   agent-readiness-artifacts at build.fsx:1813  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1814  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1815  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1825  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1826  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1827  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at scripts/template-drift.fsx:398  (Agent-facing readiness artifact touched)
+
+exit-code=2
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+
+[1/3] Computing task graph...
+task-graph: 51 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.md
+  status: 51[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 7 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=51
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+    [adv]   agent-readiness-artifacts at build.fsx:1813  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1814  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1815  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1825  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1826  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1827  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at scripts/template-drift.fsx:398  (Agent-facing readiness artifact touched)
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready
+
+[1/3] Computing task graph...
+task-graph: 51 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/task-graph.md
+  status: 51[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 7 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=51
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+    [adv]   agent-readiness-artifacts at build.fsx:1813  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1814  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1815  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1825  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1826  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at build.fsx:1827  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at scripts/template-drift.fsx:398  (Agent-facing readiness artifact touched)
+
+exit-code=0

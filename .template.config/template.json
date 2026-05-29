@@ -116,6 +116,13 @@
       ]
     },
     {
+      "source": ".agents/skills/",
+      "target": ".claude/skills/",
+      "copyOnly": [
+        "**/*"
+      ]
+    },
+    {
       "source": ".template.config/generated/",
       "target": "./"
     },
@@ -125,14 +132,29 @@
       "target": ".agents/skills/fs-skia-scene/"
     },
     {
+      "condition": "(profile == \"app\" || profile == \"headless-scene\" || profile == \"governed\" || profile == \"sample-pack\")",
+      "source": "src/Scene/skill/",
+      "target": ".claude/skills/fs-skia-scene/"
+    },
+    {
       "condition": "(profile == \"app\" || profile == \"sample-pack\")",
       "source": "src/SkiaViewer/skill/",
       "target": ".agents/skills/fs-skia-skiaviewer/"
     },
     {
       "condition": "(profile == \"app\" || profile == \"sample-pack\")",
+      "source": "src/SkiaViewer/skill/",
+      "target": ".claude/skills/fs-skia-skiaviewer/"
+    },
+    {
+      "condition": "(profile == \"app\" || profile == \"sample-pack\")",
       "source": "src/Elmish/skill/",
       "target": ".agents/skills/fs-skia-elmish/"
+    },
+    {
+      "condition": "(profile == \"app\" || profile == \"sample-pack\")",
+      "source": "src/Elmish/skill/",
+      "target": ".claude/skills/fs-skia-elmish/"
     },
     {
       "condition": "(profile == \"app\")",
@@ -141,13 +163,28 @@
     },
     {
       "condition": "(profile == \"app\")",
+      "source": "src/KeyboardInput/skill/",
+      "target": ".claude/skills/fs-skia-keyboard-input/"
+    },
+    {
+      "condition": "(profile == \"app\")",
       "source": "src/Controls/skill/",
       "target": ".agents/skills/fs-skia-ui-widgets/"
+    },
+    {
+      "condition": "(profile == \"app\")",
+      "source": "src/Controls/skill/",
+      "target": ".claude/skills/fs-skia-ui-widgets/"
     },
     {
       "condition": "(profile == \"governed\")",
       "source": "src/Testing/skill/",
       "target": ".agents/skills/fs-skia-testing/"
+    },
+    {
+      "condition": "(profile == \"governed\")",
+      "source": "src/Testing/skill/",
+      "target": ".claude/skills/fs-skia-testing/"
     },
     {
       "condition": "(profile == \"sample-pack\")",
@@ -161,6 +198,11 @@
       "condition": "(profile == \"sample-pack\")",
       "source": "template/fragments/samples/skill/",
       "target": ".agents/skills/fs-skia-samples/"
+    },
+    {
+      "condition": "(profile == \"sample-pack\")",
+      "source": "template/fragments/samples/skill/",
+      "target": ".claude/skills/fs-skia-samples/"
     }
   ],
   "postActions": [

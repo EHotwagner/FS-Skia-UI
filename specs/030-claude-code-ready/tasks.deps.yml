@@ -1,0 +1,168 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Every Tnnn id that appears in tasks.md MUST appear as a key here. Each task
+# value MUST include:
+#   deps: ordered list of explicit non-phase dependencies
+#   skillist: ordered list of applicable capability skill identifiers
+# Use skillist: [] when no capability skill applies.
+#
+# Phase-checkpoint edges are auto-injected by the script. Only explicit
+# non-phase cross-edges and same-phase implementation/test edges are written
+# here.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: [T001, T002, T003, T004]
+    skillist: []
+  T006:
+    deps: []
+    skillist: []
+  T007:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+  T008:
+    deps: []
+    skillist: []
+  T009:
+    deps: []
+    skillist: []
+  T010:
+    deps: [T006, T007, T008, T009]
+    skillist: []
+  T011:
+    deps: [T010]
+    skillist: []
+  T012:
+    deps: [T010]
+    skillist: []
+  T013:
+    deps: [T010]
+    skillist: []
+  T014:
+    deps: [T011, T012, T013]
+    skillist: []
+  T049:
+    deps: [T014]
+    skillist: []
+  T015:
+    deps: []
+    skillist: []
+  T016:
+    deps: []
+    skillist: []
+  T017:
+    deps: []
+    skillist: []
+  T018:
+    deps: [T015]
+    skillist: []
+  T019:
+    deps: [T016, T018]
+    skillist: []
+  T020:
+    deps: [T017, T018]
+    skillist: []
+  T021:
+    deps: [T018, T019, T020]
+    skillist: []
+  T022:
+    deps: [T021]
+    skillist: []
+  T023:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+  T024:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+  T025:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+  T026:
+    deps: [T023]
+    skillist: ["fs-skia-template-update"]
+  T027:
+    deps: [T025, T026]
+    skillist: ["fs-skia-template-update"]
+  T028:
+    deps: [T024, T026, T027]
+    skillist: ["fs-skia-template-update"]
+  T029:
+    deps: [T026, T027, T028]
+    skillist: ["fs-skia-template-update"]
+  T030:
+    deps: []
+    skillist: []
+  T031:
+    deps: []
+    skillist: []
+  T032:
+    deps: []
+    skillist: []
+  T033:
+    deps: [T030, T031, T032]
+    skillist: []
+  T034:
+    deps: [T033]
+    skillist: ["fs-skia-template-update"]
+  T035:
+    deps: [T033, T034]
+    skillist: []
+  T036:
+    deps: [T035]
+    skillist: []
+  T037:
+    deps: []
+    skillist: []
+  T038:
+    deps: []
+    skillist: []
+  T039:
+    deps: [T037]
+    skillist: []
+  T040:
+    deps: [T038, T039]
+    skillist: []
+  T041:
+    deps: [T039, T040]
+    skillist: []
+  T042:
+    deps: [T022, T029, T036, T041]
+    skillist: []
+  T043:
+    deps: [T029]
+    skillist: ["fs-skia-template-update"]
+  T044:
+    deps: [T036]
+    skillist: []
+  T045:
+    deps: [T042, T043, T044]
+    skillist: ["speckit-evidence-graph"]
+  T050:
+    deps: [T042, T043, T044]
+    skillist: ["speckit-evidence-audit"]
+  T046:
+    deps: [T045, T050]
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T051:
+    deps: [T042, T043, T044, T046]
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T047:
+    deps: [T042, T043, T044, T046, T051]
+    skillist: []
+  T048:
+    deps: [T047]
+    skillist: []

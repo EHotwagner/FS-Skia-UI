@@ -1,0 +1,62 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "build.fsx",
+      "line": 1813,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"content/template/base/CLAUDE.md\""
+    },
+    {
+      "file": "build.fsx",
+      "line": 1814,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"content/template/base/.claude/settings.json\""
+    },
+    {
+      "file": "build.fsx",
+      "line": 1815,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"content/template/base/.claude/skills/fs-skia-project/SKILL.md\""
+    },
+    {
+      "file": "build.fsx",
+      "line": 1825,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"content/.claude/skills/speckit-specify/SKILL.md\""
+    },
+    {
+      "file": "build.fsx",
+      "line": 1826,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"content/.template.config/generated/CLAUDE.md\""
+    },
+    {
+      "file": "build.fsx",
+      "line": 1827,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"content/.template.config/generated/.claude/settings.json\""
+    },
+    {
+      "file": "scripts/template-drift.fsx",
+      "line": 398,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "[ \".claude/settings.json\"; \"template/base/.claude/settings.json\" ]"
+    }
+  ]
+}

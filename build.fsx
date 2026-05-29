@@ -1539,11 +1539,10 @@ let collectProcessHealth root target outputPath verdictPath =
     let dotnetStartup = if dotnetExit = 0 then "pass" else $"failed: {dotnetOutput}"
     let fakeBootstrap =
         if File.Exists(path [ root; "fake.sh" ])
-           && File.Exists(path [ root; ".config"; "dotnet-tools.json" ])
-           && Directory.Exists(path [ Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); ".nuget"; "packages"; "fsharp.core"; "6.0.7" ]) then
+           && File.Exists(path [ root; ".config"; "dotnet-tools.json" ]) then
             "pass"
         else
-            "failed: fake wrapper, tool manifest, or FSharp.Core 6.0.7 package cache is missing"
+            "failed: fake wrapper or tool manifest is missing"
 
     let thresholds =
         [ thresholdDecision "process-health.available-memory" "available-memory-mb" 128L ">=" availableMemory "FS_SKIA_PROCESS_MIN_AVAILABLE_MEMORY_MB" platform
@@ -1669,22 +1668,22 @@ let validateRunnerBootstrap root target outputPath verdictPath =
     let timestamp = DateTimeOffset.UtcNow
     let dotnetExit, dotnetOutput = runShortCommand root "dotnet" "--info" 15000
     let toolExit, toolOutput = runShortCommand root "dotnet" "tool restore" 60000
+    let runnerExit, runnerOutput = runShortCommand root "dotnet" "fake --version" 60000
     let wrapperExists = File.Exists(path [ root; "fake.sh" ]) && File.Exists(path [ root; "fake.cmd" ])
-    let packageCacheExists = Directory.Exists(path [ Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); ".nuget"; "packages"; "fsharp.core"; "6.0.7" ])
-    let passed = dotnetExit = 0 && toolExit = 0 && wrapperExists && packageCacheExists
+    let passed = dotnetExit = 0 && toolExit = 0 && runnerExit = 0 && wrapperExists
 
     let recommended =
         if passed then
             None
         else
-            Some "Run `dotnet tool restore`, clear stale `.fake/build.fsx/paket-files/paket.restore.cached` if needed, and rerun in a fresh shell, fresh container, or CI runner."
+            Some "Run `dotnet tool restore`, then `dotnet fake --version`; clear stale `.fake/build.fsx/paket-files/paket.restore.cached` only if the FAKE runner still cannot start."
 
     let validation =
         { TargetName = target
           TimestampUtc = timestamp
           DotnetSdkStatus = if dotnetExit = 0 then "pass" else $"failed: {dotnetOutput}"
           FakeToolRestoreStatus = if toolExit = 0 then "pass" else $"failed: {toolOutput}"
-          PackageCacheStatus = if packageCacheExists then "pass" else "failed: missing ~/.nuget/packages/fsharp.core/6.0.7"
+          PackageCacheStatus = if runnerExit = 0 then "pass" else $"failed: FAKE runner did not start after tool restore: {runnerOutput}"
           WrapperStatus = if wrapperExists then "pass" else "failed: fake.sh or fake.cmd missing"
           WarningClassification = "runner-warning-classification: repeated netstandard script-load warning is warning-noise unless target exits nonzero; CoreCLR/VSTest/socket/thread startup failures are environment-failure evidence"
           RecommendedAction = recommended
@@ -1811,6 +1810,9 @@ let validateTemplatePackage model outputPath =
           "content/template/base/src/Product/EvidenceCommands.fs"
           "content/template/base/src/Product/WindowOptions.fs"
           "content/template/base/src/Product/Program.fs"
+          "content/template/base/CLAUDE.md"
+          "content/template/base/.claude/settings.json"
+          "content/template/base/.claude/skills/fs-skia-project/SKILL.md"
           "content/template/base/tests/Product.Tests/Product.Tests.fsproj"
           "content/template/base/Directory.Packages.props"
           "content/template/profiles/app.yml"
@@ -1820,6 +1822,9 @@ let validateTemplatePackage model outputPath =
           "content/.specify/templates/spec-template.md"
           "content/.specify/scripts/bash/setup-plan.sh"
           "content/.agents/skills/speckit-specify/SKILL.md"
+          "content/.claude/skills/speckit-specify/SKILL.md"
+          "content/.template.config/generated/CLAUDE.md"
+          "content/.template.config/generated/.claude/settings.json"
           "content/.template.config/generated/.specify/memory/constitution.md" ]
 
     let forbiddenPrefixes =
@@ -2018,6 +2023,8 @@ let scanGeneratedRow (row: TemplateRow) =
           "docs/product.md"
           "Directory.Packages.props"
           "AGENTS.md"
+          "CLAUDE.md"
+          ".claude/settings.json"
           "build.fsx"
           "fake.sh"
           ".specify/memory/constitution.md"
@@ -2026,9 +2033,13 @@ let scanGeneratedRow (row: TemplateRow) =
           ".specify/workflows/speckit/workflow.yml"
           ".specify/extensions/evidence/scripts/bash/run-audit.sh"
           ".agents/skills/speckit-specify/SKILL.md"
+          ".claude/skills/speckit-specify/SKILL.md"
           ".agents/skills/speckit-plan/SKILL.md"
+          ".claude/skills/speckit-plan/SKILL.md"
           ".agents/skills/speckit-tasks/SKILL.md"
-          ".agents/skills/speckit-implement/SKILL.md" ]
+          ".claude/skills/speckit-tasks/SKILL.md"
+          ".agents/skills/speckit-implement/SKILL.md"
+          ".claude/skills/speckit-implement/SKILL.md" ]
         @ samplePackRequired
 
     let missingRequired =
@@ -2654,12 +2665,17 @@ let tests =
 
 let copySelectedSkills model row capabilities =
     let skillRoot = path [ row.Root; ".agents"; "skills" ]
+    let claudeSkillRoot = path [ row.Root; ".claude"; "skills" ]
     Directory.CreateDirectory skillRoot |> ignore
+    Directory.CreateDirectory claudeSkillRoot |> ignore
     copyDirectory (path [ model.RepositoryRoot; "template"; "base"; ".agents"; "skills"; "fs-skia-project" ]) (path [ skillRoot; "fs-skia-project" ])
+    copyDirectory (path [ model.RepositoryRoot; "template"; "base"; ".claude"; "skills"; "fs-skia-project" ]) (path [ claudeSkillRoot; "fs-skia-project" ])
 
     Directory.GetDirectories(path [ model.RepositoryRoot; ".agents"; "skills" ], "speckit-*", SearchOption.TopDirectoryOnly)
     |> Array.iter (fun directory ->
-        copyDirectory directory (path [ skillRoot; Path.GetFileName directory ]))
+        let skillName = Path.GetFileName directory
+        copyDirectory directory (path [ skillRoot; skillName ])
+        copyDirectory directory (path [ claudeSkillRoot; skillName ]))
 
     let byId = capabilitiesById model
     let controlsSelected = capabilities |> List.contains "controls"
@@ -2674,8 +2690,11 @@ let copySelectedSkills model row capabilities =
             match capability.Skill with
             | Some sourceSkill ->
                 let destinationDirectory = path [ skillRoot; destination ]
+                let claudeDestinationDirectory = path [ claudeSkillRoot; destination ]
                 Directory.CreateDirectory destinationDirectory |> ignore
+                Directory.CreateDirectory claudeDestinationDirectory |> ignore
                 File.Copy(path [ model.RepositoryRoot; sourceSkill ], path [ destinationDirectory; "SKILL.md" ], true)
+                File.Copy(path [ model.RepositoryRoot; sourceSkill ], path [ claudeDestinationDirectory; "SKILL.md" ], true)
             | None -> ()
         | _ -> ()
 
@@ -2788,12 +2807,19 @@ let scanV3GeneratedRow model row =
         [ "src/Product/Product.fsproj"
           "tests/Product.Tests/Product.Tests.fsproj"
           "README.md"
+          "CLAUDE.md"
           "docs/product.md"
           ".agents/skills/fs-skia-project/SKILL.md"
+          ".claude/skills/fs-skia-project/SKILL.md"
+          ".claude/settings.json"
           ".agents/skills/speckit-specify/SKILL.md"
+          ".claude/skills/speckit-specify/SKILL.md"
           ".agents/skills/speckit-plan/SKILL.md"
+          ".claude/skills/speckit-plan/SKILL.md"
           ".agents/skills/speckit-tasks/SKILL.md"
+          ".claude/skills/speckit-tasks/SKILL.md"
           ".agents/skills/speckit-implement/SKILL.md"
+          ".claude/skills/speckit-implement/SKILL.md"
           ".specify/memory/constitution.md"
           ".specify/templates/spec-template.md"
           ".specify/scripts/bash/setup-plan.sh"
@@ -2814,6 +2840,9 @@ let scanV3GeneratedRow model row =
 
     if row.Profile = "app" && not (files |> List.contains ".agents/skills/fs-skia-ui-widgets/SKILL.md") then
         failwithf "%s/%s generated app is missing fs-skia-ui-widgets" row.Artifact row.Profile
+
+    if row.Profile = "app" && not (files |> List.contains ".claude/skills/fs-skia-ui-widgets/SKILL.md") then
+        failwithf "%s/%s generated app is missing Claude fs-skia-ui-widgets" row.Artifact row.Profile
 
     if row.Profile = "app"
        && files |> List.exists (fun file ->
@@ -2895,6 +2924,20 @@ let scanV3GeneratedRow model row =
         |> Seq.sort
         |> Seq.toList
 
+    let selectedClaudeSkills =
+        Directory.EnumerateFiles(path [ row.Root; ".claude"; "skills" ], "SKILL.md", SearchOption.AllDirectories)
+        |> Seq.map (relativePathFrom row.Root)
+        |> Seq.sort
+        |> Seq.toList
+
+    let missingClaudeSkillPeers =
+        selectedCapabilitySkills
+        |> List.map (fun skill -> skill.Replace(".agents/skills/", ".claude/skills/"))
+        |> List.filter (fun peer -> selectedClaudeSkills |> List.contains peer |> not)
+
+    if not missingClaudeSkillPeers.IsEmpty then
+        failwithf "%s/%s generated product is missing Claude skill peers:%s%s" row.Artifact row.Profile Environment.NewLine (String.Join(Environment.NewLine, missingClaudeSkillPeers))
+
     let report =
         [ $"# {row.Profile}/{row.Artifact} generated product"
           ""
@@ -2913,7 +2956,10 @@ let scanV3GeneratedRow model row =
           productTests
           ""
           "Selected skills:"
-          yield! selectedCapabilitySkills ]
+          yield! selectedCapabilitySkills
+          ""
+          "Selected Claude skills:"
+          yield! selectedClaudeSkills ]
         |> String.concat Environment.NewLine
 
     ensureParent row.FileListPath

@@ -144,7 +144,8 @@ let processReliabilityContractTests =
                   "process-health preflight failed with environment-failure"
                   "runner-warning-classification"
                   "warning-noise unless target exits nonzero"
-                  "missing ~/.nuget/packages/fsharp.core/6.0.7"
+                  "FAKE runner did not start after tool restore"
+                  "dotnet fake --version"
                   "fresh shell, fresh container, or CI runner" ]
         }
 

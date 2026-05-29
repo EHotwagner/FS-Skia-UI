@@ -50,6 +50,14 @@ patterns:
     severity: advisory
     reason: "Synthetic-evidence disclosure (Principle V)"
 
+  # Agent readiness artifacts. Advisory coverage keeps Codex and Claude
+  # configuration changes visible in audit output without treating ordinary
+  # project guidance edits as synthetic evidence by themselves.
+  - id: agent-readiness-artifacts
+    regex: '(^|/)(AGENTS\.md|CLAUDE\.md|\.agents/|\.claude/)'
+    severity: advisory
+    reason: "Agent-facing readiness artifact touched"
+
 # Whitelist: suppress a pattern's hits when the condition matches.
 # file_glob matches the file path of the hit; line_regex matches the matched
 # line. Either or both may be specified.

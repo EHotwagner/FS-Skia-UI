@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-specs/029-bomberman-demo-feedback/plan.md
+specs/030-claude-code-ready/plan.md
 <!-- SPECKIT END -->

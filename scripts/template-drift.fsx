@@ -89,6 +89,8 @@ let changedPaths =
     match fixture with
     | Some "missing-alignment" -> [ "src/Lib/Library.fs" ]
     | Some "invalid-deferral" -> [ "scripts/template-drift.fsx"; "readiness/template-deferrals.yml" ]
+    | Some "codex-claude-codex-drift" -> [ ".agents/skills/speckit-plan/SKILL.md" ]
+    | Some "codex-claude-claude-drift" -> [ ".claude/skills/speckit-plan/SKILL.md" ]
     | Some other -> failwithf "Unknown template-drift fixture: %s" other
     | None -> changedPathsFromGit ()
 
@@ -348,7 +350,85 @@ let classViolations =
 
 let controlsBoundaryViolations = controlsBoundaryGuidanceViolations ()
 
-let violations = validateDeferrals () @ classViolations @ controlsBoundaryViolations
+let agentArtifactPeerViolations () =
+    let skillRoot = path [ repositoryRoot; ".agents"; "skills" ]
+    let claudeSkillRoot = path [ repositoryRoot; ".claude"; "skills" ]
+
+    let repositorySkillViolations =
+        if Directory.Exists skillRoot then
+            Directory.GetDirectories(skillRoot, "*", SearchOption.TopDirectoryOnly)
+            |> Array.toList
+            |> List.collect (fun codexDirectory ->
+                let workflowId = Path.GetFileName codexDirectory
+                let codexPath = path [ codexDirectory; "SKILL.md" ]
+                let claudePath = path [ claudeSkillRoot; workflowId; "SKILL.md" ]
+
+                if not (File.Exists claudePath) then
+                    [ $"scope=repository sourceId={workflowId} workflowId={workflowId} expectedPath=.agents/skills/{workflowId}/SKILL.md actualPath=.claude/skills/{workflowId}/SKILL.md differenceSummary=missing Claude skill peer repairAction=copy from .agents/skills/{workflowId}/SKILL.md or regenerate agent artifacts" ]
+                elif File.ReadAllText codexPath <> File.ReadAllText claudePath then
+                    [ $"scope=repository sourceId={workflowId} workflowId={workflowId} expectedPath=.agents/skills/{workflowId}/SKILL.md actualPath=.claude/skills/{workflowId}/SKILL.md differenceSummary=skill contents differ repairAction=regenerate Codex and Claude skills from the shared source" ]
+                else
+                    [])
+        else
+            []
+
+    let templateMappingViolations =
+        let templateJsonPath = path [ repositoryRoot; ".template.config"; "template.json" ]
+
+        if File.Exists templateJsonPath then
+            let templateJson = File.ReadAllText templateJsonPath
+
+            [ ".claude/skills/"
+              ".claude/skills/fs-skia-scene/"
+              ".claude/skills/fs-skia-skiaviewer/"
+              ".claude/skills/fs-skia-elmish/"
+              ".claude/skills/fs-skia-keyboard-input/"
+              ".claude/skills/fs-skia-ui-widgets/"
+              ".claude/skills/fs-skia-testing/"
+              ".claude/skills/fs-skia-samples/" ]
+            |> List.choose (fun expected ->
+                if templateJson.IndexOf(expected, StringComparison.Ordinal) >= 0 then
+                    None
+                else
+                    Some $"scope=template sourceId=claude-template-skill-copy workflowId=template-profile expectedPath=.template.config/template.json actualPath={expected} differenceSummary=missing generated Claude skill target mapping repairAction=add matching .claude/skills target for every .agents/skills source")
+        else
+            []
+
+    let settingsViolations =
+        [ ".claude/settings.json"; "template/base/.claude/settings.json" ]
+        |> List.collect (fun relative ->
+            let absolute = path [ repositoryRoot; relative ]
+
+            if not (File.Exists absolute) then
+                [ $"scope=repository sourceId=claude-settings workflowId=settings expectedPath={relative} actualPath={relative} differenceSummary=missing Claude project settings repairAction=regenerate project-shareable Claude settings" ]
+            else
+                let text = File.ReadAllText absolute
+
+                try
+                    use _ = JsonDocument.Parse text
+
+                    [ if text.IndexOf("settings.local.json", StringComparison.OrdinalIgnoreCase) >= 0 then
+                          yield $"scope=repository sourceId=claude-settings workflowId=settings expectedPath={relative} actualPath={relative} differenceSummary=user-local settings dependency leaked repairAction=remove settings.local.json dependency"
+                      if text.IndexOf(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), StringComparison.OrdinalIgnoreCase) >= 0 then
+                          yield $"scope=repository sourceId=claude-settings workflowId=settings expectedPath={relative} actualPath={relative} differenceSummary=user home path leaked repairAction=use project-local paths such as $CLAUDE_PROJECT_DIR"
+                      if text.IndexOf("$CLAUDE_PROJECT_DIR", StringComparison.Ordinal) < 0 then
+                          yield $"scope=repository sourceId=claude-settings workflowId=hooks expectedPath={relative} actualPath={relative} differenceSummary=hook command is not project-local repairAction=use $CLAUDE_PROJECT_DIR for hook commands" ]
+                with _ ->
+                    [ $"scope=repository sourceId=claude-settings workflowId=settings expectedPath={relative} actualPath={relative} differenceSummary=malformed JSON repairAction=write valid project-shareable JSON" ])
+
+    let fixtureViolations =
+        match fixture with
+        | Some "codex-claude-codex-drift" ->
+            [ "scope=repository sourceId=speckit-plan workflowId=speckit-plan expectedPath=.agents/skills/speckit-plan/SKILL.md actualPath=.claude/skills/speckit-plan/SKILL.md differenceSummary=Codex skill changed without Claude peer update repairAction=regenerate Codex and Claude skills from the shared source" ]
+        | Some "codex-claude-claude-drift" ->
+            [ "scope=repository sourceId=speckit-plan workflowId=speckit-plan expectedPath=.claude/skills/speckit-plan/SKILL.md actualPath=.agents/skills/speckit-plan/SKILL.md differenceSummary=Claude skill changed without Codex peer update repairAction=regenerate Codex and Claude skills from the shared source" ]
+        | _ -> []
+
+    repositorySkillViolations @ templateMappingViolations @ settingsViolations @ fixtureViolations
+
+let agentArtifactViolations = agentArtifactPeerViolations ()
+
+let violations = validateDeferrals () @ classViolations @ controlsBoundaryViolations @ agentArtifactViolations
 
 let report =
     [ yield "# Template Drift Report"
@@ -390,6 +470,13 @@ let report =
           yield "- PASS: generated guidance names Controls ownership, DataGrid, adapter wiring, and Charts migration without stale generated terms."
       else
           yield! controlsBoundaryViolations |> List.map (fun violation -> "- " + violation)
+      yield ""
+      yield "## Agent Artifact Sync"
+      yield ""
+      if List.isEmpty agentArtifactViolations then
+          yield "- PASS: repository Codex and Claude skills, template Claude skill mappings, and project-shareable settings are synchronized."
+      else
+          yield! agentArtifactViolations |> List.map (fun violation -> "- " + violation)
       yield ""
       yield "## Diagnostics"
       yield ""
