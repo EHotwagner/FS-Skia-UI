@@ -1,0 +1,66 @@
+Dev completed for generated v3dotnetappsource
+GeneratedGuidanceCheck completed for generated v3dotnetappsource
+TemplateDrift completed for generated v3dotnetappsource
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/artifacts/template-check/029-bomberman-demo-feedback/source-app/specs/generated-evidence-workflow
+
+[1/3] Computing task graph...
+task-graph: 1 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/artifacts/template-check/029-bomberman-demo-feedback/source-app/specs/generated-evidence-workflow/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/artifacts/template-check/029-bomberman-demo-feedback/source-app/specs/generated-evidence-workflow/readiness/task-graph.md
+  status: 1[X]
+
+graph-only mode; skipping diff scan.
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/artifacts/template-check/029-bomberman-demo-feedback/source-app/specs/generated-evidence-workflow
+
+[1/3] Computing task graph...
+task-graph: 1 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/artifacts/template-check/029-bomberman-demo-feedback/source-app/specs/generated-evidence-workflow/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/artifacts/template-check/029-bomberman-demo-feedback/source-app/specs/generated-evidence-workflow/readiness/task-graph.md
+  status: 1[X]
+
+graph-only mode; skipping diff scan.
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/artifacts/template-check/029-bomberman-demo-feedback/source-app/specs/generated-evidence-workflow
+
+[1/3] Computing task graph...
+task-graph: 1 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/artifacts/template-check/029-bomberman-demo-feedback/source-app/specs/generated-evidence-workflow/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/artifacts/template-check/029-bomberman-demo-feedback/source-app/specs/generated-evidence-workflow/readiness/task-graph.md
+  status: 1[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=1
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  V3DotnetAppSource -> /home/developer/projects/FS-Skia-UI/artifacts/template-check/029-bomberman-demo-feedback/source-app/src/V3DotnetAppSource/bin/Debug/net10.0/V3DotnetAppSource.dll
+  V3DotnetAppSource.Tests -> /home/developer/projects/FS-Skia-UI/artifacts/template-check/029-bomberman-demo-feedback/source-app/tests/V3DotnetAppSource.Tests/bin/Debug/net10.0/V3DotnetAppSource.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/artifacts/template-check/029-bomberman-demo-feedback/source-app/tests/V3DotnetAppSource.Tests/bin/Debug/net10.0/V3DotnetAppSource.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    28, Skipped:     0, Total:    28, Duration: 62 ms - V3DotnetAppSource.Tests.dll (net10.0)
+Test completed for generated v3dotnetappsource
+Verify completed for generated v3dotnetappsource

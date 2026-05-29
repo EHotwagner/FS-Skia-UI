@@ -1,0 +1,26 @@
+running TargetMetadata
+TargetMetadata	0	specs/029-bomberman-demo-feedback/readiness/sequential-verify/TargetMetadata.log
+running EvidenceGraph
+EvidenceGraph	0	specs/029-bomberman-demo-feedback/readiness/sequential-verify/EvidenceGraph.log
+running TemplateDrift
+TemplateDrift	0	specs/029-bomberman-demo-feedback/readiness/sequential-verify/TemplateDrift.log
+running GeneratedGuidanceCheck
+GeneratedGuidanceCheck	0	specs/029-bomberman-demo-feedback/readiness/sequential-verify/GeneratedGuidanceCheck.log
+running DependencyReport
+DependencyReport	0	specs/029-bomberman-demo-feedback/readiness/sequential-verify/DependencyReport.log
+running ControlsRenderingCheck
+ControlsRenderingCheck	0	specs/029-bomberman-demo-feedback/readiness/sequential-verify/ControlsRenderingCheck.log
+running ControlsInteractionCheck
+ControlsInteractionCheck	0	specs/029-bomberman-demo-feedback/readiness/sequential-verify/ControlsInteractionCheck.log
+running ControlsCatalogCheck
+ControlsCatalogCheck	0	specs/029-bomberman-demo-feedback/readiness/sequential-verify/ControlsCatalogCheck.log
+running Restore
+Restore	0	specs/029-bomberman-demo-feedback/readiness/sequential-verify/Restore.log
+running TemplatePack
+TemplatePack	0	specs/029-bomberman-demo-feedback/readiness/sequential-verify/TemplatePack.log
+running TemplateInstallSource
+TemplateInstallSource	0	specs/029-bomberman-demo-feedback/readiness/sequential-verify/TemplateInstallSource.log
+running CapabilityCheck
+CapabilityCheck	0	specs/029-bomberman-demo-feedback/readiness/sequential-verify/CapabilityCheck.log
+running FsiTranscripts
+FsiTranscripts	1	specs/029-bomberman-demo-feedback/readiness/sequential-verify/FsiTranscripts.log

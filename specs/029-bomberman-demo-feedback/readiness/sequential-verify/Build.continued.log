@@ -1,0 +1,33 @@
+The last full restore is still up to date. Nothing left to do.
+run Build
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target Build:
+<== Build
+   <== Restore
+
+The running order is:
+Group - 1
+  - Restore
+Group - 2
+  - Build
+Single target mode ==> Skipping dependencies.
+Starting target 'Build'
+Finished (Success) 'Build' in 00:00:35.9981789
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target     Duration
+------     --------
+Build      00:00:35.9961982
+Total:     00:00:36.0683275
+Status:    Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 167 milliseconds
+ - Packages: 49 milliseconds
+ - Script analyzing: 18 milliseconds
+ - Script running: 36 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 37 seconds

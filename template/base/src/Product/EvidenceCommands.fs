@@ -480,6 +480,12 @@ let screenshotEvidence evidencePath =
         | ScreenshotUnsupported -> GeneratedEvidenceUnsupported
         | ScreenshotFailed -> GeneratedEvidenceFailed
 
+    let fallback =
+        match result.Status, result.Fallback with
+        | ScreenshotUnsupported, Some fallback -> fallback
+        | ScreenshotUnsupported, None -> deterministicFallback
+        | _ -> "none"
+
     let report =
         writeEvidenceReport
             evidencePath
@@ -489,7 +495,7 @@ let screenshotEvidence evidencePath =
               evidenceField "evidence-kind" "screenshot"
               evidenceField "renderer-mode" result.RendererMode
               evidenceField "unsupported-host-reason" (result.UnsupportedHostReason |> Option.defaultValue "none")
-              evidenceField "fallback" (result.Fallback |> Option.defaultValue deterministicFallback)
+              evidenceField "fallback" fallback
               evidenceField "app-or-sample" result.AppOrSample
               evidenceField "host-facts" (String.concat "," result.HostFacts)
               evidenceField "capture-mode" $"{result.CaptureMode}"

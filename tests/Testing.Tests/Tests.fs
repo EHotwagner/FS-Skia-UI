@@ -132,7 +132,8 @@ let tests =
             Expect.isNone result.FailureClass "accepted report has no failure class"
         }
 
-        test "screenshot evidence report validator rejects unsupported records that hide capability detail" {
+        test "ScreenshotEvidenceReport_Synthetic rejects unsupported records that hide capability detail" {
+            // SYNTHETIC: malformed unsupported screenshot report fixture approved by T024 SEH; real path is generated screenshot evidence command validation.
             let result =
                 EvidenceReports.validateScreenshotEvidence
                     { Status = "unsupported"
@@ -166,7 +167,7 @@ let tests =
         }
 
         test "ScreenshotEvidenceReport_Synthetic rejects invalid success proof fields" {
-            // SYNTHETIC: malformed screenshot report fixture approved by T018 SEH; real path is live screenshot evidence validation.
+            // SYNTHETIC: malformed screenshot report fixture approved by T024 SEH; real path is live screenshot evidence validation.
             let result =
                 EvidenceReports.validateScreenshotEvidence
                     { Status = "ok"
@@ -200,7 +201,7 @@ let tests =
         }
 
         test "ScreenshotEvidenceReport_Synthetic rejects hidden warnings in successful proof" {
-            // SYNTHETIC: hidden-warning fixture approved by T018 SEH; real path is captured launch output classification.
+            // SYNTHETIC: hidden-warning fixture approved by T024 SEH; real path is captured launch output classification.
             let result =
                 EvidenceReports.validateScreenshotEvidence
                     { Status = "ok"
@@ -233,7 +234,7 @@ let tests =
         }
 
         test "ScreenshotEvidenceReport_Synthetic rejects hostile artifact paths" {
-            // SYNTHETIC: hostile artifact path fixture approved by T018 SEH; real path is generated report path validation.
+            // SYNTHETIC: hostile artifact path fixture approved by T024 SEH; real path is generated report path validation.
             let result =
                 EvidenceReports.validateScreenshotEvidence
                     { Status = "ok"

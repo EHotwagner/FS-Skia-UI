@@ -20,6 +20,19 @@ Run the generated product governance checks:
 ./fake.sh build -t Verify
 ```
 
+Run Spec Kit evidence checks through the generated FAKE targets:
+
+```bash
+./fake.sh build -t EvidenceGraph
+./fake.sh build -t EvidenceAudit
+```
+
+The generated targets delegate to the copied Spec Kit audit script through
+`bash`, so the workflow does not depend on executable file mode being preserved
+when the checkout is copied. Redirected `Verify` output is written as plain text
+under `readiness/logs/`; pass and fail diagnostics should remain readable and
+must not contain embedded NUL byte blocks.
+
 Spec Kit is installed in this repo through `.specify/` and the project-local
 `speckit-*` skills under `.agents/skills/`. Use `$speckit-specify`,
 `$speckit-plan`, and `$speckit-tasks` to start governed feature work.

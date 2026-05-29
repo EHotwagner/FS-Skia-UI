@@ -1,0 +1,31 @@
+status=ok
+command=--screenshot-evidence
+output=readiness/game-screenshot-evidence.txt
+mode=persistent-evidence
+evidence-kind=screenshot
+renderer-mode=skia
+unsupported-host-reason=none
+fallback=none
+app-or-sample=Generated V3DotnetAppSource
+host-facts=os=Unix,machine=496df07cd6e9
+capture-mode=ViewerRenderTargetPng
+artifact-path=readiness/game-screenshot-evidence.png
+screenshot-path=readiness/game-screenshot-evidence.png
+image-width=640
+image-height=480
+width=640
+height=480
+pixel-content-validation=PixelContentNonBlank
+frames-rendered=1
+viewer-open-status=ViewerOpenConfirmed
+first-frame-status=FirstFramePresentedStatus
+capture-availability=CaptureAvailable
+capture-source=LiveViewerWindow
+deterministic-fallback-kind=none
+proves-screenshot=True
+blocked-stage=none
+classification=none
+category=none
+message=Screenshot artifact captured from viewer render target.
+timestamp=2026-05-29T10:10:59.1645647+00:00
+diagnostics=status=ok|evidence-kind=screenshot|artifact-path=readiness/game-screenshot-evidence.png|image-width=640|image-height=480|pixel-content-validation=non-blank|capture-source=live-viewer-window|proves-screenshot=true|scene-capabilities=66

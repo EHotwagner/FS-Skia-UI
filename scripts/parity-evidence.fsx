@@ -1,7 +1,6 @@
 open System
 open System.IO
 
-#r "nuget: Fable.Elmish, 4.2.0"
 #r "../src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll"
 
 open FS.Skia.UI

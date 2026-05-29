@@ -281,6 +281,95 @@ let generatedProjectValidationTests =
                 Expect.stringContains evidenceCommands required $"generated evidence command report includes {required}")
         }
 
+        test "generated evidence graph and audit invoke Spec Kit scripts through bash" {
+            let build = read "template/base/build.fsx"
+
+            [ "let runAuthoritativeEvidence target featureDir graphOnly"
+              "let script = authoritativeEvidenceScriptContract"
+              "ProcessStartInfo(\"bash\", arguments)"
+              "if graphOnly then"
+              "--graph-only"
+              "runAuthoritativeEvidence \"EvidenceGraph\" featureDir true"
+              "runAuthoritativeEvidence \"EvidenceAudit\" featureDir false" ]
+            |> List.iter (fun required ->
+                Expect.stringContains build required $"generated evidence invocation includes {required}")
+
+            Expect.isFalse (build.Contains("ProcessStartInfo(script", System.StringComparison.Ordinal)) "generated evidence scripts are not launched directly by executable mode"
+            Expect.isFalse (build.Contains("chmod", System.StringComparison.OrdinalIgnoreCase)) "generated evidence workflow does not repair executable mode"
+        }
+
+        test "generated Verify writes redirected logs as text without binary padding paths" {
+            let build = read "template/base/build.fsx"
+
+            [ "let runProcess"
+              "RedirectStandardOutput <- true"
+              "RedirectStandardError <- true"
+              "let output = stdout + stderr"
+              "tryWriteTextLog logPath output"
+              "printf \"%s\" output"
+              "Verify completed for generated product" ]
+            |> List.iter (fun required ->
+                Expect.stringContains build required $"generated Verify text logging includes {required}")
+
+            [ "File.WriteAllBytes"
+              "BinaryWriter"
+              "\\u0000"
+              "Array.zeroCreate" ]
+            |> List.iter (fun forbidden ->
+                Expect.isFalse (build.Contains(forbidden, System.StringComparison.OrdinalIgnoreCase)) $"generated Verify log path excludes {forbidden}")
+        }
+
+        test "generated evidence reports preserve authority exit code paths and diagnostics" {
+            let build = read "template/base/build.fsx"
+
+            [ "command=./fake.sh build -t"
+              "target="
+              "generated-project-identity="
+              "feature-directory="
+              "authority=delegated-authoritative"
+              "status="
+              "exit-code="
+              "validation-area="
+              "report-path="
+              "message="
+              "diagnostics="
+              "missing authoritative evidence script"
+              "failed command launch"
+              "unreadable readiness log"
+              "failed readiness log write"
+              "authoritative validation failed" ]
+            |> List.iter (fun required ->
+                Expect.stringContains build required $"generated evidence diagnostics include {required}")
+        }
+
+        test "generated guidance documents reliable evidence workflows" {
+            expectFileContains
+                "template/base/README.md"
+                [ "./fake.sh build -t EvidenceGraph"
+                  "./fake.sh build -t EvidenceAudit"
+                  "delegate to the copied Spec Kit audit script through"
+                  "does not depend on executable file mode"
+                  "Redirected `Verify` output is written as plain text"
+                  "embedded NUL byte" ]
+
+            expectFileContains
+                "template/base/docs/product.md"
+                [ ".specify/extensions/evidence/scripts/bash/run-audit.sh"
+                  "through `bash`"
+                  "do not repair executable bits"
+                  "readiness/logs/verify.txt"
+                  "writes redirected stdout/stderr"
+                  "exit-code context" ]
+
+            expectFileContains
+                "template/fragments/full-governance/README.md"
+                [ "Evidence graph and audit targets"
+                  "through `bash`"
+                  "exit-code"
+                  "output-path"
+                  "embedded NUL bytes" ]
+        }
+
         test "generated normal launch stays separate from evidence graph and audit commands" {
             let program = read "template/base/src/Product/Program.fs"
             let defaultBranch = program.Substring(program.LastIndexOf("| None ->", System.StringComparison.Ordinal))

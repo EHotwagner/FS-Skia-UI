@@ -1,0 +1,50 @@
+The last full restore is still up to date. Nothing left to do.
+run TemplateSmoke
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target TemplateSmoke:
+<== TemplateSmoke
+   <== TemplateInstantiate
+      <== TemplatePack
+      <== TemplateInstallSource
+      <== TemplateInstallPackage
+   <== Test
+      <== Build
+         <== Restore
+      <== SampleContractSmoke
+
+The running order is:
+Group - 1
+  - Restore
+  - TemplatePack
+  - TemplateInstallSource
+Group - 2
+  - Build
+  - TemplateInstallPackage
+Group - 3
+  - SampleContractSmoke
+  - TemplateInstantiate
+Group - 4
+  - Test
+Group - 5
+  - TemplateSmoke
+Single target mode ==> Skipping dependencies.
+Starting target 'TemplateSmoke'
+Finished (Success) 'TemplateSmoke' in 00:00:13.9574092
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target          Duration
+------          --------
+TemplateSmoke   00:00:13.9553899
+Total:          00:00:14.0279411
+Status:         Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 168 milliseconds
+ - Packages: 51 milliseconds
+ - Script analyzing: 18 milliseconds
+ - Script running: 14 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 15 seconds

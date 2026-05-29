@@ -1,0 +1,30 @@
+The last full restore is still up to date. Nothing left to do.
+run ControlsRenderingCheck
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target ControlsRenderingCheck:
+<== ControlsRenderingCheck
+
+The running order is:
+Group - 1
+  - ControlsRenderingCheck
+Single target mode ==> Skipping dependencies.
+Starting target 'ControlsRenderingCheck'
+Finished (Success) 'ControlsRenderingCheck' in 00:00:01.5327280
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                   Duration
+------                   --------
+ControlsRenderingCheck   00:00:01.5307039
+Total:                   00:00:01.6003525
+Status:                  Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 164 milliseconds
+ - Packages: 52 milliseconds
+ - Script analyzing: 18 milliseconds
+ - Script running: 1 second
+ - Script cleanup: 0 milliseconds
+ - Runtime: 2 seconds

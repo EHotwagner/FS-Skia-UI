@@ -65,7 +65,7 @@ let commandContractTests =
                 Expect.stringContains content $"\"{target}\"" $"{target} target is named in build.fsx")
 
             expectContains content "\"Build\", [ \"Restore\" ]" "Build depends on Restore"
-            expectContains content "\"Test\", [ \"Restore\" ]" "Test depends on Restore"
+            expectContains content "\"Test\", [ \"Build\"; \"SampleContractSmoke\" ]" "Test depends on built outputs and sample smoke evidence"
             expectContains content "\"Dev\", [ \"Test\" ]" "Dev depends on Test"
             expectContains content "\"EvidenceAudit\", [ \"EvidenceGraph\" ]" "audit depends on graph"
             expectContains content "\"Ci\", [ \"CiPreflight\"; \"Verify\" ]" "Ci runs preflight before delegating to Verify"
@@ -96,7 +96,7 @@ let commandContractTests =
             [ "CapabilityCheck"; "SkillCheck"; "GeneratedProductCheck"; "TemplateCheck"; "Verify"; "Ci" ]
             |> List.iter expectFakeTarget
 
-            expectContains content "\"GeneratedProductCheck\", [ \"CapabilityCheck\"; \"SkillCheck\" ]" "generated product check depends on capability and skill checks"
+            expectContains content "\"GeneratedProductCheck\", [ \"CapabilityCheck\"; \"SkillCheck\"; \"Dev\"; \"TemplateCheck\" ]" "generated product check runs after capability skill dev and template checks"
             expectContains content "\"Verify\"," "Verify target exists"
             expectContains content "\"CapabilityCheck\"" "Verify includes CapabilityCheck"
             expectContains content "\"SkillCheck\"" "Verify includes SkillCheck"

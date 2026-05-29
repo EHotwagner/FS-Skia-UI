@@ -34,6 +34,18 @@ let writeLines (filePath: string) lines =
 
     File.WriteAllLines(filePath, Array.ofList lines)
 
+let tryWriteTextLog (filePath: string) (content: string) =
+    try
+        let directory = Path.GetDirectoryName filePath
+
+        if not (String.IsNullOrWhiteSpace directory) then
+            Directory.CreateDirectory directory |> ignore
+
+        File.WriteAllText(filePath, content)
+        None
+    with ex ->
+        Some $"unreadable readiness log: {filePath}; diagnostics={ex.Message}"
+
 let envOption name =
     match Environment.GetEnvironmentVariable name with
     | null -> None
@@ -145,15 +157,25 @@ let runAuthoritativeEvidence target featureDir graphOnly =
         startInfo.UseShellExecute <- false
         startInfo.WorkingDirectory <- Directory.GetCurrentDirectory()
 
-        use proc = Process.Start(startInfo)
-        let stdout = proc.StandardOutput.ReadToEnd()
-        let stderr = proc.StandardError.ReadToEnd()
-        proc.WaitForExit()
+        try
+            match Process.Start(startInfo) |> Option.ofObj with
+            | None -> 5, "", $"failed command launch: bash {arguments}"
+            | Some proc ->
+                use proc = proc
+                let stdout = proc.StandardOutput.ReadToEnd()
+                let stderr = proc.StandardError.ReadToEnd()
+                proc.WaitForExit()
 
-        let output = stdout + stderr
-        File.WriteAllText(path [ "readiness"; "logs"; target + ".txt" ], output)
-        printf "%s" output
-        proc.ExitCode, stdout, stderr
+                let output = stdout + stderr
+                let logPath = path [ "readiness"; "logs"; target + ".txt" ]
+
+                match tryWriteTextLog logPath output with
+                | Some diagnostic -> 6, stdout, stderr + Environment.NewLine + diagnostic
+                | None ->
+                    printf "%s" output
+                    proc.ExitCode, stdout, stderr
+        with ex ->
+            5, "", $"failed command launch: bash {arguments}; diagnostics={ex.Message}"
 
 let writeGeneratedEvidenceReport (target: string) (featureDir: string) (exitCode: int) (stdout: string) (stderr: string) =
     let reportPath =
@@ -231,13 +253,27 @@ let runProcess (target: string) (fileName: string) (arguments: string) =
     startInfo.UseShellExecute <- false
     startInfo.WorkingDirectory <- Directory.GetCurrentDirectory()
 
-    use proc = Process.Start(startInfo)
+    let proc =
+        try
+            Process.Start(startInfo) |> Option.ofObj
+        with ex ->
+            failwithf "%s failed command launch: %s %s; diagnostics=%s" target fileName arguments ex.Message
+
+    use proc =
+        match proc with
+        | Some proc -> proc
+        | None -> failwithf "%s failed command launch: %s %s" target fileName arguments
+
     let stdout = proc.StandardOutput.ReadToEnd()
     let stderr = proc.StandardError.ReadToEnd()
     proc.WaitForExit()
 
     let output = stdout + stderr
-    File.WriteAllText(logPath, output)
+
+    match tryWriteTextLog logPath output with
+    | Some diagnostic -> failwithf "%s failed readiness log write; %s" target diagnostic
+    | None -> ()
+
     printf "%s" output
 
     if output.IndexOf("NU1603", StringComparison.OrdinalIgnoreCase) >= 0 then
@@ -247,7 +283,7 @@ let runProcess (target: string) (fileName: string) (arguments: string) =
         failwithf "%s failed with exit code %d; see %s" target proc.ExitCode logPath
 
 let runGeneratedTests () =
-    runProcess "Test" "dotnet" "test tests/Product.Tests/Product.Tests.fsproj -m:1"
+    runProcess "Test" "dotnet" "test tests/Product.Tests/Product.Tests.fsproj -m:1 --disable-build-servers"
     printfn "Test completed for generated product"
 
 let run target =
@@ -275,6 +311,7 @@ let run target =
             failwithf "EvidenceAudit failed with exit code %d; see readiness/evidence-audit.md" auditExitCode
         runGeneratedTests ()
         writeLog "Verify"
+        printfn "Verify completed for generated product"
     | other ->
         failwithf "Unknown generated product target: %s" other
 

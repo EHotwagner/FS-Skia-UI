@@ -1,0 +1,67 @@
+The last full restore is still up to date. Nothing left to do.
+run GeneratedProductCheck
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target GeneratedProductCheck:
+<== GeneratedProductCheck
+   <== CapabilityCheck
+   <== SkillCheck
+   <== Dev
+      <== Test
+         <== Build
+            <== Restore
+         <== SampleContractSmoke
+   <== TemplateCheck
+      <== TemplatePack
+      <== TemplateInstallSource
+      <== TemplateInstallPackage
+      <== TemplateInstantiate
+      <== TemplateSmoke
+
+The running order is:
+Group - 1
+  - Restore
+  - TemplatePack
+  - TemplateInstallSource
+  - CapabilityCheck
+Group - 2
+  - Build
+  - TemplateInstallPackage
+  - SkillCheck
+Group - 3
+  - SampleContractSmoke
+  - TemplateInstantiate
+Group - 4
+  - Test
+Group - 5
+  - TemplateSmoke
+  - Dev
+Group - 6
+  - TemplateCheck
+Group - 7
+  - GeneratedProductCheck
+Single target mode ==> Skipping dependencies.
+Starting target 'GeneratedProductCheck'
+Finished (Failed) 'GeneratedProductCheck' in 00:00:41.3997968
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                  Duration
+------                  --------
+GeneratedProductCheck   00:00:41.3979445   (app/source generated Test failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/029-bomberman-demo-feedback/readiness/generated-product-verify/app-source/test.log)
+Total:                  00:00:41.4683485
+Status:                 Failure
+---------------------------------------------------------------------
+Script reported an error:
+-> BuildFailedException: Target 'GeneratedProductCheck' failed.
+-> One or more errors occurred. (app/source generated Test failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/029-bomberman-demo-feedback/readiness/generated-product-verify/app-source/test.log)
+-> app/source generated Test failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/029-bomberman-demo-feedback/readiness/generated-product-verify/app-source/test.log
+Hint: To further diagnose the problem you can run fake in verbose mode `fake -v run ...` or set the 'FAKE_DETAILED_ERRORS' environment variable to 'true'
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 172 milliseconds
+ - Packages: 52 milliseconds
+ - Script analyzing: 19 milliseconds
+ - Script running: 41 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 42 seconds

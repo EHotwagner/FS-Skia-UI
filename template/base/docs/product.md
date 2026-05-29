@@ -64,6 +64,20 @@ domain vector, convert it explicitly with a helper such as `toScenePoint` before
 passing it to `Scene.Point`; the conversion from domain vector to scene point
 must be visible in the generated source or evidence notes as an explicit conversion.
 
+Evidence graph and audit checks are exposed as generated FAKE targets:
+
+```bash
+./fake.sh build -t EvidenceGraph
+./fake.sh build -t EvidenceAudit
+```
+
+These targets launch `.specify/extensions/evidence/scripts/bash/run-audit.sh`
+through `bash`; do not repair executable bits as part of normal evidence
+collection. Use `./fake.sh build -t Verify > readiness/logs/verify.txt 2>&1`
+when capturing review logs. The generated build writes redirected stdout/stderr
+as text, preserving command diagnostics and exit-code context without binary
+padding.
+
 Generated evidence may report semantic scene facts such as lander, terrain,
 landing pad, and HUD metrics. deterministic-scene-evidence does not prove semantic object presence in a live screenshot by itself. A
 pixel-readback fallback must include `fallback-reason` and

@@ -1,0 +1,242 @@
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 72 ms - Package.Tests.dll (net10.0)
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 68 ms - Package.Tests.dll (net10.0)
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 62 ms - Package.Tests.dll (net10.0)
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 64 ms - Package.Tests.dll (net10.0)
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 64 ms - Package.Tests.dll (net10.0)
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 63 ms - Package.Tests.dll (net10.0)
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 62 ms - Package.Tests.dll (net10.0)
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 65 ms - Package.Tests.dll (net10.0)
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 66 ms - Package.Tests.dll (net10.0)
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 62 ms - Package.Tests.dll (net10.0)
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 62 ms - Package.Tests.dll (net10.0)
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 63 ms - Package.Tests.dll (net10.0)
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 62 ms - Package.Tests.dll (net10.0)
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 61 ms - Package.Tests.dll (net10.0)
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 62 ms - Package.Tests.dll (net10.0)
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 63 ms - Package.Tests.dll (net10.0)
+
+exit-code=0
+
+## package surface test build
+$ dotnet build tests/Package.Tests/Package.Tests.fsproj -m:1 --no-restore --disable-build-servers
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Debug/net10.0/FS.Skia.UI.Controls.dll
+  Package.Tests -> /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.35
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed Surface baselines.FS.Skia.UI baseline exports expected contract names [18 ms]
+  Error Message:
+   
+no unapproved public exports were added to FS.Skia.UI. Should be empty.
+   at SurfaceAreaTests.assertBaseline(String packageName, Assembly assembly) in /home/developer/projects/FS-Skia-UI/tests/Package.Tests/SurfaceAreaTests.fs:line 44
+   at SurfaceAreaTests.surfaceAreaTests@58-1.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Package.Tests/SurfaceAreaTests.fs:line 58
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112
+
+  Failed Surface baselines.FS.Skia.UI.Controls baseline exports expected contract names [3 ms]
+  Error Message:
+   
+no unapproved public exports were added to FS.Skia.UI.Controls. Should be empty.
+   at SurfaceAreaTests.assertBaseline(String packageName, Assembly assembly) in /home/developer/projects/FS-Skia-UI/tests/Package.Tests/SurfaceAreaTests.fs:line 44
+   at SurfaceAreaTests.surfaceAreaTests@98-5.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Package.Tests/SurfaceAreaTests.fs:line 98
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112
+
+
+Failed!  - Failed:     2, Passed:    15, Skipped:     0, Total:    17, Duration: 66 ms - Package.Tests.dll (net10.0)
+
+exit-code=1
+
+## package surface test build
+$ dotnet build tests/Package.Tests/Package.Tests.fsproj -m:1 --no-restore --disable-build-servers
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Debug/net10.0/FS.Skia.UI.Controls.dll
+  Package.Tests -> /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.26
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 63 ms - Package.Tests.dll (net10.0)
+
+exit-code=0
+
+## package surface test build
+$ dotnet build tests/Package.Tests/Package.Tests.fsproj -m:1 --no-restore --disable-build-servers
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Debug/net10.0/FS.Skia.UI.Controls.dll
+  Package.Tests -> /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.29
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 64 ms - Package.Tests.dll (net10.0)
+
+exit-code=0

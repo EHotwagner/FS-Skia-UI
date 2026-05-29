@@ -1,0 +1,170 @@
+The last full restore is still up to date. Nothing left to do.
+run Verify
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target Verify:
+<== Verify
+   <== VerifyPreflight
+   <== Dev
+      <== Test
+         <== Build
+            <== Restore
+   <== PackLocal
+   <== PackageSurfaceCheck
+   <== FsiTranscripts
+   <== SampleContractSmoke
+   <== TemplateCheck
+      <== TemplatePack
+      <== TemplateInstallSource
+      <== TemplateInstallPackage
+      <== TemplateInstantiate
+      <== TemplateSmoke
+   <== CapabilityCheck
+   <== SkillCheck
+   <== GeneratedProductCheck
+   <== ControlsCatalogCheck
+   <== ControlsInteractionCheck
+   <== ControlsRenderingCheck
+   <== DependencyReport
+   <== GeneratedGuidanceCheck
+   <== TemplateDrift
+   <== EvidenceAudit
+      <== EvidenceGraph
+   <== TargetMetadataDrift
+      <== TargetMetadata
+
+The running order is:
+Group - 1
+  - TargetMetadata
+  - EvidenceGraph
+  - TemplateDrift
+  - GeneratedGuidanceCheck
+  - DependencyReport
+  - ControlsRenderingCheck
+  - ControlsInteractionCheck
+  - ControlsCatalogCheck
+  - CapabilityCheck
+  - TemplatePack
+  - TemplateInstallSource
+  - Restore
+  - FsiTranscripts
+  - PackageSurfaceCheck
+  - PackLocal
+  - VerifyPreflight
+Group - 2
+  - TargetMetadataDrift
+  - EvidenceAudit
+  - SkillCheck
+  - TemplateInstallPackage
+  - Build
+Group - 3
+  - GeneratedProductCheck
+  - TemplateInstantiate
+  - SampleContractSmoke
+  - Test
+Group - 4
+  - TemplateSmoke
+  - Dev
+Group - 5
+  - TemplateCheck
+Group - 6
+  - Verify
+Starting target 'TargetMetadata'
+Finished (Success) 'TargetMetadata' in 00:00:00.0170028
+Starting target 'EvidenceGraph'
+Finished (Success) 'EvidenceGraph' in 00:00:00.0951149
+Starting target 'TemplateDrift'
+Finished (Success) 'TemplateDrift' in 00:00:01.9880646
+Starting target 'GeneratedGuidanceCheck'
+Finished (Success) 'GeneratedGuidanceCheck' in 00:00:00.0194069
+Starting target 'DependencyReport'
+Finished (Success) 'DependencyReport' in 00:00:02.1108454
+Starting target 'ControlsRenderingCheck'
+Finished (Success) 'ControlsRenderingCheck' in 00:00:01.6284098
+Starting target 'ControlsInteractionCheck'
+Finished (Success) 'ControlsInteractionCheck' in 00:00:01.5394971
+Starting target 'ControlsCatalogCheck'
+Finished (Success) 'ControlsCatalogCheck' in 00:00:01.5829447
+Starting target 'CapabilityCheck'
+Finished (Success) 'CapabilityCheck' in 00:00:00.0130349
+Starting target 'TemplatePack'
+Finished (Success) 'TemplatePack' in 00:00:02.0209572
+Starting target 'TemplateInstallSource'
+Finished (Success) 'TemplateInstallSource' in 00:00:01.7661626
+Starting target 'Restore'
+Finished (Success) 'Restore' in 00:00:10.6598695
+Starting target 'FsiTranscripts'
+Finished (Success) 'FsiTranscripts' in 00:00:09.5766494
+Starting target 'PackageSurfaceCheck'
+Finished (Success) 'PackageSurfaceCheck' in 00:00:01.4196860
+Starting target 'PackLocal'
+Finished (Success) 'PackLocal' in 00:00:16.2321575
+Starting target 'VerifyPreflight'
+Finished (Success) 'VerifyPreflight' in 00:00:00.6949830
+Starting target 'TargetMetadataDrift'
+Finished (Success) 'TargetMetadataDrift' in 00:00:00.0091071
+Starting target 'EvidenceAudit'
+Finished (Success) 'EvidenceAudit' in 00:00:00.6533475
+Starting target 'SkillCheck'
+Finished (Success) 'SkillCheck' in 00:00:00.0037055
+Starting target 'TemplateInstallPackage'
+Finished (Success) 'TemplateInstallPackage' in 00:00:01.5981181
+Starting target 'Build'
+Finished (Success) 'Build' in 00:00:09.4329866
+Starting target 'GeneratedProductCheck'
+Finished (Success) 'GeneratedProductCheck' in 00:02:21.5854061
+Starting target 'TemplateInstantiate'
+Finished (Success) 'TemplateInstantiate' in 00:00:08.4743895
+Starting target 'SampleContractSmoke'
+Finished (Failed) 'SampleContractSmoke' in 00:00:38.2230075
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                     Duration
+------                     --------
+TargetMetadata             00:00:00.0150427
+EvidenceGraph              00:00:00.0950541
+TemplateDrift              00:00:01.9880017
+GeneratedGuidanceCheck     00:00:00.0193759
+DependencyReport           00:00:02.1108232
+ControlsRenderingCheck     00:00:01.6283817
+ControlsInteractionCheck   00:00:01.5394736
+ControlsCatalogCheck       00:00:01.5829176
+CapabilityCheck            00:00:00.0130056
+TemplatePack               00:00:02.0209334
+TemplateInstallSource      00:00:01.7661369
+Restore                    00:00:10.6598368
+FsiTranscripts             00:00:09.5766134
+PackageSurfaceCheck        00:00:01.4196637
+PackLocal                  00:00:16.2321236
+VerifyPreflight            00:00:00.6949528
+TargetMetadataDrift        00:00:00.0090739
+EvidenceAudit              00:00:00.6533175
+SkillCheck                 00:00:00.0036845
+TemplateInstallPackage     00:00:01.5980816
+Build                      00:00:09.4329641
+GeneratedProductCheck      00:02:21.5853859
+TemplateInstantiate        00:00:08.4743700
+SampleContractSmoke        00:00:38.2229375   (ControlsGallery contract smoke failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/029-bomberman-demo-feedback/readiness/sample-smoke/ControlsGallery.txt)
+Test                       00:00:00           (skipped)
+TemplateSmoke              00:00:00           (skipped)
+Dev                        00:00:00           (skipped)
+TemplateCheck              00:00:00           (skipped)
+Verify                     00:00:00           (skipped)
+Total:                     00:04:11.4114157
+Status:                    Failure
+---------------------------------------------------------------------
+Script reported an error:
+-> BuildFailedException: Target 'SampleContractSmoke' failed.
+-> One or more errors occurred. (ControlsGallery contract smoke failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/029-bomberman-demo-feedback/readiness/sample-smoke/ControlsGallery.txt)
+-> ControlsGallery contract smoke failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/029-bomberman-demo-feedback/readiness/sample-smoke/ControlsGallery.txt
+Hint: To further diagnose the problem you can run fake in verbose mode `fake -v run ...` or set the 'FAKE_DETAILED_ERRORS' environment variable to 'true'
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 178 milliseconds
+ - Packages: 48 milliseconds
+ - Script compiling: 7 seconds
+ - Script analyzing: 517 milliseconds
+ - Script running: 4 minutes, 11 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 4 minutes, 19 seconds

@@ -217,6 +217,24 @@ let runDotnet (arguments: string) =
             proc.WaitForExitAsync().GetAwaiter().GetResult()
             proc.ExitCode, stdout, stderr)
 
+let sampleSmokeResult sampleName arguments =
+    match Environment.GetEnvironmentVariable "FS_SKIA_SAMPLE_SMOKE_DIR" with
+    | null
+    | "" ->
+        runDotnet arguments
+    | directory ->
+        let evidencePath = Path.Combine(directory, sampleName + ".txt")
+
+        if File.Exists evidencePath then
+            let evidence = File.ReadAllText evidencePath
+
+            if evidence.Contains("exit-code=0", StringComparison.Ordinal) then
+                0, evidence, ""
+            else
+                1, evidence, evidence
+        else
+            runDotnet arguments
+
 [<Tests>]
 let publicSurfaceTests =
     testList "Public surface" [
@@ -836,7 +854,7 @@ let us4SampleAndScreenshotTests =
     testList "US4 complete Elmish viewer examples" [
         test "BasicViewer contract smoke compiles and exercises scene and screenshot command" {
             let exitCode, stdout, stderr =
-                runDotnet "run --project samples/BasicViewer/BasicViewer.fsproj -- --contract-smoke"
+                sampleSmokeResult "BasicViewer" "run --project samples/BasicViewer/BasicViewer.fsproj --no-build --no-restore -- --contract-smoke"
 
             Expect.equal exitCode 0 stderr
             Expect.stringContains stdout "status=ok" "contract smoke succeeds"
@@ -853,7 +871,7 @@ let us4SampleAndScreenshotTests =
 
             if File.Exists project then
                 let exitCode, stdout, stderr =
-                    runDotnet "run --project samples/InteractiveViewer/InteractiveViewer.fsproj -- --contract-smoke"
+                    sampleSmokeResult "InteractiveViewer" "run --project samples/InteractiveViewer/InteractiveViewer.fsproj --no-build --no-restore -- --contract-smoke"
 
                 Expect.equal exitCode 0 stderr
                 Expect.stringContains stdout "status=ok" "contract smoke succeeds"
@@ -872,7 +890,7 @@ let us4SampleAndScreenshotTests =
 
             if File.Exists project then
                 let exitCode, stdout, stderr =
-                    runDotnet "run --project samples/ScreenshotGallery/ScreenshotGallery.fsproj -- --contract-smoke"
+                    sampleSmokeResult "ScreenshotGallery" "run --project samples/ScreenshotGallery/ScreenshotGallery.fsproj --no-build --no-restore -- --contract-smoke"
 
                 Expect.equal exitCode 0 stderr
                 Expect.stringContains stdout "status=ok" "contract smoke succeeds"

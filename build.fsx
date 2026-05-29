@@ -532,7 +532,7 @@ let sampleSmokeProjects =
       "ControlsGallery", "samples/ControlsGallery/ControlsGallery.fsproj" ]
 
 let buildProjects =
-    packProjects |> List.map fst
+    (packProjects |> List.map fst) @ (sampleSmokeProjects |> List.map snd) @ defaultTestProjects
     |> List.distinct
 
 let requiredTargets =
@@ -577,23 +577,23 @@ let targetDependencyRows =
     [ "Clean", []
       "Restore", []
       "Build", [ "Restore" ]
-      "Test", [ "Restore" ]
+      "Test", [ "Build"; "SampleContractSmoke" ]
       "Dev", [ "Test" ]
       "PackLocal", []
       "RefreshSurfaceBaselines", [ "Build" ]
-      "PackageSurfaceCheck", []
-      "FsiTranscripts", []
+      "PackageSurfaceCheck", [ "Build" ]
+      "FsiTranscripts", [ "Build" ]
       "SampleContractSmoke", [ "Build" ]
       "TemplatePack", []
       "TemplateInstallSource", []
       "TemplateInstallPackage", [ "TemplatePack" ]
       "TemplateInstantiate", [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage" ]
-      "TemplateSmoke", [ "TemplateInstantiate" ]
+      "TemplateSmoke", [ "TemplateInstantiate"; "Test" ]
       // V2 compatibility expectation: "TemplateCheck", [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage"; "TemplateInstantiate"; "TemplateSmoke" ]
       "TemplateCheck", [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage"; "TemplateInstantiate"; "TemplateSmoke" ]
       "CapabilityCheck", []
       "SkillCheck", [ "CapabilityCheck" ]
-      "GeneratedProductCheck", [ "CapabilityCheck"; "SkillCheck" ]
+      "GeneratedProductCheck", [ "CapabilityCheck"; "SkillCheck"; "Dev"; "TemplateCheck" ]
       "ControlsCatalogCheck", []
       "ControlsInteractionCheck", []
       "ControlsRenderingCheck", []
@@ -669,7 +669,7 @@ validation_verdict:
     command: VSTest/YoloDev adapter execution filtered to KeyboardInputGallery
     result: hung before launching the KeyboardInputGallery child process
   control_check:
-    command: dotnet run --project samples/KeyboardInputGallery/KeyboardInputGallery.fsproj -- --contract-smoke
+    command: dotnet run --project samples/KeyboardInputGallery/KeyboardInputGallery.fsproj --no-build --no-restore -- --contract-smoke
     result: passed and printed contract smoke output
   final_classification: VSTest/YoloDev adapter orchestration concern for the smoke executable, not a sample or product failure
   diagnostic: The FAKE Test target now runs only Smoke.Tests via direct Expecto execution; all other test projects continue to use dotnet test.
@@ -685,7 +685,7 @@ let focusedGateContract model target =
     match target with
     | "PackageSurfaceCheck" ->
         { TargetName = target
-          DirectPrerequisites = []
+          DirectPrerequisites = [ "Build" ]
           Command = "./fake.sh build -t PackageSurfaceCheck"
           LogPath = log "package-surface-check.txt"
           ReadinessPath = Some(path [ model.PackageSurfaceReportDir; "index.md" ])
@@ -695,7 +695,7 @@ let focusedGateContract model target =
           VerdictCategory = VerificationSuccess }
     | "FsiTranscripts" ->
         { TargetName = target
-          DirectPrerequisites = []
+          DirectPrerequisites = [ "Build" ]
           Command = "./fake.sh build -t FsiTranscripts"
           LogPath = path [ model.FsiDir; "prelude.txt" ]
           ReadinessPath = Some model.FsiDir
@@ -1050,19 +1050,28 @@ let update msg model =
         [ RunDotnetAction("dotnet build", "build", "FS-Skia-UI.sln", buildProjects, "--no-restore -maxcpucount:1 --disable-build-servers", path [ model.LogDir; "build.txt" ]) ]
     | StartTarget "Test" ->
         model,
-        defaultTestProjects
-        |> List.filter (fun project -> File.Exists(path [ model.RepositoryRoot; project ]))
-        |> List.map (fun project ->
-            if project.Replace('\\', '/').EndsWith("tests/Smoke.Tests/Smoke.Tests.fsproj", StringComparison.Ordinal) then
-                processEffect $"dotnet run {project}" "dotnet" $"run --project {project} --no-restore" model.RepositoryRoot (path [ model.LogDir; "test.txt" ])
-            else
-                let extra =
-                    if project.IndexOf("Governance.Tests", StringComparison.Ordinal) >= 0 then
-                        " --filter \"FullyQualifiedName!~workflow self-check&FullyQualifiedName!~fixture\" -- --sequenced"
-                    else
-                        " -- --sequenced"
+        [ processEffect "dotnet build-server shutdown before tests" "dotnet" "build-server shutdown" model.RepositoryRoot (path [ model.LogDir; "test.txt" ])
+          yield!
+              defaultTestProjects
+              |> List.filter (fun project -> File.Exists(path [ model.RepositoryRoot; project ]))
+              |> List.map (fun project ->
+                  if project.Replace('\\', '/').EndsWith("tests/Smoke.Tests/Smoke.Tests.fsproj", StringComparison.Ordinal) then
+                      processEffect $"dotnet run {project}" "dotnet" $"run --project {project} --no-restore" model.RepositoryRoot (path [ model.LogDir; "test.txt" ])
+                  else
+                      let extra =
+                          if project.IndexOf("Governance.Tests", StringComparison.Ordinal) >= 0 then
+                              " --filter \"FullyQualifiedName!~workflow self-check&FullyQualifiedName!~fixture\" -- --sequenced"
+                          else
+                              " -- --sequenced"
 
-                processEffect $"dotnet test {project}" "dotnet" $"test {project} -m:1{extra}" model.RepositoryRoot (path [ model.LogDir; "test.txt" ]))
+                      RunProcess(
+                          $"dotnet test {project}",
+                          "dotnet",
+                          $"test {project} -m:1 --no-build --no-restore{extra}",
+                          model.RepositoryRoot,
+                          path [ model.LogDir; "test.txt" ],
+                          Map.ofList [ "FS_SKIA_SAMPLE_SMOKE_DIR", model.SampleSmokeDir ]
+                      )) ]
     | StartTarget "Dev" ->
         model,
         [ WriteFile(path [ model.LogDir; "dev-verdict.txt" ], "Dev target completed: Restore, Build, and default non-visual Test targets passed.\n")
@@ -1086,7 +1095,8 @@ let update msg model =
             ) ]
     | StartTarget "PackageSurfaceCheck" ->
         model,
-        [ focusedGateAssumptionCheck model "PackageSurfaceCheck"
+        [ processEffect "package surface test build" "dotnet" "build tests/Package.Tests/Package.Tests.fsproj -m:1 --no-restore --disable-build-servers" model.RepositoryRoot (path [ model.LogDir; "package-surface-check.txt" ])
+          focusedGateAssumptionCheck model "PackageSurfaceCheck"
           processEffect "package surface check" "dotnet" "test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore" model.RepositoryRoot (path [ model.LogDir; "package-surface-check.txt" ])
           PackageSurfaceReport
           RequireFiles("stable package surface baselines", [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.KeyboardInput.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.Elmish.txt" ] ])
@@ -1103,7 +1113,7 @@ let update msg model =
         model,
         sampleSmokeProjects
         |> List.map (fun (name, project) ->
-            processEffect $"{name} contract smoke" "dotnet" $"run --project {project} -- --contract-smoke" model.RepositoryRoot (path [ model.SampleSmokeDir; $"{name}.txt" ]))
+            processEffect $"{name} contract smoke" "dotnet" $"run --project {project} --no-build --no-restore -- --contract-smoke" model.RepositoryRoot (path [ model.SampleSmokeDir; $"{name}.txt" ]))
     | StartTarget "TemplatePack" ->
         model,
         [ processEffect "template package" "dotnet" $"pack .template.package/FS.Skia.UI.Template.fsproj -c Release -o {quote model.TemplateArtifactDir}" model.RepositoryRoot (path [ model.TemplateEvidenceDir; "template-pack.log" ])

@@ -537,5 +537,30 @@ let tests =
             Expect.stringContains build "synthetic-evidence" "audit report distinguishes synthetic evidence failures"
             Expect.isFalse (build.Contains("| \"EvidenceGraph\"\n    | \"EvidenceAudit\" -> writeLog target")) "evidence commands are not completion-only logs"
         }
+
+        test "generated evidence graph and audit use bash script invocation" {
+            let build = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "build.fsx"))
+
+            Expect.stringContains build "ProcessStartInfo(\"bash\", arguments)" "generated evidence scripts run through bash"
+            Expect.stringContains build "let script = authoritativeEvidenceScriptContract" "script path is an argument, not the executable"
+            Expect.stringContains build "runAuthoritativeEvidence \"EvidenceGraph\" featureDir true" "graph command delegates through shared bash runner"
+            Expect.stringContains build "runAuthoritativeEvidence \"EvidenceAudit\" featureDir false" "audit command delegates through shared bash runner"
+            Expect.isFalse (build.Contains("ProcessStartInfo(script", StringComparison.Ordinal)) "generated evidence scripts are not launched directly by executable mode"
+            Expect.isFalse (build.Contains("chmod", StringComparison.OrdinalIgnoreCase)) "generated evidence workflow does not repair executable mode"
+        }
+
+        test "generated Verify redirected output is clean text" {
+            let build = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "build.fsx"))
+
+            Expect.stringContains build "RedirectStandardOutput <- true" "generated Verify captures stdout as text"
+            Expect.stringContains build "RedirectStandardError <- true" "generated Verify captures stderr as text"
+            Expect.stringContains build "let output = stdout + stderr" "generated Verify combines text streams"
+            Expect.stringContains build "tryWriteTextLog logPath output" "generated Verify writes text logs through the checked text writer"
+            Expect.stringContains build "printf \"%s\" output" "generated Verify echoes text without binary padding"
+
+            [ "File.WriteAllBytes"; "BinaryWriter"; "\\u0000"; "Array.zeroCreate" ]
+            |> List.iter (fun forbidden ->
+                Expect.isFalse (build.Contains(forbidden, StringComparison.OrdinalIgnoreCase)) $"generated Verify excludes binary log writer {forbidden}")
+        }
     ]
 //#endif

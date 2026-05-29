@@ -102,7 +102,7 @@ let smokeContractTests =
 
         test "KeyboardInputGallery contract smoke captures keyboard state display evidence" {
             let exitCode, stdout, stderr =
-                runProcess "dotnet" "run --project samples/KeyboardInputGallery/KeyboardInputGallery.fsproj -- --contract-smoke"
+                runProcess "dotnet" "run --project samples/KeyboardInputGallery/KeyboardInputGallery.fsproj --no-build --no-restore -- --contract-smoke"
 
             let evidencePath =
                 readinessPath [ "sample-smoke"; "keyboard-input-gallery-state-display.txt" ]

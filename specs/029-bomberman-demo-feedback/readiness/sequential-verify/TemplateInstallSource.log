@@ -1,0 +1,30 @@
+The last full restore is still up to date. Nothing left to do.
+run TemplateInstallSource
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target TemplateInstallSource:
+<== TemplateInstallSource
+
+The running order is:
+Group - 1
+  - TemplateInstallSource
+Single target mode ==> Skipping dependencies.
+Starting target 'TemplateInstallSource'
+Finished (Success) 'TemplateInstallSource' in 00:00:01.8236065
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                  Duration
+------                  --------
+TemplateInstallSource   00:00:01.8215205
+Total:                  00:00:01.8938000
+Status:                 Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 171 milliseconds
+ - Packages: 50 milliseconds
+ - Script analyzing: 17 milliseconds
+ - Script running: 2 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 2 seconds

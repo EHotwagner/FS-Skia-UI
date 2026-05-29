@@ -1,0 +1,53 @@
+The last full restore is still up to date. Nothing left to do.
+run TemplateCheck
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target TemplateCheck:
+<== TemplateCheck
+   <== TemplatePack
+   <== TemplateInstallSource
+   <== TemplateInstallPackage
+   <== TemplateInstantiate
+   <== TemplateSmoke
+      <== Test
+         <== Build
+            <== Restore
+         <== SampleContractSmoke
+
+The running order is:
+Group - 1
+  - Restore
+  - TemplatePack
+  - TemplateInstallSource
+Group - 2
+  - Build
+  - TemplateInstallPackage
+Group - 3
+  - SampleContractSmoke
+  - TemplateInstantiate
+Group - 4
+  - Test
+Group - 5
+  - TemplateSmoke
+Group - 6
+  - TemplateCheck
+Single target mode ==> Skipping dependencies.
+Starting target 'TemplateCheck'
+Finished (Success) 'TemplateCheck' in 00:00:00.0142778
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target          Duration
+------          --------
+TemplateCheck   00:00:00.0124831
+Total:          00:00:00.0790079
+Status:         Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 163 milliseconds
+ - Packages: 50 milliseconds
+ - Script analyzing: 17 milliseconds
+ - Script running: 206 milliseconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 second

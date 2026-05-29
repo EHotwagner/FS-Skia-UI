@@ -1,0 +1,101 @@
+The last full restore is still up to date. Nothing left to do.
+run Verify
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target Verify:
+<== Verify
+   <== VerifyPreflight
+   <== Dev
+      <== Test
+         <== Build
+            <== Restore
+         <== SampleContractSmoke
+   <== PackLocal
+   <== PackageSurfaceCheck
+   <== FsiTranscripts
+   <== TemplateCheck
+      <== TemplatePack
+      <== TemplateInstallSource
+      <== TemplateInstallPackage
+      <== TemplateInstantiate
+      <== TemplateSmoke
+   <== CapabilityCheck
+   <== SkillCheck
+   <== GeneratedProductCheck
+   <== ControlsCatalogCheck
+   <== ControlsInteractionCheck
+   <== ControlsRenderingCheck
+   <== DependencyReport
+   <== GeneratedGuidanceCheck
+   <== TemplateDrift
+   <== EvidenceAudit
+      <== EvidenceGraph
+   <== TargetMetadataDrift
+      <== TargetMetadata
+
+The running order is:
+Group - 1
+  - TargetMetadata
+  - EvidenceGraph
+  - TemplateDrift
+  - GeneratedGuidanceCheck
+  - DependencyReport
+  - ControlsRenderingCheck
+  - ControlsInteractionCheck
+  - ControlsCatalogCheck
+  - Restore
+  - TemplatePack
+  - TemplateInstallSource
+  - CapabilityCheck
+  - FsiTranscripts
+  - PackageSurfaceCheck
+  - PackLocal
+  - VerifyPreflight
+Group - 2
+  - TargetMetadataDrift
+  - EvidenceAudit
+  - Build
+  - TemplateInstallPackage
+  - SkillCheck
+Group - 3
+  - SampleContractSmoke
+  - TemplateInstantiate
+Group - 4
+  - Test
+Group - 5
+  - TemplateSmoke
+  - Dev
+Group - 6
+  - TemplateCheck
+Group - 7
+  - GeneratedProductCheck
+Group - 8
+  - Verify
+Single target mode ==> Skipping dependencies.
+Starting target 'Verify'
+Finished (Failed) 'Verify' in 00:00:00.0117740
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target     Duration
+------     --------
+Verify     00:00:00.0099877   (Missing v1 plus v2 verification artifact set:
+/home/developer/projects/FS-Skia-UI/specs/029-bomberman-demo-feedback/readiness/generated-product-verify/app-source/verify.log)
+Total:     00:00:00.0800986
+Status:    Failure
+---------------------------------------------------------------------
+Script reported an error:
+-> BuildFailedException: Target 'Verify' failed.
+-> One or more errors occurred. (Missing v1 plus v2 verification artifact set:
+   /home/developer/projects/FS-Skia-UI/specs/029-bomberman-demo-feedback/readiness/generated-product-verify/app-source/verify.log)
+-> Missing v1 plus v2 verification artifact set:
+   /home/developer/projects/FS-Skia-UI/specs/029-bomberman-demo-feedback/readiness/generated-product-verify/app-source/verify.log
+Hint: To further diagnose the problem you can run fake in verbose mode `fake -v run ...` or set the 'FAKE_DETAILED_ERRORS' environment variable to 'true'
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 172 milliseconds
+ - Packages: 49 milliseconds
+ - Script analyzing: 20 milliseconds
+ - Script running: 218 milliseconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 second

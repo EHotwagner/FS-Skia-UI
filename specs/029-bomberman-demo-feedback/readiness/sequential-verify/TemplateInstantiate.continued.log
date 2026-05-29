@@ -1,0 +1,38 @@
+The last full restore is still up to date. Nothing left to do.
+run TemplateInstantiate
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target TemplateInstantiate:
+<== TemplateInstantiate
+   <== TemplatePack
+   <== TemplateInstallSource
+   <== TemplateInstallPackage
+
+The running order is:
+Group - 1
+  - TemplatePack
+  - TemplateInstallSource
+Group - 2
+  - TemplateInstallPackage
+Group - 3
+  - TemplateInstantiate
+Single target mode ==> Skipping dependencies.
+Starting target 'TemplateInstantiate'
+Finished (Success) 'TemplateInstantiate' in 00:00:08.6413728
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                Duration
+------                --------
+TemplateInstantiate   00:00:08.6393200
+Total:                00:00:08.7084666
+Status:               Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 162 milliseconds
+ - Packages: 49 milliseconds
+ - Script analyzing: 18 milliseconds
+ - Script running: 8 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 9 seconds

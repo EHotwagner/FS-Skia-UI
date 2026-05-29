@@ -1,0 +1,33 @@
+The last full restore is still up to date. Nothing left to do.
+run EvidenceAudit
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target EvidenceAudit:
+<== EvidenceAudit
+   <== EvidenceGraph
+
+The running order is:
+Group - 1
+  - EvidenceGraph
+Group - 2
+  - EvidenceAudit
+Single target mode ==> Skipping dependencies.
+Starting target 'EvidenceAudit'
+Finished (Success) 'EvidenceAudit' in 00:00:00.7892756
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target          Duration
+------          --------
+EvidenceAudit   00:00:00.7868228
+Total:          00:00:00.8644881
+Status:         Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 213 milliseconds
+ - Packages: 57 milliseconds
+ - Script analyzing: 22 milliseconds
+ - Script running: 1 second
+ - Script cleanup: 0 milliseconds
+ - Runtime: 2 seconds

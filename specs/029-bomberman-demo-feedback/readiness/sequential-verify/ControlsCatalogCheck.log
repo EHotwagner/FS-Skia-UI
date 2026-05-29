@@ -1,0 +1,30 @@
+The last full restore is still up to date. Nothing left to do.
+run ControlsCatalogCheck
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target ControlsCatalogCheck:
+<== ControlsCatalogCheck
+
+The running order is:
+Group - 1
+  - ControlsCatalogCheck
+Single target mode ==> Skipping dependencies.
+Starting target 'ControlsCatalogCheck'
+Finished (Success) 'ControlsCatalogCheck' in 00:00:01.5470770
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                 Duration
+------                 --------
+ControlsCatalogCheck   00:00:01.5451143
+Total:                 00:00:01.6179578
+Status:                Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 173 milliseconds
+ - Packages: 53 milliseconds
+ - Script analyzing: 18 milliseconds
+ - Script running: 1 second
+ - Script cleanup: 0 milliseconds
+ - Runtime: 2 seconds

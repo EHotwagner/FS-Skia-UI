@@ -1,0 +1,33 @@
+The last full restore is still up to date. Nothing left to do.
+run SkillCheck
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target SkillCheck:
+<== SkillCheck
+   <== CapabilityCheck
+
+The running order is:
+Group - 1
+  - CapabilityCheck
+Group - 2
+  - SkillCheck
+Single target mode ==> Skipping dependencies.
+Starting target 'SkillCheck'
+Finished (Success) 'SkillCheck' in 00:00:00.0213324
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target       Duration
+------       --------
+SkillCheck   00:00:00.0193533
+Total:       00:00:00.0938159
+Status:      Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 159 milliseconds
+ - Packages: 51 milliseconds
+ - Script analyzing: 19 milliseconds
+ - Script running: 231 milliseconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 second

@@ -1,0 +1,150 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "specs/029-bomberman-demo-feedback/plan.md",
+      "line": 30,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: Synthetic fixtures are allowed only for negative malformed-input/error-path tests and must use"
+    },
+    {
+      "file": "specs/029-bomberman-demo-feedback/plan.md",
+      "line": 107,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence disclosure**: PASS. Synthetic use is restricted to negative malformed-input/error-path fixtures a"
+    },
+    {
+      "file": "specs/029-bomberman-demo-feedback/readiness/compatibility-impact.md",
+      "line": 11,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- Synthetic evidence is limited to T024 approved malformed screenshot report fixtures."
+    },
+    {
+      "file": "specs/029-bomberman-demo-feedback/readiness/generated-file-lists/app-package.txt",
+      "line": 624,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"generated app Synthetic exposes window behavior flags and option diagnostics without leaving interactive launch\" {"
+    },
+    {
+      "file": "specs/029-bomberman-demo-feedback/readiness/generated-file-lists/app-source.txt",
+      "line": 624,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"generated app Synthetic exposes window behavior flags and option diagnostics without leaving interactive launch\" {"
+    },
+    {
+      "file": "specs/029-bomberman-demo-feedback/readiness/logs/test.txt",
+      "line": 407,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "\"| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error "
+    },
+    {
+      "file": "specs/029-bomberman-demo-feedback/readiness/task-graph.md",
+      "line": 77,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "## Synthetic Error-Handling Classification"
+    },
+    {
+      "file": "specs/029-bomberman-demo-feedback/readiness/task-graph.md",
+      "line": 79,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Accepted | Label | Design source | Synthetic input class | Expected error behavior | Diagnostics |"
+    },
+    {
+      "file": "specs/029-bomberman-demo-feedback/readiness/task-graph.md",
+      "line": 304,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/029-bomberman-demo-feedback/readiness/us2-tests-first.md",
+      "line": 6,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "## Synthetic Error-Handling Coverage"
+    },
+    {
+      "file": "specs/029-bomberman-demo-feedback/tasks.md",
+      "line": 225,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    },
+    {
+      "file": "specs/029-bomberman-demo-feedback/tasks.md",
+      "line": 229,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "## Approved Synthetic Error-Handling Tasks"
+    },
+    {
+      "file": "specs/029-bomberman-demo-feedback/tasks.md",
+      "line": 234,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "not a successful capability claim. Synthetic input class: malformed or missing"
+    },
+    {
+      "file": "tests/Testing.Tests/Tests.fs",
+      "line": 135,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"ScreenshotEvidenceReport_Synthetic rejects unsupported records that hide capability detail\" {"
+    },
+    {
+      "file": "tests/Testing.Tests/Tests.fs",
+      "line": 136,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: malformed unsupported screenshot report fixture approved by T024 SEH; real path is generated screenshot ev"
+    },
+    {
+      "file": "tests/Testing.Tests/Tests.fs",
+      "line": 170,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: malformed screenshot report fixture approved by T024 SEH; real path is live screenshot evidence validation"
+    },
+    {
+      "file": "tests/Testing.Tests/Tests.fs",
+      "line": 204,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: hidden-warning fixture approved by T024 SEH; real path is captured launch output classification."
+    },
+    {
+      "file": "tests/Testing.Tests/Tests.fs",
+      "line": 237,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: hostile artifact path fixture approved by T024 SEH; real path is generated report path validation."
+    }
+  ]
+}
