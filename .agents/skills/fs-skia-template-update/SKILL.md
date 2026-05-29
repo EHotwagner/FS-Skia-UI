@@ -51,7 +51,8 @@ Primary files:
      ```bash
      ./fake.sh build -t TemplatePack
      ```
-   - If FAKE fails after NuGet caches were cleared with a stale `.fake` cache or missing package folder, remove only `.fake` and rerun:
+   - If FAKE fails after NuGet caches were cleared with a stale `.fake` cache,
+     invalid assembly cache, or missing package folder, remove only `.fake` and rerun once:
      ```bash
      rm -rf .fake
      ./fake.sh build -t TemplatePack
@@ -111,9 +112,15 @@ Primary files:
      - `FS.Skia.UI.Layout`
      - `FS.Skia.UI.Controls`
      - `FS.Skia.UI.Controls.Elmish`
-   - The template does not necessarily create a `.sln`; restore project files directly:
+   - The template does not necessarily create a `.sln`; restore and test
+     project files directly. The test project has its own restore graph, so
+     restore the test project explicitly before using `--no-restore`, or allow
+     `dotnet test` to restore with the local feed sources:
      ```bash
      dotnet restore /tmp/fs-skia-ui-template-update-check/src/TemplateUpdateCheck/TemplateUpdateCheck.fsproj \
+       --source "$HOME/.local/share/nuget-local" \
+       --source https://api.nuget.org/v3/index.json
+     dotnet restore /tmp/fs-skia-ui-template-update-check/tests/TemplateUpdateCheck.Tests/TemplateUpdateCheck.Tests.fsproj \
        --source "$HOME/.local/share/nuget-local" \
        --source https://api.nuget.org/v3/index.json
      dotnet test /tmp/fs-skia-ui-template-update-check/tests/TemplateUpdateCheck.Tests/TemplateUpdateCheck.Tests.fsproj \
@@ -136,6 +143,18 @@ Primary files:
      and confirm the governed profile pins match the current package versions:
      - `FS.Skia.UI.Scene`
      - `FS.Skia.UI.Testing`
+   - Restore and test the governed profile through the same local-feed path:
+     ```bash
+     dotnet restore /tmp/fs-skia-ui-template-update-governed-check/src/TemplateGovernedCheck/TemplateGovernedCheck.fsproj \
+       --source "$HOME/.local/share/nuget-local" \
+       --source https://api.nuget.org/v3/index.json
+     dotnet restore /tmp/fs-skia-ui-template-update-governed-check/tests/TemplateGovernedCheck.Tests/TemplateGovernedCheck.Tests.fsproj \
+       --source "$HOME/.local/share/nuget-local" \
+       --source https://api.nuget.org/v3/index.json
+     dotnet test /tmp/fs-skia-ui-template-update-governed-check/tests/TemplateGovernedCheck.Tests/TemplateGovernedCheck.Tests.fsproj \
+       --no-restore \
+       --logger "console;verbosity=minimal"
+     ```
    - Optionally instantiate `headless-scene` and `sample-pack` for a lighter
      package-pin smoke check when template conditionals changed:
      ```bash
@@ -143,7 +162,8 @@ Primary files:
      dotnet new fs-skia-ui --name TemplateSamplePackCheck --profile sample-pack --output /tmp/fs-skia-ui-template-update-sample-pack-check --allow-scripts yes --skipGitInit true
      ```
 
-8. Commit and push only if requested.
+8. Commit and push.
+   - Always commit and push after a successful template update validation.
    - Commit at least:
      - `.template.package/FS.Skia.UI.Template.fsproj`
      - `template/base/Directory.Packages.props`
@@ -152,7 +172,7 @@ Primary files:
      ```text
      Update fs-skia-ui template package pins
      ```
-   - Push with `git push origin <branch>` when the user requested publishing.
+   - Push with `git push origin <branch>`.
 
 ## Validation Notes
 
