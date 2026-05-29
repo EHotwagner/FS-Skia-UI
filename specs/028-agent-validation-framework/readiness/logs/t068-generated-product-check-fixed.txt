@@ -1,0 +1,40 @@
+The last full restore is still up to date. Nothing left to do.
+run GeneratedProductCheck
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target GeneratedProductCheck:
+<== GeneratedProductCheck
+   <== CapabilityCheck
+   <== SkillCheck
+
+The running order is:
+Group - 1
+  - CapabilityCheck
+Group - 2
+  - SkillCheck
+Group - 3
+  - GeneratedProductCheck
+Starting target 'CapabilityCheck'
+Finished (Success) 'CapabilityCheck' in 00:00:00.0258753
+Starting target 'SkillCheck'
+Finished (Success) 'SkillCheck' in 00:00:00.0048917
+Starting target 'GeneratedProductCheck'
+Finished (Failed) 'GeneratedProductCheck' in 00:00:43.0204841
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                  Duration
+------                  --------
+CapabilityCheck         00:00:00.0234090
+SkillCheck              00:00:00.0048453
+Total:                  00:00:43.1221970
+---------------------------------------------------------------------
+Hint: To further diagnose the problem you can run fake in verbose mode `fake -v run ...` or set the 'FAKE_DETAILED_ERRORS' environment variable to 'true'
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 170 milliseconds
+ - Packages: 49 milliseconds
+ - Script analyzing: 18 milliseconds
+ - Script running: 43 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 44 seconds

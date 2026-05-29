@@ -77,8 +77,12 @@ let generatedProjectValidationTests =
             expectFileContains
                 "template/base/src/Product/Program.fs"
                 [ "Viewer.runApp viewerOptions generatedHost"
-                  "--launch-evidence"
                   "mode=interactive-window"
+                  "tryRunEvidenceCommand" ]
+
+            expectFileContains
+                "template/base/src/Product/EvidenceCommands.fs"
+                [ "--launch-evidence"
                   "--bounded-smoke"
                   "--bounded-smoke-frame-diagnostics"
                   "--scene-evidence" ]
@@ -279,7 +283,7 @@ let generatedProjectValidationTests =
 
         test "generated normal launch stays separate from evidence graph and audit commands" {
             let program = read "template/base/src/Product/Program.fs"
-            let defaultBranch = program.Substring(program.IndexOf("| _ ->", System.StringComparison.Ordinal))
+            let defaultBranch = program.Substring(program.LastIndexOf("| None ->", System.StringComparison.Ordinal))
 
             Expect.stringContains defaultBranch "Viewer.runApp viewerOptions generatedHost" "normal launch remains the persistent interactive host"
 
@@ -291,6 +295,54 @@ let generatedProjectValidationTests =
               "readiness/evidence-audit" ]
             |> List.iter (fun forbidden ->
                 Expect.isFalse (defaultBranch.Contains(forbidden, System.StringComparison.OrdinalIgnoreCase)) $"normal launch must not run evidence command surface {forbidden}")
+        }
+
+        test "generated Program default launch is evidence-free and delegates policy commands out of Program" {
+            let program = read "template/base/src/Product/Program.fs"
+
+            [ "open Product.EvidenceCommands"
+              "let layoutEvidenceCommand"
+              "let sceneEvidence"
+              "let boundedSmoke"
+              "let launchEvidence"
+              "let imageEvidence"
+              "let screenshotEvidence"
+              "let visualEvidence"
+              "\"--launch-evidence\""
+              "\"--bounded-smoke\""
+              "\"--scene-evidence\""
+              "\"--image-evidence\"" ]
+            |> List.iter (fun forbidden ->
+                Expect.isFalse (program.Contains(forbidden, System.StringComparison.Ordinal)) $"Program.fs keeps normal launch free from evidence policy term {forbidden}")
+        }
+
+        test "generated EvidenceCommands exposes explicit discoverable evidence workflows" {
+            expectFileContains
+                "template/base/src/Product/EvidenceCommands.fs"
+                [ "type GeneratedEvidenceWorkflow"
+                  "availableEvidenceWorkflows"
+                  "NormalLaunch"
+                  "ExplicitEvidenceCommand"
+                  "PolicyOwnedReport"
+                  "ProductOwnedFacts"
+                  "Authority"
+                  "SkippedGates"
+                  "UnsupportedOutcome"
+                  "NextCommand" ]
+        }
+
+        test "Synthetic generated evidence command fixtures classify missing artifacts and unsupported hosts" {
+            // SYNTHETIC: missing generated artifacts and unsupported-host outcomes are approved SEH negative fixtures; real generated evidence command proof is recorded in readiness/evidence-policy-separation.md.
+            expectFileContains
+                "template/base/src/Product/EvidenceCommands.fs"
+                [ "type GeneratedEvidenceFixture"
+                  "SyntheticMissingGeneratedArtifact"
+                  "SyntheticUnsupportedHost"
+                  "missing generated artifact"
+                  "unsupported host fixture"
+                  "UnsupportedOutcome"
+                  "StalePrerequisite"
+                  "NextCommand" ]
         }
 
         test "V3 source and package generated validation roots prove Controls usage and framework-source exclusions" {

@@ -102,7 +102,7 @@ let tests =
             let productDir = System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product")
             let project = System.IO.File.ReadAllText(System.IO.Path.Combine(productDir, "Product.fsproj"))
 
-            [ "Model.fs"; "View.fs"; "LayoutEvidence.fs"; "EvidenceCommands.fs"; "Program.fs" ]
+            [ "Model.fs"; "View.fs"; "LayoutEvidence.fs"; "WindowOptions.fs"; "EvidenceCommands.fs"; "Program.fs" ]
             |> List.iter (fun file ->
                 Expect.isTrue (System.IO.File.Exists(System.IO.Path.Combine(productDir, file))) $"{file} exists in generated product source"
                 Expect.stringContains project $"Compile Include=\"{file}\"" $"{file} is included in compile order")
@@ -110,17 +110,19 @@ let tests =
             let modelIndex = project.IndexOf("Model.fs", StringComparison.Ordinal)
             let viewIndex = project.IndexOf("View.fs", StringComparison.Ordinal)
             let layoutIndex = project.IndexOf("LayoutEvidence.fs", StringComparison.Ordinal)
+            let windowOptionsIndex = project.IndexOf("WindowOptions.fs", StringComparison.Ordinal)
             let evidenceIndex = project.IndexOf("EvidenceCommands.fs", StringComparison.Ordinal)
             let programIndex = project.IndexOf("Program.fs", StringComparison.Ordinal)
 
             Expect.isLessThan modelIndex viewIndex "model compiles before view"
             Expect.isLessThan viewIndex layoutIndex "view compiles before layout evidence"
-            Expect.isLessThan layoutIndex evidenceIndex "layout evidence compiles before evidence commands"
+            Expect.isLessThan layoutIndex windowOptionsIndex "layout evidence compiles before window options"
+            Expect.isLessThan windowOptionsIndex evidenceIndex "window options compile before evidence commands"
             Expect.isLessThan evidenceIndex programIndex "evidence commands compile before entrypoint"
 
             let program = System.IO.File.ReadAllText(System.IO.Path.Combine(productDir, "Program.fs"))
             Expect.stringContains program "[<EntryPoint>]" "Program.fs keeps the entrypoint"
-            Expect.stringContains program "match List.ofArray args" "Program.fs owns command dispatch"
+            Expect.stringContains program "tryRunEvidenceCommand (List.ofArray args)" "Program.fs delegates explicit evidence command dispatch"
             Expect.isFalse (program.Contains("let writeGeneratedEvidenceLines", StringComparison.Ordinal)) "Program.fs does not own report writing"
             Expect.isFalse (program.Contains("let layoutEvidenceForSize size model : LayoutEvidenceReport", StringComparison.Ordinal)) "Program.fs does not own layout evidence implementation"
         }
@@ -246,7 +248,7 @@ let tests =
         test "generated evidence commands are opt-in and not reported as ongoing interactive play" {
             let source = productSources [ "Program.fs"; "EvidenceCommands.fs" ]
             let program = productSource "Program.fs"
-            let defaultBranch = program.Substring(program.LastIndexOf("| args ->", StringComparison.Ordinal))
+            let defaultBranch = program.Substring(program.LastIndexOf("| None ->", StringComparison.Ordinal))
 
             Expect.stringContains source "--launch-evidence" "first-frame launch evidence is exposed only by explicit CLI flag"
             Expect.stringContains source "--bounded-smoke" "bounded evidence smoke is exposed only by explicit CLI flag"
@@ -343,7 +345,7 @@ let tests =
 
         test "generated normal launch reports desktop session diagnostics without evidence fallback" {
             let source = productSource "Program.fs"
-            let defaultBranch = source.Substring(source.LastIndexOf("| args ->", StringComparison.Ordinal))
+            let defaultBranch = source.Substring(source.LastIndexOf("| None ->", StringComparison.Ordinal))
 
             Expect.stringContains defaultBranch "Viewer.desktopSessionDiagnostic()" "normal launch captures desktop/session diagnostics before app lifecycle debugging"
             Expect.stringContains defaultBranch "diagnostic-class=" "normal launch reports diagnostic classification"
@@ -361,7 +363,7 @@ let tests =
         test "generated window diagnostics command reports failure classes and native facts before app debugging" {
             let source = productSources [ "Program.fs"; "EvidenceCommands.fs" ]
             let program = productSource "Program.fs"
-            let defaultBranch = program.Substring(program.LastIndexOf("| args ->", StringComparison.Ordinal))
+            let defaultBranch = program.Substring(program.LastIndexOf("| None ->", StringComparison.Ordinal))
 
             Expect.stringContains source "--window-diagnostics" "generated product exposes an explicit window diagnostics command"
             Expect.stringContains source "diagnostic-class=environment-session" "diagnostics include environment/session class"
@@ -383,7 +385,7 @@ let tests =
         test "generated app Synthetic exposes window behavior flags and option diagnostics without leaving interactive launch" {
             let source = productSources [ "Program.fs"; "WindowOptions.fs" ]
             let program = productSource "Program.fs"
-            let defaultBranch = program.Substring(program.LastIndexOf("| args ->", StringComparison.Ordinal))
+            let defaultBranch = program.Substring(program.LastIndexOf("| None ->", StringComparison.Ordinal))
 
             Expect.stringContains source "--window-resize" "resize policy is configurable"
             Expect.stringContains source "--window-maximize" "maximize policy is configurable"
@@ -503,7 +505,7 @@ let tests =
             | None -> failtest "generated game tick must advance gameplay over time"
 
             let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
-            let defaultBranch = source.Substring(source.LastIndexOf("| args ->", StringComparison.Ordinal))
+            let defaultBranch = source.Substring(source.LastIndexOf("| None ->", StringComparison.Ordinal))
             Expect.stringContains defaultBranch "Viewer.runApp viewerOptions generatedHost" "normal launch uses interactive host"
             Expect.isFalse (defaultBranch.Contains("--launch-evidence")) "launch evidence flag stays out of normal launch branch"
             Expect.isFalse (defaultBranch.Contains("--bounded-smoke")) "bounded smoke flag stays out of normal launch branch"

@@ -1,0 +1,4 @@
+11:- The default branch still calls `Viewer.runApp viewerOptions generatedHost`.
+20:- `GeneratedEvidenceWorkflow` records command authority, product-owned facts,
+23:- `GeneratedEvidenceFixture` contains the approved SEH negative fixtures for
+37:instantiation and package validation remain assigned to `TemplateCheck` in the

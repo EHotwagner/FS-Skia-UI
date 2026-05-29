@@ -2,6 +2,10 @@ namespace FS.Skia.UI.Controls
 
 module Attr =
     val create: name: string -> category: AttrCategory -> value: AttrValue<'msg> -> Attr<'msg>
+    val standardAttribute: name: StandardAttributeName -> value: StandardAttributeValue<'msg> -> Attr<'msg>
+    val customAttribute: name: string -> value: obj -> Attr<'msg>
+    val standardEvent: eventKind: StandardEventKind -> msg: 'msg -> Attr<'msg>
+    val customEvent: eventKind: string -> msg: 'msg -> Attr<'msg>
     val text: value: string -> Attr<'msg>
     val value: value: string -> Attr<'msg>
     val items: values: string list -> Attr<'msg>

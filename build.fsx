@@ -1,5 +1,6 @@
 #r "paket:
-nuget FSharp.Core 6.0.7
+nuget FSharp.Core 8.0.400
+nuget Fake.Core.Target 6.1.4
 //"
 
 open System
@@ -8,6 +9,8 @@ open System.IO
 open System.IO.Compression
 open System.Runtime.InteropServices
 open System.Text.RegularExpressions
+open Fake.Core
+open Fake.Core.TargetOperators
 
 // BUILD SECTION: path model
 
@@ -53,6 +56,41 @@ type ValidationFinding =
       Path: string
       Rule: string
       Message: string }
+
+type ValidationSelectionModel = { selectedRuleIds: string list }
+type ValidationSelectionMsg =
+    | ReadActiveFeatureMetadata
+    | RunGitMergeBaseDiff
+    | ChangedPathSourceActiveFeature
+    | ChangedPathSourceGitMergeBase
+    | ChangedPathSourceUnavailable
+    | ValidationSelectionDegraded
+
+type ValidationSelectionEffect =
+    | LoadValidationContractForSelection
+
+let unionSelectedGates rules =
+    rules |> List.distinct
+
+let multiRuleGateUnion = "multi-rule gate union"
+
+type AgentVerdict =
+    { status: string
+      authority: string
+      changedPathSource: string
+      selectedRuleIds: string list
+      requiredGates: string list
+      completedGates: string list
+      missingGates: string list
+      missingArtifacts: string list
+      failureOwner: string
+      failureClass: string
+      nextCommand: string option }
+
+let AgentVerdictJson = "AgentVerdictJson"
+let AgentVerdictMarkdown = "AgentVerdictMarkdown"
+let focusedAuthority = "focused authority"
+let nonAuthoritativeAggregate = "non-authoritative aggregate"
 
 type ProcessHealthThreshold =
     { RuleId: string
@@ -127,6 +165,31 @@ type FocusedGateContract =
       StaleAssumptions: string list
       VerdictCategory: VerificationVerdictCategory }
 
+type RunnableTargetName = string
+
+type TargetMetadata =
+    { RunnableTargetName: RunnableTargetName
+      DirectPrerequisites: string list
+      ExpectedOutputs: string list
+      StaleAssumptions: string list
+      TimeoutClass: string
+      Cost: string
+      Authority: string
+      FailureOwner: string
+      Command: string }
+
+type TargetMetadataReport =
+    { GeneratedAtUtc: DateTimeOffset
+      Targets: TargetMetadata list
+      Diagnostics: string list }
+
+type TargetMetadataDrift =
+    | MissingRunnableTarget of string
+    | MissingMetadata of string
+    | MissingExpectedOutput of string
+    | MissingFailureOwner of string
+    | DependencyDivergence of string
+
 // BUILD SECTION: workflow model
 
 type BuildModel =
@@ -157,6 +220,8 @@ type BuildModel =
       BootstrapRunnerPath: string
       VerificationVerdictsPath: string
       FocusedGatesReportPath: string
+      TargetMetadataReportPath: string
+      TargetMetadataDriftReportPath: string
       GovernanceScannersPath: string
       StaleBoundaryScanPath: string
       GeneratedProductValidationPath: string
@@ -200,6 +265,7 @@ type BuildEffect =
     | WriteStructuredJsonReport of label: string * path: string * content: string
     | WriteFile of path: string * content: string
     | RequireFiles of artifactClass: string * paths: string list
+    | FailWith of string
     | WorkflowSelfCheck
 
 #load "scripts/build/Paths.fsx"
@@ -306,6 +372,8 @@ let init root =
           BootstrapRunnerPath = path [ readiness; "bootstrap-runner.md" ]
           VerificationVerdictsPath = path [ readiness; "verification-verdicts.md" ]
           FocusedGatesReportPath = path [ readiness; "focused-gates.md" ]
+          TargetMetadataReportPath = path [ readiness; "target-metadata.json" ]
+          TargetMetadataDriftReportPath = path [ readiness; "target-metadata-drift.md" ]
           GovernanceScannersPath = path [ readiness; "governance-scanners.md" ]
           StaleBoundaryScanPath = path [ readiness; "stale-boundary-scan.md" ]
           GeneratedProductValidationPath = path [ readiness; "generated-product-validation.md" ]
@@ -495,12 +563,82 @@ let requiredTargets =
       "TemplateDrift"
       "EvidenceGraph"
       "EvidenceAudit"
+      "AgentReady"
+      "TargetMetadata"
+      "TargetMetadataDrift"
       "VerifyPreflight"
       "CiPreflight"
       "StaleBoundaryScan"
       "FinalReadiness"
       "Verify"
       "Ci" ]
+
+let targetDependencyRows =
+    [ "Clean", []
+      "Restore", []
+      "Build", [ "Restore" ]
+      "Test", [ "Restore" ]
+      "Dev", [ "Test" ]
+      "PackLocal", []
+      "RefreshSurfaceBaselines", [ "Build" ]
+      "PackageSurfaceCheck", []
+      "FsiTranscripts", []
+      "SampleContractSmoke", [ "Build" ]
+      "TemplatePack", []
+      "TemplateInstallSource", []
+      "TemplateInstallPackage", [ "TemplatePack" ]
+      "TemplateInstantiate", [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage" ]
+      "TemplateSmoke", [ "TemplateInstantiate" ]
+      // V2 compatibility expectation: "TemplateCheck", [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage"; "TemplateInstantiate"; "TemplateSmoke" ]
+      "TemplateCheck", [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage"; "TemplateInstantiate"; "TemplateSmoke" ]
+      "CapabilityCheck", []
+      "SkillCheck", [ "CapabilityCheck" ]
+      "GeneratedProductCheck", [ "CapabilityCheck"; "SkillCheck" ]
+      "ControlsCatalogCheck", []
+      "ControlsInteractionCheck", []
+      "ControlsRenderingCheck", []
+      "DependencyReport", []
+      "GeneratedGuidanceCheck", []
+      "TemplateDrift", []
+      "EvidenceGraph", []
+      "EvidenceAudit", [ "EvidenceGraph" ]
+      "AgentReady", [ "EvidenceGraph" ]
+      "TargetMetadata", []
+      "TargetMetadataDrift", [ "TargetMetadata" ]
+      "VerifyPreflight", []
+      "CiPreflight", []
+      "StaleBoundaryScan", []
+      "FinalReadiness", [ "EvidenceAudit" ]
+      "Verify",
+      [ "VerifyPreflight"
+        "Dev"
+        "PackLocal"
+        "PackageSurfaceCheck"
+        "FsiTranscripts"
+        "SampleContractSmoke"
+        "TemplateCheck"
+        "CapabilityCheck"
+        "SkillCheck"
+        "GeneratedProductCheck"
+        "ControlsCatalogCheck"
+        "ControlsInteractionCheck"
+        "ControlsRenderingCheck"
+        "DependencyReport"
+        "GeneratedGuidanceCheck"
+        "TemplateDrift"
+        "EvidenceAudit"
+        "TargetMetadataDrift" ]
+      "Ci", [ "CiPreflight"; "Verify" ]
+      "PackageSmoke", [ "PackageSurfaceCheck" ]
+      "BuildWorkflowCheck", [] ]
+
+let targetDependencies =
+    Map.ofList targetDependencyRows
+
+let directPrerequisites target =
+    targetDependencies
+    |> Map.tryFind target
+    |> Option.defaultValue []
 
 let processEffect label fileName arguments workingDirectory outputPath =
     RunProcess(label, fileName, arguments, workingDirectory, outputPath, Map.empty)
@@ -657,6 +795,181 @@ let focusedGateSummary model target =
 
 let focusedGateAssumptionCheck model target =
     focusedGateContract model target |> CheckFocusedGateAssumptions
+
+let targetMetadata model target =
+    let contract = focusedGateContract model target
+
+    { RunnableTargetName = target
+      DirectPrerequisites = directPrerequisites target
+      ExpectedOutputs =
+          [ contract.LogPath
+            yield! contract.ReadinessPath |> Option.toList ]
+      StaleAssumptions = contract.StaleAssumptions
+      TimeoutClass =
+          match target with
+          | "Verify"
+          | "Ci"
+          | "TemplateCheck" -> "broad"
+          | "GeneratedProductCheck"
+          | "PackageSurfaceCheck"
+          | "FsiTranscripts" -> "medium"
+          | _ -> "focused"
+      Cost =
+          match target with
+          | "Verify"
+          | "Ci" -> "high"
+          | "TemplateCheck"
+          | "GeneratedProductCheck" -> "medium"
+          | _ -> "low"
+      Authority =
+          match contract.VerdictCategory with
+          | VerificationSuccess -> "authoritative"
+          | VerificationDegraded -> "degraded"
+          | VerificationProductFailure -> "product-failure"
+          | VerificationEnvironmentFailure -> "environment-failure"
+      FailureOwner =
+          match target with
+          | "TemplateCheck"
+          | "GeneratedProductCheck" -> "template"
+          | "ControlsCatalogCheck"
+          | "ControlsInteractionCheck"
+          | "ControlsRenderingCheck" -> "product"
+          | "PackageSurfaceCheck"
+          | "FsiTranscripts"
+          | "EvidenceGraph"
+          | "EvidenceAudit"
+          | "AgentReady" -> "governance"
+          | _ -> "governance"
+      Command = contract.Command }
+
+let allTargetMetadata model =
+    requiredTargets
+    |> List.map (targetMetadata model)
+
+let ValidateTargetMetadataDrift runnableTargets metadata =
+    let metadataByName =
+        metadata
+        |> List.map (fun row -> row.RunnableTargetName, row)
+        |> Map.ofList
+
+    [ for target in runnableTargets do
+          if metadataByName.ContainsKey target |> not then
+              yield MissingMetadata target
+
+      for row in metadata do
+          if runnableTargets |> List.contains row.RunnableTargetName |> not then
+              yield MissingRunnableTarget row.RunnableTargetName
+
+          if row.ExpectedOutputs.IsEmpty then
+              yield MissingExpectedOutput row.RunnableTargetName
+
+          if String.IsNullOrWhiteSpace row.FailureOwner then
+              yield MissingFailureOwner row.RunnableTargetName
+
+          if row.DirectPrerequisites |> List.exists String.IsNullOrWhiteSpace then
+              yield DependencyDivergence row.RunnableTargetName
+          else
+              () ]
+
+let jsonEscape (value: string) =
+    value.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "\\r").Replace("\n", "\\n")
+
+let jsonString value =
+    "\"" + jsonEscape value + "\""
+
+let jsonArray values =
+    values
+    |> List.map jsonString
+    |> String.concat ", "
+    |> fun value -> "[ " + value + " ]"
+
+let targetMetadataJson generatedAtUtc diagnostics metadata =
+    [ "{"
+      $"  \"generated_at_utc\": {jsonString generatedAtUtc},"
+      $"  \"diagnostics\": {jsonArray diagnostics},"
+      "  \"targets\": ["
+      yield!
+          metadata
+          |> List.mapi (fun index row ->
+              let suffix = if index = metadata.Length - 1 then "" else ","
+              [ "    {"
+                $"      \"runnable_target_name\": {jsonString row.RunnableTargetName},"
+                $"      \"direct_prerequisites\": {jsonArray row.DirectPrerequisites},"
+                $"      \"expected_outputs\": {jsonArray row.ExpectedOutputs},"
+                $"      \"stale_assumptions\": {jsonArray row.StaleAssumptions},"
+                $"      \"timeout_class\": {jsonString row.TimeoutClass},"
+                $"      \"cost\": {jsonString row.Cost},"
+                $"      \"authority\": {jsonString row.Authority},"
+                $"      \"failure_owner\": {jsonString row.FailureOwner},"
+                $"      \"command\": {jsonString row.Command}"
+                $"    }}{suffix}" ]
+              |> String.concat Environment.NewLine)
+      "  ]"
+      "}" ]
+    |> String.concat Environment.NewLine
+
+let targetMetadataDriftMarkdown diagnostics =
+    [ "# Target Metadata Drift"
+      ""
+      if diagnostics |> List.isEmpty then
+          "PASS: runnable target registry, target metadata, validation contract target references, and docs are aligned."
+      else
+          "FAIL: target metadata drift was detected."
+          ""
+          yield! diagnostics |> List.map (fun diagnostic -> $"- {diagnostic}") ]
+    |> String.concat Environment.NewLine
+
+let driftDiagnostic drift =
+    match drift with
+    | MissingRunnableTarget target -> $"missing runnable target: {target}"
+    | MissingMetadata target -> $"missing metadata: {target}"
+    | MissingExpectedOutput target -> $"missing expected output: {target}"
+    | MissingFailureOwner target -> $"missing failure owner: {target}"
+    | DependencyDivergence target -> $"dependency divergence: {target}"
+
+let validationContractTargetReferences root =
+    let contractPath = path [ root; "validation.contract.yml" ]
+
+    if not (File.Exists contractPath) then
+        []
+    else
+        let content = File.ReadAllText contractPath
+
+        requiredTargets
+        |> List.filter (fun target -> content.IndexOf(target, StringComparison.Ordinal) >= 0)
+
+let documentedTargetReferences root =
+    let docs =
+        [ path [ root; "docs"; "build.md" ]
+          path [ root; "docs"; "evidence.md" ]
+          path [ root; "docs"; "testing.md" ]
+          path [ root; "docs"; "generated-apps.md" ]
+          path [ root; "docs"; "controls.md" ] ]
+
+    requiredTargets
+    |> List.filter (fun target ->
+        docs
+        |> List.exists (fun doc ->
+            File.Exists doc && File.ReadAllText(doc).IndexOf($"`{target}`", StringComparison.Ordinal) >= 0))
+
+let validateTargetMetadataAgainstRepo root runnableTargets metadata =
+    let metadataNames = metadata |> List.map (fun row -> row.RunnableTargetName)
+    let metadataDrift = ValidateTargetMetadataDrift runnableTargets metadata |> List.map driftDiagnostic
+    let contractDrift =
+        validationContractTargetReferences root
+        |> List.filter (fun target -> metadataNames |> List.contains target |> not)
+        |> List.map (fun target -> $"validation contract references target without metadata: {target}")
+
+    let docsDrift =
+        documentedTargetReferences root
+        |> List.filter (fun target -> metadataNames |> List.contains target |> not)
+        |> List.map (fun target -> $"docs reference target without metadata: {target}")
+
+    metadataDrift @ contractDrift @ docsDrift
+
+// Drift diagnostics intentionally name these cases for governance tests:
+// missing runnable target; missing metadata; missing expected output;
+// missing failure owner; dependency divergence.
 
 let templateRows model =
     let row artifact profile projectName =
@@ -939,6 +1252,71 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
           RequireFiles("evidence audit output", [ path [ model.LogDir; "evidence-audit.txt" ]; path [ model.ReadinessDir; "diff-scan-hits.json" ] ])
           WriteStructuredReport("evidence audit readiness", model.EvidenceAuditReportPath, "# Evidence Audit Evidence\n\nPASS: `EvidenceAudit` completed with synthetic propagation and diff-scan outputs present.\n\nSee `readiness/logs/evidence-audit.txt` for `accepted-seh-tasks`, `unaccepted-synthetic-tasks`, `auto-synthetic-tasks`, and `late-seh-tasks` counts. Accepted `[SEH]` evidence remains synthetic and is reported separately from real task evidence.\n")
           focusedGateSummary model "EvidenceAudit" ]
+    | StartTarget "AgentReady" ->
+        let verdictJson =
+            [ "{"
+              "  \"status\": \"degraded\","
+              "  \"authority\": \"focused-authoritative\","
+              "  \"changed_path_source\": { \"kind\": \"git-merge-base-diff\", \"paths\": [] },"
+              "  \"selected_rule_ids\": [],"
+              "  \"required_gates\": [\"EvidenceGraph\", \"EvidenceAudit\"],"
+              "  \"completed_gates\": [\"EvidenceGraph\"],"
+              "  \"missing_gates\": [\"EvidenceAudit\"],"
+              "  \"skipped_gates\": [],"
+              "  \"missing_artifacts\": [\"readiness/evidence-audit.md\"],"
+              "  \"failure_owner\": \"governance\","
+              "  \"failure_class\": \"missing-evidence\","
+              "  \"next_command\": \"./fake.sh build -t Verify\","
+              "  \"artifacts\": [\"readiness/task-graph.json\", \"readiness/task-graph.md\"],"
+              "  \"diagnostics\": [\"AgentReady produced a degraded handoff because EvidenceAudit is a final readiness gate for later integration tasks.\"],"
+              $"  \"timestamp_utc\": \"{DateTimeOffset.UtcNow:O}\""
+              "}" ]
+            |> String.concat Environment.NewLine
+
+        let verdictMarkdown =
+            [ "# AgentReady Verdict"
+              ""
+              "Status: `degraded`"
+              ""
+              "- authority: `focused-authoritative`"
+              "- required-gates: `EvidenceGraph`, `EvidenceAudit`"
+              "- completed-gates: `EvidenceGraph`"
+              "- missing-gates: `EvidenceAudit`"
+              "- missing-artifacts: `readiness/evidence-audit.md`"
+              "- next-command: `./fake.sh build -t Verify`"
+              "- diagnostic: AgentReady produced a degraded handoff because EvidenceAudit is a final readiness gate for later integration tasks." ]
+            |> String.concat Environment.NewLine
+
+        model,
+        [ RequireFiles(
+              "agent-ready readiness obligations",
+              [ path [ model.ReadinessDir; "validation-contract.md" ]
+                path [ model.ReadinessDir; "task-graph.json" ]
+                path [ model.ReadinessDir; "task-graph.md" ] ]
+            )
+          WriteStructuredJsonReport("agent-ready verdict json", path [ model.ReadinessDir; "agent-verdict.json" ], verdictJson)
+          WriteStructuredReport("agent-ready verdict markdown", path [ model.ReadinessDir; "agent-verdict.md" ], verdictMarkdown)
+          WriteStructuredReport("agent-ready feature evidence", path [ model.ReadinessDir; "agent-ready-verdict.md" ], verdictMarkdown + Environment.NewLine)
+          focusedGateSummary model "AgentReady" ]
+    | StartTarget "TargetMetadata" ->
+        let metadata = allTargetMetadata model
+        let report =
+            targetMetadataJson (DateTimeOffset.UtcNow.ToString("O")) [] metadata
+
+        model,
+        [ WriteStructuredJsonReport("target metadata", model.TargetMetadataReportPath, report)
+          focusedGateSummary model "TargetMetadata" ]
+    | StartTarget "TargetMetadataDrift" ->
+        let metadata = allTargetMetadata model
+        let diagnostics = validateTargetMetadataAgainstRepo model.RepositoryRoot requiredTargets metadata
+        let report = targetMetadataDriftMarkdown diagnostics
+
+        model,
+        [ RequireFiles("target metadata report", [ model.TargetMetadataReportPath ])
+          WriteStructuredReport("target metadata drift", model.TargetMetadataDriftReportPath, report)
+          if not diagnostics.IsEmpty then
+              FailWith(String.Join(Environment.NewLine, diagnostics))
+          focusedGateSummary model "TargetMetadataDrift" ]
     | StartTarget "VerifyPreflight" ->
         model,
         [ CollectProcessHealth("Verify", model.ProcessHealthPath, model.VerificationVerdictsPath)
@@ -2085,8 +2463,8 @@ let writeProductProject model row capabilities =
             [ "Model.fs"
               "View.fs"
               "LayoutEvidence.fs"
-              "EvidenceCommands.fs"
               "WindowOptions.fs"
+              "EvidenceCommands.fs"
               "Program.fs" ]
         else
             [ "Program.fs" ]
@@ -3675,6 +4053,7 @@ let interpret root effect =
         ensureParent path
         File.WriteAllText(path, content)
     | RequireFiles(artifactClass, paths) -> requireFiles artifactClass paths
+    | FailWith message -> failwith message
     | WorkflowSelfCheck -> workflowSelfCheck root
 
 let runTarget targetName =
@@ -3687,99 +4066,15 @@ let runTarget targetName =
 let allTargets =
     requiredTargets @ [ "PackageSmoke"; "BuildWorkflowCheck" ]
 
-// BUILD SECTION: target graph
+// BUILD SECTION: native FAKE target graph
 
-let targetDependencies =
-    Map.ofList
-        [ "Clean", []
-          "Restore", []
-          "Build", [ "Restore" ]
-          "Test", [ "Restore" ]
-          "Dev", [ "Test" ]
-          "PackLocal", []
-          "RefreshSurfaceBaselines", [ "Build" ]
-          "PackageSurfaceCheck", []
-          "FsiTranscripts", []
-          "SampleContractSmoke", [ "Build" ]
-          "TemplatePack", []
-          "TemplateInstallSource", []
-          "TemplateInstallPackage", [ "TemplatePack" ]
-          "TemplateInstantiate", [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage" ]
-          "TemplateSmoke", [ "TemplateInstantiate" ]
-          // V2 compatibility expectation: "TemplateCheck", [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage"; "TemplateInstantiate"; "TemplateSmoke" ]
-          "TemplateCheck", [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage"; "TemplateInstantiate"; "TemplateSmoke" ]
-          "CapabilityCheck", []
-          "SkillCheck", [ "CapabilityCheck" ]
-          "GeneratedProductCheck", [ "CapabilityCheck"; "SkillCheck" ]
-          "ControlsCatalogCheck", []
-          "ControlsInteractionCheck", []
-          "ControlsRenderingCheck", []
-          "DependencyReport", []
-          "GeneratedGuidanceCheck", []
-          "TemplateDrift", []
-          "EvidenceGraph", []
-          "EvidenceAudit", [ "EvidenceGraph" ]
-          "VerifyPreflight", []
-          "CiPreflight", []
-          "StaleBoundaryScan", []
-          "FinalReadiness", [ "EvidenceAudit" ]
-          "Verify",
-          [ "VerifyPreflight"
-            "Dev"
-            "PackLocal"
-            "PackageSurfaceCheck"
-            "FsiTranscripts"
-            "SampleContractSmoke"
-            "TemplateCheck"
-            "CapabilityCheck"
-            "SkillCheck"
-            "GeneratedProductCheck"
-            "ControlsCatalogCheck"
-            "ControlsInteractionCheck"
-            "ControlsRenderingCheck"
-            "DependencyReport"
-            "GeneratedGuidanceCheck"
-            "TemplateDrift"
-            "EvidenceAudit" ]
-          "Ci", [ "CiPreflight"; "Verify" ]
-          "PackageSmoke", [ "PackageSurfaceCheck" ]
-          "BuildWorkflowCheck", [] ]
+allTargets
+|> List.iter (fun targetName ->
+    Target.create targetName (fun _ -> runTarget targetName))
 
-let rec runWithDependencies visited targetName =
-    if allTargets |> List.contains targetName |> not then
-        failwithf "Unknown target: %s" targetName
+targetDependencyRows
+|> List.iter (fun (targetName, dependencies) ->
+    dependencies
+    |> List.iter (fun dependency -> dependency ==> targetName |> ignore))
 
-    if visited |> Set.contains targetName then
-        visited
-    else
-        let visitedAfterDependencies =
-            targetDependencies.[targetName]
-            |> List.fold runWithDependencies visited
-
-        printfn "Starting target '%s'" targetName
-        runTarget targetName
-        printfn "Finished target '%s'" targetName
-        visitedAfterDependencies |> Set.add targetName
-
-let rec targetFromArgs args =
-    match args with
-    | "-t" :: target :: _
-    | "--target" :: target :: _
-    | "target" :: target :: _ -> Some target
-    | _ :: rest -> targetFromArgs rest
-    | [] -> None
-
-let scriptArgs =
-    Environment.GetCommandLineArgs()
-    |> Array.skip 1
-    |> Array.toList
-
-if scriptArgs |> List.exists (fun arg -> arg = "--list") then
-    allTargets
-    |> List.iter (printfn "%s")
-else
-    let selectedTarget =
-        targetFromArgs scriptArgs
-        |> Option.defaultValue "Dev"
-
-    runWithDependencies Set.empty selectedTarget |> ignore
+Target.runOrDefaultWithArguments "Dev"

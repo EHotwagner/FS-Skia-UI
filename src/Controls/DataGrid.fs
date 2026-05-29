@@ -236,9 +236,9 @@ module DataGrid =
         Attr.create "selectedRows" State (UntypedValue selectedRows)
 
     let focusedCell (focusedCell: DataGridFocusedCell option) =
-        let value =
-            focusedCell
-            |> Option.map (fun cell -> $"{cell.RowKey}:{cell.ColumnKey}")
-            |> Option.defaultValue ""
+        let payload =
+            match focusedCell with
+            | Some cell -> Some cell :> obj
+            | None -> "" :> obj
 
-        Attr.create "focusedCell" State (TextValue value)
+        Attr.create "focusedCell" State (UntypedValue payload)

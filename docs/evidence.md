@@ -21,6 +21,7 @@ remains under the active feature readiness directory.
 | Bootstrap runner validation | Active feature `readiness/bootstrap-runner.md` |
 | Verification verdicts | Active feature `readiness/verification-verdicts.md` |
 | Focused gate summaries | Active feature `readiness/focused-gates.md` |
+| Target metadata | Active feature `readiness/target-metadata.json` and `readiness/target-metadata-drift.md` |
 | Governance scanner summaries | Active feature `readiness/governance-scanners.md` |
 | Stale boundary scan | Active feature `readiness/stale-boundary-scan.md` |
 | Generated product validation summary | Active feature `readiness/generated-product-validation.md` |
@@ -96,11 +97,13 @@ make current package checks pass.
 `RefreshSurfaceBaselines`, `PackageSurfaceCheck`, `FsiTranscripts`,
 `SampleContractSmoke`, `TemplateCheck`, `CapabilityCheck`, `SkillCheck`,
 `GeneratedProductCheck`, `DependencyReport`, `GeneratedGuidanceCheck`,
-`TemplateDrift`, `StaleBoundaryScan`, `EvidenceGraph`, `EvidenceAudit`, and
-`FinalReadiness` are the evidence-producing targets. `Verify` fails when any
+`TemplateDrift`, `TargetMetadata`, `TargetMetadataDrift`,
+`StaleBoundaryScan`, `EvidenceGraph`, `EvidenceAudit`, and `FinalReadiness`
+are the evidence-producing targets. `Verify` fails when any
 required package, template, generated-product, guidance, drift, dependency,
-graph, or audit artifact class is missing. Broad aggregate preflight and
-bootstrap failures are recorded as `environment-failure`, not product evidence.
+target metadata, graph, or audit artifact class is missing. Broad aggregate
+preflight and bootstrap failures are recorded as `environment-failure`, not
+product evidence.
 
 ## Broad Verdicts
 

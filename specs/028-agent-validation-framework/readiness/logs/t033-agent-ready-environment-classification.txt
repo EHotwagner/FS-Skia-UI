@@ -1,0 +1,1 @@
+T033 readiness files verified: agent-ready-verdict.md, environment-failure-classification.md, agent-verdict.json

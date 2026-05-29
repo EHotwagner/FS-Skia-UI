@@ -47,7 +47,8 @@ category, package identity, or evidence path needed to act on the failure.
 
 Bounded smoke, frame diagnostics, and scene evidence are explicit CI and
 reviewer-diagnostic commands. They are not interactive readiness substitutes
-for the default persistent graphical launch path.
+for the default persistent graphical launch path, and they should stay behind
+explicit command dispatch outside the default product launch branch.
 The default command for a viewer-backed graphical profile must attempt
 `Viewer.runApp viewerOptions Product.Program.generatedHost`; commands that
 only print metadata, count controls, run bounded smoke, emit scene evidence, or
@@ -71,11 +72,12 @@ launch proof, and screenshot proof as separate evidence kinds. A deterministic
 scene hash or pixel fallback can support diagnosis, but it must not be relabeled
 as persistent-window or screenshot evidence.
 Generated layout, image, screenshot, and pixel-readback evidence commands should
-share the `FS.Skia.UI.Testing.EvidenceReports` convention without forcing the
-default app profile to reference the Testing package: `status`, `command`,
-`output`, stable key ordering, normalized `ok`/`unsupported`/`failed` status
-vocabulary, and unsupported-host `unsupported-host-reason` plus
-`fallback=deterministic-scene-evidence`.
+share stable report conventions without forcing the default app profile to
+reference the Testing package: `status`, `command`, `output`, stable key
+ordering, normalized `ok`/`unsupported`/`failed` status vocabulary, skipped
+gates, next command, and unsupported-host `unsupported-host-reason` plus
+`fallback=deterministic-scene-evidence`. Evidence reports may only claim the
+authority of the gates they actually complete.
 Generated app message examples must qualify app-owned messages such as
 `Product.Program.Msg.CloseRequested`; `CloseRequested` is an app-owned message.
 When generated code stores a domain vector, use an explicit conversion helper
@@ -114,3 +116,7 @@ Repository validation for generated app flows is produced by `TemplateCheck`,
 `GeneratedProductCheck`. The active feature stores the generated consumer
 summary at `readiness/generated-product-validation.md` and detailed logs under
 `readiness/generated-consumer-validation/`.
+Generated app and template command names are part of the native FAKE target
+registry. `TargetMetadataDrift` must stay green after generated workflow
+changes so generated guidance, docs, target metadata, and
+`validation.contract.yml` continue to name runnable commands.

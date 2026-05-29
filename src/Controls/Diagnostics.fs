@@ -24,6 +24,18 @@ module Diagnostics =
     let unsupportedEnvironment kind (capability: string) =
         create None kind UnsupportedEnvironment Warning $"Host environment does not expose {capability}; operation reports diagnostics instead."
 
+    let unsupportedStandardAttribute (kind: StandardControlKind) (name: StandardAttributeName) =
+        create None $"{kind}" UnsupportedStateCombination Error $"Unsupported standard attribute `{name}` for `{kind}`."
+
+    let unsupportedStandardEvent (kind: StandardControlKind) (eventKind: StandardEventKind) =
+        create None $"{kind}" UnsupportedStateCombination Error $"Unsupported standard event `{eventKind}` for `{kind}`."
+
+    let missingStandardAttribute (kind: StandardControlKind) (name: StandardAttributeName) =
+        create None $"{kind}" MissingRequiredAttribute Error $"Missing required standard attribute `{name}` for `{kind}`."
+
+    let customExtension (kind: string) (extensionName: string) =
+        create None kind UnsupportedEnvironment Info $"Custom extension `{extensionName}` is accepted for custom control `{kind}`."
+
     let stalePackageReference (packageId: string) (path: string) =
         create None packageId StaleGeneratedReference Error $"Stale package reference `{packageId}` found in `{path}`."
 

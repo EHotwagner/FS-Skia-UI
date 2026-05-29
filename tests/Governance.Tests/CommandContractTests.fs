@@ -9,8 +9,8 @@ open GovernanceTestSupport
 let commandContractTests =
     testList "Canonical command contract" [
         test "repo-local FAKE manifest and wrappers are available" {
-            expectFileContains ".config/dotnet-tools.json" [ "\"fake-cli\""; "\"version\": \"5.23.1\""; "\"fake\"" ]
-            expectFileContains "fake.sh" [ "dotnet tool restore"; "dotnet fake \"$@\"" ]
+            expectFileContains ".config/dotnet-tools.json" [ "\"fake-cli\""; "\"version\": \"6.1.4\""; "\"fake\"" ]
+            expectFileContains "fake.sh" [ "dotnet tool restore"; "FAKE_SDK_RESOLVER_CUSTOM_DOTNET_PATH"; "dotnet fake \"$@\"" ]
             expectFileContains "fake.cmd" [ "dotnet tool restore"; "dotnet fake %*" ]
             Expect.isTrue (File.Exists(fullPath "fake.sh")) "Bash wrapper exists"
             Expect.isTrue (File.Exists(fullPath "fake.cmd")) "Windows wrapper exists"
@@ -38,7 +38,7 @@ let commandContractTests =
                   "BUILD SECTION: target update"
                   "BUILD SECTION: interpreter"
                   "BUILD SECTION: guidance validation"
-                  "BUILD SECTION: target graph" ]
+                  "BUILD SECTION: native FAKE target graph" ]
         }
 
         test "required targets are declared exactly once through the target graph" {

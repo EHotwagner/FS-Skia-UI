@@ -1,0 +1,152 @@
+The last full restore is still up to date. Nothing left to do.
+run Verify
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target Verify:
+<== Verify
+   <== VerifyPreflight
+   <== Dev
+      <== Test
+         <== Restore
+   <== PackLocal
+   <== PackageSurfaceCheck
+   <== FsiTranscripts
+   <== SampleContractSmoke
+      <== Build
+   <== TemplateCheck
+      <== TemplatePack
+      <== TemplateInstallSource
+      <== TemplateInstallPackage
+      <== TemplateInstantiate
+      <== TemplateSmoke
+   <== CapabilityCheck
+   <== SkillCheck
+   <== GeneratedProductCheck
+   <== ControlsCatalogCheck
+   <== ControlsInteractionCheck
+   <== ControlsRenderingCheck
+   <== DependencyReport
+   <== GeneratedGuidanceCheck
+   <== TemplateDrift
+   <== EvidenceAudit
+      <== EvidenceGraph
+   <== TargetMetadataDrift
+      <== TargetMetadata
+
+The running order is:
+Group - 1
+  - TargetMetadata
+  - EvidenceGraph
+  - TemplateDrift
+  - GeneratedGuidanceCheck
+  - DependencyReport
+  - ControlsRenderingCheck
+  - ControlsInteractionCheck
+  - ControlsCatalogCheck
+  - CapabilityCheck
+  - TemplatePack
+  - TemplateInstallSource
+  - Restore
+  - FsiTranscripts
+  - PackageSurfaceCheck
+  - PackLocal
+  - VerifyPreflight
+Group - 2
+  - TargetMetadataDrift
+  - EvidenceAudit
+  - SkillCheck
+  - TemplateInstallPackage
+  - Build
+  - Test
+Group - 3
+  - GeneratedProductCheck
+  - TemplateInstantiate
+  - SampleContractSmoke
+  - Dev
+Group - 4
+  - TemplateSmoke
+Group - 5
+  - TemplateCheck
+Group - 6
+  - Verify
+Starting target 'TargetMetadata'
+Finished (Success) 'TargetMetadata' in 00:00:00.0187954
+Starting target 'EvidenceGraph'
+Finished (Success) 'EvidenceGraph' in 00:00:00.1125726
+Starting target 'TemplateDrift'
+Finished (Success) 'TemplateDrift' in 00:00:02.1896168
+Starting target 'GeneratedGuidanceCheck'
+Finished (Success) 'GeneratedGuidanceCheck' in 00:00:00.0264230
+Starting target 'DependencyReport'
+Finished (Success) 'DependencyReport' in 00:00:02.2835783
+Starting target 'ControlsRenderingCheck'
+Finished (Success) 'ControlsRenderingCheck' in 00:00:01.7375565
+Starting target 'ControlsInteractionCheck'
+Finished (Success) 'ControlsInteractionCheck' in 00:00:01.7533997
+Starting target 'ControlsCatalogCheck'
+Finished (Success) 'ControlsCatalogCheck' in 00:00:01.7106981
+Starting target 'CapabilityCheck'
+Finished (Success) 'CapabilityCheck' in 00:00:00.0164688
+Starting target 'TemplatePack'
+Finished (Success) 'TemplatePack' in 00:00:01.7663339
+Starting target 'TemplateInstallSource'
+Finished (Success) 'TemplateInstallSource' in 00:00:01.8783099
+Starting target 'Restore'
+Finished (Success) 'Restore' in 00:00:11.8634376
+Starting target 'FsiTranscripts'
+Finished (Success) 'FsiTranscripts' in 00:00:10.8871738
+Starting target 'PackageSurfaceCheck'
+Finished (Success) 'PackageSurfaceCheck' in 00:00:01.5599832
+Starting target 'PackLocal'
+Finished (Success) 'PackLocal' in 00:00:18.6175678
+Starting target 'VerifyPreflight'
+Finished (Success) 'VerifyPreflight' in 00:00:00.7893042
+Starting target 'TargetMetadataDrift'
+Finished (Success) 'TargetMetadataDrift' in 00:00:00.0111621
+Starting target 'EvidenceAudit'
+Finished (Success) 'EvidenceAudit' in 00:00:01.1057020
+Starting target 'SkillCheck'
+Finished (Success) 'SkillCheck' in 00:00:00.0036754
+Starting target 'TemplateInstallPackage'
+Finished (Success) 'TemplateInstallPackage' in 00:00:01.7635584
+Starting target 'Build'
+Finished (Success) 'Build' in 00:00:22.0757493
+Starting target 'Test'
+Finished (Failed) 'Test' in 00:01:21.8706635
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                     Duration
+------                     --------
+TargetMetadata             00:00:00.0167632
+EvidenceGraph              00:00:00.1125102
+TemplateDrift              00:00:02.1895775
+GeneratedGuidanceCheck     00:00:00.0263995
+DependencyReport           00:00:02.2835560
+ControlsRenderingCheck     00:00:01.7375254
+ControlsInteractionCheck   00:00:01.7533720
+ControlsCatalogCheck       00:00:01.7106608
+CapabilityCheck            00:00:00.0164388
+TemplatePack               00:00:01.7663093
+TemplateInstallSource      00:00:01.8782866
+Restore                    00:00:11.8634159
+FsiTranscripts             00:00:10.8871470
+PackageSurfaceCheck        00:00:01.5599647
+PackLocal                  00:00:18.6175426
+VerifyPreflight            00:00:00.7892741
+TargetMetadataDrift        00:00:00.0111300
+EvidenceAudit              00:00:01.1056619
+SkillCheck                 00:00:00.0036575
+TemplateInstallPackage     00:00:01.7635334
+Build                      00:00:22.0757267
+Total:                     00:02:44.1245384
+---------------------------------------------------------------------
+Hint: To further diagnose the problem you can run fake in verbose mode `fake -v run ...` or set the 'FAKE_DETAILED_ERRORS' environment variable to 'true'
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 177 milliseconds
+ - Packages: 60 milliseconds
+ - Script analyzing: 21 milliseconds
+ - Script running: 2 minutes, 44 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 2 minutes, 45 seconds

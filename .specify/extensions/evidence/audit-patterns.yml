@@ -101,6 +101,10 @@ whitelist:
   - pattern_id: mock-identifiers
     file_glob: "**/audit-patterns.yml"
 
+  # FAKE is the build runner name here, not a test-double marker.
+  - pattern_id: mock-identifiers
+    line_regex: '\b(fakeBootstrap|FakeBootstrap)\b'
+
   # The preset templates contain disclosure examples.
   - pattern_id: mock-identifiers
     file_glob: ".specify/presets/**/commands/*.md"

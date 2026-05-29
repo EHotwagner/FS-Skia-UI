@@ -4,7 +4,6 @@ open System
 open Product.Model
 open Product.View
 open Product.LayoutEvidence
-open Product.EvidenceCommands
 //#if (profile == "governed" || profile == "headless-scene")
 
 type Model = Product.Model.Model
@@ -13,23 +12,12 @@ let initialModel = Product.Model.initialModel
 let update = Product.Model.update
 let view = Product.View.view
 let layoutEvidenceForSize = Product.LayoutEvidence.layoutEvidenceForSize
-let layoutEvidenceCommand = Product.EvidenceCommands.layoutEvidenceCommand
-let sceneEvidence = Product.EvidenceCommands.sceneEvidence
 
 [<EntryPoint>]
 let main args =
-    match List.ofArray args with
-    | "--layout-evidence" :: path :: width :: height :: _ ->
-        match Int32.TryParse width, Int32.TryParse height with
-        | (true, parsedWidth), (true, parsedHeight) -> layoutEvidenceCommand path parsedWidth parsedHeight
-        | _ ->
-            printfn "status=failed command=--layout-evidence diagnostics=width and height must be integers"
-            1
-    | "--layout-evidence" :: path :: _ -> layoutEvidenceCommand path 640 480
-    | "--layout-evidence" :: _ -> layoutEvidenceCommand "readiness/layout-evidence.txt" 640 480
-    | "--scene-evidence" :: path :: _ -> sceneEvidence path
-    | "--scene-evidence" :: _ -> sceneEvidence "readiness/headless-scene-evidence.txt"
-    | _ ->
+    match Product.EvidenceCommands.tryRunEvidenceCommand (List.ofArray args) with
+    | Some exitCode -> exitCode
+    | None ->
         printfn "status=ok mode=headless-scene command=dotnet-run scene-nodes=1"
         0
 
@@ -76,13 +64,6 @@ let viewerEffectsForModel = Product.EvidenceCommands.viewerEffectsForModel
 let interpretAtHostBoundary = Product.EvidenceCommands.interpretAtHostBoundary
 let generatedHost = Product.EvidenceCommands.generatedHost
 let defaultCommand = Product.EvidenceCommands.defaultCommand
-let boundedSmoke = Product.EvidenceCommands.boundedSmoke
-let launchEvidence = Product.EvidenceCommands.launchEvidence
-let imageEvidence = Product.EvidenceCommands.imageEvidence
-let screenshotEvidence = Product.EvidenceCommands.screenshotEvidence
-let visualEvidence = Product.EvidenceCommands.visualEvidence
-let sceneEvidence = Product.EvidenceCommands.sceneEvidence
-let windowDiagnostics = Product.EvidenceCommands.windowDiagnostics
 let windowBehaviorArgsFromFile = Product.WindowOptions.windowBehaviorArgsFromFile
 let parseWindowBehavior = Product.WindowOptions.parseWindowBehavior
 let toViewerWindowBehavior = Product.WindowOptions.toViewerWindowBehavior
@@ -92,34 +73,10 @@ let windowOptionsReport = Product.WindowOptions.windowOptionsReport
 
 [<EntryPoint>]
 let main args =
-    match List.ofArray args with
-    | "--layout-evidence" :: path :: width :: height :: _ ->
-        match Int32.TryParse width, Int32.TryParse height with
-        | (true, parsedWidth), (true, parsedHeight) -> layoutEvidenceCommand path parsedWidth parsedHeight
-        | _ ->
-            printfn "status=failed command=--layout-evidence diagnostics=width and height must be integers"
-            1
-    | "--layout-evidence" :: path :: _ -> layoutEvidenceCommand path 640 480
-    | "--layout-evidence" :: _ -> layoutEvidenceCommand "readiness/layout-evidence.txt" 640 480
-    | "--launch-evidence" :: path :: _ -> launchEvidence path
-    | "--launch-evidence" :: _ -> launchEvidence "readiness/evidence-launch-mode.txt"
-    | "--bounded-smoke" :: path :: _ -> boundedSmoke false path
-    | "--bounded-smoke" :: _ -> boundedSmoke false "readiness/bounded-viewer-smoke.txt"
-    | "--bounded-smoke-frame-diagnostics" :: path :: _ -> boundedSmoke true path
-    | "--bounded-smoke-frame-diagnostics" :: _ -> boundedSmoke true "readiness/bounded-viewer-frame-diagnostics.txt"
-    | "--scene-evidence" :: path :: _ -> sceneEvidence path
-    | "--scene-evidence" :: _ -> sceneEvidence "readiness/headless-scene-evidence.txt"
-    | "--window-diagnostics" :: path :: _ -> windowDiagnostics path
-    | "--window-diagnostics" :: _ -> windowDiagnostics "readiness/window-diagnostics.txt"
-    | "--window-options" :: path :: tail -> windowOptionsReport path (parseWindowBehavior tail)
-    | "--window-options" :: _ -> windowOptionsReport "readiness/window-options.txt" (parseWindowBehavior [])
-    | "--image-evidence" :: path :: _ -> imageEvidence path
-    | "--image-evidence" :: _ -> imageEvidence "readiness/game-image-evidence.png"
-    | "--screenshot-evidence" :: path :: _ -> screenshotEvidence path
-    | "--screenshot-evidence" :: _ -> screenshotEvidence "readiness/game-screenshot-evidence.txt"
-    | "--pixel-readback-evidence" :: path :: _ -> visualEvidence "--pixel-readback-evidence" "command=--pixel-readback-evidence" FS.Skia.UI.Scene.Hash "pixel-readback" "evidence-kind=pixel-readback" "screenshot-unavailable" path
-    | "--pixel-readback-evidence" :: _ -> visualEvidence "--pixel-readback-evidence" "command=--pixel-readback-evidence" FS.Skia.UI.Scene.Hash "pixel-readback" "evidence-kind=pixel-readback" "screenshot-unavailable" "readiness/game-pixel-readback-evidence.txt"
-    | args ->
+    match Product.EvidenceCommands.tryRunEvidenceCommand (List.ofArray args) with
+    | Some exitCode -> exitCode
+    | None ->
+        let args = List.ofArray args
         let windowBehavior = parseWindowBehavior args
         let windowBehaviorRequest = toViewerWindowBehavior windowBehavior
         let capability = Viewer.runtimeCapability()

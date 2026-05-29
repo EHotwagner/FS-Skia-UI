@@ -6,7 +6,6 @@ open FS.Skia.UI.Scene
 open FS.Skia.UI.SkiaViewer
 open Product.Model
 open Product.View
-open Product.EvidenceCommands
 //#if (profile == "app" || profile == "sample-pack")
 
 type WindowBehaviorSettings =
@@ -89,6 +88,17 @@ let toViewerWindowBehavior behavior = behavior
 
 let windowOptionStatusText status = status
 
+let private viewerInitialSize = { Width = 640; Height = 480 }
+
+let private writeWindowOptionLines (path: string) exitCode lines =
+    let directory = Path.GetDirectoryName path
+
+    if not (String.IsNullOrWhiteSpace directory) then
+        Directory.CreateDirectory(directory |> string) |> ignore
+
+    File.WriteAllLines(path, Array.ofList lines)
+    exitCode
+
 let manualWindowOptionResults behavior =
     let positionStatus, positionObserved, positionMessage =
         match behavior.Position with
@@ -118,7 +128,7 @@ let manualWindowOptionResults behavior =
         | "software" -> "unsupported", "none", "Software backend preference is not supported by this viewer host."
         | _ -> "degraded", "default", "No backend requested; default backend will be selected."
 
-    [ "initial-size", $"{viewerOptions.InitialSize.Width}x{viewerOptions.InitialSize.Height}", $"{viewerOptions.InitialSize.Width}x{viewerOptions.InitialSize.Height}", "honored", "Initial window size is positive and can be requested."
+    [ "initial-size", $"{viewerInitialSize.Width}x{viewerInitialSize.Height}", $"{viewerInitialSize.Width}x{viewerInitialSize.Height}", "honored", "Initial window size is positive and can be requested."
       "resize", behavior.Resize, behavior.Resize, "honored", "Resize policy can be honored by the viewer host."
       "maximize", behavior.Maximize, behavior.Maximize, "honored", "Maximize policy can be honored by the viewer host."
       "startup-state", behavior.Startup, startupObserved, startupStatus, startupMessage
@@ -138,7 +148,7 @@ let windowOptionsReport evidencePath behavior =
               manualWindowOptionResults request
               |> List.map optionLine ]
 
-    writeGeneratedEvidenceLines evidencePath false 0 lines |> ignore
+    writeWindowOptionLines evidencePath 0 lines |> ignore
     lines |> List.iter (printfn "%s")
     0
 

@@ -33,7 +33,8 @@ The full testing and evidence target set is `Dev`, `Verify`, `Ci`,
 `PackageSurfaceCheck`, `FsiTranscripts`, `SampleContractSmoke`,
 `TemplateCheck`, `CapabilityCheck`, `SkillCheck`, `GeneratedProductCheck`,
 `DependencyReport`, `GeneratedGuidanceCheck`, `TemplateDrift`,
-`StaleBoundaryScan`, `EvidenceGraph`, `EvidenceAudit`, and `FinalReadiness`.
+`TargetMetadata`, `TargetMetadataDrift`, `StaleBoundaryScan`,
+`EvidenceGraph`, `EvidenceAudit`, and `FinalReadiness`.
 
 Governance tests include section-aware generated guidance checks, semantic
 template drift fixtures, public record invariant inventory coverage, and build
@@ -101,8 +102,9 @@ writes one log per sample under
 
 `CapabilityCheck`, `SkillCheck`, `GeneratedProductCheck`,
 `DependencyReport`, `GeneratedGuidanceCheck`, `TemplateDrift`,
-`EvidenceGraph`, and `EvidenceAudit` are focused governance targets and can be
-run independently while developing those surfaces.
+`TargetMetadataDrift`, `EvidenceGraph`, and `EvidenceAudit` are focused
+governance targets and can be run independently while developing those
+surfaces.
 
 ## Process Health And Focused Gate Checks
 
@@ -131,6 +133,7 @@ Focused gates should be run directly when isolating a failure:
 ./fake.sh build -t DependencyReport
 ./fake.sh build -t GeneratedGuidanceCheck
 ./fake.sh build -t TemplateDrift
+./fake.sh build -t TargetMetadataDrift
 ./fake.sh build -t EvidenceGraph
 ./fake.sh build -t EvidenceAudit
 ```

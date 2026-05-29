@@ -20,6 +20,10 @@ fake.cmd build -t Ci
 The wrappers restore the local `fake-cli` tool from `.config/dotnet-tools.json`
 and run the shared `build.fsx` target graph. Automation should call
 `./fake.sh build -t Ci`.
+Targets are registered through FAKE's native target graph. `./fake.sh build
+--list` is the supported discovery surface for runnable target names, and
+`TargetMetadataDrift` verifies that discovered targets, metadata, docs, and
+`validation.contract.yml` stay aligned.
 
 ## Targets
 
@@ -37,6 +41,8 @@ and run the shared `build.fsx` target graph. Automation should call
 | `SampleContractSmoke` | Runs non-visual sample `--contract-smoke` paths. | `readiness/sample-smoke/*.txt` under this feature |
 | `EvidenceGraph` | Runs Spec Kit task graph and task `skillist` metadata validation. | `readiness/task-graph.json` and `.md` under this feature |
 | `EvidenceAudit` | Runs the synthetic evidence audit after a valid task graph. | `readiness/logs/evidence-audit.txt` and diff-scan output |
+| `TargetMetadata` | Writes machine-readable target metadata for external tooling and reviewers. | Active feature `readiness/target-metadata.json` |
+| `TargetMetadataDrift` | Validates native FAKE targets, metadata, docs, and validation contract references. | Active feature `readiness/target-metadata-drift.md` |
 | `VerifyPreflight` | Records process-health and bootstrap evidence for `Verify` before broad work starts. | Active feature `readiness/process-health.md`, `readiness/bootstrap-runner.md`, and `readiness/verification-verdicts.md` |
 | `CiPreflight` | Records process-health and bootstrap evidence for `Ci` before delegating to `Verify`. | Active feature `readiness/process-health.md`, `readiness/bootstrap-runner.md`, and `readiness/verification-verdicts.md` |
 | `StaleBoundaryScan` | Records stale active ownership scan status for removed package/boundary evidence. | Active feature `readiness/stale-boundary-scan.md` |
@@ -123,6 +129,7 @@ is stale.
 | `GeneratedProductCheck` | `CapabilityCheck`, `SkillCheck` | `readiness/generated-file-lists/summary.md` |
 | `GeneratedGuidanceCheck` | none | `readiness/generated-guidance.md` |
 | `TemplateDrift` | none | `readiness/template-drift.md` |
+| `TargetMetadataDrift` | `TargetMetadata` | `readiness/target-metadata.json` and `readiness/target-metadata-drift.md` |
 | `EvidenceGraph` | none | `readiness/task-graph.md` and `.json`, including task `skillist` diagnostics |
 | `EvidenceAudit` | `EvidenceGraph` | `readiness/logs/evidence-audit.txt` |
 

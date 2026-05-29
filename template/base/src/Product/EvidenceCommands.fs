@@ -53,10 +53,25 @@ let sceneEvidence evidencePath =
         printfn "status=failed scene-evidence blocked-stage=%s classification=%A category=%s message=%s evidence=%s" failure.BlockedStage failure.Classification failure.DiagnosticCategory failure.Message evidencePath
         1
 
+let tryRunEvidenceCommand args =
+    match args with
+    | "--layout-evidence" :: path :: width :: height :: _ ->
+        match Int32.TryParse width, Int32.TryParse height with
+        | (true, parsedWidth), (true, parsedHeight) -> Some(layoutEvidenceCommand path parsedWidth parsedHeight)
+        | _ ->
+            printfn "status=failed command=--layout-evidence diagnostics=width and height must be integers"
+            Some 1
+    | "--layout-evidence" :: path :: _ -> Some(layoutEvidenceCommand path 640 480)
+    | "--layout-evidence" :: _ -> Some(layoutEvidenceCommand "readiness/layout-evidence.txt" 640 480)
+    | "--scene-evidence" :: path :: _ -> Some(sceneEvidence path)
+    | "--scene-evidence" :: _ -> Some(sceneEvidence "readiness/headless-scene-evidence.txt")
+    | _ -> None
+
 //#else
 open FS.Skia.UI.Controls.Elmish
 open FS.Skia.UI.KeyboardInput
 open FS.Skia.UI.SkiaViewer
+open Product.WindowOptions
 
 let writeGeneratedEvidenceLines (path: string) echoToStdout exitCode lines =
     let directory = Path.GetDirectoryName path
@@ -87,6 +102,58 @@ type GeneratedEvidenceCommandReport =
       ReportPath: string
       Diagnostics: string list }
 
+type GeneratedEvidenceWorkflowKind =
+    | NormalLaunch
+    | ExplicitEvidenceCommand
+    | PolicyOwnedReport
+    | ProductOwnedFacts
+    | UnsupportedOutcome
+
+type GeneratedEvidenceWorkflow =
+    { Command: string
+      Kind: GeneratedEvidenceWorkflowKind
+      Authority: string
+      ProductOwnedFacts: string list
+      PolicyOwnedReport: string
+      SkippedGates: string list
+      UnsupportedOutcome: string option
+      NextCommand: string option }
+
+type GeneratedEvidenceFailureClassification =
+    | GeneratedUnsupportedOutcome
+    | StalePrerequisite
+
+type GeneratedEvidenceFixture =
+    // SYNTHETIC: approved SEH fixtures for missing generated artifact and unsupported host fixture classification; real command proof is produced by explicit generated evidence commands.
+    | SyntheticMissingGeneratedArtifact
+    | SyntheticUnsupportedHost
+
+let availableEvidenceWorkflows =
+    [ { Command = "dotnet run --project src/Product/Product.fsproj"
+        Kind = NormalLaunch
+        Authority = "product-owned interactive launch"
+        ProductOwnedFacts = [ "model"; "view"; "viewer-host" ]
+        PolicyOwnedReport = "none"
+        SkippedGates = []
+        UnsupportedOutcome = None
+        NextCommand = None }
+      { Command = "--launch-evidence"
+        Kind = ExplicitEvidenceCommand
+        Authority = "generated evidence command"
+        ProductOwnedFacts = [ "viewer run result"; "renderer mode"; "first frame" ]
+        PolicyOwnedReport = "readiness/evidence-launch-mode.txt"
+        SkippedGates = []
+        UnsupportedOutcome = Some "unsupported host fixture reports fallback and reason"
+        NextCommand = Some "dotnet run --project src/Product/Product.fsproj -- --window-diagnostics readiness/window-diagnostics.txt" }
+      { Command = "--image-evidence"
+        Kind = PolicyOwnedReport
+        Authority = "governed visual evidence report"
+        ProductOwnedFacts = [ "scene"; "viewer options"; "render outcome" ]
+        PolicyOwnedReport = "readiness/game-image-evidence.png.metadata.txt"
+        SkippedGates = [ "interactive visible-window proof" ]
+        UnsupportedOutcome = Some "missing generated artifact is classified as stale prerequisite"
+        NextCommand = Some "dotnet run --project src/Product/Product.fsproj -- --scene-evidence readiness/headless-scene-evidence.txt" } ]
+
 let generatedEvidenceStatusText status =
     match status with
     | GeneratedEvidenceOk -> "ok"
@@ -102,7 +169,7 @@ let generatedEvidenceExitCode status =
 let evidenceField name value =
     name, value
 
-let generatedEvidenceCommandReportFields report =
+let generatedEvidenceCommandReportFields (report: GeneratedEvidenceCommandReport) =
     [ evidenceField "command" report.Command
       evidenceField "target" report.Target
       evidenceField "generated-project-identity" report.GeneratedAppIdentity
@@ -540,5 +607,35 @@ let windowDiagnostics (evidencePath: string) =
     File.WriteAllLines(evidencePath, lines)
     lines |> List.iter (printfn "%s")
     0
+
+let tryRunEvidenceCommand args =
+    match args with
+    | "--layout-evidence" :: path :: width :: height :: _ ->
+        match Int32.TryParse width, Int32.TryParse height with
+        | (true, parsedWidth), (true, parsedHeight) -> Some(layoutEvidenceCommand path parsedWidth parsedHeight)
+        | _ ->
+            printfn "status=failed command=--layout-evidence diagnostics=width and height must be integers"
+            Some 1
+    | "--layout-evidence" :: path :: _ -> Some(layoutEvidenceCommand path 640 480)
+    | "--layout-evidence" :: _ -> Some(layoutEvidenceCommand "readiness/layout-evidence.txt" 640 480)
+    | "--launch-evidence" :: path :: _ -> Some(launchEvidence path)
+    | "--launch-evidence" :: _ -> Some(launchEvidence "readiness/evidence-launch-mode.txt")
+    | "--bounded-smoke" :: path :: _ -> Some(boundedSmoke false path)
+    | "--bounded-smoke" :: _ -> Some(boundedSmoke false "readiness/bounded-viewer-smoke.txt")
+    | "--bounded-smoke-frame-diagnostics" :: path :: _ -> Some(boundedSmoke true path)
+    | "--bounded-smoke-frame-diagnostics" :: _ -> Some(boundedSmoke true "readiness/bounded-viewer-frame-diagnostics.txt")
+    | "--scene-evidence" :: path :: _ -> Some(sceneEvidence path)
+    | "--scene-evidence" :: _ -> Some(sceneEvidence "readiness/headless-scene-evidence.txt")
+    | "--window-diagnostics" :: path :: _ -> Some(windowDiagnostics path)
+    | "--window-diagnostics" :: _ -> Some(windowDiagnostics "readiness/window-diagnostics.txt")
+    | "--window-options" :: path :: tail -> Some(windowOptionsReport path (parseWindowBehavior tail))
+    | "--window-options" :: _ -> Some(windowOptionsReport "readiness/window-options.txt" (parseWindowBehavior []))
+    | "--image-evidence" :: path :: _ -> Some(imageEvidence path)
+    | "--image-evidence" :: _ -> Some(imageEvidence "readiness/game-image-evidence.png")
+    | "--screenshot-evidence" :: path :: _ -> Some(screenshotEvidence path)
+    | "--screenshot-evidence" :: _ -> Some(screenshotEvidence "readiness/game-screenshot-evidence.txt")
+    | "--pixel-readback-evidence" :: path :: _ -> Some(visualEvidence "--pixel-readback-evidence" "command=--pixel-readback-evidence" Hash "pixel-readback" "evidence-kind=pixel-readback" "screenshot-unavailable" path)
+    | "--pixel-readback-evidence" :: _ -> Some(visualEvidence "--pixel-readback-evidence" "command=--pixel-readback-evidence" Hash "pixel-readback" "evidence-kind=pixel-readback" "screenshot-unavailable" "readiness/game-pixel-readback-evidence.txt")
+    | _ -> None
 
 //#endif

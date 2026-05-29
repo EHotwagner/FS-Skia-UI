@@ -1,0 +1,18 @@
+template/fragments/controls/skill/SKILL.md:21:Use typed standard front doors for known controls, events, attributes, chart
+template/fragments/controls/skill/SKILL.md:22:data, and DataGrid data. Only use `Control.customControl`,
+template/fragments/controls/skill/SKILL.md:23:`Attr.customAttribute`, or `Attr.customEvent` for deliberate product-owned or
+template/fragments/controls/skill/SKILL.md:54:            LineChart.create [ LineChart.series model.Revenue ]
+template/fragments/controls/skill/SKILL.md:57:                DataGrid.rows model.Rows
+template/fragments/controls/skill/SKILL.md:58:                DataGrid.visibleRange {
+template/base/src/Product/View.fs:41:            LineChart.create [ LineChart.series model.Revenue ]
+template/base/src/Product/View.fs:45:                DataGrid.rows model.GridRows
+template/base/src/Product/View.fs:46:                DataGrid.visibleRange (visibleRows model)
+template/base/src/Product/View.fs:47:                DataGrid.selectedRows Set.empty
+template/base/src/Product/View.fs:48:                DataGrid.focusedCell None
+template/base/docs/product.md:12:Controls examples should use typed standard front doors by default:
+template/base/docs/product.md:13:`TextBlock.text`, `TextBox.value`, `Button.onClick`, `LineChart.series`,
+template/base/docs/product.md:14:`GraphView.nodes`, `DataGrid.columns`, `DataGrid.rows`,
+template/base/docs/product.md:15:`DataGrid.visibleRange`, `DataGrid.selectedRows`, and
+template/base/docs/product.md:16:`DataGrid.focusedCell`. Deliberate extension scenarios must use visibly custom
+template/base/docs/product.md:17:APIs such as `Control.customControl`, `Attr.customAttribute`, and
+template/base/docs/product.md:18:`Attr.customEvent`; do not spell custom usage as if it were a known standard

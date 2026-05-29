@@ -1,0 +1,35 @@
+The last full restore is still up to date. Nothing left to do.
+run TargetMetadataDrift
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target TargetMetadataDrift:
+<== TargetMetadataDrift
+   <== TargetMetadata
+
+The running order is:
+Group - 1
+  - TargetMetadata
+Group - 2
+  - TargetMetadataDrift
+Starting target 'TargetMetadata'
+Finished (Success) 'TargetMetadata' in 00:00:00.0165186
+Starting target 'TargetMetadataDrift'
+Finished (Success) 'TargetMetadataDrift' in 00:00:00.0125642
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                Duration
+------                --------
+TargetMetadata        00:00:00.0145901
+TargetMetadataDrift   00:00:00.0125169
+Total:                00:00:00.0963454
+Status:               Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 165 milliseconds
+ - Packages: 51 milliseconds
+ - Script analyzing: 20 milliseconds
+ - Script running: 231 milliseconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 second

@@ -1,0 +1,43 @@
+98:      Authority: string
+105:type GeneratedEvidenceWorkflowKind =
+106:    | NormalLaunch
+107:    | ExplicitEvidenceCommand
+108:    | PolicyOwnedReport
+109:    | ProductOwnedFacts
+110:    | UnsupportedOutcome
+112:type GeneratedEvidenceWorkflow =
+115:      Authority: string
+116:      ProductOwnedFacts: string list
+117:      PolicyOwnedReport: string
+118:      SkippedGates: string list
+119:      UnsupportedOutcome: string option
+120:      NextCommand: string option }
+123:    | GeneratedUnsupportedOutcome
+124:    | StalePrerequisite
+126:type GeneratedEvidenceFixture =
+127:    // SYNTHETIC: approved SEH fixtures for missing generated artifact and unsupported host fixture classification; real command proof is produced by explicit generated evidence commands.
+128:    | SyntheticMissingGeneratedArtifact
+129:    | SyntheticUnsupportedHost
+131:let availableEvidenceWorkflows =
+133:        Kind = NormalLaunch
+134:        Authority = "product-owned interactive launch"
+135:        ProductOwnedFacts = [ "model"; "view"; "viewer-host" ]
+136:        PolicyOwnedReport = "none"
+137:        SkippedGates = []
+138:        UnsupportedOutcome = None
+139:        NextCommand = None }
+141:        Kind = ExplicitEvidenceCommand
+142:        Authority = "generated evidence command"
+143:        ProductOwnedFacts = [ "viewer run result"; "renderer mode"; "first frame" ]
+144:        PolicyOwnedReport = "readiness/evidence-launch-mode.txt"
+145:        SkippedGates = []
+146:        UnsupportedOutcome = Some "unsupported host fixture reports fallback and reason"
+147:        NextCommand = Some "dotnet run --project src/Product/Product.fsproj -- --window-diagnostics readiness/window-diagnostics.txt" }
+149:        Kind = PolicyOwnedReport
+150:        Authority = "governed visual evidence report"
+151:        ProductOwnedFacts = [ "scene"; "viewer options"; "render outcome" ]
+152:        PolicyOwnedReport = "readiness/game-image-evidence.png.metadata.txt"
+153:        SkippedGates = [ "interactive visible-window proof" ]
+154:        UnsupportedOutcome = Some "missing generated artifact is classified as stale prerequisite"
+155:        NextCommand = Some "dotnet run --project src/Product/Product.fsproj -- --scene-evidence readiness/headless-scene-evidence.txt" } ]
+176:      evidenceField "authority" report.Authority

@@ -1,0 +1,10 @@
+The last restore is still up to date. Nothing left to do.
+Starting target 'PackageSurfaceCheck'
+Finished target 'PackageSurfaceCheck'
+Performance:
+ - Cli parsing: 169 milliseconds
+ - Packages: 40 milliseconds
+ - Script analyzing: 64 milliseconds
+ - Script running: 1 second
+ - Script cleanup: 1 millisecond
+ - Runtime: 2 seconds

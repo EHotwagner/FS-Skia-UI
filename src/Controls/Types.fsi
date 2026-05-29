@@ -6,6 +6,95 @@ open FS.Skia.UI.Layout
 type ControlId = string
 type ControlKind = string
 
+[<RequireQualifiedAccess>]
+type KnownControl =
+    | TextBlock
+    | Button
+    | TextBox
+    | LineChart
+    | BarChart
+    | PieChart
+    | ScatterPlot
+    | GraphView
+    | DataGrid
+
+[<RequireQualifiedAccess>]
+type KnownEvent =
+    | Click
+    | Changed
+    | Selected
+    | FocusChanged
+    | SortChanged
+
+[<RequireQualifiedAccess>]
+type KnownAttribute =
+    | Text
+    | Value
+    | Children
+    | Series
+    | Values
+    | Columns
+    | Rows
+    | Items
+    | Nodes
+    | VisibleRange
+    | SelectedRows
+    | FocusedCell
+
+[<RequireQualifiedAccess>]
+type StandardControlKind =
+    | TextBlock
+    | Button
+    | TextBox
+    | LineChart
+    | BarChart
+    | PieChart
+    | ScatterPlot
+    | GraphView
+    | DataGrid
+    | Custom of string
+
+[<RequireQualifiedAccess>]
+type StandardEventKind =
+    | Click
+    | Changed
+    | Selected
+    | FocusChanged
+    | SortChanged
+    | Custom of string
+
+[<RequireQualifiedAccess>]
+type StandardAttributeName =
+    | Text
+    | Value
+    | Children
+    | Series
+    | Values
+    | Columns
+    | Rows
+    | Items
+    | Nodes
+    | VisibleRange
+    | SelectedRows
+    | FocusedCell
+    | Custom of string
+
+type StandardAttributeValue<'msg> =
+    | StandardText of string
+    | StandardBool of bool
+    | StandardFloat of float
+    | StandardStringList of string list
+    | StandardMessage of 'msg
+    | StandardEvent of (string -> 'msg)
+    | StandardUntyped of obj
+
+type ControlSchema =
+    { Kind: StandardControlKind
+      RequiredAttributes: StandardAttributeName list
+      SupportedAttributes: StandardAttributeName list
+      SupportedEvents: StandardEventKind list
+      CustomAllowed: bool }
+
 type ControlDiagnosticSeverity =
     | Info
     | Warning

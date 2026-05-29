@@ -1,0 +1,49 @@
+ValidationSelection.init Feature=Some "028-agent-validation-framework" Effects=[ReadActiveFeatureMetadata]
+ValidationSelection.update ChangedPathSource=Some { Kind = ActiveFeatureMetadata
+       Feature = Some "028-agent-validation-framework"
+       MergeBase = None
+       Paths = ["src/Controls/Types.fsi"; "build.fsx"]
+       Diagnostics = [] } Effects=[LoadValidationContract]
+AgentVerdict JSON={
+  "status": "degraded",
+  "authority": "focused-authoritative",
+  "changed_path_source": { "kind": "active-feature-metadata", "feature": "028-agent-validation-framework", "merge_base": null, "paths": ["src/Controls/Types.fsi"], "diagnostics": [] },
+  "selected_rule_ids": ["controls-public-surface"],
+  "required_gates": ["PackageSurfaceCheck","FsiTranscripts","EvidenceGraph"],
+  "completed_gates": ["EvidenceGraph"],
+  "missing_gates": ["PackageSurfaceCheck","FsiTranscripts"],
+  "skipped_gates": [],
+  "missing_artifacts": [],
+  "failure_owner": "governance",
+  "failure_class": "missing-evidence",
+  "next_command": "./fake.sh build -t AgentReady",
+  "artifacts": [],
+  "diagnostics": ["draft transcript"],
+  "timestamp_utc": "2026-05-28T15:30:00.0000000\u002B00:00"
+}
+AgentVerdict Markdown=# AgentReady Verdict
+
+- status: `degraded`
+- authority: `focused-authoritative`
+- changed-path-source: `active-feature-metadata`
+- required-gates: `PackageSurfaceCheck,FsiTranscripts,EvidenceGraph`
+- completed-gates: `EvidenceGraph`
+- missing-gates: `PackageSurfaceCheck,FsiTranscripts`
+- failure-owner: `governance`
+- failure-class: `missing-evidence`
+- next-command: `./fake.sh build -t AgentReady`
+StandardControlKind Button -> Kind=button Attributes=2
+StandardEventKind Click customControl customAttribute customEvent -> button vendor-widget [{ Name = "vendor-mode"
+   Category = Data
+   Value = UntypedValue "compact" }; { Name = "vendor-activated"
+                                       Category = Event
+                                       Value = MessageValue "Activated" }]
+DataGrid validateStandardControl diagnostics=[{ ControlId = None
+   ControlKind = "DataGrid"
+   Code = MissingRequiredAttribute
+   Severity = Error
+   Message = "Missing required standard attribute `Rows` for `DataGrid`."
+   EvidencePath = None }]
+Catalog knownControlKinds=[TextBlock; Button; TextBox; LineChart; BarChart; PieChart; ScatterPlot;
+ GraphView; DataGrid]
+validateStandardControl Button diagnostics=[]

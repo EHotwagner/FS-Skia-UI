@@ -1,0 +1,25 @@
+
+## template drift
+$ dotnet fsi scripts/template-drift.fsx "/home/developer/projects/FS-Skia-UI/specs/028-agent-validation-framework/readiness/template-drift.md"
+
+exit-code=0
+
+## template drift
+$ dotnet fsi scripts/template-drift.fsx "/home/developer/projects/FS-Skia-UI/specs/028-agent-validation-framework/readiness/template-drift.md"
+
+exit-code=0
+
+## template drift
+$ dotnet fsi scripts/template-drift.fsx "/home/developer/projects/FS-Skia-UI/specs/028-agent-validation-framework/readiness/template-drift.md"
+
+exit-code=0
+
+## template drift
+$ dotnet fsi scripts/template-drift.fsx "/home/developer/projects/FS-Skia-UI/specs/028-agent-validation-framework/readiness/template-drift.md"
+
+exit-code=0
+
+## template drift
+$ dotnet fsi scripts/template-drift.fsx "/home/developer/projects/FS-Skia-UI/specs/028-agent-validation-framework/readiness/template-drift.md"
+
+exit-code=0

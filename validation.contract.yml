@@ -1,0 +1,161 @@
+schema_version: 1
+
+defaults:
+  broad_fallback_command: "./fake.sh build -t Verify"
+  unknown_gate_rejection:
+    owner: governance
+    diagnostic: "unknown gate is rejected with no success verdict"
+  final_gates:
+    - EvidenceGraph
+    - EvidenceAudit
+
+tiers:
+  tier1:
+    authority: focused-authoritative
+    default_gates:
+      - AgentReady
+      - EvidenceGraph
+      - EvidenceAudit
+  tier2:
+    authority: non-authoritative
+    default_gates:
+      - Dev
+  inner-loop:
+    authority: non-authoritative
+    default_gates:
+      - Dev
+  focused-authority:
+    authority: focused-authoritative
+    default_gates:
+      - EvidenceGraph
+  agent-ready:
+    authority: focused-authoritative
+    default_gates:
+      - AgentReady
+      - EvidenceGraph
+      - EvidenceAudit
+  maintainer-verify:
+    authority: broad-authoritative
+    default_gates:
+      - Verify
+  automation-final:
+    authority: broad-authoritative
+    default_gates:
+      - Ci
+
+routing_rules:
+  - id: controls-public-surface
+    paths:
+      - "src/Controls/**"
+    feature_concerns:
+      - controls-public-surface
+      - typed-controls
+    required_gates:
+      - ControlsCatalogCheck
+      - ControlsInteractionCheck
+      - ControlsRenderingCheck
+      - PackageSurfaceCheck
+      - FsiTranscripts
+      - GeneratedProductCheck
+    expected_artifacts:
+      - readiness/typed-controls-front-door.md
+      - readiness/package-surface-expectations.md
+    timeout_class: focused
+    failure_owner: product
+
+  - id: generated-template
+    paths:
+      - "template/base/**"
+      - "template/fragments/**"
+    feature_concerns:
+      - generated-template
+      - generated-product
+    required_gates:
+      - TemplateCheck
+      - GeneratedProductCheck
+    expected_artifacts:
+      - readiness/evidence-policy-separation.md
+    timeout_class: focused
+    failure_owner: template
+
+  - id: evidence-governance
+    paths:
+      - "specs/**/tasks.md"
+      - "specs/**/tasks.deps.yml"
+      - "specs/**/readiness/**"
+      - ".specify/extensions/evidence/**"
+    feature_concerns:
+      - evidence-governance
+    required_gates:
+      - EvidenceGraph
+      - EvidenceAudit
+    expected_artifacts:
+      - readiness/validation-contract.md
+      - readiness/evidence-graph.md
+      - readiness/evidence-audit.md
+    timeout_class: focused
+    failure_owner: governance
+
+  - id: generated-guidance
+    paths:
+      - ".specify/templates/**"
+      - ".specify/presets/**"
+      - "template/fragments/**/README.md"
+      - "template/fragments/**/skill/SKILL.md"
+    feature_concerns:
+      - generated-guidance
+    required_gates:
+      - GeneratedGuidanceCheck
+      - TemplateDrift
+    expected_artifacts:
+      - readiness/evidence-policy-separation.md
+    timeout_class: focused
+    failure_owner: governance
+
+  - id: docs-only
+    paths:
+      - "docs/**"
+      - "specs/**/contracts/**"
+      - "specs/**/quickstart.md"
+    feature_concerns:
+      - docs-only
+    required_gates:
+      - EvidenceGraph
+    expected_artifacts:
+      - readiness/validation-contract.md
+    timeout_class: focused
+    failure_owner: governance
+
+  - id: package-surface
+    paths:
+      - "src/**/*.fsi"
+      - "readiness/surface-baselines/**"
+    feature_concerns:
+      - package-surface
+    required_gates:
+      - PackageSurfaceCheck
+      - FsiTranscripts
+    expected_artifacts:
+      - readiness/package-surface-expectations.md
+    timeout_class: focused
+    failure_owner: product
+
+  - id: build-target-contract
+    paths:
+      - "build.fsx"
+      - "scripts/build/**"
+      - "validation.contract.yml"
+    feature_concerns:
+      - build-target-contract
+    required_gates:
+      - AgentReady
+      - TargetMetadataDrift
+      - EvidenceGraph
+      - EvidenceAudit
+      - Verify
+      - Ci
+    expected_artifacts:
+      - readiness/target-metadata.md
+      - readiness/agent-ready-verdict.md
+    timeout_class: broad
+    failure_owner: governance

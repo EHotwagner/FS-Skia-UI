@@ -98,6 +98,12 @@ Charts and graph views are authored with `LineChart`, `BarChart`, `PieChart`,
 control, not a chart category; products provide columns, rows, selection/focus
 state, sort/filter metadata, and visible-range state through the Controls
 DataGrid APIs.
+Known controls, events, attributes, chart data, and DataGrid data use typed
+front doors such as `LineChart.series`, `GraphView.nodes`, `DataGrid.columns`,
+`DataGrid.rows`, `DataGrid.visibleRange`, `DataGrid.selectedRows`, and
+`DataGrid.focusedCell`. Deliberate extension points stay available through
+visibly custom APIs: `Control.customControl`, `Attr.customAttribute`, and
+`Attr.customEvent`.
 
 Catalog rows for chart, graph, and DataGrid controls link to
 `specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md` for
@@ -117,7 +123,9 @@ Use `./fake.sh build -t Dev` for the default framework build and tests. Use
 `ControlsRenderingCheck` before adding or changing catalog rows. Use
 `FsiTranscripts`, `SampleContractSmoke`, `GeneratedProductCheck`, and
 `TemplateCheck` before changing public surface, samples, or generated product
-support.
+support. Use `TargetMetadataDrift` when adding, renaming, or changing control
+validation targets so control docs, generated guidance, target metadata, and
+the native FAKE registry stay aligned.
 
 For the form-and-dashboard walkthrough, build from the catalog docs with at
 least 10 controls, 3 nested layout regions, and 5 interactions. The maintained

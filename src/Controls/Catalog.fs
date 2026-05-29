@@ -123,6 +123,161 @@ module Catalog =
           |> withChartDataGridEvidence
           definition "custom-control" "Custom Control" "custom" "CustomControl" "Product-owned wrapper for custom Skia content." [ "id"; "render"; "layout"; "hitTest"; "accessibility" ] common [ "onCustom" ] states "Custom" ]
 
+    let standardSchema =
+        [ { Kind = StandardControlKind.TextBlock
+            RequiredAttributes = [ StandardAttributeName.Text ]
+            SupportedAttributes = [ StandardAttributeName.Text; StandardAttributeName.Custom "accessibility" ]
+            SupportedEvents = []
+            CustomAllowed = false }
+          { Kind = StandardControlKind.Button
+            RequiredAttributes = [ StandardAttributeName.Text ]
+            SupportedAttributes = [ StandardAttributeName.Text ]
+            SupportedEvents = [ StandardEventKind.Click ]
+            CustomAllowed = false }
+          { Kind = StandardControlKind.TextBox
+            RequiredAttributes = [ StandardAttributeName.Value ]
+            SupportedAttributes = [ StandardAttributeName.Value ]
+            SupportedEvents = [ StandardEventKind.Changed ]
+            CustomAllowed = false }
+          { Kind = StandardControlKind.LineChart
+            RequiredAttributes = [ StandardAttributeName.Series ]
+            SupportedAttributes = [ StandardAttributeName.Series ]
+            SupportedEvents = [ StandardEventKind.Selected ]
+            CustomAllowed = false }
+          { Kind = StandardControlKind.BarChart
+            RequiredAttributes = [ StandardAttributeName.Series ]
+            SupportedAttributes = [ StandardAttributeName.Series ]
+            SupportedEvents = [ StandardEventKind.Selected ]
+            CustomAllowed = false }
+          { Kind = StandardControlKind.PieChart
+            RequiredAttributes = [ StandardAttributeName.Values ]
+            SupportedAttributes = [ StandardAttributeName.Values ]
+            SupportedEvents = [ StandardEventKind.Selected ]
+            CustomAllowed = false }
+          { Kind = StandardControlKind.ScatterPlot
+            RequiredAttributes = [ StandardAttributeName.Series ]
+            SupportedAttributes = [ StandardAttributeName.Series ]
+            SupportedEvents = [ StandardEventKind.Selected ]
+            CustomAllowed = false }
+          { Kind = StandardControlKind.GraphView
+            RequiredAttributes = [ StandardAttributeName.Nodes ]
+            SupportedAttributes = [ StandardAttributeName.Nodes ]
+            SupportedEvents = [ StandardEventKind.Selected ]
+            CustomAllowed = false }
+          { Kind = StandardControlKind.DataGrid
+            RequiredAttributes = [ StandardAttributeName.Columns; StandardAttributeName.Rows ]
+            SupportedAttributes = [ StandardAttributeName.Columns; StandardAttributeName.Rows; StandardAttributeName.VisibleRange; StandardAttributeName.SelectedRows; StandardAttributeName.FocusedCell ]
+            SupportedEvents = [ StandardEventKind.Selected; StandardEventKind.FocusChanged; StandardEventKind.SortChanged ]
+            CustomAllowed = false } ]
+
+    let knownControlKinds () =
+        standardSchema |> List.map _.Kind
+
+    let requiredAttributes kind =
+        standardSchema
+        |> List.tryFind (fun schema -> schema.Kind = kind)
+        |> Option.map _.RequiredAttributes
+        |> Option.defaultValue []
+
+    let supportedAttributes kind =
+        standardSchema
+        |> List.tryFind (fun schema -> schema.Kind = kind)
+        |> Option.map _.SupportedAttributes
+        |> Option.defaultValue []
+
+    let supportedEvents kind =
+        standardSchema
+        |> List.tryFind (fun schema -> schema.Kind = kind)
+        |> Option.map _.SupportedEvents
+        |> Option.defaultValue []
+
+    let validateStandardControl (control: Control<'msg>) =
+        let standardAttributeName name =
+            match name with
+            | StandardAttributeName.Text -> "text"
+            | StandardAttributeName.Value -> "value"
+            | StandardAttributeName.Children -> "children"
+            | StandardAttributeName.Series -> "series"
+            | StandardAttributeName.Values -> "values"
+            | StandardAttributeName.Columns -> "columns"
+            | StandardAttributeName.Rows -> "rows"
+            | StandardAttributeName.Items -> "items"
+            | StandardAttributeName.Nodes -> "nodes"
+            | StandardAttributeName.VisibleRange -> "visibleRange"
+            | StandardAttributeName.SelectedRows -> "selectedRows"
+            | StandardAttributeName.FocusedCell -> "focusedCell"
+            | StandardAttributeName.Custom value -> value
+
+        let standardAttributeFromName name =
+            match name with
+            | "text" -> Some StandardAttributeName.Text
+            | "value" -> Some StandardAttributeName.Value
+            | "children" -> Some StandardAttributeName.Children
+            | "series" -> Some StandardAttributeName.Series
+            | "values" -> Some StandardAttributeName.Values
+            | "columns" -> Some StandardAttributeName.Columns
+            | "rows" -> Some StandardAttributeName.Rows
+            | "items" -> Some StandardAttributeName.Items
+            | "nodes" -> Some StandardAttributeName.Nodes
+            | "visibleRange" -> Some StandardAttributeName.VisibleRange
+            | "selectedRows" -> Some StandardAttributeName.SelectedRows
+            | "focusedCell" -> Some StandardAttributeName.FocusedCell
+            | _ -> None
+
+        let standardEventFromName name =
+            match name with
+            | "onClick" -> Some StandardEventKind.Click
+            | "onChanged" -> Some StandardEventKind.Changed
+            | "onSelected" -> Some StandardEventKind.Selected
+            | "onFocusChanged" -> Some StandardEventKind.FocusChanged
+            | "onSortChanged" -> Some StandardEventKind.SortChanged
+            | _ -> None
+
+        let schema =
+            standardSchema
+            |> List.tryFind (fun schema ->
+                match schema.Kind, control.Kind with
+                | StandardControlKind.TextBlock, "text-block"
+                | StandardControlKind.Button, "button"
+                | StandardControlKind.TextBox, "text-box"
+                | StandardControlKind.LineChart, "line-chart"
+                | StandardControlKind.BarChart, "bar-chart"
+                | StandardControlKind.PieChart, "pie-chart"
+                | StandardControlKind.ScatterPlot, "scatter-plot"
+                | StandardControlKind.GraphView, "graph-view"
+                | StandardControlKind.DataGrid, "data-grid" -> true
+                | _ -> false)
+
+        match schema with
+        | None -> [ Diagnostics.customExtension control.Kind "custom-control" ]
+        | Some schema ->
+            let missing =
+                schema.RequiredAttributes
+                |> List.choose (fun required ->
+                    let name = standardAttributeName required
+                    if control.Attributes |> List.exists (fun attr -> attr.Name = name) then
+                        None
+                    else
+                        Some(Diagnostics.missingStandardAttribute schema.Kind required))
+
+            let unsupportedAttributes =
+                control.Attributes
+                |> List.choose (fun attr ->
+                    match standardAttributeFromName attr.Name with
+                    | Some standard when attr.Category <> Event && not (schema.SupportedAttributes |> List.contains standard) ->
+                        Some(Diagnostics.unsupportedStandardAttribute schema.Kind standard)
+                    | _ -> None)
+
+            let unsupportedEvents =
+                control.Attributes
+                |> List.choose (fun attr ->
+                    match standardEventFromName attr.Name with
+                    | Some standard when attr.Category = Event && not (schema.SupportedEvents |> List.contains standard) ->
+                        Some(Diagnostics.unsupportedStandardEvent schema.Kind standard)
+                    | _ -> None)
+
+            missing @ unsupportedAttributes @ unsupportedEvents
+
     let supportedCount () =
         supportedControls
         |> List.filter (fun row -> row.SupportStatus = "supported")

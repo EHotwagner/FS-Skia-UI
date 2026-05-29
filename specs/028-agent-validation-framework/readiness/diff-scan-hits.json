@@ -1,0 +1,206 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "specs/028-agent-validation-framework/plan.md",
+      "line": 35,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "**Synthetic Evidence**: Synthetic malformed contract, metadata, graph, and verdict fixtures may be used only for rejecti"
+    },
+    {
+      "file": "specs/028-agent-validation-framework/plan.md",
+      "line": 50,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: PASS with restrictions. Negative fixtures for malformed contracts/metadata/verdicts are allowe"
+    },
+    {
+      "file": "specs/028-agent-validation-framework/plan.md",
+      "line": 144,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic disclosure**: PASS with restrictions. Synthetic fixtures are limited to malformed/error-path rejection and"
+    },
+    {
+      "file": "specs/028-agent-validation-framework/readiness/logs/t010-generated-template-tests.txt",
+      "line": 215,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: template/base may run against the pre-change SkiaViewer package during local validation; the real image pa"
+    },
+    {
+      "file": "specs/028-agent-validation-framework/readiness/logs/t011-synthetic-malformed-fixtures.txt",
+      "line": 23,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "\u001b[0m\u001b[1000D\u001b[?25h\u001b[1000D\u001b[?25h\u001b[1000D\u001b[?25h\u001b[37m[\u001b[37m17:26:31 \u001b[31mERR\u001b[37m] \u001b[36mAgent validation framework contract.S"
+    },
+    {
+      "file": "specs/028-agent-validation-framework/readiness/logs/t011-synthetic-malformed-fixtures.txt",
+      "line": 17110,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "\u001b[0m\u001b[1000D\u001b[?25h\u001b[1000D\u001b[?25h\u001b[37m[\u001b[37m17:26:31 \u001b[31mERR\u001b[37m] \u001b[36mAgent validation framework contract.Synthetic malf"
+    },
+    {
+      "file": "specs/028-agent-validation-framework/readiness/logs/t017-t019-us1-routing-tests.txt",
+      "line": 16,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "\u001b[0m\u001b[1000D\u001b[?25h\u001b[37m[\u001b[37m17:36:35 \u001b[31mERR\u001b[37m] \u001b[36mUS1 validation routing.Synthetic malformed routing fixtures rej"
+    },
+    {
+      "file": "specs/028-agent-validation-framework/readiness/task-graph.json",
+      "line": 445,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "\"design_source\": \"`specs/028-agent-validation-framework/plan.md` Synthetic Evidence and contracts\","
+    },
+    {
+      "file": "specs/028-agent-validation-framework/readiness/task-graph.md",
+      "line": 90,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "## Synthetic Error-Handling Classification"
+    },
+    {
+      "file": "specs/028-agent-validation-framework/readiness/task-graph.md",
+      "line": 92,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Accepted | Label | Design source | Synthetic input class | Expected error behavior | Diagnostics |"
+    },
+    {
+      "file": "specs/028-agent-validation-framework/readiness/task-graph.md",
+      "line": 94,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| T011 | yes | yes | `specs/028-agent-validation-framework/plan.md` Synthetic Evidence and contracts | malformed YAML/JS"
+    },
+    {
+      "file": "specs/028-agent-validation-framework/readiness/task-graph.md",
+      "line": 367,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/028-agent-validation-framework/tasks.md",
+      "line": 240,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    },
+    {
+      "file": "specs/028-agent-validation-framework/tasks.md",
+      "line": 242,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| T011 | Malformed validation contract and verdict rejection paths require intentionally invalid contract shapes and can"
+    },
+    {
+      "file": "template/base/src/Product/EvidenceCommands.fs",
+      "line": 127,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: approved SEH fixtures for missing generated artifact and unsupported host fixture classification; real com"
+    },
+    {
+      "file": "tests/Governance.Tests/AgentValidationFrameworkTests.fs",
+      "line": 190,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"Synthetic malformed validation contract fixtures reject invalid shapes\" {"
+    },
+    {
+      "file": "tests/Governance.Tests/AgentValidationFrameworkTests.fs",
+      "line": 191,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: intentionally malformed contract fixtures prove SEH rejection paths; real success routing evidence is reco"
+    },
+    {
+      "file": "tests/Governance.Tests/AgentValidationFrameworkTests.fs",
+      "line": 204,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"Synthetic malformed agent verdict fixtures reject invalid handoff payloads\" {"
+    },
+    {
+      "file": "tests/Governance.Tests/AgentValidationFrameworkTests.fs",
+      "line": 205,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: intentionally malformed verdict fixtures prove SEH rejection paths; real AgentReady verdict evidence is re"
+    },
+    {
+      "file": "tests/Governance.Tests/AgentValidationFrameworkTests.fs",
+      "line": 468,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"Synthetic malformed routing fixtures reject unsafe contract inputs\" {"
+    },
+    {
+      "file": "tests/Governance.Tests/AgentValidationFrameworkTests.fs",
+      "line": 469,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: malformed YAML, duplicate ids, unknown targets, and invalid path patterns are approved SEH fixtures; real "
+    },
+    {
+      "file": "tests/Governance.Tests/AgentValidationFrameworkTests.fs",
+      "line": 565,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"Synthetic forced error-result fixtures classify environment unsupported stale and missing-evidence paths\" {"
+    },
+    {
+      "file": "tests/Governance.Tests/AgentValidationFrameworkTests.fs",
+      "line": 566,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: forced gate outcomes are approved SEH fixtures for rare environment/prerequisite states; real command evid"
+    },
+    {
+      "file": "tests/Governance.Tests/GeneratedProjectValidationTests.fs",
+      "line": 334,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"Synthetic generated evidence command fixtures classify missing artifacts and unsupported hosts\" {"
+    },
+    {
+      "file": "tests/Governance.Tests/GeneratedProjectValidationTests.fs",
+      "line": 335,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: missing generated artifacts and unsupported-host outcomes are approved SEH negative fixtures; real generat"
+    }
+  ]
+}

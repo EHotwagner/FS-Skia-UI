@@ -1,0 +1,31 @@
+[37m[[37m17:21:54 [37mINF[37m] [37mEXPECTO? Running tests...[37m [37m<[37mExpecto[37m>[37m
+[0m[1000D[?25h[37m[[37m17:21:55 [31mERR[37m] [36mAgent validation framework contract.validation contract routes representative changed paths to focused gates[37m failed in [32m00:00:00.0090000[37m. [36m
+validation.contract.yml exists at repository root. Actual value was false but had expected it to be true.
+   at AgentValidationFrameworkTests.contractText() in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/AgentValidationFrameworkTests.fs:line 10
+   at AgentValidationFrameworkTests.agentValidationFrameworkTests@51-2.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/AgentValidationFrameworkTests.fs:line 51
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112[37m [37m<[37mExpecto[37m>[37m
+[0m[1000D[?25h[37m[[37m17:21:55 [31mERR[37m] [36mAgent validation framework contract.validation contract declares schema tiers defaults routing and diagnostics[37m failed in [32m00:00:00.0090000[37m. [36m
+validation.contract.yml exists at repository root. Actual value was false but had expected it to be true.
+   at AgentValidationFrameworkTests.contractText() in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/AgentValidationFrameworkTests.fs:line 10
+   at AgentValidationFrameworkTests.agentValidationFrameworkTests@17.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/AgentValidationFrameworkTests.fs:line 17
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112[37m [37m<[37mExpecto[37m>[37m
+[0m[1000D[?25h[37m[[37m17:21:55 [31mERR[37m] [36mAgent validation framework contract.validation contract names required authoritative gates[37m failed in [32m00:00:00.0090000[37m. [36m
+validation.contract.yml exists at repository root. Actual value was false but had expected it to be true.
+   at AgentValidationFrameworkTests.contractText() in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/AgentValidationFrameworkTests.fs:line 10
+   at AgentValidationFrameworkTests.agentValidationFrameworkTests@34-1.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/AgentValidationFrameworkTests.fs:line 34
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112[37m [37m<[37mExpecto[37m>[37m
+[0m[1000D[?25h[37m[[37m17:21:55 [31mERR[37m] [36mAgent validation framework contract.validation contract rejects unknown gates with governance-owned diagnostics[37m failed in [32m00:00:00.0090000[37m. [36m
+validation.contract.yml exists at repository root. Actual value was false but had expected it to be true.
+   at AgentValidationFrameworkTests.contractText() in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/AgentValidationFrameworkTests.fs:line 10
+   at AgentValidationFrameworkTests.agentValidationFrameworkTests@65-3.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Governance.Tests/AgentValidationFrameworkTests.fs:line 65
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112[37m [37m<[37mExpecto[37m>[37m
+[0m[1000D[?25h[1000D[?25h[1000D[?25h[1000D[?25h[1000D[?25h[37m[[37m17:21:55 [37mINF[37m] [37mEXPECTO! [36m4[37m tests run in [32m00:00:00.0926977[37m for [36mAgent validation framework contract[37m – [36m0[37m passed, [36m0[37m ignored, [36m4[37m failed, [36m0[37m errored. [36m[37m [37m<[37mExpecto[37m>[37m
+[0m

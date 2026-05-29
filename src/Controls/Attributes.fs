@@ -1,10 +1,57 @@
 namespace FS.Skia.UI.Controls
 
 module Attr =
+    let standardAttributeName name =
+        match name with
+        | StandardAttributeName.Text -> "text"
+        | StandardAttributeName.Value -> "value"
+        | StandardAttributeName.Children -> "children"
+        | StandardAttributeName.Series -> "series"
+        | StandardAttributeName.Values -> "values"
+        | StandardAttributeName.Columns -> "columns"
+        | StandardAttributeName.Rows -> "rows"
+        | StandardAttributeName.Items -> "items"
+        | StandardAttributeName.Nodes -> "nodes"
+        | StandardAttributeName.VisibleRange -> "visibleRange"
+        | StandardAttributeName.SelectedRows -> "selectedRows"
+        | StandardAttributeName.FocusedCell -> "focusedCell"
+        | StandardAttributeName.Custom value -> value
+
+    let standardEventName eventKind =
+        match eventKind with
+        | StandardEventKind.Click -> "onClick"
+        | StandardEventKind.Changed -> "onChanged"
+        | StandardEventKind.Selected -> "onSelected"
+        | StandardEventKind.FocusChanged -> "onFocusChanged"
+        | StandardEventKind.SortChanged -> "onSortChanged"
+        | StandardEventKind.Custom value -> value
+
+    let standardValue value =
+        match value with
+        | StandardText value -> TextValue value
+        | StandardBool value -> BoolValue value
+        | StandardFloat value -> FloatValue value
+        | StandardStringList values -> StringListValue values
+        | StandardMessage msg -> MessageValue msg
+        | StandardEvent map -> UntypedValue map
+        | StandardUntyped value -> UntypedValue value
+
     let create name category value =
         { Name = name
           Category = category
           Value = value }
+
+    let standardAttribute name value =
+        create (standardAttributeName name) Data (standardValue value)
+
+    let customAttribute name (value: obj) =
+        create name Data (UntypedValue value)
+
+    let standardEvent eventKind msg =
+        create (standardEventName eventKind) Event (MessageValue msg)
+
+    let customEvent eventKind msg =
+        create eventKind Event (MessageValue msg)
 
     let text value = create "text" Content (TextValue value)
     let value value = create "value" Content (TextValue value)

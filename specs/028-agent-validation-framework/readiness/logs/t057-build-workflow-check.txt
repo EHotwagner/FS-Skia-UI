@@ -1,0 +1,30 @@
+The last full restore is still up to date. Nothing left to do.
+run BuildWorkflowCheck
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target BuildWorkflowCheck:
+<== BuildWorkflowCheck
+
+The running order is:
+Group - 1
+  - BuildWorkflowCheck
+Starting target 'BuildWorkflowCheck'
+process reliability self-check: preflight, bootstrap, verdict, and focused gate effects are pure
+Finished (Success) 'BuildWorkflowCheck' in 00:00:00.0168300
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target               Duration
+------               --------
+BuildWorkflowCheck   00:00:00.0147762
+Total:               00:00:00.0912287
+Status:              Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 217 milliseconds
+ - Packages: 63 milliseconds
+ - Script analyzing: 22 milliseconds
+ - Script running: 263 milliseconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 second

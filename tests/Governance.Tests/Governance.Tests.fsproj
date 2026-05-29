@@ -31,10 +31,12 @@
     <Compile Include="SyntheticErrorEvidenceTests.fs" />
     <Compile Include="TemplateDriftTests.fs" />
     <Compile Include="PublicRecordInvariantTests.fs" />
+    <Compile Include="AgentValidationFrameworkTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Lib\Lib.fsproj" />
     <PackageReference Include="Expecto" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" />

@@ -1,0 +1,15 @@
+
+## sample-pack/source generated Test
+$ bash ./fake.sh build -t Test
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/028-agent-validation-framework/sample-pack-source/src/Product/Product.fsproj (in 290 ms).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/028-agent-validation-framework/sample-pack-source/tests/Product.Tests/Product.Tests.fsproj (in 290 ms).
+  Product -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/028-agent-validation-framework/sample-pack-source/src/Product/bin/Debug/net10.0/Product.dll
+  Product.Tests -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/028-agent-validation-framework/sample-pack-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/artifacts/generated-products/028-agent-validation-framework/sample-pack-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     2, Skipped:     0, Total:     2, Duration: 13 ms - Product.Tests.dll (net10.0)
+Test completed for generated product
+
+exit-code=0

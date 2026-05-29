@@ -5,6 +5,20 @@ open FS.Skia.UI.Scene
 
 module LayoutDefaults = FS.Skia.UI.Layout.Defaults
 
+module StandardControlKindHelpers =
+    let toControlKind kind =
+        match kind with
+        | FS.Skia.UI.Controls.StandardControlKind.TextBlock -> "text-block"
+        | FS.Skia.UI.Controls.StandardControlKind.Button -> "button"
+        | FS.Skia.UI.Controls.StandardControlKind.TextBox -> "text-box"
+        | FS.Skia.UI.Controls.StandardControlKind.LineChart -> "line-chart"
+        | FS.Skia.UI.Controls.StandardControlKind.BarChart -> "bar-chart"
+        | FS.Skia.UI.Controls.StandardControlKind.PieChart -> "pie-chart"
+        | FS.Skia.UI.Controls.StandardControlKind.ScatterPlot -> "scatter-plot"
+        | FS.Skia.UI.Controls.StandardControlKind.GraphView -> "graph-view"
+        | FS.Skia.UI.Controls.StandardControlKind.DataGrid -> "data-grid"
+        | FS.Skia.UI.Controls.StandardControlKind.Custom value -> value
+
 module ControlInternals =
     let tryLast name (attrs: Attr<'msg> list) =
         attrs
@@ -284,6 +298,18 @@ module Control =
           Children = children
           Content = text
           Accessibility = ControlInternals.accessibility kind attrs text }
+
+    let standard kind attrs =
+        create (StandardControlKindHelpers.toControlKind kind) attrs
+
+    let customControl kind attrs =
+        create kind attrs
+
+    let lowerStandard (control: Control<'msg>) =
+        control
+
+    let lowerCustom (control: Control<'msg>) =
+        control
 
     let withKey key (control: Control<'msg>) =
         { control with Key = Some key }

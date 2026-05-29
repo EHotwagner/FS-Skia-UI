@@ -2,6 +2,10 @@ namespace FS.Skia.UI.Controls
 
 module Control =
     val create: kind: ControlKind -> attrs: Attr<'msg> list -> Control<'msg>
+    val standard: kind: StandardControlKind -> attrs: Attr<'msg> list -> Control<'msg>
+    val customControl: kind: string -> attrs: Attr<'msg> list -> Control<'msg>
+    val lowerStandard: control: Control<'msg> -> Control<'msg>
+    val lowerCustom: control: Control<'msg> -> Control<'msg>
     val withKey: key: ControlId -> control: Control<'msg> -> Control<'msg>
     val render: theme: Theme -> control: Control<'msg> -> ControlRenderResult<'msg>
     val diagnostics: control: Control<'msg> -> ControlDiagnostic list

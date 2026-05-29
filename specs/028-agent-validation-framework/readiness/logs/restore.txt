@@ -1,0 +1,355 @@
+
+## dotnet tool restore
+$ dotnet tool restore
+Tool 'fake-cli' (version '6.1.4') was restored. Available commands: fake
+
+Restore was successful.
+
+exit-code=0
+
+## dotnet restore src/Scene/Scene.fsproj
+$ dotnet restore "src/Scene/Scene.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/SkiaViewer/SkiaViewer.fsproj
+$ dotnet restore "src/SkiaViewer/SkiaViewer.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Elmish/Elmish.fsproj
+$ dotnet restore "src/Elmish/Elmish.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/KeyboardInput/KeyboardInput.fsproj
+$ dotnet restore "src/KeyboardInput/KeyboardInput.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Controls.Elmish/Controls.Elmish.fsproj
+$ dotnet restore "src/Controls.Elmish/Controls.Elmish.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Testing/Testing.fsproj
+$ dotnet restore "src/Testing/Testing.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Lib/Lib.fsproj
+$ dotnet restore "src/Lib/Lib.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Layout/Layout.fsproj
+$ dotnet restore "src/Layout/Layout.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Controls/Controls.fsproj
+$ dotnet restore "src/Controls/Controls.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet tool restore
+$ dotnet tool restore
+Tool 'fake-cli' (version '6.1.4') was restored. Available commands: fake
+
+Restore was successful.
+
+exit-code=0
+
+## dotnet restore src/Scene/Scene.fsproj
+$ dotnet restore "src/Scene/Scene.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/SkiaViewer/SkiaViewer.fsproj
+$ dotnet restore "src/SkiaViewer/SkiaViewer.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Elmish/Elmish.fsproj
+$ dotnet restore "src/Elmish/Elmish.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/KeyboardInput/KeyboardInput.fsproj
+$ dotnet restore "src/KeyboardInput/KeyboardInput.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Controls.Elmish/Controls.Elmish.fsproj
+$ dotnet restore "src/Controls.Elmish/Controls.Elmish.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Testing/Testing.fsproj
+$ dotnet restore "src/Testing/Testing.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Lib/Lib.fsproj
+$ dotnet restore "src/Lib/Lib.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Layout/Layout.fsproj
+$ dotnet restore "src/Layout/Layout.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Controls/Controls.fsproj
+$ dotnet restore "src/Controls/Controls.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet tool restore
+$ dotnet tool restore
+Tool 'fake-cli' (version '6.1.4') was restored. Available commands: fake
+
+Restore was successful.
+
+exit-code=0
+
+## dotnet restore src/Scene/Scene.fsproj
+$ dotnet restore "src/Scene/Scene.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/SkiaViewer/SkiaViewer.fsproj
+$ dotnet restore "src/SkiaViewer/SkiaViewer.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Elmish/Elmish.fsproj
+$ dotnet restore "src/Elmish/Elmish.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/KeyboardInput/KeyboardInput.fsproj
+$ dotnet restore "src/KeyboardInput/KeyboardInput.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Controls.Elmish/Controls.Elmish.fsproj
+$ dotnet restore "src/Controls.Elmish/Controls.Elmish.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Testing/Testing.fsproj
+$ dotnet restore "src/Testing/Testing.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Lib/Lib.fsproj
+$ dotnet restore "src/Lib/Lib.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Layout/Layout.fsproj
+$ dotnet restore "src/Layout/Layout.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Controls/Controls.fsproj
+$ dotnet restore "src/Controls/Controls.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet tool restore
+$ dotnet tool restore
+Tool 'fake-cli' (version '6.1.4') was restored. Available commands: fake
+
+Restore was successful.
+
+exit-code=0
+
+## dotnet restore src/Scene/Scene.fsproj
+$ dotnet restore "src/Scene/Scene.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/SkiaViewer/SkiaViewer.fsproj
+$ dotnet restore "src/SkiaViewer/SkiaViewer.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Elmish/Elmish.fsproj
+$ dotnet restore "src/Elmish/Elmish.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/KeyboardInput/KeyboardInput.fsproj
+$ dotnet restore "src/KeyboardInput/KeyboardInput.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Controls.Elmish/Controls.Elmish.fsproj
+$ dotnet restore "src/Controls.Elmish/Controls.Elmish.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Testing/Testing.fsproj
+$ dotnet restore "src/Testing/Testing.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Lib/Lib.fsproj
+$ dotnet restore "src/Lib/Lib.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Layout/Layout.fsproj
+$ dotnet restore "src/Layout/Layout.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Controls/Controls.fsproj
+$ dotnet restore "src/Controls/Controls.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet tool restore
+$ dotnet tool restore
+Tool 'fake-cli' (version '6.1.4') was restored. Available commands: fake
+
+Restore was successful.
+
+exit-code=0
+
+## dotnet restore src/Scene/Scene.fsproj
+$ dotnet restore "src/Scene/Scene.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/SkiaViewer/SkiaViewer.fsproj
+$ dotnet restore "src/SkiaViewer/SkiaViewer.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Elmish/Elmish.fsproj
+$ dotnet restore "src/Elmish/Elmish.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/KeyboardInput/KeyboardInput.fsproj
+$ dotnet restore "src/KeyboardInput/KeyboardInput.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Controls.Elmish/Controls.Elmish.fsproj
+$ dotnet restore "src/Controls.Elmish/Controls.Elmish.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Testing/Testing.fsproj
+$ dotnet restore "src/Testing/Testing.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Lib/Lib.fsproj
+$ dotnet restore "src/Lib/Lib.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Layout/Layout.fsproj
+$ dotnet restore "src/Layout/Layout.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0
+
+## dotnet restore src/Controls/Controls.fsproj
+$ dotnet restore "src/Controls/Controls.fsproj"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+exit-code=0

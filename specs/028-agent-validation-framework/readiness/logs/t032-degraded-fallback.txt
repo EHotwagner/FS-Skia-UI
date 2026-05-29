@@ -1,0 +1,13 @@
+The last restore is still up to date. Nothing left to do.
+Starting target 'EvidenceGraph'
+Finished target 'EvidenceGraph'
+Starting target 'AgentReady'
+Finished target 'AgentReady'
+Performance:
+ - Cli parsing: 221 milliseconds
+ - Packages: 65 milliseconds
+ - Script analyzing: 58 milliseconds
+ - Script running: 183 milliseconds
+ - Script cleanup: 2 milliseconds
+ - Runtime: 1 second
+T032 degraded fallback verified: status=degraded next_command=./fake.sh build -t Verify missing_gates=EvidenceAudit

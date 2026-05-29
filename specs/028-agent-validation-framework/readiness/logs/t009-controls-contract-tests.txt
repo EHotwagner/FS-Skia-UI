@@ -1,0 +1,420 @@
+[37m[[37m17:24:20 [37mINF[37m] [37mEXPECTO? Running tests...[37m [37m<[37mExpecto[37m>[37m
+[0m[1000D[?25h[37m[[37m17:24:20 [31mERR[37m] [36mTyped standard controls contract.Control and Attributes signatures expose typed standard and visibly custom APIs[37m failed in [32m00:00:00.0110000[37m. [36m
+typed control front door exposes standard. Expected subject string 'namespace FS.Skia.UI.Controls
+
+module Control =
+    val create: kind: ControlKind -> attrs: Attr<'msg> list -> Control<'msg>
+    val withKey: key: ControlId -> control: Control<'msg> -> Control<'msg>
+    val render: theme: Theme -> control: Control<'msg> -> ControlRenderResult<'msg>
+    val diagnostics: control: Control<'msg> -> ControlDiagnostic list
+    val dispatch: event: ControlEvent -> control: Control<'msg> -> 'msg list
+    val count: control: Control<'msg> -> int
+
+module TextBlock =
+    val create: Attr<'msg> list -> Control<'msg>
+    val text: string -> Attr<'msg>
+
+module Label =
+    val create: Attr<'msg> list -> Control<'msg>
+    val text: string -> Attr<'msg>
+
+module Image =
+    val create: Attr<'msg> list -> Control<'msg>
+    val source: string -> Attr<'msg>
+
+module Icon =
+    val create: Attr<'msg> list -> Control<'msg>
+    val name: string -> Attr<'msg>
+
+module Separator =
+    val create: Attr<'msg> list -> Control<'msg>
+
+module Badge =
+    val create: Attr<'msg> list -> Control<'msg>
+    val text: string -> Attr<'msg>
+
+module Button =
+    val create: Attr<'msg> list -> Control<'msg>
+    val text: string -> Attr<'msg>
+    val enabled: bool -> Attr<'msg>
+    val onClick: 'msg -> Attr<'msg>
+    val onClickWith: (ControlEvent -> 'msg) -> Attr<'msg>
+
+module IconButton =
+    val create: Attr<'msg> list -> Control<'msg>
+    val icon: string -> Attr<'msg>
+    val onClick: 'msg -> Attr<'msg>
+
+module CheckBox =
+    val create: Attr<'msg> list -> Control<'msg>
+    val text: string -> Attr<'msg>
+    val checked': bool -> Attr<'msg>
+    val onChanged: (bool -> 'msg) -> Attr<'msg>
+
+module Switch =
+    val create: Attr<'msg> list -> Control<'msg>
+    val checked': bool -> Attr<'msg>
+    val onChanged: (bool -> 'msg) -> Attr<'msg>
+
+module Slider =
+    val create: Attr<'msg> list -> Control<'msg>
+    val value: float -> Attr<'msg>
+    val onChanged: (float -> 'msg) -> Attr<'msg>
+
+module NumericInput =
+    val create: Attr<'msg> list -> Control<'msg>
+    val value: float -> Attr<'msg>
+    val onChanged: (float -> 'msg) -> Attr<'msg>
+
+module TextBox =
+    val create: Attr<'msg> list -> Control<'msg>
+    val value: string -> Attr<'msg>
+    val readOnly: bool -> Attr<'msg>
+    val validation: ValidationState -> Attr<'msg>
+    val onChanged: (string -> 'msg) -> Attr<'msg>
+
+module TextArea =
+    val create: Attr<'msg> list -> Control<'msg>
+    val value: string -> Attr<'msg>
+    val onChanged: (string -> 'msg) -> Attr<'msg>
+
+module RadioGroup =
+    val create: Attr<'msg> list -> Control<'msg>
+    val items: string list -> Attr<'msg>
+    val selected: string -> Attr<'msg>
+    val onChanged: (string -> 'msg) -> Attr<'msg>
+
+module Stack =
+    val create: Attr<'msg> list -> Control<'msg>
+    val children: Control<'msg> list -> Attr<'msg>
+
+module Grid =
+    val create: Attr<'msg> list -> Control<'msg>
+    val children: Control<'msg> list -> Attr<'msg>
+
+module Dock =
+    val create: Attr<'msg> list -> Control<'msg>
+    val children: Control<'msg> list -> Attr<'msg>
+
+module Wrap =
+    val create: Attr<'msg> list -> Control<'msg>
+    val children: Control<'msg> list -> Attr<'msg>
+
+module Border =
+    val create: Attr<'msg> list -> Control<'msg>
+    val child: Control<'msg> -> Attr<'msg>
+
+module Panel =
+    val create: Attr<'msg> list -> Control<'msg>
+    val children: Control<'msg> list -> Attr<'msg>
+
+module ProgressBar =
+    val create: Attr<'msg> list -> Control<'msg>
+    val value: float -> Attr<'msg>
+
+module Spinner =
+    val create: Attr<'msg> list -> Control<'msg>
+
+module ValidationMessage =
+    val create: Attr<'msg> list -> Control<'msg>
+    val text: string -> Attr<'msg>
+
+module Tabs =
+    val create: Attr<'msg> list -> Control<'msg>
+    val items: string list -> Attr<'msg>
+    val selected: string -> Attr<'msg>
+    val onChanged: (string -> 'msg) -> Attr<'msg>
+
+module Menu =
+    val create: Attr<'msg> list -> Control<'msg>
+    val items: string list -> Attr<'msg>
+    val onSelected: (string -> 'msg) -> Attr<'msg>
+
+module Toolbar =
+    val create: Attr<'msg> list -> Control<'msg>
+    val children: Control<'msg> list -> Attr<'msg>
+
+module Tooltip =
+    val create: Attr<'msg> list -> Control<'msg>
+    val text: string -> Attr<'msg>
+
+module Dialog =
+    val create: Attr<'msg> list -> Control<'msg>
+    val children: Control<'msg> list -> Attr<'msg>
+
+module Toast =
+    val create: Attr<'msg> list -> Control<'msg>
+    val text: string -> Attr<'msg>
+
+module Overlay =
+    val create: Attr<'msg> list -> Control<'msg>
+    val child: Control<'msg> -> Attr<'msg>
+
+namespace FS.Skia.UI.Controls
+
+module Attr =
+    val create: name: string -> category: AttrCategory -> value: AttrValue<'msg> -> Attr<'msg>
+    val text: value: string -> Attr<'msg>
+    val value: value: string -> Attr<'msg>
+    val items: values: string list -> Attr<'msg>
+    val child: control: Control<'msg> -> Attr<'msg>
+    val children: controls: Control<'msg> list -> Attr<'msg>
+    val enabled: value: bool -> Attr<'msg>
+    val visible: value: bool -> Attr<'msg>
+    val readOnly: value: bool -> Attr<'msg>
+    val loading: value: bool -> Attr<'msg>
+    val selected: value: bool -> Attr<'msg>
+    val width: value: float -> Attr<'msg>
+    val height: value: float -> Attr<'msg>
+    val padding: value: float -> Attr<'msg>
+    val margin: value: float -> Attr<'msg>
+    val style: name: string -> Attr<'msg>
+    val theme: theme: Theme -> Attr<'msg>
+    val validation: state: ValidationState -> Attr<'msg>
+    val accessibility: metadata: AccessibilityMetadata -> Attr<'msg>
+    val on: eventKind: string -> msg: 'msg -> Attr<'msg>
+    val onWith: eventKind: string -> map: (ControlEvent -> 'msg) -> Attr<'msg>
+' to contain substring 'standard'.
+   at ControlsTypedControlContractTests.typedControlContractTests@36-1.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Controls.Tests/TypedControlContractTests.fs:line 49
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112[37m [37m<[37mExpecto[37m>[37m
+[0m[1000D[?25h[37m[[37m17:24:20 [31mERR[37m] [36mTyped standard controls contract.Catalog and Diagnostics signatures expose schema-backed validation[37m failed in [32m00:00:00.0110000[37m. [36m
+schema diagnostics expose standardSchema. Expected subject string 'namespace FS.Skia.UI.Controls
+
+type CatalogAccessibility =
+    { Role: string
+      NameSource: string
+      StateMetadata: string list
+      FocusBehavior: string
+      KeyboardOperation: string
+      ContrastEvidence: string }
+
+type ControlDefinition =
+    { Id: string
+      DisplayName: string
+      Category: string
+      Module: string
+      Purpose: string
+      RequiredAttributes: string list
+      CommonAttributes: string list
+      Events: string list
+      VisualStates: string list
+      Accessibility: CatalogAccessibility
+      Examples: string list
+      Tests: string list
+      Evidence: string list
+      SupportStatus: string
+      Owner: string }
+
+module Catalog =
+    val supportedControls: ControlDefinition list
+    val supportedCount: unit -> int
+    val categories: unit -> string list
+    val validate: unit -> ControlDiagnostic list
+    val markdownSummary: unit -> string
+
+namespace FS.Skia.UI.Controls
+
+module Diagnostics =
+    val create:
+        controlId: ControlId option ->
+        kind: ControlKind ->
+        code: ControlDiagnosticCode ->
+        severity: ControlDiagnosticSeverity ->
+        message: string ->
+            ControlDiagnostic
+
+    val missingRequired: controlId: ControlId option -> kind: ControlKind -> name: string -> ControlDiagnostic
+    val duplicateAttribute: controlId: ControlId option -> kind: ControlKind -> name: string -> ControlDiagnostic
+    val missingAccessibility: controlId: ControlId option -> kind: ControlKind -> ControlDiagnostic
+    val keyCollision: key: ControlId -> kind: ControlKind -> ControlDiagnostic
+    val unsupportedEnvironment: kind: ControlKind -> capability: string -> ControlDiagnostic
+    val stalePackageReference: packageId: string -> path: string -> ControlDiagnostic
+    val dependencyLeak: packageId: string -> dependencyPath: string -> ControlDiagnostic
+    val catalogOmission: controlId: string -> requiredField: string -> ControlDiagnostic
+    val duplicateRuntimeDefinition: runtimeName: string -> path: string -> ControlDiagnostic
+    val staleEventTarget: controlId: ControlId -> eventKind: string -> ControlDiagnostic
+    val unsupportedScopeExpansion: scopeName: string -> owner: string -> ControlDiagnostic
+' to contain substring 'standardSchema'.
+   at ControlsTypedControlContractTests.typedControlContractTests@53-2.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Controls.Tests/TypedControlContractTests.fs:line 68
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112[37m [37m<[37mExpecto[37m>[37m
+[0m[1000D[?25h[1000D[?25h[37m[[37m17:24:20 [31mERR[37m] [36mTyped standard controls contract.FSI transcript expectations cover typed front doors and custom escape hatch[37m failed in [32m00:00:00.0110000[37m. [36m
+draft FSI transcript exists. Actual value was false but had expected it to be true.
+   at ControlsTypedControlContractTests.typedControlContractTests@72-3.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Controls.Tests/TypedControlContractTests.fs:line 73
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112[37m [37m<[37mExpecto[37m>[37m
+[0m[1000D[?25h[1000D[?25h[1000D[?25h[37m[[37m17:24:20 [31mERR[37m] [36mTyped standard controls contract.Types signature declares typed standard controls events attributes and values[37m failed in [32m00:00:00.0110000[37m. [36m
+Types.fsi exposes type StandardControlKind. Expected subject string 'namespace FS.Skia.UI.Controls
+
+open FS.Skia.UI.Scene
+open FS.Skia.UI.Layout
+
+type ControlId = string
+type ControlKind = string
+
+type ControlDiagnosticSeverity =
+    | Info
+    | Warning
+    | Error
+
+type ControlDiagnosticCode =
+    | MissingRequiredAttribute
+    | DuplicateAttribute
+    | UnsupportedStateCombination
+    | MissingStableKey
+    | HitTestFailed
+    | LayoutConflict
+    | MissingAccessibilityMetadata
+    | ContrastFailure
+    | UnsupportedEnvironment
+    | KeyCollision
+    | StaleGeneratedReference
+
+type AccessibilityRole =
+    | StaticText
+    | Button
+    | TextBox
+    | CheckBox
+    | RadioGroup
+    | Slider
+    | List
+    | Grid
+    | Menu
+    | Tab
+    | Dialog
+    | Progress
+    | Image
+    | Chart
+    | Graph
+    | Custom
+
+type KeyboardOperation =
+    { Focusable: bool
+      ActivationKeys: string list
+      NavigationKeys: string list }
+
+type ContrastEvidence =
+    { Foreground: Color
+      Background: Color
+      Ratio: float
+      RequiredRatio: float }
+
+type AccessibilityMetadata =
+    { Role: AccessibilityRole
+      NameSource: string
+      State: string list
+      FocusOrder: int option
+      Keyboard: KeyboardOperation
+      Contrast: ContrastEvidence option }
+
+type ValidationState =
+    | Valid
+    | Invalid of string
+    | Pending of string
+
+type VisualState =
+    | Normal
+    | Disabled
+    | Hover
+    | Pressed
+    | Focused
+    | Selected
+    | Loading
+    | Validation of ValidationState
+
+type Theme =
+    { Name: string
+      Foreground: Color
+      Background: Color
+      Accent: Color
+      Danger: Color
+      Muted: Color
+      FontFamily: string option
+      FontSize: float
+      Density: float
+      CornerRadius: float
+      ContrastRequiredRatio: float }
+
+type ControlEventOrigin =
+    | Pointer
+    | Keyboard
+    | Text
+    | Focus
+    | Selection
+    | Clipboard
+
+type ControlEvent =
+    { Kind: string
+      ControlId: ControlId option
+      Origin: ControlEventOrigin
+      Payload: string option }
+
+type AttrCategory =
+    | Content
+    | Children
+    | Layout
+    | Style
+    | Theme
+    | State
+    | Validation
+    | Accessibility
+    | Event
+    | Data
+
+type Control<'msg> =
+    { Kind: ControlKind
+      Key: ControlId option
+      Attributes: Attr<'msg> list
+      Children: Control<'msg> list
+      Content: string option
+      Accessibility: AccessibilityMetadata option }
+
+and Attr<'msg> =
+    { Name: string
+      Category: AttrCategory
+      Value: AttrValue<'msg> }
+
+and AttrValue<'msg> =
+    | TextValue of string
+    | BoolValue of bool
+    | FloatValue of float
+    | StringListValue of string list
+    | ValidationValue of ValidationState
+    | AccessibilityValue of AccessibilityMetadata
+    | ThemeValue of Theme
+    | ChildValue of Control<'msg>
+    | ChildrenValue of Control<'msg> list
+    | MessageValue of 'msg
+    | EventValue of (ControlEvent -> 'msg)
+    | UntypedValue of obj
+
+type ControlDiagnostic =
+    { ControlId: ControlId option
+      ControlKind: ControlKind
+      Code: ControlDiagnosticCode
+      Severity: ControlDiagnosticSeverity
+      Message: string
+      EvidencePath: string option }
+
+type ControlEventBinding<'msg> =
+    { ControlId: ControlId
+      EventKind: string
+      Dispatch: ControlEvent -> 'msg }
+
+type ControlRenderResult<'msg> =
+    { Scene: Scene
+      Layout: LayoutNode
+      Diagnostics: ControlDiagnostic list
+      EventBindings: ControlEventBinding<'msg> list
+      NodeCount: int }
+' to contain substring 'type StandardControlKind'.
+   at ControlsTypedControlContractTests.typedControlContractTests@22.Invoke(Unit unitVar) in /home/developer/projects/FS-Skia-UI/tests/Controls.Tests/TypedControlContractTests.fs:line 32
+   at Expecto.Impl.execTestAsync@578-1.Invoke(Unit unitVar)
+   at Microsoft.FSharp.Control.AsyncPrimitives.CallThenInvoke[T,TResult](AsyncActivation`1 ctxt, TResult result1, FSharpFunc`2 part2) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 509
+   at Microsoft.FSharp.Control.Trampoline.Execute(FSharpFunc`2 firstAction) in /__w/1/s/src/fsharp/src/FSharp.Core/async.fs:line 112[37m [37m<[37mExpecto[37m>[37m
+[0m[1000D[?25h[1000D[?25h[37m[[37m17:24:20 [37mINF[37m] [37mEXPECTO! [36m4[37m tests run in [32m00:00:00.0933865[37m for [36mTyped standard controls contract[37m – [36m0[37m passed, [36m0[37m ignored, [36m4[37m failed, [36m0[37m errored. [36m[37m [37m<[37mExpecto[37m>[37m
+[0m

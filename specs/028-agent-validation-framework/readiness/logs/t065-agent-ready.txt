@@ -1,0 +1,35 @@
+The last full restore is still up to date. Nothing left to do.
+run AgentReady
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target AgentReady:
+<== AgentReady
+   <== EvidenceGraph
+
+The running order is:
+Group - 1
+  - EvidenceGraph
+Group - 2
+  - AgentReady
+Starting target 'EvidenceGraph'
+Finished (Success) 'EvidenceGraph' in 00:00:00.1095481
+Starting target 'AgentReady'
+Finished (Success) 'AgentReady' in 00:00:00.0016124
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target          Duration
+------          --------
+EvidenceGraph   00:00:00.1076327
+AgentReady      00:00:00.0015549
+Total:          00:00:00.1789738
+Status:         Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 165 milliseconds
+ - Packages: 51 milliseconds
+ - Script analyzing: 19 milliseconds
+ - Script running: 311 milliseconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 second

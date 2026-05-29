@@ -1,0 +1,29 @@
+The last full restore is still up to date. Nothing left to do.
+run EvidenceGraph
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target EvidenceGraph:
+<== EvidenceGraph
+
+The running order is:
+Group - 1
+  - EvidenceGraph
+Starting target 'EvidenceGraph'
+Finished (Success) 'EvidenceGraph' in 00:00:00.1074922
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target          Duration
+------          --------
+EvidenceGraph   00:00:00.1056547
+Total:          00:00:00.1732287
+Status:         Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 163 milliseconds
+ - Packages: 48 milliseconds
+ - Script analyzing: 22 milliseconds
+ - Script running: 299 milliseconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 second

@@ -1,0 +1,12 @@
+The last restore is still up to date. Nothing left to do.
+Starting target 'TargetMetadata'
+Finished target 'TargetMetadata'
+Starting target 'TargetMetadataDrift'
+Finished target 'TargetMetadataDrift'
+Performance:
+ - Cli parsing: 149 milliseconds
+ - Packages: 39 milliseconds
+ - Script analyzing: 45 milliseconds
+ - Script running: 43 milliseconds
+ - Script cleanup: 1 millisecond
+ - Runtime: 861 milliseconds

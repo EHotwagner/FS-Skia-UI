@@ -9,6 +9,14 @@ text, chart controls, graph controls, and DataGrid. Keep product values and
 messages in product source. Use `FS.Skia.UI.Controls.Elmish` only at the
 program edge for adapter commands and subscriptions when Elmish integration is
 selected.
+Controls examples should use typed standard front doors by default:
+`TextBlock.text`, `TextBox.value`, `Button.onClick`, `LineChart.series`,
+`GraphView.nodes`, `DataGrid.columns`, `DataGrid.rows`,
+`DataGrid.visibleRange`, `DataGrid.selectedRows`, and
+`DataGrid.focusedCell`. Deliberate extension scenarios must use visibly custom
+APIs such as `Control.customControl`, `Attr.customAttribute`, and
+`Attr.customEvent`; do not spell custom usage as if it were a known standard
+control, event, or attribute.
 
 Generated game samples reserve a named HUD/status region and a named gameplay
 region. The default validation size is 1280x720 and the documented constrained
@@ -25,17 +33,22 @@ Do not append viewer effects to app command lists or reuse one category name for
 both effect kinds.
 
 Viewer-backed profiles use `Viewer.runApp viewerOptions Product.Program.generatedHost`
-as the persistent interactive launch contract. Deterministic scene evidence,
-persistent launch evidence, and screenshot evidence are separate report kinds:
-scene evidence does not prove a persistent window, and unsupported screenshot
-capture must report `fallback=deterministic-scene-evidence` without claiming a
-screenshot artifact. A report with `evidence-kind=screenshot` is screenshot
-proof only when it records live viewer-window capture after first-frame
-presentation; deterministic-scene-evidence must not claim screenshot proof.
-Generated evidence commands use the `FS.Skia.UI.Testing.EvidenceReports`
-convention for stable key ordering, stdout/file parity, parent-directory
-creation, normalized status vocabulary, and unsupported-host reason/fallback
-fields without forcing the default app profile to reference the Testing package.
+as the persistent interactive launch contract. Default `dotnet run` is
+product-owned and should not write readiness artifacts. Evidence collection is
+explicit: commands such as `--launch-evidence`, `--image-evidence`,
+`--screenshot-evidence`, `--pixel-readback-evidence`, and `--scene-evidence`
+live behind opt-in command dispatch in `Product.EvidenceCommands`.
+Deterministic scene evidence, persistent launch evidence, and screenshot
+evidence are separate report kinds: scene evidence does not prove a persistent
+window, and unsupported screenshot capture must report
+`fallback=deterministic-scene-evidence` without claiming a screenshot artifact.
+A report with `evidence-kind=screenshot` is screenshot proof only when it
+records live viewer-window capture after first-frame presentation;
+deterministic-scene-evidence must not claim screenshot proof. Generated
+evidence commands use stable key ordering, stdout/file parity,
+parent-directory creation, normalized status vocabulary, explicit skipped
+gates, next commands, and unsupported-host reason/fallback fields without
+forcing the default app profile to reference the Testing package.
 Game entities reuse shared Scene geometry for layout, containment, collision,
 and rendering evidence when the Scene model fits, rather than introducing local
 duplicate bounds records.

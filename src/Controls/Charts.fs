@@ -21,8 +21,8 @@ module ChartAttrs =
     let pointValues (values: ChartPoint list) =
         values |> List.map _.Y |> finite
 
-    let series (values: ChartSeries list) = Attr.create "series" Data (UntypedValue(seriesValues values))
-    let points (values: ChartPoint list) = Attr.create "values" Data (UntypedValue(pointValues values))
+    let series (values: ChartSeries list) = Attr.create "series" Data (UntypedValue values)
+    let points (values: ChartPoint list) = Attr.create "values" Data (UntypedValue values)
     let nodes (values: string list) = Attr.create "nodes" Data (StringListValue values)
 
 module LineChart =

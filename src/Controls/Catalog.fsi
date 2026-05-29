@@ -27,6 +27,12 @@ type ControlDefinition =
 
 module Catalog =
     val supportedControls: ControlDefinition list
+    val standardSchema: ControlSchema list
+    val knownControlKinds: unit -> StandardControlKind list
+    val requiredAttributes: kind: StandardControlKind -> StandardAttributeName list
+    val supportedAttributes: kind: StandardControlKind -> StandardAttributeName list
+    val supportedEvents: kind: StandardControlKind -> StandardEventKind list
+    val validateStandardControl: control: Control<'msg> -> ControlDiagnostic list
     val supportedCount: unit -> int
     val categories: unit -> string list
     val validate: unit -> ControlDiagnostic list

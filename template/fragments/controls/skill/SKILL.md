@@ -1,5 +1,5 @@
 ---
-name: fs-skia-ui-widgets
+name: fs-skia-generated-controls-guidance
 description: Generated product guidance for Skia-rendered FS.Skia.UI Controls, rich text, chart controls, graph controls, DataGrid, and custom wrappers.
 ---
 
@@ -18,6 +18,11 @@ Reference `FS.Skia.UI.Controls` and build `Control<'msg>` values with
 module-per-control `create` functions and declarative attributes.
 DataGrid is a data control with product-owned rows, columns, selection, focus,
 and viewport state.
+Use typed standard front doors for known controls, events, attributes, chart
+data, and DataGrid data. Only use `Control.customControl`,
+`Attr.customAttribute`, or `Attr.customEvent` for deliberate product-owned or
+vendor extension points; custom usage must be visibly named as custom rather
+than masquerading as a misspelled standard control.
 
 ## Generic Message Flow
 

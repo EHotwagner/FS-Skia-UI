@@ -5,7 +5,7 @@ open System.Diagnostics
 open System.IO
 open BuildPaths
 
-let tryParseInt64 value =
+let tryParseInt64 (value: string) =
     let mutable parsed = 0L
 
     if Int64.TryParse(value, &parsed) then
