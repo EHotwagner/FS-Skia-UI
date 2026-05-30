@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+"""LSP stdin proxy: re-adds \\r\\n to headers stripped by TRAMP."""
+import sys, re, subprocess, threading
+
+def proxy_stdin(target):
+    inp = sys.stdin.buffer
+    while True:
+        cl = None
+        while True:
+            line = inp.readline()
+            if not line:
+                target.close()
+                return
+            text = line.rstrip(b"\r\n")
+            m = re.match(rb"Content-Length:\s*(\d+)", text)
+            if m:
+                cl = int(m.group(1))
+            target.write(text + b"\r\n")
+            if text == b"":
+                break
+        target.flush()
+        if cl:
+            body = b""
+            while len(body) < cl:
+                chunk = inp.read(cl - len(body))
+                if not chunk:
+                    target.close()
+                    return
+                body += chunk
+            target.write(body)
+            target.flush()
+
+def proxy_stdout(source):
+    while True:
+        chunk = source.read1(4096)
+        if not chunk:
+            break
+        sys.stdout.buffer.write(chunk)
+        sys.stdout.buffer.flush()
+
+proc = subprocess.Popen(
+    ["/home/developer/.dotnet/tools/fsautocomplete", "--adaptive-lsp-server-enabled"],
+    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=sys.stderr
+)
+threading.Thread(target=proxy_stdout, args=(proc.stdout,), daemon=True).start()
+proxy_stdin(proc.stdin)
+proc.wait()
+sys.exit(proc.returncode)

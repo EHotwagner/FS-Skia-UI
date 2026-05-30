@@ -1,0 +1,149 @@
+FROM archlinux:latest
+
+ARG CONTAINER_CACHEBUST=unset
+ARG DOTNET_CHANNELS="8.0 10.0"
+ARG TZ=UTC
+
+# General-purpose F# + Skia UI development image.
+# This intentionally excludes personal editors, agent tooling, private repos,
+# Git identity, and machine-specific keyboard/session configuration.
+
+# -- System setup -------------------------------------------------------------
+
+RUN echo 'Server = https://mirror.rackspace.com/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist && \
+    echo 'Server = https://mirrors.kernel.org/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist && \
+    echo 'Server = https://mirror.leaseweb.net/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist && \
+    pacman -Syu --noconfirm && \
+    pacman -S --noconfirm \
+    alsa-lib \
+    bash \
+    ca-certificates \
+    catatonit \
+    curl \
+    dbus \
+    expat \
+    fd \
+    fontconfig \
+    freetype2 \
+    fzf \
+    gcc \
+    git \
+    glib2 \
+    gtk3 \
+    harfbuzz \
+    icu \
+    jq \
+    krb5 \
+    less \
+    libglvnd \
+    libice \
+    libsm \
+    libunwind \
+    libx11 \
+    libxcb \
+    libxcursor \
+    libxext \
+    libxi \
+    libxinerama \
+    libxkbcommon \
+    libxkbcommon-x11 \
+    libxrandr \
+    libxrender \
+    mesa \
+    mesa-utils \
+    nano \
+    nodejs \
+    npm \
+    openssh \
+    openssl \
+    pipewire-pulse \
+    pulseaudio-alsa \
+    python \
+    python-pip \
+    ripgrep \
+    sudo \
+    tar \
+    unzip \
+    vulkan-icd-loader \
+    vulkan-tools \
+    wayland \
+    which \
+    xorg-xeyes \
+    zlib && \
+    pacman -Scc --noconfirm
+
+RUN ln -sf "/usr/share/zoneinfo/${TZ}" /etc/localtime && \
+    echo "${TZ}" > /etc/timezone
+ENV TZ=${TZ}
+
+# -- User setup ---------------------------------------------------------------
+
+RUN useradd -m -s /bin/bash developer && \
+    echo "developer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+WORKDIR /workspace
+
+ENV DOTNET_ROOT="/usr/share/dotnet" \
+    DOTNET_ROOT_X64="/usr/share/dotnet" \
+    DOTNET_HOST_PATH="/usr/share/dotnet/dotnet" \
+    FAKE_SDK_RESOLVER_CUSTOM_DOTNET_PATH="/usr/share/dotnet" \
+    NUGET_XMLDOC_MODE="skip" \
+    PATH="/home/developer/.local/bin:/home/developer/.dotnet/tools:/usr/share/dotnet:$PATH"
+
+# -- .NET SDKs ----------------------------------------------------------------
+
+RUN mkdir -p /usr/share/dotnet && \
+    curl -fsSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh && \
+    for channel in ${DOTNET_CHANNELS}; do \
+        bash /tmp/dotnet-install.sh --channel "$channel" --quality ga --install-dir /usr/share/dotnet; \
+    done && \
+    ln -sf /usr/share/dotnet/dotnet /usr/bin/dotnet && \
+    rm /tmp/dotnet-install.sh && \
+    test -d /usr/share/dotnet/sdk
+
+USER developer
+
+# -- F# and app tooling -------------------------------------------------------
+
+RUN echo "tooling-cachebust=${CONTAINER_CACHEBUST}" && \
+    dotnet tool install -g fsautocomplete && \
+    dotnet tool install -g fantomas && \
+    dotnet tool install -g fake-cli && \
+    dotnet tool install -g paket && \
+    dotnet tool install -g fable && \
+    npm config set prefix /home/developer/.local && \
+    npm install -g @fsouza/prettierd@latest
+
+RUN mkdir -p /home/developer/.local/share/nuget-local \
+             /home/developer/.config/NuGet \
+             /home/developer/projects && \
+    dotnet nuget add source /home/developer/.local/share/nuget-local --name local-feed
+
+COPY --chown=developer:developer Container/fsautocomplete-lsp /home/developer/.local/bin/fsautocomplete-lsp
+COPY --chown=developer:developer Container/fs-skia-ui-entrypoint.sh /home/developer/.local/bin/fs-skia-ui-entrypoint.sh
+RUN chmod +x /home/developer/.local/bin/fsautocomplete-lsp \
+             /home/developer/.local/bin/fs-skia-ui-entrypoint.sh
+
+RUN printf 'alias ll="ls -la"\n' >> /home/developer/.bashrc && \
+    printf 'alias gs="git status --short"\n' >> /home/developer/.bashrc && \
+    printf 'alias db="dotnet build"\n' >> /home/developer/.bashrc && \
+    printf 'alias dt="dotnet test"\n' >> /home/developer/.bashrc && \
+    printf 'alias dr="dotnet run"\n' >> /home/developer/.bashrc && \
+    printf 'alias dw="dotnet watch"\n' >> /home/developer/.bashrc && \
+    printf 'alias dfmt="fantomas"\n' >> /home/developer/.bashrc && \
+    printf 'alias fsi="dotnet fsi"\n' >> /home/developer/.bashrc
+
+# -- Verify & finalize --------------------------------------------------------
+
+RUN dotnet --info >/dev/null && \
+    dotnet fsi --help >/dev/null && \
+    fsautocomplete --help >/dev/null && \
+    fantomas --version >/dev/null && \
+    fake --version >/dev/null && \
+    paket --version >/dev/null && \
+    fable --version >/dev/null && \
+    prettierd --version >/dev/null
+
+EXPOSE 5000 5001 5173 8080 8081
+ENTRYPOINT ["/usr/bin/catatonit", "--", "/home/developer/.local/bin/fs-skia-ui-entrypoint.sh"]
+CMD ["/bin/bash"]
