@@ -15,6 +15,41 @@ screenshots, diagnostics, shutdown); the workflow produces the model, messages,
 
 ---
 
+## Why it holds up
+
+The point of FS.Skia.UI is that an **agent can build your app and you can trust
+the result**, because the process is engineered for robustness rather than speed
+alone:
+
+- **A spec-driven workflow.** Every feature starts as a specification, becomes a
+  plan, then a dependency-ordered task list, and only then an implementation.
+  Intent is written down and reviewable before any code exists.
+- **Contract-first: task → `.fsi` → tests → implementation.** Public surface
+  changes are sketched as an `.fsi` signature and exercised in F# Interactive
+  *before* the `.fs` body exists — "FSI is the honest audience." Semantic tests
+  then exercise the API through that same surface, and surface-area baselines are
+  validated automatically, so the public contract can't drift silently.
+- **Elmish that is actually testable.** Stateful and I/O workflows must go
+  through an MVU boundary with a pure `update`. Tests are required on *both
+  sides*: pure `Model + Msg → Model + effects` transitions, interpreter tests
+  against real I/O, and FSI transcripts. Logic is verified without a window.
+- **Per-task skill assignment at generation time.** When tasks are generated,
+  each one is tagged with the local skills required to implement it (`skillist`
+  metadata). The agent loads the declared skills before touching code for that
+  task, so the right guidance is in context for the work at hand.
+- **Evidence that can't be faked.** Work cannot claim "done" without proof.
+  `EvidenceGraph` tracks unproven (synthetic) tasks; `EvidenceAudit` is a merge
+  gate that **hard-blocks** on unjustified synthetic tasks or block-severity
+  findings. An agent can't hand-wave a feature past the gate.
+- **Extensive, markdown-driven governance via FAKE.** A large
+  [FAKE](https://fake.build/) build (`build.fsx`) drives the test suites,
+  package-surface checks, template/generated-product validation, dependency
+  ownership, and the evidence audits — emitting human-readable Markdown
+  readiness reports. `validation.contract.yml` routes each change to the gates
+  and artifacts it owes.
+
+---
+
 ## How you build with it
 
 Spec Kit is the primary interface. Every project you generate carries the
@@ -25,20 +60,20 @@ through a governed loop driven by a coding agent:
 specify  →  plan  →  tasks  →  implement  →  evidence
 ```
 
-1. **`$speckit-specify`** — describe the feature you want in plain language; the
-   workflow writes `spec.md`.
+1. **`$speckit-specify`** — describe the feature in plain language; the workflow
+   writes `spec.md`.
 2. **`$speckit-plan`** — turn the spec into an implementation plan and design
    artifacts.
-3. **`$speckit-tasks`** — break the plan into a dependency-ordered task list.
-4. **`$speckit-implement`** — the agent implements the tasks, producing the F#
-   MVU code and the readiness evidence.
-5. **evidence** — gates keep the work honest (see
-   [Evidence keeps it honest](#evidence-keeps-it-honest)).
+3. **`$speckit-tasks`** — break the plan into a dependency-ordered task list,
+   each task tagged with the skills needed to implement it.
+4. **`$speckit-implement`** — the agent works each task contract-first
+   (`.fsi` → tests → implementation), producing the F# MVU code and the
+   readiness evidence.
+5. **evidence** — `EvidenceGraph` / `EvidenceAudit` gate the result.
 
 Each feature lives in a numbered folder (`spec.md → plan.md → tasks.md →
 research.md → data-model.md → contracts/ → readiness/`). Your job is to describe
-intent, make decisions when the workflow asks, and review evidence — not to
-hand-author the render loop or the Elmish plumbing.
+intent, decide when the workflow asks, and review evidence.
 
 The workflow is driven by coding agents, with synchronized skill peers for
 [Claude Code](https://www.anthropic.com/claude-code) (`.claude/skills/`) and
@@ -136,6 +171,7 @@ let main _ =
 ```
 
 The application owns the MVU four-tuple; the framework owns everything around it.
+Because `update` is pure, its behavior is tested without ever opening a window.
 When something can't start (unsupported OS, no Vulkan surface, swapchain/context
 failure), `Viewer.run` returns `Result<unit, RenderDiagnostic>` with a stage you
 can report — it does not throw or silently fall back.
@@ -157,26 +193,6 @@ The workflow can compose any of these capability packages into what it builds:
 
 ---
 
-## Evidence keeps it honest
-
-The distinctive part of the Spec Kit workflow is its evidence layer. Generated
-work can't claim it's done without proof:
-
-- **EvidenceGraph** validates the task dependency graph and counts synthetic
-  (not-yet-proven) tasks.
-- **EvidenceAudit** is the merge gate — it hard-blocks on unjustified synthetic
-  tasks or block-severity findings, so a feature can't merge claiming evidence
-  it doesn't have.
-
-`validation.contract.yml` routes changed paths to required gates and expected
-readiness artifacts. The project constitution
-([.specify/memory/constitution.md](.specify/memory/constitution.md)) governs
-public-contract impact, MVU boundaries, test evidence, and synthetic-evidence
-disclosure. See [docs/speckit.md](docs/speckit.md) and
-[docs/evidence.md](docs/evidence.md).
-
----
-
 ## Requirements
 
 - .NET SDK with `net10.0` support
@@ -192,30 +208,6 @@ disclosure. See [docs/speckit.md](docs/speckit.md) and
 > preview-risk: Vulkan driver behavior, native assets, and package shape may
 > change before SkiaSharp 4 is stable. The public API exposes no renderer
 > selection and provides no OpenGL/CPU/software/fallback renderer.
-
----
-
-## Learn from the samples
-
-Each sample runs as a window, or as a non-visual contract smoke (`--contract-smoke`):
-
-```bash
-dotnet run --project samples/BasicViewer/BasicViewer.fsproj
-dotnet run --project samples/DemoReel/DemoReel.fsproj -- --contract-smoke
-```
-
-| Sample | Shows |
-|--------|-------|
-| `BasicViewer` | Core scene composition, diagnostics, screenshots. |
-| `ChartsGallery` | Line, bar, scatter, area, pie/donut, histogram charts. |
-| `DataGridGallery` | Sorting, viewport state, fixed headers, hit testing. |
-| `DemoReel` | Animated showcase: geometry, shaders, layout, charts, graphs, effects. |
-| `EffectsGallery` | Gradients, path effects, blend modes, clipping, perspective. |
-| `InteractiveViewer` | Keyboard/pointer state, timer updates, JPEG screenshots. |
-| `KeyboardInputGallery` | Keyboard layouts, command resolution, state display. |
-| `LayoutGraphGallery` | Automatic layout, graph rendering, validation, hit testing. |
-| `ParityGallery` | Skia feature parity: shapes, paths, clips, regions, images. |
-| `ScreenshotGallery` | Screenshot/render effects, recoverable diagnostics. |
 
 ---
 
@@ -235,6 +227,9 @@ Scene  ──────────────  pure scene primitives (FSharp
              │   └─ Controls.Elmish   command + subscription adapters
              └─ Testing               generated-product validation helpers
 ```
+
+Package boundaries are enforced: e.g. `Controls` may not reference
+Silk.NET/SkiaSharp/Elmish directly, keeping the layers honest.
 
 ---
 
@@ -282,11 +277,10 @@ and are not safe to run concurrently):
 6. `./fake.sh build -t EvidenceAudit` — merge gate
 
 `Verify` and `Ci` are the broad aggregate gates. Public visibility lives in
-`.fsi` signature files (the contract chain is spec → `.fsi` → failing tests →
-implementation → surface baseline), and package boundaries are enforced (e.g.
-`Controls` may not reference Silk.NET/SkiaSharp/Elmish directly). See
-[docs/build.md](docs/build.md), [docs/testing.md](docs/testing.md),
-[docs/evidence.md](docs/evidence.md), and
+`.fsi` signature files (the contract chain is Spec → `.fsi` → semantic tests →
+implementation → surface baseline). See [docs/build.md](docs/build.md),
+[docs/testing.md](docs/testing.md), [docs/evidence.md](docs/evidence.md),
+[docs/speckit.md](docs/speckit.md), and
 [.specify/memory/constitution.md](.specify/memory/constitution.md).
 
 ---
