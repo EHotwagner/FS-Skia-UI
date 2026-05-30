@@ -53,6 +53,21 @@ Game entities reuse shared Scene geometry for layout, containment, collision,
 and rendering evidence when the Scene model fits, rather than introducing local
 duplicate bounds records.
 
+Visual evidence honesty keeps screenshot proof, rasterized scene proof, layout
+readability proof, fallback classification, and unsupported proof separate.
+Accepted proof names a decodable image, image dimensions, non-trivial content,
+renderer mode, fallback classification, and unsupported reason. Metadata-only
+reports do not satisfy visual proof, 1x1 fallback images do not satisfy visual
+proof, and layout-only bounds claims do not satisfy visual proof.
+Exact visual proof rejection phrases for scans: metadata-only reports do not satisfy visual proof; 1x1 fallback images do not satisfy visual proof; layout-only bounds claims do not satisfy visual proof.
+
+Asteroids feedback findings are classified as framework runtime, generated
+template workflow, documentation discoverability, or consumer authoring.
+Host-friction notes preserve persistent-window blocking, display/session
+availability, auto-close smoke, benign warning, blocking warning, deferred
+warning, and name-collision guidance outcomes.
+Exact owner phrases for scans: framework runtime; generated template workflow; documentation discoverability; consumer authoring; persistent-window blocking; display/session availability; auto-close smoke; benign warning; blocking warning; deferred warning; name-collision guidance.
+
 ## Compact Consumer API Map
 
 Generated products expose a compact consumer API map before app-specific code:

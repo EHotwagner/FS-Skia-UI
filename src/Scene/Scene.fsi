@@ -1,35 +1,42 @@
 namespace FS.Skia.UI.Scene
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type Size =
     { Width: int
       Height: int }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type Color =
     { Red: byte
       Green: byte
       Blue: byte
       Alpha: byte }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type Point =
     { X: float
       Y: float }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type Rect =
     { X: float
       Y: float
       Width: float
       Height: float }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type StrokeCap =
     | Butt
     | Round
     | Square
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type StrokeJoin =
     | Miter
     | RoundJoin
     | Bevel
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type BlendMode =
     | SrcOver
     | Multiply
@@ -42,36 +49,43 @@ type BlendMode =
     | Difference
     | Exclusion
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type Stroke =
     { Width: float
       Cap: StrokeCap
       Join: StrokeJoin
       Miter: float }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type Shader =
     | SolidColor of Color
     | LinearGradient of startPoint: Point * endPoint: Point * colors: Color list
     | RadialGradient of center: Point * radius: float * colors: Color list
     | SweepGradient of center: Point * colors: Color list
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ColorFilter =
     | NoColorFilter
     | BlendColor of Color * BlendMode
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type MaskFilter =
     | NoMaskFilter
     | Blur of sigma: float
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ImageFilter =
     | NoImageFilter
     | DropShadow of dx: float * dy: float * blur: float * color: Color
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type PathEffect =
     | NoPathEffect
     | Dash of intervals: float list * phase: float
     | Discrete of segmentLength: float * deviation: float
     | Corner of radius: float
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type Paint =
     { Fill: Color option
       Stroke: Stroke option
@@ -84,10 +98,12 @@ type Paint =
       ImageFilter: ImageFilter
       PathEffect: PathEffect }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type PathFillType =
     | Winding
     | EvenOdd
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type PathCommand =
     | MoveTo of Point
     | LineTo of Point
@@ -96,29 +112,35 @@ type PathCommand =
     | ArcTo of bounds: Rect * startAngle: float * sweepAngle: float
     | Close
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type PathSpec =
     { Commands: PathCommand list
       FillType: PathFillType }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type Clip =
     | RectClip of Rect
     | PathClip of PathSpec
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type RegionOperation =
     | Replace
     | RegionUnion
     | RegionIntersect
     | RegionDifference
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type Region =
     { Bounds: Rect list
       Operation: RegionOperation }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ColorSpace =
     | Srgb
     | DisplayP3
     | AdobeRgb
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type PerspectiveTransform =
     { M11: float
       M12: float
@@ -130,41 +152,49 @@ type PerspectiveTransform =
       M32: float
       M33: float }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type PathOperation =
     | Union
     | Intersect
     | Difference
     | Xor
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type PathMeasure =
     { Length: float
       IsClosed: bool }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type FontSpec =
     { Family: string option
       Size: float
       Weight: int option }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type TextRun =
     { Text: string
       Position: Point
       Font: FontSpec
       Paint: Paint }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type TextMetrics =
     { Width: float
       Height: float
       Baseline: float }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type Vertex =
     { Position: Point
       Color: Color option }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type VertexMode =
     | Triangles
     | TriangleStrip
     | TriangleFan
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type SceneElementKind =
     | EmptyElement
     | GroupElement
@@ -186,17 +216,20 @@ type SceneElementKind =
     | PictureElement
     | ChartElement
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type RenderReadbackEvidence =
     { Size: Size
       CapabilityCount: int
       Capabilities: string list
       DeterministicHash: string }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ShapePlacement =
     | FullyInside
     | PartiallyOutOfBounds
     | FullyOutOfBounds
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type CircleShapeEvidence =
     { Center: Point
       Radius: float
@@ -204,26 +237,31 @@ type CircleShapeEvidence =
       Fill: Color
       Placement: ShapePlacement }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type EllipseShapeEvidence =
     { Bounds: Rect
       Fill: Color
       Placement: ShapePlacement }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type LayoutProofLevel =
     | ReadableLayout
     | DeterministicRenderOnly
     | UnsupportedLayoutInspection
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type LayoutMeasurementMode =
     | ExactTextBounds
     | ApproximateTextBounds
     | UnsupportedTextBounds
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type LayoutOverlapKind =
     | HudTextOverlap
     | HudGameplayOverlap
     | GameplayOutOfBounds
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type LayoutOverlapDiagnostic =
     { Kind: LayoutOverlapKind
       FirstName: string
@@ -231,44 +269,53 @@ type LayoutOverlapDiagnostic =
       Bounds: Rect
       Message: string }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type LayoutOverlapStatus =
     | NoLayoutOverlap
     | LayoutOverlaps of LayoutOverlapDiagnostic list
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type LayoutRegionEvidence =
     { Name: string
       Bounds: Rect }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type LayoutTextBounds =
     { Name: string
       Text: string
       Bounds: Rect
       MeasurementMode: LayoutMeasurementMode }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type LayoutGameplayBounds =
     { Name: string
       Bounds: Rect }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type LayoutUnsupportedReason =
     { Fact: string
       Reason: string
       Diagnostic: string }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type DiagnosticSeverity =
     | Info
     | Warning
     | Error
     | Fatal
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type DiagnosticStage =
     | FrameRender
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type RenderDiagnostic =
     { Severity: DiagnosticSeverity
       Stage: DiagnosticStage
       Message: string
       Cause: string option }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type SceneNode =
     | Empty
     | Group of Scene list
@@ -299,6 +346,7 @@ and Picture =
     { Name: string
       Scene: Scene }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type LayoutEvidenceReport =
     { Scene: Scene
       OutputSize: Size
@@ -313,71 +361,121 @@ type LayoutEvidenceReport =
       Diagnostics: string list
       RenderEvidence: RenderReadbackEvidence option }
 
+/// Public contract module exposed by this FS.Skia.UI package.
 module Colors =
+    /// Public contract function exposed by this FS.Skia.UI package.
     val rgba: red: byte -> green: byte -> blue: byte -> alpha: byte -> Color
+    /// Public contract function exposed by this FS.Skia.UI package.
     val rgb: red: byte -> green: byte -> blue: byte -> Color
+    /// Public contract function exposed by this FS.Skia.UI package.
     val black: Color
+    /// Public contract function exposed by this FS.Skia.UI package.
     val white: Color
+    /// Public contract function exposed by this FS.Skia.UI package.
     val transparent: Color
 
+/// Public contract module exposed by this FS.Skia.UI package.
 module Paint =
+    /// Public contract function exposed by this FS.Skia.UI package.
     val fill: color: Color -> Paint
+    /// Public contract function exposed by this FS.Skia.UI package.
     val stroke: color: Color -> width: float -> Paint
+    /// Public contract function exposed by this FS.Skia.UI package.
     val withOpacity: opacity: float -> paint: Paint -> Paint
+    /// Public contract function exposed by this FS.Skia.UI package.
     val withBlendMode: blendMode: BlendMode -> paint: Paint -> Paint
+    /// Public contract function exposed by this FS.Skia.UI package.
     val withStrokeCap: cap: StrokeCap -> paint: Paint -> Paint
+    /// Public contract function exposed by this FS.Skia.UI package.
     val withPathEffect: effect: PathEffect -> paint: Paint -> Paint
 
+/// Public contract module exposed by this FS.Skia.UI package.
 module Path =
+    /// Public contract function exposed by this FS.Skia.UI package.
     val create: fillType: PathFillType -> commands: PathCommand list -> PathSpec
+    /// Public contract function exposed by this FS.Skia.UI package.
     val moveTo: x: float -> y: float -> PathCommand
+    /// Public contract function exposed by this FS.Skia.UI package.
     val lineTo: x: float -> y: float -> PathCommand
+    /// Public contract function exposed by this FS.Skia.UI package.
     val close: PathCommand
 
+/// Public contract module exposed by this FS.Skia.UI package.
 module Scene =
+    /// Public contract function exposed by this FS.Skia.UI package.
     val empty: Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val group: scenes: Scene list -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val rectangle: bounds: float * float * float * float -> fill: Color -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val rectangleWithPaint: bounds: Rect -> paint: Paint -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val circle: center: Point -> radius: float -> fill: Color -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val filledEllipse: bounds: Rect -> fill: Color -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val ellipse: bounds: Rect -> paint: Paint -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val line: startPoint: Point -> endPoint: Point -> paint: Paint -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val path: path: PathSpec -> paint: Paint -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val points: points: Point list -> paint: Paint -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val vertices: mode: VertexMode -> vertices: Vertex list -> paint: Paint -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val arc: bounds: Rect -> startAngle: float -> sweepAngle: float -> paint: Paint -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val text: position: float * float -> text: string -> color: Color -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val textRun: run: TextRun -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val measureText: text: string -> font: FontSpec -> TextMetrics
+    /// Public contract function exposed by this FS.Skia.UI package.
     val image: bounds: float * float * float * float -> source: string -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val clipped: clip: Clip -> scene: Scene -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val region: region: Region -> paint: Paint -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val withColorSpace: colorSpace: ColorSpace -> scene: Scene -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val withPerspective: transform: PerspectiveTransform -> scene: Scene -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val picture: picture: Picture -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val chart: values: float list -> Scene
+    /// Public contract function exposed by this FS.Skia.UI package.
     val describe: scene: Scene -> SceneElementKind list
+    /// Public contract function exposed by this FS.Skia.UI package.
     val diagnostics: scene: Scene -> RenderDiagnostic list
+    /// Public contract function exposed by this FS.Skia.UI package.
     val renderReadbackEvidence: size: Size -> scene: Scene -> RenderReadbackEvidence
+    /// Public contract function exposed by this FS.Skia.UI package.
     val circleEvidence: outputSize: Size -> center: Point -> radius: float -> fill: Color -> CircleShapeEvidence
+    /// Public contract function exposed by this FS.Skia.UI package.
     val ellipseEvidence: outputSize: Size -> bounds: Rect -> fill: Color -> EllipseShapeEvidence
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type SceneEvidenceFormat =
     | Hash
     | Png
     | Metadata
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type SceneEvidenceFailureClassification =
     | UnsupportedEnvironment
     | ProductDefect
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type SceneEvidenceFailure =
     { BlockedStage: string
       Classification: SceneEvidenceFailureClassification
       DiagnosticCategory: string
       Message: string }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type SceneEvidenceRequest =
     { Scene: Scene
       OutputSize: Size
@@ -385,6 +483,7 @@ type SceneEvidenceRequest =
       RendererMode: string
       EvidencePath: string option }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type SceneEvidence =
     { Format: SceneEvidenceFormat
       OutputSize: Size
@@ -392,12 +491,20 @@ type SceneEvidence =
       EvidencePath: string option
       Value: string }
 
+/// Public contract module exposed by this FS.Skia.UI package.
 module SceneEvidence =
+    /// Public contract function exposed by this FS.Skia.UI package.
     val render: request: SceneEvidenceRequest -> Result<SceneEvidence, SceneEvidenceFailure>
+    /// Public contract function exposed by this FS.Skia.UI package.
     val renderHash: size: Size -> scene: Scene -> Result<SceneEvidence, SceneEvidenceFailure>
+    /// Public contract function exposed by this FS.Skia.UI package.
     val renderPng: size: Size -> scene: Scene -> Result<byte[], SceneEvidenceFailure>
 
+/// Public contract module exposed by this FS.Skia.UI package.
 module LayoutEvidence =
+    /// Public contract function exposed by this FS.Skia.UI package.
     val classify: report: LayoutEvidenceReport -> LayoutEvidenceReport
+    /// Public contract function exposed by this FS.Skia.UI package.
     val fromRenderEvidence: scene: Scene -> evidence: RenderReadbackEvidence -> LayoutEvidenceReport
+    /// Public contract function exposed by this FS.Skia.UI package.
     val unsupported: scene: Scene -> outputSize: Size -> reason: LayoutUnsupportedReason -> LayoutEvidenceReport

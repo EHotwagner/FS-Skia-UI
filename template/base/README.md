@@ -51,6 +51,23 @@ source before restoring or running this generated project.
 The product owns its application code, tests, documentation, readiness evidence,
 and selected local skills.
 
+Visual demo task lists assign scene rendering -> fs-skia-scene, screenshot
+capture -> fs-skia-skiaviewer, layout readability -> fs-skia-layout-evidence,
+persistent viewer launch -> fs-skia-skiaviewer, deterministic evidence mode ->
+fs-skia-layout-evidence, generated-package validation ->
+fs-skia-template-update, graph validation -> speckit-evidence-graph, audit
+validation -> speckit-evidence-audit, and debug-loop skills ->
+speckit-debug-loop. Ordered multi-skill examples preserve
+implementation-before-evidence, graph-before-audit, debug-before-broad-rerun,
+and visible mirrors such as `[skillist: speckit-tasks, fs-skia-layout-evidence]`.
+
+Generated readiness scaffolds include `readiness/visual-evidence-honesty.md`,
+`readiness/window-visibility.md`, `readiness/governance-risk-levels.md`,
+`readiness/aggregate-hang-diagnostics.md`, `readiness/runtime-limitations.md`,
+`readiness/generated-guidance-validation.md`, and
+`readiness/real-image-evidence.md`. Each scaffold records the authoritative
+command, artifact path, failure class, and next action.
+
 For generated app profiles, `FS.Skia.UI.Controls` is the authoring path for
 ordinary controls, rich text, chart controls, graph controls, and DataGrid.
 When Elmish integration is selected, `FS.Skia.UI.Controls.Elmish` provides the

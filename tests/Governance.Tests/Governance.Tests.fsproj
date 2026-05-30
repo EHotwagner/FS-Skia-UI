@@ -30,6 +30,7 @@
     <Compile Include="TaskValidatorFeedbackTests.fs" />
     <Compile Include="PersistentViewerEvidenceTests.fs" />
     <Compile Include="GovernanceEvidenceTests.fs" />
+    <Compile Include="AsteroidsFeedbackSkillGuidanceTests.fs" />
     <Compile Include="SyntheticErrorEvidenceTests.fs" />
     <Compile Include="TemplateDriftTests.fs" />
     <Compile Include="ClaudeCodeReadyTests.fs" />

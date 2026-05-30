@@ -1,8 +1,11 @@
 namespace FS.Skia.UI.KeyboardInput
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type CommandId = string
+/// Public contract type exposed by this FS.Skia.UI package.
 type KeyId = string
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ViewerKey =
     | ArrowLeft
     | ArrowRight
@@ -17,24 +20,29 @@ type ViewerKey =
     | Function of int
     | Unknown of raw: string
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ViewerKeyDirection =
     | KeyDown
     | KeyUp
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ViewerKeyEvent =
     { RawKey: string
       Direction: ViewerKeyDirection }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type KeyboardBinding =
     { Key: KeyId
       Command: CommandId }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type KeyboardDiagnostic =
     { Code: string
       Severity: string
       Message: string
       Key: KeyId option }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type KeyboardStateDisplay =
     { PressedKeys: KeyId list
       ActiveLayout: string
@@ -42,6 +50,7 @@ type KeyboardStateDisplay =
       PendingSequence: KeyId list
       LastCommand: CommandId option }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type KeyboardEffect =
     | CommandResolved of CommandId
     | KeyStateChanged of KeyId list
@@ -52,6 +61,7 @@ type KeyboardEffect =
     | ReportKeyboardDiagnostic of KeyboardDiagnostic
     | RequestHostKeyCapture of KeyId
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type KeyboardModel =
     { Bindings: KeyboardBinding list
       PressedKeys: Set<KeyId>
@@ -64,6 +74,7 @@ type KeyboardModel =
       RecentEffects: KeyboardEffect list
       StateDisplay: KeyboardStateDisplay }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type KeyboardMsg =
     | KeyDown of KeyId
     | KeyUp of KeyId
@@ -75,12 +86,20 @@ type KeyboardMsg =
     | SetPersistentMode of key: string * value: string
     | ResolvePendingSequence of KeyId list
 
+/// Public contract module exposed by this FS.Skia.UI package.
 module Keyboard =
+    /// Public contract function exposed by this FS.Skia.UI package.
     val init: bindings: KeyboardBinding list -> KeyboardModel * KeyboardEffect list
+    /// Public contract function exposed by this FS.Skia.UI package.
     val update: msg: KeyboardMsg -> model: KeyboardModel -> KeyboardModel * KeyboardEffect list
+    /// Public contract function exposed by this FS.Skia.UI package.
     val stateDisplay: model: KeyboardModel -> KeyboardStateDisplay
 
+/// Public contract module exposed by this FS.Skia.UI package.
 module ViewerKeyboard =
+    /// Public contract function exposed by this FS.Skia.UI package.
     val normalize: raw: string -> ViewerKey
+    /// Public contract function exposed by this FS.Skia.UI package.
     val normalizeEvent: event: ViewerKeyEvent -> ViewerKey * bool
+    /// Public contract function exposed by this FS.Skia.UI package.
     val toKeyId: key: ViewerKey -> KeyId

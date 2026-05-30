@@ -111,6 +111,22 @@ Warning classification evidence must preserve real `LaunchFailure`,
 `RenderingFailure`, `LayoutFailure`, and `PackageFailure` diagnostics even when
 known benign environment warnings are present.
 
+Visual evidence honesty requires screenshot proof, rasterized scene proof,
+layout readability proof, fallback classification, and unsupported proof to be
+separate. Accepted visual proof names a decodable image, image dimensions,
+non-trivial content, renderer mode, fallback classification, and unsupported
+reason. Metadata-only reports do not satisfy visual proof, 1x1 fallback images
+do not satisfy visual proof, and layout-only bounds claims do not satisfy visual
+proof.
+Exact visual proof rejection phrases for scans: metadata-only reports do not satisfy visual proof; 1x1 fallback images do not satisfy visual proof; layout-only bounds claims do not satisfy visual proof.
+
+Asteroids feedback findings must be classified by owner: framework runtime,
+generated template workflow, documentation discoverability, or consumer
+authoring. Host feedback must distinguish persistent-window blocking,
+display/session availability, auto-close smoke needs, benign warning, blocking
+warning, deferred warning, and name-collision guidance.
+Exact owner phrases for scans: framework runtime; generated template workflow; documentation discoverability; consumer authoring; persistent-window blocking; display/session availability; auto-close smoke; benign warning; blocking warning; deferred warning; name-collision guidance.
+
 ## Package Boundary
 
 Keep pure layout-evidence classifiers in Scene or Testing contracts as planned.

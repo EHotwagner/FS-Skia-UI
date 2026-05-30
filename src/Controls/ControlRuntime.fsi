@@ -1,18 +1,22 @@
 namespace FS.Skia.UI.Controls
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlCaret =
     { ControlId: ControlId
       Index: int }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlSelection =
     { ControlId: ControlId
       Start: int
       End: int }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlComposition =
     { ControlId: ControlId
       Text: string }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlDrag =
     { ControlId: ControlId
       StartX: float
@@ -20,6 +24,7 @@ type ControlDrag =
       CurrentX: float
       CurrentY: float }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlRuntimeEffect =
     | FocusChanged of ControlId option
     | HoverChanged of ControlId option
@@ -32,6 +37,7 @@ type ControlRuntimeEffect =
     | CancelledInteraction of ControlId option
     | ReportControlRuntimeDiagnostic of ControlDiagnostic
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlRuntimeModel =
     { FocusedControl: ControlId option
       HoveredControl: ControlId option
@@ -43,6 +49,7 @@ type ControlRuntimeModel =
       Diagnostics: ControlDiagnostic list
       RecentEffects: ControlRuntimeEffect list }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlRuntimeMsg =
     | FocusControl of ControlId option
     | HoverControl of ControlId option
@@ -61,7 +68,11 @@ type ControlRuntimeMsg =
     | CancelInteraction of ControlId option
     | Reset
 
+/// Public contract module exposed by this FS.Skia.UI package.
 module ControlRuntime =
+    /// Public contract function exposed by this FS.Skia.UI package.
     val init: unit -> ControlRuntimeModel * ControlRuntimeEffect list
+    /// Public contract function exposed by this FS.Skia.UI package.
     val update: msg: ControlRuntimeMsg -> model: ControlRuntimeModel -> ControlRuntimeModel * ControlRuntimeEffect list
+    /// Public contract function exposed by this FS.Skia.UI package.
     val diagnostics: model: ControlRuntimeModel -> ControlDiagnostic list

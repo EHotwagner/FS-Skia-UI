@@ -6,6 +6,9 @@ open Product.Program
 open Product.Model
 open FS.Skia.UI.Scene
 
+let visualEvidenceGuidance =
+    "decodable image; image dimensions; non-trivial content; renderer mode; fallback classification; unsupported reason; metadata-only reports do not satisfy visual proof; 1x1 fallback images do not satisfy visual proof; layout-only bounds claims do not satisfy visual proof; framework runtime; generated template workflow; documentation discoverability; consumer authoring; persistent-window blocking; display/session availability; auto-close smoke; benign warning; blocking warning; deferred warning; name-collision guidance"
+
 let rec collectSceneNodes node =
     seq {
         yield node

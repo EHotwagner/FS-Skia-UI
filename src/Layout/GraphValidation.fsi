@@ -1,5 +1,6 @@
 namespace FS.Skia.UI.Layout
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type GraphValidationIssue =
     | DuplicateNodeId of string
     | MissingSource of edgeIndex: int * nodeId: string
@@ -7,7 +8,11 @@ type GraphValidationIssue =
     | SelfLoop of edgeIndex: int * nodeId: string
     | CycleDetected of nodeIds: string list
 
+/// Public contract module exposed by this FS.Skia.UI package.
 module GraphValidation =
+    /// Public contract function exposed by this FS.Skia.UI package.
     val validate : graph: GraphDefinition -> GraphValidationIssue list
+    /// Public contract function exposed by this FS.Skia.UI package.
     val hasCycle : graph: GraphDefinition -> bool
+    /// Public contract function exposed by this FS.Skia.UI package.
     val disconnectedComponents : graph: GraphDefinition -> string list list

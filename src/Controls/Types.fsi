@@ -3,10 +3,13 @@ namespace FS.Skia.UI.Controls
 open FS.Skia.UI.Scene
 open FS.Skia.UI.Layout
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlId = string
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlKind = string
 
 [<RequireQualifiedAccess>]
+/// Public contract type exposed by this FS.Skia.UI package.
 type KnownControl =
     | TextBlock
     | Button
@@ -19,6 +22,7 @@ type KnownControl =
     | DataGrid
 
 [<RequireQualifiedAccess>]
+/// Public contract type exposed by this FS.Skia.UI package.
 type KnownEvent =
     | Click
     | Changed
@@ -27,6 +31,7 @@ type KnownEvent =
     | SortChanged
 
 [<RequireQualifiedAccess>]
+/// Public contract type exposed by this FS.Skia.UI package.
 type KnownAttribute =
     | Text
     | Value
@@ -42,6 +47,7 @@ type KnownAttribute =
     | FocusedCell
 
 [<RequireQualifiedAccess>]
+/// Public contract type exposed by this FS.Skia.UI package.
 type StandardControlKind =
     | TextBlock
     | Button
@@ -55,6 +61,7 @@ type StandardControlKind =
     | Custom of string
 
 [<RequireQualifiedAccess>]
+/// Public contract type exposed by this FS.Skia.UI package.
 type StandardEventKind =
     | Click
     | Changed
@@ -64,6 +71,7 @@ type StandardEventKind =
     | Custom of string
 
 [<RequireQualifiedAccess>]
+/// Public contract type exposed by this FS.Skia.UI package.
 type StandardAttributeName =
     | Text
     | Value
@@ -79,6 +87,7 @@ type StandardAttributeName =
     | FocusedCell
     | Custom of string
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type StandardAttributeValue<'msg> =
     | StandardText of string
     | StandardBool of bool
@@ -88,6 +97,7 @@ type StandardAttributeValue<'msg> =
     | StandardEvent of (string -> 'msg)
     | StandardUntyped of obj
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlSchema =
     { Kind: StandardControlKind
       RequiredAttributes: StandardAttributeName list
@@ -95,11 +105,13 @@ type ControlSchema =
       SupportedEvents: StandardEventKind list
       CustomAllowed: bool }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlDiagnosticSeverity =
     | Info
     | Warning
     | Error
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlDiagnosticCode =
     | MissingRequiredAttribute
     | DuplicateAttribute
@@ -113,6 +125,7 @@ type ControlDiagnosticCode =
     | KeyCollision
     | StaleGeneratedReference
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type AccessibilityRole =
     | StaticText
     | Button
@@ -131,17 +144,20 @@ type AccessibilityRole =
     | Graph
     | Custom
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type KeyboardOperation =
     { Focusable: bool
       ActivationKeys: string list
       NavigationKeys: string list }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ContrastEvidence =
     { Foreground: Color
       Background: Color
       Ratio: float
       RequiredRatio: float }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type AccessibilityMetadata =
     { Role: AccessibilityRole
       NameSource: string
@@ -150,11 +166,13 @@ type AccessibilityMetadata =
       Keyboard: KeyboardOperation
       Contrast: ContrastEvidence option }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ValidationState =
     | Valid
     | Invalid of string
     | Pending of string
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type VisualState =
     | Normal
     | Disabled
@@ -165,6 +183,7 @@ type VisualState =
     | Loading
     | Validation of ValidationState
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type Theme =
     { Name: string
       Foreground: Color
@@ -178,6 +197,7 @@ type Theme =
       CornerRadius: float
       ContrastRequiredRatio: float }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlEventOrigin =
     | Pointer
     | Keyboard
@@ -186,12 +206,14 @@ type ControlEventOrigin =
     | Selection
     | Clipboard
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlEvent =
     { Kind: string
       ControlId: ControlId option
       Origin: ControlEventOrigin
       Payload: string option }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type AttrCategory =
     | Content
     | Children
@@ -204,6 +226,7 @@ type AttrCategory =
     | Event
     | Data
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type Control<'msg> =
     { Kind: ControlKind
       Key: ControlId option
@@ -231,6 +254,7 @@ and AttrValue<'msg> =
     | EventValue of (ControlEvent -> 'msg)
     | UntypedValue of obj
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlDiagnostic =
     { ControlId: ControlId option
       ControlKind: ControlKind
@@ -239,11 +263,13 @@ type ControlDiagnostic =
       Message: string
       EvidencePath: string option }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlEventBinding<'msg> =
     { ControlId: ControlId
       EventKind: string
       Dispatch: ControlEvent -> 'msg }
 
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlRenderResult<'msg> =
     { Scene: Scene
       Layout: LayoutNode

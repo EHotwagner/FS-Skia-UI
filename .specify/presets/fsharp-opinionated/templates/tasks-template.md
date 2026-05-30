@@ -193,6 +193,30 @@ Task generation MUST reject viewer-backed default executable paths that only
 print metadata, count controls, run bounded smoke, emit scene evidence, or
 exit without a persistent launch attempt.
 
+Visual demo task guidance must assign implementation skills before work starts:
+scene rendering -> fs-skia-scene; screenshot capture -> fs-skia-skiaviewer;
+layout readability -> fs-skia-layout-evidence; persistent viewer launch ->
+fs-skia-skiaviewer; deterministic evidence mode -> fs-skia-layout-evidence;
+generated-package validation -> fs-skia-template-update; graph validation ->
+speckit-evidence-graph; audit validation -> speckit-evidence-audit; debug-loop
+skills -> speckit-debug-loop. Multi-skill ordering must preserve
+implementation-before-evidence, graph-before-audit, and
+debug-before-broad-rerun. Visible mirrors such as
+`[skillist: speckit-tasks, fs-skia-layout-evidence]` must match structured
+metadata exactly.
+
+Exact skill phrases for scans: scene rendering -> fs-skia-scene; screenshot capture -> fs-skia-skiaviewer; layout readability -> fs-skia-layout-evidence; persistent viewer launch -> fs-skia-skiaviewer; deterministic evidence mode -> fs-skia-layout-evidence; generated-package validation -> fs-skia-template-update; graph validation -> speckit-evidence-graph; audit validation -> speckit-evidence-audit; debug-loop skills -> speckit-debug-loop.
+
+Visual demo readiness scaffolds must be named before final audit discovery:
+`readiness/visual-evidence-honesty.md`, `readiness/window-visibility.md`,
+`readiness/governance-risk-levels.md`,
+`readiness/aggregate-hang-diagnostics.md`, `readiness/runtime-limitations.md`,
+`readiness/generated-guidance-validation.md`, and
+`readiness/real-image-evidence.md`. Each scaffold records the authoritative
+command, artifact path, failure class, and next action.
+
+Exact readiness phrases for scans: authoritative command.
+
 Template source: `.specify/presets/fsharp-opinionated/templates/tasks-template.md`.
 
 ---
