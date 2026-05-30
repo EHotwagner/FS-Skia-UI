@@ -14,7 +14,7 @@ FAIL
 
 - Changed alignment classes: ``
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/035-api-discovery-names`
+- Active feature evidence: `specs/036-archive-readiness-api-docs`
 
 ## Controls Boundary Guidance
 

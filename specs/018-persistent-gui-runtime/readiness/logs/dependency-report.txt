@@ -1,5 +1,0 @@
-
-## dependency report
-$ dotnet fsi scripts/dependency-report.fsx "/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/dependencies.md"
-
-exit-code=0

@@ -1,6 +1,0 @@
-
-## package/governed generated Dev
-$ bash ./fake.sh build -t Dev
-Dev completed for generated v3dotnetgovernedpackage
-
-exit-code=0

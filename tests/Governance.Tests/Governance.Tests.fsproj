@@ -36,6 +36,7 @@
     <Compile Include="ClaudeCodeReadyTests.fs" />
     <Compile Include="PublicRecordInvariantTests.fs" />
     <Compile Include="AgentValidationFrameworkTests.fs" />
+    <Compile Include="ArchiveReadinessApiDocsTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

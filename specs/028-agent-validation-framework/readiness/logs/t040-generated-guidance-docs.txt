@@ -1,6 +1,0 @@
-28:as the persistent interactive launch contract. Default `dotnet run` is
-docs/generated-apps.md:51:explicit command dispatch outside the default product launch branch.
-docs/generated-apps.md:79:`fallback=deterministic-scene-evidence`. Evidence reports may only claim the
-template/base/docs/product.md:32:live behind opt-in command dispatch in `Product.EvidenceCommands`.
-template/base/docs/product.md:41:parent-directory creation, normalized status vocabulary, explicit skipped
-template/base/docs/product.md:42:gates, next commands, and unsupported-host reason/fallback fields without

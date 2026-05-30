@@ -1,1 +1,0 @@
-Verify target completed with v1 and v2 artifact classes present.

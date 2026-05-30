@@ -1,1 +1,0 @@
-mode=persistent-evidence selfClosed=true firstFrame=true input=not-required userClose=false

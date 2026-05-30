@@ -1,5 +1,0 @@
-  Determining projects to restore...
-  Restored /home/developer/projects/FS-Skia-UI/src/Layout/Layout.fsproj (in 362 ms).
-  Restored /home/developer/projects/FS-Skia-UI/src/Controls/Controls.fsproj (in 362 ms).
-  Restored /home/developer/projects/FS-Skia-UI/src/Controls.Elmish/Controls.Elmish.fsproj (in 362 ms).
-  2 of 5 projects are up-to-date for restore.

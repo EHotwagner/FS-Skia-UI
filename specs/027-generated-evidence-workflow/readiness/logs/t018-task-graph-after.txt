@@ -1,4 +1,0 @@
-task-graph: 41 tasks parsed
-  wrote /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/task-graph.json
-  wrote /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/task-graph.md
-  status: 15[X], 3[S], 23[ ]

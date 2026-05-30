@@ -1,18 +1,0 @@
-  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
-  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
-  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
-  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
-  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Debug/net10.0/FS.Skia.UI.Controls.dll
-/home/developer/projects/FS-Skia-UI/samples/ControlsGallery/Program.fs(96,27): error FS0001: This expression was expected to have type    'Color'    but here has type    'Scene.Color' [/home/developer/projects/FS-Skia-UI/samples/ControlsGallery/ControlsGallery.fsproj]
-/home/developer/projects/FS-Skia-UI/samples/ControlsGallery/Program.fs(101,45): error FS0001: Type mismatch. Expecting a    'Model -> Scene'    but given a    'Model -> Scene.Scene'    The type 'Scene' does not match the type 'Scene.Scene' [/home/developer/projects/FS-Skia-UI/samples/ControlsGallery/ControlsGallery.fsproj]
-/home/developer/projects/FS-Skia-UI/samples/ControlsGallery/Program.fs(123,46): error FS0001: This expression was expected to have type    'Scene'    but here has type    'Scene.Scene' [/home/developer/projects/FS-Skia-UI/samples/ControlsGallery/ControlsGallery.fsproj]
-
-Build FAILED.
-
-/home/developer/projects/FS-Skia-UI/samples/ControlsGallery/Program.fs(96,27): error FS0001: This expression was expected to have type    'Color'    but here has type    'Scene.Color' [/home/developer/projects/FS-Skia-UI/samples/ControlsGallery/ControlsGallery.fsproj]
-/home/developer/projects/FS-Skia-UI/samples/ControlsGallery/Program.fs(101,45): error FS0001: Type mismatch. Expecting a    'Model -> Scene'    but given a    'Model -> Scene.Scene'    The type 'Scene' does not match the type 'Scene.Scene' [/home/developer/projects/FS-Skia-UI/samples/ControlsGallery/ControlsGallery.fsproj]
-/home/developer/projects/FS-Skia-UI/samples/ControlsGallery/Program.fs(123,46): error FS0001: This expression was expected to have type    'Scene'    but here has type    'Scene.Scene' [/home/developer/projects/FS-Skia-UI/samples/ControlsGallery/ControlsGallery.fsproj]
-    0 Warning(s)
-    3 Error(s)
-
-Time Elapsed 00:00:01.33

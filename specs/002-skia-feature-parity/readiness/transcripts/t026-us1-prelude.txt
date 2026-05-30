@@ -1,4 +1,0 @@
-us1-kinds=[GroupElement; RectangleElement; PathElement; VerticesElement; ArcElement;
- ClipElement; TextElement; RegionElement; ColorSpaceElement; RectangleElement]
-us1-path-length=32.000
-us1-readback=15aa36a3d64d03e52d9584cad0d5ad960d168a8d385e910b4f1cb0d22556f6a1 capabilities=9

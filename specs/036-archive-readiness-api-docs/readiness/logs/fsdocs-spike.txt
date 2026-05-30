@@ -1,0 +1,6 @@
+fsdocs spike not executed as a committed dependency adoption.
+
+The documented command remains:
+dotnet tool install fsdocs-tool --tool-path ./.tools/fsdocs && ./.tools/fsdocs/fsdocs build --projects src/Scene/Scene.fsproj src/Controls/Controls.fsproj src/SkiaViewer/SkiaViewer.fsproj --output artifacts/fsdocs-spike/036-archive-readiness-api-docs --strict
+
+Blocker: no committed fsdocs dependency or generated sample is accepted as authoritative in this feature.

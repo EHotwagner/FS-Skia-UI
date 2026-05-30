@@ -1,6 +1,0 @@
-status=ok
-input-latency-ms=21
-subscription-seconds=60
-subscription-ticks=240
-active-key=Some "Space"
-pointer=Some (240.0, 180.0)

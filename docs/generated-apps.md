@@ -181,3 +181,12 @@ Generated app and template command names are part of the native FAKE target
 registry. `TargetMetadataDrift` must stay green after generated workflow
 changes so generated guidance, docs, target metadata, and
 `validation.contract.yml` continue to name runnable commands.
+
+## Archive And API Reference Guidance
+
+For current governance work, current feature readiness paths are authoritative for current gates. historical feature readiness is audit context only unless a
+current evidence map explicitly marks it as supporting evidence. Archived material must not be cited as current package, template, generated-product, or audit pass/fail evidence.
+
+The source-shaped `.fsi` package API reference remains authoritative for agent
+authoring. FSharp.Formatting/fsdocs output is secondary or hybrid unless the
+active generator decision record marks it authoritative. Package consumers must not use assembly reflection or repository source inspection as an authoring substitute.

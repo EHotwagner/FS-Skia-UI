@@ -1,6 +1,0 @@
-
-## governed/source generated Test
-$ bash ./fake.sh build -t Test
-Test completed for generated product
-
-exit-code=0

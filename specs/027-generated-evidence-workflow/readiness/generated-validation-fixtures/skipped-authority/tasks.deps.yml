@@ -1,7 +1,0 @@
-schema_version: "1.0"
-
-# SYNTHETIC FIXTURE: valid graph paired with skipped-authority evidence report.
-tasks:
-  T001:
-    deps: []
-    skillist: []

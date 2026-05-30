@@ -1,1 +1,0 @@
-status=unsupported mode=interactive-window command=dotnet-fsi-supported-host-runApp blocked-stage=Window classification=UnsupportedEnvironment category=Startup message=Silk.NET_persistent_viewer_launch_failed:_Couldn't_find_a_suitable_window_platform._(GlfwPlatform_-_not_applicable)_https://dotnet.github.io/Silk.NET/docs/hlu/troubleshooting.html

@@ -20,6 +20,9 @@ let repositoryPath (relativePath: string) =
 let referenceRoot =
     repositoryPath "specs/035-api-discovery-names/readiness/package/api-reference"
 
+let archiveFeatureReadinessRoot =
+    repositoryPath "specs/036-archive-readiness-api-docs/readiness"
+
 let referencePath packageId =
     Path.Combine(referenceRoot, packageId + ".md")
 
@@ -119,5 +122,47 @@ let packageApiReferenceTests =
               "repository-source-authoring-fallback: false" ]
             |> List.iter (fun required ->
                 Expect.stringContains index required $"reference index records {required}")
+        }
+
+        test "archive API reference decision covers required packages dimensions and authority" {
+            let evaluationPath = Path.Combine(archiveFeatureReadinessRoot, "api-reference-generator-evaluation.md")
+            Expect.isTrue (File.Exists evaluationPath) $"API reference generator evaluation exists at {evaluationPath}"
+
+            let evaluation = File.ReadAllText evaluationPath
+
+            [ "FS.Skia.UI.Scene"
+              "FS.Skia.UI.Controls"
+              "FS.Skia.UI.SkiaViewer"
+              "F# authoring spelling fidelity"
+              "record-field and union-case visibility"
+              "parameter names and labels"
+              "XML documentation preservation"
+              "package-adjacent discoverability"
+              "Markdown or HTML output suitability"
+              "dependency and build impact"
+              "generated product guidance compatibility"
+              "mixed Scene/Controls qualification guidance"
+              "clean package-consumer discovery without repository source inspection or reflection as the authoring strategy"
+              "current-fsi"
+              "authoritative"
+              "fsdocs"
+              "secondary" ]
+            |> List.iter (fun required -> Expect.stringContains evaluation required $"evaluation records {required}")
+        }
+
+        test "fsdocs spike blocker records command log path reason and next action" {
+            let spikePath = Path.Combine(archiveFeatureReadinessRoot, "fsharp-formatting-spike.md")
+            Expect.isTrue (File.Exists spikePath) $"FSharp.Formatting spike record exists at {spikePath}"
+
+            let spike = File.ReadAllText spikePath
+
+            [ "command:"
+              "log path:"
+              "blocker:"
+              "reason:"
+              "next action:"
+              "secondary or hybrid"
+              "not authoritative" ]
+            |> List.iter (fun required -> Expect.stringContains spike required $"fsdocs spike records {required}")
         }
     ]

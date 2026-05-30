@@ -1,3 +1,0 @@
-event=Some (Input (PointerMoved (3.0, 4.0)))
-effect=Some (Dispatch Tick)
-subscriptions=0

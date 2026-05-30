@@ -1,9 +1,0 @@
-
-## dotnet fsi scripts/prelude.fsx
-$ dotnet fsi scripts/prelude.fsx
-
-
-/home/developer/projects/FS-Skia-UI/scripts/prelude.fsx(6,1): error FS0999: Failed to create CoreCLR, HRESULT: 0x8007000E
-
-
-exit-code=1

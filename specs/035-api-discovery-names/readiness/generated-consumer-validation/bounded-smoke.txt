@@ -1,8 +1,0 @@
-status=ok
-smoke=bounded-viewer
-frames-rendered=1
-elapsed-ms=325.0305
-initial-output-size=320x200
-renderer-mode=vulkan
-diagnostic-mode=startup-focused
-diagnostic-categories=Startup,Startup

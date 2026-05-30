@@ -1,1 +1,0 @@
-status=ok mode=persistent-window window-opened=true input-dispatch=not-applicable exit-path=true renderer-mode=skia

@@ -1,2 +1,0 @@
-Failed to load plugin: 'libgtk-3.so.0: cannot open shared object file: No such file or directory'
-status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=/home/developer/projects/FS-Skia-UI/specs/018-persistent-gui-runtime/readiness/logs/t028-generated-app-real-launch-evidence-output-after-cache-clear.txt

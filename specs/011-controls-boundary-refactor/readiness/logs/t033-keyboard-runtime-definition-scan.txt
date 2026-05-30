@@ -1,6 +1,0 @@
-src/KeyboardInput/KeyboardInput.fsi:23:type KeyboardEffect =
-src/KeyboardInput/KeyboardInput.fsi:33:type KeyboardModel =
-src/KeyboardInput/KeyboardInput.fsi:45:type KeyboardMsg =
-src/KeyboardInput/KeyboardInput.fs:23:type KeyboardEffect =
-src/KeyboardInput/KeyboardInput.fs:33:type KeyboardModel =
-src/KeyboardInput/KeyboardInput.fs:45:type KeyboardMsg =

@@ -1,4 +1,0 @@
-task-graph: 57 tasks parsed
-  wrote /home/developer/projects/FS-Skia-UI/specs/019-fix-window-visibility/readiness/task-graph.json
-  wrote /home/developer/projects/FS-Skia-UI/specs/019-fix-window-visibility/readiness/task-graph.md
-  status: 29[X], 1[S], 27[ ]

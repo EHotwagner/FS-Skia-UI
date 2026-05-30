@@ -1,3 +1,0 @@
-desktop-diagnostic-class=unsupported-host
-persistent-window-capability=false
-status=failed blocked-stage=Window classification=UnsupportedEnvironment category=EnvironmentSession message=DISPLAY or WAYLAND_DISPLAY is missing; interactive Linux launch is blocked before app lifecycle debugging.

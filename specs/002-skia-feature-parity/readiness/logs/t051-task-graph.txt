@@ -1,4 +1,0 @@
-task-graph: 84 tasks parsed
-  wrote /home/developer/projects/FS-Skia-UI/specs/002-skia-feature-parity/readiness/task-graph.json
-  wrote /home/developer/projects/FS-Skia-UI/specs/002-skia-feature-parity/readiness/task-graph.md
-  status: 15[X], 1[S], 35[S*], 33[ ]

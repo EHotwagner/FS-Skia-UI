@@ -1,6 +1,0 @@
-The last restore is still up to date. Nothing left to do.
-Performance:
- - Cli parsing: 135 milliseconds
- - Packages: 37 milliseconds
- - Runtime: 704 milliseconds
-Hint: If you just upgraded the fake-runner you can try to remove the .fake directory and try again.

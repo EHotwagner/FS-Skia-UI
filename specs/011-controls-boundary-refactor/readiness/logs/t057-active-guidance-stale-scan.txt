@@ -1,1 +1,0 @@
-PASS: build checks, template drift, generated guidance, and active Controls skill have no active stale generated terms.

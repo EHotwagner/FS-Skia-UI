@@ -1,0 +1,102 @@
+schema_version: "1.0"
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: ["speckit-tasks"]
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: []
+  T006:
+    deps: []
+    skillist: []
+  T007:
+    deps: []
+    skillist: []
+  T008:
+    deps: []
+    skillist: []
+  T009:
+    deps: []
+    skillist: []
+  T010:
+    deps: [T004, T009]
+    skillist: []
+  T011:
+    deps: [T004, T009]
+    skillist: []
+  T012:
+    deps: [T010]
+    skillist: []
+  T013:
+    deps: [T011, T012]
+    skillist: []
+  T014:
+    deps: [T013]
+    skillist: []
+  T015:
+    deps: [T012, T013, T014]
+    skillist: []
+  T016:
+    deps: [T005, T006, T012, T013, T009]
+    skillist: []
+  T017:
+    deps: [T016]
+    skillist: []
+  T018:
+    deps: [T017]
+    skillist: []
+  T019:
+    deps: [T007, T013, T018]
+    skillist: ["fs-skia-layout-evidence"]
+  T020:
+    deps: [T019]
+    skillist: []
+  T021:
+    deps: [T018, T019, T020]
+    skillist: []
+  T022:
+    deps: [T008]
+    skillist: []
+  T023:
+    deps: [T008]
+    skillist: []
+  T024:
+    deps: [T023]
+    skillist: []
+  T025:
+    deps: [T022, T024]
+    skillist: []
+  T026:
+    deps: [T008, T025]
+    skillist: []
+  T027:
+    deps: [T025, T026]
+    skillist: []
+  T028:
+    deps: [T015, T021, T027]
+    skillist: []
+  T029:
+    deps: [T028]
+    skillist: []
+  T030:
+    deps: [T029]
+    skillist: []
+  T031:
+    deps: [T030]
+    skillist: ["speckit-evidence-graph"]
+  T032:
+    deps: [T031]
+    skillist: ["speckit-evidence-audit"]
+  T033:
+    deps: [T032]
+    skillist: []

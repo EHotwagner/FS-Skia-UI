@@ -81,3 +81,12 @@ When Elmish integration is selected, `FS.Skia.UI.Controls.Elmish` provides the
 adapter for commands, subscriptions, and program wiring. Users moving from the
 legacy Charts package should use Controls chart and DataGrid declarations
 directly; there is no compatibility shim.
+
+## Archive And API Reference Guidance
+
+For generated product governance, current feature readiness paths are authoritative for current gates. historical feature readiness is audit context only unless a current evidence map explicitly marks it as supporting evidence.
+Archived material must not be cited as current package, template, generated-product, or audit pass/fail evidence.
+
+The source-shaped `.fsi` package API reference remains authoritative for agent
+authoring. FSharp.Formatting/fsdocs output is secondary or hybrid unless the
+active generator decision record marks it authoritative. Package consumers must not use assembly reflection or repository source inspection as an authoring substitute.

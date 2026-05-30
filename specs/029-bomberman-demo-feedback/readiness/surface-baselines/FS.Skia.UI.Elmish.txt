@@ -1,4 +1,0 @@
-FS.Skia.UI.Elmish.ElmishAdapter
-FS.Skia.UI.Elmish.ElmishAdapterEffect`1
-FS.Skia.UI.Elmish.ElmishAdapterModel`1
-FS.Skia.UI.Elmish.ElmishAdapterMsg`1

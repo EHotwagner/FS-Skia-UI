@@ -1,9 +1,0 @@
-specs/028-agent-validation-framework/readiness/logs/t034-generated-normal-launch-tests.txt:13058:  Failed Generated project validation contract.generated EvidenceCommands exposes explicit discoverable evidence workflows
-specs/028-agent-validation-framework/readiness/logs/t034-generated-normal-launch-tests.txt:13061:template/base/src/Product/EvidenceCommands.fs contains type GeneratedEvidenceWorkflow. Expected subject string 'module Product.EvidenceCommands
-specs/028-agent-validation-framework/readiness/logs/t034-generated-normal-launch-tests.txt:13605:' to contain substring 'type GeneratedEvidenceWorkflow'.
-tests/Governance.Tests/GeneratedProjectValidationTests.fs:315:        test "generated EvidenceCommands exposes explicit discoverable evidence workflows" {
-tests/Governance.Tests/GeneratedProjectValidationTests.fs:318:                [ "type GeneratedEvidenceWorkflow"
-tests/Governance.Tests/GeneratedProjectValidationTests.fs:322:                  "PolicyOwnedReport"
-tests/Governance.Tests/GeneratedProjectValidationTests.fs:325:                  "SkippedGates"
-tests/Governance.Tests/GeneratedProjectValidationTests.fs:326:                  "UnsupportedOutcome"
-tests/Governance.Tests/GeneratedProjectValidationTests.fs:327:                  "NextCommand" ]

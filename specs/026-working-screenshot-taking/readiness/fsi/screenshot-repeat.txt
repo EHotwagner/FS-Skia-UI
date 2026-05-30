@@ -1,3 +1,0 @@
-runs=20
-accepted=20
-pass-rate=100%

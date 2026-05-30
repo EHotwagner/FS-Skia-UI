@@ -1,8 +1,0 @@
-persistent-window=true
-bounded-smoke=true
-keyboard-input=true
-renderer-mode=skia
-status=ok
-mode=persistent-window
-window-opened=true
-exit-path=true

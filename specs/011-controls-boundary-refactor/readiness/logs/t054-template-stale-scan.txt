@@ -1,1 +1,0 @@
-PASS: template generated guidance has no stale Charts package, chart-only, DataGrid-as-chart, renderer-neutral, or host-loop ownership terms.

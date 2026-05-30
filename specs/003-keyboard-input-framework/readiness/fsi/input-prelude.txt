@@ -1,6 +1,0 @@
-init-effects=2
-replay-effects=15
-mode-stack=["selection"]
-held-modes=[]
-active-layout=qwerty
-top-pairs=2 risks=5 suggestions=5

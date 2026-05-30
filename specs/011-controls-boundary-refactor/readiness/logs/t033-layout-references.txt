@@ -1,3 +1,0 @@
-Project reference(s)
---------------------
-../Scene/Scene.fsproj

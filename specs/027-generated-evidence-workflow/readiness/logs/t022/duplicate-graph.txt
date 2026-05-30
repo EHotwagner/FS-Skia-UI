@@ -1,7 +1,0 @@
-
-VALIDATION FAILED
-  T001: duplicate skill-loading evidence row for speckit-tasks; duplicate rows do not mask missing required rows
-  T001: declared skill speckit-implement has no pre-work load evidence
-task-graph: 1 tasks parsed
-  wrote /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/skill-loading-fixtures/duplicate/readiness/task-graph.json
-  wrote /home/developer/projects/FS-Skia-UI/specs/027-generated-evidence-workflow/readiness/skill-loading-fixtures/duplicate/readiness/task-graph.md

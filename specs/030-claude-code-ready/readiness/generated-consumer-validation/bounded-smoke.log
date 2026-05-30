@@ -1,8 +1,0 @@
-
-## generated consumer bounded smoke
-$ dotnet run --project src/Product/Product.fsproj --no-restore -- --bounded-smoke "/home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/generated-consumer-validation/bounded-smoke.txt"
-status=ok smoke=bounded-viewer frames-rendered=1 renderer-mode=vulkan evidence=/home/developer/projects/FS-Skia-UI/specs/030-claude-code-ready/readiness/generated-consumer-validation/bounded-smoke.txt
-Gtk-Message: 15:43:30.700: Failed to load module "colorreload-gtk-module"
-Gtk-Message: 15:43:30.700: Failed to load module "window-decorations-gtk-module"
-
-exit-code=0

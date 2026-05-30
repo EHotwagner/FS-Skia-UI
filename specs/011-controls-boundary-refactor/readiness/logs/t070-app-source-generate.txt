@@ -1,7 +1,0 @@
-The template "FS Skia UI Governed Project" was created successfully.
-
-Processing post-creation actions...
-Running command 'bash -c "find . -type f \( -name '*.sh' -o -name 'fake.sh' \) -exec chmod +x {} +; if ! command -v git >/dev/null 2>&1; then echo '[fs-skia-ui] git not found; skipped repository initialization' >&2; exit 0; fi; if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then git init -q && git add . && git -c user.name='FS Skia UI Template' -c user.email='template@example.invalid' commit --allow-empty -q -m '[Spec Kit] Initial commit'; fi"'...
-Command succeeded.
-
-

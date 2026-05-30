@@ -1,3 +1,0 @@
-  Determining projects to restore...
-  Restored /home/developer/projects/FS-Skia-UI/tests/Package.Tests/Package.Tests.fsproj (in 448 ms).
-  5 of 6 projects are up-to-date for restore.

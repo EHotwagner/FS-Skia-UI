@@ -1,2 +1,0 @@
-ERROR stage=VulkanSurface severity=Fatal message=Silk.NET window creation failed. cause=Some
-  "Couldn't find a suitable window platform. (GlfwPlatform - not applicable) https://dotnet.github.io/Silk.NET/docs/hlu/troubleshooting.html"

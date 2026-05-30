@@ -1,118 +1,0 @@
-
-## generated consumer Verify
-$ bash ./fake.sh build -t Verify
-Dev completed for generated product
-GeneratedGuidanceCheck completed for generated product
-TemplateDrift completed for generated product
-EvidenceGraph completed for generated product
-EvidenceAudit completed for generated product
-  Determining projects to restore...
-  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Product.Tests.fsproj (in 276 ms).
-  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/src/Product/Product.fsproj (in 276 ms).
-  Product -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/src/Product/bin/Debug/net10.0/Product.dll
-  Product.Tests -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll
-Test run for /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll (.NETCoreApp,Version=v10.0)
-A total of 1 test files matched the specified pattern.
-
-Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 60 ms - Product.Tests.dll (net10.0)
-Test completed for generated product
-Verify completed for generated product
-
-exit-code=0
-
-## generated consumer Verify
-$ bash ./fake.sh build -t Verify
-Dev completed for generated product
-GeneratedGuidanceCheck completed for generated product
-TemplateDrift completed for generated product
-EvidenceGraph completed for generated product
-EvidenceAudit completed for generated product
-  Determining projects to restore...
-  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/src/Product/Product.fsproj (in 296 ms).
-  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Product.Tests.fsproj (in 296 ms).
-  Product -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/src/Product/bin/Debug/net10.0/Product.dll
-  Product.Tests -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll
-Test run for /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll (.NETCoreApp,Version=v10.0)
-A total of 1 test files matched the specified pattern.
-
-Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 62 ms - Product.Tests.dll (net10.0)
-Test completed for generated product
-Verify completed for generated product
-
-exit-code=0
-
-## generated consumer Verify
-$ bash ./fake.sh build -t Verify
-Dev completed for generated product
-GeneratedGuidanceCheck completed for generated product
-TemplateDrift completed for generated product
-EvidenceGraph completed for generated product
-EvidenceAudit completed for generated product
-  Determining projects to restore...
-  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Product.Tests.fsproj (in 274 ms).
-  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/src/Product/Product.fsproj (in 274 ms).
-  Product -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/src/Product/bin/Debug/net10.0/Product.dll
-/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Tests.fs(95,35): error FS0001: This expression was expected to have type    'FS.Skia.UI.InputMsg'    but here has type    'Msg' [/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Product.Tests.fsproj]
-/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Tests.fs(95,46): error FS0001: This expression was expected to have type    'FS.Skia.UI.InputRuntime'    but here has type    'Model' [/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Product.Tests.fsproj]
-/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Tests.fs(98,96): error FS0001: This expression was expected to have type    'Model'    but here has type    'FS.Skia.UI.InputRuntime' [/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Product.Tests.fsproj]
-/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Tests.fs(108,49): error FS0001: This expression was expected to have type    'FS.Skia.UI.InputMsg'    but here has type    'Msg' [/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Product.Tests.fsproj]
-/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Tests.fs(108,75): error FS0001: This expression was expected to have type    'FS.Skia.UI.InputRuntime'    but here has type    'Model' [/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Product.Tests.fsproj]
-/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Tests.fs(109,58): error FS0001: This expression was expected to have type    'FS.Skia.UI.InputMsg'    but here has type    'Msg' [/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Product.Tests.fsproj]
-/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Tests.fs(111,34): error FS0039: The type 'InputRuntime' does not define a field, constructor, or member named 'Screen'. [/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Product.Tests.fsproj]
-/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Tests.fs(113,37): error FS0039: The type 'InputRuntime' does not define a field, constructor, or member named 'PrimaryInteractions'. [/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Product.Tests.fsproj]
-/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Tests.fs(291,43): error FS0001: This expression was expected to have type    'FS.Skia.UI.InputMsg'    but here has type    'Msg' [/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Product.Tests.fsproj]
-/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Tests.fs(291,51): error FS0001: This expression was expected to have type    'FS.Skia.UI.InputRuntime'    but here has type    'Model' [/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Product.Tests.fsproj]
-/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Tests.fs(292,43): error FS0001: This expression was expected to have type    'FS.Skia.UI.InputRuntime'    but here has type    'Model' [/home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Product.Tests.fsproj]
-System.Exception: Test failed with exit code 1; see readiness/logs/Test.txt
-   at Microsoft.FSharp.Core.PrintfModule.PrintFormatToStringThenFail@1447.Invoke(String message)
-   at FSI_0001.runProcess(String target, String fileName, String arguments) in /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/build.fsx:line 43
-   at FSI_0001.runGeneratedTests() in /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/build.fsx:line 46
-   at FSI_0001.run(String target) in /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/build.fsx:line 60
-   at <StartupCode$FSI_0001>.$FSI_0001.main@() in /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/build.fsx:line 65
-   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
-   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
-Stopped due to error
-
-exit-code=1
-
-## generated consumer Verify
-$ bash ./fake.sh build -t Verify
-Dev completed for generated product
-GeneratedGuidanceCheck completed for generated product
-TemplateDrift completed for generated product
-EvidenceGraph completed for generated product
-EvidenceAudit completed for generated product
-  Determining projects to restore...
-  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/src/Product/Product.fsproj (in 281 ms).
-  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Product.Tests.fsproj (in 281 ms).
-  Product -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/src/Product/bin/Debug/net10.0/Product.dll
-  Product.Tests -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll
-Test run for /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll (.NETCoreApp,Version=v10.0)
-A total of 1 test files matched the specified pattern.
-
-Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 63 ms - Product.Tests.dll (net10.0)
-Test completed for generated product
-Verify completed for generated product
-
-exit-code=0
-
-## generated consumer Verify
-$ bash ./fake.sh build -t Verify
-Dev completed for generated product
-GeneratedGuidanceCheck completed for generated product
-TemplateDrift completed for generated product
-EvidenceGraph completed for generated product
-EvidenceAudit completed for generated product
-  Determining projects to restore...
-  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/Product.Tests.fsproj (in 283 ms).
-  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/src/Product/Product.fsproj (in 283 ms).
-  Product -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/src/Product/bin/Debug/net10.0/Product.dll
-  Product.Tests -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll
-Test run for /home/developer/projects/FS-Skia-UI/artifacts/generated-products/019-fix-window-visibility/app-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll (.NETCoreApp,Version=v10.0)
-A total of 1 test files matched the specified pattern.
-
-Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 59 ms - Product.Tests.dll (net10.0)
-Test completed for generated product
-Verify completed for generated product
-
-exit-code=0

@@ -1,8 +1,0 @@
-scene-size=320x240 point=(16.0,24.0)
-scene-rect=320.0x240.0 layout-bounds=320.0x208.0
-layout-size={ Width = Some 320.0
-  Height = Some 240.0 } diagnostic=FallbackBoundsApplied
-viewer-title=Bomberman feedback FSI surface exercise diagnostics=2
-screenshot-command=fsi-surface-exercise capture=ViewerRenderTargetPng
-screenshot-check-status=unsupported source=Some "NoCaptureSource"
-elmish-model=0 effects=3

@@ -1,9 +1,0 @@
-status=unsupported
-smoke=bounded-viewer
-blocked-stage=Renderer
-classification=UnsupportedEnvironment
-diagnostic-category=Renderer
-message=Bounded live viewer smoke is not available in this host; set FS_SKIA_ENABLE_BOUNDED_VIEWER_SIMULATION=1 only for deterministic transition diagnostics.
-last-diagnostic-summary=Bounded live viewer smoke is not available in this host; set FS_SKIA_ENABLE_BOUNDED_VIEWER_SIMULATION=1 only for deterministic transition diagnostics.
-diagnostic-mode=startup-focused
-diagnostic-categories=Renderer

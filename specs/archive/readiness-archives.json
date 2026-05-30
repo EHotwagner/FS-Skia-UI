@@ -1,0 +1,212 @@
+[
+  {
+    "feature": "001-vulkan-elmish-viewer",
+    "files": 37,
+    "archive_bytes": 38059,
+    "sha256": "539a2e5ffb5a37c7544324a1d61ca6f70d6ee10cf5726586a2ae72b2cda56eac"
+  },
+  {
+    "feature": "002-skia-feature-parity",
+    "files": 161,
+    "archive_bytes": 114089,
+    "sha256": "6d53fb772d8b519a4edf7c25957092f54bba39df002dd19cbee8caca4b969846"
+  },
+  {
+    "feature": "003-keyboard-input-framework",
+    "files": 17,
+    "archive_bytes": 18658,
+    "sha256": "4972fc3af042f57dc8a69a2b76c9e8023c111ecd5736c295f34eaf0fd0fe12f2"
+  },
+  {
+    "feature": "004-keyboard-state-display",
+    "files": 16,
+    "archive_bytes": 15394,
+    "sha256": "f743f650589c78760b56c0dddd65aafefaf084a66090117152e9d7b0b59d1a7f"
+  },
+  {
+    "feature": "005-add-yoga-net-layout",
+    "files": 15,
+    "archive_bytes": 15174,
+    "sha256": "5b0eb9ef08a9b17c1b314aa1befdc249beaafee3f800b020544f46424a0a1313"
+  },
+  {
+    "feature": "006-template-framework-governance",
+    "files": 40,
+    "archive_bytes": 34150,
+    "sha256": "d2c7891dbf87db927d5fa2d721320010007cc6972a1945b28a8a041c7dd07494"
+  },
+  {
+    "feature": "007-v2-template-packaging",
+    "files": 64,
+    "archive_bytes": 54434,
+    "sha256": "f07df24a02d9f34537110e2bd639d124b40648eba35ab937af5cb7954e89dfed"
+  },
+  {
+    "feature": "008-targeted-refactor-governance",
+    "files": 84,
+    "archive_bytes": 71628,
+    "sha256": "e06ca9d83ddde34671124d8eeafe73f82646a34e5cc7f3712c167c9963ba0185"
+  },
+  {
+    "feature": "009-v3-modular-framework",
+    "files": 140,
+    "archive_bytes": 158791,
+    "sha256": "2437439ad488a87307cf1425a4a348e02cc67850f5c43d9a1dc45fa42a8cd065"
+  },
+  {
+    "feature": "010-skia-controls-library",
+    "files": 103,
+    "archive_bytes": 86143,
+    "sha256": "638898d6543ada81a710782e94e2aa534ac1220ca9f65cf4b167adf2420b6122"
+  },
+  {
+    "feature": "011-controls-boundary-refactor",
+    "files": 290,
+    "archive_bytes": 252539,
+    "sha256": "4846f869a0b57a63590694b37059fe8b0216609f5082e4de1ef2b6d67e94071b"
+  },
+  {
+    "feature": "012-fix-refactor-process",
+    "files": 57,
+    "archive_bytes": 53105,
+    "sha256": "9b096fbebf221c4c824bbce72f84f299e54fc8f76b6fcf4553f4b0c3f754b4e2"
+  },
+  {
+    "feature": "013-tetris-demo-integration",
+    "files": 186,
+    "archive_bytes": 168372,
+    "sha256": "fb8222817b9a0679c9d45d0b518dcf432cc37a23df2d738a5ca434418ef908a3"
+  },
+  {
+    "feature": "014-task-skilllist-governance",
+    "files": 65,
+    "archive_bytes": 40763,
+    "sha256": "3a386de450ebe2c8e35e1e456f09b71ce81d6cb0a1c0ea3e930bc6307ee6c328"
+  },
+  {
+    "feature": "015-improve-governance-weaknesses",
+    "files": 21,
+    "archive_bytes": 22918,
+    "sha256": "aa99f0647c197404a182a40d7c54dd19ae61eaf15459d440dd205965d5dd09eb"
+  },
+  {
+    "feature": "016-persistent-viewer-contract",
+    "files": 119,
+    "archive_bytes": 110225,
+    "sha256": "6c7c27ba86d174ca648cbc6d501d70e723905074cd8ab51a123aa5d173ccf97c"
+  },
+  {
+    "feature": "017-synthetic-error-evidence",
+    "files": 169,
+    "archive_bytes": 147948,
+    "sha256": "e502abd2d179349eb3f4f03c18c7ce40d31cd99cde7dc259a5787a786cb427db"
+  },
+  {
+    "feature": "018-persistent-gui-runtime",
+    "files": 188,
+    "archive_bytes": 186195,
+    "sha256": "4991da4702fc81c4100bd1567ec55b5f822524136690277c409e5aa86196e121"
+  },
+  {
+    "feature": "019-fix-window-visibility",
+    "files": 244,
+    "archive_bytes": 202611,
+    "sha256": "e5153ca99891e4e365adb46908e209a56fd4a12377c2fff4624f9964369af9d3"
+  },
+  {
+    "feature": "020-asteroids-integration-feedback",
+    "files": 147,
+    "archive_bytes": 147714,
+    "sha256": "460b6b9a3339f7f03cfb1f50b56c12b5b812a061d181e43c74e09b4be2a2119d"
+  },
+  {
+    "feature": "021-persistent-launch-evidence",
+    "files": 197,
+    "archive_bytes": 176878,
+    "sha256": "c07b9cfbebc00ad5ae996503f82d674307e6fb71a1321e576220ffe1562b14f7"
+  },
+  {
+    "feature": "022-breakout-demo-feedback",
+    "files": 178,
+    "archive_bytes": 171545,
+    "sha256": "8c7266444005cf8451f5ee823719063dfb254f74a4dfb4c48f6d03793b576fd0"
+  },
+  {
+    "feature": "023-phased-refactor-cleanup",
+    "files": 174,
+    "archive_bytes": 155054,
+    "sha256": "651ee28eb396797fa617ee05ddca828aa405508efcbfd3f97ad38c0c36ed16dc"
+  },
+  {
+    "feature": "024-racer-feedback-followups",
+    "files": 152,
+    "archive_bytes": 154727,
+    "sha256": "85ed60a5c8416d8ef2982ce0adf82b2bc7a0c7db2a4fdd21c63ff87f21d6e8f9"
+  },
+  {
+    "feature": "025-upgrade-skia-speckit",
+    "files": 194,
+    "archive_bytes": 166925,
+    "sha256": "ef42568cee84656adcee566d74bf1fb6103b1017c97504f7bbe93c714a9dfb42"
+  },
+  {
+    "feature": "026-working-screenshot-taking",
+    "files": 151,
+    "archive_bytes": 130889,
+    "sha256": "43a0746664c761b448b163a5f6d263ab6915feb781b87f78c5088591ba651951"
+  },
+  {
+    "feature": "027-generated-evidence-workflow",
+    "files": 280,
+    "archive_bytes": 259407,
+    "sha256": "89098f1374ed0b91c86325d66c480847882829875dda8b758e300c46c2c6c104"
+  },
+  {
+    "feature": "028-agent-validation-framework",
+    "files": 221,
+    "archive_bytes": 834202,
+    "sha256": "cfc74f42a085e3d3b84a0d22759b56a13c7b0c5243e6db293bb19561c3dc2030"
+  },
+  {
+    "feature": "029-bomberman-demo-feedback",
+    "files": 228,
+    "archive_bytes": 258401,
+    "sha256": "71f382b741cbc87c2ef73eb87d68094979380d2d15781901de4c9278e478966e"
+  },
+  {
+    "feature": "030-claude-code-ready",
+    "files": 147,
+    "archive_bytes": 135580,
+    "sha256": "cd465459feca6e57bfe4d3678845e2162118e67a58afabbb6fa4b237f86e469a"
+  },
+  {
+    "feature": "031-serialize-fake-runs",
+    "files": 126,
+    "archive_bytes": 124728,
+    "sha256": "855706175d076848c5c1b93856fc6cf6ecc7a943af13c4f6972d3bf538bfb3c6"
+  },
+  {
+    "feature": "032-sokoban-feedback-followups",
+    "files": 80,
+    "archive_bytes": 98312,
+    "sha256": "b9b08747ef94d90db24a8311dda03d1092f7cf3155e1e09a7aa470f329c1533f"
+  },
+  {
+    "feature": "033-fix-task-validator-feedback",
+    "files": 115,
+    "archive_bytes": 119770,
+    "sha256": "ce30ce6e33e861caa4c912417da851079327d0a28ef0f3db425a62a0cf5151a9"
+  },
+  {
+    "feature": "034-asteroids-feedback-skills",
+    "files": 113,
+    "archive_bytes": 119991,
+    "sha256": "b1b11408445db07e224f7ee0078e534fd29b31580d1f8aa3ffacb32861819349"
+  },
+  {
+    "feature": "035-api-discovery-names",
+    "files": 138,
+    "archive_bytes": 184309,
+    "sha256": "b008d13b202f20f9292e523e2abbb31663807c85ef925bbfba59285d8c3c95ca"
+  }
+]

@@ -1,5 +1,0 @@
-t028-diagnostic-count=3
-Error FrameRender Invalid image resource declaration. Some
-  "Image source 'specs/002-skia-feature-parity/readiness/sample-assets/missing-image.png' does not exist."
-Error FrameRender Invalid path declaration. Some "Path declarations must begin with MoveTo before drawing contours."
-Warning FrameRender Font family 'FS-Skia-UI-Definitely-Missing-Font (FileNotFoundException)' is unavailable; platform font resolution will choose a substitute. None

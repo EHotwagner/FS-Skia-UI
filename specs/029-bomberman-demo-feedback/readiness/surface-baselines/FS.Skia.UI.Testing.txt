@@ -1,3 +1,0 @@
-FS.Skia.UI.Testing.GeneratedProductAssertions
-FS.Skia.UI.Testing.GeneratedProductExpectation
-FS.Skia.UI.Testing.PackageReferenceExpectation

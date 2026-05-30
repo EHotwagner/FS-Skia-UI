@@ -1,0 +1,48 @@
+The last full restore is still up to date. Nothing left to do.
+run EvidenceGraph
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target EvidenceGraph:
+<== EvidenceGraph
+
+The running order is:
+Group - 1
+  - EvidenceGraph
+Starting target 'EvidenceGraph'
+Finished (Success) 'EvidenceGraph' in 00:00:00.1180675
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target          Duration
+------          --------
+EvidenceGraph   00:00:00.1161418
+Total:          00:00:00.1866434
+Status:         Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 154 milliseconds
+ - Packages: 51 milliseconds
+ - Script analyzing: 19 milliseconds
+ - Script running: 323 milliseconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 second
+full merge-gate validation.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/036-archive-readiness-api-docs --graph-only
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/specs/036-archive-readiness-api-docs
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 33 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/036-archive-readiness-api-docs/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/036-archive-readiness-api-docs/readiness/task-graph.md
+  status: 32[X], 1[S]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+
+exit-code=0

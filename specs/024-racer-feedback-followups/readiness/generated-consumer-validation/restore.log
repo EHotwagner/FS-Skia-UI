@@ -1,8 +1,0 @@
-
-## generated consumer restore from local packages
-$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache
-  Determining projects to restore...
-  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/024-racer-feedback-followups/app-source/tests/Product.Tests/Product.Tests.fsproj (in 312 ms).
-  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/024-racer-feedback-followups/app-source/src/Product/Product.fsproj (in 312 ms).
-
-exit-code=0

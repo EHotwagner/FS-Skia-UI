@@ -1,6 +1,0 @@
-public-surface.md: 2
-control-runtime.md: 1
-keyboardinput-package.md: 1
-keyboard-input-elmish.md: 1
-rich-rendering.md: 1
-elmish-adapter.md: 1

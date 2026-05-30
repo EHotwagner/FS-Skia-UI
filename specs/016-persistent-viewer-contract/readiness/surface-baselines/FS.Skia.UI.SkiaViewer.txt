@@ -1,9 +1,0 @@
-# SkiaViewer Surface Baseline Readiness
-
-Status: scaffolded. The repository-level baseline remains `readiness/surface-baselines/FS.Skia.UI.SkiaViewer.txt` until T045 refreshes it.
-
-T014 preparation:
-
-- Public surface changes are expected for `ViewerRuntimeCapability`, `ViewerLaunchOutcome`, `GeneratedAppHost<'model,'msg>`, `Viewer.runtimeCapability`, `Viewer.run`, and `Viewer.runApp`.
-- The stable baseline must not be refreshed until implementation and package verification are ready.
-- T045 owns `./fake.sh build -t RefreshSurfaceBaselines` and `./fake.sh build -t PackageSurfaceCheck`.
