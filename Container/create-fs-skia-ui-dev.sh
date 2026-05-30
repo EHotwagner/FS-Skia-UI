@@ -13,7 +13,7 @@ ATTACH_SHELL="/bin/bash"
 ENABLE_GPU=true
 ENABLE_DISPLAY=true
 ENABLE_AUDIO=true
-DOTNET_CHANNELS="${DOTNET_CHANNELS:-8.0 10.0}"
+DOTNET_CHANNELS="${DOTNET_CHANNELS:-6.0 8.0 10.0}"
 TZ_VALUE="${TZ:-UTC}"
 
 PORT_FLAGS=(
@@ -36,7 +36,7 @@ Options:
                             Defaults to the current directory.
   --container=NAME          Container name. Default: fs-skia-ui-dev.
   --image=NAME              Image name. Default: fs-skia-ui-dev.
-  --dotnet-channels=LIST    Space-separated .NET channels. Default: "8.0 10.0".
+  --dotnet-channels=LIST    Space-separated .NET channels. Default: "6.0 8.0 10.0".
   --timezone=ZONE           Timezone copied into the image. Default: UTC.
   --port=HOST:CONTAINER     Add or replace published ports. Repeatable.
   --env=KEY=VALUE           Pass an environment variable. Repeatable.

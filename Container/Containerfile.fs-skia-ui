@@ -1,7 +1,7 @@
 FROM archlinux:latest
 
 ARG CONTAINER_CACHEBUST=unset
-ARG DOTNET_CHANNELS="8.0 10.0"
+ARG DOTNET_CHANNELS="6.0 8.0 10.0"
 ARG TZ=UTC
 
 # General-purpose F# + Skia UI development image.

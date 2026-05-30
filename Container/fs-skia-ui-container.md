@@ -16,7 +16,7 @@ The container gives consumers a clean base they can adapt for their own editor, 
 ## What Is Included
 
 - Arch Linux base image.
-- .NET SDK channels `8.0` and `10.0` by default.
+- .NET SDK channels `6.0`, `8.0`, and `10.0` by default. The repo targets .NET 10, while FAKE currently needs .NET 6 reference assemblies.
 - F# tools: `fsautocomplete`, `fantomas`, `fake-cli`, `paket`, and `fable`.
 - Native graphics/UI libraries commonly needed by SkiaSharp, GTK, OpenGL, Vulkan, X11, Wayland, and font rendering.
 - Node/npm plus `prettierd`, useful for Fable/web companion projects.
@@ -84,7 +84,7 @@ You can also set these environment variables before running the script:
 ```bash
 export IMAGE=my-fs-skia-ui-dev
 export CONTAINER=my-fs-skia-ui-dev
-export DOTNET_CHANNELS="8.0 9.0 10.0"
+export DOTNET_CHANNELS="6.0 8.0 10.0"
 export TZ=America/New_York
 export GIT_USER_NAME="Your Name"
 export GIT_USER_EMAIL="you@example.com"
