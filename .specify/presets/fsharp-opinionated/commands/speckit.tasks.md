@@ -46,6 +46,39 @@ derived from the spec and plan.
   structured `skillist` value as `[skillist: ...]`. Use `[skillist: []]` for
   an empty list. Non-empty mirrors preserve the exact structured order, for
   example `[skillist: speckit-tasks, speckit-evidence-graph]`.
+- **Task graph pitfall guidance.** `EvidenceGraph` enforces these blocking
+  Spec Kit title-trigger groups: graph validation (`task graph`,
+  `evidence graph`, `readiness validation`, `tasks.deps.yml`,
+  `structured task metadata`, `mirror mismatch`, `skillist field`,
+  `skillist, list typing`, `obvious capability`,
+  `multi-skill dependency order`, `migration blocker`,
+  `validator diagnostics`, `EvidenceGraph`); evidence audit (`evidence audit`,
+  `diff-scan`, `synthetic propagation`, `readiness-blocking`,
+  `EvidenceAudit`); task generation (`/speckit.tasks`, `speckit.tasks`,
+  `task-generation`, `task templates`, `tasks-template`, `tasks template`,
+  `generated task guidance`, `post-generation skill evaluation`);
+  implementation loading (`/speckit.implement`, `speckit.implement`,
+  `implementation-loading`, `implementation skill`, `implementation command`,
+  `load each`, `skill-load`, `before implementation`); and constitution
+  (`constitution`, `constitutional`). Titles beginning with
+  `Complete readiness notes` suppress these checks for setup/readiness
+  aggregation tasks.
+  Safe setup wording examples: `Complete readiness notes for skill-loading
+  evidence workflow placeholder`, `Record required
+  readiness filenames for later verification`, and `Create placeholder
+  evidence files listed by the plan`.
+- **Declared skill ids resolve from skill names.** The authoritative registry
+  is `.agents/skills/*/SKILL.md`, `src/*/skill/SKILL.md`, and
+  `template/fragments/*/skill/SKILL.md`. Declare each skill file's `name:`
+  value in `skillist`; do not assume the directory name is accepted when it
+  differs.
+- **Advisory FS.Skia.UI capability hints.** These hints are non-blocking:
+  rendering/scene -> `fs-skia-scene`; viewer/window host ->
+  `fs-skia-skiaviewer`; Elmish workflow -> `fs-skia-elmish`;
+  keyboard/input -> `fs-skia-keyboard-input`; layout -> `fs-skia-layout`;
+  controls/forms/charts/graphs/DataGrid -> `fs-skia-ui-widgets`;
+  generated game HUD readability, public-scene host update, host-warning
+  classification, or evidence tasks -> `fs-skia-layout-evidence`.
 - **Phase-checkpoint edges are implicit.** The graph compute script
   auto-injects an edge from every task in Phase N+1 to the last foundation
   task of Phase N. You do NOT repeat those edges in the yml — write only

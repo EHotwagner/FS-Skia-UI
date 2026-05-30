@@ -27,6 +27,7 @@
     <Compile Include="ControlsBoundaryGeneratedGuidanceTests.fs" />
     <Compile Include="ControlsBoundaryCompositionTests.fs" />
     <Compile Include="SkillValidationTests.fs" />
+    <Compile Include="TaskValidatorFeedbackTests.fs" />
     <Compile Include="PersistentViewerEvidenceTests.fs" />
     <Compile Include="GovernanceEvidenceTests.fs" />
     <Compile Include="SyntheticErrorEvidenceTests.fs" />

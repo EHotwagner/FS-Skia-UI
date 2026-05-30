@@ -36,11 +36,19 @@ let claudeCodeReadyTests =
                   ".claude/settings.json"
                   ".claude/hooks/validate-speckit-project.sh" ]
 
+            use featureJson = readJson ".specify/feature.json"
+            let activeFeature =
+                match featureJson.RootElement.GetProperty("feature_directory").GetString() |> Option.ofObj with
+                | Some value -> value
+                | None -> failtest ".specify/feature.json feature_directory is missing"
+
+            let activePlan = activeFeature + "/plan.md"
+
             let claude = read "CLAUDE.md"
             Expect.stringContains claude "@AGENTS.md" "CLAUDE imports AGENTS"
             Expect.stringContains claude ".claude/skills/" "CLAUDE points to project skills"
-            Expect.isFalse (claude.Contains("specs/032-sokoban-feedback-followups/plan.md")) "CLAUDE does not duplicate the active AGENTS plan line"
-            expectFileContains "AGENTS.md" [ "specs/032-sokoban-feedback-followups/plan.md" ]
+            Expect.isFalse (claude.Contains(activePlan)) "CLAUDE does not duplicate the active AGENTS plan line"
+            expectFileContains "AGENTS.md" [ activePlan ]
         }
 
         test "repository Claude skills exist for every Codex workflow with identical content" {

@@ -124,6 +124,20 @@ class GraphResult:
         return len(self.errors) > 0
 
 
+@dataclass(frozen=True)
+class SkillRegistry:
+    skills: Dict[str, List[Path]]
+    directory_aliases: Dict[str, Tuple[str, Path]]
+    warnings: List[str]
+
+
+@dataclass(frozen=True)
+class CapabilityTriggerGroup:
+    skill_id: str
+    group: str
+    triggers: Tuple[str, ...]
+
+
 # ----------------------------------------------------------------------------
 # Parsers
 # ----------------------------------------------------------------------------
@@ -407,13 +421,29 @@ def parse_deps_yml(path: Path) -> Tuple[Dict[str, TaskMetadata], List[str]]:
     return metadata, errors
 
 
-def discover_skills(repo_root: Path) -> Tuple[Dict[str, List[Path]], List[str]]:
+def skill_directory_alias(skill_file: Path, repo_root: Path) -> str:
+    try:
+        rel = skill_file.relative_to(repo_root)
+        parts = rel.parts
+        if len(parts) >= 4 and parts[0] == ".agents" and parts[1] == "skills":
+            return parts[2]
+        if len(parts) >= 4 and parts[0] == "src" and parts[2] == "skill":
+            return parts[1]
+        if len(parts) >= 5 and parts[0] == "template" and parts[1] == "fragments" and parts[3] == "skill":
+            return parts[2]
+    except ValueError:
+        pass
+    return skill_file.parent.name
+
+
+def discover_skill_registry(repo_root: Path) -> SkillRegistry:
     roots = [repo_root / ".agents" / "skills"]
     if (repo_root / "src").exists():
         roots.extend((repo_root / "src").glob("*/skill"))
     if (repo_root / "template" / "fragments").exists():
         roots.extend((repo_root / "template" / "fragments").glob("*/skill"))
     skills: Dict[str, List[Path]] = defaultdict(list)
+    directory_aliases: Dict[str, Tuple[str, Path]] = {}
     warnings: List[str] = []
     for root in roots:
         if not root.exists():
@@ -427,16 +457,107 @@ def discover_skills(repo_root: Path) -> Tuple[Dict[str, List[Path]], List[str]]:
             name_m = re.search(r"^name:\s*['\"]?([^'\"\n]+)['\"]?\s*$", text, re.MULTILINE)
             skill_id = name_m.group(1).strip() if name_m else skill_file.parent.name
             skills[skill_id].append(skill_file)
-    return skills, warnings
+            alias = skill_directory_alias(skill_file, repo_root)
+            if alias != skill_id and alias not in directory_aliases:
+                directory_aliases[alias] = (skill_id, skill_file)
+    return SkillRegistry(skills=skills, directory_aliases=directory_aliases, warnings=warnings)
 
 
-CAPABILITY_EXPECTATIONS = [
-    ("speckit-evidence-graph", re.compile(r"(task graph|evidence graph|readiness validation|tasks\.deps\.yml|structured task metadata|mirror mismatch|skillist field|skillist, list typing|obvious capability|multi-skill dependency order|migration blocker|validator diagnostics|EvidenceGraph)", re.I)),
-    ("speckit-evidence-audit", re.compile(r"(evidence audit|diff-scan|synthetic propagation|readiness-blocking|EvidenceAudit)", re.I)),
-    ("speckit-tasks", re.compile(r"(/speckit\.tasks|speckit\.tasks|task-generation|task templates|tasks-template|tasks template|generated task guidance|post-generation skill evaluation)", re.I)),
-    ("speckit-implement", re.compile(r"(/speckit\.implement|speckit\.implement|implementation-loading|implementation skill|implementation command|load each|skill-load|before implementation)", re.I)),
-    ("speckit-constitution", re.compile(r"(constitution|constitutional)", re.I)),
+def discover_skills(repo_root: Path) -> Tuple[Dict[str, List[Path]], List[str]]:
+    registry = discover_skill_registry(repo_root)
+    return registry.skills, registry.warnings
+
+
+CAPABILITY_TRIGGER_GROUPS = [
+    CapabilityTriggerGroup(
+        "speckit-evidence-graph",
+        "graph validation",
+        (
+            "task graph",
+            "evidence graph",
+            "readiness validation",
+            "tasks.deps.yml",
+            "structured task metadata",
+            "mirror mismatch",
+            "skillist field",
+            "skillist, list typing",
+            "obvious capability",
+            "multi-skill dependency order",
+            "migration blocker",
+            "validator diagnostics",
+            "EvidenceGraph",
+        ),
+    ),
+    CapabilityTriggerGroup(
+        "speckit-evidence-audit",
+        "evidence audit",
+        ("evidence audit", "diff-scan", "synthetic propagation", "readiness-blocking", "EvidenceAudit"),
+    ),
+    CapabilityTriggerGroup(
+        "speckit-tasks",
+        "task generation",
+        (
+            "/speckit.tasks",
+            "speckit.tasks",
+            "task-generation",
+            "task templates",
+            "tasks-template",
+            "tasks template",
+            "generated task guidance",
+            "post-generation skill evaluation",
+        ),
+    ),
+    CapabilityTriggerGroup(
+        "speckit-implement",
+        "implementation loading",
+        (
+            "/speckit.implement",
+            "speckit.implement",
+            "implementation-loading",
+            "implementation skill",
+            "implementation command",
+            "load each",
+            "skill-load",
+            "before implementation",
+        ),
+    ),
+    CapabilityTriggerGroup("speckit-constitution", "constitution", ("constitution", "constitutional")),
 ]
+
+
+def token_context(text: str, start: int, end: int) -> str:
+    left = start
+    while left > 0 and re.match(r"[A-Za-z0-9._/-]", text[left - 1]):
+        left -= 1
+    right = end
+    while right < len(text) and re.match(r"[A-Za-z0-9._/-]", text[right]):
+        right += 1
+    return text[left:right]
+
+
+def is_filename_context(token: str) -> bool:
+    return bool(re.search(r"\.[A-Za-z0-9]{1,8}$", token))
+
+
+def trigger_matches_title(title: str, trigger: str) -> Optional[Tuple[str, str]]:
+    pattern = re.compile(r"(?<![A-Za-z0-9])" + re.escape(trigger) + r"(?![A-Za-z0-9])", re.IGNORECASE)
+    for match in pattern.finditer(title):
+        token = token_context(title, match.start(), match.end())
+        if is_filename_context(token):
+            continue
+        return trigger, token
+    return None
+
+
+def expected_capability_matches(title: str) -> List[Tuple[str, str, str]]:
+    matches: List[Tuple[str, str, str]] = []
+    for group in CAPABILITY_TRIGGER_GROUPS:
+        for trigger in group.triggers:
+            matched = trigger_matches_title(title, trigger)
+            if matched:
+                matches.append((group.skill_id, group.group, matched[0]))
+                break
+    return matches
 
 SKILL_PREREQUISITES = {
     "speckit-evidence-audit": ["speckit-evidence-graph"],
@@ -492,8 +613,9 @@ def validate_and_merge(
                 errors.append(f"tasks.deps.yml: {tid} depends on itself")
 
     # Merge explicit deps into tasks.
-    skills, skill_warnings = discover_skills(repo_root)
-    errors.extend(skill_warnings)
+    registry = discover_skill_registry(repo_root)
+    skills = registry.skills
+    errors.extend(registry.warnings)
 
     for tid, meta in metadata.items():
         if tid not in tasks:
@@ -514,28 +636,37 @@ def validate_and_merge(
         for skill_id in meta.skillist or []:
             matches = skills.get(skill_id, [])
             if not matches:
-                errors.append(f"{tid}: declared skill {skill_id} is not readable or not registered")
+                alias = registry.directory_aliases.get(skill_id)
+                if alias:
+                    accepted_id, path = alias
+                    errors.append(
+                        f"{tid}: declared skill {skill_id} is a directory-like name for {path.relative_to(repo_root)}; accepted declared id is {accepted_id}"
+                    )
+                else:
+                    errors.append(f"{tid}: declared skill {skill_id} is not readable or not registered")
             elif len(matches) > 1:
                 joined = ", ".join(str(p.relative_to(repo_root)) for p in matches)
                 errors.append(f"{tid}: declared skill {skill_id} is ambiguous: {joined}")
 
-        expected = []
+        expected: List[Tuple[str, str, str]] = []
         if not re.search(r"^Complete readiness notes", task.title, re.I):
-            expected = [skill_id for skill_id, pattern in CAPABILITY_EXPECTATIONS if pattern.search(task.title)]
-        for skill_id in expected:
+            expected = expected_capability_matches(task.title)
+        for skill_id, trigger_group, matched_trigger in expected:
             assessment = {
                 "task_id": tid,
                 "declared_skillist": meta.skillist or [],
                 "candidate_skill_id": skill_id,
-                "matched_signals": ["task-text"],
+                "matched_signals": [matched_trigger],
                 "confidence": "high",
                 "ambiguity": None,
                 "reviewer_disposition": "accepted" if skill_id in (meta.skillist or []) else None,
-                "diagnostic": f"{tid}: task text matches {skill_id}",
+                "diagnostic": f"{tid}: task text matches {skill_id}; trigger_group={trigger_group}; matched_trigger={matched_trigger}",
             }
             task.skill_match_assessments.append(assessment)
             if skill_id not in (meta.skillist or []):
-                errors.append(f"{tid}: high-confidence skill match omitted declared skill {skill_id}; matched_signals=task-text")
+                errors.append(
+                    f"{tid}: high-confidence skill match omitted declared skill {skill_id}; trigger_group={trigger_group}; matched_trigger={matched_trigger}; declared_skillist=[{', '.join(meta.skillist or [])}]"
+                )
 
         if not expected:
             task.skill_match_assessments.append(

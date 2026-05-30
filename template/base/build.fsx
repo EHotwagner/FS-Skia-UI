@@ -186,7 +186,7 @@ let writeGeneratedEvidenceReport (target: string) (featureDir: string) (exitCode
 
     let status = if exitCode = 0 then "ok" else "failed"
     let validationArea =
-        if target = "EvidenceGraph" then "task-graph"
+        if target = "EvidenceGraph" then "graph-validation-only"
         elif stdout.Contains("Readiness contract scan", StringComparison.OrdinalIgnoreCase) || stderr.Contains("readiness contract", StringComparison.OrdinalIgnoreCase) then "readiness-contract"
         elif stdout.Contains("diff-scan", StringComparison.OrdinalIgnoreCase) || stderr.Contains("diff-scan", StringComparison.OrdinalIgnoreCase) then "diff-scan"
         elif stdout.Contains("synthetic", StringComparison.OrdinalIgnoreCase) || stderr.Contains("synthetic", StringComparison.OrdinalIgnoreCase) then "synthetic-evidence"
@@ -209,6 +209,13 @@ let writeGeneratedEvidenceReport (target: string) (featureDir: string) (exitCode
         else
             "authoritative validation failed"
 
+    let graphOnlyNotes =
+        if target = "EvidenceGraph" then
+            [ "mode=graph-validation-only"
+              "next-action=Run EvidenceAudit for full merge-gate validation, including diff-scan and synthetic-evidence blocking checks." ]
+        else
+            []
+
     let lines =
         [ "# Generated Evidence Command Report"
           ""
@@ -221,8 +228,9 @@ let writeGeneratedEvidenceReport (target: string) (featureDir: string) (exitCode
           $"exit-code={exitCode}"
           $"validation-area={validationArea}"
           $"report-path={reportPath}"
-          $"message={message}"
-          "diagnostics=" ]
+          $"message={message}" ]
+        @ graphOnlyNotes
+        @ [ "diagnostics=" ]
         @ (if List.isEmpty diagnostics then [ "- none" ] else diagnostics |> List.map (fun line -> "- " + line.Trim()))
 
     writeLines reportPath lines

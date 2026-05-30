@@ -72,11 +72,19 @@ READINESS_DIR="$FEATURE_DIR/readiness"
 mkdir -p "$READINESS_DIR"
 
 # --- 1. graph compute -------------------------------------------------------
-echo "=== speckit.evidence.audit ==="
+if [[ $GRAPH_ONLY -eq 1 ]]; then
+  echo "=== speckit.evidence.graph (graph validation only) ==="
+else
+  echo "=== speckit.evidence.audit ==="
+fi
 echo "feature: $FEATURE_DIR"
 echo
 
-echo "[1/3] Computing task graph..."
+if [[ $GRAPH_ONLY -eq 1 ]]; then
+  echo "[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit."
+else
+  echo "[1/3] Computing task graph..."
+fi
 if ! python3 "$GRAPH_SCRIPT" "$FEATURE_DIR"; then
   echo
   echo "✗ Graph compute failed. See $READINESS_DIR/task-graph.md for details." >&2
@@ -85,7 +93,8 @@ fi
 echo
 
 if [[ $GRAPH_ONLY -eq 1 ]]; then
-  echo "graph-only mode; skipping diff scan."
+  echo "graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks."
+  echo "Run EvidenceAudit for full merge-gate validation."
   exit 0
 fi
 

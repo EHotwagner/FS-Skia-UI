@@ -126,6 +126,42 @@ indented object fields instead. Every task id in `tasks.md` must appear once in
 `[skillist: ...]` mirror in `tasks.md` must match the structured `skillist`
 list exactly and in order.
 
+Blocking Spec Kit title-trigger groups enforced by `EvidenceGraph` are:
+graph validation (`task graph`, `evidence graph`, `readiness validation`,
+`tasks.deps.yml`, `structured task metadata`, `mirror mismatch`,
+`skillist field`, `skillist, list typing`, `obvious capability`,
+`multi-skill dependency order`, `migration blocker`, `validator diagnostics`,
+`EvidenceGraph`); evidence audit (`evidence audit`, `diff-scan`,
+`synthetic propagation`, `readiness-blocking`, `EvidenceAudit`); task
+generation (`/speckit.tasks`, `speckit.tasks`, `task-generation`,
+`task templates`, `tasks-template`, `tasks template`,
+`generated task guidance`, `post-generation skill evaluation`);
+implementation loading (`/speckit.implement`, `speckit.implement`,
+`implementation-loading`, `implementation skill`, `implementation command`,
+`load each`, `skill-load`, `before implementation`); and constitution
+(`constitution`, `constitutional`). Titles beginning with
+`Complete readiness notes` suppress these capability expectation checks for
+setup/readiness aggregation tasks. Safe setup wording examples:
+`Complete readiness notes for skill-loading evidence workflow placeholder`,
+`Record required readiness filenames for later verification`, and
+`Create placeholder evidence files listed by the plan`.
+
+The authoritative skill registry for `skillist` ids is built from readable
+`SKILL.md` files under `.agents/skills/*/SKILL.md`,
+`src/*/skill/SKILL.md`, and `template/fragments/*/skill/SKILL.md`. Declare the
+`name:` value from the skill file, not the directory name, when they differ.
+
+Advisory FS.Skia.UI capability hints are non-blocking: rendering or scene tasks
+usually need `fs-skia-scene`; viewer or window-host tasks usually need
+`fs-skia-skiaviewer`; Elmish workflow tasks usually need `fs-skia-elmish`;
+keyboard or input tasks usually need `fs-skia-keyboard-input`; layout tasks
+usually need `fs-skia-layout`; controls, forms, charts, graphs, or DataGrid
+tasks usually need `fs-skia-ui-widgets`; generated game HUD readability,
+public-scene host update, host-warning classification, or evidence tasks
+usually need `fs-skia-layout-evidence`. These hints do not create hard
+validation failures unless a task also matches a blocking Spec Kit trigger
+group above.
+
 Generated task lists must make audit-enforced readiness files discoverable
 before implementation starts. Setup or foundation work should create placeholders
 or explicit tasks for the active feature's required readiness files, including

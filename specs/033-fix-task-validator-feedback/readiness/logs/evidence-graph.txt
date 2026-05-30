@@ -1,0 +1,64 @@
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/033-fix-task-validator-feedback --graph-only
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/specs/033-fix-task-validator-feedback
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 37 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/033-fix-task-validator-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/033-fix-task-validator-feedback/readiness/task-graph.md
+  status: 25[X], 5[S], 7[ ]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/033-fix-task-validator-feedback --graph-only
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/specs/033-fix-task-validator-feedback
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 37 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/033-fix-task-validator-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/033-fix-task-validator-feedback/readiness/task-graph.md
+  status: 25[X], 5[S], 7[ ]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/033-fix-task-validator-feedback --graph-only
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/specs/033-fix-task-validator-feedback
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 37 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/033-fix-task-validator-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/033-fix-task-validator-feedback/readiness/task-graph.md
+  status: 25[X], 5[S], 7[ ]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/033-fix-task-validator-feedback --graph-only
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/specs/033-fix-task-validator-feedback
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 37 tasks parsed
+  wrote /home/developer/projects/FS-Skia-UI/specs/033-fix-task-validator-feedback/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/033-fix-task-validator-feedback/readiness/task-graph.md
+  status: 32[X], 5[S]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+
+exit-code=0
