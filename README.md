@@ -1,81 +1,62 @@
 # FS.Skia.UI
 
-FS.Skia.UI is an experimental F# desktop UI toolkit and governed project
-template for building SkiaSharp-rendered applications with an Elmish/MVU
-application model.
+FS.Skia.UI is an experimental F# desktop UI toolkit built on
+[SkiaSharp](https://github.com/mono/SkiaSharp) and
+[Vulkan](https://www.vulkan.org/), using an [Elmish](https://elmish.github.io/elmish/)
+(Model-View-Update) application model. It is **two things at once**: a
+composable UI library, and a spec-driven, evidence-governed framework for
+building it.
 
-Application code owns the model, messages, update function, and view function.
-The view function returns immutable `Scene` values. `Viewer.run` owns the host
-edge: window creation, input events, Vulkan/Skia setup, frame rendering,
-screenshots, diagnostics, and shutdown.
+Application code owns the model, messages, `update` function, and `view`
+function. The `view` function returns immutable `Scene` values. `Viewer.run`
+owns the host edge: window creation, input events, Vulkan/Skia setup, frame
+rendering, screenshots, diagnostics, and shutdown. Higher-level packages only
+produce data, diagnostics, hit-test results, or `Scene` output — they never
+create windows or take over the application loop.
 
-The repository currently contains:
+It is **not** a general renderer abstraction, a browser/mobile UI framework, or
+a retained widget toolkit that owns application state. The runtime host is
+deliberately narrow: desktop, SkiaSharp, Silk.NET, and Vulkan.
 
-- `FS.Skia.UI.Scene`: core scene primitives and paint/path/text/image
-  declarations.
-- `FS.Skia.UI.SkiaViewer`: viewer runtime contracts, structured diagnostics,
-  screenshots, and desktop host boundaries.
-- `FS.Skia.UI.Elmish`: Elmish/MVU adapter contracts for product applications.
-- `FS.Skia.UI.KeyboardInput`: keyboard input helpers and configuration
-  contracts.
-- `FS.Skia.UI`: compatibility core package while capability packages are staged.
-- `FS.Skia.UI.Charts`: pure chart and DataGrid builders that return core
-  `Scene` values.
-- `FS.Skia.UI.Layout`: Yoga-backed layout, graph validation, graph layout,
-  rendering, and hit testing.
-- `FS.Skia.UI.Testing`: generated-product and capability validation helpers.
-- Runnable sample applications with non-visual contract smoke modes.
-- A governed product-generation template plus V3 capability profiles, selected
-  local skills, build, dependency, documentation, and evidence workflows.
-- Spec Kit incorporation for feature specifications, implementation plans,
-  task breakdowns, readiness evidence, and synthetic-evidence disclosure.
+---
 
-It is not a general renderer abstraction, a browser/mobile UI framework, or a
-traditional retained widget toolkit that owns application state. The current
-runtime host is deliberately narrow: desktop, SkiaSharp, Silk.NET, and Vulkan.
+## Architecture
 
-## Quickstart
+The packages form a layered stack. `Scene` is the shared vocabulary that every
+layer ultimately returns; the host edge lives in `Lib`/`SkiaViewer`.
 
-From this repository, restore the local tools and run the default validation:
-
-```bash
-dotnet tool restore
-./fake.sh build -t Dev
+```
+Scene  ──────────────  pure scene primitives (FSharp.Core only)
+ ├─ Layout            (+ Yoga.Net)    flex/grid layout, graphs, hit testing
+ ├─ KeyboardInput     (+ YamlDotNet)  key bindings, reducer, effects
+ └─ Lib (FS.Skia.UI)  (+ Silk.NET, SkiaSharp, Elmish)   Vulkan desktop host
+     └─ SkiaViewer                    viewer host workflow contracts
+         └─ Elmish                    Elmish ↔ viewer adapter
+             ├─ Controls              TextBlock/Button/charts/DataGrid/graphs
+             │   └─ Controls.Elmish   command + subscription adapters
+             └─ Testing               generated-product validation helpers
 ```
 
-FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`) share
-repository `.fake` state and are not safe to run concurrently. When more than
-one FAKE-backed target is needed, run them sequentially in a deterministic
-order. Non-FAKE reads and checks may still run in parallel when they do not
-invoke FAKE or depend on `.fake`.
+| Package | Purpose |
+|---------|---------|
+| `FS.Skia.UI.Scene` | Core scene primitives and paint/path/text/image declarations. Zero dependencies beyond FSharp.Core. |
+| `FS.Skia.UI.Layout` | Yoga-backed layout, graph validation, graph layout, rendering, and hit testing. |
+| `FS.Skia.UI.KeyboardInput` | Keyboard input runtime, reducer, effects, diagnostics, and state-display contracts. |
+| `FS.Skia.UI` | Elmish-only Vulkan desktop viewer primitives (the live SkiaSharp/Silk.NET host). |
+| `FS.Skia.UI.SkiaViewer` | Viewer runtime contracts, structured diagnostics, screenshots, and desktop host boundaries. |
+| `FS.Skia.UI.Elmish` | Elmish/MVU adapter contracts for product applications. |
+| `FS.Skia.UI.Controls` | Declarative controls, rich rendering, chart/graph controls, and DataGrid. |
+| `FS.Skia.UI.Controls.Elmish` | Elmish command, subscription, and program adapters for Controls and KeyboardInput. |
+| `FS.Skia.UI.Charts` | Pure chart and DataGrid builders that return core `Scene` values. |
+| `FS.Skia.UI.Testing` | Generated-product and package validation helpers. |
 
-Pack the current preview capability packages locally, then install the V3
-template and generate a product:
+Design invariants that gates enforce: public visibility lives in `.fsi`
+signature files (not `.fs`); the contract chain is **spec → `.fsi` → failing
+tests → implementation → surface baseline**; package boundaries are strict
+(e.g. `Controls` may not reference Silk.NET/SkiaSharp/Elmish directly); stateful
+workflows go through the MVU/effect boundary.
 
-```bash
-./fake.sh build -t PackLocal
-dotnet new install .
-dotnet new fs-skia-ui --name MyProduct --profile app --allow-scripts yes
-cd MyProduct
-./fake.sh build -t Dev
-```
-
-Use a different profile when the product should start smaller or sample-focused:
-
-```bash
-dotnet new fs-skia-ui --name SceneOnly --profile headless-scene --allow-scripts yes
-dotnet new fs-skia-ui --name GovernedScene --profile governed --allow-scripts yes
-dotnet new fs-skia-ui --name SamplePack --profile sample-pack --allow-scripts yes
-```
-
-The generated product references FS.Skia.UI packages. For local preview work,
-`PackLocal` writes those packages to `~/.local/share/nuget-local`; add that
-folder as a NuGet source or use an equivalent configured feed before restoring
-or running the generated product project. Pass `--skipGitInit true` when
-generating inside an existing repository. The generated project includes the
-`.specify/` Spec Kit install and project-local `speckit-*` skills, so commands
-such as `$speckit-specify`, `$speckit-plan`, and `$speckit-tasks` are available
-from the new repo after generation.
+---
 
 ## Minimal App Shape
 
@@ -116,11 +97,9 @@ let main _ =
         1
 ```
 
-Higher-level packages follow the same rule: they produce data, diagnostics,
-hit-test results, or `Scene` output. They do not create windows or take over the
-application loop.
+---
 
-## Current Runtime Boundary
+## Runtime Boundary
 
 The live desktop host currently requires:
 
@@ -129,192 +108,163 @@ The live desktop host currently requires:
 - Vulkan-capable GPU, driver, and presentation surface.
 - NuGet access for SkiaSharp 4 preview and Silk.NET dependencies.
 
-macOS, mobile, browser, and headless production targets are out of scope for
-this first version. The public API does not expose renderer selection and does
-not provide an OpenGL, CPU, software, or fallback renderer.
+macOS, mobile, browser, and headless production targets are out of scope. The
+public API does not expose renderer selection and provides no OpenGL, CPU,
+software, or fallback renderer. Startup validates the supported OS, presentation
+surface, Vulkan instance, device, swapchain, and Skia Vulkan context before
+rendering; failures return `Result<unit, RenderDiagnostic>` from `Viewer.run`.
 
-## Build And Test
+This is a first-version, preview package. Treat the SkiaSharp 4 preview
+dependency as preview-risk: Vulkan driver behavior, native assets, and package
+shape may change before SkiaSharp 4 reaches stable release.
+
+---
+
+## Quickstart
+
+Restore local tools and run the default validation:
+
+```bash
+dotnet tool restore
+./fake.sh build -t Dev
+```
+
+Pack the preview packages locally, install the template, and generate a product:
+
+```bash
+./fake.sh build -t PackLocal
+dotnet new install .
+dotnet new fs-skia-ui --name MyProduct --profile app --allow-scripts yes
+cd MyProduct
+./fake.sh build -t Dev
+```
+
+`PackLocal` writes packages to `~/.local/share/nuget-local`; add that folder as
+a NuGet source (or use an equivalent feed) before restoring the generated
+product. Pass `--skipGitInit true` when generating inside an existing repository.
+
+> **FAKE concurrency:** FAKE-backed commands (`./fake.sh`, `fake.cmd`,
+> `dotnet fake`) share repository `.fake` state and are **not safe to run
+> concurrently**. When more than one FAKE target is needed, run them
+> sequentially in a deterministic order. Non-FAKE reads and checks may still run
+> in parallel.
+
+---
+
+## Build, Test, and Governance
 
 Run FAKE-backed validation targets one at a time:
 
-1. `./fake.sh build -t Dev`
-2. `./fake.sh build -t GeneratedGuidanceCheck`
-3. `./fake.sh build -t TemplateCheck`
-4. `./fake.sh build -t GeneratedProductCheck`
-5. `./fake.sh build -t DependencyReport`
-6. `./fake.sh build -t TemplateDrift`
-7. `./fake.sh build -t Verify`
+1. `./fake.sh build -t Dev` — restore, build, test
+2. `./fake.sh build -t GeneratedGuidanceCheck` — spec/plan template governance prompts
+3. `./fake.sh build -t TemplateCheck` — template pack/install/instantiate/smoke
+4. `./fake.sh build -t GeneratedProductCheck` — generated-product matrix compiles and passes
+5. `./fake.sh build -t EvidenceGraph` — validate the task DAG, count synthetic tasks
+6. `./fake.sh build -t EvidenceAudit` — merge gate: synthetic propagation + diff-scan
 
-Use the same serialized rule for `CapabilityCheck`, `SkillCheck`, evidence
-targets, or any other FAKE target added to the sequence.
+`Verify` and `Ci` are the broad aggregate gates. Use `fake.cmd build -t Dev`
+from Windows command prompts. See [docs/build.md](docs/build.md),
+[docs/testing.md](docs/testing.md), and [docs/evidence.md](docs/evidence.md).
 
-Use `fake.cmd build -t Dev` or `fake.cmd build -t Verify` from Windows command
-prompts. See [docs/build.md](docs/build.md), [docs/testing.md](docs/testing.md),
-and [docs/evidence.md](docs/evidence.md) for target responsibilities, evidence
-paths, and deferred roadmap items.
+### Spec Kit and evidence governance
 
-## Technical Design
+Feature work runs through [Spec Kit](https://github.com/github/spec-kit):
+numbered folders under `specs/` carry `spec.md → plan.md → tasks.md →
+research.md → data-model.md → contracts/ → readiness/`. The distinctive layer is
+**evidence/readiness**:
 
-Start with [docs/technical-design.md](docs/technical-design.md) for the
-architecture overview, runtime design, subsystem design, design decisions, and
-links to the operational governance documents.
+- **EvidenceGraph** validates the task dependency graph and counts synthetic
+  tasks — it reports but does not block.
+- **EvidenceAudit** is the merge gate: it runs synthetic propagation plus a
+  diff-scan and **hard-blocks** on unjustified synthetic tasks (`[S]`/`[S*]`) or
+  block-severity findings.
 
-## Spec Kit Governance
+`validation.contract.yml` routes changed paths to required gates, expected
+readiness artifacts, and a failure owner. The project constitution in
+[.specify/memory/constitution.md](.specify/memory/constitution.md) governs
+public-contract impact, `.fsi` visibility, MVU boundaries, test evidence, and
+synthetic-evidence disclosure. Project-local `speckit-*` skills live in
+`.claude/skills/`, mirrored by Codex peers in `.agents/skills/`.
 
-Spec Kit is part of the repository operating model. Feature work is expected to
-start from specification and planning artifacts under `specs/`, then carry
-through task evidence, readiness logs, and merge summaries. The project-specific
-constitution in [.specify/memory/constitution.md](.specify/memory/constitution.md)
-requires explicit public-contract impact, `.fsi` visibility decisions,
-MVU/effect boundaries for stateful workflows, test evidence, diagnostics, and
-clear disclosure when evidence is synthetic. Task generation also has a
-mandatory capability-skill review: every task must have structured `skillist`
-metadata in `tasks.deps.yml`, a matching `[skillist: ...]` mirror in
-`tasks.md`, and implementation must load the declared skills before changing
-code for that task.
-
-The active Spec Kit templates and F# preset overrides live under
-[.specify/templates](.specify/templates/) and
-[.specify/presets/fsharp-opinionated/templates](.specify/presets/fsharp-opinionated/templates/).
-Generated products inherit those prompts through the `fs-skia-ui` template so
-new work keeps the same planning and evidence discipline. See
-[docs/speckit.md](docs/speckit.md) for the maintained prompt and roadmap
-boundaries.
+---
 
 ## Project Template
 
-V3 generated products are validated through explicit capability profiles:
-`app`, `headless-scene`, `governed`, and `sample-pack`. Maintainers run the
-source/package product matrix with:
-
-```bash
-./fake.sh build -t GeneratedProductCheck
-```
-
-The `dotnet new fs-skia-ui` template can be installed from the source
-directory:
+`dotnet new fs-skia-ui` generates governed products through explicit capability
+profiles: `app`, `headless-scene`, `governed`, and `sample-pack`. Profiles are
+composed from `template/base/` plus `template/fragments/`. Generated products
+inherit the Spec Kit prompts and evidence discipline.
 
 ```bash
 dotnet new install .
-dotnet new fs-skia-ui --name MyProduct --profile app --allow-scripts yes
-dotnet new fs-skia-ui --name MyProduct.SceneOnly --profile headless-scene --allow-scripts yes
-dotnet new fs-skia-ui --name MyProduct.Governed --profile governed --allow-scripts yes
-dotnet new fs-skia-ui --name MyProduct.Samples --profile sample-pack --allow-scripts yes
-dotnet new fs-skia-ui --name MyProduct.NoGit --skipGitInit true --allow-scripts yes
+dotnet new fs-skia-ui --name MyProduct          --profile app            --allow-scripts yes
+dotnet new fs-skia-ui --name MyProduct.Scene    --profile headless-scene --allow-scripts yes
+dotnet new fs-skia-ui --name MyProduct.Governed --profile governed       --allow-scripts yes
+dotnet new fs-skia-ui --name MyProduct.Samples  --profile sample-pack    --allow-scripts yes
 ```
 
-Generated standalone projects create an initial Git commit by default for Spec
-Kit workflows and repair Unix execute permissions on generated shell scripts.
-That initial commit prevents unborn-branch failures in commands such as
-`/speckit-clarify`. The .NET CLI prompts before running template scripts unless
-`--allow-scripts yes` is supplied. Pass `--skipGitInit true` when generating
-inside an existing repository or when the output is disposable.
-The generated output also carries `.specify/` and the local `speckit-*` skills;
-source-only active feature state such as `.specify/feature.json` is omitted.
+Maintainers validate source and packaged template paths with `TemplateCheck`
+and `GeneratedProductCheck`. See
+[docs/template-profile.md](docs/template-profile.md),
+[docs/dependencies.md](docs/dependencies.md), and [docs/speckit.md](docs/speckit.md).
 
-Maintainers validate source and packaged template paths with:
-
-1. `./fake.sh build -t TemplateCheck`
-2. `./fake.sh build -t GeneratedProductCheck`
-
-See [docs/template-profile.md](docs/template-profile.md),
-[docs/dependencies.md](docs/dependencies.md), and
-[docs/speckit.md](docs/speckit.md).
-
-## Run The Basic Viewer Smoke Test
-
-```bash
-scripts/us1-vulkan-smoke.sh specs/001-vulkan-elmish-viewer/readiness/us1-vulkan-smoke.txt
-```
-
-Successful output records `renderer=Vulkan`, `fallback-used=false`, startup timing, and first-frame timing.
+---
 
 ## Samples
 
-The repository includes these runnable samples:
+The repository includes runnable samples. Each exposes a public-API contract
+smoke path (`--contract-smoke`) that does not open a live window.
 
-| Sample | Project | Focus |
-|--------|---------|-------|
-| `BasicViewer` | `samples/BasicViewer/BasicViewer.fsproj` | Core scene composition, chart placeholder, image placeholder, diagnostics, and screenshot requests. |
-| `ChartsGallery` | `samples/ChartsGallery/ChartsGallery.fsproj` | Line, bar, scatter, area, pie/donut, and histogram chart widgets. |
-| `DataGridGallery` | `samples/DataGridGallery/DataGridGallery.fsproj` | Data grid sorting, viewport state, fixed headers, and hit testing. |
-| `DemoReel` | `samples/DemoReel/DemoReel.fsproj` | Animated combined showcase for geometry, shaders, layout, charts, data grid, graphs, and effects. |
-| `EffectsGallery` | `samples/EffectsGallery/EffectsGallery.fsproj` | Paint effects, gradients, path effects, blend modes, clipping, perspective, and color spaces. |
-| `InteractiveViewer` | `samples/InteractiveViewer/InteractiveViewer.fsproj` | Keyboard and pointer state, timer-style updates, diagnostics, and JPEG screenshot requests. |
-| `KeyboardInputGallery` | `samples/KeyboardInputGallery/KeyboardInputGallery.fsproj` | Keyboard input layouts, command resolution, and keyboard state display. |
-| `LayoutGraphGallery` | `samples/LayoutGraphGallery/LayoutGraphGallery.fsproj` | Automatic layout, graph rendering, chart/data-grid composition, validation, and hit testing. |
-| `ParityGallery` | `samples/ParityGallery/ParityGallery.fsproj` | Skia feature parity coverage for shapes, paths, vertices, clips, regions, pictures, images, and charts. |
-| `ScreenshotGallery` | `samples/ScreenshotGallery/ScreenshotGallery.fsproj` | Screenshot effects, render effects, recoverable diagnostics, and shutdown effects. |
-
-Run any sample from source with its project path:
+| Sample | Focus |
+|--------|-------|
+| `BasicViewer` | Core scene composition, diagnostics, and screenshot requests. |
+| `ChartsGallery` | Line, bar, scatter, area, pie/donut, and histogram charts. |
+| `DataGridGallery` | Data grid sorting, viewport state, fixed headers, hit testing. |
+| `DemoReel` | Animated showcase: geometry, shaders, layout, charts, graphs, effects. |
+| `EffectsGallery` | Gradients, path effects, blend modes, clipping, perspective, color spaces. |
+| `InteractiveViewer` | Keyboard/pointer state, timer updates, JPEG screenshot requests. |
+| `KeyboardInputGallery` | Keyboard layouts, command resolution, keyboard state display. |
+| `LayoutGraphGallery` | Automatic layout, graph rendering, validation, hit testing. |
+| `ParityGallery` | Skia feature-parity coverage for shapes, paths, clips, regions, images. |
+| `ScreenshotGallery` | Screenshot/render effects, recoverable diagnostics, shutdown effects. |
 
 ```bash
 dotnet run --project samples/BasicViewer/BasicViewer.fsproj
-dotnet run --project samples/DemoReel/DemoReel.fsproj
+dotnet run --project samples/BasicViewer/BasicViewer.fsproj -- --contract-smoke
 ```
 
-Every current sample exposes a public-API contract smoke path that does not
-open a live window:
+---
 
-```bash
-for project in \
-  samples/BasicViewer/BasicViewer.fsproj \
-  samples/ChartsGallery/ChartsGallery.fsproj \
-  samples/DataGridGallery/DataGridGallery.fsproj \
-  samples/DemoReel/DemoReel.fsproj \
-  samples/EffectsGallery/EffectsGallery.fsproj \
-  samples/InteractiveViewer/InteractiveViewer.fsproj \
-  samples/KeyboardInputGallery/KeyboardInputGallery.fsproj \
-  samples/LayoutGraphGallery/LayoutGraphGallery.fsproj \
-  samples/ParityGallery/ParityGallery.fsproj \
-  samples/ScreenshotGallery/ScreenshotGallery.fsproj
-do
-  dotnet run --project "$project" -- --contract-smoke
-done
-```
+## Built With
 
-After packing, verify package-aware samples against the NuGet package surface:
+### Runtime dependencies
 
-```bash
-PACKAGE_DIR="$(pwd)/specs/001-vulkan-elmish-viewer/readiness/package"
-dotnet pack src/Lib/Lib.fsproj -c Release -o "$PACKAGE_DIR"
+| Library | Version | Role |
+|---------|---------|------|
+| [F# / FSharp.Core](https://github.com/dotnet/fsharp) | 10.1.300 | Language and core library. |
+| [.NET](https://dotnet.microsoft.com/) (`net10.0`) | — | Target framework. |
+| [SkiaSharp](https://github.com/mono/SkiaSharp) | 4.147.0-preview.3.1 | 2D graphics / rendering. |
+| [SkiaSharp.NativeAssets.Linux / .Win32](https://github.com/mono/SkiaSharp) | 4.147.0-preview.3.1 | Native Skia binaries. |
+| [Silk.NET](https://github.com/dotnet/Silk.NET) (Input, Vulkan, Vulkan.Extensions.KHR, Windowing, Windowing.Extensions) | 2.23.0 | Windowing, input, and [Vulkan](https://www.vulkan.org/) bindings. |
+| [Fable.Elmish](https://github.com/elmish/elmish) | 4.2.0 | Model-View-Update application model. |
+| [Yoga.Net](https://www.nuget.org/packages/Yoga.Net) | 3.2.3 | .NET binding for [Yoga](https://www.yogalayout.dev/) flexbox layout. |
+| [YamlDotNet](https://github.com/aaubry/YamlDotNet) | 17.1.0 | YAML parsing for input/config contracts. |
 
-for project in \
-  samples/BasicViewer/BasicViewer.fsproj \
-  samples/EffectsGallery/EffectsGallery.fsproj \
-  samples/InteractiveViewer/InteractiveViewer.fsproj \
-  samples/ParityGallery/ParityGallery.fsproj \
-  samples/ScreenshotGallery/ScreenshotGallery.fsproj
-do
-  dotnet run --project "$project" \
-    -p:UsePackedPackage=true \
-    -p:RestoreAdditionalProjectSources="$PACKAGE_DIR" \
-    -- --contract-smoke
-done
-```
+### Build, test, and governance tooling
 
-The samples use the Elmish public API for configuration, scene composition,
-input state, subscriptions, diagnostics, layout, charting, graph/data-grid
-widgets, keyboard input, and screenshot effects.
+| Tool | Version | Role |
+|------|---------|------|
+| [FAKE](https://fake.build/) | — | F# Make build automation (`build.fsx`). |
+| [Spec Kit](https://github.com/github/spec-kit) | — | Spec-driven development and evidence governance. |
+| [Expecto](https://github.com/haf/expecto) | 10.2.2 | F# test framework. |
+| [YoloDev.Expecto.TestSdk](https://github.com/YoloDev/YoloDev.Expecto.TestSdk) | 0.15.3 | Expecto adapter for `dotnet test`. |
+| [Microsoft.NET.Test.Sdk](https://github.com/microsoft/vstest) | 17.11.1 | Test host/runner. |
 
-If a local validation package uses a unique version, pass
-`-p:FsSkiaUiPackageVersion=<version>` with `-p:UsePackedPackage=true`.
+Exact pins are centralized in
+[Directory.Packages.props](Directory.Packages.props).
 
-Screenshot smoke can write PNG and JPEG artifacts from the last successful Vulkan/Skia frame:
+---
 
-```bash
-dotnet run --project samples/BasicViewer/BasicViewer.fsproj -- --screenshot-smoke --output=specs/001-vulkan-elmish-viewer/readiness/screenshots/basic-viewer.png
-dotnet run --project samples/BasicViewer/BasicViewer.fsproj -- --screenshot-smoke --jpeg --output=specs/001-vulkan-elmish-viewer/readiness/screenshots/basic-viewer.jpg
-```
+## License
 
-## Package Compatibility
-
-This is a first-version package. There is no previous public FS.Skia.UI API to migrate from. Package consumers should treat the SkiaSharp 4 preview dependency as preview-risk: Vulkan driver behavior, native assets, and package shape may change before SkiaSharp 4 reaches stable release.
-
-## Unsupported Environment Diagnostics
-
-Startup validates the supported OS, presentation surface, Vulkan instance, physical device, swapchain, and Skia Vulkan context before rendering. Failures return `Result<unit, RenderDiagnostic>` from `Viewer.run` and include a diagnostic stage such as `PlatformCheck`, `VulkanInstance`, `VulkanDevice`, `VulkanSurface`, `VulkanSwapchain`, or `SkiaContext`.
-
-Expected failure output identifies Vulkan initialization and states that no fallback renderer is used.
-
-Screenshot capture is available through `ViewerEffect.CaptureScreenshot` and writes PNG or JPEG from the last successful Vulkan/Skia frame. A capture requested before any successful frame returns a `ScreenshotCapture` diagnostic.
+Licensed under the [MIT License](LICENSE).
