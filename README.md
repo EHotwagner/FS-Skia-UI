@@ -1,14 +1,112 @@
 # FS.Skia.UI
 
-Build native desktop apps in **F#** with an [Elmish](https://elmish.github.io/elmish/)
-(Model-View-Update) model, rendered with [SkiaSharp](https://github.com/mono/SkiaSharp)
-on [Vulkan](https://www.vulkan.org/) — and develop them through a spec-driven
-workflow that ships in the box.
+A **Spec Kit-first** F# desktop UI framework. You describe the app you want as
+specifications and drive a governed, agent-run workflow — it produces an
+[Elmish](https://elmish.github.io/elmish/) (Model-View-Update) application
+rendered with [SkiaSharp](https://github.com/mono/SkiaSharp) on
+[Vulkan](https://www.vulkan.org/), backed by evidence at every step.
 
-You write the model, messages, `update`, and `view`. Your `view` returns
-immutable `Scene` values; the framework owns the host edge (window, input,
-Vulkan/Skia setup, frame rendering, screenshots, diagnostics, shutdown). You
-never manage the window or the render loop.
+You don't hand-write the window plumbing, the render loop, or the MVU wiring.
+You author specifications, drive the [Spec Kit](https://github.com/github/spec-kit)
+workflow with a coding agent, and review the evidence it produces. The framework
+owns the host edge (window, input, Vulkan/Skia setup, frame rendering,
+screenshots, diagnostics, shutdown); the workflow produces the model, messages,
+`update`, and `view` that returns immutable `Scene` values.
+
+---
+
+## How you build with it
+
+Spec Kit is the primary interface. Every project you generate carries the
+`.specify/` install and project-local `speckit-*` skills, so you build features
+through a governed loop driven by a coding agent:
+
+```
+specify  →  plan  →  tasks  →  implement  →  evidence
+```
+
+1. **`$speckit-specify`** — describe the feature you want in plain language; the
+   workflow writes `spec.md`.
+2. **`$speckit-plan`** — turn the spec into an implementation plan and design
+   artifacts.
+3. **`$speckit-tasks`** — break the plan into a dependency-ordered task list.
+4. **`$speckit-implement`** — the agent implements the tasks, producing the F#
+   MVU code and the readiness evidence.
+5. **evidence** — gates keep the work honest (see
+   [Evidence keeps it honest](#evidence-keeps-it-honest)).
+
+Each feature lives in a numbered folder (`spec.md → plan.md → tasks.md →
+research.md → data-model.md → contracts/ → readiness/`). Your job is to describe
+intent, make decisions when the workflow asks, and review evidence — not to
+hand-author the render loop or the Elmish plumbing.
+
+The workflow is driven by coding agents, with synchronized skill peers for
+[Claude Code](https://www.anthropic.com/claude-code) (`.claude/skills/`) and
+[Codex](https://openai.com/codex/) (`.agents/skills/`). It is currently
+developed and tested against **Claude Opus 4.8** and **Codex 5.5**.
+
+---
+
+## Get started
+
+### 1. Generate a Spec Kit-enabled project
+
+From a clone of this repository, pack the preview packages to a local feed and
+install the project template:
+
+```bash
+dotnet tool restore
+./fake.sh build -t PackLocal          # writes packages to ~/.local/share/nuget-local
+dotnet new install .                  # installs the `fs-skia-ui` template
+```
+
+Add `~/.local/share/nuget-local` as a NuGet source (e.g. via `nuget.config` or
+`dotnet nuget add source`), then generate a governed product:
+
+```bash
+dotnet new fs-skia-ui --name MyApp --profile governed --allow-scripts yes
+cd MyApp
+```
+
+The generated repository already contains the Spec Kit install, the project-local
+`speckit-*` skills, an initial Git commit, and a working FS.Skia.UI app to build
+on. Pass `--skipGitInit true` when generating inside an existing repository.
+
+### 2. Drive the workflow
+
+Open the generated project with your coding agent and describe the first feature:
+
+```text
+$speckit-specify  a start screen with a title and a "New Game" button
+$speckit-plan
+$speckit-tasks
+$speckit-implement
+```
+
+The agent produces the spec, plan, tasks, the F# implementation, and the
+readiness evidence. Then build and run what it produced:
+
+```bash
+./fake.sh build -t Dev                # restore, build, test
+dotnet run --project src/MyApp/MyApp.fsproj
+```
+
+### 3. Pick the right profile
+
+| Profile | Use it for |
+|---------|-----------|
+| `governed` | The full Spec Kit governance framework (recommended starting point). |
+| `app` | A full consumer application. |
+| `headless-scene` | Scene composition without a live window (tests, evidence). |
+| `sample-pack` | A demo/gallery-style starting point. |
+
+---
+
+## What the workflow produces
+
+The implementation the workflow generates is an ordinary Elmish app: a model,
+messages, an `update`, and a `view` that returns immutable `Scene` values. You
+read and review code shaped like this — you don't write it from scratch:
 
 ```fsharp
 open Elmish
@@ -37,126 +135,32 @@ let main _ =
     | Error d -> eprintfn "%s" d.Message; 1
 ```
 
----
-
-## What you get
-
-- **A pure view model** — compose immutable `Scene` values; the host renders
-  them. No retained widget tree to keep in sync.
-- **Ready-made controls** — `TextBlock`, `Button`, `TextBox`, charts
-  (line/bar/pie/scatter), a `DataGrid`, and graph views, with theming,
-  accessibility roles, and hit testing.
-- **Layout** — Yoga-backed flex/grid layout, graph layout, and hit testing.
-- **Keyboard input** — bindings, command resolution, modes, and a live
-  state-display contract.
-- **Diagnostics & screenshots** — structured render diagnostics and PNG/JPEG
-  capture from the last good frame.
-- **A development process in the box** — every generated app inherits the
-  [Spec Kit](https://github.com/github/spec-kit) specify → plan → tasks →
-  implement → evidence workflow (see below).
-
----
-
-## Requirements
-
-- .NET SDK with `net10.0` support
-- Windows or Linux desktop (macOS, mobile, browser, and headless production are
-  out of scope)
-- A Vulkan-capable GPU, driver, and presentation surface
-- NuGet access for the SkiaSharp 4 preview and Silk.NET dependencies
-
-> **Preview status.** This is a first-version, preview toolkit. There are no
-> stable published packages yet — consume it from this repository using the
-> local-feed flow below. Treat the SkiaSharp 4 preview dependency as
-> preview-risk: Vulkan driver behavior, native assets, and package shape may
-> change before SkiaSharp 4 is stable. The public API exposes no renderer
-> selection and provides no OpenGL/CPU/software/fallback renderer.
-
----
-
-## Get started
-
-### 1. Scaffold an app from the template
-
-From a clone of this repository, pack the preview packages to a local feed and
-install the project template:
-
-```bash
-dotnet tool restore
-./fake.sh build -t PackLocal          # writes packages to ~/.local/share/nuget-local
-dotnet new install .                  # installs the `fs-skia-ui` template
-```
-
-Add `~/.local/share/nuget-local` as a NuGet source (e.g. via `nuget.config` or
-`dotnet nuget add source`), then generate and run a product:
-
-```bash
-dotnet new fs-skia-ui --name MyApp --profile app --allow-scripts yes
-cd MyApp
-./fake.sh build -t Dev                # restore, build, test
-dotnet run --project src/MyApp/MyApp.fsproj
-```
-
-Pass `--skipGitInit true` when generating inside an existing repository. The
-`.NET` CLI prompts before running template scripts unless you pass
-`--allow-scripts yes`.
-
-### 2. Pick a profile
-
-Generated products are scaffolded through capability profiles:
-
-| Profile | Use it for |
-|---------|-----------|
-| `app` | A full consumer application. |
-| `headless-scene` | Scene composition without a live window (tests, evidence). |
-| `governed` | The full Spec Kit governance framework. |
-| `sample-pack` | A demo/gallery-style starting point. |
-
-```bash
-dotnet new fs-skia-ui --name MyApp --profile governed --allow-scripts yes
-```
-
----
-
-## Writing your app
-
-Your application owns the MVU four-tuple; higher-level packages only **produce
-data, diagnostics, hit-test results, or `Scene` output** — they never open a
-window or take over the loop. Compose with the packages you need:
-
-| Package | What it gives your app |
-|---------|------------------------|
-| `FS.Skia.UI.Scene` | The scene vocabulary — shapes, paths, text, images, paint. |
-| `FS.Skia.UI` | The Elmish Vulkan viewer (`Viewer.create`, `Viewer.run`). |
-| `FS.Skia.UI.Controls` | Buttons, text, charts, `DataGrid`, graph views, theming. |
-| `FS.Skia.UI.Controls.Elmish` | Wires control + keyboard runtime effects into your Elmish program. |
-| `FS.Skia.UI.Layout` | Flex/grid layout, graph layout, hit testing. |
-| `FS.Skia.UI.KeyboardInput` | Key bindings, command resolution, modes, state display. |
-| `FS.Skia.UI.Charts` | Pure chart and `DataGrid` builders that return `Scene` values. |
-| `FS.Skia.UI.Elmish` | The adapter that bridges your Elmish program to the viewer. |
-| `FS.Skia.UI.SkiaViewer` | Viewer host workflow contracts (window behavior, close reasons). |
-| `FS.Skia.UI.Testing` | Helpers for validating your generated product. |
-
+The application owns the MVU four-tuple; the framework owns everything around it.
 When something can't start (unsupported OS, no Vulkan surface, swapchain/context
 failure), `Viewer.run` returns `Result<unit, RenderDiagnostic>` with a stage you
 can report — it does not throw or silently fall back.
 
+The workflow can compose any of these capability packages into what it builds:
+
+| Package | Capability |
+|---------|-----------|
+| `FS.Skia.UI.Scene` | The scene vocabulary — shapes, paths, text, images, paint. |
+| `FS.Skia.UI` | The Elmish Vulkan viewer (`Viewer.create`, `Viewer.run`). |
+| `FS.Skia.UI.Controls` | Buttons, text, charts, `DataGrid`, graph views, theming, accessibility. |
+| `FS.Skia.UI.Controls.Elmish` | Wires control + keyboard runtime effects into the Elmish program. |
+| `FS.Skia.UI.Layout` | Flex/grid layout, graph layout, hit testing. |
+| `FS.Skia.UI.KeyboardInput` | Key bindings, command resolution, modes, state display. |
+| `FS.Skia.UI.Charts` | Pure chart and `DataGrid` builders that return `Scene` values. |
+| `FS.Skia.UI.Elmish` | The adapter that bridges the Elmish program to the viewer. |
+| `FS.Skia.UI.SkiaViewer` | Viewer host workflow contracts (window behavior, close reasons). |
+| `FS.Skia.UI.Testing` | Helpers for validating the generated product. |
+
 ---
 
-## Building with Spec Kit
+## Evidence keeps it honest
 
-Every generated app carries the `.specify/` install and project-local
-`speckit-*` skills, so you develop features through the same governed loop the
-framework uses on itself:
-
-```
-specify  →  plan  →  tasks  →  implement  →  evidence
-```
-
-Each feature lives in a numbered folder (`spec.md → plan.md → tasks.md →
-research.md → data-model.md → contracts/ → readiness/`). The skills
-`$speckit-specify`, `$speckit-plan`, `$speckit-tasks`, and `$speckit-implement`
-drive each stage, and an **evidence** layer keeps work honest:
+The distinctive part of the Spec Kit workflow is its evidence layer. Generated
+work can't claim it's done without proof:
 
 - **EvidenceGraph** validates the task dependency graph and counts synthetic
   (not-yet-proven) tasks.
@@ -164,11 +168,30 @@ drive each stage, and an **evidence** layer keeps work honest:
   tasks or block-severity findings, so a feature can't merge claiming evidence
   it doesn't have.
 
-The workflow is driven by coding agents, with synchronized skill peers for
-[Claude Code](https://www.anthropic.com/claude-code) (`.claude/skills/`) and
-[Codex](https://openai.com/codex/) (`.agents/skills/`). It is currently
-developed and tested against **Claude Opus 4.8** and **Codex 5.5**. See
-[docs/speckit.md](docs/speckit.md).
+`validation.contract.yml` routes changed paths to required gates and expected
+readiness artifacts. The project constitution
+([.specify/memory/constitution.md](.specify/memory/constitution.md)) governs
+public-contract impact, MVU boundaries, test evidence, and synthetic-evidence
+disclosure. See [docs/speckit.md](docs/speckit.md) and
+[docs/evidence.md](docs/evidence.md).
+
+---
+
+## Requirements
+
+- .NET SDK with `net10.0` support
+- A coding agent for the Spec Kit workflow (currently Claude Opus 4.8 or Codex 5.5)
+- Windows or Linux desktop (macOS, mobile, browser, and headless production are
+  out of scope)
+- A Vulkan-capable GPU, driver, and presentation surface
+- NuGet access for the SkiaSharp 4 preview and Silk.NET dependencies
+
+> **Preview status.** This is a first-version, preview toolkit. There are no
+> stable published packages yet — consume it from this repository using the
+> local-feed flow above. Treat the SkiaSharp 4 preview dependency as
+> preview-risk: Vulkan driver behavior, native assets, and package shape may
+> change before SkiaSharp 4 is stable. The public API exposes no renderer
+> selection and provides no OpenGL/CPU/software/fallback renderer.
 
 ---
 
