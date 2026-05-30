@@ -4,8 +4,12 @@ FS.Skia.UI is an experimental F# desktop UI toolkit built on
 [SkiaSharp](https://github.com/mono/SkiaSharp) and
 [Vulkan](https://www.vulkan.org/), using an [Elmish](https://elmish.github.io/elmish/)
 (Model-View-Update) application model. It is **two things at once**: a
-composable UI library, and a spec-driven, evidence-governed framework for
-building it.
+composable UI library, and a spec-driven, evidence-governed process for building
+applications with it. That [Spec Kit](https://github.com/github/spec-kit)
+process is delivered to consumers through the project template — when you
+generate a product you inherit the same specification, planning, task, and
+evidence workflow for building your own arbitrary app. The framework repository
+dogfoods the same process for its own development.
 
 Application code owns the model, messages, `update` function, and `view`
 function. The `view` function returns immutable `Scene` values. `Viewer.run`
@@ -166,12 +170,18 @@ Run FAKE-backed validation targets one at a time:
 from Windows command prompts. See [docs/build.md](docs/build.md),
 [docs/testing.md](docs/testing.md), and [docs/evidence.md](docs/evidence.md).
 
-### Spec Kit and evidence governance
+### Spec Kit: the application development process
 
-Feature work runs through [Spec Kit](https://github.com/github/spec-kit):
-numbered folders under `specs/` carry `spec.md → plan.md → tasks.md →
-research.md → data-model.md → contracts/ → readiness/`. The distinctive layer is
-**evidence/readiness**:
+[Spec Kit](https://github.com/github/spec-kit) is the primary way applications
+are built **on** this framework — not just how the framework itself is built.
+Generated products carry the `.specify/` install and project-local `speckit-*`
+skills, so a consumer building an arbitrary app uses the same loop: specify →
+plan → tasks → implement → evidence. Work is organized as numbered folders that
+carry `spec.md → plan.md → tasks.md → research.md → data-model.md → contracts/ →
+readiness/`. The framework repository's own `specs/` folder is the same process
+applied to developing FS.Skia.UI.
+
+The distinctive layer is **evidence/readiness**:
 
 - **EvidenceGraph** validates the task dependency graph and counts synthetic
   tasks — it reports but does not block.
@@ -183,8 +193,16 @@ research.md → data-model.md → contracts/ → readiness/`. The distinctive la
 readiness artifacts, and a failure owner. The project constitution in
 [.specify/memory/constitution.md](.specify/memory/constitution.md) governs
 public-contract impact, `.fsi` visibility, MVU boundaries, test evidence, and
-synthetic-evidence disclosure. Project-local `speckit-*` skills live in
-`.claude/skills/`, mirrored by Codex peers in `.agents/skills/`.
+synthetic-evidence disclosure.
+
+### Agent tooling
+
+The Spec Kit workflow is driven by coding agents, with skills authored as
+synchronized peers: project-local `speckit-*` skills for [Claude
+Code](https://www.anthropic.com/claude-code) live in `.claude/skills/`, mirrored
+by [Codex](https://openai.com/codex/) source artifacts in `.agents/skills/`. The
+process is currently developed and tested against **Claude Opus 4.8** and
+**Codex 5.5**.
 
 ---
 
