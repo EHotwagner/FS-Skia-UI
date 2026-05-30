@@ -8,6 +8,10 @@
 
   <ItemGroup>
     <Compile Include="SurfaceAreaTests.fs" Condition="Exists('SurfaceAreaTests.fs')" />
+    <Compile Include="PackageApiReferenceTests.fs" />
+    <Compile Include="NameCollisionSafetyTests.fs" />
+    <Compile Include="GeneratedConsumerValidationTests.fs" />
+    <Compile Include="FsiTranscriptCoverageTests.fs" />
     <Compile Include="Tests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

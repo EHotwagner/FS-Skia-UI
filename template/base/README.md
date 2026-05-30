@@ -47,6 +47,13 @@ The product references FS.Skia.UI preview packages from the configured NuGet
 sources. For local framework development, pack the source repository with
 `./fake.sh build -t PackLocal` and add `~/.local/share/nuget-local` as a NuGet
 source before restoring or running this generated project.
+Use the generated source-shaped package API reference. Do not use assembly reflection or
+repository source inspection as an authoring substitute. When Scene and Controls are used in
+the same file, qualify collision-prone names such as
+`FS.Skia.UI.Scene.Rect`, `FS.Skia.UI.Scene.Paint`,
+`FS.Skia.UI.Scene.TextRun`, `FS.Skia.UI.Controls.TextBlock.create`,
+`FS.Skia.UI.Controls.TextBox.onChanged`, and
+`FS.Skia.UI.Controls.Stack.children`. Do not rely on namespace open order.
 
 The product owns its application code, tests, documentation, readiness evidence,
 and selected local skills.

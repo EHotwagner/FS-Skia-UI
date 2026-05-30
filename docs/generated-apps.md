@@ -45,6 +45,9 @@ the generated app guidance must name:
 Generated demo authors should be able to find the public API shape before
 coding:
 
+- Package API reference: inspect the source-shaped package API reference
+  generated from curated `.fsi` files. Do not use assembly reflection or
+  repository source inspection as an authoring substitute.
 - Keyboard keys: use `FS.Skia.UI.KeyboardInput.ViewerKey` cases
   `ArrowLeft`, `ArrowRight`, `ArrowUp`, `ArrowDown`, `Enter`, `Space`,
   `Escape`, `Backspace`, `Letter`, `Digit`, `Function`, and `Unknown`; normalize
@@ -64,6 +67,11 @@ coding:
   `Scene.rectangle`, `Scene.circle`, `Scene.text`, `Scene.textRun`,
   `Scene.line`, `Scene.path`, and shared `Scene.Point`, `Scene.Rect`, and
   `Scene.Color` records.
+- Mixed Scene and Controls authoring: qualify collision-prone names such as
+  `FS.Skia.UI.Scene.Rect`, `FS.Skia.UI.Scene.Paint`,
+  `FS.Skia.UI.Scene.TextRun`, `FS.Skia.UI.Controls.TextBlock.create`,
+  `FS.Skia.UI.Controls.TextBox.onChanged`, and
+  `FS.Skia.UI.Controls.Stack.children`. Do not rely on namespace open order.
 
 Default text is intended to be readable in evidence screenshots on supported
 Linux desktop hosts with common Latin fonts. Specify explicit fonts with

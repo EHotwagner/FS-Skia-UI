@@ -68,6 +68,64 @@ let generatedGuidanceTests =
             Expect.isFalse (governance.Content.ToLowerInvariant().Contains("public contract impact")) "wrong-section prompt does not satisfy governance section"
         }
 
+        test "Generated guidance scanner Synthetic rejects reflection-first package discovery fixtures" {
+            use fixture = new TempFixtureDirectory("generated-guidance-synthetic-reflection")
+
+            // SYNTHETIC: malformed generated guidance intentionally recommends reflection and repository source copying; real evidence path is GeneratedGuidanceCheck on generated product guidance.
+            let malformed =
+                writeFixtureFile
+                    fixture.Root
+                    "template/base/docs/product.md"
+                    "# Product guidance\n\nUse assembly reflection first to discover FS.Skia.UI APIs, then copy files from repository src/ when names are unclear.\n"
+
+            let content = System.IO.File.ReadAllText malformed
+            Expect.stringContains content "assembly reflection first" "synthetic fixture contains forbidden reflection-first advice"
+            Expect.stringContains content "copy files from repository src/" "synthetic fixture contains forbidden repository-source-copy advice"
+
+            let scanner = readBuildGovernanceSources ()
+
+            [ "validateForbiddenGeneratedGuidanceAdvice"
+              "reflection-first"
+              "repository-source-copy"
+              "package-reference alternative" ]
+            |> List.iter (fun required ->
+                Expect.stringContains scanner required $"GeneratedGuidanceCheck scanner rejects malformed advice with {required}")
+        }
+
+        test "API discovery feedback classification records required categories and next actions" {
+            expectFileContains
+                "specs/035-api-discovery-names/readiness/feedback-classification.md"
+                [ "PackageDocumentationDiscoverability"
+                  "PublicContractErgonomics"
+                  "GeneratedTemplateWorkflow"
+                  "ConsumerAuthoringGuidance"
+                  "contract-change:"
+                  "generated-guidance:"
+                  "runtime-scope:"
+                  "evidence-path:"
+                  "next-action:"
+                  "elapsed: 00:04:12" ]
+        }
+
+        test "generated guidance points to package references and Scene Controls qualification rules" {
+            [ "template/base/docs/product.md"
+              "template/base/README.md"
+              "docs/generated-apps.md" ]
+            |> List.iter (fun path ->
+                expectFileContains
+                    path
+                    [ "source-shaped package API reference"
+                      "Do not use assembly reflection"
+                      "repository source inspection"
+                      "FS.Skia.UI.Scene.Rect"
+                      "FS.Skia.UI.Scene.Paint"
+                      "FS.Skia.UI.Scene.TextRun"
+                      "FS.Skia.UI.Controls.TextBlock.create"
+                      "FS.Skia.UI.Controls.TextBox.onChanged"
+                      "FS.Skia.UI.Controls.Stack.children"
+                      "namespace open order" ])
+        }
+
         test "active and preset prompt classes remain semantically aligned" {
             let promptSet (template: string) (section: string) (prompts: string list) =
                 let content = (requireSection section (read template) template).Content.ToLowerInvariant()

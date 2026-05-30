@@ -1,7 +1,7 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-specs/034-asteroids-feedback-skills/plan.md
+specs/035-api-discovery-names/plan.md
 <!-- SPECKIT END -->
 
 FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`) share

@@ -1,0 +1,38 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "build.fsx",
+      "line": 3768,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"template/base/.agents/skills/fs-skia-project/SKILL.md\""
+    },
+    {
+      "file": "build.fsx",
+      "line": 3769,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"template/base/.claude/skills/fs-skia-project/SKILL.md\" ]"
+    },
+    {
+      "file": "tests/Governance.Tests/GeneratedGuidanceTests.fs",
+      "line": 71,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"Generated guidance scanner Synthetic rejects reflection-first package discovery fixtures\" {"
+    },
+    {
+      "file": "tests/Governance.Tests/GeneratedGuidanceTests.fs",
+      "line": 74,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: malformed generated guidance intentionally recommends reflection and repository source copying; real evide"
+    }
+  ]
+}

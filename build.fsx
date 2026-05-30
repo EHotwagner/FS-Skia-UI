@@ -1081,7 +1081,8 @@ let update msg model =
         (packProjects
          |> List.map (fun (project, packageId) ->
              processEffect $"dotnet pack {packageId}" "dotnet" $"pack {project} -c Release -m:1 -o {quote model.LocalPackageDir}" model.RepositoryRoot (path [ model.LogDir; "pack-local.txt" ])))
-        @ [ WriteStructuredReport("local package report", path [ model.PackageEvidenceDir; "local-packages.md" ], localPackageReport model.RepositoryRoot model.LocalPackageDir) ]
+        @ [ processEffect "generate package API reference" "dotnet" "fsi scripts/generate-package-api-reference.fsx" model.RepositoryRoot (path [ model.LogDir; "pack-local.txt" ])
+            WriteStructuredReport("local package report", path [ model.PackageEvidenceDir; "local-packages.md" ], localPackageReport model.RepositoryRoot model.LocalPackageDir) ]
     | StartTarget "RefreshSurfaceBaselines" ->
         model,
         [ processEffect "refresh surface baselines" "dotnet" "fsi scripts/refresh-surface-baselines.fsx" model.RepositoryRoot (path [ model.LogDir; "surface-refresh.txt" ])
@@ -1096,6 +1097,7 @@ let update msg model =
     | StartTarget "PackageSurfaceCheck" ->
         model,
         [ processEffect "package surface test build" "dotnet" "build tests/Package.Tests/Package.Tests.fsproj -m:1 --no-restore --disable-build-servers" model.RepositoryRoot (path [ model.LogDir; "package-surface-check.txt" ])
+          processEffect "generate package API reference" "dotnet" "fsi scripts/generate-package-api-reference.fsx" model.RepositoryRoot (path [ model.LogDir; "package-surface-check.txt" ])
           focusedGateAssumptionCheck model "PackageSurfaceCheck"
           processEffect "package surface check" "dotnet" "test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore" model.RepositoryRoot (path [ model.LogDir; "package-surface-check.txt" ])
           PackageSurfaceReport
@@ -3750,6 +3752,38 @@ let validateSerializedRunnerGuidance model =
       "template/base/.claude/skills/fs-skia-project/SKILL.md" ]
     |> List.collect (validateSerializedRunnerGuidancePath model)
 
+let forbiddenGeneratedGuidanceAdvice =
+    [ "assembly reflection first", "reflection-first"
+      "reflection-first", "reflection-first"
+      "copy files from repository src/", "repository-source-copy"
+      "copy repository source", "repository-source-copy"
+      "read repository source instead", "repository-source-copy" ]
+
+let validateForbiddenGeneratedGuidanceAdvice model =
+    let guidancePaths =
+        [ "docs/generated-apps.md"
+          "docs/controls.md"
+          "template/base/README.md"
+          "template/base/docs/product.md"
+          "template/base/.agents/skills/fs-skia-project/SKILL.md"
+          "template/base/.claude/skills/fs-skia-project/SKILL.md" ]
+
+    guidancePaths
+    |> List.collect (fun relativePath ->
+        let filePath = path [ model.RepositoryRoot; relativePath ]
+
+        if not (File.Exists filePath) then
+            []
+        else
+            let content = File.ReadAllText filePath
+
+            forbiddenGeneratedGuidanceAdvice
+            |> List.choose (fun (term, failureClass) ->
+                if containsText term content then
+                    Some $"{relativePath}: forbidden {failureClass} generated guidance `{term}`; use package-reference alternative first [package-reference alternative]"
+                else
+                    None))
+
 let tryHeading (line: string) =
     let trimmed = line.TrimStart()
 
@@ -4060,6 +4094,7 @@ let runGeneratedGuidanceScan model outputPath =
     let findings =
         (validationRows |> List.collect (fun (_, findings, _) -> findings))
         @ validateGuidanceParity validationRows
+        @ validateForbiddenGeneratedGuidanceAdvice model
         @ validateControlsBoundaryGuidance model
         @ validateTaskSkillistGuidance model
         @ validateSerializedRunnerGuidance model

@@ -10,6 +10,14 @@ rich text, chart controls, graph controls, and DataGrid. Product models own
 business data and messages; Controls declarations stay generic over
 `Control<'msg>`.
 
+When Controls are authored beside Scene primitives, generated examples should
+fully qualify collision-prone names. Use `FS.Skia.UI.Scene.Rect`,
+`FS.Skia.UI.Scene.Paint`, and `FS.Skia.UI.Scene.TextRun` for scene records, and
+use Controls front doors such as `FS.Skia.UI.Controls.TextBlock.create`,
+`FS.Skia.UI.Controls.TextBox.onChanged`, and
+`FS.Skia.UI.Controls.Stack.children` for controls. Do not rely on namespace
+open order to choose between overlapping names.
+
 Generated products must not copy framework galleries, framework samples,
 framework readiness evidence, historical specs, or framework implementation
 projects.
