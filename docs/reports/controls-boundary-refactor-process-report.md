@@ -186,7 +186,7 @@ ownership boundary:
   the active source tree.
 
 These were resolved by updating `.specify/memory/constitution.md`, updating
-`docs/architecture.md`, and removing the remaining tracked legacy Charts source
+`docs/reports/architecture.md`, and removing the remaining tracked legacy Charts source
 and tests. After that cleanup, `EvidenceAudit` passed.
 
 Recommended follow-up:

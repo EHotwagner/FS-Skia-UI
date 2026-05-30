@@ -17,7 +17,7 @@ let templateDriftTests =
     testList "Template drift governance" [
         test "template ownership and deferral rules are documented" {
             expectFileContains
-                "docs/template-profile.md"
+                "docs/reports/template-profile.md"
                 [ "Template-owned changes"
                   ".template.config/template.json"
                   "readiness/template-deferrals.yml"

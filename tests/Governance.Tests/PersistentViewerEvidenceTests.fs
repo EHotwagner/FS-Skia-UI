@@ -471,13 +471,13 @@ let persistentViewerEvidenceTests =
 
         test "bounded viewer docs label helper commands as non-readiness substitutes" {
             expectFileContains
-                "docs/evidence.md"
+                "docs/reports/evidence.md"
                 [ "CI and diagnostic helpers"
                   "do not replace supported-host persistent graphical launch evidence"
                   "contains only bounded or unsupported-host artifacts as incomplete" ]
 
             expectFileContains
-                "docs/generated-apps.md"
+                "docs/reports/generated-apps.md"
                 [ "not interactive readiness substitutes"
                   "Viewer.runApp viewerOptions Product.Program.generatedHost"
                   "only print metadata"

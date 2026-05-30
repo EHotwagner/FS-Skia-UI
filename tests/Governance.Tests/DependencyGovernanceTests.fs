@@ -88,7 +88,7 @@ let dependencyGovernanceTests =
 
         test "dependency docs include metadata fields and validation-only policy" {
             expectFileContains
-                "docs/dependencies.md"
+                "docs/reports/dependencies.md"
                 [ "Purpose"
                   "Owner"
                   "License posture"
@@ -135,7 +135,7 @@ let dependencyGovernanceTests =
                       "Legacy Charts package/project references are absent" ]
 
             expectFileContains
-                "docs/dependencies.md"
+                "docs/reports/dependencies.md"
                 [ "The Controls boundary refactor does not add a third-party runtime dependency."
                   "FS.Skia.UI.Controls.Elmish"
                   "Legacy Charts package"

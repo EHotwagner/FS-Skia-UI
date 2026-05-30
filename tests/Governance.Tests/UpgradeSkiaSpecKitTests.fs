@@ -180,7 +180,7 @@ let upgradeSkiaSpecKitTests =
 
         test "documentation and guidance carry selected version and conservative compatibility posture" {
             expectFileContains
-                "docs/dependencies.md"
+                "docs/reports/dependencies.md"
                 [ "4.147.0-preview.3.1"
                   "FS.Skia.UI remains a stable compatibility surface"
                   "Prefer focused packages for new generated products"

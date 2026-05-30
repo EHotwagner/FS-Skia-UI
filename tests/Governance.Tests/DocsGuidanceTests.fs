@@ -32,7 +32,7 @@ let deferredItems =
 let docsGuidanceTests =
     testList "Docs and generated guidance" [
         test "build testing and evidence docs cover canonical targets and artifact paths" {
-            [ "docs/build.md"; "docs/testing.md"; "docs/evidence.md" ]
+            [ "docs/reports/build.md"; "docs/reports/testing.md"; "docs/reports/evidence.md" ]
             |> List.iter (fun doc ->
                 Expect.isTrue (File.Exists(fullPath doc)) $"{doc} exists"
                 let content = read doc
@@ -40,7 +40,7 @@ let docsGuidanceTests =
                 |> List.iter (fun target -> Expect.stringContains content target $"{doc} names {target}"))
 
             expectFileContains
-                "docs/evidence.md"
+                "docs/reports/evidence.md"
                 [ "readiness/surface-baselines/*.txt"
                   "Active feature `readiness/logs/*.txt`"
                   "Active feature `readiness/fsi/*.txt`"
@@ -49,14 +49,14 @@ let docsGuidanceTests =
         }
 
         test "docs name deferred roadmap categories outside v1 verification" {
-            let docs = read "docs/build.md" + read "docs/testing.md" + read "docs/evidence.md"
+            let docs = read "docs/reports/build.md" + read "docs/reports/testing.md" + read "docs/reports/evidence.md"
 
             deferredItems
             |> List.iter (fun item -> Expect.stringContains (docs.ToLowerInvariant()) item $"{item} is deferred in docs")
         }
 
         test "README and workflow delegate to canonical command surface" {
-            expectFileContains "README.md" [ "./fake.sh build -t Dev"; "./fake.sh build -t Verify"; "docs/build.md" ]
+            expectFileContains "README.md" [ "./fake.sh build -t Dev"; "./fake.sh build -t Verify"; "docs/reports/build.md" ]
             expectFileContains ".specify/workflows/speckit/workflow.yml" [ "./fake.sh build -t Ci"; "canonical" ]
         }
 
@@ -87,7 +87,7 @@ let docsGuidanceTests =
 
         test "Controls compatibility guidance documents replacement path and non-promises" {
             let compatibility = read "specs/011-controls-boundary-refactor/readiness/compatibility-impact.md"
-            let controls = read "docs/controls.md"
+            let controls = read "docs/reports/controls.md"
             let generatedProduct = read "template/base/docs/product.md"
             let combined = compatibility + Environment.NewLine + controls + Environment.NewLine + generatedProduct
 

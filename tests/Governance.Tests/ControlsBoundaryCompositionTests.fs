@@ -51,8 +51,8 @@ let expectNoCopiedFrameworkAssets relativeRoot =
       "src/Lib"
       "tests/Controls.Tests"
       "tests/Charts.Tests"
-      "docs/architecture.md"
-      "docs/subsystem-design.md"
+      "docs/reports/architecture.md"
+      "docs/reports/subsystem-design.md"
       "specs/00" ]
     |> List.iter (fun forbidden ->
         let relative = $"{relativeRoot}/{forbidden}"

@@ -89,8 +89,8 @@ let archiveReadinessApiDocsTests =
         }
 
         test "generated guidance explains current evidence archives source shaped fsi and fsdocs authority limits" {
-            [ "docs/generated-apps.md"
-              "docs/template-profile.md"
+            [ "docs/reports/generated-apps.md"
+              "docs/reports/template-profile.md"
               "template/base/README.md"
               "template/base/docs/product.md" ]
             |> List.iter (fun path ->

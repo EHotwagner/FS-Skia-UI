@@ -46,9 +46,9 @@ let private validateSerializedRunnerGuidance (path: string) (content: string) =
 
 let private repositoryGuidancePaths =
     [ "README.md"
-      "docs/build.md"
-      "docs/testing.md"
-      "docs/evidence.md" ]
+      "docs/reports/build.md"
+      "docs/reports/testing.md"
+      "docs/reports/evidence.md" ]
 
 let private agentGuidancePaths =
     [ "AGENTS.md"

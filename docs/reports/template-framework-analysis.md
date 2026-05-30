@@ -204,7 +204,7 @@ Template-owned:
 - `.specify/presets/fsharp-opinionated` or a renamed template preset.
 - `.specify/extensions/evidence` plus new project-local extensions.
 - `.agents/skills` for local Speckit and Git workflows.
-- `docs/template-profile.md`, `docs/build.md`, `docs/testing.md`, `docs/speckit.md`, `docs/dependencies.md`, `docs/evidence.md`, `docs/rendering-boundaries.md`, and `docs/layout-boundaries.md`.
+- `docs/reports/template-profile.md`, `docs/reports/build.md`, `docs/reports/testing.md`, `docs/reports/speckit.md`, `docs/reports/dependencies.md`, `docs/reports/evidence.md`, `docs/rendering-boundaries.md`, and `docs/layout-boundaries.md`.
 - Stable baseline directories for current public package surface.
 
 Product-owned after instantiation:
@@ -378,7 +378,7 @@ Concrete changes:
 - Set `ManagePackageVersionsCentrally` to `true`.
 - Move all `PackageReference Version="..."` values into `<PackageVersion />` entries.
 - Keep project files with versionless `<PackageReference Include="..." />`.
-- Add `docs/dependencies.md` with package owner, reason, license, pinning policy, upgrade command, and evidence target.
+- Add `docs/reports/dependencies.md` with package owner, reason, license, pinning policy, upgrade command, and evidence target.
 - Add `DependencyReport` in FAKE.
 - Add a no-inline-version package test that fails if an individual project reintroduces `Version="..."` except for explicitly allowed local package smoke cases.
 
@@ -752,7 +752,7 @@ Deliverables:
 - Add targets: `Clean`, `Restore`, `Build`, `Test`, `Dev`, `Verify`.
 - Wire existing FSI and surface scripts into targets.
 - Add stable current baseline path for package surface.
-- Add `docs/build.md`, `docs/testing.md`, and `docs/evidence.md`.
+- Add `docs/reports/build.md`, `docs/reports/testing.md`, and `docs/reports/evidence.md`.
 
 Exit criteria:
 
@@ -765,7 +765,7 @@ Deliverables:
 
 - Add `Directory.Packages.props`.
 - Move package versions out of project files.
-- Add `docs/dependencies.md`.
+- Add `docs/reports/dependencies.md`.
 - Add `DependencyReport` target.
 - Add no-inline-package-version package test.
 - Decide lock-file policy for samples and package-smoke consumers.
@@ -842,7 +842,7 @@ The first PR should be intentionally narrow:
 1. Add FAKE bootstrap.
 2. Add `Dev`, `Verify`, `PackLocal`, `PackageSurfaceCheck`, `FsiTranscripts`, `EvidenceGraph`, and `EvidenceAudit` targets.
 3. Move surface baselines to a stable current path or add a compatibility target that writes both current and feature-readiness copies.
-4. Add `docs/build.md` and `docs/evidence.md`.
+4. Add `docs/reports/build.md` and `docs/reports/evidence.md`.
 5. Update Speckit task template so generated tasks call FAKE targets.
 
 Do not start with `.template.config/template.json`. Without the build graph, the template can create files but cannot prove that the created project is valid.

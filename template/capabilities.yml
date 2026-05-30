@@ -32,7 +32,7 @@ capabilities:
     defaultApp: true
     evidence: [capability-catalog, package-surface, generated-product]
     surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.Scene.txt
-    docs: docs/v3Design.md
+    docs: docs/reports/v3Design.md
     ownerNotes: Dependency-light scene vocabulary.
   - id: skiaviewer
     displayName: SkiaViewer
@@ -49,7 +49,7 @@ capabilities:
     defaultApp: true
     evidence: [capability-catalog, package-surface, generated-product]
     surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.SkiaViewer.txt
-    docs: docs/v3Design.md
+    docs: docs/reports/v3Design.md
     ownerNotes: Host and viewer workflow boundary.
   - id: elmish
     displayName: Elmish
@@ -66,7 +66,7 @@ capabilities:
     defaultApp: true
     evidence: [capability-catalog, package-surface, generated-product]
     surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.Elmish.txt
-    docs: docs/v3Design.md
+    docs: docs/reports/v3Design.md
     ownerNotes: Elmish adapter and pure update boundary.
   - id: keyboard-input
     displayName: KeyboardInput
@@ -83,7 +83,7 @@ capabilities:
     defaultApp: true
     evidence: [capability-catalog, package-surface, generated-product]
     surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.KeyboardInput.txt
-    docs: docs/v3Design.md
+    docs: docs/reports/v3Design.md
     ownerNotes: Keyboard reducer and command effects.
   - id: layout
     displayName: Layout
@@ -103,7 +103,7 @@ capabilities:
     defaultApp: true
     evidence: [capability-catalog, package-surface, generated-product]
     surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.Layout.txt
-    docs: docs/v3Design.md
+    docs: docs/reports/v3Design.md
     ownerNotes: Yoga-backed layout and graph helpers.
   - id: controls
     displayName: Controls
@@ -133,7 +133,7 @@ capabilities:
     defaultApp: true
     evidence: [control-catalog, public-surface, semantic-tests, interaction-tests, layout-rendering, chart-datagrid-controls, generated-product]
     surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.Controls.txt
-    docs: docs/controls.md
+    docs: docs/reports/controls.md
     ownerNotes: Skia-rendered ordinary controls, rich text, chart controls, graph controls, DataGrid, custom wrappers, and product-owned ControlRuntime guidance.
   - id: testing
     displayName: Testing
@@ -150,7 +150,7 @@ capabilities:
     defaultApp: false
     evidence: [capability-catalog, package-surface, generated-product]
     surfaceBaseline: readiness/surface-baselines/FS.Skia.UI.Testing.txt
-    docs: docs/v3Design.md
+    docs: docs/reports/v3Design.md
     ownerNotes: Product validation helpers.
   - id: samples
     displayName: Samples
@@ -167,5 +167,5 @@ capabilities:
     defaultApp: false
     evidence: [generated-product]
     surfaceBaseline: no-public-surface
-    docs: docs/v3Design.md
+    docs: docs/reports/v3Design.md
     ownerNotes: Optional sample content only.

@@ -31,11 +31,11 @@ documentation.
 Local sources:
 
 - [README.md](../README.md)
-- [docs/architecture.md](architecture.md)
-- [docs/build.md](build.md)
-- [docs/evidence.md](evidence.md)
-- [docs/generated-apps.md](generated-apps.md)
-- [docs/template-profile.md](template-profile.md)
+- [docs/reports/architecture.md](architecture.md)
+- [docs/reports/build.md](build.md)
+- [docs/reports/evidence.md](evidence.md)
+- [docs/reports/generated-apps.md](generated-apps.md)
+- [docs/reports/template-profile.md](template-profile.md)
 - [specs/027-generated-evidence-workflow/plan.md](../specs/027-generated-evidence-workflow/plan.md)
 - [build.fsx](../build.fsx)
 - [template/base/src/Product/Program.fs](../template/base/src/Product/Program.fs)
@@ -159,7 +159,7 @@ exit code, validation area, diagnostics, and write command reports under
 Focused gates also have stronger in-repository metadata than the original
 analysis observed: command, direct prerequisites, log path, readiness path,
 stale build/restore assumptions, and verdict category are represented in the
-build workflow and documented in [docs/build.md](build.md). This improves
+build workflow and documented in [docs/reports/build.md](build.md). This improves
 direct invocation and evidence review, but it is still not a changed-path
 validation manifest.
 
@@ -198,7 +198,7 @@ visible.
 ### 1. Agent Routing Is Too Implicit
 
 The repository documents many gates, but the gate selection rule is not yet a
-first-class machine-readable contract. An agent can read [docs/build.md](build.md),
+first-class machine-readable contract. An agent can read [docs/reports/build.md](build.md),
 but it still has to infer which gates are authoritative for a given change.
 
 Example: a change under [src/Controls](../src/Controls/) may need some subset

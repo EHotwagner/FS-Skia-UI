@@ -950,11 +950,11 @@ let validationContractTargetReferences root =
 
 let documentedTargetReferences root =
     let docs =
-        [ path [ root; "docs"; "build.md" ]
-          path [ root; "docs"; "evidence.md" ]
-          path [ root; "docs"; "testing.md" ]
-          path [ root; "docs"; "generated-apps.md" ]
-          path [ root; "docs"; "controls.md" ] ]
+        [ path [ root; "docs"; "reports"; "build.md" ]
+          path [ root; "docs"; "reports"; "evidence.md" ]
+          path [ root; "docs"; "reports"; "testing.md" ]
+          path [ root; "docs"; "reports"; "generated-apps.md" ]
+          path [ root; "docs"; "reports"; "controls.md" ] ]
 
     requiredTargets
     |> List.filter (fun target ->
@@ -2869,10 +2869,10 @@ let scanV3GeneratedRow model row =
           "framework sample content", "samples/"
           "historical specs", "specs/00"
           "framework readiness evidence", "readiness/"
-          "framework README content", "docs/architecture.md"
-          "framework README content", "docs/V2Analysis.md"
-          "framework README content", "docs/subsystem-design.md"
-          "framework README content", "docs/technical-design.md"
+          "framework README content", "docs/reports/architecture.md"
+          "framework README content", "docs/reports/V2Analysis.md"
+          "framework README content", "docs/reports/subsystem-design.md"
+          "framework README content", "docs/reports/technical-design.md"
           "framework implementation projects", "tests/Parity.Tests"
           "framework implementation projects", ".template.package" ]
 
@@ -3799,9 +3799,9 @@ let validateSerializedRunnerGuidancePath model relativePath =
 
 let validateSerializedRunnerGuidance model =
     [ "README.md"
-      "docs/build.md"
-      "docs/testing.md"
-      "docs/evidence.md"
+      "docs/reports/build.md"
+      "docs/reports/testing.md"
+      "docs/reports/evidence.md"
       "AGENTS.md"
       "CLAUDE.md"
       ".agents/skills/speckit-implement/SKILL.md"
@@ -3829,8 +3829,8 @@ let forbiddenGeneratedGuidanceAdvice =
 
 let validateForbiddenGeneratedGuidanceAdvice model =
     let guidancePaths =
-        [ "docs/generated-apps.md"
-          "docs/controls.md"
+        [ "docs/reports/generated-apps.md"
+          "docs/reports/controls.md"
           "template/base/README.md"
           "template/base/docs/product.md"
           "template/base/.agents/skills/fs-skia-project/SKILL.md"

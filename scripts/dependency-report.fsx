@@ -73,7 +73,7 @@ let cpmEnabled =
 if not cpmEnabled then
     failwith "Directory.Packages.props must set ManagePackageVersionsCentrally to true"
 
-let docsPath = path [ repositoryRoot; "docs"; "dependencies.md" ]
+let docsPath = path [ repositoryRoot; "docs"; "reports"; "dependencies.md" ]
 let docsContent =
     if File.Exists docsPath then File.ReadAllText docsPath else ""
 
@@ -227,7 +227,7 @@ let violations =
                         if centralPolicyViolation then
                             $"{relativeProject}: {packageId} missing PackageVersion in Directory.Packages.props"
                         if docsViolation then
-                            $"{relativeProject}: {packageId} missing metadata row in docs/dependencies.md" ])) ]
+                            $"{relativeProject}: {packageId} missing metadata row in docs/reports/dependencies.md" ])) ]
 
 if not (List.isEmpty violations) then
     let report =

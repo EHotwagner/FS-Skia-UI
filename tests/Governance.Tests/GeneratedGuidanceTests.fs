@@ -110,7 +110,7 @@ let generatedGuidanceTests =
         test "generated guidance points to package references and Scene Controls qualification rules" {
             [ "template/base/docs/product.md"
               "template/base/README.md"
-              "docs/generated-apps.md" ]
+              "docs/reports/generated-apps.md" ]
             |> List.iter (fun path ->
                 expectFileContains
                     path
@@ -205,7 +205,7 @@ let generatedGuidanceTests =
 
         test "Spec Kit docs distinguish V2 obligations from deferred roadmap work" {
             expectFileContains
-                "docs/speckit.md"
+                "docs/reports/speckit.md"
                 [ "package impact"
                   "template ownership"
                   "Deferred Roadmap"
@@ -235,8 +235,8 @@ let generatedGuidanceTests =
         }
 
         test "generated app guidance names qualified app-owned scene host and update values" {
-            [ "docs/generated-apps.md"
-              "docs/testing.md"
+            [ "docs/reports/generated-apps.md"
+              "docs/reports/testing.md"
               "template/base/docs/product.md" ]
             |> List.iter (fun path ->
                 expectFileContains
@@ -263,7 +263,7 @@ let generatedGuidanceTests =
         }
 
         test "generated guidance keeps app commands distinct from viewer effects" {
-            [ "docs/generated-apps.md"
+            [ "docs/reports/generated-apps.md"
               "template/base/docs/product.md" ]
             |> List.iter (fun path ->
                 expectFileContains
@@ -292,7 +292,7 @@ let generatedGuidanceTests =
 
         test "generated guidance reuses shared Scene geometry instead of local duplicates" {
             [ "template/fragments/scene/README.md"
-              "docs/generated-apps.md"
+              "docs/reports/generated-apps.md"
               "template/base/docs/product.md" ]
             |> List.iter (fun path ->
                 expectFileContains
@@ -312,7 +312,7 @@ let generatedGuidanceTests =
 
         test "generated guidance recommends domain geometry names and not primitive collisions" {
             let guidancePaths =
-                [ "docs/generated-apps.md"
+                [ "docs/reports/generated-apps.md"
                   "template/base/docs/product.md"
                   "template/fragments/scene/README.md" ]
 
@@ -336,8 +336,8 @@ let generatedGuidanceTests =
         }
 
         test "generated screenshot wording requires live-window proof and keeps deterministic fallback separate" {
-            [ "docs/generated-apps.md"
-              "docs/evidence.md"
+            [ "docs/reports/generated-apps.md"
+              "docs/reports/evidence.md"
               "template/base/docs/product.md"
               "template/fragments/skiaviewer/README.md" ]
             |> List.iter (fun path ->
@@ -353,7 +353,7 @@ let generatedGuidanceTests =
         test "generated game guidance qualifies CloseRequested and converts app vectors to scene points" {
             [ "template/base/docs/product.md"
               "template/fragments/scene/README.md"
-              "docs/generated-apps.md" ]
+              "docs/reports/generated-apps.md" ]
             |> List.iter (fun path ->
                 expectFileContains
                     path
@@ -369,7 +369,7 @@ let generatedGuidanceTests =
         test "generated evidence guidance separates semantic scene facts from screenshot and pixel-readback claims" {
             [ "template/base/docs/product.md"
               "template/fragments/testing/README.md"
-              "docs/evidence.md" ]
+              "docs/reports/evidence.md" ]
             |> List.iter (fun path ->
                 expectFileContains
                     path
@@ -403,7 +403,7 @@ let generatedGuidanceTests =
         }
 
         test "generated Linux detached launch guidance preserves logs stderr and stdin detachment" {
-            [ "docs/generated-apps.md"
+            [ "docs/reports/generated-apps.md"
               "template/base/docs/product.md"
               "template/fragments/skiaviewer/README.md" ]
             |> List.iter (fun path ->
@@ -416,7 +416,7 @@ let generatedGuidanceTests =
                       "&" ])
 
             let combined =
-                [ "docs/generated-apps.md"
+                [ "docs/reports/generated-apps.md"
                   "template/base/docs/product.md"
                   "template/fragments/skiaviewer/README.md" ]
                 |> List.map read
@@ -430,7 +430,7 @@ let generatedGuidanceTests =
         }
 
         test "generated viewer guidance scans one selected persistent launch contract across owned artifacts" {
-            [ "docs/generated-apps.md"
+            [ "docs/reports/generated-apps.md"
               "template/fragments/skiaviewer/README.md"
               "specs/022-breakout-demo-feedback/quickstart.md" ]
             |> List.iter (fun path ->
@@ -468,7 +468,7 @@ let generatedGuidanceTests =
         }
 
         test "generated guidance contains compact consumer API map before coding" {
-            [ "docs/generated-apps.md"
+            [ "docs/reports/generated-apps.md"
               "template/base/docs/product.md" ]
             |> List.iter (fun path ->
                 expectFileContains
@@ -492,9 +492,9 @@ let generatedGuidanceTests =
         }
 
         test "readiness guidance names feature scoped contracts and mandatory terms" {
-            [ "docs/generated-apps.md"
+            [ "docs/reports/generated-apps.md"
               "template/base/docs/product.md"
-              "docs/evidence.md" ]
+              "docs/reports/evidence.md" ]
             |> List.iter (fun path ->
                 expectFileContains
                     path

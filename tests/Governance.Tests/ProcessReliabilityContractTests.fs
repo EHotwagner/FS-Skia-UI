@@ -211,7 +211,7 @@ let processReliabilityContractTests =
             let capability = writeCapabilityMetadataFixture fixture.Root "- id: controls\n  displayName: Controls\n"
             let generated = writeGeneratedProductFixture fixture.Root "sample-pack" [ "samples/README.md", "# Samples\n" ]
             let guidance = writeGeneratedGuidanceFixture fixture.Root "docs/generated.md" [ "RichText.create" ] [ "ControlsElmish.program" ]
-            let stale = writeStaleReferenceFixture fixture.Root "docs/architecture.md" "FS.Skia.UI.Charts" "historical replacement"
+            let stale = writeStaleReferenceFixture fixture.Root "docs/reports/architecture.md" "FS.Skia.UI.Charts" "historical replacement"
             let readiness = writeReadinessReportFixture fixture.Root "readiness/verification-verdicts.md" "environment-failure" [ "process-health.md" ]
 
             [ project; capability; guidance; stale; readiness ]

@@ -456,7 +456,7 @@ let generatedProjectValidationTests =
                           "readiness/"
                           "src/Lib/Lib.fsproj"
                           ".template.package"
-                          "docs/architecture.md" ])
+                          "docs/reports/architecture.md" ])
             else
                 Expect.isFalse (directoryExists ".template.config") "generated products do not carry active feature validation roots"
         }

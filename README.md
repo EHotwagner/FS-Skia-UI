@@ -294,9 +294,9 @@ order below):
 `./fake.sh build -t Verify` and `./fake.sh build -t Ci` are the broad aggregate
 gates. Public visibility lives in
 `.fsi` signature files (the contract chain is Spec → `.fsi` → semantic tests →
-implementation → surface baseline). See [docs/build.md](docs/build.md),
-[docs/testing.md](docs/testing.md), [docs/evidence.md](docs/evidence.md),
-[docs/speckit.md](docs/speckit.md), and
+implementation → surface baseline). See [docs/reports/build.md](docs/reports/build.md),
+[docs/reports/testing.md](docs/reports/testing.md), [docs/reports/evidence.md](docs/reports/evidence.md),
+[docs/reports/speckit.md](docs/reports/speckit.md), and
 [.specify/memory/constitution.md](.specify/memory/constitution.md).
 
 ---
