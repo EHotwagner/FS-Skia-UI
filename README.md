@@ -193,14 +193,28 @@ The workflow can compose any of these capability packages into what it builds:
 
 ---
 
-## Requirements
+## Development environment
 
-- .NET SDK with `net10.0` support
-- A coding agent for the Spec Kit workflow (currently Claude Opus 4.8 or Codex 5.5)
-- Windows or Linux desktop (macOS, mobile, browser, and headless production are
-  out of scope)
-- A Vulkan-capable GPU, driver, and presentation surface
-- NuGet access for the SkiaSharp 4 preview and Silk.NET dependencies
+The repository ships a ready-made development container that bundles every
+prerequisite — the .NET SDKs (6.0/8.0/10.0), F# tooling (`fsautocomplete`,
+`fantomas`, FAKE, Paket, Fable), the native graphics libraries SkiaSharp and
+Vulkan need, and the local NuGet feed — so you don't assemble them by hand. From
+the repository root:
+
+```bash
+./Container/create-fs-skia-ui-dev.sh --workspace="$PWD" --rebuild
+```
+
+This builds the image, starts a rootless Podman container with your workspace
+mounted at `/workspace`, forwards GPU/display where available, and drops you into
+a shell. See
+[Container/fs-skia-ui-container.md](Container/fs-skia-ui-container.md) for the
+full prerequisite list and options.
+
+You still bring two things the container can't: a **Vulkan-capable GPU** on a
+Windows or Linux desktop host (macOS, mobile, browser, and headless production
+are out of scope), and a **coding agent** for the Spec Kit workflow (currently
+Claude Opus 4.8 or Codex 5.5).
 
 > **Preview status.** This is a first-version, preview toolkit. There are no
 > stable published packages yet — consume it from this repository using the
