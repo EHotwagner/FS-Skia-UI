@@ -1,0 +1,7 @@
+=== PRE-FIX (failing-first) — mixed Scene/Controls open order (Controls last) ===
+command: dotnet fsi specs/037-authoring-audit-robustness/readiness/fsi/mixed-scene-controls-text-collision.fsx
+
+/home/developer/projects/FS-Skia-UI/specs/037-authoring-audit-robustness/readiness/fsi/mixed-scene-controls-text-collision.fsx(30,5): error FS0003: This value is not a function and cannot be applied. It has type 'ControlEventOrigin', which does not accept arguments.
+
+Diagnosis: unqualified 'Text' resolved to the leaked ControlEventOrigin.Text
+case — the opaque 'not a function / has type ControlEventOrigin' error (SC-004).

@@ -1,0 +1,10 @@
+=== POST-FIX — mixed Scene/Controls open order (Controls last) now resolves (SC-004) ===
+command: dotnet fsi specs/037-authoring-audit-robustness/readiness/fsi/mixed-scene-controls-text-collision.fsx
+
+scene text node resolved: Text ((0.0, 0.0), "Hello, scene", { Red = 24uy
+                                    Green = 88uy
+                                    Blue = 128uy
+                                    Alpha = 255uy })
+
+Resolution: unqualified 'Text' now resolves to the Scene Text constructor;
+ControlEventOrigin.Text no longer leaks into the opened Controls namespace.

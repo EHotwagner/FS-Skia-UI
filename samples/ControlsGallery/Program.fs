@@ -204,7 +204,7 @@ let runContractSmoke () =
     let click =
         { Kind = "click"
           ControlId = Some "save-button"
-          Origin = Pointer
+          Origin = ControlEventOrigin.Pointer
           Payload = None }
 
     stopwatch.Stop()

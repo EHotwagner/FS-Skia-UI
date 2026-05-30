@@ -280,8 +280,9 @@ Exact pins are centralized in
 ## Developing FS.Skia.UI itself
 
 Maintainers work in this repository through the same Spec Kit process, validated
-by FAKE targets run **one at a time** (FAKE-backed commands share `.fake` state
-and are not safe to run concurrently):
+by FAKE targets run **one at a time, sequentially** (FAKE-backed commands share
+`.fake` state and are not safe to run concurrently; run them in the deterministic
+order below):
 
 1. `./fake.sh build -t Dev` — restore, build, test
 2. `./fake.sh build -t GeneratedGuidanceCheck` — spec/plan template governance
@@ -290,7 +291,8 @@ and are not safe to run concurrently):
 5. `./fake.sh build -t EvidenceGraph` — validate the task DAG
 6. `./fake.sh build -t EvidenceAudit` — merge gate
 
-`Verify` and `Ci` are the broad aggregate gates. Public visibility lives in
+`./fake.sh build -t Verify` and `./fake.sh build -t Ci` are the broad aggregate
+gates. Public visibility lives in
 `.fsi` signature files (the contract chain is Spec → `.fsi` → semantic tests →
 implementation → surface baseline). See [docs/build.md](docs/build.md),
 [docs/testing.md](docs/testing.md), [docs/evidence.md](docs/evidence.md),

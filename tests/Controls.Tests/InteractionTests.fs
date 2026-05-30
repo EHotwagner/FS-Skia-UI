@@ -8,7 +8,7 @@ type Msg =
     | Changed of string
 
 let click id =
-    { Kind = "click"; ControlId = Some id; Origin = Pointer; Payload = None }
+    { Kind = "click"; ControlId = Some id; Origin = ControlEventOrigin.Pointer; Payload = None }
 
 [<Tests>]
 let interactionTests =
@@ -45,7 +45,7 @@ let interactionTests =
             Expect.equal (Control.dispatch (click "save-button") disabled) [] "disabled button suppresses click"
 
             let changed =
-                { Kind = "changed"; ControlId = Some "name"; Origin = Text; Payload = Some "Grace" }
+                { Kind = "changed"; ControlId = Some "name"; Origin = ControlEventOrigin.Text; Payload = Some "Grace" }
 
             Expect.equal (Control.dispatch changed readOnly) [] "read-only text box suppresses change"
         }
@@ -56,7 +56,7 @@ let interactionTests =
                 |> Control.withKey "save-button"
 
             let key =
-                { Kind = "click"; ControlId = Some "save-button"; Origin = Keyboard; Payload = Some "Enter" }
+                { Kind = "click"; ControlId = Some "save-button"; Origin = ControlEventOrigin.Keyboard; Payload = Some "Enter" }
 
             Expect.equal (Control.dispatch key button) [ Save 7 ] "keyboard activation dispatches through current event binding"
         }

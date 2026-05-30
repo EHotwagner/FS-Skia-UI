@@ -17,6 +17,23 @@ examples must qualify collision-prone names explicitly: use
 `FS.Skia.UI.Scene.TextRun`, `FS.Skia.UI.Controls.TextBlock.create`,
 `FS.Skia.UI.Controls.TextBox.onChanged`, and
 `FS.Skia.UI.Controls.Stack.children`. Do not rely on namespace open order.
+Reuse the shared `FS.Skia.UI.Scene.Rect` bounds type rather than a look-alike
+record so record-field inference does not hijack resolution, and reference
+`ControlEventOrigin` cases qualified (`ControlEventOrigin.Text`) — it carries
+`[<RequireQualifiedAccess>]` so its `Text` case never shadows the scene `Text`
+constructor.
+
+## Load the app in FSI
+
+To explore the built app interactively, load it and its transitive
+`FS.Skia.UI.*` references into FSI in one step with no manual reference editing:
+build once (`./fake.sh build -t Dev`), then run `dotnet fsi load-product.fsx`.
+The generated `load-product.fsx` is derived from `Directory.Packages.props` and
+the built `Product` output (it is not a hand-maintained list — do not edit it),
+so it stays in sync as the assembly set changes. It only `#r`s and `open`s the
+app; it launches nothing, so benign host-warning classification is unaffected and
+a missing assembly surfaces as a normal load failure.
+
 Controls examples should use typed standard front doors by default:
 `TextBlock.text`, `TextBox.value`, `Button.onClick`, `LineChart.series`,
 `GraphView.nodes`, `DataGrid.columns`, `DataGrid.rows`,

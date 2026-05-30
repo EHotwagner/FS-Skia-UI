@@ -510,7 +510,13 @@ if requires_runtime_scan:
             })
 
         exact = package_values.get("exact-match", "").lower()
-        if exact not in {"true", "yes"} or "nu1603" in package_lower or "mismatch" in package_lower:
+        # Structured-only (spec 037, FR-004/FR-005): read violating values from
+        # declared keys, never from prose substring presence of nu1603/mismatch.
+        if (
+            exact not in {"true", "yes"}
+            or package_values.get("package-resolution", "").lower() == "nu1603"
+            or package_values.get("mismatch", "").lower() in {"true", "yes"}
+        ):
             hits.append({
                 "path": str(package_path),
                 "reason": "unresolved package mismatch",
@@ -673,11 +679,10 @@ if requires_window_visibility:
             falsy(interactive_values.get("window-visible", ""))
             or falsy(interactive_values.get("accessible-window", ""))
         )
-        process_only = truthy(interactive_values.get("process-running", "")) and (
-            "process/taskbar-only" in interactive_lower
-            or "taskbar-only" in interactive_lower
-            or truthy(interactive_values.get("process-only", ""))
-        )
+        # Structured-only (spec 037, FR-004/FR-005): the process/taskbar-only
+        # blocker is the structured taskbar_only signal above plus an explicit
+        # process-only key — never the prose substring "taskbar-only".
+        process_only = truthy(interactive_values.get("process-running", "")) and truthy(interactive_values.get("process-only", ""))
         if status_ok and (taskbar_only or process_only):
             hits.append({
                 "path": str(interactive_path),
@@ -724,7 +729,9 @@ if requires_window_visibility:
             })
 
         status_ok = diagnostics_values.get("status", "").lower() in {"ok", "pass", "success"}
-        diagnostic_taskbar_only = truthy(diagnostics_values.get("taskbar-entry", "")) or "taskbar-only" in diagnostics_lower
+        # Structured-only (spec 037, FR-004/FR-005): read taskbar-entry as a
+        # declared key, not the prose substring "taskbar-only".
+        diagnostic_taskbar_only = truthy(diagnostics_values.get("taskbar-entry", ""))
         if status_ok and diagnostic_taskbar_only:
             hits.append({
                 "path": str(diagnostics_path),
@@ -871,7 +878,13 @@ if requires_window_visibility:
             })
 
         exact = generated_values.get("exact-package-match", "").lower()
-        if exact not in {"true", "yes"} or "nu1603" in generated_lower or "package mismatch" in generated_lower:
+        # Structured-only (spec 037, FR-004/FR-005): violating values come from
+        # declared keys, not prose substring presence of nu1603/package mismatch.
+        if (
+            exact not in {"true", "yes"}
+            or generated_values.get("package-resolution", "").lower() == "nu1603"
+            or generated_values.get("package-mismatch", "").lower() in {"true", "yes"}
+        ):
             hits.append({
                 "path": str(generated_path),
                 "reason": "unresolved package mismatch",
@@ -893,6 +906,52 @@ for hit in hits:
     print(f"    [BLOCK] {hit['path']} ({hit['reason']}){detail}", file=sys.stderr)
 PYEOF
 WINDOW_VISIBILITY_HITS=$(python3 -c "import json; print(len(json.load(open('$WINDOW_VISIBILITY_HITS_JSON'))))")
+echo
+
+# --- 5c. audit-status region scan -------------------------------------------
+# Spec 037 / US2: machine-readable status is authoritative only inside a fenced
+# ```audit-status region (FR-005). The scanner resolves first-region-wins,
+# treats duplicate keys and malformed entries as parse errors, and blocks only
+# on explicit violating values — never on prose substring presence (FR-004,
+# FR-006). audit-fixtures/ and audit-rejections/ are excluded from the live scan
+# (they are exercised in isolation by governance tests / fixture replay).
+echo "[2e/3] Audit-status region scan..."
+
+AUDIT_STATUS_HITS_JSON="$READINESS_DIR/audit-status-hits.json"
+AUDIT_STATUS_SCANNER="$EXT_ROOT/scripts/python/audit-status-scan.py"
+AUDIT_STATUS_HITS=$(python3 - "$READINESS_DIR" "$AUDIT_STATUS_HITS_JSON" "$AUDIT_STATUS_SCANNER" <<'PYEOF'
+import json, subprocess, sys
+from pathlib import Path
+
+readiness = Path(sys.argv[1])
+out = Path(sys.argv[2])
+scanner = sys.argv[3]
+
+files = []
+for path in sorted(readiness.rglob("*.md")):
+    rel = str(path.relative_to(readiness)).lower()
+    if rel.startswith("audit-fixtures/") or rel.startswith("audit-rejections/"):
+        continue
+    try:
+        if "```audit-status" in path.read_text(encoding="utf-8", errors="replace"):
+            files.append(str(path))
+    except OSError:
+        continue
+
+blocking = []
+lines = []
+if files:
+    proc = subprocess.run([sys.executable, scanner, *files], capture_output=True, text=True)
+    lines = proc.stdout.splitlines()
+    blocking = [ln for ln in lines if ln.startswith("BLOCK ")]
+
+out.write_text(json.dumps({"scanned_files": files, "blocking": blocking}, indent=2) + "\n", encoding="utf-8")
+for ln in lines:
+    print("  " + ln, file=sys.stderr)
+print(len(blocking))
+PYEOF
+)
+echo "  audit-status: $AUDIT_STATUS_HITS blocking"
 echo
 
 # --- 6. diff scan -----------------------------------------------------------
@@ -1148,7 +1207,7 @@ with open(out, "w") as f:
 PYEOF
 fi
 
-TOTAL_BLOCKERS=$((UNACCEPTED_SYNTHETIC_COUNT + INVALID_SEH_COUNT + BLOCK_HITS + READINESS_CONTRACT_HITS + PERSISTENT_LAUNCH_HITS + PERSISTENT_GUI_RUNTIME_HITS + WINDOW_VISIBILITY_HITS))
+TOTAL_BLOCKERS=$((UNACCEPTED_SYNTHETIC_COUNT + INVALID_SEH_COUNT + BLOCK_HITS + READINESS_CONTRACT_HITS + PERSISTENT_LAUNCH_HITS + PERSISTENT_GUI_RUNTIME_HITS + WINDOW_VISIBILITY_HITS + AUDIT_STATUS_HITS))
 
 echo "=== Verdict ==="
 if [[ $TOTAL_BLOCKERS -eq 0 ]]; then
@@ -1205,6 +1264,9 @@ if [[ $PERSISTENT_GUI_RUNTIME_HITS -gt 0 ]]; then
 fi
 if [[ $WINDOW_VISIBILITY_HITS -gt 0 ]]; then
   echo "  window visibility hits:          $WINDOW_VISIBILITY_HITS"
+fi
+if [[ $AUDIT_STATUS_HITS -gt 0 ]]; then
+  echo "  audit-status region hits:        $AUDIT_STATUS_HITS"
 fi
 if [[ $ADVISORY_HITS -gt 0 ]]; then
   echo "  advisory diff-scan hits:         $ADVISORY_HITS (printed, not blocking)"

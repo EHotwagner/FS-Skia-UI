@@ -37,6 +37,9 @@
     <Compile Include="PublicRecordInvariantTests.fs" />
     <Compile Include="AgentValidationFrameworkTests.fs" />
     <Compile Include="ArchiveReadinessApiDocsTests.fs" />
+    <Compile Include="FeatureResolutionRobustnessTests.fs" />
+    <Compile Include="AuditStatusRegionTests.fs" />
+    <Compile Include="GeneratedFsiLoadScriptTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

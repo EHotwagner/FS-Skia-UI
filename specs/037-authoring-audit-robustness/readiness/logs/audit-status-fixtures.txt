@@ -1,0 +1,25 @@
+=== US2 audit-status fixture transcript (spec 037) ===
+scanner: .specify/extensions/evidence/scripts/python/audit-status-scan.py
+
+--- prose-negation-clean.md (expect PASS — prose/negation/bullets ignored) ---
+PASS specs/037-authoring-audit-robustness/readiness/audit-fixtures/prose-negation-clean.md: audit-status region resolves clean
+exit=0
+
+--- genuine-violation.md (expect BLOCK — violating values in region) ---
+BLOCK specs/037-authoring-audit-robustness/readiness/audit-fixtures/genuine-violation.md:
+  - process/taskbar-only declared (taskbar-only=true)
+  - process/taskbar-only (taskbar-entry=true with window-visible=false)
+  - unresolved package mismatch (exact-package-match=false)
+  - unresolved package mismatch (package-resolution=nu1603)
+exit=2
+
+--- duplicate-key.md (expect BLOCK — duplicate-key parse error) ---
+BLOCK specs/037-authoring-audit-robustness/readiness/audit-fixtures/duplicate-key.md:
+  - duplicate key in audit-status region: exact-package-match
+exit=2
+
+--- malformed-key.md (expect BLOCK — malformed-entry parse error) ---
+BLOCK specs/037-authoring-audit-robustness/readiness/audit-fixtures/malformed-key.md:
+  - malformed entry (no '='): 'exact-package-match'
+  - malformed entry (empty key): '=true'
+exit=2

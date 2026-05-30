@@ -287,6 +287,17 @@ get_feature_paths() {
         return 1
     fi
 
+    # FR-002 (spec 037): the resolution order above is authoritative
+    # (SPECIFY_FEATURE_DIRECTORY -> .specify/feature.json -> branch prefix).
+    # An unresolved real feature is a terminal failure, never a stub fallback:
+    # the branch-prefix lookup can echo a path for a directory that does not
+    # exist, so a real directory must back the resolved feature before we emit
+    # paths a caller would otherwise treat as a passable (placeholder) state.
+    if [[ -z "$feature_dir" || ! -d "$feature_dir" ]]; then
+        echo "ERROR: No real active feature resolved (order: SPECIFY_FEATURE_DIRECTORY -> .specify/feature.json -> branch prefix). Refusing to fall back to a placeholder. Resolved path: ${feature_dir:-<empty>}" >&2
+        return 1
+    fi
+
     # Use printf '%q' to safely quote values, preventing shell injection
     # via crafted branch names or paths containing special characters
     printf 'REPO_ROOT=%q\n' "$repo_root"

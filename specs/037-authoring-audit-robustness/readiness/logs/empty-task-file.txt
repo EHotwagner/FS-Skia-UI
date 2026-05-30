@@ -1,0 +1,10 @@
+=== (b) compute-task-graph empty/unparseable task file ===
+
+VALIDATION FAILED
+  resolved feature '051-empty-feature' has an empty or unparseable task file (/tmp/claude-1000/tmp.6scJxwl319/specs/051-empty-feature/tasks.md); refusing to report a stub task count
+task-graph: 0 tasks parsed
+  resolved-feature: 051-empty-feature
+  real-task-count: 0
+  wrote /tmp/claude-1000/tmp.6scJxwl319/specs/051-empty-feature/readiness/task-graph.json
+  wrote /tmp/claude-1000/tmp.6scJxwl319/specs/051-empty-feature/readiness/task-graph.md
+exit=2

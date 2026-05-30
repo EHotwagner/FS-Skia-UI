@@ -39,6 +39,22 @@ when the checkout is copied. Redirected `Verify` output is written as plain text
 under `readiness/logs/`; pass and fail diagnostics should remain readable and
 must not contain embedded NUL byte blocks.
 
+## Explore the app in FSI
+
+To load the built app and all its transitive `FS.Skia.UI.*` references into FSI
+in a single step — with **zero manual reference edits** — build once, then run
+the generated load script:
+
+1. `./fake.sh build -t Dev`
+2. `dotnet fsi load-product.fsx`
+
+`load-product.fsx` is **generated** and stays in sync with the product's
+assembly set: it is derived from `Directory.Packages.props` and the built
+`Product` output, not a hand-maintained reference list, so do not edit it. It
+only `#r`s the assemblies and `open`s `Product` — it launches nothing, so it
+neither emits nor suppresses host warnings, and a missing assembly surfaces as a
+normal load failure.
+
 Spec Kit is installed in this repo through `.specify/` and the project-local
 `speckit-*` skills under `.agents/skills/`. Use `$speckit-specify`,
 `$speckit-plan`, and `$speckit-tasks` to start governed feature work.

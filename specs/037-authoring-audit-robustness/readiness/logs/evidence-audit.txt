@@ -1,0 +1,44 @@
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/037-authoring-audit-robustness
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/037-authoring-audit-robustness
+
+[1/3] Computing task graph...
+task-graph: 30 tasks parsed
+  resolved-feature: 037-authoring-audit-robustness
+  real-task-count: 30
+  wrote /home/developer/projects/FS-Skia-UI/specs/037-authoring-audit-robustness/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/037-authoring-audit-robustness/readiness/task-graph.md
+  status: 30[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[2e/3] Audit-status region scan...
+  audit-status: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 1 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=30
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+    [adv]   synthetic-banner at .specify/extensions/evidence/scripts/bash/run-audit.sh:1210  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=0

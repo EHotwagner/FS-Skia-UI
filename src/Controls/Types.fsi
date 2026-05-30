@@ -197,6 +197,7 @@ type Theme =
       CornerRadius: float
       ContrastRequiredRatio: float }
 
+[<RequireQualifiedAccess>]
 /// Public contract type exposed by this FS.Skia.UI package.
 type ControlEventOrigin =
     | Pointer

@@ -58,10 +58,11 @@ let private agentGuidancePaths =
       ".agents/skills/speckit-evidence-audit/SKILL.md"
       ".claude/skills/speckit-implement/SKILL.md"
       ".claude/skills/speckit-evidence-graph/SKILL.md"
-      ".claude/skills/speckit-evidence-audit/SKILL.md"
-      ".claude/commands/speckit-implement.md"
-      ".claude/commands/speckit-evidence-graph.md"
-      ".claude/commands/speckit-evidence-audit.md" ]
+      ".claude/skills/speckit-evidence-audit/SKILL.md" ]
+// Note: the redundant `.claude/commands/speckit-*.md` slash-command wrappers were
+// intentionally removed in commit ba327b0 ("Remove redundant speckit slash-command
+// wrappers"); the same-named `.claude/skills/speckit-*` skills above are the
+// canonical surface and remain validated here.
 
 let private generatedGuidancePaths =
     [ "template/base/README.md"

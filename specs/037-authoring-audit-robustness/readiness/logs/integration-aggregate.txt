@@ -1,0 +1,22 @@
+=== T028 — Full sequential FAKE validation (non-authoritative aggregate) ===
+
+FAKE-backed targets share .fake state and were run ONE AT A TIME, sequentially,
+in the documented order. These aggregate results are non-authoritative per
+readiness/aggregate-hang-diagnostics.md; the focused per-story gates are
+authoritative.
+
+| # | Target                  | Result   | Notes |
+|---|-------------------------|----------|-------|
+| 1 | Dev                     | Ok       | restore+build+test; all 10 test projects green |
+| 2 | GeneratedGuidanceCheck  | Ok       | spec/plan template governance |
+| 3 | TemplateCheck           | Ok       | pack/install/instantiate/smoke |
+| 4 | GeneratedProductCheck   | Ok       | generated 5 products; emitted in-sync load-product.fsx each |
+| + | PackageSurfaceCheck     | Ok       | US3 baseline (qualified-access marker), no surface drift |
+
+Non-authoritative aggregate note: the first GeneratedProductCheck attempt aborted
+in the SkiaViewer.Tests VSTest host with a headless-host crash
+("Failed to load plugin 'libdecor-gtk.so': failed to init"). Per the
+non-authoritative-aggregate policy, the affected FAKE target was rerun
+sequentially and passed (Status: Ok). The focused control — SkiaViewer.Tests in
+isolation — passed 48/48, confirming the abort was an environment GTK plugin
+flake, not a product or feature defect.

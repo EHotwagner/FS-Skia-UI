@@ -1,0 +1,2 @@
+=== (a) build.fsx hard-fail (feature.json removed) ===
+-> Cannot resolve the active feature: the file does not exist. Expected an authoritative "feature_directory" entry in /home/developer/projects/FS-Skia-UI/.specify/feature.json. The evidence graph/audit refuses to fall back to a placeholder feature (FR-001, FR-002).

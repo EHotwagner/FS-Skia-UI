@@ -9,8 +9,11 @@ let v2CommandContractTests =
         test "build workflow exposes V2 target names and feature paths" {
             let content = read "build.fsx"
 
-            [ "007-v2-template-packaging"
-              "TemplatePack"
+            // The active feature id is resolved authoritatively from
+            // .specify/feature.json (spec 037, FR-001/FR-002); the former
+            // hardcoded "007-v2-template-packaging" placeholder fallback was
+            // removed, so it is no longer expected in build.fsx.
+            [ "TemplatePack"
               "TemplateInstallSource"
               "TemplateInstallPackage"
               "TemplateInstantiate"

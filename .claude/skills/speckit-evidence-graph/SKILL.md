@@ -93,6 +93,30 @@ Common failure modes and their fixes:
 
 Commit both files alongside the feature's other artifacts.
 
+## Authoritative status region (spec 037, US2)
+
+Machine-readable status values are read **only** from a fenced code block whose
+info string is exactly `audit-status`. Prose, markdown bullets, and any other
+fenced block are never read as status, so a blocker term inside explanatory text
+or a negation cannot raise a false block (FR-004, FR-005).
+
+Deterministic resolution rule:
+
+1. **First region wins** — the first `audit-status` region that declares a key
+   provides its authoritative value.
+2. **Duplicate key within the region is a parse error** — never silent
+   last-wins.
+3. **Prose never wins** — a key in prose/bullets/other blocks is ignored.
+4. **Malformed entry** (missing `=`, empty key) is a parse error — never
+   silently treated as passing or failing.
+
+Blocking is structured, not substring (FR-006): the audit blocks on explicit
+violating values (`exact-package-match` not in {true,yes},
+`package-resolution=nu1603`, `taskbar-only=true`, or `taskbar-entry=true` with
+`window-visible=false`) — never on substring presence of `taskbar-only` /
+`mismatch` / `nu1603` in text. Scanner:
+`.specify/extensions/evidence/scripts/python/audit-status-scan.py`.
+
 ## Sequential FAKE Commands
 
 FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`) share

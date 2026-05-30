@@ -421,6 +421,27 @@ def parse_deps_yml(path: Path) -> Tuple[Dict[str, TaskMetadata], List[str]]:
     return metadata, errors
 
 
+def recorded_feature_directory(repo_root: Path) -> Optional[str]:
+    """Return the basename of the active feature recorded in .specify/feature.json.
+
+    Mirrors build.fsx activeFeatureId / common.sh read_feature_json_feature_directory:
+    the authoritative active-feature source. Returns None when the file is absent,
+    unreadable, or does not declare a non-empty feature_directory (FR-001, FR-003).
+    """
+    feature_json = repo_root / ".specify" / "feature.json"
+    try:
+        text = feature_json.read_text(encoding="utf-8")
+    except OSError:
+        return None
+    try:
+        recorded = json.loads(text).get("feature_directory")
+    except (ValueError, AttributeError):
+        return None
+    if not recorded or not str(recorded).strip():
+        return None
+    return os.path.basename(str(recorded).strip().rstrip("/\\"))
+
+
 def skill_directory_alias(skill_file: Path, repo_root: Path) -> str:
     try:
         rel = skill_file.relative_to(repo_root)
@@ -1190,12 +1211,31 @@ def main(argv: List[str]) -> int:
         deps, dep_errs = parse_deps_yml(deps_yml)
         errors.extend(dep_errs)
 
+    # Resolve the repository root (authoritative-feature source lives there).
+    repo_root = feature_dir
+    for parent in [feature_dir, *feature_dir.parents]:
+        if (parent / ".git").exists() or (parent / ".specify").exists():
+            repo_root = parent
+            break
+
+    # FR-003 (spec 037): surface a recorded-vs-scanned feature mismatch so an
+    # author can immediately detect that the audit ran against the wrong feature.
+    recorded_feature = recorded_feature_directory(repo_root)
+    if recorded_feature and recorded_feature != feature_dir.name:
+        warnings.append(
+            f"recorded-feature-vs-scanned mismatch: .specify/feature.json records "
+            f"'{recorded_feature}' but the audit scanned '{feature_dir.name}'"
+        )
+
+    # FR-003 / spec Edge Cases: a resolved feature whose task file is empty or
+    # unparseable is a blocking failure, never a silent stub task count.
+    if tasks_md.exists() and not tasks:
+        errors.append(
+            f"resolved feature '{feature_dir.name}' has an empty or unparseable task file "
+            f"({tasks_md}); refusing to report a stub task count"
+        )
+
     if tasks and deps is not None:
-        repo_root = feature_dir
-        for parent in [feature_dir, *feature_dir.parents]:
-            if (parent / ".git").exists() or (parent / ".specify").exists():
-                repo_root = parent
-                break
         errors.extend(validate_and_merge(tasks, deps, repo_root))
         errors.extend(validate_skill_loading_evidence(tasks, repo_root, feature_dir))
         skills, skill_warnings = discover_skills(repo_root)
@@ -1237,8 +1277,12 @@ def main(argv: List[str]) -> int:
 
     # Console summary
     print(f"task-graph: {len(tasks)} tasks parsed")
+    print(f"  resolved-feature: {feature_dir.name}")
+    print(f"  real-task-count: {len(tasks)}")
     print(f"  wrote {json_out}")
     print(f"  wrote {md_out}")
+    for w in warnings:
+        print(f"  warning: {w}", file=sys.stderr)
 
     if errors or cycles:
         print("", file=sys.stderr)

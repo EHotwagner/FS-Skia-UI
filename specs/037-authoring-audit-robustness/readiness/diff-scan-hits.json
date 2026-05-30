@@ -1,0 +1,14 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": ".specify/extensions/evidence/scripts/bash/run-audit.sh",
+      "line": 1210,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "TOTAL_BLOCKERS=$((UNACCEPTED_SYNTHETIC_COUNT + INVALID_SEH_COUNT + BLOCK_HITS + READINESS_CONTRACT_HITS + PERSISTENT_LAU"
+    }
+  ]
+}

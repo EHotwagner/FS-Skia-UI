@@ -746,13 +746,13 @@ let runContractSmoke () =
     let click =
         { Kind = "click"
           ControlId = Some "save-button"
-          Origin = Keyboard
+          Origin = ControlEventOrigin.Keyboard
           Payload = Some "Enter" }
 
     let textChange =
         { Kind = "changed"
           ControlId = Some "profile-name"
-          Origin = Text
+          Origin = ControlEventOrigin.Text
           Payload = Some "Katherine Johnson" }
 
     let dispatches = Control.dispatch click (formControls model) @ Control.dispatch textChange (formControls model)

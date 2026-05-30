@@ -1,0 +1,105 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Every Tnnn id that appears in tasks.md MUST appear as a key here. Each task
+# value MUST include:
+#   deps: ordered list of explicit non-phase dependencies
+#   skillist: ordered list of applicable capability skill identifiers
+# Use skillist: [] when no capability skill applies.
+#
+# Phase-checkpoint edges are auto-injected by the script (every task in
+# Phase N+1 implicitly depends on the last foundation task of Phase N).
+# Only non-phase cross-edges are written here.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: []
+  T006:
+    deps: []
+    skillist: []
+  T007:
+    deps: []
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T008:
+    deps: [T007]
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T009:
+    deps: [T008]
+    skillist: ["speckit-evidence-graph"]
+  T010:
+    deps: []
+    skillist: ["speckit-evidence-audit"]
+  T011:
+    deps: [T008, T009, T010]
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T012:
+    deps: []
+    skillist: ["speckit-evidence-audit"]
+  T013:
+    deps: [T012, T014]
+    skillist: ["speckit-evidence-audit"]
+  T014:
+    deps: [T012]
+    skillist: ["speckit-evidence-audit"]
+  T015:
+    deps: [T014]
+    skillist: ["speckit-evidence-graph", "speckit-evidence-audit"]
+  T016:
+    deps: [T013, T014]
+    skillist: ["speckit-evidence-audit"]
+  T017:
+    deps: []
+    skillist: ["fs-skia-scene", "fs-skia-ui-widgets"]
+  T018:
+    deps: [T017]
+    skillist: ["fs-skia-ui-widgets"]
+  T019:
+    deps: []
+    skillist: ["fs-skia-scene", "fs-skia-ui-widgets"]
+  T020:
+    deps: [T018]
+    skillist: ["fs-skia-template-update"]
+  T021:
+    deps: [T018]
+    skillist: []
+  T022:
+    deps: [T018, T020]
+    skillist: ["fs-skia-scene", "fs-skia-ui-widgets"]
+  T023:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+  T024:
+    deps: [T023]
+    skillist: ["fs-skia-template-update"]
+  T025:
+    deps: [T024]
+    skillist: ["fs-skia-template-update"]
+  T026:
+    deps: [T024]
+    skillist: ["fs-skia-template-update", "fs-skia-layout-evidence"]
+  T027:
+    deps: [T025, T026]
+    skillist: ["fs-skia-template-update"]
+  T028:
+    deps: [T011, T016, T022, T027]
+    skillist: []
+  T029:
+    deps: [T028]
+    skillist: ["speckit-evidence-graph"]
+  T030:
+    deps: [T029]
+    skillist: ["speckit-evidence-audit"]

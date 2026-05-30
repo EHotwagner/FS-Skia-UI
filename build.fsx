@@ -284,40 +284,50 @@ let repositoryRoot = __SOURCE_DIRECTORY__
 let activeFeatureId root =
     let featureJson = path [ root; ".specify"; "feature.json" ]
 
-    if File.Exists featureJson then
+    // FR-001/FR-002 (spec 037): resolve the active feature authoritatively from
+    // .specify/feature.json. There is no placeholder fallback — an unresolved
+    // feature is never a passable state, so we hard-fail loudly naming the
+    // expected source rather than silently auditing a stub.
+    let fail reason =
+        failwithf
+            "Cannot resolve the active feature: %s. Expected an authoritative \"feature_directory\" entry in %s. The evidence graph/audit refuses to fall back to a placeholder feature (FR-001, FR-002)."
+            reason
+            featureJson
+
+    if not (File.Exists featureJson) then
+        fail "the file does not exist"
+    else
         let content = File.ReadAllText featureJson
         let marker = "\"feature_directory\""
         let markerIndex = content.IndexOf(marker, StringComparison.Ordinal)
 
         if markerIndex < 0 then
-            "007-v2-template-packaging"
+            fail "no \"feature_directory\" key was found"
         else
             let afterMarker = content.Substring(markerIndex + marker.Length)
             let colonIndex = afterMarker.IndexOf(':')
 
             if colonIndex < 0 then
-                "007-v2-template-packaging"
+                fail "the \"feature_directory\" key has no value"
             else
                 let afterColon = afterMarker.Substring(colonIndex + 1)
                 let firstQuote = afterColon.IndexOf('"')
 
                 if firstQuote < 0 then
-                    "007-v2-template-packaging"
+                    fail "the \"feature_directory\" value is not a quoted string"
                 else
                     let afterFirstQuote = afterColon.Substring(firstQuote + 1)
                     let secondQuote = afterFirstQuote.IndexOf('"')
 
                     if secondQuote < 0 then
-                        "007-v2-template-packaging"
+                        fail "the \"feature_directory\" value is not terminated"
                     else
                         let featureDirectory = afterFirstQuote.Substring(0, secondQuote)
 
                         if String.IsNullOrWhiteSpace featureDirectory then
-                            "007-v2-template-packaging"
+                            fail "the \"feature_directory\" value is empty"
                         else
                             Path.GetFileName(featureDirectory.TrimEnd('/', '\\'))
-    else
-        "007-v2-template-packaging"
 
 let featureId = activeFeatureId repositoryRoot
 
@@ -2748,6 +2758,60 @@ let writeGeneratedProductReadme row capabilities =
 
     File.WriteAllText(path [ row.Root; "README.md" ], content + Environment.NewLine)
 
+// US4 (spec 037, FR-009): emit the generated FSI load script. The reference set
+// is DERIVED from the built Product output assembly directory (the transitive
+// FS.Skia.UI.* closure pinned by Directory.Packages.props) plus the Product app
+// itself, so it stays in sync with the assembly set instead of being a
+// hand-maintained list. Loading it neither emits nor suppresses host warnings;
+// real load failures surface normally (spec 021 benign-warning classification is
+// unaffected because the script references and opens — it launches nothing).
+let emitFsiLoadScript row =
+    let productBin = path [ row.Root; "src"; "Product"; "bin" ]
+    let loadScriptPath = path [ row.Root; "load-product.fsx" ]
+
+    let productDll =
+        if Directory.Exists productBin then
+            Directory.EnumerateFiles(productBin, "Product.dll", SearchOption.AllDirectories)
+            |> Seq.sortBy (fun candidate -> candidate.Length)
+            |> Seq.tryHead
+        else
+            None
+
+    match productDll with
+    | None ->
+        failwithf
+            "%s/%s could not emit load-product.fsx: no built Product.dll under %s (generated build must run first)"
+            row.Artifact row.Profile productBin
+    | Some dll ->
+        let outDir = Path.GetDirectoryName dll
+        let outRel = (relativePathFrom row.Root outDir).Replace('\\', '/')
+
+        let fsAssemblies =
+            Directory.EnumerateFiles(outDir, "FS.Skia.UI*.dll")
+            |> Seq.map Path.GetFileName
+            |> Seq.sort
+            |> Seq.toList
+
+        let referenceLines =
+            [ for assembly in fsAssemblies -> $"#r \"{outRel}/{assembly}\"" ]
+            @ [ $"#r \"{outRel}/Product.dll\"" ]
+            |> String.concat Environment.NewLine
+
+        let content =
+            [ "// GENERATED — do not edit. Regenerated from Directory.Packages.props and the"
+              "// built Product output assembly. Loads the Product app and its transitive"
+              "// FS.Skia.UI.* references for FSI in one step:  dotnet fsi load-product.fsx"
+              "//"
+              "// This script only references and opens the app; it launches nothing, so it"
+              "// neither emits nor suppresses host warnings. A missing assembly is a real"
+              "// load failure that surfaces normally; benign host-warning classification"
+              "// (spec 021) is unaffected."
+              referenceLines
+              "open Product" ]
+            |> String.concat Environment.NewLine
+
+        File.WriteAllText(loadScriptPath, content + Environment.NewLine)
+
 let generateV3Product model row =
     cleanDirectoryContents row.Root
     cleanDirectoryContents row.EvidenceDir
@@ -2773,6 +2837,9 @@ let generateV3Product model row =
     [ "Dev"; "Test"; "Verify" ]
     |> List.iter (fun target ->
         runProcess $"{row.Profile}/{row.Artifact} generated {target}" "bash" $"./fake.sh build -t {target}" row.Root (path [ row.EvidenceDir; $"{target.ToLowerInvariant()}.log" ]) Map.empty)
+
+    // Emit the in-sync FSI load script from the freshly built Product output (US4, FR-009).
+    emitFsiLoadScript row
 
 let runGenerateV3Products model =
     cleanDirectoryContents model.GeneratedProductRootsDir
@@ -2812,6 +2879,7 @@ let scanV3GeneratedRow model row =
     let missing =
         [ "src/Product/Product.fsproj"
           "tests/Product.Tests/Product.Tests.fsproj"
+          "load-product.fsx"
           "README.md"
           "CLAUDE.md"
           "docs/product.md"

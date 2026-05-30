@@ -178,6 +178,7 @@ type Theme =
       CornerRadius: float
       ContrastRequiredRatio: float }
 
+[<RequireQualifiedAccess>]
 type ControlEventOrigin =
     | Pointer
     | Keyboard

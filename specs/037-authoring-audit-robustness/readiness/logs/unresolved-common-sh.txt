@@ -1,0 +1,3 @@
+=== (c) common.sh get_feature_paths terminal-fail ===
+ERROR: No real active feature resolved (order: SPECIFY_FEATURE_DIRECTORY -> .specify/feature.json -> branch prefix). Refusing to fall back to a placeholder. Resolved path: /tmp/claude-1000/tmp.sO6SDe5ccc/specs/999-missing-feature
+exit=1

@@ -77,3 +77,47 @@ Compile scenario result:
 Next action: rerun `GeneratedGuidanceCheck`, `TemplateCheck`, and
 `GeneratedProductCheck` during integration after US3 guidance-classification
 work is complete.
+
+## Reversal for `ControlEventOrigin` (spec 037, FR-010)
+
+source: spec 037 (`specs/037-authoring-audit-robustness`)
+
+reversal: For the `ControlEventOrigin` type **only**, the `Text`-row
+`decision: consumer-guidance` (guidance over attributes) recorded above is
+**reversed** to a contract change. `[<RequireQualifiedAccess>]` is added to
+`ControlEventOrigin` in `src/Controls/Types.fsi` (and `Types.fs`), aligning it
+with its sibling DUs (`KnownControl`, `KnownEvent`, `StandardEventKind`, …) that
+already carry the attribute.
+
+rationale: guidance proved insufficient for this case. With `FS.Skia.UI.Scene`
+and `FS.Skia.UI.Controls` both opened (Controls last), the leaked
+`ControlEventOrigin.Text` case shadowed the Scene `Text` constructor and produced
+the opaque diagnostic `error FS0003: This value is not a function and cannot be
+applied. It has type 'ControlEventOrigin'` — which pointed nowhere near the cause
+and cost real debugging time. Adding the attribute stops the `Text` case leaking
+into the opened namespace so the unqualified scene construct resolves predictably
+(verified by
+`specs/037-authoring-audit-robustness/readiness/fsi/mixed-scene-controls-text-collision.fsx`).
+
+scope: This reversal applies to `ControlEventOrigin` only. **No other collision
+decision from spec 035 changes** — the Scene discriminated-union constructors and
+the shared `LayoutBounds`/`Rect` record remain guidance-governed
+(`decision: consumer-guidance`), and all rows above stand.
+
+### Consumer compatibility impact + migration
+
+compatibility: contract-change-reviewed — `ControlEventOrigin` cases must now be
+referenced qualified. Consumer code that referenced the cases unqualified (after
+`open FS.Skia.UI.Controls`) must qualify them:
+
+```fsharp
+// Before (unqualified — no longer compiles after the attribute is added)
+let ev = { Kind = "changed"; ControlId = Some "name"; Origin = Text; Payload = None }
+
+// After (qualified)
+let ev = { Kind = "changed"; ControlId = Some "name"; Origin = ControlEventOrigin.Text; Payload = None }
+```
+
+The case set is unchanged (`Pointer`, `Keyboard`, `Text`, `Focus`, `Selection`,
+`Clipboard`); only the access form changes. No package identity, content, or
+version change accompanies this `.fsi` surface change.

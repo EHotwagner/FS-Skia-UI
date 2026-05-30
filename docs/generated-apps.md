@@ -72,6 +72,18 @@ coding:
   `FS.Skia.UI.Scene.TextRun`, `FS.Skia.UI.Controls.TextBlock.create`,
   `FS.Skia.UI.Controls.TextBox.onChanged`, and
   `FS.Skia.UI.Controls.Stack.children`. Do not rely on namespace open order.
+- Shared structurally-typed types (FR-008): when you need a bounds/geometry
+  value near scene code, **reuse the shared `FS.Skia.UI.Scene.Rect` type**
+  rather than defining a look-alike record with the same `X/Y/Width/Height`
+  fields. A local same-shape record makes F# record-field inference ambiguous
+  and can hijack which type a literal resolves to. Annotate the literal with the
+  shared type (`let bounds : FS.Skia.UI.Scene.Rect = { X = 0.0; Y = 0.0; Width =
+  240.0; Height = 80.0 }`) so resolution stays predictable. This pattern
+  generalizes to any structurally-shared type, not just bounds.
+- `ControlEventOrigin` carries `[<RequireQualifiedAccess>]` (spec 037): reference
+  its cases qualified — `ControlEventOrigin.Text`, `ControlEventOrigin.Pointer`,
+  … — so the `Text` case never shadows the unqualified scene `Text` constructor
+  when both namespaces are opened.
 
 Default text is intended to be readable in evidence screenshots on supported
 Linux desktop hosts with common Latin fonts. Specify explicit fonts with
