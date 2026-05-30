@@ -1,6 +1,6 @@
 # Template Package Contents
 
-Package: `/home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.47-preview.1.nupkg`
+Package: `/home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.48-preview.1.nupkg`
 
 Required entries verified:
 - `content/.template.config/template.json`
@@ -29,4 +29,4 @@ Required entries verified:
 - `content/.template.config/generated/.claude/settings.json`
 - `content/.template.config/generated/.specify/memory/constitution.md`
 
-Total entries: 436
+Total entries: 438
