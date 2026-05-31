@@ -141,6 +141,17 @@ baseline those claims are unverifiable, and "did we regress evidence output?" is
    - **ADR: Spec Kit fork stance** — porting the Python forks us from upstream Spec Kit. Record
      that we accept ownership (the `extensions/`+`presets/` customisation already forked us in
      practice).
+   - **ADR: Configuration representation** — framework-owned config (the `validation.contract.yml`
+     tiers + routing, the capability catalog, audit-scan patterns) is represented as **compiled F#
+     values and functions in the governance library**, *not* YAML and *not* runtime-loaded `.fsx`
+     via FSharp Compiler Services. Compiled F# fails at *build* time, has zero per-run compile
+     cost, can reference the typed `Target` model (a mistyped target name won't compile), and lets
+     routing rules be predicates (`Diff -> Tier`) rather than path-glob strings. FCS-loaded FSX is
+     explicitly rejected: it pushes errors to load time, re-introduces the per-invocation compile
+     tax this whole programme removes, and can do non-deterministic IO at load. A **data** format
+     (YAML/JSON) is retained *only* for high-churn, agent-authored, logic-free instance data
+     (`tasks.deps.yml`), validated by the ported F# parser. (See companion analysis §6 and Open
+     Decision D6.)
 
 0.3 **Establish the meta-process** (this is the dogfooding fix applied to the plan itself):
    - This programme's own features run under the **framework-author inner loop** (Stage 1's
@@ -152,7 +163,7 @@ baseline those claims are unverifiable, and "did we regress evidence output?" is
 ### Exit criteria
 
 - Baseline file committed with all counts and the golden evidence fixtures.
-- All four ADRs written and the open decisions (below) either resolved or explicitly deferred
+- All five ADRs written and the open decisions (below) either resolved or explicitly deferred
   with an owner.
 - No code changed (Stage 0 is read + document only). `Dev` still green.
 
@@ -186,22 +197,31 @@ order on everything," which is the suffocation. The framework-author path is und
 
 ### Work items
 
-1.1 **Define the framework-author inner loop** explicitly in `validation.contract.yml`:
-   - Add a `developer_class` axis (`framework-author` | `consumer-agent`).
+1.1 **Define the framework-author inner loop.** Add a `developer_class` axis
+   (`framework-author` | `consumer-agent`):
    - `framework-author` default tier = `inner-loop` (gates: `Dev` + a new lightweight
      `SurfaceCheck` composite = `PackageSurfaceCheck` only when `.fsi` changed).
    - `consumer-agent` and any change matching `template/**`, `.specify/**`, `validation.contract.yml`,
-     governance paths, or `src/**/*.fsi` **escalate** to the existing focused/agent-ready tiers
-     via the current `routing_rules`.
+     governance paths, or `src/**/*.fsi` **escalate** to the existing focused/agent-ready tiers.
+   - **Config-representation note (per the Stage-0 ADR / analysis §6):** the end-state for this
+     contract is **compiled F#** in the governance library, not YAML. Because Stage 1 ships before
+     the library exists, it reads the *existing* `validation.contract.yml` as a pragmatic interim
+     — but **do not grow the YAML schema**. Keep the `developer_class`/`inner-loop` additions
+     minimal; they are scaffolding to be superseded by `Routing.fs` (Stage 5), where tiers and
+     routing rules become typed values and predicates. Treat any temptation to add rich YAML
+     parsing as a signal to pull the library work forward instead.
 
 1.2 **Add a tier-selection gate** — a small, deterministic command that, given the working-tree
    diff, prints the required tier and gate list and (in `--enforce` mode) fails if a
    higher-tier change is being shipped without its gates' evidence artifacts present. Two
    implementation options:
-   - *Interim (Stage 1):* a `scripts/build/select-tier.fsx` (`dotnet fsi`) that reads
-     `validation.contract.yml` + `git diff --name-only` and emits the tier + gates as JSON/text.
-   - *Final (folded into Stage 3+):* the same logic as a typed function in the governance library
-     exposed via a `Route` target. Stage 1 ships the fsx; Stage 6 retires it into the library.
+   - *Interim (Stage 1):* a `scripts/build/select-tier.fsx` (`dotnet fsi`) that reads the existing
+     `validation.contract.yml` + `git diff --name-only` and emits the tier + gates. Deliberately
+     thin — it is throwaway scaffolding.
+   - *Final (Stage 5):* the contract *is* compiled F# (`Routing.fs`); the same logic becomes a
+     typed function in the governance library exposed via the `Route` target, and
+     `select-tier.fsx` is deleted. No FCS / runtime script loading at any point — the interim uses
+     `dotnet fsi` only as a stopgap reader, and it is removed, not promoted.
 
 1.3 **Add a `Route` FAKE target** (`./fake.sh build -t Route`) that runs the selector and prints
    the minimal gate set for the current diff. This becomes the agent's and maintainer's entry
@@ -216,8 +236,9 @@ order on everything," which is the suffocation. The framework-author path is und
 
 ### New / changed artifacts
 
-- `validation.contract.yml` (extended with `developer_class`, `inner-loop` gate definition).
-- `scripts/build/select-tier.fsx` (interim selector).
+- `validation.contract.yml` (minimally extended with `developer_class` + `inner-loop`; interim
+  only — superseded by compiled F# in Stage 5).
+- `scripts/build/select-tier.fsx` (interim selector; deleted in Stage 5).
 - `build.fsx` (+ a `Route` target wired into the existing dynamic target list at
   `requiredTargets`, lines 548–584, and metadata at `targetMetadata`).
 - `CLAUDE.md`, `AGENTS.md` (guidance rewrite).
@@ -339,14 +360,23 @@ logic first.
    - `Paths.fs` — the path model from `BuildModel` (lines 361–398) as a typed record builder.
    - `Findings.fs` — the `ValidationFinding` type + a uniform finding/result type so every
      validator returns structured results instead of ad-hoc strings.
+   - `Config.fs` — the home for framework-owned config **as compiled F# values** (per the
+     Stage-0 config-representation ADR / analysis §6): the capability catalog and audit-scan
+     patterns become typed values here rather than parsed YAML. The `validation.contract.yml`
+     tiers/routing follow in Stage 5 (`Routing.fs`). No FCS, no runtime script loading — config
+     is data-typed-as-code, checked by the compiler and unit-testable like any other module.
 
 3.3 **Move the first validators** (chosen for low coupling + high duplication payoff):
    - **Target-metadata drift** (`ValidateTargetMetadataDrift`, build.fsx ~865–879 and ~548–1030).
      Becomes a pure function over the typed `Target` graph; the drift *disappears* because
      metadata is derived, not duplicated. ~480 lines of build.fsx logic → tested module.
-   - **Capability-catalog parse + validate** (build.fsx ~2244–2361). Replace the hand-rolled YAML
-     parser with `YamlDotNet` (already a managed dependency) + a typed `CapabilityRow` model and
-     a `validateCapabilityRows` function with real error types. ~500 lines → tested module.
+   - **Capability catalog** (build.fsx ~2244–2361). Per the config-representation ADR, represent
+     the catalog as **compiled F# values** in `Config.fs` (a typed `CapabilityRow` list) and
+     retire the hand-rolled YAML parser entirely; `validateCapabilityRows` becomes a pure
+     function over those values with real error types. If a YAML form must persist briefly for an
+     external reader, parse it with `YamlDotNet` (already a managed dependency) *behind* the typed
+     model and schedule its retirement — do not keep the bespoke parser. ~500 lines → tested
+     module + typed config.
    - **`.claude`/`.agents` sync + skillist presence** (folds in Stage 2's checks as typed
      functions).
 
@@ -363,7 +393,7 @@ logic first.
 ### New / changed artifacts
 
 - `build/Governance/FS.Skia.UI.Build.fsproj` + `Targets.fs`, `Paths.fs`, `Findings.fs`,
-  `CapabilityCatalog.fs`, `TargetMetadata.fs`.
+  `Config.fs`, `TargetMetadata.fs`.
 - `FS-Skia-UI.sln` (+1 project), `Governance.Tests.fsproj` (+ project reference).
 - `build.fsx` shrinks by the moved logic (target: −~900 lines this stage).
 
@@ -516,8 +546,14 @@ orchestration skeleton, which is the cleanest thing to relocate last.
 5.4 **Retire `build.fsx`** to either a deleted file (dedicated-project path) or a <200-line
    `#load` shim (script path). The 4,688-line monolith is gone.
 
-5.5 **Fold Stage 1's `select-tier.fsx` into the library** as a typed `Routing.fs`; the `Route`
-   target now calls it in-process.
+5.5 **Migrate the validation contract from YAML to compiled F#** (per the config-representation
+   ADR / analysis §6). Fold Stage 1's interim `select-tier.fsx` + `validation.contract.yml` into a
+   typed `Routing.fs`: tiers become typed values and routing rules become predicates over a diff
+   (`Diff -> Tier`) sharing the `Target` union, so a mistyped target name or gate fails to
+   compile. The `Route` target calls `Routing.fs` in-process; `select-tier.fsx` is deleted and
+   `validation.contract.yml` is retired (or reduced to a generated, human-readable *view* emitted
+   from the F# source for documentation, never the source of truth). No FCS / runtime script
+   loading is introduced — the contract is compiled into the library like any other module.
 
 ### New / changed artifacts
 
@@ -525,6 +561,8 @@ orchestration skeleton, which is the cleanest thing to relocate last.
 - `build/Governance/Engine/*.fs`, `GeneratedProduct.fs`, `Guidance.fs`, `Preflight.fs`,
   `Routing.fs`.
 - `fake.sh`, `fake.cmd` updated.
+- `validation.contract.yml` retired or demoted to a generated documentation view; `Routing.fs`
+  becomes the source of truth. `scripts/build/select-tier.fsx` deleted.
 - `.config/dotnet-tools.json` (drop `fake-cli` if moving fully to `dotnet run`; keep if thin-fsx
   path).
 
@@ -533,7 +571,10 @@ orchestration skeleton, which is the cleanest thing to relocate last.
 - `build.fsx` either deleted or ≤ 200 lines; recorded vs 4,688 baseline.
 - Every target produces baseline-identical reports/artifacts (golden diff across all 36 targets).
 - `update` has direct unit tests for representative targets (typed effect-list assertions).
-- Tier selection (`Route`) runs in-process; `select-tier.fsx` deleted.
+- Tier selection (`Route`) runs in-process; `select-tier.fsx` deleted; `validation.contract.yml`
+  retired or demoted to a generated view, with `Routing.fs` as the compiled-F# source of truth.
+- No FCS / runtime-script-loading dependency was introduced anywhere; config is compiled, not
+  loaded (grep proves no `FSharp.Compiler.Service` reference).
 - Cold-build and warm-build wall-clock recorded vs baseline (expect warm builds faster: compiled
   library replaces 207 KB script recompilation).
 - Invariants 1–6 hold; full serialized gate sequence green.
@@ -674,7 +715,8 @@ scaffolding, and document the new development model so it sticks.
 | Governance Markdown (rules) | ~23,000 lines, 21:1 prose:code | low hundreds; rules enforced by code |
 | `.claude`/`.agents` duplication | ~5,854 lines, unguarded | single source + generation |
 | Framework-author process | full consumer ceremony (~12–14h/feature) | `inner-loop` (`Dev` + surface check); full pipeline reserved for consumers + dogfood |
-| Tier selection | implicit / "run everything" | `./fake.sh build -t Route`, enforced from `validation.contract.yml` |
+| Tier selection | implicit / "run everything" | `./fake.sh build -t Route`, enforced by compiled `Routing.fs` |
+| Framework-owned config | YAML, stringly-typed, runtime-parsed | compiled F# values/predicates in the library; build-time checked; no FCS |
 | Generated-product contract | unversioned, hard-break | versioned with deprecation window |
 | Runtime architecture | sound | **unchanged** |
 
@@ -693,6 +735,13 @@ scaffolding, and document the new development model so it sticks.
   from upstream Spec Kit. *Blocks: Stage 4.*
 - **D5 — Sequencing & parallelism.** Stage 1 and Stage 2 can run in parallel with the library
   track. Confirm whether to ship Stage 1 alone first (recommended) for immediate relief.
+- **D6 — Configuration representation.** Confirm the decision (analysis §6 / Stage-0 ADR) to
+  represent framework-owned config as **compiled F#** in the governance library — *not* YAML and
+  *not* runtime-loaded `.fsx` via FSharp Compiler Services — keeping a data format only for
+  high-churn, agent-authored, logic-free instance data (`tasks.deps.yml`). (Recommendation:
+  adopt as stated. Security is a non-issue for framework-internal config; the deciding factors
+  are build-time enforcement, zero per-run compile cost, and determinism.) *Shapes: Stage 1.1,
+  Stage 3.2/3.3, Stage 5.5.*
 
 ---
 

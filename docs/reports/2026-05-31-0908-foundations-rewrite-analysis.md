@@ -335,6 +335,76 @@ These surfaced during investigation and reinforce the thesis:
 
 ---
 
+## 6. Configuration representation: compiled F# over YAML and over runtime-loaded FSX
+
+A natural question follows from the move to a typed governance library: if the rules become F#,
+should the *configuration* that drives them (the `validation.contract.yml` tiers and routing, the
+capability catalog, the diff-scan patterns) also stop being YAML? And if so, should it be F#
+script (`.fsx`) loaded and compiled at startup via FSharp Compiler Services (FCS) so it is
+type-checked? Security — arbitrary code execution — is correctly *not* a concern for
+framework-internal config, since the project already runs `build.fsx` as code.
+
+This is a false binary. There are three options, and the strongest one is neither YAML nor
+FCS-loaded FSX:
+
+1. **YAML / data parsed at runtime** — today's `validation.contract.yml`. Inert and
+   language-agnostic, but stringly-typed and needs a parser plus a validator.
+2. **`.fsx` loaded and compiled at runtime via FCS** — type-checked, but *at load time*.
+3. **Plain `.fs` compiled into the governance library** — config is F# values and functions in a
+   normal compiled module (`let tiers = [ … ]`; routing rules as predicates).
+
+| | YAML (1) | FSX via FCS (2) | Compiled F# (3) |
+|---|---|---|---|
+| When errors surface | runtime parse/validate | **runtime load/compile** | **build time — the build fails** |
+| Startup cost | trivial parse | **FCS compile on every run** | none (already compiled) |
+| References the `Target` DU / domain types | no (strings) | yes | yes |
+| Rules as *functions*, not patterns | no | yes | yes |
+| IDE / refactor / unit-test | weak | awkward | full |
+| Determinism | inert data | can do arbitrary IO at load | pure values |
+
+**Verdict — compiled F# (3) for framework-owned config; keep a data format only for high-churn,
+agent-authored, logic-free instance data; do not adopt FCS-loaded FSX.**
+
+The prize the FSX idea reaches for — "type-checked config" — is really *"rules that are
+executable predicates sharing the domain types"* (a routing rule as `Diff -> Tier` instead of a
+path-glob string). **That power comes from F# being compiled, not from FCS specifically.** FCS
+only adds the ability to load that F# from outside the compiled host at runtime, and the cost is
+steep and points the wrong way:
+
+- **It re-walks the exact trap this report is trying to remove.** `build.fsx` already *is*
+  config-as-code evaluated by a script compiler at runtime; the whole thesis is to stop
+  dynamically compiling logic and instead compile and test it. For a build/governance *tool*,
+  "application start" is *every invocation* (`./fake.sh build -t Route`), so FCS reintroduces the
+  per-run compile tax the project is paying down. (FAKE content-hash-caches compiled scripts
+  precisely because this hurts.)
+- **It loses the build-time guarantee.** An FSX type error fails when the tool *runs and loads
+  it*, not when the tool is built. Compiled `.fs` config fails the build — strictly stronger
+  enforcement.
+- **FCS is a heavy, churny dependency** to carry just to read config.
+- **Determinism, not security, is the live concern.** An FSX config can read files/env at load
+  time, so "config" can become non-deterministic — bad for an engine whose purpose is
+  reproducible verdicts. Inert data and pure compiled values are easier to reason about.
+
+By artifact:
+
+- **Framework-owned config that changes with the code** (`validation.contract.yml` tiers +
+  routing, the target graph, the capability catalog, audit-scan patterns) → **compiled F# in the
+  governance library.** Routing rules become predicates over a diff; a typo'd target name fails
+  to compile. This is a small extension of the typed `Target` model the keystone already creates.
+- **The consumer boundary** (generated projects need governance too) → once the consumer has a
+  real build project (see the keystone), its config is a `.fs` calling the packaged engine's
+  typed API — type-checked at the consumer's build time, no FCS, no file loading.
+- **High-churn, agent-authored, logic-free instance data** (`tasks.deps.yml`: id → deps,
+  skillist) → **keep as data**, validated by the ported F# parser. Making it FSX adds
+  type-check friction to the most frequently edited file for a payoff (dangling skill/target
+  refs) a validator over the data already provides.
+
+So FCS-loaded FSX is the right tool only for "external, runtime-loaded, must-be-typed,
+genuinely can't-be-compiled-into-the-build-that-reads-it" config — and once the framework and
+its generated consumers both have compiled build projects, no such case remains in this repo.
+
+---
+
 ## Consolidated verdict and direction
 
 All four instincts are correct, and they converge on **one keystone and one policy**, not four
@@ -353,8 +423,10 @@ consumer-grade governance**, reserving the latter for generated consumer project
 explicit dogfooding sample. Select the tier by who-is-doing-what, extending the
 `validation.contract.yml` tiering the agent-consumer report already proposed.
 
-**Plus:** generate-don't-sync the duplicated artifacts (item 5), and add the missing
-`.claude`↔`.agents` check today as a stopgap.
+**Plus:** generate-don't-sync the duplicated artifacts (item 5), add the missing
+`.claude`↔`.agents` check today as a stopgap, and represent framework-owned config as **compiled
+F# in the governance library** rather than YAML or runtime-loaded FSX (item 6) — keeping a data
+format only for high-churn, agent-authored instance data.
 
 ### Is this a rewrite or a refactor?
 
