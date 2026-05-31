@@ -2,7 +2,11 @@
 
 - **Date:** 2026-05-31 10:49 CEST
 - **Author:** Claude Code (planning, requested by maintainer)
-- **Status:** Proposed plan. **Stage 0 IMPLEMENTED** as feature `039-foundations-baseline-spike` (all 26 tasks complete; evidence graph `ok`, evidence audit `PASS`; D2 spike **confirmed**). See [Stage 0 — Implementation status](#stage-0--implementation-status-2026-05-31-feature-039) below. Stages 1–7 not yet started.
+- **Status:** Proposed plan, partially implemented.
+  - **Stage 0 IMPLEMENTED** as feature `039-foundations-baseline-spike` (all 26 tasks complete; evidence graph `ok`, evidence audit `PASS`; D2 spike **confirmed**). See [Stage 0 — Implementation status](#stage-0--implementation-status-2026-05-31-feature-039) below.
+  - **Stage 2.1 IMPLEMENTED** (the `.claude`↔`.agents` byte-identity stopgap) as feature `040-foundations-capability-skills`, which shipped `SkillSyncCheck` (in-process SHA-256 sync) + `SkillExamplesCheck` (compile-verified cookbooks). The rest of Stage 2 (2.2–2.5) is not yet started. See [Stage 2 — Implementation status](#stage-2--implementation-status-2026-05-31-feature-040).
+  - **Stage 3 IMPLEMENTED** as feature `041-foundations-library-validators` (the first two real validators extracted into the compiled `FS.Skia.UI.Build` library + the typed `Target` single-source DU; squash-merged to `master`, evidence audit `PASS`). See [Stage 3 — Implementation status](#stage-3--implementation-status-2026-05-31-feature-041).
+  - **Stages 1, 2.2–2.5, 4–7 not yet started.**
 - **Companion analysis:** [`2026-05-31-0908-foundations-rewrite-analysis.md`](./2026-05-31-0908-foundations-rewrite-analysis.md)
 - **Baseline at authoring time:** `build.fsx` = 4,688 lines; `tests/Governance.Tests/` = 34 test files; `validation.contract.yml` already defines tiers + path routing; evidence graph/audit computed by `.specify/extensions/evidence/scripts/python/*` orchestrated by `run-audit.sh` (1,284 lines) and shelled to from `build.fsx:1266,1273`.
 
@@ -437,6 +441,23 @@ unguarded `.claude`↔`.agents` drift hole (a live risk today — no check enfor
 **Effort:** ~3–4 days. **Revert:** generation targets are additive; the sync check can be removed;
 generated files were already present so nothing is lost.
 
+### Stage 2 — Implementation status (2026-05-31, feature 040)
+
+**Status: 2.1 COMPLETE; 2.2–2.5 not started.** Feature
+`040-foundations-capability-skills` shipped the Stage-2.1 stopgap and the
+capability-skill cookbooks Stage 3 consumes:
+
+- **2.1 `.claude`↔`.agents` sync check — done.** `SkillSyncCheck` compares the
+  two skill trees by in-process SHA-256 byte-identity (no `diff`/`cmp`/`sha256sum`
+  shelling) and fails on drift; `SkillExamplesCheck` tangles every ` ```fsharp `
+  block out of the six capability skills and compiles them against the pinned
+  adopt-set. Both are compiled `build/Governance` modules (`SkillSync.fs`,
+  `SkillExamples.fs`, each with a curated `.fsi`) `#load`'d into `build.fsx` —
+  the same in-process pattern Stage 3 reuses.
+- **Not yet done:** 2.2 `GenerateAgentSkills` (the trees are still hand-synced and
+  only *checked*, not generated from one source), 2.3 constitution de-dup,
+  2.4 skillist single-source, 2.5 drift-checks → generation-currency checks.
+
 ---
 
 ## Stage 3 — Governance library skeleton + cheapest high-value validators
@@ -524,6 +545,60 @@ logic first.
 
 **Effort:** ~5–7 days. **Revert:** the library is additive; `interpret` cases can fall back to the
 inline code (kept behind a flag until the golden diff is clean, then deleted).
+
+### Stage 3 — Implementation status (2026-05-31, feature 041)
+
+**Status: IMPLEMENTED** (squash-merged to `master` as `ca0f5b5`; version bump
+`5ddcdc7`). Feature `041-foundations-library-validators` moved the two
+cheapest/highest-value validators into the compiled `FS.Skia.UI.Build` library
+and introduced the typed `Target` single-source. `speckit.evidence.audit`
+returns **verdict=PASS** (0 unaccepted-synthetic, 0 auto-synthetic, 0 diff-scan,
+0 readiness-contract blocking); the serialized gate set (`Dev`,
+`GeneratedGuidanceCheck`, `TemplateCheck`, `GeneratedProductCheck`,
+`EvidenceGraph`, `EvidenceAudit`) is green. **Zero synthetic evidence.**
+
+What landed against the Stage-3 work items:
+
+- **3.1 library reference — done** (the `build/Governance/FS.Skia.UI.Build.fsproj`
+  skeleton from the 039 spike / 040 is now `#load`'d into `build.fsx` and
+  project-referenced by `Governance.Tests`).
+- **3.2 typed core — partial (as scoped):** `Targets.fs` (a 40-case `Target` DU +
+  total `spec` from which `requiredTargetNames`/`targetDependencyRows` are
+  **derived**, replacing the stringly-typed registries) and `Findings.fs` (the
+  uniform `ValidationFinding` + `finding`/`renderDetail`) shipped. **`Paths.fs`
+  deferred:** the `BuildModel` path machinery and `focusedGateContract` stay at
+  the `build.fsx` interpreter edge per research R3 (Principle IV; relocation is
+  Stage 5). **`Config.fs`-as-compiled-F#-values deviated (recorded):** per the
+  041 clarification/R4 the capability catalog is read through **`YamlDotNet`
+  behind the typed model** (`Capabilities.fs`) — the YAML file is retained as the
+  data source consumed by template generation — rather than inlined as compiled
+  F# values. The bespoke hand-rolled YAML parser is deleted; D6's
+  compiled-F#-config end-state for the catalog is left for a later stage.
+- **3.3 first validators — done:** target-metadata drift (`TargetMetadata.fs`,
+  pure `validateMetadataDrift`/`validateAgainstRepo`) and the capability catalog
+  (`Capabilities.fs`, pure `validateRows` with the surface-baseline probe
+  injected). The drift becomes structurally unrepresentable because metadata is
+  derived from the closed `Target` DU. The `.claude`/`.agents` sync folded in
+  earlier via 040.
+- **3.4 in-process wiring — done:** the `CapabilityCheck` / `TargetMetadata` /
+  `TargetMetadataDrift` interpret cases call the library; **all** `StartTarget`
+  arms now dispatch on the typed `Targets.Target` and FAKE registration is driven
+  off `Targets.dispatchTargets` (a renamed target is a compile error, SC-003).
+- **3.5 Governance.Tests upgraded — done:** 3 new suites (`TargetMetadataTests`,
+  `CapabilityCatalogTests`, `ReportParityTests`) assert **typed** findings (8
+  cases) and byte-identical report parity; the source-scan command/dependency
+  contract tests were re-pointed at the typed `Targets` values.
+
+**Exit-criterion variance (honest disclosure):** the "`build.fsx` line count
+reduced ≥ 800" criterion was **not met** — realized shrink is **385** (4,839 →
+4,454). The bulk of the target-metadata code is `focusedGateContract` +
+`BuildModel` path machinery, which R3 deliberately keeps at the edge (moving it
+is the out-of-scope Stage-5 MEL-engine relocation); the ≥800 figure over-counted
+Stage-3's extractable surface. Recorded as `[F]` on task T019 with diagnostics in
+`specs/041-foundations-library-validators/readiness/build-fsx-line-delta.md`; not
+padded. All other exit criteria (clean `TreatWarningsAsErrors` build, typed
+unit tests, golden-diff report parity = 0 bytes, invariants 1–6) hold. The
+remaining Stage-3 reduction is realized when Stage 5 relocates the engine.
 
 ---
 
