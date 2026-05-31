@@ -78,13 +78,15 @@ Unless a stage overrides it, the exit-gate command sequence is the canonical ser
 ## Stage dependency overview
 
 ```
-Stage 0  Foundations, baselines, decisions
+Stage 0  Foundations, baselines, decisions  ── + ── Stage 3.1 spike (library reference)   [GATE: do these first — D5]
    │
-   ├──> Stage 1  Two-tier process (policy + enforcement)        [independent, ship first]
+   │  (spike outcome confirms D2 dedicated-project form, or triggers the thin-fsx fallback)
+   │
+   ├──> Stage 1  Two-tier process (policy + enforcement)        [independent; ship early, in parallel]
    │
    ├──> Stage 2  Single-source generation (.claude/.agents, constitution, skillist)
    │
-   └──> Stage 3  Governance library skeleton + cheap validators
+   └──> Stage 3  Governance library skeleton + cheap validators (continues from the 3.1 spike)
                     │
                     ├──> Stage 4  Port Python graph/audit into the library
                     │
@@ -95,9 +97,11 @@ Stage 0  Foundations, baselines, decisions
                                                       └──> Stage 7  Decommission, measure, document the new normal
 ```
 
-Stages 1 and 2 are independent of the library track (3→4→5→6) and can proceed in parallel by
-different sessions. Stage 1 is the recommended first ship: it is pure policy + a thin gate and
-delivers the maintainer's biggest immediate relief.
+**Sequencing (D5 resolved): Stage 0 + the Stage-3.1 spike go first**, before committing effort to
+the rest. The spike de-risks the one technical unknown — whether the dedicated FAKE build project
+(D2) can cleanly reference the compiled library — and either confirms D2 or activates the thin-fsx
+fallback. Once that is settled, Stage 1 and Stage 2 (independent of the library track) ship early
+and in parallel with the continuing library track (3→4→5→6).
 
 ---
 
@@ -127,20 +131,21 @@ baseline those claims are unverifiable, and "did we regress evidence output?" is
 
 0.2 **Record architecture decisions** as ADRs under `docs/adr/` (the template-framework report
    already anticipated `docs/adr/`):
-   - **ADR: Governance library placement and distribution** — decide whether the extracted
-     library is (a) a build-only project under `build/`, (b) a non-packable `src/` project, or
-     (c) a published package `FS.Skia.UI.Build`. **Recommendation: (c)** because generated
-     consumer projects run `EvidenceGraph`/`EvidenceAudit` too and will need the same engine; a
-     package referenced by both the repo's build front-end and generated build front-ends avoids
-     a second port. (See Open Decision D1.)
-   - **ADR: Build front-end form** — dedicated FAKE build project (`dotnet run`) vs thin
-     `build.fsx` that `#load`s the compiled library. **Recommendation: dedicated project** for
-     tooling/incremental compilation; revisit if it complicates the FAKE tool-restore flow.
+   - **ADR: Governance library placement and distribution — DECIDED (D1): published library
+     package `FS.Skia.UI.Build`.** The repo's build front-end project-references it in-solution;
+     generated consumers package-reference the published version. One port serves both and keeps
+     consumers lean (no source copies). Cost: one more package to pack/version in the release flow.
+   - **ADR: Build front-end form — DECIDED (D2): dedicated FAKE build project (`build/Build.fsproj`,
+     `dotnet run`).** Compiled, IDE-grade tooling, references the library directly, and `dotnet
+     run` builds the whole project graph (no DLL bootstrap-order wrinkle). The Stage-3.1 spike must
+     confirm the FAKE Target API works cleanly from a normal compiled exe; the thin-`build.fsx`-shim
+     remains the documented fallback **only if** the spike surfaces a blocker.
    - **ADR: Contract versioning** — the generated-product contract (the ~800 lines of structural
      checks) gets a `schema_version` and a deprecation window. Define the policy now.
-   - **ADR: Spec Kit fork stance** — porting the Python forks us from upstream Spec Kit. Record
-     that we accept ownership (the `extensions/`+`presets/` customisation already forked us in
-     practice).
+   - **ADR: Spec Kit fork stance — DECIDED (D4): accept full F# ownership.** Porting the Python
+     forks us from upstream Spec Kit; the `extensions/`+`presets/` customisation already did so in
+     practice. We own the evidence toolchain in typed, tested, in-process F# and forgo an upstream
+     merge path.
    - **ADR: Configuration representation** — framework-owned config (the `validation.contract.yml`
      tiers + routing, the capability catalog, audit-scan patterns) is represented as **compiled F#
      values and functions in the governance library**, *not* YAML and *not* runtime-loaded `.fsx`
@@ -163,8 +168,8 @@ baseline those claims are unverifiable, and "did we regress evidence output?" is
 ### Exit criteria
 
 - Baseline file committed with all counts and the golden evidence fixtures.
-- All five ADRs written and the open decisions (below) either resolved or explicitly deferred
-  with an owner.
+- All five ADRs written, recording the decisions already resolved with the maintainer
+  (D1, D2, D4, D6) and the contract-versioning policy. (See the resolved-decisions section below.)
 - No code changed (Stage 0 is read + document only). `Dev` still green.
 
 ### Risks & mitigations
@@ -537,14 +542,15 @@ orchestration skeleton, which is the cleanest thing to relocate last.
    - Generated-guidance / skill-section scanners (~200 lines) → `Guidance.fs`.
    - Process-health/bootstrap (~267 lines, build.fsx ~1534–1800) → `Preflight.fs`.
 
-5.3 **Create the dedicated build front-end** `build/Build.fsproj` (FAKE dedicated build project
-   pattern): references `FS.Skia.UI.Build`, registers targets from the typed `Target` graph,
-   delegates each target body to the library. `fake.sh`/`fake.cmd` updated to `dotnet run
-   --project build/Build.fsproj -- <target>` (or keep `dotnet fake` if the ADR chose a thin
-   `build.fsx` that `#load`s the DLL).
+5.3 **Create the dedicated build front-end** `build/Build.fsproj` (D2 decided): references
+   `FS.Skia.UI.Build`, registers targets from the typed `Target` graph, delegates each target body
+   to the library. `fake.sh`/`fake.cmd` updated to `dotnet run --project build/Build.fsproj --
+   <target>`, dropping the `dotnet fake` CLI invocation. (Fallback, only if the Stage-3.1 spike
+   blocked the dedicated project: a <200-line `build.fsx` that `#r`s the DLL, still via `dotnet
+   fake`.)
 
-5.4 **Retire `build.fsx`** to either a deleted file (dedicated-project path) or a <200-line
-   `#load` shim (script path). The 4,688-line monolith is gone.
+5.4 **Retire `build.fsx`** — deleted under the dedicated-project path (the 4,688-line monolith is
+   gone), or reduced to the <200-line shim only under the spike-fallback path.
 
 5.5 **Migrate the validation contract from YAML to compiled F#** (per the config-representation
    ADR / analysis §6). Fold Stage 1's interim `select-tier.fsx` + `validation.contract.yml` into a
@@ -557,14 +563,14 @@ orchestration skeleton, which is the cleanest thing to relocate last.
 
 ### New / changed artifacts
 
-- `build/Build.fsproj` (dedicated front-end) **or** trimmed `build.fsx` shim.
+- `build/Build.fsproj` (dedicated front-end; D2).
 - `build/Governance/Engine/*.fs`, `GeneratedProduct.fs`, `Guidance.fs`, `Preflight.fs`,
   `Routing.fs`.
-- `fake.sh`, `fake.cmd` updated.
+- `fake.sh`, `fake.cmd` updated to `dotnet run --project build/Build.fsproj`.
 - `validation.contract.yml` retired or demoted to a generated documentation view; `Routing.fs`
   becomes the source of truth. `scripts/build/select-tier.fsx` deleted.
-- `.config/dotnet-tools.json` (drop `fake-cli` if moving fully to `dotnet run`; keep if thin-fsx
-  path).
+- `.config/dotnet-tools.json`: drop `fake-cli` (moving to `dotnet run`), unless the spike-fallback
+  thin-fsx path is taken.
 
 ### Exit criteria
 
@@ -628,10 +634,13 @@ gates (full pipeline).
 6.4 **Version the generated-product contract.** Apply the ADR: `schema_version` on the contract,
    a deprecation window for structural checks, machine-readable change log.
 
-6.5 **Evidence-artifact hygiene.** Address the committed bloat (35 `.zip`, 142 `.log`, 174 `.txt`,
-   916 `.md`; ~38 GB tree): decide per-class whether evidence is regenerable output (gitignore +
-   regenerate on demand) or durable history; move regenerable evidence out of committed history.
-   This is lower-risk now that the evidence engine is in-process and fast.
+6.5 **Evidence-artifact hygiene (minimal — D3 resolved).** The earlier "~38 GB" figure was the
+   *working tree* (gitignored `.fake/`, `bin/obj/`, `artifacts/`). The **tracked** repo is only
+   **~24 MB with ~15 MB of git history**; committed evidence is ~5 MB of `readiness.zip` archives
+   and ~3 MB of logs — minor. **Decision: leave existing committed evidence as-is; add `.gitignore`
+   rules so *future* regenerable logs/zips are not committed going forward.** No active tree
+   cleanup, no history rewrite (negligible gain, would break clones). This item shrinks to a small
+   `.gitignore` edit.
 
 ### New / changed artifacts
 
@@ -640,8 +649,8 @@ gates (full pipeline).
 - Trimmed `.agents/skills/**` (and generated `.claude/skills/**`), `.specify/memory/constitution.md`,
   templates.
 - `validation.contract.yml` + generated-product contract: `schema_version`, changelog.
-- `.gitignore` updates for regenerable evidence; a migration commit moving bloat out of history
-  (or a documented decision to keep it).
+- `.gitignore` updates so future regenerable logs/zips aren't committed (no history rewrite,
+  no tree cleanup — D3 resolved minimal).
 
 ### Exit criteria
 
@@ -651,16 +660,13 @@ gates (full pipeline).
   violation in a scratch branch and observing the gate fail.
 - Per-invocation agent context (skill bytes loaded) reduced; recorded vs baseline.
 - Generated-product contract carries a version and a deprecation path.
-- Committed-evidence size reduced per the hygiene decision; recorded.
+- `.gitignore` prevents future regenerable logs/zips from being committed (D3 minimal).
 - Invariants 1–6 hold.
 
 ### Risks & mitigations
 
 - *Risk:* deleting prose an agent silently relied on. *Mitigation:* only delete a prose rule once
   its code gate exists and is proven to fail on violation (6.1 before 6.2, rule by rule).
-- *Risk:* rewriting git history for bloat is disruptive. *Mitigation:* prefer gitignore-going-
-  forward + a single archival commit over history rewrite; only rewrite history if the maintainer
-  explicitly opts in (Open Decision D3).
 
 **Effort:** ~5–8 days. **Revert:** prose deletions are git-revertible; gates are additive and can
 be downgraded to warnings.
@@ -722,34 +728,45 @@ scaffolding, and document the new development model so it sticks.
 
 ---
 
-## Open decisions requiring maintainer input
+## Decisions (resolved 2026-05-31)
 
-- **D1 — Governance library distribution.** Build-only project, non-packable `src/` project, or
-  published `FS.Skia.UI.Build` package? (Recommendation: published package, because generated
-  consumers also run the evidence engine.) *Blocks: Stage 4.7, Stage 5.3.*
-- **D2 — Build front-end form.** Dedicated FAKE build project (`dotnet run`) vs thin `build.fsx`
-  that `#load`s the compiled library. (Recommendation: dedicated project.) *Blocks: Stage 5.*
-- **D3 — Evidence bloat handling.** Gitignore-going-forward + single archival commit (safe) vs
-  history rewrite (disruptive, needs explicit opt-in). *Blocks: Stage 6.5.*
-- **D4 — Spec Kit fork stance.** Confirm acceptance that porting the Python permanently forks us
-  from upstream Spec Kit. *Blocks: Stage 4.*
-- **D5 — Sequencing & parallelism.** Stage 1 and Stage 2 can run in parallel with the library
-  track. Confirm whether to ship Stage 1 alone first (recommended) for immediate relief.
-- **D6 — Configuration representation.** Confirm the decision (analysis §6 / Stage-0 ADR) to
-  represent framework-owned config as **compiled F#** in the governance library — *not* YAML and
-  *not* runtime-loaded `.fsx` via FSharp Compiler Services — keeping a data format only for
-  high-churn, agent-authored, logic-free instance data (`tasks.deps.yml`). (Recommendation:
-  adopt as stated. Security is a non-issue for framework-internal config; the deciding factors
-  are build-time enforcement, zero per-run compile cost, and determinism.) *Shapes: Stage 1.1,
-  Stage 3.2/3.3, Stage 5.5.*
+All six open decisions were resolved with the maintainer. Recorded here and reflected in the
+stages above.
+
+- **D1 — Governance library distribution → published library package `FS.Skia.UI.Build`.** Repo
+  build front-end project-references it in-solution; generated consumers package-reference the
+  published version. One port serves both; consumers stay lean. *Shapes: Stage 0 ADR, 4.7, 5.3.*
+- **D2 — Build front-end form → dedicated FAKE build project (`build/Build.fsproj`, `dotnet run`).**
+  Compiled, IDE-grade, references the library directly, no DLL bootstrap wrinkle. Thin-`build.fsx`
+  shim retained only as a fallback if the Stage-3.1 spike surfaces a blocker. *Shapes: Stage 5.*
+- **D3 — Evidence artifacts → minimal.** Tracked repo is ~24 MB (~15 MB history), not 38 GB; the
+  bloat was overstated. Leave existing committed evidence as-is; only `.gitignore` future
+  regenerable logs/zips. No tree cleanup, no history rewrite. *Shapes: Stage 6.5 (now a one-line
+  `.gitignore` edit).*
+- **D4 — Spec Kit fork stance → accept full F# ownership.** Port the evidence engine to typed,
+  tested, in-process F#; forgo an upstream merge path (already forked via `extensions/`+`presets/`
+  in practice). *Shapes: Stage 0 ADR, Stage 4.*
+- **D5 — Sequencing → Stage 0 + the Stage-3.1 spike first**, then ship Stage 1 / Stage 2 early and
+  in parallel with the continuing library track. De-risk the dedicated-project unknown before
+  committing broad effort. *Shapes: Stage dependency overview, Suggested entry point.*
+- **D6 — Configuration representation → compiled F# as stated.** Framework-owned config becomes
+  compiled F# values/predicates in the library (build-time enforcement, no FCS, no per-run
+  compile); a data format is retained only for high-churn, agent-authored `tasks.deps.yml`.
+  *Shapes: Stage 1.1, Stage 3.2/3.3, Stage 5.5.*
 
 ---
 
-## Suggested entry point
+## Suggested entry point (D5 resolved)
 
-Ship **Stage 1** first as its own Spec Kit feature (it is a designated dogfood feature, so it
-runs the full pipeline and exercises the harness). It delivers the maintainer's largest immediate
-relief with zero rewrite, and it makes every subsequent stage cheaper by giving framework work a
-light default tier. Begin the library track (Stage 3) in parallel once D1/D2 are decided; the
-library skeleton spike (3.1) should be done early because it validates the one technical
-unknown — whether the FAKE front-end can reference a compiled library — that gates Stage 5's form.
+**Start with Stage 0 + the Stage-3.1 spike, run together.** Stage 0 is now mostly a recording
+exercise (the four shaping ADRs — D1, D2, D4, D6 — are decided; it captures baselines and golden
+evidence fixtures). The Stage-3.1 spike stands up `build/Governance/FS.Skia.UI.Build.fsproj` and
+the dedicated `build/Build.fsproj`, then proves the one technical unknown: that the dedicated FAKE
+build project can reference and drive the compiled library. That spike either confirms D2 or
+activates the thin-fsx fallback, which is what gates Stage 5's form.
+
+Once the spike is green, **ship Stage 1 (two-tier process) early** — it is a designated dogfood
+feature, delivers the largest immediate relief with no rewrite, and makes every later stage
+cheaper by giving framework work a light default tier — and run **Stage 2** and the continuing
+**library track (3→4→5→6)** in parallel. The highest-risk single step remains Stage 4 (the Python
+port), gated by the Stage-0 golden-evidence parity fixtures.

@@ -320,11 +320,12 @@ These surfaced during investigation and reinforce the thesis:
   templates — all are *hand-maintained duplicates the build checks for drift.* Every one of
   these should be **derived from a single source**. A drift check is a confession that you have
   two sources of truth; generation removes the second.
-- **Committed evidence bloat.** The repo tracks 35 `.zip`, 142 `.log`, 174 `.txt`, and 916
-  `.md` files; the working tree is ~38 GB. A lot of regenerable evidence is committed as
-  artifacts. Consider treating evidence as regenerable output (git-ignored or stored
-  separately) rather than committed history. This is minor next to items 1–4 but compounds the
-  "noise" the maintainer mentions.
+- **Committed evidence is modest — earlier "~38 GB" was the working tree, not the repo.** The
+  *tracked* repo is only ~24 MB (~15 MB git history); the ~38 GB working tree is almost entirely
+  gitignored build output (`.fake/`, `bin/obj/`, `artifacts/`). Committed evidence is ~5 MB of
+  `readiness.zip` archives plus ~3 MB of logs. So this is a non-problem: the right move is just to
+  `.gitignore` *future* regenerable logs/zips, not to clean up or rewrite history. Noted here so
+  the figure is not mistaken for a pressing concern.
 - **No versioning on the generated-product contract.** The ~800 lines of generated-product
   validation hard-code exact structural expectations with no deprecation path. When the
   governance moves into a library (item 2), **version that contract** so template changes have a
