@@ -300,7 +300,7 @@ let tests =
             Expect.stringContains source "evidenceField \"evidence-kind\" evidenceKind" "pixel-readback command records fallback evidence kind"
             Expect.stringContains source "evidenceField \"fallback-reason\" fallbackReason" "pixel-readback command records why screenshot proof was unavailable"
             Expect.stringContains source "screenshot-unavailable" "pixel-readback command names screenshot unavailability"
-            Expect.stringContains source "evidenceField \"board-readable\" \"true\"" "visual evidence proves the board/grid is readable"
+            Expect.stringContains source "evidenceField \"playfield-readable\" \"true\"" "visual evidence proves the playfield/grid is readable"
             Expect.stringContains source "evidenceField \"input-or-progress-observed\" \"true\"" "visual evidence proves input dispatch or time progression was observed"
             Expect.stringContains source "evidenceField \"unsupported-host-reason\"" "unsupported visual evidence reports why neither visual path is available"
             Expect.stringContains source "evidenceField \"supported-host\" \"false\"" "unsupported visual evidence is explicit instead of substituting text-only metadata"
@@ -412,7 +412,7 @@ let tests =
             Expect.isFalse (defaultBranch.Contains("Viewer.runBounded")) "window options do not switch normal launch to bounded evidence"
         }
 
-        test "generated default game view renders board grid and side information" {
+        test "generated default game view renders grid playfield and side information" {
             let rendered = view initialModel
             let nodes = collectSceneNodes rendered |> Seq.toList
             let text = sceneText rendered
@@ -427,11 +427,11 @@ let tests =
                 |> List.filter (function Line _ -> true | _ -> false)
                 |> List.length
 
-            Expect.isGreaterThanOrEqual rectangleCount 20 "Tetris-style board renders multiple cells"
-            Expect.isGreaterThanOrEqual lineCount 10 "Tetris-style board renders visible grid lines"
-            Expect.stringContains text "score" "side panel includes score"
-            Expect.stringContains text "level" "side panel includes level"
-            Expect.stringContains text "next" "side panel includes next piece"
+            Expect.isGreaterThanOrEqual rectangleCount 20 "grid-style playfield renders multiple cells"
+            Expect.isGreaterThanOrEqual lineCount 10 "grid-style playfield renders visible grid lines"
+            Expect.stringContains text "tally" "side panel includes tally"
+            Expect.stringContains text "stage" "side panel includes stage"
+            Expect.stringContains text "upcoming" "side panel includes upcoming token"
         }
 
         test "generated default game view uses circular and elliptical entities without rectangle substitution" {

@@ -1,0 +1,4 @@
+
+
+/home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/fsi/us6-scene-constructors.fsx(24,11): error FS0039: The value, constructor, namespace or type 'filledRectangle' is not defined.
+

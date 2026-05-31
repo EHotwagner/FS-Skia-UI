@@ -10,3 +10,18 @@ selected.
 
 Keep chart controls, graph controls, DataGrid, and rich text guidance in the
 Controls fragment.
+
+```fsharp
+open FS.Skia.UI.KeyboardInput
+
+let bindings = [ { Key = "ArrowLeft"; Command = "move-left" }
+                 { Key = "Space"; Command = "primary-action" } ]
+
+let model, startupEffects = Keyboard.init bindings
+
+let mapKey (key: ViewerKey) (isDown: bool) : Msg option =
+    match key, isDown with
+    | ArrowLeft, true -> Some MoveLeft
+    | Space, true -> Some PrimaryAction
+    | _ -> None
+```

@@ -141,12 +141,12 @@ derived from the spec and plan.
   fs-skia-layout-evidence, persistent viewer launch -> fs-skia-skiaviewer,
   deterministic evidence mode -> fs-skia-layout-evidence,
   generated-package validation -> fs-skia-template-update, graph validation ->
-  speckit-evidence-graph, audit validation -> speckit-evidence-audit, and
-  debug-loop skills -> speckit-debug-loop. Preserve
+  speckit-evidence-graph, audit validation -> speckit-evidence-audit.
+  Preserve
   implementation-before-evidence, graph-before-audit, and
   debug-before-broad-rerun ordering; the visible mirror
   `[skillist: speckit-tasks, fs-skia-layout-evidence]` illustrates exact
-  structured order. Exact skill phrases for scans: scene rendering -> fs-skia-scene; screenshot capture -> fs-skia-skiaviewer; layout readability -> fs-skia-layout-evidence; persistent viewer launch -> fs-skia-skiaviewer; deterministic evidence mode -> fs-skia-layout-evidence; generated-package validation -> fs-skia-template-update; graph validation -> speckit-evidence-graph; audit validation -> speckit-evidence-audit; debug-loop skills -> speckit-debug-loop.
+  structured order. Exact skill phrases for scans: scene rendering -> fs-skia-scene; screenshot capture -> fs-skia-skiaviewer; layout readability -> fs-skia-layout-evidence; persistent viewer launch -> fs-skia-skiaviewer; deterministic evidence mode -> fs-skia-layout-evidence; generated-package validation -> fs-skia-template-update; graph validation -> speckit-evidence-graph; audit validation -> speckit-evidence-audit.
 - **Visual demo readiness scaffolds.** Enumerate
   `readiness/visual-evidence-honesty.md`, `readiness/window-visibility.md`,
   `readiness/governance-risk-levels.md`,

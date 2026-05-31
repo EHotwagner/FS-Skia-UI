@@ -1,0 +1,18 @@
+US4 (FR-007, SC-004) demo-identifier scan — before/after.
+
+Scan logic (mirror of build.fsx scanV3GeneratedRow): lowercase the generated
+starter app + test files, strip legitimate framework roots that contain a
+forbidden substring (keyboard*, prooflevel/proof-level), then look for the
+forbidden tokens: tetris, score, level, next piece, board, piece.
+
+BEFORE neutralization (git HEAD template/base app starter + tests):
+  forbidden tokens found: tetris score level next piece board piece   -> FAIL
+
+AFTER neutralization (working tree, with corrected keyboard/proof-level exclusions):
+  forbidden tokens found: (none)                                       -> PASS
+
+Renames applied (preserving the generic game-starter shape — HUD region,
+gameplay region, primary-interaction counter):
+  Score -> Tally ; Level -> Stage ; NextPiece -> NextToken
+  board* -> playfield* ; active-piece -> active-token ; board-readable -> playfield-readable
+  "Tetris-style board" -> "grid-style playfield" ; display "score:/level:/next:" -> "tally:/stage:/upcoming:"

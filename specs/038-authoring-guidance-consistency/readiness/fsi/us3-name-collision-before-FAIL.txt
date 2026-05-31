@@ -1,0 +1,7 @@
+
+
+/home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/fsi/us3-name-collision-consumer.fsx(30,26): error FS0001: This expression was expected to have type
+    'AppState'    
+but here has type
+    'ViewerWindowStartupState'    
+

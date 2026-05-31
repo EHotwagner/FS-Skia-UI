@@ -25,7 +25,7 @@ capabilities:
       - src/Scene/Scene.fsi
     tests:
       - tests/Scene.Tests/Scene.Tests.fsproj
-    skill: src/Scene/skill/SKILL.md
+    skill: template/product-skills/fs-skia-scene/SKILL.md
     templateFragment: template/fragments/scene
     dependencies: []
     profiles: [app, headless-scene, governed, sample-pack]
@@ -42,7 +42,7 @@ capabilities:
       - src/SkiaViewer/SkiaViewer.fsi
     tests:
       - tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj
-    skill: src/SkiaViewer/skill/SKILL.md
+    skill: template/product-skills/fs-skia-skiaviewer/SKILL.md
     templateFragment: template/fragments/skiaviewer
     dependencies: [scene]
     profiles: [app, governed, sample-pack]
@@ -59,7 +59,7 @@ capabilities:
       - src/Elmish/Elmish.fsi
     tests:
       - tests/Elmish.Tests/Elmish.Tests.fsproj
-    skill: src/Elmish/skill/SKILL.md
+    skill: template/product-skills/fs-skia-elmish/SKILL.md
     templateFragment: template/fragments/elmish
     dependencies: [scene, skiaviewer]
     profiles: [app, governed, sample-pack]
@@ -76,7 +76,7 @@ capabilities:
       - src/KeyboardInput/KeyboardInput.fsi
     tests:
       - tests/KeyboardInput.Tests/KeyboardInput.Tests.fsproj
-    skill: src/KeyboardInput/skill/SKILL.md
+    skill: template/product-skills/fs-skia-keyboard-input/SKILL.md
     templateFragment: template/fragments/keyboard-input
     dependencies: [scene]
     profiles: [app, governed, sample-pack]
@@ -126,7 +126,7 @@ capabilities:
       - src/Controls/CustomControl.fsi
     tests:
       - tests/Controls.Tests/Controls.Tests.fsproj
-    skill: src/Controls/skill/SKILL.md
+    skill: template/product-skills/fs-skia-ui-widgets/SKILL.md
     templateFragment: template/fragments/controls
     dependencies: [scene, layout, keyboard-input]
     profiles: [app, governed, sample-pack]
@@ -143,7 +143,7 @@ capabilities:
       - src/Testing/Testing.fsi
     tests:
       - tests/Testing.Tests/Testing.Tests.fsproj
-    skill: src/Testing/skill/SKILL.md
+    skill: template/product-skills/fs-skia-testing/SKILL.md
     templateFragment: template/fragments/testing
     dependencies: [scene]
     profiles: [governed, sample-pack]

@@ -162,9 +162,14 @@ let runAuthoritativeEvidence target featureDir graphOnly =
             | None -> 5, "", $"failed command launch: bash {arguments}"
             | Some proc ->
                 use proc = proc
-                let stdout = proc.StandardOutput.ReadToEnd()
-                let stderr = proc.StandardError.ReadToEnd()
+                // Drain stdout and stderr concurrently before waiting: reading one
+                // stream to end before the other deadlocks when the child fills the
+                // other pipe (e.g. a large evidence-audit diff scan).
+                let stdoutTask = proc.StandardOutput.ReadToEndAsync()
+                let stderrTask = proc.StandardError.ReadToEndAsync()
                 proc.WaitForExit()
+                let stdout = stdoutTask.Result
+                let stderr = stderrTask.Result
 
                 let output = stdout + stderr
                 let logPath = path [ "readiness"; "logs"; target + ".txt" ]
@@ -272,9 +277,14 @@ let runProcess (target: string) (fileName: string) (arguments: string) =
         | Some proc -> proc
         | None -> failwithf "%s failed command launch: %s %s" target fileName arguments
 
-    let stdout = proc.StandardOutput.ReadToEnd()
-    let stderr = proc.StandardError.ReadToEnd()
+    // Drain stdout and stderr concurrently before waiting: reading one stream to
+    // end before the other deadlocks when the child fills the other pipe (e.g. a
+    // large evidence-audit diff scan).
+    let stdoutTask = proc.StandardOutput.ReadToEndAsync()
+    let stderrTask = proc.StandardError.ReadToEndAsync()
     proc.WaitForExit()
+    let stdout = stdoutTask.Result
+    let stderr = stderrTask.Result
 
     let output = stdout + stderr
 

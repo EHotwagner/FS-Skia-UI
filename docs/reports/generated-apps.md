@@ -1,5 +1,13 @@
 # Generated Apps
 
+> **Canonical effects boundary:** the single source of truth for the two effect
+> categories (application commands at the MVU edge vs viewer effects at the host
+> boundary) and the `update`→host wiring is the page bundled into every generated
+> project at `docs/effects-boundary.md` (authored from
+> `template/base/docs/effects-boundary.md`). The effects notes below are aligned
+> to it; from a generated project follow the bundled page without reading this
+> framework report or framework source.
+
 Generated graphical apps must validate user-reachable input and rendering
 paths through public package surfaces. For feature `013-tetris-demo-integration`
 the generated app guidance must name:

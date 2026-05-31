@@ -35,10 +35,10 @@ type Model =
       PrimaryInteractions: int
       ActiveColumn: int
       ActiveRow: int
-      Score: int
-      Level: int
+      Tally: int
+      Stage: int
       TickCount: int
-      NextPiece: string
+      NextToken: string
       LastInput: ViewerKey option
       InputDiagnostics: InputFlowDiagnostic list
       Revenue: ChartSeries list
@@ -125,10 +125,10 @@ let initialModel =
       PrimaryInteractions = 0
       ActiveColumn = 4
       ActiveRow = 1
-      Score = 0
-      Level = 1
+      Tally = 0
+      Stage = 1
       TickCount = 0
-      NextPiece = "T"
+      NextToken = "T"
       LastInput = None
       InputDiagnostics = []
       Revenue = revenueSeries
@@ -209,7 +209,7 @@ let update msg model : Model * AdapterCommand<Msg> =
             { model with
                 TickCount = model.TickCount + 1
                 ActiveRow = if model.ActiveRow >= 19 then 1 else model.ActiveRow + 1
-                Score = model.Score + 10 },
+                Tally = model.Tally + 10 },
             []
         else
             { model with TickCount = model.TickCount + 1 }, []

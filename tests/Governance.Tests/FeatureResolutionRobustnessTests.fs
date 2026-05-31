@@ -81,6 +81,32 @@ let featureResolutionRobustnessTests =
             Expect.stringContains output "real-task-count: 3" "echoes the real task count"
         }
 
+        // Feature 038 (FR-011, SC-008) regression guard: the gates resolve the
+        // audited feature from .specify/feature.json and must NOT fire required
+        // evidence from a bare filename mention in tasks.md prose. The real task
+        // count reflects the task table, not the incidental filename mentions.
+        test "compute-task-graph does not fire required evidence from a bare filename mention" {
+            use fixture = new TempFixtureDirectory("resolve-filename-mention")
+            featureJson fixture.Root "specs/052-filename-mention"
+            // Two real tasks; the prose mentions report.md / evidence.txt /
+            // screenshot.png in passing. Those bare mentions must not become tasks
+            // or required evidence.
+            writeFeature
+                fixture.Root
+                "specs/052-filename-mention"
+                ("- [ ] T001 [skillist: []] Set up the workspace and note that report.md is named only in prose\n"
+                 + "- [ ] T002 [skillist: []] Wire the second piece referencing evidence.txt and screenshot.png in passing")
+                ("  T001:\n    deps: []\n    skillist: []\n"
+                 + "  T002:\n    deps: []\n    skillist: []\n")
+
+            let featureDir = Path.Combine(fixture.Root, "specs", "052-filename-mention")
+            let code, stdout, stderr = runGraph featureDir
+            let output = stdout + stderr
+            Expect.equal code 0 $"feature resolves from feature.json: {output}"
+            Expect.stringContains output "052-filename-mention" "echoes the resolved feature id from feature.json"
+            Expect.stringContains output "real-task-count: 2" "counts the two real tasks, not the prose filename mentions"
+        }
+
         test "compute-task-graph hard-fails on an empty or unparseable task file" {
             use fixture = new TempFixtureDirectory("resolve-empty-tasks")
             featureJson fixture.Root "specs/051-empty-feature"

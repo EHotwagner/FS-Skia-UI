@@ -128,62 +128,62 @@
     },
     {
       "condition": "(profile == \"app\" || profile == \"headless-scene\" || profile == \"governed\" || profile == \"sample-pack\")",
-      "source": "src/Scene/skill/",
+      "source": "template/product-skills/fs-skia-scene/",
       "target": ".agents/skills/fs-skia-scene/"
     },
     {
       "condition": "(profile == \"app\" || profile == \"headless-scene\" || profile == \"governed\" || profile == \"sample-pack\")",
-      "source": "src/Scene/skill/",
+      "source": "template/product-skills/fs-skia-scene/",
       "target": ".claude/skills/fs-skia-scene/"
     },
     {
       "condition": "(profile == \"app\" || profile == \"sample-pack\")",
-      "source": "src/SkiaViewer/skill/",
+      "source": "template/product-skills/fs-skia-skiaviewer/",
       "target": ".agents/skills/fs-skia-skiaviewer/"
     },
     {
       "condition": "(profile == \"app\" || profile == \"sample-pack\")",
-      "source": "src/SkiaViewer/skill/",
+      "source": "template/product-skills/fs-skia-skiaviewer/",
       "target": ".claude/skills/fs-skia-skiaviewer/"
     },
     {
       "condition": "(profile == \"app\" || profile == \"sample-pack\")",
-      "source": "src/Elmish/skill/",
+      "source": "template/product-skills/fs-skia-elmish/",
       "target": ".agents/skills/fs-skia-elmish/"
     },
     {
       "condition": "(profile == \"app\" || profile == \"sample-pack\")",
-      "source": "src/Elmish/skill/",
+      "source": "template/product-skills/fs-skia-elmish/",
       "target": ".claude/skills/fs-skia-elmish/"
     },
     {
       "condition": "(profile == \"app\")",
-      "source": "src/KeyboardInput/skill/",
+      "source": "template/product-skills/fs-skia-keyboard-input/",
       "target": ".agents/skills/fs-skia-keyboard-input/"
     },
     {
       "condition": "(profile == \"app\")",
-      "source": "src/KeyboardInput/skill/",
+      "source": "template/product-skills/fs-skia-keyboard-input/",
       "target": ".claude/skills/fs-skia-keyboard-input/"
     },
     {
       "condition": "(profile == \"app\")",
-      "source": "src/Controls/skill/",
+      "source": "template/product-skills/fs-skia-ui-widgets/",
       "target": ".agents/skills/fs-skia-ui-widgets/"
     },
     {
       "condition": "(profile == \"app\")",
-      "source": "src/Controls/skill/",
+      "source": "template/product-skills/fs-skia-ui-widgets/",
       "target": ".claude/skills/fs-skia-ui-widgets/"
     },
     {
       "condition": "(profile == \"governed\")",
-      "source": "src/Testing/skill/",
+      "source": "template/product-skills/fs-skia-testing/",
       "target": ".agents/skills/fs-skia-testing/"
     },
     {
       "condition": "(profile == \"governed\")",
-      "source": "src/Testing/skill/",
+      "source": "template/product-skills/fs-skia-testing/",
       "target": ".claude/skills/fs-skia-testing/"
     },
     {

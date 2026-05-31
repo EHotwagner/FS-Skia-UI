@@ -41,6 +41,7 @@ type ViewerWindowMaximizePolicy =
     | Maximizable
     | NotMaximizable
 
+[<RequireQualifiedAccess>]
 type ViewerWindowStartupState =
     | Normal
     | Maximized
@@ -748,7 +749,7 @@ module Viewer =
     let defaultWindowBehavior =
         { ResizePolicy = Resizable
           MaximizePolicy = Maximizable
-          StartupState = Normal
+          StartupState = ViewerWindowStartupState.Normal
           StartupPosition = Some Centered
           BackendPreference = Some DefaultBackend }
 
@@ -773,10 +774,10 @@ module Viewer =
 
             let startupState =
                 match request.StartupState with
-                | Normal -> optionResult "startup-state" "normal" (Some "normal") Honored "Normal startup state can be honored by the viewer host."
-                | Maximized -> optionResult "startup-state" "maximized" (Some "maximized") Honored "Maximized startup state can be requested."
-                | Minimized -> optionResult "startup-state" "minimized" None UnsupportedOption "Minimized startup is not accepted for visible interactive launch validation."
-                | Fullscreen -> optionResult "startup-state" "fullscreen" None UnsupportedOption "Fullscreen startup is not yet supported by the viewer host."
+                | ViewerWindowStartupState.Normal -> optionResult "startup-state" "normal" (Some "normal") Honored "Normal startup state can be honored by the viewer host."
+                | ViewerWindowStartupState.Maximized -> optionResult "startup-state" "maximized" (Some "maximized") Honored "Maximized startup state can be requested."
+                | ViewerWindowStartupState.Minimized -> optionResult "startup-state" "minimized" None UnsupportedOption "Minimized startup is not accepted for visible interactive launch validation."
+                | ViewerWindowStartupState.Fullscreen -> optionResult "startup-state" "fullscreen" None UnsupportedOption "Fullscreen startup is not yet supported by the viewer host."
 
             let startupPosition =
                 match request.StartupPosition with
@@ -1179,10 +1180,10 @@ module Viewer =
         | FixedSize -> applied.WindowBorder <- WindowBorder.Fixed
 
         match behavior.StartupState with
-        | Normal -> applied.WindowState <- WindowState.Normal
-        | Maximized -> applied.WindowState <- WindowState.Maximized
-        | Minimized -> applied.WindowState <- WindowState.Minimized
-        | Fullscreen -> applied.WindowState <- WindowState.Fullscreen
+        | ViewerWindowStartupState.Normal -> applied.WindowState <- WindowState.Normal
+        | ViewerWindowStartupState.Maximized -> applied.WindowState <- WindowState.Maximized
+        | ViewerWindowStartupState.Minimized -> applied.WindowState <- WindowState.Minimized
+        | ViewerWindowStartupState.Fullscreen -> applied.WindowState <- WindowState.Fullscreen
 
         match behavior.StartupPosition with
         | Some(Coordinates(x, y)) -> applied.Position <- Vector2D<int>(x, y)

@@ -1,0 +1,19 @@
+us6 fixture compiled: { Nodes = [Rectangle ((10.0, 20.0, 100.0, 40.0), { Red = 220uy
+                                                   Green = 40uy
+                                                   Blue = 40uy
+                                                   Alpha = 255uy })] } { Nodes = [Text ((12.0, 24.0), "score", { Red = 220uy
+                                          Green = 40uy
+                                          Blue = 40uy
+                                          Alpha = 255uy })] } Rectangle ((10.0, 20.0, 100.0, 40.0), { Red = 220uy
+                                        Green = 40uy
+                                        Blue = 40uy
+                                        Alpha = 255uy }) Text ((12.0, 24.0), "score", { Red = 220uy
+                               Green = 40uy
+                               Blue = 40uy
+                               Alpha = 255uy }) { Nodes = [Rectangle ((10.0, 20.0, 100.0, 40.0), { Red = 220uy
+                                                   Green = 40uy
+                                                   Blue = 40uy
+                                                   Alpha = 255uy })] } { Nodes = [Text ((12.0, 24.0), "score", { Red = 220uy
+                                          Green = 40uy
+                                          Blue = 40uy
+                                          Alpha = 255uy })] }

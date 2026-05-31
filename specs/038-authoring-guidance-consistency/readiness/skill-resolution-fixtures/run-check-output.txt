@@ -1,0 +1,11 @@
+## fixture-dangling — dangling advertised id
+   FAIL: .agents/skills/speckit-tasks/SKILL.md:2: advertised id `speckit-debug-loop` does not resolve
+
+## fixture-dirname-mismatch — directory / declared-name disagreement
+   FAIL: directory `fs-skia-scene` disagrees with declared name `fs-skia-renamed-scene`
+
+## fixture-peer-drift — .agents/.claude peer drift
+   FAIL: directory `fs-skia-scene` disagrees with declared name `fs-skia-scene-drifted`
+   FAIL: peer skill `fs-skia-scene` declares different name (Some "fs-skia-scene" vs Some "fs-skia-scene-drifted")
+
+RESULT: all three fixtures FAILED as required (failing-first satisfied).

@@ -1,0 +1,211 @@
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency --graph-only
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 38 tasks parsed
+  resolved-feature: 038-authoring-guidance-consistency
+  real-task-count: 38
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.md
+  status: 31[X], 7[ ]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency --graph-only
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 38 tasks parsed
+  resolved-feature: 038-authoring-guidance-consistency
+  real-task-count: 38
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.md
+  status: 31[X], 7[ ]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency --graph-only
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 38 tasks parsed
+  resolved-feature: 038-authoring-guidance-consistency
+  real-task-count: 38
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.md
+  status: 31[X], 7[ ]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency --graph-only
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 38 tasks parsed
+  resolved-feature: 038-authoring-guidance-consistency
+  real-task-count: 38
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.md
+  status: 31[X], 7[ ]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency --graph-only
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 38 tasks parsed
+  resolved-feature: 038-authoring-guidance-consistency
+  real-task-count: 38
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.md
+  status: 32[X], 6[ ]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency --graph-only
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 38 tasks parsed
+  resolved-feature: 038-authoring-guidance-consistency
+  real-task-count: 38
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.md
+
+
+VALIDATION FAILED
+  T007: declared skill fs-skia-skiaviewer is ambiguous: src/SkiaViewer/skill/SKILL.md, template/fragments/skiaviewer/skill/SKILL.md
+  T007: declared skill fs-skia-elmish is ambiguous: src/Elmish/skill/SKILL.md, template/fragments/elmish/skill/SKILL.md
+  T007: declared skill fs-skia-keyboard-input is ambiguous: src/KeyboardInput/skill/SKILL.md, template/fragments/keyboard-input/skill/SKILL.md
+  T017: declared skill fs-skia-skiaviewer is ambiguous: src/SkiaViewer/skill/SKILL.md, template/fragments/skiaviewer/skill/SKILL.md
+  T018: declared skill fs-skia-skiaviewer is ambiguous: src/SkiaViewer/skill/SKILL.md, template/fragments/skiaviewer/skill/SKILL.md
+  T018: declared skill fs-skia-elmish is ambiguous: src/Elmish/skill/SKILL.md, template/fragments/elmish/skill/SKILL.md
+  T018: declared skill fs-skia-keyboard-input is ambiguous: src/KeyboardInput/skill/SKILL.md, template/fragments/keyboard-input/skill/SKILL.md
+  T020: declared skill fs-skia-skiaviewer is ambiguous: src/SkiaViewer/skill/SKILL.md, template/fragments/skiaviewer/skill/SKILL.md
+  T021: declared skill fs-skia-skiaviewer is ambiguous: src/SkiaViewer/skill/SKILL.md, template/fragments/skiaviewer/skill/SKILL.md
+  T024: declared skill fs-skia-scene is ambiguous: src/Scene/skill/SKILL.md, template/fragments/scene/skill/SKILL.md
+  T027: declared skill fs-skia-elmish is ambiguous: src/Elmish/skill/SKILL.md, template/fragments/elmish/skill/SKILL.md
+  T027: declared skill fs-skia-skiaviewer is ambiguous: src/SkiaViewer/skill/SKILL.md, template/fragments/skiaviewer/skill/SKILL.md
+  T029: declared skill fs-skia-scene is ambiguous: src/Scene/skill/SKILL.md, template/fragments/scene/skill/SKILL.md
+  T030: declared skill fs-skia-scene is ambiguous: src/Scene/skill/SKILL.md, template/fragments/scene/skill/SKILL.md
+  T031: declared skill fs-skia-scene is ambiguous: src/Scene/skill/SKILL.md, template/fragments/scene/skill/SKILL.md
+  T032: declared skill fs-skia-scene is ambiguous: src/Scene/skill/SKILL.md, template/fragments/scene/skill/SKILL.md
+  T007: declared skill fs-skia-skiaviewer evidence path does not match resolved skill path
+  T007: declared skill fs-skia-elmish evidence path does not match resolved skill path
+  T007: declared skill fs-skia-keyboard-input evidence path does not match resolved skill path
+  T017: declared skill fs-skia-skiaviewer evidence path does not match resolved skill path
+  T018: declared skill fs-skia-skiaviewer evidence path does not match resolved skill path
+  T018: declared skill fs-skia-elmish evidence path does not match resolved skill path
+  T018: declared skill fs-skia-keyboard-input evidence path does not match resolved skill path
+  T020: declared skill fs-skia-skiaviewer evidence path does not match resolved skill path
+  T021: declared skill fs-skia-skiaviewer evidence path does not match resolved skill path
+  T027: declared skill fs-skia-elmish evidence path does not match resolved skill path
+  T027: declared skill fs-skia-skiaviewer evidence path does not match resolved skill path
+  T029: declared skill fs-skia-scene evidence path does not match resolved skill path
+  T030: declared skill fs-skia-scene evidence path does not match resolved skill path
+  T031: declared skill fs-skia-scene evidence path does not match resolved skill path
+  T032: declared skill fs-skia-scene evidence path does not match resolved skill path
+✗ Graph compute failed. See /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.md for details.
+
+exit-code=3
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency --graph-only
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 38 tasks parsed
+  resolved-feature: 038-authoring-guidance-consistency
+  real-task-count: 38
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.md
+  status: 32[X], 6[ ]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency --graph-only
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 38 tasks parsed
+  resolved-feature: 038-authoring-guidance-consistency
+  real-task-count: 38
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.md
+  status: 32[X], 6[ ]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency --graph-only
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 38 tasks parsed
+  resolved-feature: 038-authoring-guidance-consistency
+  real-task-count: 38
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.md
+  status: 38[X]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency --graph-only
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 38 tasks parsed
+  resolved-feature: 038-authoring-guidance-consistency
+  real-task-count: 38
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/task-graph.md
+  status: 38[X]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+
+exit-code=0

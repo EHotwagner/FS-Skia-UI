@@ -1,0 +1,73 @@
+The last full restore is still up to date. Nothing left to do.
+run PackageSurfaceCheck
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target PackageSurfaceCheck:
+<== PackageSurfaceCheck
+   <== Build
+      <== Restore
+
+The running order is:
+Group - 1
+  - Restore
+Group - 2
+  - Build
+Group - 3
+  - PackageSurfaceCheck
+Starting target 'Restore'
+Finished (Success) 'Restore' in 00:00:34.0884414
+Starting target 'Build'
+Finished (Success) 'Build' in 00:00:35.9224484
+Starting target 'PackageSurfaceCheck'
+Finished (Success) 'PackageSurfaceCheck' in 00:00:05.0514409
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                Duration
+------                --------
+Restore               00:00:34.0864026
+Build                 00:00:35.9223568
+PackageSurfaceCheck   00:00:05.0513910
+Total:                00:01:15.1437980
+Status:               Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 196 milliseconds
+ - Packages: 65 milliseconds
+ - Script analyzing: 18 milliseconds
+ - Script running: 1 minute, 15 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 minute, 16 seconds
+
+## package surface test build
+$ dotnet build tests/Package.Tests/Package.Tests.fsproj -m:1 --no-restore --disable-build-servers
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Debug/net10.0/FS.Skia.UI.Layout.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Debug/net10.0/FS.Skia.UI.KeyboardInput.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Debug/net10.0/FS.Skia.UI.Controls.dll
+  Package.Tests -> /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.20
+
+exit-code=0
+
+## generate package API reference
+$ dotnet fsi scripts/generate-package-api-reference.fsx
+Wrote package API reference for 8 packages to /home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference
+
+exit-code=0
+
+## package surface check
+$ dotnet test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore
+Test run for /home/developer/projects/FS-Skia-UI/tests/Package.Tests/bin/Debug/net10.0/Package.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    35, Skipped:     0, Total:    35, Duration: 73 ms - Package.Tests.dll (net10.0)
+
+exit-code=0

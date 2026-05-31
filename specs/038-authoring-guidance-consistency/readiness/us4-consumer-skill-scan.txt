@@ -1,0 +1,41 @@
+US4 (FR-005, FR-006, SC-004) consumer-skill scan — before/after.
+
+Scan logic (mirror of build.fsx scanV3GeneratedRow, consumerSkillFindings block):
+for each generated runtime capability-usage skill (.agents/skills/<dest>/SKILL.md,
+excluding non-runtime `samples` and the layout skill folded into Controls), FAIL
+when the generated skill:
+  - names a framework-only build target: CapabilityCheck, PackLocal,
+    DependencyReport, PackageSurfaceCheck
+  - points at a framework-only `src/.../*.fsi` source path (regex
+    `src/[A-Za-z0-9_.]+/[A-Za-z0-9_.]+\.fsi`)
+  - names `readiness/surface-baselines`
+  - has no consumer-runnable fenced ```fsharp usage snippet
+
+BEFORE fix (capabilities.yml `skill:` pointed each runtime capability at the
+dual-purpose framework `src/<Cap>/skill/SKILL.md`, copied verbatim into the
+generated product):
+
+  src/Scene/skill/SKILL.md         framework-only: CapabilityCheck PackLocal PackageSurfaceCheck readiness/surface-baselines src/Scene/Scene.fsi          snippets: 0  -> FAIL
+  src/SkiaViewer/skill/SKILL.md    framework-only: CapabilityCheck DependencyReport PackLocal readiness/surface-baselines src/SkiaViewer/SkiaViewer.fsi   snippets: 0  -> FAIL
+  src/Elmish/skill/SKILL.md        framework-only: CapabilityCheck DependencyReport PackLocal readiness/surface-baselines src/Elmish/Elmish.fsi           snippets: 0  -> FAIL
+  src/KeyboardInput/skill/SKILL.md framework-only: CapabilityCheck DependencyReport PackLocal readiness/surface-baselines src/KeyboardInput/KeyboardInput.fsi snippets: 0 -> FAIL
+  src/Controls/skill/SKILL.md      framework-only: PackLocal PackageSurfaceCheck readiness/surface-baselines                snippets: 1  -> FAIL (framework-only refs)
+  src/Testing/skill/SKILL.md       framework-only: CapabilityCheck PackLocal PackageSurfaceCheck readiness/surface-baselines src/Testing/Testing.fsi      snippets: 0  -> FAIL
+
+AFTER fix (capabilities.yml `skill:` points each runtime capability at a
+consumer-facing fragment skill `template/fragments/<cap>/skill/SKILL.md`; the
+framework `src/<Cap>/skill/SKILL.md` files are unchanged and stay framework-dev
+oriented):
+
+  template/fragments/scene/skill/SKILL.md          framework-only: (none)  snippets: 1  -> PASS  (name: fs-skia-scene)
+  template/fragments/skiaviewer/skill/SKILL.md     framework-only: (none)  snippets: 1  -> PASS  (name: fs-skia-skiaviewer)
+  template/fragments/elmish/skill/SKILL.md         framework-only: (none)  snippets: 1  -> PASS  (name: fs-skia-elmish)
+  template/fragments/keyboard-input/skill/SKILL.md framework-only: (none)  snippets: 1  -> PASS  (name: fs-skia-keyboard-input)
+  template/fragments/controls/skill/SKILL.md       framework-only: (none)  snippets: 1  -> PASS  (name: fs-skia-ui-widgets)
+  template/fragments/testing/skill/SKILL.md        framework-only: (none)  snippets: 1  -> PASS  (name: fs-skia-testing)
+
+Each consumer fragment skill's `name:` equals its generated destination directory
+(capabilitySkillDestination), so the generated skill set is dir/name-consistent.
+The bundled `docs/api-surface/<Pkg>/<Pkg>.fsi` reference (US2) replaces the
+former `src/.../*.fsi` pointer, and Dev/Test/Verify replace the framework-only
+targets.

@@ -64,7 +64,7 @@ let private intersects first second =
     && first.Y < second.Y + second.Height
     && first.Y + first.Height > second.Y
 
-let private boardLayout size =
+let private playfieldLayout size =
     let gameplay = gameplayRegionForSize size
     let cell =
         min
@@ -72,19 +72,19 @@ let private boardLayout size =
             ((gameplay.Bounds.Height - 48.0) / 20.0)
         |> max 10.0
 
-    let boardWidth = cell * 10.0
-    let boardHeight = cell * 20.0
-    let boardX = gameplay.Bounds.X + 32.0
-    let boardY = gameplay.Bounds.Y + 24.0
+    let playfieldWidth = cell * 10.0
+    let playfieldHeight = cell * 20.0
+    let playfieldX = gameplay.Bounds.X + 32.0
+    let playfieldY = gameplay.Bounds.Y + 24.0
 
-    boardX, boardY, cell, boardWidth, boardHeight
+    playfieldX, playfieldY, cell, playfieldWidth, playfieldHeight
 
 let activeGameplayBoundsForSize size model : LayoutGameplayBounds =
-    let boardX, boardY, cell, _, _ = boardLayout size
-    { Name = "active-piece"
+    let playfieldX, playfieldY, cell, _, _ = playfieldLayout size
+    { Name = "active-token"
       Bounds =
-        { X = boardX + float model.ActiveColumn * cell + 1.0
-          Y = boardY + float model.ActiveRow * cell + 1.0
+        { X = playfieldX + float model.ActiveColumn * cell + 1.0
+          Y = playfieldY + float model.ActiveRow * cell + 1.0
           Width = cell * 2.0 - 2.0
           Height = cell * 2.0 - 2.0 } }
 
@@ -108,9 +108,9 @@ let private hudTextBounds (size: Size) model =
           Bounds = { X = x; Y = y; Width = width; Height = 24.0 }
           MeasurementMode = ApproximateTextBounds }
 
-    [ text 128.0 16.0 16.0 "score" $"score: {model.Score}"
-      text 96.0 168.0 16.0 "level" $"level: {model.Level}"
-      text 96.0 296.0 16.0 "next" $"next: {model.NextPiece}"
+    [ text 128.0 16.0 16.0 "tally" $"tally: {model.Tally}"
+      text 96.0 168.0 16.0 "stage" $"stage: {model.Stage}"
+      text 96.0 296.0 16.0 "upcoming" $"upcoming: {model.NextToken}"
       text 152.0 (float size.Width - 184.0) 16.0 "status" $"screen: {screenName model.Screen}" ]
 
 let private overlapDiagnostics report =

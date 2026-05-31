@@ -203,7 +203,7 @@ let tests =
                 Viewer.validateWindowLaunchBehavior
                     { Width = 0; Height = 200 }
                     { Viewer.defaultWindowBehavior with
-                        StartupState = Fullscreen
+                        StartupState = ViewerWindowStartupState.Fullscreen
                         BackendPreference = Some ViewerBackendPreference.Software }
 
             Expect.exists windowResults (fun item -> item.Option = "initial-size" && item.Status = FailedOption && item.Message.Contains "positive") "window launch diagnostics keep positive-size validation"
@@ -1013,7 +1013,7 @@ let tests =
                     { Viewer.defaultWindowBehavior with
                         ResizePolicy = FixedSize
                         MaximizePolicy = NotMaximizable
-                        StartupState = Maximized
+                        StartupState = ViewerWindowStartupState.Maximized
                         StartupPosition = Some(Coordinates(20, 30))
                         BackendPreference = Some ViewerBackendPreference.Vulkan }
 
@@ -1029,7 +1029,7 @@ let tests =
             let results =
                 Viewer.validateWindowBehavior
                     { Viewer.defaultWindowBehavior with
-                        StartupState = Minimized
+                        StartupState = ViewerWindowStartupState.Minimized
                         StartupPosition = Some(Coordinates(-1, 10))
                         BackendPreference = Some ViewerBackendPreference.OpenGL }
 
@@ -1043,7 +1043,7 @@ let tests =
                 { Viewer.defaultWindowBehavior with
                     ResizePolicy = FixedSize
                     MaximizePolicy = NotMaximizable
-                    StartupState = Normal
+                    StartupState = ViewerWindowStartupState.Normal
                     StartupPosition = Some Centered
                     BackendPreference = Some ViewerBackendPreference.DefaultBackend }
 
@@ -1065,7 +1065,7 @@ let tests =
                 { Viewer.defaultWindowBehavior with
                     ResizePolicy = FixedSize
                     MaximizePolicy = NotMaximizable
-                    StartupState = Maximized
+                    StartupState = ViewerWindowStartupState.Maximized
                     StartupPosition = Some(Coordinates(32, 48))
                     BackendPreference = Some ViewerBackendPreference.Vulkan }
 

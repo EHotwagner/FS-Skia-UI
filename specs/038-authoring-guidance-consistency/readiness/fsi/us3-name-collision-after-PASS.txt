@@ -1,0 +1,1 @@
+us3 fixture compiled: Normal -> Busy (collision-fixture)

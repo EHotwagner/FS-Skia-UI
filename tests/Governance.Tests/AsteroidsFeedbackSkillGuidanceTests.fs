@@ -75,11 +75,22 @@ let asteroidsFeedbackSkillGuidanceTests =
                       "generated-package validation -> fs-skia-template-update"
                       "graph validation -> speckit-evidence-graph"
                       "audit validation -> speckit-evidence-audit"
-                      "debug-loop skills -> speckit-debug-loop"
                       "implementation-before-evidence"
                       "graph-before-audit"
                       "debug-before-broad-rerun"
                       "[skillist: speckit-tasks, fs-skia-layout-evidence]" ])
+        }
+
+        // Feature 038 (FR-001, US1): the `speckit-debug-loop` advertised id was
+        // dangling — no skill declares that `name:` — so it is removed from the
+        // speckit-tasks guidance. Assert it no longer advertises the dangling id.
+        test "speckit-tasks guidance does not advertise the dangling speckit-debug-loop id" {
+            [ ".agents/skills/speckit-tasks/SKILL.md"
+              ".claude/skills/speckit-tasks/SKILL.md" ]
+            |> List.iter (fun path ->
+                Expect.isFalse
+                    ((read path).Contains "speckit-debug-loop")
+                    $"{path} must not advertise the dangling `speckit-debug-loop` id (FR-001)")
         }
 
         test "generated guidance enumerates readiness scaffolds and field cues before audit" {

@@ -389,6 +389,9 @@ module Scene =
     let rectangleWithPaint bounds paint =
         { Nodes = [ PaintedRectangle(bounds, paint) ] }
 
+    let filledRectangle (bounds: Rect) fill =
+        { Nodes = [ Rectangle((bounds.X, bounds.Y, bounds.Width, bounds.Height), fill) ] }
+
     let circle center radius fill =
         { Nodes = [ Circle(center, radius, fill) ] }
 
@@ -415,6 +418,9 @@ module Scene =
 
     let text position text color =
         { Nodes = [ Text(position, text, color) ] }
+
+    let textAt (position: Point) text color =
+        { Nodes = [ Text((position.X, position.Y), text, color) ] }
 
     let textRun run =
         { Nodes = [ TextRun run ] }

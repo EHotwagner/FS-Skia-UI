@@ -1,0 +1,40 @@
+The last full restore is still up to date. Nothing left to do.
+run GeneratedGuidanceCheck
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target GeneratedGuidanceCheck:
+<== GeneratedGuidanceCheck
+
+The running order is:
+Group - 1
+  - GeneratedGuidanceCheck
+Starting target 'GeneratedGuidanceCheck'
+Finished (Failed) 'GeneratedGuidanceCheck' in 00:00:00.0594015
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                   Duration
+------                   --------
+GeneratedGuidanceCheck   00:00:00.0576825   (Generated guidance check failed:
+.agents/skills/speckit-tasks/SKILL.md:149: advertised skill id `speckit-debug-loop` does not resolve to any declared skill `name:` [skill-id-resolution]
+.claude/skills/speckit-tasks/SKILL.md:149: advertised skill id `speckit-debug-loop` does not resolve to any declared skill `name:` [skill-id-resolution])
+Total:                   00:00:00.1295790
+Status:                  Failure
+---------------------------------------------------------------------
+Script reported an error:
+-> BuildFailedException: Target 'GeneratedGuidanceCheck' failed.
+-> One or more errors occurred. (Generated guidance check failed:
+   .agents/skills/speckit-tasks/SKILL.md:149: advertised skill id `speckit-debug-loop` does not resolve to any declared skill `name:` [skill-id-resolution]
+   .claude/skills/speckit-tasks/SKILL.md:149: advertised skill id `speckit-debug-loop` does not resolve to any declared skill `name:` [skill-id-resolution])
+-> Generated guidance check failed:
+   .agents/skills/speckit-tasks/SKILL.md:149: advertised skill id `speckit-debug-loop` does not resolve to any declared skill `name:` [skill-id-resolution]
+   .claude/skills/speckit-tasks/SKILL.md:149: advertised skill id `speckit-debug-loop` does not resolve to any declared skill `name:` [skill-id-resolution]
+Hint: To further diagnose the problem you can run fake in verbose mode `fake -v run ...` or set the 'FAKE_DETAILED_ERRORS' environment variable to 'true'
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 177 milliseconds
+ - Packages: 52 milliseconds
+ - Script analyzing: 19 milliseconds
+ - Script running: 275 milliseconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 second

@@ -40,6 +40,7 @@ type ViewerWindowMaximizePolicy =
     | Maximizable
     | NotMaximizable
 
+[<RequireQualifiedAccess>]
 /// Public contract type exposed by this FS.Skia.UI package.
 type ViewerWindowStartupState =
     | Normal

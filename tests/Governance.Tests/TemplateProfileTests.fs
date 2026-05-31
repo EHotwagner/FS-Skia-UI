@@ -45,12 +45,12 @@ let templateProfileTests =
                       ".specify/"
                       ".agents/skills/"
                       "memory/constitution.md"
-                      "src/Scene/skill/"
-                      "src/SkiaViewer/skill/"
-                      "src/Elmish/skill/"
-                      "src/KeyboardInput/skill/"
-                      "src/Controls/skill/"
-                      "src/Testing/skill/"
+                      "template/product-skills/fs-skia-scene/"
+                      "template/product-skills/fs-skia-skiaviewer/"
+                      "template/product-skills/fs-skia-elmish/"
+                      "template/product-skills/fs-skia-keyboard-input/"
+                      "template/product-skills/fs-skia-ui-widgets/"
+                      "template/product-skills/fs-skia-testing/"
                       "template/fragments/samples/"
                       "fs-skia-samples" ]
             else

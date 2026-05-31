@@ -2812,6 +2812,41 @@ let emitFsiLoadScript row =
 
         File.WriteAllText(loadScriptPath, content + Environment.NewLine)
 
+// US2 (FR-004, SC-002): bundle the real public `.fsi` signatures for every
+// capability the profile consumes into a local `docs/api-surface/` reference, so
+// an author reads any union case's exact field order without DLL reflection.
+// Derivation is mechanical (verbatim copy-at-generation from src/.../*.fsi).
+let apiSurfaceContractsFor model capabilities =
+    let byId = capabilitiesById model
+
+    capabilities
+    |> List.collect (fun capabilityId ->
+        match Map.tryFind capabilityId byId with
+        | Some capability -> capability.Contracts
+        | None -> [])
+    // Skip non-runtime capabilities whose contract is the `no-public-surface`
+    // sentinel rather than a real `.fsi` path.
+    |> List.filter (fun contract -> contract.EndsWith(".fsi", StringComparison.OrdinalIgnoreCase))
+    |> List.distinct
+
+// Bundled path mirrors the source package directory so same-named contracts from
+// different packages (e.g. Controls/Types.fsi vs Layout/Types.fsi) do not collide.
+let apiSurfaceRelativePath (contractRelative: string) =
+    let packageDir = Path.GetFileName(Path.GetDirectoryName contractRelative)
+    $"docs/api-surface/{packageDir}/{Path.GetFileName contractRelative}"
+
+let copyApiSurface model row capabilities =
+    apiSurfaceContractsFor model capabilities
+    |> List.iter (fun contractRelative ->
+        let source = path [ model.RepositoryRoot; contractRelative ]
+
+        if File.Exists source then
+            let dest = path [ row.Root; apiSurfaceRelativePath contractRelative ]
+            ensureParent dest
+            File.Copy(source, dest, true)
+        else
+            failwithf "Cannot bundle API surface: missing source contract %s" contractRelative)
+
 let generateV3Product model row =
     cleanDirectoryContents row.Root
     cleanDirectoryContents row.EvidenceDir
@@ -2828,6 +2863,7 @@ let generateV3Product model row =
 
     writeGeneratedProductReadme row resolved
     copySelectedSkills model row resolved
+    copyApiSurface model row resolved
 
     for capabilityId in resolved do
         match capabilityId with
@@ -2883,6 +2919,7 @@ let scanV3GeneratedRow model row =
           "README.md"
           "CLAUDE.md"
           "docs/product.md"
+          "docs/effects-boundary.md"
           ".agents/skills/fs-skia-project/SKILL.md"
           ".claude/skills/fs-skia-project/SKILL.md"
           ".claude/settings.json"
@@ -2911,6 +2948,160 @@ let scanV3GeneratedRow model row =
 
     if not missing.IsEmpty then
         failwithf "%s/%s generated product missing files:%s%s" row.Artifact row.Profile Environment.NewLine (String.Join(Environment.NewLine, missing))
+
+    // US2 (FR-004, SC-002): every consumed package's signatures are bundled
+    // verbatim under docs/api-surface/ and stay in lockstep with source.
+    let apiSurfaceFindings =
+        apiSurfaceContractsFor model (resolveCapabilities model row.Capabilities)
+        |> List.choose (fun contractRelative ->
+            let relative = apiSurfaceRelativePath contractRelative
+            let bundled = path [ row.Root; relative ]
+            let source = path [ model.RepositoryRoot; contractRelative ]
+
+            if not (File.Exists bundled) then
+                Some $"{relative} missing from generated product"
+            elif File.ReadAllText bundled <> File.ReadAllText source then
+                Some $"{relative} drifts from source {contractRelative}"
+            else
+                None)
+
+    if not apiSurfaceFindings.IsEmpty then
+        failwithf
+            "%s/%s bundled API surface invalid:%s%s"
+            row.Artifact
+            row.Profile
+            Environment.NewLine
+            (String.Join(Environment.NewLine, apiSurfaceFindings))
+
+    // US5 (FR-009, SC-005): a single canonical effects-boundary page is present
+    // and self-contained (both effect categories + boundary + update->host wiring).
+    let effectsBoundaryPath = path [ row.Root; "docs"; "effects-boundary.md" ]
+
+    if File.Exists effectsBoundaryPath then
+        let effectsText = File.ReadAllText effectsBoundaryPath
+
+        let requiredEffectsTokens =
+            [ "application commands"
+              "viewer effects"
+              "host boundary"
+              "MVU edge"
+              "Viewer.runApp"
+              "generatedHost" ]
+
+        let missingEffectsTokens =
+            requiredEffectsTokens
+            |> List.filter (fun token -> effectsText.IndexOf(token, StringComparison.OrdinalIgnoreCase) < 0)
+
+        if not missingEffectsTokens.IsEmpty then
+            failwithf
+                "%s/%s docs/effects-boundary.md missing required content: %s"
+                row.Artifact
+                row.Profile
+                (String.Join(", ", missingEffectsTokens))
+
+    // US4 (FR-007, SC-004): the generated starter app and tests carry zero
+    // demo-specific (game-title) identifiers. Legitimate framework compounds that
+    // merely contain a forbidden substring (KeyboardInput, ProofLevel, proof-level)
+    // are stripped before the scan so they are not false positives.
+    let demoScanFiles =
+        files
+        |> List.filter (fun file ->
+            (file.StartsWith("src/Product/", StringComparison.Ordinal)
+             || file.StartsWith("tests/Product.Tests/", StringComparison.Ordinal))
+            && file.EndsWith(".fs", StringComparison.Ordinal))
+
+    // Whole-word framework roots that legitimately contain a forbidden substring:
+    // `keyboard*` (-> "board"), `prooflevel`/`proof-level` (-> "level").
+    let legitimateCompounds =
+        [ "keyboard"
+          "prooflevel"
+          "proof-level"
+          "layoutprooflevel"
+          "diagnosticlevel"
+          "viewerdiagnosticlevel"
+          "minimumlevel" ]
+
+    let forbiddenDemoTokens = [ "tetris"; "score"; "level"; "next piece"; "board"; "piece" ]
+
+    let demoFindings =
+        demoScanFiles
+        |> List.collect (fun relative ->
+            let content = File.ReadAllText(path [ row.Root; relative ]).ToLowerInvariant()
+
+            let sanitized =
+                legitimateCompounds
+                |> List.fold (fun (state: string) compound -> state.Replace(compound, "")) content
+
+            forbiddenDemoTokens
+            |> List.choose (fun token ->
+                if sanitized.Contains token then
+                    Some $"{relative}: generated starter contains demo identifier `{token}`"
+                else
+                    None))
+
+    if not demoFindings.IsEmpty then
+        failwithf
+            "%s/%s generated starter carries demo identifiers:%s%s"
+            row.Artifact
+            row.Profile
+            Environment.NewLine
+            (String.Join(Environment.NewLine, demoFindings))
+
+    // US4 (FR-005, FR-006, SC-004): every generated capability-usage skill is
+    // consumer-facing — it carries at least one consumer-runnable fsharp snippet
+    // and names no framework-only path or build target absent from a consumer
+    // project. Non-runtime capabilities (e.g. samples) carry no usage snippet, and
+    // layout's skill is folded into Controls when Controls is selected, so both are
+    // excluded the same way generation excludes them.
+    let generatedCapabilitySkillRow =
+        let byId = capabilitiesById model
+        let resolved = resolveCapabilities model row.Capabilities
+        let controlsSelected = resolved |> List.contains "controls"
+
+        resolved
+        |> List.filter (fun capabilityId -> not (controlsSelected && capabilityId = "layout"))
+        |> List.choose (fun capabilityId ->
+            match Map.tryFind capabilityId byId with
+            | Some capability when capability.NonRuntime -> None
+            | Some _ -> capabilitySkillDestination capabilityId
+            | None -> None)
+        |> List.distinct
+
+    let frameworkOnlyTargets = [ "CapabilityCheck"; "PackLocal"; "DependencyReport"; "PackageSurfaceCheck" ]
+    let frameworkOnlySurfaceBaseline = "readiness/surface-baselines"
+    let frameworkOnlySourceContract = Regex(@"src/[A-Za-z0-9_.]+/[A-Za-z0-9_.]+\.fsi")
+
+    let consumerSkillFindings =
+        generatedCapabilitySkillRow
+        |> List.collect (fun destination ->
+            let relative = $".agents/skills/{destination}/SKILL.md"
+            let full = path [ row.Root; relative ]
+
+            if not (File.Exists full) then
+                [ $"{relative}: expected generated capability skill is missing" ]
+            else
+                let text = File.ReadAllText full
+
+                [ for target in frameworkOnlyTargets do
+                      if text.IndexOf(target, StringComparison.Ordinal) >= 0 then
+                          yield $"{relative}: generated skill names framework-only target `{target}` absent from a consumer project (FR-005)"
+
+                  if frameworkOnlySourceContract.IsMatch text then
+                      yield $"{relative}: generated skill points at a framework-only `src/.../*.fsi` source path; reference the bundled `docs/api-surface/` instead (FR-005)"
+
+                  if text.IndexOf(frameworkOnlySurfaceBaseline, StringComparison.Ordinal) >= 0 then
+                      yield $"{relative}: generated skill names framework-only `{frameworkOnlySurfaceBaseline}` absent from a consumer project (FR-005)"
+
+                  if not (text.Contains "```fsharp") then
+                      yield $"{relative}: generated skill has no consumer-runnable fsharp usage snippet (FR-006)" ])
+
+    if not consumerSkillFindings.IsEmpty then
+        failwithf
+            "%s/%s generated capability skills are not consumer-facing:%s%s"
+            row.Artifact
+            row.Profile
+            Environment.NewLine
+            (String.Join(Environment.NewLine, consumerSkillFindings))
 
     if row.Profile = "app" && not (files |> List.contains ".agents/skills/fs-skia-ui-widgets/SKILL.md") then
         failwithf "%s/%s generated app is missing fs-skia-ui-widgets" row.Artifact row.Profile
@@ -4152,6 +4343,194 @@ let validateTaskSkillistGuidance model =
                 else
                     None))
 
+// US1 (FR-001/002/003, SC-007): skill-id resolution guard.
+// Build the advertised-id set from the single-line `-> <id>` mappings in the
+// speckit-tasks SKILL.md copies, resolve each against the declared `name:` of
+// every skill, and fail on any unresolved id, directory/name disagreement, or
+// `.agents`<->`.claude` peer drift. Reads only repository files (a FAKE target
+// cannot enumerate the runtime "available skills" harness surface).
+
+let skillResolutionAdvertisingFiles =
+    [ ".agents/skills/speckit-tasks/SKILL.md"
+      ".claude/skills/speckit-tasks/SKILL.md" ]
+
+let advertisedSkillIdRegex =
+    Regex(@"->\s*((?:fs-skia|speckit)-[a-z0-9]+(?:-[a-z0-9]+)*)", RegexOptions.IgnoreCase)
+
+let readDeclaredSkillName (file: string) =
+    File.ReadAllLines file
+    |> Array.tryPick (fun line ->
+        let trimmed = line.Trim()
+
+        if trimmed.StartsWith("name:", StringComparison.Ordinal) then
+            Some(trimmed.Substring(5).Trim().Trim('"').Trim('\''))
+        else
+            None)
+
+type SkillIdentityRecord =
+    { Registry: string
+      KeyDir: string
+      DeclaredName: string option
+      RelativeFile: string
+      EnforceDirEqualsName: bool }
+
+let collectSkillIdentityRecords root =
+    let toRelative (full: string) =
+        Path.GetRelativePath(root, full).Replace('\\', '/')
+
+    let flatRegistry registry enforce =
+        let registryRoot = path [ root; registry ]
+
+        if Directory.Exists registryRoot then
+            Directory.GetDirectories registryRoot
+            |> Array.toList
+            |> List.choose (fun dir ->
+                let file = Path.Combine(dir, "SKILL.md")
+
+                if File.Exists file then
+                    Some
+                        { Registry = registry
+                          KeyDir = Path.GetFileName dir
+                          DeclaredName = readDeclaredSkillName file
+                          RelativeFile = toRelative file
+                          EnforceDirEqualsName = enforce }
+                else
+                    None)
+        else
+            []
+
+    let nestedRegistry parentRelative =
+        let parentRoot = path [ root; parentRelative ]
+
+        if Directory.Exists parentRoot then
+            Directory.GetDirectories parentRoot
+            |> Array.toList
+            |> List.choose (fun dir ->
+                let file = path [ dir; "skill"; "SKILL.md" ]
+
+                if File.Exists file then
+                    Some
+                        { Registry = parentRelative
+                          KeyDir = Path.GetFileName dir
+                          DeclaredName = readDeclaredSkillName file
+                          RelativeFile = toRelative file
+                          EnforceDirEqualsName = false }
+                else
+                    None)
+        else
+            []
+
+    flatRegistry ".agents/skills" true
+    @ flatRegistry ".claude/skills" true
+    // The skill set a generated consumer project receives (FR-002 edge case): an
+    // id may resolve in this repo yet not in the generated project's skills.
+    @ flatRegistry "template/base/.agents/skills" true
+    @ flatRegistry "template/base/.claude/skills" true
+    @ nestedRegistry "src"
+    @ nestedRegistry "template/fragments"
+
+let advertisedSkillIds root =
+    skillResolutionAdvertisingFiles
+    |> List.collect (fun relative ->
+        let file = path [ root; relative ]
+
+        if File.Exists file then
+            File.ReadAllLines file
+            |> Array.toList
+            |> List.mapi (fun index line -> index + 1, line)
+            |> List.collect (fun (lineNo, line) ->
+                [ for m in advertisedSkillIdRegex.Matches line -> m.Groups.[1].Value, $"{relative}:{lineNo}" ])
+        else
+            [])
+
+let validateSkillIdResolution model =
+    let root = model.RepositoryRoot
+    let records = collectSkillIdentityRecords root
+    let declaredNames = records |> List.choose (fun r -> r.DeclaredName) |> Set.ofList
+
+    let recordsByKey registry =
+        records
+        |> List.filter (fun r -> r.Registry = registry)
+        |> List.map (fun r -> r.KeyDir, r)
+        |> Map.ofList
+
+    let advertised = advertisedSkillIds root
+
+    let peerFindingsFor agentsRegistry claudeRegistry =
+        let agents = recordsByKey agentsRegistry
+        let claude = recordsByKey claudeRegistry
+
+        (agents
+         |> Map.toList
+         |> List.choose (fun (key, agentRecord) ->
+             match Map.tryFind key claude with
+             | Some claudeRecord when claudeRecord.DeclaredName <> agentRecord.DeclaredName ->
+                 Some
+                     $"{agentRecord.RelativeFile} vs {claudeRecord.RelativeFile}: peer skill `{key}` declares different `name:` [skill-id-resolution]"
+             | None -> Some $"{agentRecord.RelativeFile}: `{agentsRegistry}` skill `{key}` has no `{claudeRegistry}` peer [skill-id-resolution]"
+             | _ -> None))
+        @ (claude
+           |> Map.toList
+           |> List.choose (fun (key, claudeRecord) ->
+               if Map.containsKey key (recordsByKey agentsRegistry) then
+                   None
+               else
+                   Some $"{claudeRecord.RelativeFile}: `{claudeRegistry}` skill `{key}` has no `{agentsRegistry}` peer [skill-id-resolution]"))
+
+    let missingNameFindings =
+        records
+        |> List.choose (fun r ->
+            if Option.isNone r.DeclaredName then
+                Some $"{r.RelativeFile}: SKILL.md has no `name:` declaration [skill-id-resolution]"
+            else
+                None)
+
+    let dirNameFindings =
+        records
+        |> List.choose (fun r ->
+            match r.DeclaredName with
+            | Some name when r.EnforceDirEqualsName && name <> r.KeyDir ->
+                Some $"{r.RelativeFile}: directory `{r.KeyDir}` disagrees with declared name `{name}` [skill-id-resolution]"
+            | _ -> None)
+
+    let peerFindings =
+        peerFindingsFor ".agents/skills" ".claude/skills"
+        @ peerFindingsFor "template/base/.agents/skills" "template/base/.claude/skills"
+
+    let resolutionFindings =
+        advertised
+        |> List.choose (fun (id, location) ->
+            if Set.contains id declaredNames then
+                None
+            else
+                Some $"{location}: advertised skill id `{id}` does not resolve to any declared skill `name:` [skill-id-resolution]")
+
+    let advertisedSetFor relative =
+        advertised
+        |> List.filter (fun (_, loc) -> loc.StartsWith(relative, StringComparison.Ordinal))
+        |> List.map fst
+        |> Set.ofList
+
+    let driftFindings =
+        let agentsAdvertised = advertisedSetFor ".agents/skills/speckit-tasks/SKILL.md"
+        let claudeAdvertised = advertisedSetFor ".claude/skills/speckit-tasks/SKILL.md"
+
+        if agentsAdvertised = claudeAdvertised then
+            []
+        else
+            let drift =
+                Set.union (Set.difference agentsAdvertised claudeAdvertised) (Set.difference claudeAdvertised agentsAdvertised)
+                |> Set.toList
+                |> String.concat ", "
+
+            [ $".agents/.claude speckit-tasks advertised id sets drift: {drift} [skill-id-resolution]" ]
+
+    missingNameFindings
+    @ dirNameFindings
+    @ peerFindings
+    @ resolutionFindings
+    @ driftFindings
+
 let runGeneratedGuidanceScan model outputPath =
     let validationRows =
         generatedGuidanceRequirements
@@ -4166,6 +4545,7 @@ let runGeneratedGuidanceScan model outputPath =
         @ validateControlsBoundaryGuidance model
         @ validateTaskSkillistGuidance model
         @ validateSerializedRunnerGuidance model
+        @ validateSkillIdResolution model
 
     if not (List.isEmpty findings) then
         failwithf "Generated guidance check failed:%s%s" Environment.NewLine (String.Join(Environment.NewLine, findings))
@@ -4177,6 +4557,7 @@ let runGeneratedGuidanceScan model outputPath =
           "PASS: generated Controls guidance covers Skia-rendered controls, rich text, chart controls, graph controls, DataGrid, Controls.Elmish adapter wiring, and legacy Charts replacement notes without stale generated terms."
           "PASS: task templates, task metadata templates, implementation guidance, and constitution guidance require `skillist` evaluation, confidence review, risk-level evidence, and implementation-time skill loading."
           "PASS: repository, agent, template, and generated-product guidance serialize FAKE-backed commands because `.fake` state is shared, while preserving safe non-FAKE parallelism."
+          "PASS: every advertised skill id in the speckit-tasks hints resolves to a declared skill `name:`; skill directory/name agree and `.agents`/`.claude` peers are synchronized."
           ""
           "Validated prompt classes:"
           yield!

@@ -2,6 +2,9 @@
 
 ## ✓ Graph is acyclic and consistent
 
+### Warnings
+- recorded-feature-vs-scanned mismatch: .specify/feature.json records '038-authoring-guidance-consistency' but the audit scanned 'text-only-visual-supported-host'
+
 ## Skill Match Assessments
 
 | Task | Candidate | Confidence | Signals | Reviewer disposition | Diagnostic |

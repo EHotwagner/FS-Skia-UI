@@ -410,6 +410,9 @@ module Scene =
     val rectangle: bounds: float * float * float * float -> fill: Color -> Scene
     /// Public contract function exposed by this FS.Skia.UI package.
     val rectangleWithPaint: bounds: Rect -> paint: Paint -> Scene
+    /// Self-describing, `Rect`-based rectangle constructor (parallels `filledEllipse`);
+    /// avoids the positional `(float * float * float * float)` arity slip.
+    val filledRectangle: bounds: Rect -> fill: Color -> Scene
     /// Public contract function exposed by this FS.Skia.UI package.
     val circle: center: Point -> radius: float -> fill: Color -> Scene
     /// Public contract function exposed by this FS.Skia.UI package.
@@ -428,6 +431,9 @@ module Scene =
     val arc: bounds: Rect -> startAngle: float -> sweepAngle: float -> paint: Paint -> Scene
     /// Public contract function exposed by this FS.Skia.UI package.
     val text: position: float * float -> text: string -> color: Color -> Scene
+    /// Self-describing, `Point`-based text constructor (parallels `circle`);
+    /// avoids the positional `(float * float)` arity slip.
+    val textAt: position: Point -> text: string -> color: Color -> Scene
     /// Public contract function exposed by this FS.Skia.UI package.
     val textRun: run: TextRun -> Scene
     /// Public contract function exposed by this FS.Skia.UI package.

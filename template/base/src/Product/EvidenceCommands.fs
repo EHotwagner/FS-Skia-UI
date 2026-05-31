@@ -541,7 +541,7 @@ let visualEvidence command _commandLine format evidenceKind _evidenceKindLine fa
                   evidenceField "evidence-kind" evidenceKind
                   evidenceField "supported-host" "true"
                   evidenceField "fallback-reason" fallbackReason
-                  evidenceField "board-readable" "true"
+                  evidenceField "playfield-readable" "true"
                   evidenceField "input-or-progress-observed" "true"
                   evidenceField "self-closed-for-evidence" "true"
                   evidenceField "input-dispatch" "not-required"
