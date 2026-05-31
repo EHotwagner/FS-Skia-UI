@@ -2,7 +2,7 @@
 
 - **Date:** 2026-05-31 10:49 CEST
 - **Author:** Claude Code (planning, requested by maintainer)
-- **Status:** Proposed plan. Not yet a feature; not in-flight.
+- **Status:** Proposed plan. **Stage 0 IMPLEMENTED** as feature `039-foundations-baseline-spike` (all 26 tasks complete; evidence graph `ok`, evidence audit `PASS`; D2 spike **confirmed**). See [Stage 0 — Implementation status](#stage-0--implementation-status-2026-05-31-feature-039) below. Stages 1–7 not yet started.
 - **Companion analysis:** [`2026-05-31-0908-foundations-rewrite-analysis.md`](./2026-05-31-0908-foundations-rewrite-analysis.md)
 - **Baseline at authoring time:** `build.fsx` = 4,688 lines; `tests/Governance.Tests/` = 34 test files; `validation.contract.yml` already defines tiers + path routing; evidence graph/audit computed by `.specify/extensions/evidence/scripts/python/*` orchestrated by `run-audit.sh` (1,284 lines) and shelled to from `build.fsx:1266,1273`.
 
@@ -178,6 +178,107 @@ baseline those claims are unverifiable, and "did we regress evidence output?" is
   snapshot with the git SHA recorded; later stages compare against it, not against a moving tree.
 
 **Effort:** ~0.5–1 day. **Revert:** delete the docs; nothing else touched.
+
+### Stage 0 — Implementation status (2026-05-31, feature 039)
+
+**Status: COMPLETE.** Stage 0 was implemented as feature
+`039-foundations-baseline-spike` (branch `039-foundations-baseline-spike`,
+pinned commit `34faf1ed61ec0ec2a8a2a81168517cb5ccf499d1`). All 26 tasks are
+`[X]`; `speckit.evidence.graph` returns `verdict=ok` (26 tasks, 0 errors/cycles)
+and `speckit.evidence.audit` returns `verdict=PASS` (0 unaccepted-synthetic, 0
+auto-synthetic, 0 late-seh, 0 diff-scan, 0 readiness-contract blocking). No
+synthetic evidence was used. Toolchain: dotnet `10.0.300`, FAKE `6.1.4`, python
+`3.14.5`.
+
+**0.1 Baseline captured** → `docs/reports/_baselines/2026-05-31-foundations.md`
+(SHA-pinned, each metric paired with its reproduction command):
+
+| Metric | Value (committed corpus at pinned SHA) |
+|---|---|
+| `build.fsx` total | **4,688** lines |
+| `build.fsx` orchestration vs validation | 45 `StartTarget` dispatch cases (orchestration) · 22 `Validate*` functions (validation), reported as marker counts; per-line attribution deferred to Stage 4 |
+| `.claude/skills` ↔ `.agents/skills` mirror | 19 ↔ 19 files, **5,854** combined lines |
+| `.specify/memory/constitution.md` | 336 lines |
+| Templates (`.specify/templates` + preset templates) | 1,508 lines |
+| `specs/**/*.md` | 773 files, **58,880** lines |
+| F# (`.fs`/`.fsi`/`.fsx`) | 191 files, **44,398** LOC |
+| Bash (`.sh`) | 17 files, 611 LOC |
+| Python (`.py`) | 2 files, **1,460** LOC (the evidence engine — the Stage 4 port target) |
+| Feature dirs under `specs/` | 40 |
+| Per-feature ceremony estimate | ~12–14 h (carried from this plan; labelled an estimate, exempt from the measurement-command rule) |
+
+   - **Golden fixtures** committed under
+     `tests/Governance.Tests/fixtures/evidence-golden/<feature>/`
+     (`task-graph.json` + `task-graph.md` + `audit-counts.txt`), proven
+     byte-for-byte reproducible (SHA-1) from the existing Python engine —
+     **the Stage 4 parity oracle**.
+   - **Substitution (recorded per FR-003):** the plan named three sources
+     (current 038, plus two historical). `017-synthetic-error-evidence` does
+     **not** produce a stable evidence output at the pinned SHA — its graph
+     compute fails (`exit 3`, `verdict=error`) because its skilled tasks lack a
+     committed `readiness/skill-loading-evidence.md`, so the audit halts before
+     a count block. Per the substitution rule it was replaced by
+     **`036-archive-readiness-api-docs`**, which passes graph compute *and*
+     carries an accepted-`[SEH]` task (`accepted-seh-tasks=1`, T005), preserving
+     the synthetic-propagation coverage 017 was chosen for. Final source set:
+     `038-authoring-guidance-consistency` (current), `037-authoring-audit-robustness`,
+     `036-archive-readiness-api-docs`. (Coverage gap noted in the fixtures
+     README: no stable source exercises `[S*]` auto-synthetic / unaccepted
+     counts — a follow-up.)
+
+**0.2 ADRs written** → `docs/adr/0001..0005-*.md` (D1 governance-library
+placement & distribution, D2 build front-end form, contract-versioning policy,
+D4 Spec Kit fork stance, D6 configuration representation), each with
+decision / alternatives / rationale / stages-shaped.
+
+   - **D2 spike — confirmed.** The de-risking spike stood up the two compiled
+     projects that Stage 5 builds on, and recorded the outcome in
+     `docs/reports/_baselines/2026-05-31-spike-d2-outcome.md`:
+     - `build/Governance/FS.Skia.UI.Build.fsproj` — governance-library skeleton
+       with a curated `Spike.fsi` (`val run : unit -> string`) per Principle II.
+     - `build/Build.fsproj` (Exe) — dedicated FAKE front-end whose `Program.fs`
+       registers one `SpikeHello` target via `Fake.Core.Target` delegating
+       **only** to `FS.Skia.UI.Build.Spike.run` (no inlined logic), dispatched
+       via `Target.runOrDefaultWithArguments`.
+     - Both compile clean under `net10.0`/`TreatWarningsAsErrors` (0/0);
+       `dotnet run --project build/Build.fsproj -- SpikeHello` prints the
+       library's success line; and `dotnet list build/Build.fsproj package
+       --include-transitive` shows **no `FSharp.Compiler.*`** (FR-012 satisfied
+       — the FAKE Target API works from a normal compiled exe with no FSX
+       runner / FCS). Reproduced by the committed `build/spike-verify.sh`
+       (`SPIKE-VERIFY PASS: D2 confirmed`). **The thin-`build.fsx` fallback is
+       not needed.**
+     - Dependency wiring: `Fake.Core.Target 6.1.4` added centrally to
+       `Directory.Packages.props` (build-tooling only; transitively brings the
+       minimal `Fake.Core.*` companions; **not** shipped in any generated
+       product) with a matching row in `docs/reports/dependencies.md`. Both
+       projects added to `FS-Skia-UI.sln` additively (32 → 36 project entries).
+
+**0.3 Meta-process established** — recorded in
+`specs/039-foundations-baseline-spike/plan.md §Programme Meta-Process` (the
+single discoverable place, cross-linked from the baseline): default
+framework-author light tier for foundations features, with Stage 1 and Stage 4
+named as the full-pipeline dogfood features.
+
+**Invariants held.** Runtime untouched: `git diff` over `src/**` = 0 changes,
+no runtime `.fsi` changed, `PackageSurfaceCheck` shows no baseline diff (SC-006).
+
+**No-regression caveat (honest disclosure).** In the serialized FAKE gate run,
+`Dev`, `GeneratedGuidanceCheck`, `GeneratedProductCheck`, `DependencyReport`,
+`TemplateDrift`, and `PackageSurfaceCheck` are **green**; the two readiness
+gates (`EvidenceGraph`/`EvidenceAudit`) PASS. **Two gates are RED for
+pre-existing, feature-independent reasons**, proven via a stash control (they
+fail identically with all of feature 039's edits stashed): `FsiTranscripts`
+(`scripts/controls-prelude.fsx` exits 1 on this toolchain) and `TemplateCheck`
+(its `Test` target hits the known `SkiaViewer.Tests` headless flake). Both are
+runtime/environment-side, out of scope per the runtime-untouched invariant; full
+detail in `specs/039-foundations-baseline-spike/readiness/logs/no-regression.md`.
+A one-time FAKE-runner paket-cache gap was resolved by restoring the
+`build.fsx.lock` "Main" group into the NuGet cache and clearing `.fake` (no
+target behaviour changed).
+
+**Stage 0 exit criteria: met** — baseline + golden fixtures committed, all five
+ADRs written, runtime unchanged, evidence graph/audit green.
 
 ---
 
@@ -738,7 +839,10 @@ stages above.
   published version. One port serves both; consumers stay lean. *Shapes: Stage 0 ADR, 4.7, 5.3.*
 - **D2 — Build front-end form → dedicated FAKE build project (`build/Build.fsproj`, `dotnet run`).**
   Compiled, IDE-grade, references the library directly, no DLL bootstrap wrinkle. Thin-`build.fsx`
-  shim retained only as a fallback if the Stage-3.1 spike surfaces a blocker. *Shapes: Stage 5.*
+  shim retained only as a fallback if the Stage-3.1 spike surfaces a blocker. **Spike CONFIRMED in
+  feature 039 (2026-05-31): `Fake.Core.Target` drives a target from a compiled exe with no FSX
+  runner and no `FSharp.Compiler.*` transitive dependency; the fallback is not needed.** *Shapes:
+  Stage 5.* See `docs/reports/_baselines/2026-05-31-spike-d2-outcome.md`.
 - **D3 — Evidence artifacts → minimal.** Tracked repo is ~24 MB (~15 MB history), not 38 GB; the
   bloat was overstated. Leave existing committed evidence as-is; only `.gitignore` future
   regenerable logs/zips. No tree cleanup, no history rewrite. *Shapes: Stage 6.5 (now a one-line
