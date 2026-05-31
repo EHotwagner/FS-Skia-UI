@@ -11,6 +11,10 @@
   <ItemGroup>
     <Compile Include="Spike.fsi" />
     <Compile Include="Spike.fs" />
+    <Compile Include="SkillSync.fsi" />
+    <Compile Include="SkillSync.fs" />
+    <Compile Include="SkillExamples.fsi" />
+    <Compile Include="SkillExamples.fs" />
   </ItemGroup>
 
 </Project>

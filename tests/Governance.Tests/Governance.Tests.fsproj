@@ -40,11 +40,14 @@
     <Compile Include="FeatureResolutionRobustnessTests.fs" />
     <Compile Include="AuditStatusRegionTests.fs" />
     <Compile Include="GeneratedFsiLoadScriptTests.fs" />
+    <Compile Include="SkillSyncTests.fs" />
+    <Compile Include="SkillExamplesTangleTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Lib\Lib.fsproj" />
+    <ProjectReference Include="..\..\build\Governance\FS.Skia.UI.Build.fsproj" />
     <PackageReference Include="Expecto" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" />

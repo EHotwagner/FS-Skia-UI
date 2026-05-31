@@ -32,4 +32,18 @@
   <ItemGroup>
     <PackageVersion Include="Fake.Core.Target" Version="6.1.4" />
   </ItemGroup>
+  <!-- Build-tooling adopt-set (feature 040). Referenced ONLY by the tangle
+       examples project (build/SkillExamples) and tests/Governance.Tests so the
+       capability-skill cookbook snippets compile against the real pinned APIs.
+       NOT shipped in any generated product; NO FSharp.Compiler.Service (FR-008).
+       See docs/reports/dependencies.md and the capability report §9. -->
+  <ItemGroup>
+    <PackageVersion Include="FSharp.SystemTextJson" Version="1.4.36" />
+    <PackageVersion Include="XParsec" Version="1.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.FileSystemGlobbing" Version="10.0.8" />
+    <PackageVersion Include="Fake.IO.FileSystem" Version="6.1.4" />
+    <PackageVersion Include="Fake.Tools.Git" Version="6.1.4" />
+    <PackageVersion Include="DiffPlex" Version="1.9.0" />
+    <PackageVersion Include="FsCheck" Version="3.3.3" />
+  </ItemGroup>
 </Project>

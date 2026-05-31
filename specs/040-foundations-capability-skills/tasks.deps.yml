@@ -1,0 +1,104 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Every Tnnn id in tasks.md appears as a key here with both `deps` and
+# `skillist`. Phase-checkpoint edges (every Phase N+1 task -> last foundation
+# task of Phase N) are auto-injected by the graph script; only non-phase
+# cross-edges are written here.
+#
+# The six fsharp-* capability skills are reference-only (FR-007 / SC-005) and
+# MUST NOT appear in any skillist; that is why the parsing/graph/etc. tasks
+# carry skillist: [] despite being about those capabilities.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: []
+  T006:
+    deps: [T001]
+    skillist: []
+  T007:
+    deps: [T005]
+    skillist: []
+  T008:
+    deps: [T005]
+    skillist: []
+  T009:
+    deps: [T005]
+    skillist: []
+  T010:
+    deps: []
+    skillist: []
+  T011:
+    deps: []
+    skillist: []
+  T012:
+    deps: []
+    skillist: []
+  T013:
+    deps: []
+    skillist: []
+  T014:
+    deps: []
+    skillist: []
+  T015:
+    deps: []
+    skillist: []
+  T016:
+    deps: [T005]
+    skillist: []
+  T017:
+    deps: [T005]
+    skillist: []
+  T018:
+    deps: [T016, T017]
+    skillist: []
+  T019:
+    deps: [T007, T018]
+    skillist: []
+  T020:
+    deps: [T010, T011, T012, T013, T014, T015, T019]
+    skillist: []
+  T021:
+    deps: [T005]
+    skillist: []
+  T022:
+    deps: [T005]
+    skillist: []
+  T023:
+    deps: [T021, T022]
+    skillist: []
+  T024:
+    deps: [T006, T007, T023]
+    skillist: []
+  T025:
+    deps: [T010, T011, T012, T013, T014, T015, T024]
+    skillist: []
+  T026:
+    deps: [T010, T011, T012, T013, T014, T015]
+    skillist: []
+  T027:
+    deps: [T020, T026]
+    skillist: []
+  T028:
+    deps: [T020, T025]
+    skillist: []
+  T029:
+    deps: [T027, T028]
+    skillist: ["speckit-evidence-graph"]
+  T030:
+    deps: [T029]
+    skillist: ["speckit-evidence-audit"]

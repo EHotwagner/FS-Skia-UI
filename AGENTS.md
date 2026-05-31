@@ -1,7 +1,7 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-specs/039-foundations-baseline-spike/plan.md
+specs/040-foundations-capability-skills/plan.md
 <!-- SPECKIT END -->
 
 FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`) share

@@ -1,0 +1,3 @@
+sha256Hex "abc" = ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
+checkAll -> 6 pairs; drifted = 0
+extractBlocks fsharp-parsing -> 8 blocks; first module = Skill.fsharp_parsing.Block01 @ line 70

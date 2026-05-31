@@ -66,7 +66,8 @@ let commandContractTests =
 
             expectContains content "\"Build\", [ \"Restore\" ]" "Build depends on Restore"
             expectContains content "\"Test\", [ \"Build\"; \"SampleContractSmoke\" ]" "Test depends on built outputs and sample smoke evidence"
-            expectContains content "\"Dev\", [ \"Test\" ]" "Dev depends on Test"
+            expectContains content "\"Dev\", [ \"Test\"; \"SkillSyncCheck\"; \"SkillExamplesCheck\" ]" "Dev depends on Test and the feature 040 capability-skill gates"
+            expectContains content "\"SkillExamplesCheck\", [ \"SkillSyncCheck\" ]" "examples compile gate runs after the byte-identity gate"
             expectContains content "\"EvidenceAudit\", [ \"EvidenceGraph\" ]" "audit depends on graph"
             expectContains content "\"Ci\", [ \"CiPreflight\"; \"Verify\" ]" "Ci runs preflight before delegating to Verify"
         }

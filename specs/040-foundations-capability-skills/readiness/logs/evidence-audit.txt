@@ -1,0 +1,226 @@
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/040-foundations-capability-skills
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/040-foundations-capability-skills
+
+[1/3] Computing task graph...
+task-graph: 30 tasks parsed
+  resolved-feature: 040-foundations-capability-skills
+  real-task-count: 30
+  wrote /home/developer/projects/FS-Skia-UI/specs/040-foundations-capability-skills/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/040-foundations-capability-skills/readiness/task-graph.md
+  status: 30[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 1 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[2e/3] Audit-status region scan...
+  audit-status: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 29 advisory
+
+=== Verdict ===
+verdict=FAIL
+real-tasks=30
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=FAIL — unresolved synthetic evidence, late [SEH] classification, readiness contract hits, persistent launch/runtime hits, or blocking diff-scan hits remain.
+  synthetic tasks (declared):     0
+  auto-synthetic tasks (computed): 0
+  accepted [SEH] tasks:           0
+  unaccepted synthetic tasks:      0
+  late [SEH] tasks:                0
+  readiness contract hits:         1
+  advisory diff-scan hits:         29 (printed, not blocking)
+
+  To override, rerun with:  --accept-synthetic "justification"
+    [BLOCK] validation-area=readiness-contract path=/home/developer/projects/FS-Skia-UI/specs/040-foundations-capability-skills/readiness/aggregate-hang-diagnostics.md status=missing reason=missing aggregate-hang-diagnostics.md missing-terms=verdict,stage,elapsed duration,last observed command,focused rerun,non-authoritative aggregate missing-sections= blocking=true
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:37  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:135  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:136  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:161  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:162  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:167  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:168  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:174  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-parsing/SKILL.md:113  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-parsing/SKILL.md:124  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:37  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:135  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:136  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:161  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:162  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:167  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:168  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:174  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-parsing/SKILL.md:113  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-parsing/SKILL.md:124  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/040-foundations-capability-skills/plan.md:101  (Synthetic-evidence disclosure (Principle V))
+    [adv]   agent-readiness-artifacts at specs/040-foundations-capability-skills/plan.md:140  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at specs/040-foundations-capability-skills/plan.md:141  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at specs/040-foundations-capability-skills/readiness/skill-loading-evidence.template.md:5  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at specs/040-foundations-capability-skills/readiness/skill-loading-evidence.template.md:6  (Agent-facing readiness artifact touched)
+    [adv]   synthetic-banner at specs/040-foundations-capability-skills/readiness/task-graph.md:155  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/040-foundations-capability-skills/tasks.md:22  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/040-foundations-capability-skills/tasks.md:181  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/040-foundations-capability-skills/tasks.md:184  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=2
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/040-foundations-capability-skills
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/040-foundations-capability-skills
+
+[1/3] Computing task graph...
+task-graph: 30 tasks parsed
+  resolved-feature: 040-foundations-capability-skills
+  real-task-count: 30
+  wrote /home/developer/projects/FS-Skia-UI/specs/040-foundations-capability-skills/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/040-foundations-capability-skills/readiness/task-graph.md
+  status: 30[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[2e/3] Audit-status region scan...
+  audit-status: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 29 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=30
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:37  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:135  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:136  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:161  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:162  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:167  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:168  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:174  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-parsing/SKILL.md:113  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-parsing/SKILL.md:124  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:37  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:135  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:136  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:161  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:162  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:167  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:168  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:174  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-parsing/SKILL.md:113  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-parsing/SKILL.md:124  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/040-foundations-capability-skills/plan.md:101  (Synthetic-evidence disclosure (Principle V))
+    [adv]   agent-readiness-artifacts at specs/040-foundations-capability-skills/plan.md:140  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at specs/040-foundations-capability-skills/plan.md:141  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at specs/040-foundations-capability-skills/readiness/skill-loading-evidence.template.md:5  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at specs/040-foundations-capability-skills/readiness/skill-loading-evidence.template.md:6  (Agent-facing readiness artifact touched)
+    [adv]   synthetic-banner at specs/040-foundations-capability-skills/readiness/task-graph.md:155  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/040-foundations-capability-skills/tasks.md:22  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/040-foundations-capability-skills/tasks.md:181  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/040-foundations-capability-skills/tasks.md:184  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=0
+
+## speckit evidence audit
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/040-foundations-capability-skills
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/040-foundations-capability-skills
+
+[1/3] Computing task graph...
+task-graph: 30 tasks parsed
+  resolved-feature: 040-foundations-capability-skills
+  real-task-count: 30
+  wrote /home/developer/projects/FS-Skia-UI/specs/040-foundations-capability-skills/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/040-foundations-capability-skills/readiness/task-graph.md
+  status: 30[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[2e/3] Audit-status region scan...
+  audit-status: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 29 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=30
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:37  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:135  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:136  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:161  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:162  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:167  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:168  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-graph-algorithms/SKILL.md:174  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-parsing/SKILL.md:113  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .agents/skills/fsharp-parsing/SKILL.md:124  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:37  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:135  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:136  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:161  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:162  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:167  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:168  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-graph-algorithms/SKILL.md:174  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-parsing/SKILL.md:113  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at .claude/skills/fsharp-parsing/SKILL.md:124  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/040-foundations-capability-skills/plan.md:101  (Synthetic-evidence disclosure (Principle V))
+    [adv]   agent-readiness-artifacts at specs/040-foundations-capability-skills/plan.md:140  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at specs/040-foundations-capability-skills/plan.md:141  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at specs/040-foundations-capability-skills/readiness/skill-loading-evidence.template.md:5  (Agent-facing readiness artifact touched)
+    [adv]   agent-readiness-artifacts at specs/040-foundations-capability-skills/readiness/skill-loading-evidence.template.md:6  (Agent-facing readiness artifact touched)
+    [adv]   synthetic-banner at specs/040-foundations-capability-skills/readiness/task-graph.md:155  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/040-foundations-capability-skills/tasks.md:22  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/040-foundations-capability-skills/tasks.md:181  (Synthetic-evidence disclosure (Principle V))
+    [adv]   synthetic-banner at specs/040-foundations-capability-skills/tasks.md:184  (Synthetic-evidence disclosure (Principle V))
+
+exit-code=0

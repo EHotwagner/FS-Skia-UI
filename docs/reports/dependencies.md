@@ -54,6 +54,28 @@ resolved transitively and are not declared as separate top-level entries.
 `dotnet list build/Build.fsproj package --include-transitive` and recorded in
 `docs/reports/_baselines/2026-05-31-spike-d2-outcome.md`.
 
+### Capability adopt-set (feature 040 — `build/SkillExamples` + `tests/Governance.Tests` only)
+
+The six `fsharp-*` capability skills carry compile-verified ` ```fsharp ` cookbook
+snippets. The `SkillExamplesCheck` gate tangles every block into
+`build/SkillExamples/SkillExamples.fsproj` and compiles it against the report's
+minimal adopt set, so a passing build proves the snippets' API calls are correct
+against the pinned versions. These packages are referenced **only** by that
+examples project and `tests/Governance.Tests`; no `src/**` project references
+them and none ships in any generated product. `DependencyReport` scans only
+`src/**`, so it never counts them as runtime dependencies. **No
+`FSharp.Compiler.Service`** (FR-008).
+
+| Package | Version | Purpose | Owner | License posture | Upgrade expectation | Preview risk |
+|---------|---------|---------|-------|-----------------|---------------------|--------------|
+| FSharp.SystemTextJson | 1.4.36 | F# DU/record round-trip over `System.Text.Json` for the JSON read/write capability (C4, C5). | Build tooling / governance | OSS package accepted for build tooling only. | Review with `System.Text.Json` / SDK upgrades. | None. |
+| XParsec | 1.0.0 | Pure-F# parser combinators for the line/region/diff grammar capability (C2, C3, C16) after the regex-port parity gate. | Build tooling / governance | MIT; accepted for build tooling only. | Pinned to 1.0.0 per the capability report; review on a new major. | None. |
+| Microsoft.Extensions.FileSystemGlobbing | 10.0.8 | First-party `*`/`**` whitelist glob matching for the glob capability (C14). | Build tooling / governance | Microsoft OSS package accepted for build tooling only. | Keep aligned with the .NET 10 line. | None. |
+| Fake.IO.FileSystem | 6.1.4 | FAKE-family file discovery / globbing for the discovery capability (C13). | Build tooling / governance | OSS package accepted for build tooling only. | Keep aligned with `Fake.Core.Target` 6.1.4 and `build.fsx.lock`. | None. |
+| Fake.Tools.Git | 6.1.4 | FAKE-family git wrapping (base-ref resolve, `merge-base`, diff) for the git capability (C15). | Build tooling / governance | OSS package accepted for build tooling only. | Keep aligned with `Fake.Core.Target` 6.1.4. | None. |
+| DiffPlex | 1.9.0 | Readable unified/side-by-side text diffs for the golden-parity / generation-currency capability (C19). | Build tooling / governance | OSS package accepted for build tooling only. | Review on a new minor. | None. |
+| FsCheck | 3.3.3 | Property-based testing (v3) of the graph algorithms for the testing capability (C20). | Build tooling / governance | OSS package accepted for build tooling only. | Keep on the FsCheck 3 line, integrating with the in-tree Expecto 10.2.2. | None. |
+
 ## Validation-Only Exceptions
 
 Sample projects may keep a conditional `PackageReference Include="FS.*"

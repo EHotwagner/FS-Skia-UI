@@ -267,6 +267,8 @@ type BuildEffect =
     | RequireFiles of artifactClass: string * paths: string list
     | FailWith of string
     | WorkflowSelfCheck
+    | SkillSyncGate
+    | SkillExamplesGate
 
 #load "scripts/build/Paths.fsx"
 #load "scripts/build/Process.fsx"
@@ -275,6 +277,12 @@ type BuildEffect =
 #load "scripts/build/PackageResolution.fsx"
 #load "scripts/build/TemplateValidation.fsx"
 #load "scripts/build/ProcessHealth.fsx"
+// Feature 040: the capability-skill byte-identity comparator and the ` ```fsharp `
+// block extractor/tangler are authored as compiled build/Governance modules (with
+// curated .fsi for Principle II) and #load'd here so SkillSyncCheck / SkillExamplesCheck
+// run them in-process. Both are BCL-only, so loading them into the FSX front-end is safe.
+#load "build/Governance/SkillSync.fs"
+#load "build/Governance/SkillExamples.fs"
 
 open BuildPaths
 open BuildProcess
@@ -570,6 +578,8 @@ let requiredTargets =
       "ControlsRenderingCheck"
       "DependencyReport"
       "GeneratedGuidanceCheck"
+      "SkillSyncCheck"
+      "SkillExamplesCheck"
       "TemplateDrift"
       "EvidenceGraph"
       "EvidenceAudit"
@@ -588,7 +598,7 @@ let targetDependencyRows =
       "Restore", []
       "Build", [ "Restore" ]
       "Test", [ "Build"; "SampleContractSmoke" ]
-      "Dev", [ "Test" ]
+      "Dev", [ "Test"; "SkillSyncCheck"; "SkillExamplesCheck" ]
       "PackLocal", []
       "RefreshSurfaceBaselines", [ "Build" ]
       "PackageSurfaceCheck", [ "Build" ]
@@ -609,6 +619,8 @@ let targetDependencyRows =
       "ControlsRenderingCheck", []
       "DependencyReport", []
       "GeneratedGuidanceCheck", []
+      "SkillSyncCheck", []
+      "SkillExamplesCheck", [ "SkillSyncCheck" ]
       "TemplateDrift", []
       "EvidenceGraph", []
       "EvidenceAudit", [ "EvidenceGraph" ]
@@ -774,6 +786,22 @@ let focusedGateContract model target =
           LogPath = log "template-drift.txt"
           ReadinessPath = Some model.TemplateDriftReportPath
           StaleAssumptions = []
+          VerdictCategory = VerificationSuccess }
+    | "SkillSyncCheck" ->
+        { TargetName = target
+          DirectPrerequisites = []
+          Command = "./fake.sh build -t SkillSyncCheck"
+          LogPath = log "skill-sync-check.txt"
+          ReadinessPath = readiness "skill-sync-check.md"
+          StaleAssumptions = []
+          VerdictCategory = VerificationSuccess }
+    | "SkillExamplesCheck" ->
+        { TargetName = target
+          DirectPrerequisites = [ "SkillSyncCheck" ]
+          Command = "./fake.sh build -t SkillExamplesCheck"
+          LogPath = log "skill-examples-check.txt"
+          ReadinessPath = readiness "skill-examples-check.md"
+          StaleAssumptions = [ "requires-restored-project:build/SkillExamples/SkillExamples.fsproj" ]
           VerdictCategory = VerificationSuccess }
     | "EvidenceGraph" ->
         { TargetName = target
@@ -1254,6 +1282,18 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
           GeneratedGuidanceScan model.GeneratedGuidanceReportPath
           RequireFiles("generated guidance report output", [ model.GeneratedGuidanceReportPath ])
           focusedGateSummary model "GeneratedGuidanceCheck" ]
+    | StartTarget "SkillSyncCheck" ->
+        model,
+        [ focusedGateAssumptionCheck model "SkillSyncCheck"
+          SkillSyncGate
+          RequireFiles("skill sync report", [ path [ model.ReadinessDir; "skill-sync-check.md" ]; path [ model.LogDir; "skill-sync-check.txt" ] ])
+          focusedGateSummary model "SkillSyncCheck" ]
+    | StartTarget "SkillExamplesCheck" ->
+        model,
+        [ focusedGateAssumptionCheck model "SkillExamplesCheck"
+          SkillExamplesGate
+          RequireFiles("skill examples report + compile log", [ path [ model.ReadinessDir; "skill-examples-check.md" ]; path [ model.LogDir; "skill-examples-check.txt" ] ])
+          focusedGateSummary model "SkillExamplesCheck" ]
     | StartTarget "TemplateDrift" ->
         model,
         [ focusedGateAssumptionCheck model "TemplateDrift"
@@ -4624,6 +4664,115 @@ let workflowSelfCheck (root: string) =
 
 // BUILD SECTION: interpreter
 
+// Feature 040 — SkillSyncCheck: in-process SHA-256 byte-identity over the two
+// skill trees (FR-002/FR-011/SC-002). Real evidence only; no diff/cmp/sha256sum.
+let runSkillSyncGate (model: BuildModel) =
+    let results = FS.Skia.UI.Build.SkillSync.checkAll model.RepositoryRoot
+    let report = FS.Skia.UI.Build.SkillSync.renderReport results
+    let reportPath = path [ model.ReadinessDir; "skill-sync-check.md" ]
+    let logPath = path [ model.LogDir; "skill-sync-check.txt" ]
+    ensureParent reportPath
+    File.WriteAllText(reportPath, report)
+    ensureParent logPath
+    File.WriteAllText(logPath, report)
+
+    match FS.Skia.UI.Build.SkillSync.drifted results with
+    | [] -> ()
+    | _ -> failwith (FS.Skia.UI.Build.SkillSync.renderFailureMessage results)
+
+// Feature 040 — SkillExamplesCheck: tangle every ` ```fsharp ` block into the
+// examples project and compile it against the pinned adopt set (FR-014/SC-007).
+// On a compile failure the F# diagnostic is mapped back to the owning skill +
+// block via the generated `// source:` comment. Empty extraction is a hard FAIL.
+let runSkillExamplesGate (model: BuildModel) =
+    let root = model.RepositoryRoot
+    let genDir = path [ root; "build"; "SkillExamples"; "Generated" ]
+    Directory.CreateDirectory genDir |> ignore
+
+    for stale in Directory.EnumerateFiles(genDir, "*.fs") do
+        File.Delete stale
+
+    let mutable total = 0
+
+    let countRows =
+        [ for slug in FS.Skia.UI.Build.SkillSync.expectedSlugs do
+              let rel = FS.Skia.UI.Build.SkillSync.claudeRelPath slug
+              let full = Path.Combine(root, rel.Replace('/', Path.DirectorySeparatorChar))
+              let blocks = FS.Skia.UI.Build.SkillExamples.extractBlocks slug (File.ReadAllText full)
+              total <- total + List.length blocks
+
+              if not (List.isEmpty blocks) then
+                  File.WriteAllText(path [ genDir; slug + ".fs" ], FS.Skia.UI.Build.SkillExamples.renderSkillFile rel blocks)
+
+              sprintf "| `%s` | %d |" slug (List.length blocks) ]
+
+    if total = 0 then
+        failwith "SkillExamplesCheck FAILED — empty extraction: no ```fsharp blocks were found across the six capability skills (no silent skip; Principle VII)."
+
+    let logPath = path [ model.LogDir; "skill-examples-check.txt" ]
+    ensureParent logPath
+    File.WriteAllText(logPath, "")
+    runProcessWithAllowedExitCodes "SkillExamples compile" "dotnet" "build build/SkillExamples/SkillExamples.fsproj -m:1 --nologo" root logPath Map.empty (Set.ofList [ 0; 1 ])
+
+    let log = File.ReadAllText logPath
+
+    if not (log.Contains "Build succeeded") then
+        // Map each `Generated/<slug>.fs(line,...)` diagnostic back to the source
+        // skill + block via the nearest preceding `// source:` comment (R4).
+        let rx = System.Text.RegularExpressions.Regex(@"Generated[/\\](?<slug>[A-Za-z0-9_.-]+)\.fs\((?<line>\d+)")
+
+        let mapped =
+            log.Replace("\r\n", "\n").Split('\n')
+            |> Array.choose (fun line ->
+                let m = rx.Match line
+
+                if m.Success && line.Contains "error" then
+                    let slug = m.Groups.["slug"].Value
+                    let genLine = int m.Groups.["line"].Value
+                    let genFile = path [ genDir; slug + ".fs" ]
+
+                    let source =
+                        if File.Exists genFile then
+                            let glines = File.ReadAllLines genFile
+                            glines.[.. min (genLine - 1) (glines.Length - 1)]
+                            |> Array.rev
+                            |> Array.tryPick (fun gl -> if gl.TrimStart().StartsWith "// source:" then Some(gl.Trim()) else None)
+                            |> Option.defaultValue "<source comment not found>"
+                        else
+                            "<generated file missing>"
+
+                    Some(sprintf "  %s   [%s]" (line.Trim()) source)
+                else
+                    None)
+            |> Array.toList
+            |> List.distinct
+
+        failwithf
+            "SkillExamplesCheck FAILED — a ```fsharp block did not compile against the pinned adopt-set packages.%sOffending skill/block(s):%s%s%sFull log: %s"
+            Environment.NewLine
+            Environment.NewLine
+            (String.Join(Environment.NewLine, mapped))
+            Environment.NewLine
+            logPath
+
+    let reportPath = path [ model.ReadinessDir; "skill-examples-check.md" ]
+
+    let report =
+        String.Join(
+            "\n",
+            [ "# SkillExamplesCheck"
+              ""
+              sprintf "PASS: all %d ` ```fsharp ` blocks across the six capability skills compiled against the pinned adopt-set packages (FCS-free)." total
+              ""
+              "| Skill | ` ```fsharp ` blocks |"
+              "|-------|----------------------|"
+              yield! countRows
+              "" ]
+        )
+
+    ensureParent reportPath
+    File.WriteAllText(reportPath, report)
+
 let interpret root effect =
     let model, _ = init root
 
@@ -4663,6 +4812,8 @@ let interpret root effect =
     | RequireFiles(artifactClass, paths) -> requireFiles artifactClass paths
     | FailWith message -> failwith message
     | WorkflowSelfCheck -> workflowSelfCheck root
+    | SkillSyncGate -> runSkillSyncGate model
+    | SkillExamplesGate -> runSkillExamplesGate model
 
 let runTarget targetName =
     let model, initEffects = init repositoryRoot

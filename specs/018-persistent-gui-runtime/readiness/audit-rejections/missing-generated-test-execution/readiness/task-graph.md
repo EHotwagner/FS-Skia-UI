@@ -3,7 +3,7 @@
 ## ✓ Graph is acyclic and consistent
 
 ### Warnings
-- recorded-feature-vs-scanned mismatch: .specify/feature.json records '038-authoring-guidance-consistency' but the audit scanned 'missing-generated-test-execution'
+- recorded-feature-vs-scanned mismatch: .specify/feature.json records '040-foundations-capability-skills' but the audit scanned 'missing-generated-test-execution'
 
 ## Skill Match Assessments
 

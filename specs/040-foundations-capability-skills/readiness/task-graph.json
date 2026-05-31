@@ -1,0 +1,1278 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Add the seven adopt-set build-tooling `PackageVersion` entries (`FSharp.SystemTextJson`, `XParsec` 1.0.0, `Microsoft.Extensions.FileSystemGlobbing`, `Fake.IO.FileSystem`, `Fake.Tools.Git`, `DiffPlex`, `FsCheck`) to `Directory.Packages.props` in a build-tooling `ItemGroup`, each pinned per Central Package Management; resolve exact net10-compatible versions against NuGet",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T001",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T001: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T1",
+      "parallel": true,
+      "title": "Add rows for the seven build-tooling packages to `docs/reports/dependencies.md` (need, version, maintenance owner = build-tooling/governance) so `DependencyReport` reads them as build-tooling scope, never product/runtime",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T002",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T002: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record feature Tier 1, affected layer (`build/Governance` build-tooling only), public-API impact (no product `.fsi`; new build-tooling `.fsi` required), Elmish/MVU applicability (plugs into the existing `build.fsx` `update`/effect boundary \u2014 no new `Model`/`Msg` algebra), and the evidence obligations (refined skills + `SkillSyncCheck` PASS + `SkillExamplesCheck` PASS)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T003",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T003: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Complete readiness notes for the feature's required readiness placeholder files under `specs/040-foundations-capability-skills/readiness/` (governance-risk-levels, aggregate-hang-diagnostics, runtime-limitations, generated-validation-authority, evidence-graph, evidence-audit), each naming its authoritative command, artifact path, failure class, and next action",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T004",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T004: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Draft the curated `.fsi` signatures for the two new `build/Governance` public modules \u2014 `SkillSync.fsi` (`SkillPair` model, skill-pair discovery, SHA-256 byte-identity comparison; pure core + IO edge) and `SkillExamples.fsi` (`CodeBlock` model, ` ```fsharp ` extraction, generated-module/tangle rendering) \u2014 Principle II curated companions, no access modifiers in `.fs`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T005",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T005: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": "T1",
+      "parallel": true,
+      "title": "Scaffold `build/SkillExamples/SkillExamples.fsproj` referencing exactly the adopt set (FCS-free), with `IsPackable=false`, a local `TreatWarningsAsErrors=false` override (errors still fail), and an empty regenerated `Generated/` directory",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T006",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T006: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T001"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Add `SkillSyncCheck` + `SkillExamplesCheck` target stubs to `build.fsx` (new `StartTarget` dispatch arms / effect DU cases) and register them in `requiredTargets`, `targetDependencyRows`, and the `Dev` dependency list so `Verify`/`Ci` inherit them \u2014 no existing target changes meaning",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T007",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T007: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Exercise the draft `.fsi` from FSI (representative pair-hash and block-extraction calls), capturing the session transcript to `readiness/fsi-session.txt`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T008",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T008: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record surface-area baselines for the new `build/Governance` modules and the unsupported-scope handling + fail-fast failure diagnostics (missing file / empty extraction \u2192 explicit FAIL, no silent skip)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T009",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T009: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Refine the `fsharp-parsing` skill cookbook (C1\u2013C5, C16, C21): verdicts (YamlDotNet / FSharp.SystemTextJson / XParsec / regex), the exact `tasks.md` task-line + box/annotation grammar and `audit-status` region semantics, the two-shape YAML caution, the Stage-0 golden-fixture byte-parity obligation, an API walkthrough + multiple runnable ` ```fsharp ` examples per owned capability, cautions, consuming stages, and Sources/links \u2014 written byte-identically to both `.claude/skills/fsharp-parsing/SKILL.md` and `.agents/skills/fsharp-parsing/SKILL.md`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T010",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T010: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Refine the `fsharp-graph-algorithms` skill cookbook (C6\u2013C9): verdicts (hand-roll + FsCheck), the exact cycle-detection / Kahn topo-sort / propagation parity rules, the Stage-0 golden-fixture byte-parity obligation, API walkthrough + multiple runnable examples per capability, cautions, consuming stages, Sources/links \u2014 byte-identical in both trees",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T011",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T011: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Refine the `fsharp-code-generation` skill cookbook (C10\u2013C12): verdicts (StringBuilder / `Utf8JsonWriter` schema-1.0 emit; **reject** code-quotations/FCS; Fabulous.AST/Myriad deferred-consider prose), API walkthrough + multiple runnable examples per capability using only adopt-set + BCL APIs, cautions (no FCS, build-tooling-only), consuming stages, Sources/links \u2014 byte-identical in both trees",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T012",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T012: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Refine the `fsharp-io-globbing` skill cookbook (C13\u2013C14): verdicts (`Microsoft.Extensions.FileSystemGlobbing`), the .NET-glob vs Python-`fnmatch` semantic-drift caution with the golden-test-before-cutover mitigation, API walkthrough + multiple runnable examples per capability, consuming stages, Sources/links \u2014 byte-identical in both trees",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T013",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T013: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Refine the `fsharp-shell-process` skill cookbook (C15, C17): verdicts (in-process-first; `Fake.Tools.Git` / `Fake.Core.Process` for residual shelling), API walkthrough + multiple runnable examples per capability, cautions, consuming stages, Sources/links \u2014 byte-identical in both trees",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T014",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T014: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Refine the `fsharp-build-orchestration` skill cookbook (C18\u2013C20): verdicts (Fake target orchestration; DiffPlex golden-diff; Expecto + FsCheck testing), API walkthrough + multiple runnable examples per capability, cautions, consuming stages, Sources/links \u2014 byte-identical in both trees",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T015",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T015: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add a failing `tests/Governance.Tests` test for the SHA-256 pair comparator: equal bytes \u2192 in-sync; differing bytes \u2192 out-of-sync with the offending slug and both hex digests named (fails before `SkillSync.fs` exists)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T016",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T016: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T015"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add a failing `tests/Governance.Tests` test for skill-pair discovery: finds exactly the six expected pairs across both trees; a missing file on either side is a failure, never a skip (fails before discovery exists)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T017",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T017: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T015"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `build/Governance/SkillSync.fs` against its `.fsi`: discover the six pairs, `File.ReadAllBytes` + `System.Security.Cryptography.SHA256` per file (no newline normalization), compare digests, name drift \u2014 pure comparison core with IO only at the edge",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T018",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T018: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T016",
+        "T017"
+      ],
+      "phase_deps": [
+        "T015"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Wire the `SkillSyncCheck` effect/target in `build.fsx`: in-process hash, write `readiness/skill-sync-check.md` (PASS: six slugs + shared hash) and `readiness/logs/skill-sync-check.txt`, emit `FailWith` naming every drifted slug + both hashes on drift",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T019",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T019: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T007",
+        "T018"
+      ],
+      "phase_deps": [
+        "T015"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Run `SkillSyncCheck` over the refined six (PASS lists six matching hashes); self-test: flip one byte in one `SKILL.md` \u2192 FAIL names that slug; restore \u2192 PASS; capture the PASS/FAIL/PASS evidence",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T020",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T020: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T010",
+        "T011",
+        "T012",
+        "T013",
+        "T014",
+        "T015",
+        "T019"
+      ],
+      "phase_deps": [
+        "T015"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add a failing `tests/Governance.Tests` test for the ` ```fsharp ` block extractor: returns blocks with stable `{skillSlug; blockIndex (1-based, per skill); startLine}` identity in document order (fails before `SkillExamples.fs` exists)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T021",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T021: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add a failing `tests/Governance.Tests` test for the tangler: wraps each block as `module Skill.<slug_underscored>.Block<NN>` preceded by a `// source: <skillPath>:<startLine>` comment, deterministic across runs (fails before the tangler exists)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T022",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T022: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `build/Governance/SkillExamples.fs` against its `.fsi`: extract every ` ```fsharp ` block from the six `SKILL.md`, render `build/SkillExamples/Generated/<slug>.fs` deterministically (regenerated each run, never hand-edited)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T023",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T023: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T021",
+        "T022"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Wire the `SkillExamplesCheck` target in `build.fsx`: regenerate `Generated/*.fs`, `dotnet build build/SkillExamples/SkillExamples.fsproj` capturing to `readiness/logs/skill-examples-check.txt`, map any compiler diagnostic back to the owning skill + block via the `// source:` comment, write `readiness/skill-examples-check.md` (per-skill block count); missing artifact or empty extraction \u2192 explicit FAIL",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T024",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T024: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T006",
+        "T007",
+        "T023"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Run `SkillExamplesCheck` over the refined six (PASS lists per-skill block counts); self-test: break one block's API call \u2192 FAIL names the skill/block; fix \u2192 PASS; capture the PASS/FAIL/PASS evidence",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T025",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T025: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T010",
+        "T011",
+        "T012",
+        "T013",
+        "T014",
+        "T015",
+        "T024"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Verify the C1\u2013C21 ownership map: each capability owned by exactly one skill (parsing C1\u2013C5/C16/C21; graph C6\u2013C9; code-gen C10\u2013C12; globbing C13\u2013C14; shell C15/C17; orchestration C18\u2013C20), union = {C1..C21}, intersection = \u2205, and every skill's frontmatter cites the capability report as `metadata.source`; record the ownership table",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T026",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T026: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T010",
+        "T011",
+        "T012",
+        "T013",
+        "T014",
+        "T015"
+      ],
+      "phase_deps": [
+        "T025"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Re-verify cross-tree byte-identity after refinement (`SkillSyncCheck` PASS over the refined six) and confirm none of the six capability skills appears in any task `skillist`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T027",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T027: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T020",
+        "T026"
+      ],
+      "phase_deps": [
+        "T025"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run the serialized FAKE validation order (`Dev` \u2014 now including `SkillSyncCheck` + `SkillExamplesCheck` \u2014 then `GeneratedGuidanceCheck`, `TemplateCheck`, `GeneratedProductCheck`), recording aggregate FAKE results as non-authoritative and rerunning any race-like gate failure in focused isolation",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T028",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T028: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T020",
+        "T025"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `speckit.evidence.graph` \u2014 confirm no cycles, no dangling refs, no `[S*]` surprises, and that none of the six capability skills appears in any `skillist` (SC-005: the evidence graph is unchanged by this feature)",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T029",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "evidence graph"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T029: task text matches speckit-evidence-graph; trigger_group=graph validation; matched_trigger=evidence graph"
+        }
+      ],
+      "explicit_deps": [
+        "T027",
+        "T028"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T030",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `speckit.evidence.audit` \u2014 confirm verdict PASS with no synthetic evidence to accept (this feature ships none)",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T030",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T030: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T029"
+      ],
+      "phase_deps": [
+        "T027"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    }
+  ]
+}

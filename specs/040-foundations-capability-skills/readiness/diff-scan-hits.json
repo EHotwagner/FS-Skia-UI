@@ -1,0 +1,238 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": ".agents/skills/fsharp-graph-algorithms/SKILL.md",
+      "line": 37,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic propagation (C8)** \u2014 `effective(T) = synthetic` if `declared(T)=synthetic`; else"
+    },
+    {
+      "file": ".agents/skills/fsharp-graph-algorithms/SKILL.md",
+      "line": 135,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| EffSynthetic"
+    },
+    {
+      "file": ".agents/skills/fsharp-graph-algorithms/SKILL.md",
+      "line": 136,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| EffAutoSynthetic"
+    },
+    {
+      "file": ".agents/skills/fsharp-graph-algorithms/SKILL.md",
+      "line": 161,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Some EffSynthetic"
+    },
+    {
+      "file": ".agents/skills/fsharp-graph-algorithms/SKILL.md",
+      "line": 162,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Some EffAutoSynthetic -> true"
+    },
+    {
+      "file": ".agents/skills/fsharp-graph-algorithms/SKILL.md",
+      "line": 167,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| SyntheticDecl -> EffSynthetic"
+    },
+    {
+      "file": ".agents/skills/fsharp-graph-algorithms/SKILL.md",
+      "line": 168,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| DoneReal when not (List.isEmpty syntheticDeps) -> EffAutoSynthetic"
+    },
+    {
+      "file": ".agents/skills/fsharp-graph-algorithms/SKILL.md",
+      "line": 174,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "if status = EffAutoSynthetic then"
+    },
+    {
+      "file": ".agents/skills/fsharp-parsing/SKILL.md",
+      "line": 113,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Synthetic"
+    },
+    {
+      "file": ".agents/skills/fsharp-parsing/SKILL.md",
+      "line": 124,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| \"S\" -> Synthetic"
+    },
+    {
+      "file": ".claude/skills/fsharp-graph-algorithms/SKILL.md",
+      "line": 37,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic propagation (C8)** \u2014 `effective(T) = synthetic` if `declared(T)=synthetic`; else"
+    },
+    {
+      "file": ".claude/skills/fsharp-graph-algorithms/SKILL.md",
+      "line": 135,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| EffSynthetic"
+    },
+    {
+      "file": ".claude/skills/fsharp-graph-algorithms/SKILL.md",
+      "line": 136,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| EffAutoSynthetic"
+    },
+    {
+      "file": ".claude/skills/fsharp-graph-algorithms/SKILL.md",
+      "line": 161,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Some EffSynthetic"
+    },
+    {
+      "file": ".claude/skills/fsharp-graph-algorithms/SKILL.md",
+      "line": 162,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Some EffAutoSynthetic -> true"
+    },
+    {
+      "file": ".claude/skills/fsharp-graph-algorithms/SKILL.md",
+      "line": 167,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| SyntheticDecl -> EffSynthetic"
+    },
+    {
+      "file": ".claude/skills/fsharp-graph-algorithms/SKILL.md",
+      "line": 168,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| DoneReal when not (List.isEmpty syntheticDeps) -> EffAutoSynthetic"
+    },
+    {
+      "file": ".claude/skills/fsharp-graph-algorithms/SKILL.md",
+      "line": 174,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "if status = EffAutoSynthetic then"
+    },
+    {
+      "file": ".claude/skills/fsharp-parsing/SKILL.md",
+      "line": 113,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Synthetic"
+    },
+    {
+      "file": ".claude/skills/fsharp-parsing/SKILL.md",
+      "line": 124,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| \"S\" -> Synthetic"
+    },
+    {
+      "file": "specs/040-foundations-capability-skills/plan.md",
+      "line": 101,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: **None.** Real evidence throughout \u2014 the rendered skill files, a real"
+    },
+    {
+      "file": "specs/040-foundations-capability-skills/plan.md",
+      "line": 140,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/<name>/SKILL.md       # \u00d76 refined cookbooks (Claude tree)"
+    },
+    {
+      "file": "specs/040-foundations-capability-skills/plan.md",
+      "line": 141,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/<name>/SKILL.md       # \u00d76 byte-identical peers (Codex tree)"
+    },
+    {
+      "file": "specs/040-foundations-capability-skills/readiness/skill-loading-evidence.template.md",
+      "line": 5,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T029 | speckit-evidence-graph | `/home/developer/projects/FS-Skia-UI/.agents/skills/speckit-evidence-graph/SKILL.md` |"
+    },
+    {
+      "file": "specs/040-foundations-capability-skills/readiness/skill-loading-evidence.template.md",
+      "line": 6,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T030 | speckit-evidence-audit | `/home/developer/projects/FS-Skia-UI/.agents/skills/speckit-evidence-audit/SKILL.md` |"
+    },
+    {
+      "file": "specs/040-foundations-capability-skills/readiness/task-graph.md",
+      "line": 155,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/040-foundations-capability-skills/tasks.md",
+      "line": 22,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "packages. No `[S]` / `[SEH]` task is anticipated (plan: Synthetic evidence \u2014"
+    },
+    {
+      "file": "specs/040-foundations-capability-skills/tasks.md",
+      "line": 181,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "**none** (plan: Synthetic evidence \u2014 None). The deliberate-break self-tests in"
+    },
+    {
+      "file": "specs/040-foundations-capability-skills/tasks.md",
+      "line": 184,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    }
+  ]
+}
