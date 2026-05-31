@@ -15,6 +15,18 @@
     <Compile Include="SkillSync.fs" />
     <Compile Include="SkillExamples.fsi" />
     <Compile Include="SkillExamples.fs" />
+    <Compile Include="Findings.fsi" />
+    <Compile Include="Findings.fs" />
+    <Compile Include="Targets.fsi" />
+    <Compile Include="Targets.fs" />
+    <Compile Include="TargetMetadata.fsi" />
+    <Compile Include="TargetMetadata.fs" />
+    <Compile Include="Capabilities.fsi" />
+    <Compile Include="Capabilities.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="YamlDotNet" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,14 @@
+
+## SkillExamples compile
+$ dotnet build build/SkillExamples/SkillExamples.fsproj -m:1 --nologo
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  SkillExamples -> /home/developer/projects/FS-Skia-UI/build/SkillExamples/bin/Debug/net10.0/SkillExamples.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.63
+
+exit-code=0

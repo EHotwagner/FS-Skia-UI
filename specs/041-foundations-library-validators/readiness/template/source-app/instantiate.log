@@ -1,0 +1,12 @@
+
+## source/app instantiate
+$ dotnet new fs-skia-ui --name V3DotnetAppSource --output "/home/developer/projects/FS-Skia-UI/artifacts/template-check/041-foundations-library-validators/source-app" --allow-scripts yes --profile app --rootNamespace V3DotnetAppSource --packagePrefix V3DotnetAppSource --authors TemplateValidation --repositoryUrl "https://example.invalid/source/app/V3DotnetAppSource" --targetFramework net10.0 --skipGitInit true
+The template "FS Skia UI Governed Project" was created successfully.
+
+Processing post-creation actions...
+Running command 'bash -c "find . -type f \( -name '*.sh' -o -name 'fake.sh' \) -exec chmod +x {} +"'...
+Command succeeded.
+
+
+
+exit-code=0

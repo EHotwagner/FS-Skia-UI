@@ -47,14 +47,14 @@ let v2CommandContractTests =
         }
 
         test "Verify and Ci compose V1 plus V2 gates" {
-            expectFileContains
-                "build.fsx"
-                [ "\"TemplateCheck\", [ \"TemplatePack\"; \"TemplateInstallSource\"; \"TemplateInstallPackage\"; \"TemplateInstantiate\"; \"TemplateSmoke\" ]"
-                  "\"DependencyReport\", []"
-                  "\"GeneratedGuidanceCheck\", []"
-                  "\"TemplateDrift\", []"
-                  "\"Ci\", [ \"CiPreflight\"; \"Verify\" ]"
-                  "v1 plus v2 verification artifact set" ]
+            // Feature 041: the dependency graph derives from the typed Targets DU (FR-001);
+            // assert the rows against Targets.targetDependencyRows, not string-tuple literals.
+            expectDependency "TemplateCheck" [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage"; "TemplateInstantiate"; "TemplateSmoke" ]
+            expectDependency "DependencyReport" []
+            expectDependency "GeneratedGuidanceCheck" []
+            expectDependency "TemplateDrift" []
+            expectDependency "Ci" [ "CiPreflight"; "Verify" ]
+            expectFileContains "build.fsx" [ "v1 plus v2 verification artifact set" ]
         }
 
         test "workflow self-check exercises V2 transition assertions" {

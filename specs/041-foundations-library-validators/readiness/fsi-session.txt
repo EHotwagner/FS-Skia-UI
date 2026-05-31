@@ -1,0 +1,6 @@
+renderDetail: - `scene` [displayName]: Missing displayName
+spec GeneratedProductCheck: name=GeneratedProductCheck timeout=medium cost=medium owner=template prereqs=["CapabilityCheck"; "SkillCheck"; "Dev"; "TemplateCheck"]
+requiredTargetNames count = 38
+validateMetadataDrift [Build;Restore] [] = [MissingMetadata "Build"; MissingMetadata "Restore"]
+readCatalog rows = 8; ids = ["scene"; "skiaviewer"; "elmish"; "keyboard-input"; "layout"; "controls";
+ "testing"; "samples"]

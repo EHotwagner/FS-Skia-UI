@@ -31,18 +31,28 @@ let read (relativePath: string) =
 
 let readBuildGovernanceSources () =
     let buildSource = read "build.fsx"
-    let scriptsDir = fullPath "scripts/build"
 
-    if Directory.Exists scriptsDir then
-        let scriptSources =
-            Directory.GetFiles(scriptsDir, "*.fsx")
+    let sourcesIn relative pattern =
+        let dir = fullPath relative
+
+        if Directory.Exists dir then
+            Directory.GetFiles(dir, pattern)
             |> Array.sort
             |> Array.map File.ReadAllText
             |> String.concat Environment.NewLine
+        else
+            ""
 
-        buildSource + Environment.NewLine + scriptSources
-    else
-        buildSource
+    // Feature 041: the build front-end is build.fsx + scripts/build/*.fsx PLUS the
+    // compiled governance modules under build/Governance (where the moved validators and
+    // the typed Target/metadata model now live), so the governance-source contract scans
+    // all three.
+    [ buildSource
+      sourcesIn "scripts/build" "*.fsx"
+      sourcesIn "build/Governance" "*.fsi"
+      sourcesIn "build/Governance" "*.fs" ]
+    |> List.filter (fun text -> text <> "")
+    |> String.concat Environment.NewLine
 
 let readJson (relativePath: string) =
     JsonDocument.Parse(read relativePath)
@@ -343,8 +353,22 @@ let expectPathsExist context paths =
     paths
     |> List.iter (fun relative -> Expect.isTrue (File.Exists(fullPath relative) || Directory.Exists(fullPath relative)) $"{context}: {relative} exists")
 
+// Feature 041: FAKE targets are registered off the typed Targets.dispatchTargets DU
+// (FR-001/FR-013), so target identity and the dependency graph are asserted against the
+// real library values rather than string-tuple literals that used to live in build.fsx.
+let registeredTargetNames =
+    FS.Skia.UI.Build.Targets.dispatchTargets |> List.map FS.Skia.UI.Build.Targets.name
+
 let expectFakeTarget target =
-    Expect.stringContains (read "build.fsx") $"\"{target}\"" $"build.fsx declares {target}"
+    Expect.isTrue (List.contains target registeredTargetNames) $"build registers the {target} FAKE target"
+
+let dependencyRow name =
+    FS.Skia.UI.Build.Targets.targetDependencyRows
+    |> List.tryFind (fun (target, _) -> target = name)
+    |> Option.map snd
+
+let expectDependency name expected =
+    Expect.equal (dependencyRow name) (Some expected) $"{name} dependency row (Targets.targetDependencyRows)"
 
 type TempFixtureDirectory(prefix: string) =
     let root =

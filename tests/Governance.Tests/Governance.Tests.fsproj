@@ -42,6 +42,9 @@
     <Compile Include="GeneratedFsiLoadScriptTests.fs" />
     <Compile Include="SkillSyncTests.fs" />
     <Compile Include="SkillExamplesTangleTests.fs" />
+    <Compile Include="TargetMetadataTests.fs" />
+    <Compile Include="CapabilityCatalogTests.fs" />
+    <Compile Include="ReportParityTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

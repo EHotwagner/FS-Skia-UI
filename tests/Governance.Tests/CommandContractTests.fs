@@ -42,8 +42,8 @@ let commandContractTests =
         }
 
         test "required targets are declared exactly once through the target graph" {
-            let content = read "build.fsx"
-
+            // Target identity + the dependency graph derive from the typed Targets DU (FR-001);
+            // assert against the real registry/rows rather than string-tuple literals.
             [ "Clean"
               "Restore"
               "Build"
@@ -61,15 +61,14 @@ let commandContractTests =
               "EvidenceAudit"
               "Verify"
               "Ci" ]
-            |> List.iter (fun target ->
-                Expect.stringContains content $"\"{target}\"" $"{target} target is named in build.fsx")
+            |> List.iter expectFakeTarget
 
-            expectContains content "\"Build\", [ \"Restore\" ]" "Build depends on Restore"
-            expectContains content "\"Test\", [ \"Build\"; \"SampleContractSmoke\" ]" "Test depends on built outputs and sample smoke evidence"
-            expectContains content "\"Dev\", [ \"Test\"; \"SkillSyncCheck\"; \"SkillExamplesCheck\" ]" "Dev depends on Test and the feature 040 capability-skill gates"
-            expectContains content "\"SkillExamplesCheck\", [ \"SkillSyncCheck\" ]" "examples compile gate runs after the byte-identity gate"
-            expectContains content "\"EvidenceAudit\", [ \"EvidenceGraph\" ]" "audit depends on graph"
-            expectContains content "\"Ci\", [ \"CiPreflight\"; \"Verify\" ]" "Ci runs preflight before delegating to Verify"
+            expectDependency "Build" [ "Restore" ]
+            expectDependency "Test" [ "Build"; "SampleContractSmoke" ]
+            expectDependency "Dev" [ "Test"; "SkillSyncCheck"; "SkillExamplesCheck" ]
+            expectDependency "SkillExamplesCheck" [ "SkillSyncCheck" ]
+            expectDependency "EvidenceAudit" [ "EvidenceGraph" ]
+            expectDependency "Ci" [ "CiPreflight"; "Verify" ]
         }
 
         test "V3 command workflow exposes capability product and skill validation effects" {
@@ -97,12 +96,12 @@ let commandContractTests =
             [ "CapabilityCheck"; "SkillCheck"; "GeneratedProductCheck"; "TemplateCheck"; "Verify"; "Ci" ]
             |> List.iter expectFakeTarget
 
-            expectContains content "\"GeneratedProductCheck\", [ \"CapabilityCheck\"; \"SkillCheck\"; \"Dev\"; \"TemplateCheck\" ]" "generated product check runs after capability skill dev and template checks"
-            expectContains content "\"Verify\"," "Verify target exists"
+            expectDependency "GeneratedProductCheck" [ "CapabilityCheck"; "SkillCheck"; "Dev"; "TemplateCheck" ]
+            expectFakeTarget "Verify"
             expectContains content "\"CapabilityCheck\"" "Verify includes CapabilityCheck"
             expectContains content "\"SkillCheck\"" "Verify includes SkillCheck"
             expectContains content "\"GeneratedProductCheck\"" "Verify includes GeneratedProductCheck"
-            expectContains content "\"Ci\", [ \"CiPreflight\"; \"Verify\" ]" "Ci runs preflight before delegating to Verify"
+            expectDependency "Ci" [ "CiPreflight"; "Verify" ]
         }
 
         test "Controls boundary refactor command surface is wired into governed targets" {
@@ -137,9 +136,10 @@ let commandContractTests =
               "DependencyOwnershipReport"
               "GeneratedGuidanceScan"
               "ScanV3GeneratedProducts"
-              "controls-boundary-guidance"
-              "EvidenceAudit\", [ \"EvidenceGraph\" ]" ]
+              "controls-boundary-guidance" ]
             |> List.iter (fun needle -> expectContains content needle $"build.fsx wires {needle}")
+
+            expectDependency "EvidenceAudit" [ "EvidenceGraph" ]
 
             [ "PackageSurfaceCheck"
               "FsiTranscripts"

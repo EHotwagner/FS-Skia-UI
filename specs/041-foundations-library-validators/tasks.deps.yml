@@ -1,0 +1,86 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Every Tnnn id in tasks.md appears as a key here with both `deps` and
+# `skillist`. Phase-checkpoint edges (every Phase N+1 task -> last foundation
+# task of Phase N) are auto-injected by the graph script; only non-phase
+# cross-edges are written here.
+#
+# This feature CONSUMES the fsharp-* cookbooks as implementation aids (see the
+# skill-assignment note in tasks.md), so they legitimately appear in skillist:
+# fsharp-parsing (YAML catalog read, T014), fsharp-code-generation (report
+# rendering, T006/T011), fsharp-build-orchestration (golden-diff parity, Expecto
+# tests, FAKE in-process wiring). The graph/audit workflow skills appear only on
+# T022/T023.
+
+tasks:
+  T001:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: []
+  T006:
+    deps: [T005]
+    skillist: ["fsharp-code-generation"]
+  T007:
+    deps: [T005]
+    skillist: []
+  T008:
+    deps: [T005]
+    skillist: []
+  T009:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T010:
+    deps: []
+    skillist: []
+  T011:
+    deps: [T009, T010]
+    skillist: ["fsharp-code-generation"]
+  T012:
+    deps: [T010, T011]
+    skillist: ["fsharp-build-orchestration"]
+  T013:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T014:
+    deps: [T006, T013]
+    skillist: ["fsharp-parsing"]
+  T015:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T016:
+    deps: [T011, T012, T014]
+    skillist: ["fsharp-build-orchestration"]
+  T017:
+    deps: [T015, T016]
+    skillist: ["fsharp-build-orchestration"]
+  T018:
+    deps: [T011, T014]
+    skillist: ["fsharp-build-orchestration"]
+  T019:
+    deps: [T016]
+    skillist: []
+  T020:
+    deps: []
+    skillist: []
+  T021:
+    deps: [T017, T018]
+    skillist: []
+  T022:
+    deps: [T021]
+    skillist: ["speckit-evidence-graph"]
+  T023:
+    deps: [T022]
+    skillist: ["speckit-evidence-audit"]

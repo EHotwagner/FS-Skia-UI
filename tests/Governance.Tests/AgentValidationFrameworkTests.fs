@@ -166,8 +166,11 @@ let agentValidationFrameworkTests =
         test "target metadata drift contract names runnable target metadata outputs owners and dependencies" {
             let source = buildText ()
 
+            // Feature 041: the target-metadata drift contract now lives in the compiled
+            // FS.Skia.UI.Build.TargetMetadata module (scanned via readBuildGovernanceSources);
+            // the intermediate TargetMetadataReport type was retired and the drift validator is
+            // the pure `validateMetadataDrift`.
             [ "type TargetMetadata"
-              "TargetMetadataReport"
               "RunnableTargetName"
               "DirectPrerequisites"
               "ExpectedOutputs"
@@ -177,7 +180,7 @@ let agentValidationFrameworkTests =
               "Authority"
               "FailureOwner"
               "Command"
-              "ValidateTargetMetadataDrift"
+              "validateMetadataDrift"
               "missing runnable target"
               "missing metadata"
               "missing expected output"

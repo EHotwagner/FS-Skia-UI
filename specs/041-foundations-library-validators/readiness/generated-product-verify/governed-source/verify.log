@@ -1,0 +1,83 @@
+
+## governed/source generated Verify
+$ bash ./fake.sh build -t Verify
+Dev completed for generated product
+GeneratedGuidanceCheck completed for generated product
+TemplateDrift completed for generated product
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/artifacts/generated-products/041-foundations-library-validators/governed-source/specs/generated-evidence-workflow
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 1 tasks parsed
+  resolved-feature: generated-evidence-workflow
+  real-task-count: 1
+  wrote /home/developer/projects/FS-Skia-UI/artifacts/generated-products/041-foundations-library-validators/governed-source/specs/generated-evidence-workflow/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/artifacts/generated-products/041-foundations-library-validators/governed-source/specs/generated-evidence-workflow/readiness/task-graph.md
+  status: 1[X]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/artifacts/generated-products/041-foundations-library-validators/governed-source/specs/generated-evidence-workflow
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 1 tasks parsed
+  resolved-feature: generated-evidence-workflow
+  real-task-count: 1
+  wrote /home/developer/projects/FS-Skia-UI/artifacts/generated-products/041-foundations-library-validators/governed-source/specs/generated-evidence-workflow/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/artifacts/generated-products/041-foundations-library-validators/governed-source/specs/generated-evidence-workflow/readiness/task-graph.md
+  status: 1[X]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/artifacts/generated-products/041-foundations-library-validators/governed-source/specs/generated-evidence-workflow
+
+[1/3] Computing task graph...
+task-graph: 1 tasks parsed
+  resolved-feature: generated-evidence-workflow
+  real-task-count: 1
+  wrote /home/developer/projects/FS-Skia-UI/artifacts/generated-products/041-foundations-library-validators/governed-source/specs/generated-evidence-workflow/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/artifacts/generated-products/041-foundations-library-validators/governed-source/specs/generated-evidence-workflow/readiness/task-graph.md
+  status: 1[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[2e/3] Audit-status region scan...
+  audit-status: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=1
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Product -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/041-foundations-library-validators/governed-source/src/Product/bin/Debug/net10.0/Product.dll
+  Product.Tests -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/041-foundations-library-validators/governed-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/artifacts/generated-products/041-foundations-library-validators/governed-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     2, Skipped:     0, Total:     2, Duration: 12 ms - Product.Tests.dll (net10.0)
+Test completed for generated product
+Verify completed for generated product
+Verify completed for generated product
+
+exit-code=0

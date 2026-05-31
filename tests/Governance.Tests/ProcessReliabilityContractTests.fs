@@ -5,6 +5,9 @@ open System.IO
 open Expecto
 open GovernanceTestSupport
 
+// Feature 041: target dependency rows are now derived from the typed Targets.Target DU
+// (FR-001); the dependency-graph contract is asserted via GovernanceTestSupport's
+// dependencyRow/expectDependency over the real Targets.targetDependencyRows value.
 let focusedGates =
     [ "PackageSurfaceCheck"
       "FsiTranscripts"
@@ -49,12 +52,13 @@ let processReliabilityContractTests =
         test "broad aggregate targets emit preflight and bootstrap effects before broad work" {
             let content = read "build.fsx"
 
-            [ "\"VerifyPreflight\", []"
-              "\"CiPreflight\", []"
-              "\"Verify\","
-              "\"Ci\", [ \"CiPreflight\"; \"Verify\" ]"
-              "StartTarget \"VerifyPreflight\""
-              "StartTarget \"CiPreflight\""
+            // Dependency graph contract is now typed (Targets.targetDependencyRows).
+            expectDependency "VerifyPreflight" []
+            expectDependency "CiPreflight" []
+            expectDependency "Ci" [ "CiPreflight"; "Verify" ]
+
+            [ "StartTarget Targets.VerifyPreflight"
+              "StartTarget Targets.CiPreflight"
               "CollectProcessHealth(\"Verify\""
               "CollectProcessHealth(\"Ci\""
               "ValidateRunnerBootstrap(\"Verify\""
@@ -150,18 +154,15 @@ let processReliabilityContractTests =
         }
 
         test "focused gates are direct entry points and avoid broad aggregate dependencies" {
-            let content = read "build.fsx"
-
             focusedGates
             |> List.iter (fun gate ->
                 expectFakeTarget gate
-                let dependencyPrefix = $"\"{gate}\", ["
-                let dependencyStart = content.IndexOf(dependencyPrefix, StringComparison.Ordinal)
-                Expect.isGreaterThanOrEqual dependencyStart 0 $"{gate} has dependency entry"
-                let dependencyEnd = content.IndexOf("]", dependencyStart, StringComparison.Ordinal)
-                let dependencyText = content.Substring(dependencyStart, dependencyEnd - dependencyStart + 1)
-                Expect.isFalse (dependencyText.Contains("\"Verify\"")) $"{gate} does not depend on Verify"
-                Expect.isFalse (dependencyText.Contains("\"Ci\"")) $"{gate} does not depend on Ci")
+
+                match dependencyRow gate with
+                | Some dependencies ->
+                    Expect.isFalse (List.contains "Verify" dependencies) $"{gate} does not depend on Verify"
+                    Expect.isFalse (List.contains "Ci" dependencies) $"{gate} does not depend on Ci"
+                | None -> failtestf "%s has no dependency entry in Targets.targetDependencyRows" gate)
         }
 
         test "focused gate diagnostics name stale build and restore remediation" {
