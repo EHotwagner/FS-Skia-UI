@@ -5,7 +5,7 @@
     <IsPackable>true</IsPackable>
     <PackageId>FS.Skia.UI</PackageId>
     <AssemblyName>FS.Skia.UI</AssemblyName>
-    <Version>0.1.42-preview.1</Version>
+    <Version>0.1.43-preview.1</Version>
     <Title>FS.Skia.UI</Title>
     <Description>Elmish-only Vulkan desktop viewer primitives for F# and SkiaSharp.</Description>
     <PackageTags>fsharp;elmish;skia;vulkan;desktop</PackageTags>
