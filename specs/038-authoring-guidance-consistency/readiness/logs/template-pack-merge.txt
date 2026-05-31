@@ -1,0 +1,29 @@
+The last full restore is still up to date. Nothing left to do.
+run TemplatePack
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target TemplatePack:
+<== TemplatePack
+
+The running order is:
+Group - 1
+  - TemplatePack
+Starting target 'TemplatePack'
+Finished (Success) 'TemplatePack' in 00:00:03.9034185
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target         Duration
+------         --------
+TemplatePack   00:00:03.9013820
+Total:         00:00:03.9787603
+Status:        Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 202 milliseconds
+ - Packages: 72 milliseconds
+ - Script analyzing: 27 milliseconds
+ - Script running: 4 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 5 seconds

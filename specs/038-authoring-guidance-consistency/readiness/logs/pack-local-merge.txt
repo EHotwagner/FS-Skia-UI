@@ -1,0 +1,29 @@
+The last full restore is still up to date. Nothing left to do.
+run PackLocal
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target PackLocal:
+<== PackLocal
+
+The running order is:
+Group - 1
+  - PackLocal
+Starting target 'PackLocal'
+Finished (Success) 'PackLocal' in 00:01:00.2039309
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target      Duration
+------      --------
+PackLocal   00:01:00.2011899
+Total:      00:01:00.2786198
+Status:     Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 199 milliseconds
+ - Packages: 58 milliseconds
+ - Script analyzing: 20 milliseconds
+ - Script running: 1 minute
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 minute, 1 second
