@@ -1,0 +1,46 @@
+The last full restore is still up to date. Nothing left to do.
+run FsiTranscripts
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target FsiTranscripts:
+<== FsiTranscripts
+   <== Build
+      <== Restore
+
+The running order is:
+Group - 1
+  - Restore
+Group - 2
+  - Build
+Group - 3
+  - FsiTranscripts
+Starting target 'Restore'
+Finished (Success) 'Restore' in 00:00:30.2235603
+Starting target 'Build'
+Finished (Success) 'Build' in 00:00:34.7334117
+Starting target 'FsiTranscripts'
+Finished (Failed) 'FsiTranscripts' in 00:00:07.6513055
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target           Duration
+------           --------
+Restore          00:00:30.2214120
+Build            00:00:34.7333308
+FsiTranscripts   00:00:07.6511851   (dotnet fsi scripts/controls-prelude.fsx failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/039-foundations-baseline-spike/readiness/fsi/controls-prelude.txt)
+Total:           00:01:12.6787561
+Status:          Failure
+---------------------------------------------------------------------
+Script reported an error:
+-> BuildFailedException: Target 'FsiTranscripts' failed.
+-> One or more errors occurred. (dotnet fsi scripts/controls-prelude.fsx failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/039-foundations-baseline-spike/readiness/fsi/controls-prelude.txt)
+-> dotnet fsi scripts/controls-prelude.fsx failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/039-foundations-baseline-spike/readiness/fsi/controls-prelude.txt
+Hint: To further diagnose the problem you can run fake in verbose mode `fake -v run ...` or set the 'FAKE_DETAILED_ERRORS' environment variable to 'true'
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 161 milliseconds
+ - Packages: 50 milliseconds
+ - Script analyzing: 19 milliseconds
+ - Script running: 1 minute, 12 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 minute, 13 seconds

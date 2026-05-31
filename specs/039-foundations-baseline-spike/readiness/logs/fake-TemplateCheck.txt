@@ -1,0 +1,80 @@
+The last full restore is still up to date. Nothing left to do.
+run TemplateCheck
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target TemplateCheck:
+<== TemplateCheck
+   <== TemplatePack
+   <== TemplateInstallSource
+   <== TemplateInstallPackage
+   <== TemplateInstantiate
+   <== TemplateSmoke
+      <== Test
+         <== Build
+            <== Restore
+         <== SampleContractSmoke
+
+The running order is:
+Group - 1
+  - Restore
+  - TemplatePack
+  - TemplateInstallSource
+Group - 2
+  - Build
+  - TemplateInstallPackage
+Group - 3
+  - SampleContractSmoke
+  - TemplateInstantiate
+Group - 4
+  - Test
+Group - 5
+  - TemplateSmoke
+Group - 6
+  - TemplateCheck
+Starting target 'Restore'
+Finished (Success) 'Restore' in 00:00:29.8984126
+Starting target 'TemplatePack'
+Finished (Success) 'TemplatePack' in 00:00:03.3409924
+Starting target 'TemplateInstallSource'
+Finished (Success) 'TemplateInstallSource' in 00:00:01.7628425
+Starting target 'Build'
+Finished (Success) 'Build' in 00:00:35.0383384
+Starting target 'TemplateInstallPackage'
+Finished (Success) 'TemplateInstallPackage' in 00:00:01.5376344
+Starting target 'SampleContractSmoke'
+Finished (Success) 'SampleContractSmoke' in 00:00:08.2068154
+Starting target 'TemplateInstantiate'
+Finished (Success) 'TemplateInstantiate' in 00:00:07.9435819
+Starting target 'Test'
+Finished (Failed) 'Test' in 00:00:06.2929796
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                   Duration
+------                   --------
+Restore                  00:00:29.8962511
+TemplatePack             00:00:03.3409398
+TemplateInstallSource    00:00:01.7627916
+Build                    00:00:35.0383012
+TemplateInstallPackage   00:00:01.5376059
+SampleContractSmoke      00:00:08.2067848
+TemplateInstantiate      00:00:07.9435474
+Test                     00:00:06.2929026   (dotnet test tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/039-foundations-baseline-spike/readiness/logs/test.txt)
+TemplateSmoke            00:00:00           (skipped)
+TemplateCheck            00:00:00           (skipped)
+Total:                   00:01:34.0917375
+Status:                  Failure
+---------------------------------------------------------------------
+Script reported an error:
+-> BuildFailedException: Target 'Test' failed.
+-> One or more errors occurred. (dotnet test tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/039-foundations-baseline-spike/readiness/logs/test.txt)
+-> dotnet test tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/039-foundations-baseline-spike/readiness/logs/test.txt
+Hint: To further diagnose the problem you can run fake in verbose mode `fake -v run ...` or set the 'FAKE_DETAILED_ERRORS' environment variable to 'true'
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 162 milliseconds
+ - Packages: 51 milliseconds
+ - Script analyzing: 20 milliseconds
+ - Script running: 1 minute, 34 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 minute, 35 seconds

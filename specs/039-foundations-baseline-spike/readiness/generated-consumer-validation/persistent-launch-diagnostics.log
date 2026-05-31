@@ -1,0 +1,6 @@
+
+## generated consumer persistent launch diagnostics
+$ dotnet run --project src/Product/Product.fsproj --no-restore -- --launch-evidence "/home/developer/projects/FS-Skia-UI/specs/039-foundations-baseline-spike/readiness/generated-consumer-validation/persistent-launch-evidence.txt"
+status=ok mode=persistent-evidence command=--launch-evidence self-closed-for-evidence=true first-frame-presented=true input-dispatch=not-required evidence=/home/developer/projects/FS-Skia-UI/specs/039-foundations-baseline-spike/readiness/generated-consumer-validation/persistent-launch-evidence.txt
+
+exit-code=0

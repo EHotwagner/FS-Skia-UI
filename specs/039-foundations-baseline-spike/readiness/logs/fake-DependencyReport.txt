@@ -1,0 +1,48 @@
+Starting full restore process.
+Downloading System.Threading.Tasks.Extensions 4.6.3
+Downloading FSharp.Core 8.0.400
+Download of System.Threading.Tasks.Extensions 4.6.3 done in 1 second. (510 kbit/s, 0 MB)
+Download of FSharp.Core 8.0.400 done in 2 seconds. (9870 kbit/s, 2 MB)
+Starting task 'DotNet:version': running dotnet --version
+Could not detect any platforms from 'net10.0' in '/home/developer/.nuget/packages/system.collections.immutable/10.0.8/lib/net10.0/System.Collections.Immutable.dll', please tell the package authors
+10.0.300
+Finished (Success) 'DotNet:version' in 00:00:00.2556623
+No exact match of product releases 10.0.300 found.
+No product release found for 10.0.300. Maybe a pre-release? Returning all the versions.
+run DependencyReport
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target DependencyReport:
+<== DependencyReport
+
+The running order is:
+Group - 1
+  - DependencyReport
+Starting target 'DependencyReport'
+Finished (Success) 'DependencyReport' in 00:00:02.1050748
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target             Duration
+------             --------
+DependencyReport   00:00:02.1030977
+Total:             00:00:02.1475465
+Status:            Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 165 milliseconds
+ - Packages: 2 seconds
+   - Disk IO: 145 milliseconds
+   - Average Download Time: 640 milliseconds
+   - Number of downloads: 2
+   - Average Request Time: 162 milliseconds
+   - Number of Requests: 5
+   - Creating Runtime Graph: 3 milliseconds
+   - Retrieve Assembly List: 1 second
+ - Script compiling: 7 seconds
+ - Script analyzing: 565 milliseconds
+ - Script running: 2 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 14 seconds
+Paket omitted 3 warnings similar to the ones above. You can see them in verbose mode.

@@ -1,0 +1,6 @@
+PackageSurfaceCheck=0
+FsiTranscripts=1
+GeneratedGuidanceCheck=0
+TemplateCheck=1
+GeneratedProductCheck=0
+TemplateDrift=0

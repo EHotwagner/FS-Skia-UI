@@ -1,0 +1,12 @@
+
+## dotnet fsi scripts/controls-prelude.fsx
+$ dotnet fsi scripts/controls-prelude.fsx
+
+
+/home/developer/projects/FS-Skia-UI/scripts/controls-prelude.fsx(58,16): error FS0001: This expression was expected to have type
+    'ControlEventOrigin'    
+but here has type
+    '(float * float) * string * Color -> SceneNode'    
+
+
+exit-code=1

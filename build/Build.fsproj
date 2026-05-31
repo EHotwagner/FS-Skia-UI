@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Dedicated compiled FAKE build front-end (build-tooling, not shipped).
+       Inherits net10.0 / TreatWarningsAsErrors / FSharp.Core from
+       Directory.Build.props. Fake.Core.Target is consumed as a library
+       (version pinned centrally in Directory.Packages.props). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="Governance/FS.Skia.UI.Build.fsproj" />
+    <PackageReference Include="Fake.Core.Target" />
+  </ItemGroup>
+
+</Project>

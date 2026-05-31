@@ -35,6 +35,25 @@ It moves dependency placement into explicit package owners:
 | Yoga.Net | 3.2.3 | Yoga layout engine bindings. | Layout package | OSS package accepted for layout use. | Review with layout engine updates. | None. |
 | YoloDev.Expecto.TestSdk | 0.15.3 | Expecto test SDK adapter for `dotnet test`. | Test infrastructure | OSS package accepted for tests. | Keep compatible with Expecto and test SDK versions. | None. |
 
+## Build-Tooling Dependencies (build/** only — NOT shipped in any generated product)
+
+Consumed as ordinary NuGet *libraries* by the compiled FAKE build front-end
+(`build/Build.fsproj`) via `dotnet run` — not via the FSX script runner, and
+not by any `src/**` project. These are scoped to `build/**`; `DependencyReport`
+scans only `src/**` and therefore never counts them as runtime/shipped
+dependencies.
+
+| Package | Version | Purpose | Owner | License posture | Upgrade expectation | Preview risk |
+|---------|---------|---------|-------|-----------------|---------------------|--------------|
+| Fake.Core.Target | 6.1.4 | Register and run build targets from a compiled `dotnet run` exe (feature 039 D2 spike). The Target API is a plain library; no FSX runner. | Build tooling | OSS package accepted for build tooling only. | Keep aligned with the `fake-cli` local tool and `build.fsx.lock`. | None. |
+
+`Fake.Core.Target` transitively brings the minimal `Fake.Core.*` companions its
+API requires (Context, Process, Trace, …) at the same `6.1.4` line; these are
+resolved transitively and are not declared as separate top-level entries.
+**No `FSharp.Compiler.Service`** is introduced (FR-012) — verified by
+`dotnet list build/Build.fsproj package --include-transitive` and recorded in
+`docs/reports/_baselines/2026-05-31-spike-d2-outcome.md`.
+
 ## Validation-Only Exceptions
 
 Sample projects may keep a conditional `PackageReference Include="FS.*"

@@ -1,0 +1,38 @@
+=== speckit.evidence.audit ===
+feature: /home/developer/projects/FS-Skia-UI/specs/039-foundations-baseline-spike
+
+[1/3] Computing task graph...
+task-graph: 26 tasks parsed
+  resolved-feature: 039-foundations-baseline-spike
+  real-task-count: 26
+  wrote /home/developer/projects/FS-Skia-UI/specs/039-foundations-baseline-spike/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/039-foundations-baseline-spike/readiness/task-graph.md
+  status: 26[X]
+
+[2/3] Readiness contract scan...
+  readiness-contract: 0 blocking
+
+[2b/3] Persistent launch evidence scan...
+  persistent-launch: 0 blocking
+
+[2c/3] Persistent GUI runtime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[2e/3] Audit-status region scan...
+  audit-status: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=26
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.

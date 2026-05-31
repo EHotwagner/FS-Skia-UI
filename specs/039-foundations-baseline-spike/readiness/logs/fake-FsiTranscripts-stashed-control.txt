@@ -1,0 +1,46 @@
+The last full restore is still up to date. Nothing left to do.
+run FsiTranscripts
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target FsiTranscripts:
+<== FsiTranscripts
+   <== Build
+      <== Restore
+
+The running order is:
+Group - 1
+  - Restore
+Group - 2
+  - Build
+Group - 3
+  - FsiTranscripts
+Starting target 'Restore'
+Finished (Success) 'Restore' in 00:00:39.3172676
+Starting target 'Build'
+Finished (Success) 'Build' in 00:01:44.6299761
+Starting target 'FsiTranscripts'
+Finished (Failed) 'FsiTranscripts' in 00:00:07.8191543
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target           Duration
+------           --------
+Restore          00:00:39.3153149
+Build            00:01:44.6298956
+FsiTranscripts   00:00:07.8190742   (dotnet fsi scripts/controls-prelude.fsx failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/fsi/controls-prelude.txt)
+Total:           00:02:31.8357225
+Status:          Failure
+---------------------------------------------------------------------
+Script reported an error:
+-> BuildFailedException: Target 'FsiTranscripts' failed.
+-> One or more errors occurred. (dotnet fsi scripts/controls-prelude.fsx failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/fsi/controls-prelude.txt)
+-> dotnet fsi scripts/controls-prelude.fsx failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/038-authoring-guidance-consistency/readiness/fsi/controls-prelude.txt
+Hint: To further diagnose the problem you can run fake in verbose mode `fake -v run ...` or set the 'FAKE_DETAILED_ERRORS' environment variable to 'true'
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 167 milliseconds
+ - Packages: 49 milliseconds
+ - Script analyzing: 18 milliseconds
+ - Script running: 2 minutes, 31 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 2 minutes, 32 seconds

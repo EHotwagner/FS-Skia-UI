@@ -23,4 +23,13 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageVersion Include="YoloDev.Expecto.TestSdk" Version="0.15.3" />
   </ItemGroup>
+  <!-- Build-tooling only (build/** projects, NOT src/** and NOT shipped in any
+       generated product). Consumed as ordinary NuGet libraries by the compiled
+       FAKE build front-end (build/Build.fsproj) via `dotnet run`, NOT via the
+       FSX script runner. Version matches the pinned fake-cli tool
+       (.config/dotnet-tools.json) and build.fsx.lock (6.1.4). No
+       FSharp.Compiler.Service (FR-012). See docs/reports/dependencies.md. -->
+  <ItemGroup>
+    <PackageVersion Include="Fake.Core.Target" Version="6.1.4" />
+  </ItemGroup>
 </Project>

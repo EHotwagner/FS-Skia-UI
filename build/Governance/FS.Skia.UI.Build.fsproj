@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Governance library skeleton (build-tooling, NOT a shipped runtime package).
+       Lives under build/ so runtime surface-baseline tooling does not sweep it.
+       Inherits net10.0 / TreatWarningsAsErrors / FSharp.Core from
+       Directory.Build.props and central package management. -->
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Spike.fsi" />
+    <Compile Include="Spike.fs" />
+  </ItemGroup>
+
+</Project>

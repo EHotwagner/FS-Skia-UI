@@ -1,0 +1,41 @@
+The last full restore is still up to date. Nothing left to do.
+run PackageSurfaceCheck
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target PackageSurfaceCheck:
+<== PackageSurfaceCheck
+   <== Build
+      <== Restore
+
+The running order is:
+Group - 1
+  - Restore
+Group - 2
+  - Build
+Group - 3
+  - PackageSurfaceCheck
+Starting target 'Restore'
+Finished (Success) 'Restore' in 00:00:32.4946829
+Starting target 'Build'
+Finished (Success) 'Build' in 00:00:35.1483337
+Starting target 'PackageSurfaceCheck'
+Finished (Success) 'PackageSurfaceCheck' in 00:00:06.7996840
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                Duration
+------                --------
+Restore               00:00:32.4923303
+Build                 00:00:35.1482505
+PackageSurfaceCheck   00:00:06.7996133
+Total:                00:01:14.5180815
+Status:               Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 183 milliseconds
+ - Packages: 57 milliseconds
+ - Script analyzing: 19 milliseconds
+ - Script running: 1 minute, 14 seconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 minute, 15 seconds

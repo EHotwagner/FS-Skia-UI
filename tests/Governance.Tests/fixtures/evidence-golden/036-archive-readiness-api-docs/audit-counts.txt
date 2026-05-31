@@ -1,0 +1,9 @@
+# Audit count block — 036-archive-readiness-api-docs
+# Graph-derived merge-gate counts (the four fields named in
+# contracts/golden-fixture-reproducibility.contract.md), computed by the
+# existing evidence engine from readiness/task-graph.json. Deterministic.
+real-tasks=32
+accepted-seh-tasks=1
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0

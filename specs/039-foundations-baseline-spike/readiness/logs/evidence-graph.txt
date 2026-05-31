@@ -1,0 +1,14 @@
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/specs/039-foundations-baseline-spike
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 26 tasks parsed
+  resolved-feature: 039-foundations-baseline-spike
+  real-task-count: 26
+  wrote /home/developer/projects/FS-Skia-UI/specs/039-foundations-baseline-spike/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/039-foundations-baseline-spike/readiness/task-graph.md
+  status: 10[X], 16[ ]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+GRAPH_EXIT=0
