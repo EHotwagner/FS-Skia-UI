@@ -1,4 +1,4 @@
-Serious rewriting ongoing, see:https://github.com/EHotwagner/FS-Skia-UI/blob/master/docs/reports/2026-05-31-0908-foundations-rewrite-analysis.md and https://github.com/EHotwagner/FS-Skia-UI/blob/master/docs/reports/2026-05-31-1049-foundations-implementation-plan.md Fingers crossed.
+Serious rewriting ongoing, see:https://github.com/EHotwagner/FS-Skia-UI/blob/main/docs/reports/2026-05-31-0908-foundations-rewrite-analysis.md and https://github.com/EHotwagner/FS-Skia-UI/blob/main/docs/reports/2026-05-31-1049-foundations-implementation-plan.md Fingers crossed.
 
 # FS.Skia.UI
 

@@ -5,7 +5,7 @@ specs/043-foundations-evidence-engine/plan.md
 ## Run `Route` first; run only the gates it prints
 
 Before validating a change, run `./fake.sh build -t Route`. It reads the
-working-tree diff (the union of the branch-vs-`master` merge-base diff and the
+working-tree diff (the union of the branch-vs-`main` merge-base diff and the
 uncommitted/untracked changes) and prints the authoritative **tier** and the
 **minimal gate list** for *this* change. Run only the gates it prints.
 

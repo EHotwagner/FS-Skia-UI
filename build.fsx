@@ -4486,12 +4486,21 @@ let runRouteSelection root =
         else
             Routing.FrameworkAuthor
 
-    let mergeBase =
-        match routeGitCapture root "merge-base HEAD master" with
+    let mergeBaseAgainst ref =
+        match routeGitCapture root (sprintf "merge-base HEAD %s" ref) with
         | Ok value when value.Trim() <> "" -> Some(value.Trim())
-        | _ ->
-            printfn "Route: could not resolve 'git merge-base HEAD master'; using working-tree changes only (no branch baseline)."
-            None
+        | _ -> None
+
+    let mergeBase =
+        // Trunk is `main` (renamed from `master`); fall back to `master` for old checkouts.
+        match mergeBaseAgainst "main" with
+        | Some _ as found -> found
+        | None ->
+            match mergeBaseAgainst "master" with
+            | Some _ as found -> found
+            | None ->
+                printfn "Route: could not resolve 'git merge-base HEAD main' (or master); using working-tree changes only (no branch baseline)."
+                None
 
     let committedPaths =
         match mergeBase with

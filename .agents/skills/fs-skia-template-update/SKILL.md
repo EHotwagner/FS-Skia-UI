@@ -20,7 +20,7 @@ Primary files:
 
 1. Confirm the working tree and current branch.
    - Use `git status --short --branch`.
-   - If the user asked to push, expect to be on `master` unless they said otherwise.
+   - If the user asked to push, expect to be on `main` unless they said otherwise.
 
 2. Detect current packable package versions.
    - Inspect `src/*/*.fsproj` files with `<IsPackable>true</IsPackable>` or `<PackageId>`.
