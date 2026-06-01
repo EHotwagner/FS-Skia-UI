@@ -23,14 +23,26 @@ Primary files:
    - If the user asked to push, expect to be on `main` unless they said otherwise.
 
 2. Detect current packable package versions.
-   - Inspect `src/*/*.fsproj` files with `<IsPackable>true</IsPackable>` or `<PackageId>`.
+   - Inspect `*.fsproj` files with `<IsPackable>true</IsPackable>` or `<PackageId>`.
+     Scan both `src/` and `build/` — `FS.Skia.UI.Build` lives in
+     `build/Governance/FS.Skia.UI.Build.fsproj`, not under `src/`, and is
+     pinned by the template like the other repo packages.
    - Use the latest versions already committed or freshly packed, for example:
-     - `rg -n "<PackageId>|<Version>|<IsPackable>" -g "*.fsproj" src`
+     - `rg -n "<PackageId>|<Version>|<IsPackable>" -g "*.fsproj" src build`
+   - All repo packages share a single version, so one value drives every pin.
    - Do not invent versions. The template pins should match the current package versions for the repo packages.
 
 3. Update generated product pins.
    - Edit `template/base/Directory.Packages.props`.
-   - Update every `FS.Skia.UI*` `<PackageVersion ... Version="...">` entry to the current package version:
+   - Because every repo package shares one version, the fastest and least
+     error-prone bump is a single replacement of the old version with the new
+     one — this structurally cannot miss a package:
+     ```bash
+     sed -i 's/Version="<old-version>"/Version="<new-version>"/g' template/base/Directory.Packages.props
+     ```
+   - This must update every `FS.Skia.UI*` `<PackageVersion ... Version="...">`
+     entry to the current package version (nine repo packages):
+     - `FS.Skia.UI.Build`
      - `FS.Skia.UI.Scene`
      - `FS.Skia.UI.SkiaViewer`
      - `FS.Skia.UI.Elmish`
@@ -59,18 +71,15 @@ Primary files:
      ```
    - Do not delete source files or reset the repo to fix FAKE cache problems.
    - After package version bumps, also verify that every current repo package
-     exists in the local feed before validating generated projects. Check the
-     exact package IDs and versions detected in step 2, for example:
+     exists in the local feed before validating generated projects. Loop over
+     the exact package IDs and the version detected in step 2:
      ```bash
-     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.Scene.<version>.nupkg"
-     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.SkiaViewer.<version>.nupkg"
-     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.Elmish.<version>.nupkg"
-     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.KeyboardInput.<version>.nupkg"
-     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.Layout.<version>.nupkg"
-     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.Controls.<version>.nupkg"
-     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.Controls.Elmish.<version>.nupkg"
-     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.Testing.<version>.nupkg"
-     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.<version>.nupkg"
+     v=<version>
+     for p in Build Scene SkiaViewer Elmish KeyboardInput Layout Controls Controls.Elmish Testing; do
+       test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.$p.$v.nupkg" && echo "OK  $p" || echo "MISS $p"
+     done
+     # FS.Skia.UI (the Lib package) has no suffix:
+     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.$v.nupkg" && echo "OK  (Lib)" || echo "MISS (Lib)"
      ```
    - If solution-level `dotnet pack` or a prior merge pack missed a packable
      repo package, pack that project explicitly before running generated
@@ -105,6 +114,7 @@ Primary files:
    - Inspect `/tmp/fs-skia-ui-template-update-check/Directory.Packages.props`
      and confirm the default `app` profile pins match the current package
      versions:
+     - `FS.Skia.UI.Build`
      - `FS.Skia.UI.Scene`
      - `FS.Skia.UI.SkiaViewer`
      - `FS.Skia.UI.Elmish`
@@ -141,6 +151,7 @@ Primary files:
    - Inspect
      `/tmp/fs-skia-ui-template-update-governed-check/Directory.Packages.props`
      and confirm the governed profile pins match the current package versions:
+     - `FS.Skia.UI.Build`
      - `FS.Skia.UI.Scene`
      - `FS.Skia.UI.Testing`
    - Restore and test the governed profile through the same local-feed path:
