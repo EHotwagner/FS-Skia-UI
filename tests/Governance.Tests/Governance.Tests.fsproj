@@ -38,8 +38,10 @@
     <Compile Include="ArchiveReadinessApiDocsTests.fs" />
     <Compile Include="AuditStatusRegionTests.fs" />
     <Compile Include="GeneratedFsiLoadScriptTests.fs" />
+    <Compile Include="SkillTreeGenTests.fs" />
     <Compile Include="SkillSyncTests.fs" />
-    <Compile Include="SkillExamplesTangleTests.fs" />
+    <Compile Include="SkillistViewTests.fs" />
+    <Compile Include="ConstitutionFragmentsTests.fs" />
     <Compile Include="TargetMetadataTests.fs" />
     <Compile Include="CapabilityCatalogTests.fs" />
     <Compile Include="ReportParityTests.fs" />

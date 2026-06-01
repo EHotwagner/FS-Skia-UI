@@ -155,13 +155,23 @@ module Audit =
                 | Some sk -> skillistOf.[tid] <- sk
 
                 match task.SkillistMirror with
-                | None -> errors.Add(sprintf "%s: missing tasks.md skillist mirror" tid)
+                | None ->
+                    // Feature 044 (US2): the derived [skillist: …] view is absent. Absent
+                    // metadata is invalid and is reported, never silently inserted (FR-007).
+                    errors.Add(
+                        sprintf
+                            "%s: missing tasks.md [skillist: …] view; regenerate via ./fake.sh build -t RefreshSurfaceBaselines"
+                            tid)
                 | Some mirror ->
                     match meta.Skillist with
                     | Some sk when mirror <> sk ->
-                        errors.Add(
-                            sprintf "%s: tasks.md mirror [%s] does not match tasks.deps.yml [%s]" tid
-                                (String.concat ", " mirror) (String.concat ", " sk))
+                        // Feature 044 (US2): reframed from a symmetric peer complaint into an
+                        // asymmetric currency diagnostic — tasks.deps.yml skillist: is canonical
+                        // and the tasks.md [skillist: …] annotation is the derived view. The token
+                        // render is delegated to SkillistView. This engine only reads the ACTIVE
+                        // feature, so historical feature directories are never re-derived
+                        // (FR-007, SC-004); the compared value (mirror <> sk) is unchanged.
+                        errors.Add(FS.Skia.UI.Build.SkillistView.staleDiagnostic tid sk)
                     | _ -> ()
 
                 let declaredSkillist = defaultArg meta.Skillist []

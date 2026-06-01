@@ -1,0 +1,114 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Every Tnnn id in tasks.md appears as a key here with both `deps` and
+# `skillist`. Phase-checkpoint edges (every Phase N+1 task -> last task of
+# Phase N) are auto-injected by the graph compute; only non-phase cross-edges
+# are written here (e.g. T011 -> {T008, T009} for the build.fsx wiring that
+# needs SkillTreeGen + the reframed SkillSync; T024/T027/T028 -> their evidence
+# inputs across phases).
+#
+# Build-tooling / governance only (build/Governance + build.fsx + .specify +
+# the skill trees), so no fs-skia-* runtime skill applies. It CONSUMES the
+# fsharp-* cookbooks (io-globbing -> SkillTreeGen enumeration + currency-diffing;
+# code-generation -> the manifest / annotation / fragment emission;
+# parsing -> the ### Principle extraction + the [skillist: ...] splice anchor;
+# build-orchestration -> the build.fsx gate/effect wiring, Expecto harnesses,
+# and the serialized run). The graph/audit workflow skills appear only on
+# T029/T030. fsharp-shell-process is deliberately NOT assigned (in-process
+# copy-generation, no diff/cmp/sha256sum/git shelling) and fs-skia-template-update
+# is NOT assigned (governance marker regions, not a dotnet-new product / pin
+# change) -- see the skill-assignment note in tasks.md.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: [T002]
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: [T004]
+    skillist: []
+  T006:
+    deps: [T004]
+    skillist: []
+  T007:
+    deps: []
+    skillist: ["fsharp-io-globbing", "fsharp-build-orchestration"]
+  T008:
+    deps: [T007]
+    skillist: ["fsharp-io-globbing", "fsharp-code-generation"]
+  T009:
+    deps: [T008]
+    skillist: ["fsharp-io-globbing"]
+  T010:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T011:
+    deps: [T008, T009]
+    skillist: ["fsharp-io-globbing", "fsharp-build-orchestration"]
+  T012:
+    deps: [T011]
+    skillist: ["fsharp-build-orchestration"]
+  T013:
+    deps: [T011]
+    skillist: ["fsharp-io-globbing"]
+  T014:
+    deps: []
+    skillist: ["fsharp-code-generation", "fsharp-build-orchestration"]
+  T015:
+    deps: [T014]
+    skillist: ["fsharp-code-generation", "fsharp-parsing"]
+  T016:
+    deps: [T015]
+    skillist: ["fsharp-code-generation"]
+  T017:
+    deps: [T016]
+    skillist: ["fsharp-build-orchestration"]
+  T018:
+    deps: []
+    skillist: ["fsharp-parsing", "fsharp-build-orchestration"]
+  T019:
+    deps: [T018]
+    skillist: ["fsharp-parsing", "fsharp-code-generation"]
+  T020:
+    deps: [T019]
+    skillist: []
+  T021:
+    deps: [T019, T020]
+    skillist: ["fsharp-build-orchestration"]
+  T022:
+    deps: [T021]
+    skillist: ["fsharp-build-orchestration"]
+  T023:
+    deps: [T010]
+    skillist: ["fsharp-build-orchestration"]
+  T024:
+    deps: [T012, T020, T023]
+    skillist: []
+  T025:
+    deps: [T012]
+    skillist: []
+  T026:
+    deps: []
+    skillist: []
+  T027:
+    deps: [T007, T014, T018]
+    skillist: ["fsharp-build-orchestration"]
+  T028:
+    deps: [T023, T024, T025, T026, T027]
+    skillist: ["fsharp-build-orchestration"]
+  T029:
+    deps: [T028]
+    skillist: ["speckit-evidence-graph"]
+  T030:
+    deps: [T029]
+    skillist: ["speckit-evidence-audit"]

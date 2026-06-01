@@ -65,8 +65,8 @@ let commandContractTests =
 
             expectDependency "Build" [ "Restore" ]
             expectDependency "Test" [ "Build"; "SampleContractSmoke" ]
-            expectDependency "Dev" [ "Test"; "SkillSyncCheck"; "SkillExamplesCheck" ]
-            expectDependency "SkillExamplesCheck" [ "SkillSyncCheck" ]
+            // Feature 044 retired SkillExamplesCheck; Dev's only skill gate is now SkillSyncCheck.
+            expectDependency "Dev" [ "Test"; "SkillSyncCheck" ]
             expectDependency "EvidenceAudit" [ "EvidenceGraph" ]
             expectDependency "Ci" [ "CiPreflight"; "Verify" ]
         }

@@ -48,7 +48,7 @@
     },
     {
       "runnable_target_name": "Dev",
-      "direct_prerequisites": [ "Test", "SkillSyncCheck", "SkillExamplesCheck" ],
+      "direct_prerequisites": [ "Test", "SkillSyncCheck" ],
       "expected_outputs": [ "__REPO__/specs/041-foundations-library-validators/readiness/logs/Dev.txt" ],
       "stale_assumptions": [  ],
       "timeout_class": "focused",
@@ -276,17 +276,6 @@
       "authority": "authoritative",
       "failure_owner": "governance",
       "command": "./fake.sh build -t SkillSyncCheck"
-    },
-    {
-      "runnable_target_name": "SkillExamplesCheck",
-      "direct_prerequisites": [ "SkillSyncCheck" ],
-      "expected_outputs": [ "__REPO__/specs/041-foundations-library-validators/readiness/logs/skill-examples-check.txt", "__REPO__/specs/041-foundations-library-validators/readiness/skill-examples-check.md" ],
-      "stale_assumptions": [ "requires-restored-project:build/SkillExamples/SkillExamples.fsproj" ],
-      "timeout_class": "focused",
-      "cost": "low",
-      "authority": "authoritative",
-      "failure_owner": "governance",
-      "command": "./fake.sh build -t SkillExamplesCheck"
     },
     {
       "runnable_target_name": "TemplateDrift",

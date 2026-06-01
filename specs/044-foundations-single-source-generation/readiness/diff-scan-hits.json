@@ -1,0 +1,14 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": ".specify/templates/tasks-template.md",
+      "line": 28,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "**V. Synthetic Evidence Requires Loud, Repeated Disclosure** \u2014 Synthetic evidence \u2014 mocks, stubs, fakes, hardcoded fixtu"
+    }
+  ]
+}

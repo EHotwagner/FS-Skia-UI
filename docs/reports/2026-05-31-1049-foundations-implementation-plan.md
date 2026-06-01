@@ -7,7 +7,8 @@
   - **Stage 2.1 IMPLEMENTED** (the `.claude`↔`.agents` byte-identity stopgap) as feature `040-foundations-capability-skills`, which shipped `SkillSyncCheck` (in-process SHA-256 sync) + `SkillExamplesCheck` (compile-verified cookbooks). The rest of Stage 2 (2.2–2.5) is not yet started. See [Stage 2 — Implementation status](#stage-2--implementation-status-2026-05-31-feature-040).
   - **Stage 3 IMPLEMENTED** as feature `041-foundations-library-validators` (the first two real validators extracted into the compiled `FS.Skia.UI.Build` library + the typed `Target` single-source DU; squash-merged to `master`, evidence audit `PASS`). See [Stage 3 — Implementation status](#stage-3--implementation-status-2026-05-31-feature-041).
   - **Stage 1 IMPLEMENTED** as feature `042-foundations-two-tier-process` (the two-tier process made authoritative and enforced via a compiled `Routing.fs` selector + a new `Route` target; the interim `select-tier.fsx` was **skipped** and Stage 5.5's `Routing.fs` pulled forward, mirroring how 041 pulled the typed `Target` work forward; evidence audit `PASS`, dogfood serialized pipeline green). See [Stage 1 — Implementation status](#stage-1--implementation-status-2026-06-01-feature-042).
-  - **Stages 2.2–2.5, 4–7 not yet started.**
+  - **Stage 4 IMPLEMENTED** as feature `043-foundations-evidence-engine` (the tri-language evidence gate — `build.fsx → run-audit.sh → compute-task-graph.py + audit-status-scan.py → JSON` — replaced by compiled, unit/property-tested F# in `FS.Skia.UI.Build.Evidence`, computing graph + merge-gate audit **in-process**; byte-for-byte parity against the Stage-0 golden fixtures proven *before* the Python and `run-audit.sh` were deleted; `FS.Skia.UI.Build` packed/published and consumed by generated projects per D1; squash-merged to `main`, all 34 tasks complete, evidence audit `PASS`, zero synthetic). See [Stage 4 — Implementation status](#stage-4--implementation-status-2026-06-01-feature-043).
+  - **Stages 2.2–2.5, 5–7 not yet started.** (Stage 5.5's routing migration was already pulled forward into Stage 1/feature 042.)
 - **Companion analysis:** [`2026-05-31-0908-foundations-rewrite-analysis.md`](./2026-05-31-0908-foundations-rewrite-analysis.md)
 - **Baseline at authoring time:** `build.fsx` = 4,688 lines; `tests/Governance.Tests/` = 34 test files; `validation.contract.yml` already defines tiers + path routing; evidence graph/audit computed by `.specify/extensions/evidence/scripts/python/*` orchestrated by `run-audit.sh` (1,284 lines) and shelled to from `build.fsx:1266,1273`.
 
@@ -785,6 +786,102 @@ parity oracle. This is a designated **dogfood feature** (runs full Spec Kit pipe
 
 **Effort:** ~7–10 days (the largest single port). **Revert:** `--legacy-evidence` flag restores
 the Python path until the flag and Python are removed at sign-off.
+
+### Stage 4 — Implementation status (2026-06-01, feature 043)
+
+**Status: IMPLEMENTED** (squash-merged to `main`; the rename master→main landed
+alongside). Feature `043-foundations-evidence-engine` replaced the tri-language
+evidence gate with typed, unit- and property-tested **compiled F#** inside
+`FS.Skia.UI.Build`, computing the evidence graph and the full merge-gate audit
+**in-process**. All **34 tasks** are `[X]` with **real evidence** (zero
+synthetic); `speckit.evidence.audit` returns **verdict=PASS** and
+`speckit.evidence.graph` returns **verdict=ok**. As a designated **dogfood** +
+consumer-contract change it ran the full serialized FAKE gate sequence for itself
+(`Dev` → `GeneratedGuidanceCheck` → `TemplateCheck` → `GeneratedProductCheck` →
+`EvidenceGraph` → `EvidenceAudit`). Runtime untouched: `git diff` over product
+`src/**` = 0; no product `.fsi`, surface baseline, or `PackageVersion` change.
+
+What landed against the Stage-4 work items:
+
+- **4.1 data model + parsers — done.** `Evidence/TaskParser.fs` (tasks.md grammar
+  → typed `TaskRecord` list, including the `[skillist: …]` mirror), `DepsParser.fs`
+  (`tasks.deps.yml` bare-list + `{deps, skillist}` forms via **`YamlDotNet`**
+  behind a typed model — no bespoke parser, FR-002), `SkillRegistry.fs`
+  (`.agents/skills`, `src/*/skill`, `template/fragments/*/skill`).
+- **4.2 algorithms — done.** `Evidence/Graph.fs`: 3-colour-DFS cycle detection,
+  Kahn topological sort, and synthetic propagation as a **pure** function,
+  **property-tested** with FsCheck (propagation monotonicity; a graph with no
+  synthetic roots has no auto-synthetic nodes).
+- **4.3 validation + audit — done.** `Evidence/Audit.fs` (cross-file consistency,
+  skill-id resolution, skill-ordering, `[SEH]` timing, `PASS`/`FAIL`/`BLOCKED`
+  verdict), `Evidence/StatusRegion.fs` (the `audit-status` structured-region
+  scanner ported faithfully — first-region-wins, duplicate-key = error, no prose
+  interpretation), plus `Evidence/Scans.fs` for the readiness-contract,
+  persistent-launch, persistent-GUI-runtime, and window-visibility scans.
+- **4.4 rendering — done, byte-compatible.** `Evidence/Render.fs` emits
+  `task-graph.json` (schema_version 1.0, id-sorted, fixed field order), the
+  `task-graph.md` block (verdict, skill-assessment table, status counts, SEH
+  classification, Mermaid `classDef`, ASCII tree, propagation report), and the
+  audit count block with the exact indentation/trailing-newline the Python wrote.
+- **4.5 rewire the build — done.** `build.fsx`'s two evidence arms emit new
+  in-process `EvidenceGraphCheck` / `EvidenceAuditCheck` `BuildEffect` cases
+  (`update` stays pure; all file/`git`/write I/O lives in `interpret`) that call
+  `FS.Skia.UI.Build.Evidence.Engine.runGraph`/`runAudit` — **no `processEffect` to
+  `run-audit.sh`**. The diff-scan moved into `Evidence/DiffScan.fs`.
+- **4.6 delete the Python and `run-audit.sh` — done.** Both Python files and
+  `run-audit.sh` are **gone from the tracked tree** (the `--legacy-evidence`
+  selector and the Python path were removed *in this feature* at parity sign-off,
+  not deferred). Grep proofs (`logs/no-python-grep.txt`) confirm zero
+  `python3`/`run-audit.sh`/`compute-task-graph.py`/`audit-status-scan.py` in the
+  steady-state evidence path; the only residual copies are gitignored
+  `artifacts/` build output. No `FSharp.Compiler.*` was introduced
+  (`logs/no-fcs-grep.txt`, SC-004).
+- **4.7 distribute to generated consumers — done (D1).** `FS.Skia.UI.Build`
+  flipped `IsPackable false → true`, joined `PackLocal` + the pack/version flow +
+  `docs/reports/dependencies.md`; `.template.config/template.json` stops copying
+  the Python/bash scripts; `template/base/build.fsx` calls the **packaged** engine
+  in-process; generated projects add a `FS.Skia.UI.Build` package pin. Every
+  generated-consumer evidence gate passes through the packaged engine
+  (`package/generated-evidence-reports/*`: graph `verdict=ok`, audit
+  `verdict=PASS`, SC-006).
+
+**Parity proof (Invariant 6).** Byte-for-byte (**0 bytes**) against the Stage-0
+golden fixtures on **036/037/038** for `task-graph.json`, `task-graph.md`, and the
+audit count block — *plus* five **newly-captured** golden fixtures for the scan
+outputs that had no Stage-0 oracle (`readiness-contract-hits.json`,
+`persistent-launch-hits.json`, `persistent-gui-runtime-hits.json`,
+`window-visibility-hits.json`, `diff-scan-hits.json`, FR-017), captured from the
+*then-current* Python engine before any deletion. Diffs recorded under
+`readiness/parity/{036,037,038}/` and `readiness/parity/scans/{036,037,038}/`.
+
+**Tests.** Expecto unit tests + FsCheck property tests assert **typed** results
+(cycle/topo/propagation/status-region); golden byte-diff via DiffPlex is the
+parity oracle. The previously-shelling suites (`AuditStatusRegionTests`,
+`PersistentViewerEvidenceTests`, `SyntheticErrorEvidenceTests`) were re-pointed
+from `python3`/`bash run-audit.sh` to the typed library (FR-014).
+
+**Language reduction (SC-005).** The evidence path went from {F#, Bash, Python} →
+**{F#}**, recorded vs the Stage-0 baseline in `logs/language-reduction.md`.
+
+**Addition beyond the staged plan (recorded).** The plan's module list named
+TaskParser/DepsParser/SkillRegistry/Graph/Audit/StatusRegion/DiffScan/Render; the
+implementation also adds `Evidence/Engine.fs` (the orchestrator that wires
+parse → merge → graph → render) and `Evidence/Scans.fs` (the four
+readiness/launch/GUI/visibility scans), and captured the five extra scan golden
+fixtures (FR-017) the Stage-0 oracle did not cover. No work item was dropped.
+
+**Invariants held.** 1 (product surface unchanged — `PackageSurfaceCheck`/
+`FsiTranscripts` no product baseline diff; only new *curated* governance-library
+`.fsi` modules per Principle II), 2 (runtime untouched), 3 (generated consumers
+still fully governed via the packaged engine), 4 (net10; `YamlDotNet`/
+`Fake.Core.Target` already central, no new `PackageVersion` outside
+`Directory.Packages.props`), 5 (FAKE sequencing), 6 (evidence output parity —
+proven byte-identical) all hold.
+
+**Stage 4 exit criteria: met** — byte-identical parity on all fixtures, typed
+unit/property tests, no `python3` in the evidence path, generated consumers pass
+on the packaged engine, evidence-path languages reduced to {F#}, invariants 1–6
+hold.
 
 ---
 

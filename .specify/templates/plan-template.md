@@ -46,6 +46,11 @@
   reports, drift reports, screenshots, and audit output.
 - **`.fsi` / contract impact**: Decide whether signatures, public docs, surface
   baselines, sample contracts, or compatibility notes change.
+
+<!-- Generated from .specify/memory/constitution.md by `./fake.sh build -t RefreshSurfaceBaselines`; do not hand-edit between the markers. -->
+<!-- BEGIN GENERATED: constitution/fsi-visibility -->
+**II. Visibility Lives in `.fsi`, Not in `.fs`** — Every public F# module MUST have a corresponding `.fsi` signature file.
+<!-- END GENERATED: constitution/fsi-visibility -->
 - **MVU/effect boundary**: For stateful or I/O-bearing work, identify `Model`,
   `Msg`, `Effect` or `Cmd<Msg>`, `init`, pure `update`, emitted effect
   assertions, and real interpreter evidence.

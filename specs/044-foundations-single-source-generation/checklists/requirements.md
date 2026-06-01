@@ -1,0 +1,43 @@
+# Specification Quality Checklist: Single-Source Generation of Duplicated Governance Artifacts
+
+**Purpose**: Validate specification completeness and quality before proceeding to planning
+**Created**: 2026-06-01
+**Feature**: [spec.md](../spec.md)
+
+## Content Quality
+
+- [x] No implementation details (languages, frameworks, APIs)
+- [x] Focused on user value and business needs
+- [x] Written for non-technical stakeholders
+- [x] All mandatory sections completed
+
+## Requirement Completeness
+
+- [x] No [NEEDS CLARIFICATION] markers remain
+- [x] Requirements are testable and unambiguous
+- [x] Success criteria are measurable
+- [x] Success criteria are technology-agnostic (no implementation details)
+- [x] All acceptance scenarios are defined
+- [x] Edge cases are identified
+- [x] Scope is clearly bounded
+- [x] Dependencies and assumptions identified
+
+## Feature Readiness
+
+- [x] All functional requirements have clear acceptance criteria
+- [x] User scenarios cover primary flows
+- [x] Feature meets measurable outcomes defined in Success Criteria
+- [x] No implementation details leak into specification
+
+## Notes
+
+- This is framework-internal governance tooling, so a degree of repo-specific vocabulary
+  (target names, file paths, the typed `Targets`/`Routing` precedents) is unavoidable and
+  appropriate for the stakeholders (maintainer + AI agents). These are named as *entities and
+  dependencies*, not as prescribed implementation, so the Content-Quality items still pass:
+  requirements state WHAT must be single-sourced and verified, not HOW to code the generators.
+- One genuine design fork — the canonical/derived **direction** for the skillist — is recorded as
+  a deferred-to-planning Assumption (with a stated default per decision D6) rather than a
+  [NEEDS CLARIFICATION] marker, because a reasonable default exists and the requirements are
+  invariant to the direction chosen.
+- Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`.

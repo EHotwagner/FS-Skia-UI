@@ -23,6 +23,11 @@ The classification must be assigned during design, planning, clarification, or
 task generation. implementation-time relabeling is forbidden; newly discovered
 needs go back to task/design review.
 
+<!-- Generated from .specify/memory/constitution.md by `./fake.sh build -t RefreshSurfaceBaselines`; do not hand-edit between the markers. -->
+<!-- BEGIN GENERATED: constitution/synthetic-disclosure -->
+**V. Synthetic Evidence Requires Loud, Repeated Disclosure** — Synthetic evidence — mocks, stubs, fakes, hardcoded fixtures, in-memory substitutes, unfinished-code placeholder exceptions, TODO-style failing placeholders, canned responses, or any test that exercises only literal data — MAY be used when real evidence is unavailable or prohibitively expensive, AND a real-evidence path is either planned or explicitly documented as infeasible.
+<!-- END GENERATED: constitution/synthetic-disclosure -->
+
 ## Vertical-slice rule (US phases)
 
 A task tagged `[US*]` may only be marked `[X]` when the change is
@@ -39,6 +44,11 @@ For stateful or I/O-bearing stories, `[X]` also requires Elmish/MVU evidence:
 the public `Model` / `Msg` / `Effect` or `Cmd<Msg>` contract was exercised,
 pure `update` transitions were tested, emitted effects were asserted, and
 the effect interpreter was run against real dependencies where safe.
+
+<!-- Generated from .specify/memory/constitution.md by `./fake.sh build -t RefreshSurfaceBaselines`; do not hand-edit between the markers. -->
+<!-- BEGIN GENERATED: constitution/mvu-boundary -->
+**IV. Elmish/MVU Is the Boundary for Stateful or I/O Workflows** — Any feature with multi-step state, external I/O, retries, user interaction, background work, or operational recovery MUST model its behavior through an Elmish-style Model-View-Update boundary before implementation.
+<!-- END GENERATED: constitution/mvu-boundary -->
 
 This rule does not apply to Setup, Foundation, Integration, or Polish
 phase tasks; those are evaluated against their own phase verification.
@@ -246,6 +256,11 @@ Template source: `.specify/presets/fsharp-opinionated/templates/tasks-template.m
 ## Phase 3: User Story 1 (US1)
 
 ### Tests First (Principle I, Principle VI)
+
+<!-- Generated from .specify/memory/constitution.md by `./fake.sh build -t RefreshSurfaceBaselines`; do not hand-edit between the markers. -->
+<!-- BEGIN GENERATED: constitution/tests-first -->
+**VI. Test Evidence Is Mandatory** — Behavior-changing code MUST include automated tests that fail before the change and pass after.
+<!-- END GENERATED: constitution/tests-first -->
 
 - [ ] T011 [P] [US1] [skillist: []] Add semantic tests that load the packed library (or prelude), exercise the US1 surface, and assert MVU state transitions plus emitted effects when applicable
 - [ ] T012 [P] [US1] [skillist: []] Add verification for the US1 outcome against the readiness artifact, including real interpreter evidence for effects where safe

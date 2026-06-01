@@ -8,9 +8,10 @@ module FS.Skia.UI.Build.Targets
 
 /// One case per dispatched build target. Closed union ⇒ exhaustive dispatch ⇒
 /// `spec` is total ⇒ a target without metadata (or metadata without a target) is
-/// unrepresentable (SC-003). The first 38 cases mirror the current `requiredTargets`
-/// list, in order; `PackageSmoke`/`BuildWorkflowCheck` are dispatched but not part
-/// of the runnable-target metadata registry (FR-013).
+/// unrepresentable (SC-003). The first 37 cases mirror the current `requiredTargets`
+/// list, in order (feature 044 retired `SkillExamplesCheck`); `PackageSmoke`/
+/// `BuildWorkflowCheck` are dispatched but not part of the runnable-target metadata
+/// registry (FR-013).
 type Target =
     | Clean
     | Restore
@@ -37,7 +38,6 @@ type Target =
     | DependencyReport
     | GeneratedGuidanceCheck
     | SkillSyncCheck
-    | SkillExamplesCheck
     | TemplateDrift
     | EvidenceGraph
     | EvidenceAudit

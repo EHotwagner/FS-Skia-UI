@@ -28,6 +28,14 @@ open Fake.Core.TargetOperators
 #load "build/Governance/Routing.fs"
 #load "build/Governance/ContractView.fs"
 #load "build/Governance/Capabilities.fs"
+// Feature 044: the three single-source generation modules (SkillTreeGen for the
+// .agents→.claude skill tree, SkillistView for the tasks.md [skillist: …] derived view,
+// ConstitutionFragments for the template principle-fragment splice). Each has a curated
+// .fsi (Principle II) and is BCL/regex-only. Loaded ahead of the Evidence engine so
+// Evidence/Audit.fs can call SkillistView, and ahead of the gate arms below.
+#load "build/Governance/SkillTreeGen.fs"
+#load "build/Governance/SkillistView.fs"
+#load "build/Governance/ConstitutionFragments.fs"
 // Feature 043: the in-process evidence engine (curated .fsi per module, Principle II)
 // #load'd ahead of the build model so the EvidenceGraph/EvidenceAudit gate arms compute
 // the task DAG + merge-gate audit in compiled F# (no run-audit.sh / python). YamlDotNet
@@ -262,7 +270,10 @@ type BuildEffect =
     | FailWith of string
     | WorkflowSelfCheck
     | SkillSyncGate
-    | SkillExamplesGate
+    // Feature 044: single-source regeneration effects (interpreter edge — all tree
+    // enumeration / file reads / writes live in interpret; update emits effect data only).
+    | RegenerateSkillTree
+    | RegenerateConstitutionFragments
     | RouteSelect
     // Feature 043: in-process evidence gates (model is re-derived in interpret, so no payload).
     | EvidenceGraphCheck
@@ -275,12 +286,11 @@ type BuildEffect =
 #load "scripts/build/PackageResolution.fsx"
 #load "scripts/build/TemplateValidation.fsx"
 #load "scripts/build/ProcessHealth.fsx"
-// Feature 040: the capability-skill byte-identity comparator and the ` ```fsharp `
-// block extractor/tangler are authored as compiled build/Governance modules (with
-// curated .fsi for Principle II) and #load'd here so SkillSyncCheck / SkillExamplesCheck
-// run them in-process. Both are BCL-only, so loading them into the FSX front-end is safe.
+// Feature 040 (reframed by feature 044): SkillSyncCheck's currency adapter is a compiled
+// build/Governance module (curated .fsi, Principle II) and #load'd here so the gate runs
+// it in-process over SkillTreeGen. BCL-only, safe to load into the FSX front-end. (The
+// feature-040 ` ```fsharp ` block tangler / SkillExamplesCheck was retired by feature 044.)
 #load "build/Governance/SkillSync.fs"
-#load "build/Governance/SkillExamples.fs"
 
 // Feature 041: the first two real validators (capability catalog + target-metadata
 // drift) and the typed Target single-source DU are compiled build/Governance modules
@@ -700,14 +710,6 @@ let focusedGateContract model target =
           ReadinessPath = readiness "skill-sync-check.md"
           StaleAssumptions = []
           VerdictCategory = VerificationSuccess }
-    | "SkillExamplesCheck" ->
-        { TargetName = target
-          DirectPrerequisites = [ "SkillSyncCheck" ]
-          Command = "./fake.sh build -t SkillExamplesCheck"
-          LogPath = log "skill-examples-check.txt"
-          ReadinessPath = readiness "skill-examples-check.md"
-          StaleAssumptions = [ "requires-restored-project:build/SkillExamples/SkillExamples.fsproj" ]
-          VerdictCategory = VerificationSuccess }
     | "EvidenceGraph" ->
         { TargetName = target
           DirectPrerequisites = []
@@ -766,6 +768,18 @@ let targetMetadata model (target: Targets.Target) : TargetMetadata.TargetMetadat
 
 let allTargetMetadata model =
     Targets.allTargets |> List.map (targetMetadata model)
+
+// Feature 044 (US3, data-model §3): which generated principle fragments each template
+// carries. The mapping is the per-template expected set the currency check enforces and
+// the regeneration splices (the locked Phase-1 inventory). Forward-slash relative paths.
+let constitutionRelPath = ".specify/memory/constitution.md"
+
+let constitutionTemplateRegions =
+    [ ".specify/templates/plan-template.md", [ "fsi-visibility" ]
+      ".specify/templates/tasks-template.md", [ "tests-first"; "mvu-boundary"; "synthetic-disclosure" ] ]
+
+let private repoRelPath root (relForwardSlash: string) =
+    path (root :: (relForwardSlash.Split('/') |> List.ofArray))
 
 let validationContractTargetReferences root =
     let contractPath = path [ root; "validation.contract.yml" ]
@@ -924,6 +938,12 @@ let update msg model =
           // view from the compiled Routing.fs single source of truth as part of the baseline
           // refresh, so the currency check folded into TargetMetadataDrift cannot trip on drift.
           WriteFile(path [ model.RepositoryRoot; "validation.contract.yml" ], ContractView.render Routing.rules Routing.dogfoodFeatureIds)
+          // Feature 044 (US1/US3, research R1): the single regeneration entry point also
+          // regenerates the derived .claude/skills tree from canonical .agents/skills, and
+          // splices the constitution principle fragments into the two templates, so the
+          // SkillSyncCheck and TargetMetadataDrift currency checks cannot trip on drift.
+          RegenerateSkillTree
+          RegenerateConstitutionFragments
           RequireFiles(
               "stable package surface baselines",
               [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.txt" ]
@@ -1088,12 +1108,6 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
           SkillSyncGate
           RequireFiles("skill sync report", [ path [ model.ReadinessDir; "skill-sync-check.md" ]; path [ model.LogDir; "skill-sync-check.txt" ] ])
           focusedGateSummary model "SkillSyncCheck" ]
-    | StartTarget Targets.SkillExamplesCheck ->
-        model,
-        [ focusedGateAssumptionCheck model "SkillExamplesCheck"
-          SkillExamplesGate
-          RequireFiles("skill examples report + compile log", [ path [ model.ReadinessDir; "skill-examples-check.md" ]; path [ model.LogDir; "skill-examples-check.txt" ] ])
-          focusedGateSummary model "SkillExamplesCheck" ]
     | StartTarget Targets.TemplateDrift ->
         model,
         [ focusedGateAssumptionCheck model "TemplateDrift"
@@ -1185,7 +1199,32 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
             else
                 [ "validation.contract.yml is missing — regenerate from Routing.fs via ./fake.sh build -t RefreshSurfaceBaselines" ]
 
-        let diagnostics = structuralDiagnostics @ currencyDiagnostics
+        // Feature 044 (US3, FR-009): the constitution principle-fragment currency check folds
+        // into TargetMetadataDrift next to the contract-currency check (same home, same
+        // precedent). The constitution + template reads stay at this interpreter edge;
+        // ConstitutionFragments.extract/currency/currencyDrift are pure (Principle IV).
+        let constitutionPath = repoRelPath model.RepositoryRoot constitutionRelPath
+
+        let constitutionDiagnostics =
+            if not (File.Exists constitutionPath) then
+                [ sprintf "%s is missing — cannot derive principle fragments" constitutionRelPath ]
+            else
+                let fragments = ConstitutionFragments.extract (File.ReadAllText constitutionPath)
+
+                [ for (relTemplate, ids) in constitutionTemplateRegions do
+                      let templatePath = repoRelPath model.RepositoryRoot relTemplate
+
+                      if not (File.Exists templatePath) then
+                          yield sprintf "%s is missing — cannot check generated constitution fragments" relTemplate
+                      else
+                          let subset = fragments |> List.filter (fun f -> List.contains f.FragmentId ids)
+                          let currency = ConstitutionFragments.currency relTemplate subset (File.ReadAllText templatePath)
+
+                          match ConstitutionFragments.currencyDrift currency with
+                          | Some diagnostic -> yield diagnostic
+                          | None -> () ]
+
+        let diagnostics = structuralDiagnostics @ currencyDiagnostics @ constitutionDiagnostics
         let report = TargetMetadata.driftMarkdown diagnostics
 
         model,
@@ -4334,11 +4373,45 @@ let workflowSelfCheck (root: string) =
 
 // BUILD SECTION: interpreter
 
-// Feature 040 — SkillSyncCheck: in-process SHA-256 byte-identity over the two
-// skill trees (FR-002/FR-011/SC-002). Real evidence only; no diff/cmp/sha256sum.
+// Feature 044 — skill-tree enumeration edge (US1). Reads every file under a tree root
+// into a SkillTreeGen.SkillFile (repo-relative, forward-slash RelPath + raw bytes), sorted
+// for determinism. This is the only file I/O for the generator; the pure plan/currency
+// live in the library (Principle IV). No diff/cmp/sha256sum/symlink shelling — in-process.
+let enumerateSkillTree (root: string) (treeRelRoot: string) : FS.Skia.UI.Build.SkillTreeGen.SkillFile list =
+    let fullRoot = path (root :: (treeRelRoot.Split('/') |> List.ofArray))
+
+    if not (Directory.Exists fullRoot) then
+        []
+    else
+        Directory.EnumerateFiles(fullRoot, "*", SearchOption.AllDirectories)
+        |> Seq.sort
+        |> Seq.map (fun full ->
+            let rel = (Path.GetRelativePath(root, full)).Replace('\\', '/')
+            let segments = rel.Split('/')
+
+            let slug =
+                match segments |> Array.tryFindIndex (fun s -> s = "skills") with
+                | Some i when i + 1 < segments.Length -> segments.[i + 1]
+                | _ -> rel
+
+            let file: FS.Skia.UI.Build.SkillTreeGen.SkillFile =
+                { Slug = slug
+                  RelPath = rel
+                  Bytes = File.ReadAllBytes full }
+
+            file)
+        |> Seq.toList
+
+// Feature 044 — SkillSyncCheck (reframed): generation-currency over the whole tree.
+// `.claude/skills` MUST be a current regeneration of canonical `.agents/skills` across
+// every enumerated file (coverage by enumeration, no allowlist). Fails with an actionable
+// "regenerate via RefreshSurfaceBaselines" diagnostic, never a bare "A and B differ".
 let runSkillSyncGate (model: BuildModel) =
-    let results = FS.Skia.UI.Build.SkillSync.checkAll model.RepositoryRoot
-    let report = FS.Skia.UI.Build.SkillSync.renderReport results
+    let canonical = enumerateSkillTree model.RepositoryRoot FS.Skia.UI.Build.SkillTreeGen.canonicalRoot
+    let derived = enumerateSkillTree model.RepositoryRoot FS.Skia.UI.Build.SkillTreeGen.derivedRoot
+    let plan = FS.Skia.UI.Build.SkillSync.planFromCanonical canonical
+    let currency = FS.Skia.UI.Build.SkillSync.currency plan derived
+    let report = FS.Skia.UI.Build.SkillSync.renderReport plan currency
     let reportPath = path [ model.ReadinessDir; "skill-sync-check.md" ]
     let logPath = path [ model.LogDir; "skill-sync-check.txt" ]
     ensureParent reportPath
@@ -4346,102 +4419,66 @@ let runSkillSyncGate (model: BuildModel) =
     ensureParent logPath
     File.WriteAllText(logPath, report)
 
-    match FS.Skia.UI.Build.SkillSync.drifted results with
-    | [] -> ()
-    | _ -> failwith (FS.Skia.UI.Build.SkillSync.renderFailureMessage results)
+    if not (FS.Skia.UI.Build.SkillSync.isCurrent currency) then
+        failwith (FS.Skia.UI.Build.SkillSync.renderFailureMessage currency)
 
-// Feature 040 — SkillExamplesCheck: tangle every ` ```fsharp ` block into the
-// examples project and compile it against the pinned adopt set (FR-014/SC-007).
-// On a compile failure the F# diagnostic is mapped back to the owning skill +
-// block via the generated `// source:` comment. Empty extraction is a hard FAIL.
-let runSkillExamplesGate (model: BuildModel) =
+// Feature 044 — RefreshSurfaceBaselines regeneration edge (US1). Plan the derived tree
+// from canonical, write each derived file's bytes + the provenance manifest, and remove
+// any orphan derived file with no canonical source so the mirror stays exact.
+let regenerateSkillTree (model: BuildModel) =
     let root = model.RepositoryRoot
-    let genDir = path [ root; "build"; "SkillExamples"; "Generated" ]
-    Directory.CreateDirectory genDir |> ignore
+    let canonical = enumerateSkillTree root FS.Skia.UI.Build.SkillTreeGen.canonicalRoot
+    let plan = FS.Skia.UI.Build.SkillSync.planFromCanonical canonical
 
-    for stale in Directory.EnumerateFiles(genDir, "*.fs") do
-        File.Delete stale
+    let toFull (rel: string) = path (root :: (rel.Split('/') |> List.ofArray))
 
-    let mutable total = 0
+    let expected =
+        plan.ManifestRelPath :: (plan.Entries |> List.map (fun e -> e.DerivedRelPath))
+        |> List.map (fun rel -> (toFull rel).Replace('\\', '/'))
+        |> Set.ofList
 
-    let countRows =
-        [ for slug in FS.Skia.UI.Build.SkillSync.expectedSlugs do
-              let rel = FS.Skia.UI.Build.SkillSync.claudeRelPath slug
-              let full = Path.Combine(root, rel.Replace('/', Path.DirectorySeparatorChar))
-              let blocks = FS.Skia.UI.Build.SkillExamples.extractBlocks slug (File.ReadAllText full)
-              total <- total + List.length blocks
+    // Write the manifest + every derived file (byte-identical to canonical, FR-003).
+    let manifestFull = toFull plan.ManifestRelPath
+    ensureParent manifestFull
+    File.WriteAllBytes(manifestFull, plan.ManifestBytes)
 
-              if not (List.isEmpty blocks) then
-                  File.WriteAllText(path [ genDir; slug + ".fs" ], FS.Skia.UI.Build.SkillExamples.renderSkillFile rel blocks)
+    for entry in plan.Entries do
+        let full = toFull entry.DerivedRelPath
+        ensureParent full
+        File.WriteAllBytes(full, entry.Bytes)
 
-              sprintf "| `%s` | %d |" slug (List.length blocks) ]
+    // Remove orphan derived files (a canonical skill removed upstream must vanish here),
+    // then prune any directory left empty by that removal so no stale skill dir lingers.
+    let derivedFullRoot = toFull FS.Skia.UI.Build.SkillTreeGen.derivedRoot
 
-    if total = 0 then
-        failwith "SkillExamplesCheck FAILED — empty extraction: no ```fsharp blocks were found across the six capability skills (no silent skip; Principle VII)."
+    if Directory.Exists derivedFullRoot then
+        for existing in Directory.EnumerateFiles(derivedFullRoot, "*", SearchOption.AllDirectories) do
+            if not (expected.Contains(existing.Replace('\\', '/'))) then
+                File.Delete existing
 
-    let logPath = path [ model.LogDir; "skill-examples-check.txt" ]
-    ensureParent logPath
-    File.WriteAllText(logPath, "")
-    runProcessWithAllowedExitCodes "SkillExamples compile" "dotnet" "build build/SkillExamples/SkillExamples.fsproj -m:1 --nologo" root logPath Map.empty (Set.ofList [ 0; 1 ])
+        for dir in Directory.EnumerateDirectories(derivedFullRoot, "*", SearchOption.AllDirectories) |> Seq.sortDescending do
+            if Directory.Exists dir && Seq.isEmpty (Directory.EnumerateFileSystemEntries dir) then
+                Directory.Delete dir
 
-    let log = File.ReadAllText logPath
+// Feature 044 — RefreshSurfaceBaselines regeneration edge (US3). Extract the principle
+// fragments from the constitution and splice them into each governed template's BEGIN/END
+// GENERATED regions, preserving every out-of-marker byte (FR-010).
+let regenerateConstitutionFragments (model: BuildModel) =
+    let constitutionPath = repoRelPath model.RepositoryRoot constitutionRelPath
 
-    if not (log.Contains "Build succeeded") then
-        // Map each `Generated/<slug>.fs(line,...)` diagnostic back to the source
-        // skill + block via the nearest preceding `// source:` comment (R4).
-        let rx = System.Text.RegularExpressions.Regex(@"Generated[/\\](?<slug>[A-Za-z0-9_.-]+)\.fs\((?<line>\d+)")
+    if not (File.Exists constitutionPath) then
+        failwithf "RefreshSurfaceBaselines: %s is missing — cannot derive principle fragments (Principle VII)." constitutionRelPath
 
-        let mapped =
-            log.Replace("\r\n", "\n").Split('\n')
-            |> Array.choose (fun line ->
-                let m = rx.Match line
+    let fragments = ConstitutionFragments.extract (File.ReadAllText constitutionPath)
 
-                if m.Success && line.Contains "error" then
-                    let slug = m.Groups.["slug"].Value
-                    let genLine = int m.Groups.["line"].Value
-                    let genFile = path [ genDir; slug + ".fs" ]
+    for (relTemplate, _ids) in constitutionTemplateRegions do
+        let templatePath = repoRelPath model.RepositoryRoot relTemplate
 
-                    let source =
-                        if File.Exists genFile then
-                            let glines = File.ReadAllLines genFile
-                            glines.[.. min (genLine - 1) (glines.Length - 1)]
-                            |> Array.rev
-                            |> Array.tryPick (fun gl -> if gl.TrimStart().StartsWith "// source:" then Some(gl.Trim()) else None)
-                            |> Option.defaultValue "<source comment not found>"
-                        else
-                            "<generated file missing>"
+        if not (File.Exists templatePath) then
+            failwithf "RefreshSurfaceBaselines: %s is missing — cannot splice constitution fragments (Principle VII)." relTemplate
 
-                    Some(sprintf "  %s   [%s]" (line.Trim()) source)
-                else
-                    None)
-            |> Array.toList
-            |> List.distinct
-
-        failwithf
-            "SkillExamplesCheck FAILED — a ```fsharp block did not compile against the pinned adopt-set packages.%sOffending skill/block(s):%s%s%sFull log: %s"
-            Environment.NewLine
-            Environment.NewLine
-            (String.Join(Environment.NewLine, mapped))
-            Environment.NewLine
-            logPath
-
-    let reportPath = path [ model.ReadinessDir; "skill-examples-check.md" ]
-
-    let report =
-        String.Join(
-            "\n",
-            [ "# SkillExamplesCheck"
-              ""
-              sprintf "PASS: all %d ` ```fsharp ` blocks across the six capability skills compiled against the pinned adopt-set packages (FCS-free)." total
-              ""
-              "| Skill | ` ```fsharp ` blocks |"
-              "|-------|----------------------|"
-              yield! countRows
-              "" ]
-        )
-
-    ensureParent reportPath
-    File.WriteAllText(reportPath, report)
+        let spliced = ConstitutionFragments.splice fragments (File.ReadAllText templatePath)
+        File.WriteAllText(templatePath, spliced)
 
 // Feature 042 (FR-002a, research R2): the git union-diff is read here at the `Route`
 // interpreter edge so the Routing selector stays pure and unit-testable without git.
@@ -4698,7 +4735,8 @@ let interpret root effect =
     | FailWith message -> failwith message
     | WorkflowSelfCheck -> workflowSelfCheck root
     | SkillSyncGate -> runSkillSyncGate model
-    | SkillExamplesGate -> runSkillExamplesGate model
+    | RegenerateSkillTree -> regenerateSkillTree model
+    | RegenerateConstitutionFragments -> regenerateConstitutionFragments model
     | RouteSelect -> runRouteSelection root
     | EvidenceGraphCheck -> runEvidenceGraphCheck model
     | EvidenceAuditCheck -> runEvidenceAuditCheck root model

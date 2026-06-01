@@ -20,10 +20,10 @@
   <ItemGroup>
     <Compile Include="Spike.fsi" />
     <Compile Include="Spike.fs" />
+    <Compile Include="SkillTreeGen.fsi" />
+    <Compile Include="SkillTreeGen.fs" />
     <Compile Include="SkillSync.fsi" />
     <Compile Include="SkillSync.fs" />
-    <Compile Include="SkillExamples.fsi" />
-    <Compile Include="SkillExamples.fs" />
     <Compile Include="Findings.fsi" />
     <Compile Include="Findings.fs" />
     <Compile Include="Targets.fsi" />
@@ -36,6 +36,10 @@
     <Compile Include="ContractView.fs" />
     <Compile Include="Capabilities.fsi" />
     <Compile Include="Capabilities.fs" />
+    <Compile Include="SkillistView.fsi" />
+    <Compile Include="SkillistView.fs" />
+    <Compile Include="ConstitutionFragments.fsi" />
+    <Compile Include="ConstitutionFragments.fs" />
     <Compile Include="Evidence/TaskParser.fsi" />
     <Compile Include="Evidence/TaskParser.fs" />
     <Compile Include="Evidence/DepsParser.fsi" />

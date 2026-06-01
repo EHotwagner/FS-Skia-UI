@@ -1,0 +1,4 @@
+=== speckit.evidence.graph (in-process) ===
+feature: 044-foundations-single-source-generation
+tasks: 30
+verdict: ok

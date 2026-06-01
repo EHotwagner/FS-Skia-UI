@@ -1,6 +1,6 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-specs/043-foundations-evidence-engine/plan.md
+specs/044-foundations-single-source-generation/plan.md
 
 ## Run `Route` first; run only the gates it prints
 

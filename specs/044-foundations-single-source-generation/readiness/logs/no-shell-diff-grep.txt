@@ -1,0 +1,6 @@
+# No diff/cmp/sha256sum/symlink shelling in the generation path (grep proof)
+
+$ grep -nE "\b(diff|cmp|sha256sum|ln -s|symlink|SHA256|sha256Hex)\b" SkillTreeGen.fs SkillistView.fs ConstitutionFragments.fs SkillSync.fs
+```
+(no matches — PASS; in-process byte comparison only)
+```

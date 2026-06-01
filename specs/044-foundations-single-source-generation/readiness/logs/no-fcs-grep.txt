@@ -1,0 +1,10 @@
+# No FSharp.Compiler.* in the generation path (grep proof)
+
+Search for an actual dependency/usage (PackageReference, open, or qualified call) of
+FSharp.Compiler.* across the three new modules, the reframed SkillSync, and the build.fsx
+generation edge. The only textual occurrence is a comment asserting its absence.
+
+$ grep -nE "open FSharp\.Compiler|Include=\"FSharp\.Compiler|FSharp\.Compiler\.(Service|Syntax|Text|CodeAnalysis)" <generation-path files>
+```
+(no real dependency or usage — PASS)
+```

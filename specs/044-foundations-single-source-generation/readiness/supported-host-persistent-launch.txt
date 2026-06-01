@@ -1,0 +1,17 @@
+status=ok
+mode=interactive-window
+command=dotnet run --project artifacts/generated-products/020-asteroids-integration-feedback/app-source/src/Product/Product.fsproj --no-restore -- --launch-evidence
+window-opened=true
+window-visible=observed:true
+accessible-window=true
+first-frame-presented=true
+user-close-observed=false
+self-closed-for-evidence=true
+input-dispatch=not-verified
+exit-path=true
+renderer-mode=skia
+blocked-stage=none
+classification=none
+category=none
+message=Compiled generated product launched a persistent interactive window on the supported host path.
+source-log=/home/developer/projects/FS-Skia-UI/specs/044-foundations-single-source-generation/readiness/generated-consumer-validation/persistent-launch-diagnostics.log

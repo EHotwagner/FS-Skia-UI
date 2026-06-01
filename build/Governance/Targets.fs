@@ -26,7 +26,6 @@ type Target =
     | DependencyReport
     | GeneratedGuidanceCheck
     | SkillSyncCheck
-    | SkillExamplesCheck
     | TemplateDrift
     | EvidenceGraph
     | EvidenceAudit
@@ -52,7 +51,8 @@ type TargetSpec =
       FailureOwner: string }
 
 // Registry order (replaces requiredTargets). PackageSmoke/BuildWorkflowCheck are
-// dispatched but excluded here so the metadata registry stays at 38 rows.
+// dispatched but excluded here so the metadata registry stays at 37 rows
+// (feature 044 retired SkillExamplesCheck).
 let allTargets =
     [ Clean
       Restore
@@ -79,7 +79,6 @@ let allTargets =
       DependencyReport
       GeneratedGuidanceCheck
       SkillSyncCheck
-      SkillExamplesCheck
       TemplateDrift
       EvidenceGraph
       EvidenceAudit
@@ -123,7 +122,6 @@ let name target =
     | DependencyReport -> "DependencyReport"
     | GeneratedGuidanceCheck -> "GeneratedGuidanceCheck"
     | SkillSyncCheck -> "SkillSyncCheck"
-    | SkillExamplesCheck -> "SkillExamplesCheck"
     | TemplateDrift -> "TemplateDrift"
     | EvidenceGraph -> "EvidenceGraph"
     | EvidenceAudit -> "EvidenceAudit"
@@ -146,7 +144,7 @@ let directPrerequisites target =
     | Restore -> []
     | Build -> [ Restore ]
     | Test -> [ Build; SampleContractSmoke ]
-    | Dev -> [ Test; SkillSyncCheck; SkillExamplesCheck ]
+    | Dev -> [ Test; SkillSyncCheck ]
     | PackLocal -> []
     | RefreshSurfaceBaselines -> [ Build ]
     | PackageSurfaceCheck -> [ Build ]
@@ -167,7 +165,6 @@ let directPrerequisites target =
     | DependencyReport -> []
     | GeneratedGuidanceCheck -> []
     | SkillSyncCheck -> []
-    | SkillExamplesCheck -> [ SkillSyncCheck ]
     | TemplateDrift -> []
     | EvidenceGraph -> []
     | EvidenceAudit -> [ EvidenceGraph ]

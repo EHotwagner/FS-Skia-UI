@@ -1,79 +1,54 @@
 module SkillSyncTests
 
-(* Feature 040 / US2 — failing-first (Principle I/VI) semantic tests for the
-   SHA-256 byte-identity comparator and skill-pair discovery used by the
-   SkillSyncCheck gate. These exercise the real `FS.Skia.UI.Build.SkillSync`
-   functions (no mocks); before SkillSync.fs existed they did not compile. *)
+(* Feature 040 → reframed by feature 044 / US1. SkillSyncCheck is no longer a six-slug
+   byte-identity PEER check; it is a generation-currency check over the whole tree
+   (`.claude/skills` must be a current regeneration of canonical `.agents/skills`,
+   covered by enumeration). These re-pointed tests exercise the reframed
+   `FS.Skia.UI.Build.SkillSync` adapter on in-memory inputs (no mocks). *)
 
-open System
-open System.IO
 open System.Text
 open Expecto
-open GovernanceTestSupport
 open FS.Skia.UI.Build
 
-let private pair slug claudeHash agentsHash : SkillSync.SkillPairResult =
-    { Slug = slug
-      ClaudePath = SkillSync.claudeRelPath slug
-      AgentsPath = SkillSync.agentsRelPath slug
-      ClaudeHash = claudeHash
-      AgentsHash = agentsHash }
+let private bytes (s: string) = Encoding.UTF8.GetBytes s
+
+let private mkFile rel b : SkillTreeGen.SkillFile = { Slug = ""; RelPath = rel; Bytes = b }
+
+let private canonicalFile slug body : SkillTreeGen.SkillFile =
+    { Slug = slug; RelPath = sprintf ".agents/skills/%s/SKILL.md" slug; Bytes = bytes body }
+
+let private derivedOf (plan: SkillTreeGen.SkillTreePlan) : SkillTreeGen.SkillFile list =
+    mkFile plan.ManifestRelPath plan.ManifestBytes
+    :: (plan.Entries |> List.map (fun e -> mkFile e.DerivedRelPath e.Bytes))
+
+let private canonical =
+    [ canonicalFile "fsharp-parsing" "alpha\n"
+      canonicalFile "speckit-merge" "beta\n" ]
 
 [<Tests>]
 let skillSyncTests =
-    testList "Feature 040 SkillSync comparator and discovery" [
+    testList "Feature 044 SkillSync currency adapter" [
 
-        test "sha256Hex matches the known digest of \"abc\"" {
-            let digest = SkillSync.sha256Hex (Encoding.ASCII.GetBytes "abc")
-            Expect.equal digest "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad" "lowercase hex SHA-256 of abc"
+        test "a faithful regeneration is current; the report is a PASS" {
+            let plan = SkillSync.planFromCanonical canonical
+            let cur = SkillSync.currency plan (derivedOf plan)
+            Expect.isTrue (SkillSync.isCurrent cur) "faithful regeneration is current"
+            Expect.equal (SkillSync.renderFailureMessage cur) "" "no failure message when current"
+            Expect.stringContains (SkillSync.renderReport plan cur) "PASS" "PASS report body"
         }
 
-        test "equal bytes are in sync; differing bytes are out of sync and named" {
-            let h1 = SkillSync.sha256Hex (Encoding.UTF8.GetBytes "identical")
-            let h2 = SkillSync.sha256Hex (Encoding.UTF8.GetBytes "different")
+        test "a drifted derived tree is not current and the failure message names the regen target (FR-012)" {
+            let plan = SkillSync.planFromCanonical canonical
 
-            let synced = pair "fsharp-parsing" (Some h1) (Some h1)
-            let drift = pair "fsharp-io-globbing" (Some h1) (Some h2)
+            let drifted =
+                derivedOf plan
+                |> List.map (fun f ->
+                    if f.RelPath.Contains "fsharp-parsing" then mkFile f.RelPath (bytes "TAMPERED\n") else f)
 
-            Expect.isTrue (SkillSync.inSync synced) "equal digests are in sync"
-            Expect.isFalse (SkillSync.inSync drift) "differing digests are out of sync"
-
-            let bad = SkillSync.drifted [ synced; drift ]
-            Expect.equal (bad |> List.map (fun r -> r.Slug)) [ "fsharp-io-globbing" ] "drifted names only the offender"
-
-            let message = SkillSync.renderFailureMessage [ synced; drift ]
-            Expect.stringContains message "fsharp-io-globbing" "failure message names the drifted slug"
-            Expect.stringContains message h1 "failure message prints the .claude digest"
-            Expect.stringContains message h2 "failure message prints the .agents digest"
-        }
-
-        test "a missing file on either side is a failure, never a skip (Principle VII)" {
-            let missingClaude = pair "fsharp-shell-process" None (Some "deadbeef")
-            Expect.isFalse (SkillSync.inSync missingClaude) "missing .claude copy is drift, not pass"
-            let message = SkillSync.renderFailureMessage [ missingClaude ]
-            Expect.stringContains message "<missing>" "failure message marks the missing side"
-        }
-
-        test "checkAll discovers exactly the six committed pairs, all in sync" {
-            let results = SkillSync.checkAll repositoryRoot
-            Expect.equal (results |> List.map (fun r -> r.Slug)) SkillSync.expectedSlugs "the six expected slugs, in order"
-            let bad = SkillSync.drifted results
-            Expect.isEmpty bad $"committed skills are byte-identical across both trees: {SkillSync.renderFailureMessage results}"
-        }
-
-        test "checkPair surfaces a one-sided file as missing over a synthetic root" {
-            let root = Path.Combine(Path.GetTempPath(), "skillsync-" + Guid.NewGuid().ToString("N"))
-            let slug = "fsharp-parsing"
-            let claudeDir = Path.Combine(root, ".claude", "skills", slug)
-            Directory.CreateDirectory claudeDir |> ignore
-            File.WriteAllText(Path.Combine(claudeDir, "SKILL.md"), "only the claude side exists\n")
-
-            try
-                let result = SkillSync.checkPair root slug
-                Expect.isSome result.ClaudeHash "claude side present"
-                Expect.isNone result.AgentsHash "agents side absent → None, not an exception"
-                Expect.isFalse (SkillSync.inSync result) "one-sided pair is never in sync"
-            finally
-                Directory.Delete(root, true)
+            let cur = SkillSync.currency plan drifted
+            Expect.isFalse (SkillSync.isCurrent cur) "tampered tree is not current"
+            let message = SkillSync.renderFailureMessage cur
+            Expect.stringContains message "RefreshSurfaceBaselines" "failure message names the regeneration command"
+            Expect.stringContains (SkillSync.renderReport plan cur) "FAIL" "FAIL report body"
         }
     ]

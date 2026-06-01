@@ -1,0 +1,13 @@
+# FSI session — exercising the three draft .fsi surfaces (T005)
+
+Loaded the compiled FS.Skia.UI.Build governance library and called the public
+SkillTreeGen / SkillistView / ConstitutionFragments surfaces over small literal inputs.
+
+```
+SkillTreeGen.plan -> 2 entries; manifest at .claude/skills/GENERATED.md
+derivedRelPath -> .claude/skills/demo-a/SKILL.md
+renderAnnotation [a;b] -> [skillist: fsharp-io-globbing, fsharp-code-generation]
+renderAnnotation []    -> [skillist: []]
+spliceAnnotation -> - [ ] T001 [skillist: x, y] do it
+ConstitutionFragments.extract -> 4 fragments: fsi-visibility, mvu-boundary, synthetic-disclosure, tests-first
+```
