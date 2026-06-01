@@ -1,0 +1,19 @@
+# .fsi Surface Exercise (T006)
+
+The curated build-tooling .fsi surfaces (Engine/Model.fsi, Engine/Update.fsi, Engine/Interpret.fsi,
+GeneratedProduct.fsi, Guidance.fsi, Preflight.fsi) are exercised through the SAME public entry points
+a script/host would use, as compiled FSI-honest tests in tests/Governance.Tests (feature 045, US3):
+
+  // representative update over a real model (BuildEngineUpdateTests.fs)
+  let model = fst (FS.Skia.UI.Build.Engine.Model.init repositoryRoot)
+  FS.Skia.UI.Build.Engine.Update.update (StartTarget FS.Skia.UI.Build.Targets.Route) model
+    // => (model, [ RouteSelect ])
+
+  // representative validator entries over small/real inputs
+  FS.Skia.UI.Build.Guidance.runGeneratedGuidanceScan model outPath          // writes the PASS report
+  FS.Skia.UI.Build.Preflight.collectProcessHealth root "Test" out verdict   // writes process-health evidence
+  FS.Skia.UI.Build.GeneratedProduct.runDependencyOwnershipReport model      // writes the dependency report
+
+Engine/Update.fsi deliberately exposes ONLY update with no I/O symbol, so the compiler enforces that
+the pure transition cannot perform filesystem/git/process I/O (Principle IV). The build of
+FS.Skia.UI.Build.fsproj succeeding against these .fsi files IS the surface-conformance evidence.

@@ -1,0 +1,286 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "build/Governance/GeneratedProduct.fs",
+      "line": 35,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"content/template/base/CLAUDE.md\""
+    },
+    {
+      "file": "build/Governance/GeneratedProduct.fs",
+      "line": 36,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"content/template/base/.claude/settings.json\""
+    },
+    {
+      "file": "build/Governance/GeneratedProduct.fs",
+      "line": 37,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"content/template/base/.claude/skills/fs-skia-project/SKILL.md\""
+    },
+    {
+      "file": "build/Governance/GeneratedProduct.fs",
+      "line": 46,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"content/.agents/skills/speckit-specify/SKILL.md\""
+    },
+    {
+      "file": "build/Governance/GeneratedProduct.fs",
+      "line": 47,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"content/.claude/skills/speckit-specify/SKILL.md\""
+    },
+    {
+      "file": "build/Governance/GeneratedProduct.fs",
+      "line": 48,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"content/.template.config/generated/CLAUDE.md\""
+    },
+    {
+      "file": "build/Governance/GeneratedProduct.fs",
+      "line": 49,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"content/.template.config/generated/.claude/settings.json\""
+    },
+    {
+      "file": "build/Governance/Guidance.fs",
+      "line": 138,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"template/base/.agents/skills/fs-skia-project/SKILL.md\""
+    },
+    {
+      "file": "build/Governance/Guidance.fs",
+      "line": 139,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"template/base/.claude/skills/fs-skia-project/SKILL.md\" ]"
+    },
+    {
+      "file": "build/Governance/Guidance.fs",
+      "line": 155,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"template/base/.agents/skills/fs-skia-project/SKILL.md\""
+    },
+    {
+      "file": "build/Governance/Guidance.fs",
+      "line": 156,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"template/base/.claude/skills/fs-skia-project/SKILL.md\" ]"
+    },
+    {
+      "file": "build/Governance/Guidance.fs",
+      "line": 555,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "@ flatRegistry \"template/base/.agents/skills\" true"
+    },
+    {
+      "file": "build/Governance/Guidance.fs",
+      "line": 556,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "@ flatRegistry \"template/base/.claude/skills\" true"
+    },
+    {
+      "file": "build/Governance/Guidance.fs",
+      "line": 626,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "@ peerFindingsFor \"template/base/.agents/skills\" \"template/base/.claude/skills\""
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/plan.md",
+      "line": 59,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| **V. Synthetic evidence** | **None planned.** Parity is real (golden baseline captured from the live `build.fsx` path)"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/plan.md",
+      "line": 97,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: none planned; `[S]`/`[SEH]` disclosure machinery on standby but expected"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/skill-loading-evidence.md",
+      "line": 11,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T004 | fsharp-build-orchestration | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-build-orchestration/SKI"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/skill-loading-evidence.md",
+      "line": 12,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T008 | fsharp-shell-process | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-shell-process/SKILL.md` | loa"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/skill-loading-evidence.md",
+      "line": 13,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T009 | fsharp-build-orchestration | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-build-orchestration/SKI"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/skill-loading-evidence.md",
+      "line": 14,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T010 | fsharp-build-orchestration | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-build-orchestration/SKI"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/skill-loading-evidence.md",
+      "line": 15,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T011 | fsharp-io-globbing | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-io-globbing/SKILL.md` | loaded "
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/skill-loading-evidence.md",
+      "line": 16,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T011 | fsharp-code-generation | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-code-generation/SKILL.md` |"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/skill-loading-evidence.md",
+      "line": 17,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T012 | fsharp-parsing | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-parsing/SKILL.md` | loaded | 2026-0"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/skill-loading-evidence.md",
+      "line": 18,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T012 | fsharp-io-globbing | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-io-globbing/SKILL.md` | loaded "
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/skill-loading-evidence.md",
+      "line": 19,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T013 | fsharp-build-orchestration | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-build-orchestration/SKI"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/skill-loading-evidence.md",
+      "line": 20,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T013 | fsharp-shell-process | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-shell-process/SKILL.md` | loa"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/skill-loading-evidence.md",
+      "line": 21,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T014 | fsharp-build-orchestration | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-build-orchestration/SKI"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/skill-loading-evidence.md",
+      "line": 22,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T020 | fsharp-build-orchestration | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-build-orchestration/SKI"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/skill-loading-evidence.md",
+      "line": 23,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T021 | fsharp-build-orchestration | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-build-orchestration/SKI"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/skill-loading-evidence.md",
+      "line": 24,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T022 | fsharp-build-orchestration | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-build-orchestration/SKI"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/skill-loading-evidence.md",
+      "line": 25,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T025 | fsharp-build-orchestration | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-build-orchestration/SKI"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/skill-loading-evidence.md",
+      "line": 26,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T026 | speckit-evidence-graph | `/home/developer/projects/FS-Skia-UI/.agents/skills/speckit-evidence-graph/SKILL.md` |"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/skill-loading-evidence.md",
+      "line": 27,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T027 | speckit-evidence-audit | `/home/developer/projects/FS-Skia-UI/.agents/skills/speckit-evidence-audit/SKILL.md` |"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/readiness/task-graph.md",
+      "line": 135,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/045-foundations-build-frontend/tasks.md",
+      "line": 228,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    }
+  ]
+}

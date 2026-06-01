@@ -1,6 +1,6 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-specs/044-foundations-single-source-generation/plan.md
+specs/045-foundations-build-frontend/plan.md
 
 ## Run `Route` first; run only the gates it prints
 

@@ -1,0 +1,4 @@
+# Proof: fake-cli absent from .config/dotnet-tools.json (FR-003/SC-003)
+# command: grep -rn 'fake-cli' .config/
+# captured: 2026-06-01T14:42:55Z
+RESULT: clean (no matches)

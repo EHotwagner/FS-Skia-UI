@@ -15,6 +15,11 @@
     <Title>FS.Skia.UI.Build</Title>
     <Description>Compiled-F# governance engine (evidence graph + merge-gate audit) consumed in-process by FS.Skia.UI build tooling and generated products.</Description>
     <PackageTags>fsharp;governance;evidence;build-tooling</PackageTags>
+    <!-- Feature 045: the build front-end relocated out of build.fsx (which ran under the
+         FSX runner without nullable reference analysis). Keep Nullable=enable so the
+         Evidence engine modules keep their annotations, but downgrade the relocated
+         body's nullness diagnostics from error to warning (behaviour-preserving). -->
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);FS3261</WarningsNotAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -60,6 +65,31 @@
     <Compile Include="Evidence/Render.fs" />
     <Compile Include="Evidence/Engine.fsi" />
     <Compile Include="Evidence/Engine.fs" />
+    <!-- Feature 045: the build front-end relocated out of build.fsx into the compiled
+         library. Helper modules first (BCL/regex only), then the value types, the MEL
+         engine (Model/Update/Interpret), and the relocated heavy validators. -->
+    <Compile Include="Front/BuildPaths.fs" />
+    <Compile Include="Front/BuildProcess.fs" />
+    <Compile Include="Front/BuildReports.fs" />
+    <Compile Include="Front/BuildGeneratedScanning.fs" />
+    <Compile Include="Front/BuildPackageResolution.fs" />
+    <Compile Include="Front/BuildTemplateValidation.fs" />
+    <Compile Include="Front/BuildProcessHealth.fs" />
+    <Compile Include="Front/Support.fs" />
+    <Compile Include="Preflight.fsi" />
+    <Compile Include="Preflight.fs" />
+    <Compile Include="Engine/Model.fsi" />
+    <Compile Include="Engine/Model.fs" />
+    <Compile Include="Front/Helpers.fs" />
+    <Compile Include="Engine/Update.fsi" />
+    <Compile Include="Engine/Update.fs" />
+    <Compile Include="GeneratedProduct.fsi" />
+    <Compile Include="GeneratedProduct.fs" />
+    <Compile Include="Guidance.fsi" />
+    <Compile Include="Guidance.fs" />
+    <Compile Include="Front/Governance.fs" />
+    <Compile Include="Engine/Interpret.fsi" />
+    <Compile Include="Engine/Interpret.fs" />
   </ItemGroup>
 
   <ItemGroup>

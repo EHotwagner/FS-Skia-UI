@@ -7,11 +7,16 @@ open FS.Skia.UI.Controls
 open FS.Skia.UI.Controls.Elmish
 
 let repositoryRoot =
+    // Feature 045 deleted build.fsx; locate the repo root by the solution file instead, and
+    // terminate at the filesystem root (the old build.fsx-marker walk looped forever once the
+    // marker was gone, hanging this test's module init — and thus Expecto discovery — headless).
     let rec find dir =
-        if File.Exists(Path.Combine(dir, "build.fsx")) then
+        if File.Exists(Path.Combine(dir, "FS-Skia-UI.sln")) then
             dir
         else
-            Directory.GetParent(dir) |> Option.ofObj |> Option.map _.FullName |> Option.defaultValue dir |> find
+            match Directory.GetParent dir |> Option.ofObj with
+            | Some parent -> find parent.FullName
+            | None -> dir
 
     find __SOURCE_DIRECTORY__
 

@@ -1,0 +1,21 @@
+run EvidenceGraph
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target EvidenceGraph:
+<== EvidenceGraph
+
+The running order is:
+Group - 1
+  - EvidenceGraph
+Single target mode ==> Skipping dependencies.
+Starting target 'EvidenceGraph'
+Finished (Success) 'EvidenceGraph' in 00:00:00.1908083
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target          Duration
+------          --------
+EvidenceGraph   00:00:00.1883567
+Total:          00:00:00.2575136
+Status:         Ok
+---------------------------------------------------------------------

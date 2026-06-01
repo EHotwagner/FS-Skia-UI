@@ -4,11 +4,11 @@
 - **Author:** Claude Code (planning, requested by maintainer)
 - **Status:** Proposed plan, partially implemented.
   - **Stage 0 IMPLEMENTED** as feature `039-foundations-baseline-spike` (all 26 tasks complete; evidence graph `ok`, evidence audit `PASS`; D2 spike **confirmed**). See [Stage 0 — Implementation status](#stage-0--implementation-status-2026-05-31-feature-039) below.
-  - **Stage 2.1 IMPLEMENTED** (the `.claude`↔`.agents` byte-identity stopgap) as feature `040-foundations-capability-skills`, which shipped `SkillSyncCheck` (in-process SHA-256 sync) + `SkillExamplesCheck` (compile-verified cookbooks). The rest of Stage 2 (2.2–2.5) is not yet started. See [Stage 2 — Implementation status](#stage-2--implementation-status-2026-05-31-feature-040).
+  - **Stage 2.1 IMPLEMENTED** (the `.claude`↔`.agents` byte-identity stopgap) as feature `040-foundations-capability-skills`, which shipped `SkillSyncCheck` (in-process SHA-256 sync) + `SkillExamplesCheck` (compile-verified cookbooks). **Stage 2.2–2.5 IMPLEMENTED** as feature `044-foundations-single-source-generation` (the three remaining "two-copies + drift-check" duplications — the `.claude`↔`.agents` skill trees, the per-task skillist, and the constitution echo — converted to **generation-currency** checks folded into the existing `RefreshSurfaceBaselines` regeneration entry point + existing gates with **no new target**; `SkillExamplesCheck` retired as redundant; squash-merged to `main`, all tasks `[X]` with real evidence, evidence audit `PASS`). See [Stage 2 — Implementation status](#stage-2--implementation-status-2026-05-31--2026-06-01-features-040--044).
   - **Stage 3 IMPLEMENTED** as feature `041-foundations-library-validators` (the first two real validators extracted into the compiled `FS.Skia.UI.Build` library + the typed `Target` single-source DU; squash-merged to `master`, evidence audit `PASS`). See [Stage 3 — Implementation status](#stage-3--implementation-status-2026-05-31-feature-041).
   - **Stage 1 IMPLEMENTED** as feature `042-foundations-two-tier-process` (the two-tier process made authoritative and enforced via a compiled `Routing.fs` selector + a new `Route` target; the interim `select-tier.fsx` was **skipped** and Stage 5.5's `Routing.fs` pulled forward, mirroring how 041 pulled the typed `Target` work forward; evidence audit `PASS`, dogfood serialized pipeline green). See [Stage 1 — Implementation status](#stage-1--implementation-status-2026-06-01-feature-042).
   - **Stage 4 IMPLEMENTED** as feature `043-foundations-evidence-engine` (the tri-language evidence gate — `build.fsx → run-audit.sh → compute-task-graph.py + audit-status-scan.py → JSON` — replaced by compiled, unit/property-tested F# in `FS.Skia.UI.Build.Evidence`, computing graph + merge-gate audit **in-process**; byte-for-byte parity against the Stage-0 golden fixtures proven *before* the Python and `run-audit.sh` were deleted; `FS.Skia.UI.Build` packed/published and consumed by generated projects per D1; squash-merged to `main`, all 34 tasks complete, evidence audit `PASS`, zero synthetic). See [Stage 4 — Implementation status](#stage-4--implementation-status-2026-06-01-feature-043).
-  - **Stages 2.2–2.5, 5–7 not yet started.** (Stage 5.5's routing migration was already pulled forward into Stage 1/feature 042.)
+  - **Stages 5–7 not yet started.** (Stage 5.5's routing migration was already pulled forward into Stage 1/feature 042, so Stage 5's remaining scope is the dedicated build front-end + MEL-engine relocation + remaining heavy-validator moves + `build.fsx` retirement.)
 - **Companion analysis:** [`2026-05-31-0908-foundations-rewrite-analysis.md`](./2026-05-31-0908-foundations-rewrite-analysis.md)
 - **Baseline at authoring time:** `build.fsx` = 4,688 lines; `tests/Governance.Tests/` = 34 test files; `validation.contract.yml` already defines tiers + path routing; evidence graph/audit computed by `.specify/extensions/evidence/scripts/python/*` orchestrated by `run-audit.sh` (1,284 lines) and shelled to from `build.fsx:1266,1273`.
 
@@ -537,9 +537,9 @@ unguarded `.claude`↔`.agents` drift hole (a live risk today — no check enfor
 **Effort:** ~3–4 days. **Revert:** generation targets are additive; the sync check can be removed;
 generated files were already present so nothing is lost.
 
-### Stage 2 — Implementation status (2026-05-31, feature 040)
+### Stage 2 — Implementation status (2026-05-31 / 2026-06-01, features 040 + 044)
 
-**Status: 2.1 COMPLETE; 2.2–2.5 not started.** Feature
+**Status: 2.1 COMPLETE (feature 040); 2.2–2.5 COMPLETE (feature 044).** Feature
 `040-foundations-capability-skills` shipped the Stage-2.1 stopgap and the
 capability-skill cookbooks Stage 3 consumes:
 
@@ -550,9 +550,38 @@ capability-skill cookbooks Stage 3 consumes:
   adopt-set. Both are compiled `build/Governance` modules (`SkillSync.fs`,
   `SkillExamples.fs`, each with a curated `.fsi`) `#load`'d into `build.fsx` —
   the same in-process pattern Stage 3 reuses.
-- **Not yet done:** 2.2 `GenerateAgentSkills` (the trees are still hand-synced and
-  only *checked*, not generated from one source), 2.3 constitution de-dup,
-  2.4 skillist single-source, 2.5 drift-checks → generation-currency checks.
+
+**Stage 2.2–2.5 — IMPLEMENTED** as feature
+`044-foundations-single-source-generation` (squash-merged to `main` as `1ce7fdd`).
+It replaced the three remaining "two-copies + drift-check" duplications with
+**generation-currency** checks, mirroring the 042 `ContractView`/
+`RefreshSurfaceBaselines` precedent and reusing existing gates — **no new
+target**. All tasks `[X]` with real evidence (zero synthetic); evidence audit
+`PASS`. As a `.specify/**`/governance change it escalated to and passed the full
+serialized FAKE gate set.
+
+- **2.2 skills single-source — done.** `.agents/skills/` is canonical;
+  `RefreshSurfaceBaselines` now regenerates the derived `.claude/skills/**` tree
+  (+ a `GENERATED.md` manifest) as a byte-identical copy **by enumeration of the
+  canonical tree** (all 25 slugs, no allowlist — closing the gap where 19 of 25
+  pairs were unguarded). `regenerateSkillTree` prunes orphan files **and** empty
+  dirs. `SkillSyncCheck` was reframed from a peer drift-check into a
+  generation-currency check.
+- **2.3 constitution de-dup — done.** Constitution principle fragments are
+  spliced into `plan-template.md`/`tasks-template.md` between
+  `<!-- BEGIN/END GENERATED: constitution/<id> -->` markers from the single
+  `.specify/memory/constitution.md` source; genuine hand-written guidance outside
+  the markers is preserved. Currency folds into `TargetMetadataDrift`.
+- **2.4 skillist single-source — done.** `tasks.deps.yml` is the canonical
+  skillist; the `tasks.md` `[skillist: …]` annotation is the derived view, with
+  currency enforced at the **active-feature** evidence merge-gate (`Evidence/
+  Audit.fs`, surfacing at `EvidenceGraph`); historical feature dirs are not
+  re-derived.
+- **2.5 drift-checks → generation-currency — done.** Each replaced check now
+  emits an actionable "regenerate from `<source>`" diagnostic; a hand-edit of any
+  derived artifact fails its gate. The now-redundant **`SkillExamplesCheck` was
+  retired**, shrinking the typed `Targets` registry 38 → 37 (DU/metadata/dispatch
+  ripple absorbed; the exhaustive match makes a missed reference a compile error).
 
 ---
 

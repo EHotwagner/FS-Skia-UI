@@ -49,6 +49,11 @@
     <Compile Include="ContractViewTests.fs" />
     <Compile Include="EvidenceGoldenParityTests.fs" />
     <Compile Include="EvidenceAlgorithmTests.fs" />
+    <!-- Feature 045 (US3): direct unit tests for the relocated MEL engine + heavy validators. -->
+    <Compile Include="BuildEngineUpdateTests.fs" />
+    <Compile Include="PreflightValidatorTests.fs" />
+    <Compile Include="GuidanceValidatorTests.fs" />
+    <Compile Include="GeneratedProductValidatorTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

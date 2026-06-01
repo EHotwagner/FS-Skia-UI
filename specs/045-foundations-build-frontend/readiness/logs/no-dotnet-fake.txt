@@ -1,0 +1,7 @@
+# Proof: no 'dotnet fake' invocation in launchers/scripts (FR-003/SC-003)
+# command: grep -rn 'dotnet fake' fake.sh fake.cmd scripts/
+# captured: 2026-06-01T14:42:55Z
+RESULT: clean (no matches)
+# note: the literal 'dotnet fake' still appears as a DOC-VALIDATION regex inside
+# build/Governance/Guidance.fs (serialized-runner guidance check); that is a validator
+# pattern, not a launcher/script invocation, and is out of scope for this proof.

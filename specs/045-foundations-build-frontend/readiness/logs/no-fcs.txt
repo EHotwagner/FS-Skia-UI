@@ -1,0 +1,4 @@
+# Proof: no FSharp.Compiler.* / FCS reference (FR-004/SC-004)
+# command: grep -rn 'FSharp.Compiler' --include=*.fs --include=*.fsproj --include=*.fsx . (excl bin/obj)
+# captured: 2026-06-01T14:42:42Z
+RESULT: clean (no matches)

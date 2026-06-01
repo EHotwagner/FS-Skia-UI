@@ -1,0 +1,118 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Every Tnnn id in tasks.md appears as a key here with both `deps` and
+# `skillist`. Phase-checkpoint edges (every Phase N+1 task -> last task of
+# Phase N) are auto-injected by the graph compute; only non-phase cross-edges
+# are written here.
+#
+# Build-tooling / governance only (build/Build.fsproj + build/Program.fs +
+# build/Governance + build.fsx + the launchers + .config/dotnet-tools.json), so
+# no fs-skia-* runtime skill applies. It CONSUMES the fsharp-* cookbooks:
+#   build-orchestration -> MEL engine (Model/update), the compiled front-end
+#       target registration + ==> wiring + dispatch, the DiffPlex golden-diff
+#       parity oracle, the Expecto effect-list/finding tests, the serialized run;
+#   shell-process -> Preflight (git/process wrapping) + the interpret I/O edge;
+#   io-globbing -> generated-project tree discovery in GeneratedProduct/Guidance;
+#   code-generation -> the byte-identical GeneratedProduct rendered report;
+#   parsing -> the markdown/skill-section scanning in Guidance.
+# The graph/audit workflow skills appear only on T026/T027. fsharp-graph-algorithms
+# is NOT assigned (no DAG/topo/propagation logic here) and fs-skia-template-update
+# is NOT assigned (behaviour-identical structural relocation, no dotnet-new
+# product / pin / template.json change) -- see the skill-assignment note in tasks.md.
+#
+# Non-phase cross-edges captured below:
+#   T009 -> T008          Engine/Model's BuildMsg references Preflight types
+#   T010,T011,T012 -> T009  update + the model-taking validators need Engine/Model
+#   T013 -> {T008,T010,T011,T012}  interpret calls update + all relocated validators
+#   T014 -> T013          the front-end delegates each body to Engine.Interpret.runTarget
+#   T017 -> {T004,T014}   parity diffs the new front-end output against the baseline
+#   T018 -> T017          delete build.fsx only after parity is clean
+#   T019 -> {T016,T018}   grep proofs after launcher rewire + build.fsx delete
+#   T022 -> {T020,T021}   record the unit-test results after both suites exist
+#   T023 -> T017 ; T024 -> {T017,T018}   timing + invariants after parity/delete
+#   T025 -> {T019,T022,T023,T024}        serialized gates after all evidence is in
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: [T002]
+    skillist: []
+  T004:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T005:
+    deps: []
+    skillist: []
+  T006:
+    deps: [T005]
+    skillist: []
+  T007:
+    deps: [T005]
+    skillist: []
+  T008:
+    deps: [T005]
+    skillist: ["fsharp-shell-process"]
+  T009:
+    deps: [T005, T008]
+    skillist: ["fsharp-build-orchestration"]
+  T010:
+    deps: [T009]
+    skillist: ["fsharp-build-orchestration"]
+  T011:
+    deps: [T009]
+    skillist: ["fsharp-io-globbing", "fsharp-code-generation"]
+  T012:
+    deps: [T009]
+    skillist: ["fsharp-parsing", "fsharp-io-globbing"]
+  T013:
+    deps: [T008, T010, T011, T012]
+    skillist: ["fsharp-build-orchestration", "fsharp-shell-process"]
+  T014:
+    deps: [T013]
+    skillist: ["fsharp-build-orchestration"]
+  T015:
+    deps: [T014]
+    skillist: []
+  T016:
+    deps: [T014]
+    skillist: []
+  T017:
+    deps: [T004, T014]
+    skillist: ["fsharp-build-orchestration"]
+  T018:
+    deps: [T017]
+    skillist: []
+  T019:
+    deps: [T016, T018]
+    skillist: []
+  T020:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T021:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T022:
+    deps: [T020, T021]
+    skillist: ["fsharp-build-orchestration"]
+  T023:
+    deps: [T017]
+    skillist: []
+  T024:
+    deps: [T017, T018]
+    skillist: []
+  T025:
+    deps: [T019, T022, T023, T024]
+    skillist: ["fsharp-build-orchestration"]
+  T026:
+    deps: [T025]
+    skillist: ["speckit-evidence-graph"]
+  T027:
+    deps: [T026]
+    skillist: ["speckit-evidence-audit"]

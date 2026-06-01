@@ -6,10 +6,10 @@ open FS.Skia.UI.Controls
 
 let repositoryRoot =
     let rec find dir =
-        if File.Exists(Path.Combine(dir, "build.fsx")) then
+        if File.Exists(Path.Combine(dir, "FS-Skia-UI.sln")) then
             dir
         else
-            Directory.GetParent(dir) |> Option.ofObj |> Option.map _.FullName |> Option.defaultValue dir |> find
+            (match Directory.GetParent dir |> Option.ofObj with Some p -> find p.FullName | None -> dir)
     find __SOURCE_DIRECTORY__
 
 [<Tests>]

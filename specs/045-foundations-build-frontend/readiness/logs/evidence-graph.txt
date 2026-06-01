@@ -1,0 +1,4 @@
+=== speckit.evidence.graph (in-process) ===
+feature: 045-foundations-build-frontend
+tasks: 27
+verdict: ok

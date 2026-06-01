@@ -1,9 +1,8 @@
 @echo off
 setlocal
 pushd "%~dp0"
-dotnet tool restore >nul
-set FAKE_ALLOW_NO_DEPENDENCIES=true
-dotnet fake %*
+rem Feature 045: dedicated compiled front-end (build/Build.fsproj) replaces the FSX runner.
+dotnet run --project build/Build.fsproj -- %*
 set EXITCODE=%ERRORLEVEL%
 popd
 exit /b %EXITCODE%

@@ -1,0 +1,21 @@
+run GeneratedGuidanceCheck
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target GeneratedGuidanceCheck:
+<== GeneratedGuidanceCheck
+
+The running order is:
+Group - 1
+  - GeneratedGuidanceCheck
+Single target mode ==> Skipping dependencies.
+Starting target 'GeneratedGuidanceCheck'
+Finished (Success) 'GeneratedGuidanceCheck' in 00:00:00.1110127
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target                   Duration
+------                   --------
+GeneratedGuidanceCheck   00:00:00.1085633
+Total:                   00:00:00.1881270
+Status:                  Ok
+---------------------------------------------------------------------

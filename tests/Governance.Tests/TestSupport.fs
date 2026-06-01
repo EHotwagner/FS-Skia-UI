@@ -27,33 +27,51 @@ let fileExists relativePath =
 let directoryExists relativePath =
     Directory.Exists(fullPath relativePath)
 
-let read (relativePath: string) =
-    File.ReadAllText(fullPath relativePath)
+// Feature 045: build.fsx was deleted; the entire build front-end (the MEL engine, the
+// relocated validators, the helper modules) now lives in compiled build/Governance modules
+// (recursively, incl. Front/ + Engine/ subdirs). The governance-source contract aggregates
+// those plus the still-present scripts/build/*.fsx helpers. `read "build.fsx"` is redirected
+// to this aggregate so the contract tests that historically asserted build.fsx text keep
+// asserting the same tokens against their relocated home (behaviour/intent preserved).
+let private readSourceTree relative =
+    let dir = fullPath relative
 
-let readBuildGovernanceSources () =
-    let buildSource = read "build.fsx"
+    if Directory.Exists dir then
+        [ Directory.GetFiles(dir, "*.fsi", SearchOption.AllDirectories)
+          Directory.GetFiles(dir, "*.fs", SearchOption.AllDirectories) ]
+        |> Array.concat
+        |> Array.filter (fun p ->
+            let n = p.Replace('\\', '/')
+            not (n.Contains "/bin/" || n.Contains "/obj/"))
+        |> Array.sort
+        |> Array.map File.ReadAllText
+        |> String.concat Environment.NewLine
+    else
+        ""
 
-    let sourcesIn relative pattern =
-        let dir = fullPath relative
+let readBuildFrontEnd () =
+    let scriptsBuild =
+        let dir = fullPath "scripts/build"
 
         if Directory.Exists dir then
-            Directory.GetFiles(dir, pattern)
+            Directory.GetFiles(dir, "*.fsx")
             |> Array.sort
             |> Array.map File.ReadAllText
             |> String.concat Environment.NewLine
         else
             ""
 
-    // Feature 041: the build front-end is build.fsx + scripts/build/*.fsx PLUS the
-    // compiled governance modules under build/Governance (where the moved validators and
-    // the typed Target/metadata model now live), so the governance-source contract scans
-    // all three.
-    [ buildSource
-      sourcesIn "scripts/build" "*.fsx"
-      sourcesIn "build/Governance" "*.fsi"
-      sourcesIn "build/Governance" "*.fs" ]
+    [ readSourceTree "build/Governance"; scriptsBuild ]
     |> List.filter (fun text -> text <> "")
     |> String.concat Environment.NewLine
+
+let read (relativePath: string) =
+    if relativePath = "build.fsx" then
+        readBuildFrontEnd ()
+    else
+        File.ReadAllText(fullPath relativePath)
+
+let readBuildGovernanceSources () = readBuildFrontEnd ()
 
 let readJson (relativePath: string) =
     JsonDocument.Parse(read relativePath)
@@ -206,7 +224,8 @@ let runProcess (fileName: string) (arguments: string) =
         runProcessUnlocked fileName arguments
 
 let runFakeTarget target =
-    runProcess "dotnet" $"fake run build.fsx --target {target}"
+    // Feature 045: the front-end is the compiled exe behind ./fake.sh, not `dotnet fake`.
+    runProcess "./fake.sh" $"build -t {target}"
 
 let projectFiles () =
     Directory.EnumerateFiles(repositoryRoot, "*.fsproj", SearchOption.AllDirectories)

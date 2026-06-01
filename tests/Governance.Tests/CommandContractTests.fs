@@ -8,12 +8,19 @@ open GovernanceTestSupport
 [<Tests>]
 let commandContractTests =
     testList "Canonical command contract" [
-        test "repo-local FAKE manifest and wrappers are available" {
-            expectFileContains ".config/dotnet-tools.json" [ "\"fake-cli\""; "\"version\": \"6.1.4\""; "\"fake\"" ]
-            expectFileContains "fake.sh" [ "dotnet tool restore"; "FAKE_SDK_RESOLVER_CUSTOM_DOTNET_PATH"; "dotnet fake \"$@\"" ]
-            expectFileContains "fake.cmd" [ "dotnet tool restore"; "dotnet fake %*" ]
+        test "compiled build front-end and wrappers are available" {
+            // Feature 045: the front-end is a compiled exe (build/Build.fsproj) behind the
+            // launchers; `dotnet fake` / `fake-cli` / `dotnet tool restore` are gone (FR-002/FR-003).
+            let tools = read ".config/dotnet-tools.json"
+            Expect.isFalse (tools.Contains "fake-cli") ".config/dotnet-tools.json no longer lists fake-cli"
+            expectFileContains "fake.sh" [ "dotnet run --project build/Build.fsproj -- \"$@\"" ]
+            expectFileContains "fake.cmd" [ "dotnet run --project build/Build.fsproj -- %*" ]
+            let bash = read "fake.sh"
+            Expect.isFalse (bash.Contains "dotnet fake") "fake.sh no longer invokes dotnet fake"
+            Expect.isFalse (bash.Contains "dotnet tool restore") "fake.sh no longer restores the fake-cli tool"
             Expect.isTrue (File.Exists(fullPath "fake.sh")) "Bash wrapper exists"
             Expect.isTrue (File.Exists(fullPath "fake.cmd")) "Windows wrapper exists"
+            Expect.isTrue (File.Exists(fullPath "build/Build.fsproj")) "compiled front-end project exists"
         }
 
         test "build workflow exposes required MVU-style effect algebra" {
@@ -30,15 +37,17 @@ let commandContractTests =
                   "WorkflowSelfCheck" ]
         }
 
-        test "canonical build script is organized by named concern sections" {
+        test "compiled build front-end is organized by named concern modules" {
+            // Feature 045: build.fsx's named comment sections became compiled modules with
+            // curated .fsi surfaces (Principle II); assert the relocated module organization.
             expectFileContains
                 "build.fsx"
-                [ "BUILD SECTION: path model"
-                  "BUILD SECTION: workflow model"
-                  "BUILD SECTION: target update"
-                  "BUILD SECTION: interpreter"
-                  "BUILD SECTION: guidance validation"
-                  "BUILD SECTION: native FAKE target graph" ]
+                [ "module FS.Skia.UI.Build.Engine.Model"
+                  "module FS.Skia.UI.Build.Engine.Update"
+                  "module FS.Skia.UI.Build.Engine.Interpret"
+                  "module FS.Skia.UI.Build.GeneratedProduct"
+                  "module FS.Skia.UI.Build.Guidance"
+                  "module FS.Skia.UI.Build.Preflight" ]
         }
 
         test "required targets are declared exactly once through the target graph" {

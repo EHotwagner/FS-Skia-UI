@@ -1,0 +1,15 @@
+=== speckit.evidence.audit (in-process) ===
+feature: 045-foundations-build-frontend
+verdict=PASS
+real-tasks=25
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+readiness-contract-hits=0
+persistent-launch-hits=0
+persistent-gui-runtime-hits=0
+window-visibility-hits=0
+audit-status-hits=0
+total-blockers=0

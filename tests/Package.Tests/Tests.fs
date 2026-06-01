@@ -18,6 +18,23 @@ let repositoryRoot = findRepositoryRoot AppContext.BaseDirectory
 let repositoryPath (relativePath: string) =
     Path.Combine(repositoryRoot, relativePath.Replace('/', Path.DirectorySeparatorChar))
 
+// Feature 045: build.fsx was relocated into compiled build/Governance modules; the PackLocal
+// package list and build wiring now live there. Aggregate those sources for the contract
+// assertions that historically scanned build.fsx text (behaviour/intent preserved).
+let buildFrontEnd () =
+    let dir = Path.Combine(repositoryRoot, "build", "Governance")
+
+    if Directory.Exists dir then
+        Directory.GetFiles(dir, "*.fs", SearchOption.AllDirectories)
+        |> Array.filter (fun p ->
+            let n = p.Replace('\\', '/')
+            not (n.Contains "/bin/" || n.Contains "/obj/"))
+        |> Array.sort
+        |> Array.map File.ReadAllText
+        |> String.concat Environment.NewLine
+    else
+        ""
+
 let runDotnet (workingDirectory: string) (arguments: string) =
     let startInfo: ProcessStartInfo = ProcessStartInfo("dotnet", arguments)
     startInfo.WorkingDirectory <- workingDirectory
@@ -47,7 +64,7 @@ let packageVersion = "0.1.9-preview.1"
 let packageContractTests =
     let v1PackageTests = [
         test "active packages are declared for PackLocal" {
-            let build = File.ReadAllText(Path.Combine(repositoryRoot, "build.fsx"))
+            let build = buildFrontEnd ()
 
             [ "src/Lib/Lib.fsproj", "FS.Skia.UI"
               "src/Layout/Layout.fsproj", "FS.Skia.UI.Layout"
@@ -61,7 +78,7 @@ let packageContractTests =
         }
 
         test "controls boundary has no active Charts package capability or monolithic viewer coupling" {
-            let build = File.ReadAllText(Path.Combine(repositoryRoot, "build.fsx"))
+            let build = buildFrontEnd ()
             let capabilities = File.ReadAllText(Path.Combine(repositoryRoot, "template", "capabilities.yml"))
             let controlsProject = File.ReadAllText(Path.Combine(repositoryRoot, "src", "Controls", "Controls.fsproj"))
 
@@ -73,7 +90,7 @@ let packageContractTests =
         }
 
         test "generated products and surface checks do not keep Charts as an active package" {
-            let build = File.ReadAllText(repositoryPath "build.fsx")
+            let build = buildFrontEnd ()
 
             let generatedProductInputs =
                 [ "template/capabilities.yml"

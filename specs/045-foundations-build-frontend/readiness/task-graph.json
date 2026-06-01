@@ -1,0 +1,1237 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T2",
+      "parallel": false,
+      "title": "Record feature Tier 2 (internal behaviour-preserving refactor of the build tooling, escalated by `Route` to the full serialized gate set as a `build.fsx`/launcher/`.config/dotnet-tools.json`/governance-path change), the affected layer (`build/Build.fsproj` + `build/Program.fs` + `build/Governance/**` + `build.fsx` + `fake.sh`/`fake.cmd` + `.config/dotnet-tools.json`; build-tooling only), public-API impact (no product `.fsi`/surface-baseline change; only curated build-tooling `.fsi` per Principle II), Elmish/MVU applicability (the relocated **build-side** MEL engine \u2014 `update` stays a pure `Msg \u00d7 Model \u2192 Model \u00d7 Effect list`, all filesystem/`git`/process I/O at the `interpret` edge, FR-007; the product Elmish runtime is untouched), and the real-evidence obligations (golden parity baseline + byte-identical diff, typed `update` effect-list + relocated-validator unit tests, `build.fsx`-deletion line-delta proof, grep proofs for no `dotnet fake`/`fake-cli`/`FSharp.Compiler.*`, recorded cold/warm wall-clock, serialized FAKE logs; zero synthetic evidence)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T001",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T001: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T2",
+      "parallel": true,
+      "title": "Create placeholder evidence files listed by the plan under `specs/045-foundations-build-frontend/readiness/` so the audit-enforced readiness files are discoverable at setup: `parity/exclusions.md`, `build-fsx-line-delta.md`, `unit-tests.md`, `fsi-session.txt`, `logs/no-dotnet-fake.txt`, `logs/no-fake-cli.txt`, `logs/no-fcs.txt`, `logs/build-timing.md`, `logs/serialized-gates.md`, `logs/runtime-untouched.md`, and the governance scaffolds named in T003 (`governance-risk-levels.md`, `aggregate-hang-diagnostics.md`, `runtime-limitations.md`, `generated-validation-authority.md`, `evidence-graph.md`, `evidence-audit.md`)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T002",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T002: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T2",
+      "parallel": false,
+      "title": "Complete readiness notes for the feature's required readiness placeholder files (`governance-risk-levels.md`, `aggregate-hang-diagnostics.md`, `runtime-limitations.md`, `generated-validation-authority.md`, `evidence-graph.md`, `evidence-audit.md`, and the `parity/exclusions.md` oracle-exclusion register), each naming its authoritative command, artifact path, failure class, and next action",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T003",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T003: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T002"
+      ],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T004",
+      "declared": "skipped",
+      "effective": "skipped",
+      "phase": 1,
+      "story": null,
+      "tier": "T2",
+      "parallel": true,
+      "title": "Capture the golden target-output baseline from the current `build.fsx` (`dotnet fake`) path **before any relocation** \u2014 for every target in `Targets.dispatchTargets`, capture its deterministic governance reports/artifacts into `readiness/parity/<target>/baseline/`, normalizing known nondeterminism (timestamps, absolute paths, ordering) per `contracts/parity-oracle.md`, and record the stash-control proof that the two pre-existing-RED gates (`FsiTranscripts`, `TemplateCheck`'s `SkiaViewer.Tests` headless flake) fail identically with this feature's edits stashed into `readiness/parity/exclusions.md` (FR-012/SC-002)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T004",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T004: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": "T2",
+      "parallel": true,
+      "title": "Extract the curated `.fsi` surfaces from `contracts/library-modules.md` into standalone files under `build/Governance/` \u2014 `Engine/Model.fsi` (`BuildModel`, `BuildMsg`, the ~35-case `BuildEffect`, `init`), `Engine/Update.fsi` (pure `update`, exposing **no** filesystem/`git`/process symbol so the compiler enforces Principle IV), `Engine/Interpret.fsi` (`interpret` + `runTarget`), `GeneratedProduct.fsi`, `Guidance.fsi`, `Preflight.fsi` \u2014 add skeleton `.fs` companions against the signatures and their `<Compile>` entries to `FS.Skia.UI.Build.fsproj` in dependency order (`Preflight` \u2192 `Engine/Model` \u2192 `Engine/Update` \u2192 `GeneratedProduct`/`Guidance` \u2192 `Engine/Interpret`); no access modifiers in the `.fs` bodies (Principle I/II)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T005",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T005: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": "T2",
+      "parallel": false,
+      "title": "Exercise the draft `.fsi` surfaces from FSI (a representative `update (StartTarget t)` over a small literal model, plus a `GeneratedProduct`/`Guidance`/`Preflight` entry over a small literal input) and capture the session transcript to `readiness/fsi-session.txt`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T006",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T006: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": "T2",
+      "parallel": false,
+      "title": "Record surface-area baselines for the new `build/Governance` build-tooling modules and the unsupported-scope / failure handling: these are **build-tooling** `.fsi` (not product surface \u2014 `PackageSurfaceCheck`/`FsiTranscripts` show **no** product baseline diff); generated-product `schema_version` / deprecation-window is Stage 6.4 and explicitly out of scope; the relocation preserves every diagnostic verbatim (Principle VII) \u2014 compiler-enforced `.fsi` is the surface guard for these build-tooling modules, so the absence of a `PackageSurfaceCheck`/`FsiTranscripts` product baseline is intentional (Principle II satisfied via `.fsi`), not an omission",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T007",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T007: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Relocate the process-health / bootstrap preflight (~267 lines) into `build/Governance/Preflight.fs` against `Preflight.fsi` \u2014 `collectProcessHealth`, `validateRunnerBootstrap`, and the `ProcessHealthThreshold`/`ProcessHealthSnapshot`/`BootstrapValidation` value types (from `build.fsx:118\u2013162` / `1431\u20131800`), behaviour-preserving; the `git`/process wrapping stays here at the edge (relocated first because `Engine/Model.fsi`'s `BuildMsg` references `Preflight.ProcessHealthSnapshot`/`BootstrapValidation`)",
+      "skillist": [
+        "fsharp-shell-process"
+      ],
+      "skillist_mirror": [
+        "fsharp-shell-process"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T008",
+          "declared_skillist": [
+            "fsharp-shell-process"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T008: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Relocate the engine model into `build/Governance/Engine/Model.fs` against `Model.fsi` \u2014 the `BuildModel` record (repository-derived paths + `CompletedTargets`), `BuildMsg` (`StartTarget of Targets.Target` + the completion/health/verdict messages), the ~35-case `BuildEffect` DU, and `init` (pure path derivation from `root`), verbatim from `build.fsx:197\u2013281`; compile clean under `TreatWarningsAsErrors`",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T009",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T009: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005",
+        "T008"
+      ],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Relocate the **pure** decision function into `build/Governance/Engine/Update.fs` against `Update.fsi` \u2014 `update : BuildMsg -> BuildModel -> BuildModel * BuildEffect list`, replacing the stringly-typed `StartTarget \"\u2026\"` dispatch with the typed `Targets.Target` dispatch, with **no** filesystem/`git`/process/write I/O so it is unit-testable without touching the repo tree (Principle IV/FR-007)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T010",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T010: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T009"
+      ],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Relocate the generated-product structural validation (~800 lines) into `build/Governance/GeneratedProduct.fs` against `GeneratedProduct.fsi` \u2014 `scanGeneratedProjects`, `generateV3Products`, `scanV3GeneratedProducts`, `validateGeneratedConsumer` (from `build.fsx:~2052\u20133500`) returning `Findings.ValidationFinding list` plus a **byte-identical** rendered report; structural checks behaviour-identical (no `schema_version` / deprecation window \u2014 Stage 6.4, out of scope)",
+      "skillist": [
+        "fsharp-io-globbing",
+        "fsharp-code-generation"
+      ],
+      "skillist_mirror": [
+        "fsharp-io-globbing",
+        "fsharp-code-generation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T011",
+          "declared_skillist": [
+            "fsharp-io-globbing",
+            "fsharp-code-generation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T011: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T009"
+      ],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Relocate the generated-guidance / skill-section scanners (~200 lines) into `build/Governance/Guidance.fs` against `Guidance.fsi` \u2014 `scanGeneratedGuidance` (from `build.fsx:~3635\u20134300`) returning typed `Findings.ValidationFinding` results plus a byte-identical report, behaviour-preserving",
+      "skillist": [
+        "fsharp-parsing",
+        "fsharp-io-globbing"
+      ],
+      "skillist_mirror": [
+        "fsharp-parsing",
+        "fsharp-io-globbing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T012",
+          "declared_skillist": [
+            "fsharp-parsing",
+            "fsharp-io-globbing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T012: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T009"
+      ],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Relocate `interpret` + `runTarget` into `build/Governance/Engine/Interpret.fs` against `Interpret.fsi` \u2014 the **only** I/O module; each `BuildEffect` arm calls the relocated `GeneratedProduct`/`Guidance`/`Preflight` function or a local I/O helper and writes its report; `runTarget = init \u2192 update (StartTarget t) \u2192 interpret` over the emitted effect list (the function the exe's `Target.create` bodies call)",
+      "skillist": [
+        "fsharp-build-orchestration",
+        "fsharp-shell-process"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration",
+        "fsharp-shell-process"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T013",
+          "declared_skillist": [
+            "fsharp-build-orchestration",
+            "fsharp-shell-process"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T013: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T008",
+        "T010",
+        "T011",
+        "T012"
+      ],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Grow `build/Program.fs` into the real front-end \u2014 iterate `Targets.dispatchTargets` registering **every** target via `Fake.Core.Target`, wire `==>` from `Targets.targetDependencyRows`, make each `Target.create` body call `Engine.Interpret.runTarget`, and dispatch via `Target.runOrDefaultWithArguments` forwarding target names and flags (e.g. `Route --enforce`) with identical semantics; consume the existing `Routing.fs` (feature 042) in-process for the `Route` target with **no** new routing logic (FR-005); the exhaustive `Target` match makes a missing registration a compile error, and the exe contains **no** inlined orchestration/validation logic (FR-001/SC-006)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T014",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T014: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T013"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Remove the spike residue \u2014 delete the `SpikeHello` target, `build/spike-verify.sh`, and any `build/SkillExamples/` remnants (`SkillExamplesCheck` was retired in feature 044) without affecting any registered target",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T015",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T015: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T014"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Rewire the launchers + toolchain \u2014 `fake.sh` \u2192 `dotnet run --project build/Build.fsproj -- \"$@\"` (drop `dotnet tool restore` + `dotnet fake`), `fake.cmd` \u2192 `dotnet run --project build/Build.fsproj -- %*` (preserve `%ERRORLEVEL%`), and remove `fake-cli` from `.config/dotnet-tools.json`; the FAKE-sequencing invariant (never concurrent) and the `.fake`-cache independence are preserved (FR-002/FR-003)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T016",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T016: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T014"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T017",
+      "declared": "skipped",
+      "effective": "skipped",
+      "phase": 4,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Prove byte-identical parity \u2014 re-run every registered target through the compiled front-end into `readiness/parity/<target>/after/`, normalize, and DiffPlex-diff against `baseline/` (T004); every Class-A/Class-B diff is empty, test-shelling targets are compared by **verdict + report** not raw stdout, and the two enumerated pre-existing-RED gates are excluded via the `readiness/parity/exclusions.md` stash-control proof; resolve any diff by fixing the relocation, never by weakening the oracle (FR-012/SC-002)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T017",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T017: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T004",
+        "T014"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Delete `build.fsx` \u2014 **only after** parity (T017) is clean; record the line delta (4,767 working / 4,688 Stage-0 \u2192 0) in `readiness/build-fsx-line-delta.md`; the \u2264200-line `#r`-the-DLL shim is used **only** if a concrete blocker surfaced (record the residual count and the blocker) (FR-011/SC-001)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T018",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T018: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T017"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture grep proofs into `readiness/logs/{no-dotnet-fake,no-fake-cli,no-fcs}.txt` \u2014 no `dotnet fake` invocation remains in the launchers/scripts, `fake-cli` is absent from `.config/dotnet-tools.json`, and no `FSharp.Compiler.*` / FCS reference exists anywhere (`--include=*.fs --include=*.fsproj --include=*.fsx`) (FR-003/FR-004/SC-003/SC-004)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T019",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T019: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T016",
+        "T018"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add typed `update` effect-list tests in `tests/Governance.Tests/BuildEngineUpdateTests.fs` \u2014 for representative targets (e.g. `Dev`, `Route`, `DependencyReport`, `PackLocal`) assert `update (StartTarget t)` returns the expected typed `BuildEffect` list as a **pure** function (no I/O), register the file in `Governance.Tests.fsproj` before `Program.fs`, and record the failing-first evidence via a **stash control** \u2014 stash the relocated `Engine/Update.fs` body (reverting `update` to its T005 skeleton) to capture RED, then unstash to capture GREEN \u2014 in `readiness/unit-tests.md`, the same stash-control discipline the parity oracle uses (FR-013/SC-005)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T020",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T020: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add typed relocated-validator tests in `tests/Governance.Tests/{GeneratedProductValidatorTests,GuidanceValidatorTests,PreflightValidatorTests}.fs` \u2014 assert typed `Findings.ValidationFinding` results and golden-report parity against fixtures for `GeneratedProduct`, `Guidance`, and `Preflight`, registered before `Program.fs`; record the failing-first \u2192 green evidence via the same **stash control** (stash the relocated `GeneratedProduct.fs`/`Guidance.fs`/`Preflight.fs` bodies for RED, unstash for GREEN) (FR-013/SC-005)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T021",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T021: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Record typed `Governance.Tests` results for `update` + the three relocated validators to `readiness/unit-tests.md`, including each suite's stash-control failing-first (RED) \u2192 GREEN transition and the assertion that `update` is exercised with **no** repo-tree I/O",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T022",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T022: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T020",
+        "T021"
+      ],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T2",
+      "parallel": true,
+      "title": "Record cold-build and warm-build wall-clock for the compiled front-end vs the prior `dotnet fake` script-recompile baseline in `readiness/logs/build-timing.md` \u2014 a **recorded-and-explained measurement, NOT a merge gate** (FR-014/SC-007): warm builds are *expected* at least as fast, but a non-improvement does not block the feature provided parity (T017) holds and any regression is explained",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T023",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T023: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T017"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T2",
+      "parallel": true,
+      "title": "SC-008 standing-invariants proof to `readiness/logs/runtime-untouched.md` \u2014 `git diff --stat` over product `src/**` = 0 (runtime untouched), `PackageSurfaceCheck`/`FsiTranscripts` show no product baseline diff, generated consumers stay byte-identical (`TemplateCheck`/`GeneratedProductCheck`/`GeneratedGuidanceCheck`), `DependencyReport` green/unchanged, and no new `PackageVersion` lives outside `Directory.Packages.props`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T024",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T024: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T017",
+        "T018"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T2",
+      "parallel": false,
+      "title": "Run the escalated serialized six-target FAKE gate set sequentially (`Dev` \u2192 `GeneratedGuidanceCheck` \u2192 `TemplateCheck` \u2192 `GeneratedProductCheck` \u2192 the final graph and audit gates T026/T027), never concurrently; record aggregate FAKE results as **non-authoritative** and rerun any race-like or environment-flaky failure (the `SkiaViewer.Tests` headless crash, the `FsiTranscripts` toolchain issue) in focused isolation under a stash control as the authoritative result; logs under `readiness/logs/serialized-gates.md`",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T025",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T025: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T019",
+        "T022",
+        "T023",
+        "T024"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run the in-process compiled-F# graph gate (`./fake.sh build -t EvidenceGraph`) \u2014 confirm the task DAG is acyclic, no dangling refs, no `[S*]` surprises, and the `skillist` metadata and visible mirrors are valid",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T026",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "EvidenceGraph"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T026: task text matches speckit-evidence-graph; trigger_group=graph validation; matched_trigger=EvidenceGraph"
+        }
+      ],
+      "explicit_deps": [
+        "T025"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run the merge-gate audit (`./fake.sh build -t EvidenceAudit`) \u2014 confirm verdict `PASS` (0 unaccepted-synthetic, 0 auto-synthetic, 0 late-seh, 0 diff-scan blocking, 0 readiness-contract blocking) with zero synthetic evidence to accept (SC-008)",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T027",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "diff-scan"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T027: task text matches speckit-evidence-audit; trigger_group=evidence audit; matched_trigger=diff-scan"
+        }
+      ],
+      "explicit_deps": [
+        "T026"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    }
+  ]
+}
