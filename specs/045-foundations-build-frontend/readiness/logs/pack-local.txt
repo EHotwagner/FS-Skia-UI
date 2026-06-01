@@ -1,0 +1,170 @@
+
+## dotnet pack FS.Skia.UI.Scene
+$ dotnet pack src/Scene/Scene.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/src/Scene/Scene.fsproj (in 237 ms).
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  The package FS.Skia.UI.Scene.0.1.48-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Scene.0.1.48-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.SkiaViewer
+$ dotnet pack src/SkiaViewer/SkiaViewer.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/src/KeyboardInput/KeyboardInput.fsproj (in 235 ms).
+  Restored /home/developer/projects/FS-Skia-UI/src/Lib/Lib.fsproj (in 235 ms).
+  Restored /home/developer/projects/FS-Skia-UI/src/SkiaViewer/SkiaViewer.fsproj (in 235 ms).
+  1 of 4 projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Release/net10.0/FS.Skia.UI.SkiaViewer.dll
+  The package FS.Skia.UI.SkiaViewer.0.1.48-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.SkiaViewer.0.1.48-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Elmish
+$ dotnet pack src/Elmish/Elmish.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/src/Elmish/Elmish.fsproj (in 250 ms).
+  4 of 5 projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+  SkiaViewer -> /home/developer/projects/FS-Skia-UI/src/SkiaViewer/bin/Release/net10.0/FS.Skia.UI.SkiaViewer.dll
+  Elmish -> /home/developer/projects/FS-Skia-UI/src/Elmish/bin/Release/net10.0/FS.Skia.UI.Elmish.dll
+  The package FS.Skia.UI.Elmish.0.1.48-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Elmish.0.1.48-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.KeyboardInput
+$ dotnet pack src/KeyboardInput/KeyboardInput.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+  The package FS.Skia.UI.KeyboardInput.0.1.48-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.KeyboardInput.0.1.48-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Controls.Elmish
+$ dotnet pack src/Controls.Elmish/Controls.Elmish.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/src/Controls/Controls.fsproj (in 247 ms).
+  Restored /home/developer/projects/FS-Skia-UI/src/Layout/Layout.fsproj (in 247 ms).
+  Restored /home/developer/projects/FS-Skia-UI/src/Controls.Elmish/Controls.Elmish.fsproj (in 247 ms).
+  2 of 5 projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Release/net10.0/FS.Skia.UI.Controls.dll
+  Controls.Elmish -> /home/developer/projects/FS-Skia-UI/src/Controls.Elmish/bin/Release/net10.0/FS.Skia.UI.Controls.Elmish.dll
+  The package FS.Skia.UI.Controls.Elmish.0.1.48-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Controls.Elmish.0.1.48-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Testing
+$ dotnet pack src/Testing/Testing.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/src/Testing/Testing.fsproj (in 226 ms).
+  1 of 2 projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  Testing -> /home/developer/projects/FS-Skia-UI/src/Testing/bin/Release/net10.0/FS.Skia.UI.Testing.dll
+  The package FS.Skia.UI.Testing.0.1.48-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Testing.0.1.48-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI
+$ dotnet pack src/Lib/Lib.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Lib -> /home/developer/projects/FS-Skia-UI/src/Lib/bin/Release/net10.0/FS.Skia.UI.dll
+  The package FS.Skia.UI.0.1.48-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.0.1.48-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Layout
+$ dotnet pack src/Layout/Layout.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+  The package FS.Skia.UI.Layout.0.1.48-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Layout.0.1.48-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Controls
+$ dotnet pack src/Controls/Controls.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Scene -> /home/developer/projects/FS-Skia-UI/src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.dll
+  Layout -> /home/developer/projects/FS-Skia-UI/src/Layout/bin/Release/net10.0/FS.Skia.UI.Layout.dll
+  KeyboardInput -> /home/developer/projects/FS-Skia-UI/src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.dll
+  Controls -> /home/developer/projects/FS-Skia-UI/src/Controls/bin/Release/net10.0/FS.Skia.UI.Controls.dll
+  The package FS.Skia.UI.Controls.0.1.48-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Controls.0.1.48-preview.1.nupkg'.
+
+exit-code=0
+
+## dotnet pack FS.Skia.UI.Build
+$ dotnet pack build/Governance/FS.Skia.UI.Build.fsproj -c Release -m:1 -o "/home/developer/.local/share/nuget-local"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+/home/developer/projects/FS-Skia-UI/build/Governance/Front/BuildProcess.fs(60,23): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Front/BuildProcess.fs(58,9): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression.. See also /home/developer/projects/FS-Skia-UI/build/Governance/Front/BuildProcess.fs(58,8)-(59,24). [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Front/BuildProcessHealth.fs(72,29): warning FS3261: Nullness warning: The types 'char seq' and 'char seq | null' do not have compatible nullability. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Front/BuildProcessHealth.fs(131,33): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Preflight.fs(145,24): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Preflight.fs(396,33): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Preflight.fs(404,35): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Engine/Model.fs(20,23): warning FS3261: Nullness warning: The types 'string' and 'string | null' do not have compatible nullability. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Engine/Model.fs(20,23): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Engine/Model.fs(78,27): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Engine/Model.fs(184,23): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Engine/Model.fs(194,73): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Engine/Model.fs(198,86): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Engine/Model.fs(72,5): warning FS3261: Nullness warning: Module 'FS.Skia.UI.Build.Engine.Model' contains    val featureId: string | null    but its signature specifies    val featureId: string    The types differ in their nullness annotations [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/GeneratedProduct.fs(469,40): warning FS3261: Nullness warning: The types 'string' and 'string | null' do not have compatible nullability. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/GeneratedProduct.fs(469,40): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/GeneratedProduct.fs(472,49): warning FS3261: Nullness warning: The types 'string' and 'string | null' do not have compatible nullability. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/GeneratedProduct.fs(472,49): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/GeneratedProduct.fs(489,55): warning FS3261: Nullness warning: The types 'string' and 'string | null' do not have compatible nullability. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/GeneratedProduct.fs(489,55): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/GeneratedProduct.fs(496,55): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/GeneratedProduct.fs(751,52): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/GeneratedProduct.fs(752,58): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/GeneratedProduct.fs(845,49): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/GeneratedProduct.fs(848,38): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Guidance.fs(521,36): warning FS3261: Nullness warning: The types 'string' and 'string | null' do not have compatible nullability. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Guidance.fs(521,36): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Guidance.fs(542,36): warning FS3261: Nullness warning: The types 'string' and 'string | null' do not have compatible nullability. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Guidance.fs(542,36): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Front/Governance.fs(185,22): warning FS3261: Nullness warning: The types 'Diagnostics.Process' and 'Diagnostics.Process | null' do not have compatible nullability. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Front/Governance.fs(185,22): warning FS3261: Nullness warning: The types 'Diagnostics.Process' and 'Diagnostics.Process | null' do not have compatible nullability. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Front/Governance.fs(186,22): warning FS3261: Nullness warning: The types 'Diagnostics.Process' and 'Diagnostics.Process | null' do not have compatible nullability. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Front/Governance.fs(186,22): warning FS3261: Nullness warning: The types 'Diagnostics.Process' and 'Diagnostics.Process | null' do not have compatible nullability. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Front/Governance.fs(187,9): warning FS3261: Nullness warning: The types 'Diagnostics.Process' and 'Diagnostics.Process | null' do not have compatible nullability. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Front/Governance.fs(187,9): warning FS3261: Nullness warning: The types 'Diagnostics.Process' and 'Diagnostics.Process | null' do not have compatible nullability. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Front/Governance.fs(189,12): warning FS3261: Nullness warning: The types 'Diagnostics.Process' and 'Diagnostics.Process | null' do not have compatible nullability. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Front/Governance.fs(189,12): warning FS3261: Nullness warning: The types 'Diagnostics.Process' and 'Diagnostics.Process | null' do not have compatible nullability. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Front/Governance.fs(302,21): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+/home/developer/projects/FS-Skia-UI/build/Governance/Front/Governance.fs(309,30): warning FS3261: Nullness warning: A non-nullable 'string' was expected but this expression is nullable. Consider either changing the target to also be nullable, or use pattern matching to safely handle the null case of this expression. [/home/developer/projects/FS-Skia-UI/build/Governance/FS.Skia.UI.Build.fsproj]
+  FS.Skia.UI.Build -> /home/developer/projects/FS-Skia-UI/build/Governance/bin/Release/net10.0/FS.Skia.UI.Build.dll
+  The package FS.Skia.UI.Build.0.1.48-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/.local/share/nuget-local/FS.Skia.UI.Build.0.1.48-preview.1.nupkg'.
+
+exit-code=0
+
+## generate package API reference
+$ dotnet fsi scripts/generate-package-api-reference.fsx
+Wrote package API reference for 8 packages to /home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference
+
+exit-code=0
