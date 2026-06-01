@@ -105,7 +105,8 @@
       ],
       "exclude": [
         "feature.json",
-        "memory/constitution.md"
+        "memory/constitution.md",
+        "extensions/evidence/scripts/**"
       ]
     },
     {

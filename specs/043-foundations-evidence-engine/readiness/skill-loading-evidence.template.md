@@ -1,0 +1,29 @@
+# Skill Loading Evidence
+
+| Task | Skill id | Resolved path | Load result | loaded_at | work_started_at | Evidence path | Reviewer exception |
+|------|----------|---------------|-------------|-----------|-----------------|---------------|--------------------|
+| T005 | fs-skia-template-update | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-template-update/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T009 | fsharp-build-orchestration | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-build-orchestration/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T010 | fsharp-parsing | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-parsing/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T011 | fsharp-parsing | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-parsing/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T012 | fsharp-io-globbing | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-io-globbing/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T013 | fsharp-graph-algorithms | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-graph-algorithms/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T014 | fsharp-parsing | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-parsing/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T015 | fsharp-parsing | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-parsing/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T016 | fsharp-parsing | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-parsing/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T018 | fsharp-code-generation | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-code-generation/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T020 | fsharp-build-orchestration | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-build-orchestration/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T020 | fsharp-shell-process | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-shell-process/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T021 | fsharp-build-orchestration | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-build-orchestration/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T022 | fsharp-graph-algorithms | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-graph-algorithms/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T022 | fsharp-build-orchestration | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-build-orchestration/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T023 | fsharp-graph-algorithms | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-graph-algorithms/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T023 | fsharp-build-orchestration | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-build-orchestration/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T024 | fsharp-build-orchestration | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-build-orchestration/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T025 | fsharp-build-orchestration | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-build-orchestration/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T026 | fs-skia-template-update | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-template-update/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T027 | fs-skia-template-update | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-template-update/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T028 | fs-skia-template-update | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-template-update/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T032 | fsharp-build-orchestration | `/home/developer/projects/FS-Skia-UI/.agents/skills/fsharp-build-orchestration/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T033 | speckit-evidence-graph | `/home/developer/projects/FS-Skia-UI/.agents/skills/speckit-evidence-graph/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T034 | speckit-evidence-audit | `/home/developer/projects/FS-Skia-UI/.agents/skills/speckit-evidence-audit/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |

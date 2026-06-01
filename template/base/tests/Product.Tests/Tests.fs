@@ -524,31 +524,32 @@ let tests =
             Expect.stringContains source "readiness/headless-scene-evidence.txt" "scene evidence writes a stable readiness path"
         }
 
-        test "generated evidence graph command delegates to authoritative validation" {
+        test "generated evidence graph command runs the in-process engine" {
             let build = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "build.fsx"))
 
+            // Feature 043 (FR-013): generated evidence runs in-process through the
+            // packaged FS.Skia.UI.Build engine — no copied Python / run-audit.sh.
             Expect.stringContains build "let runGeneratedEvidenceGraph" "generated build exposes graph command runner"
-            Expect.stringContains build ".specify/extensions/evidence/scripts/bash/run-audit.sh" "graph command delegates to copied Spec Kit audit script"
-            Expect.stringContains build "--graph-only" "graph command selects graph-only authoritative validation"
-            Expect.stringContains build "authority=delegated-authoritative" "graph report records delegated authority"
-            Expect.stringContains build "status=failed" "graph report has an explicit failed status path"
-            Expect.stringContains build "authoritative validation failed" "graph failure is reported before any pass claim"
+            Expect.stringContains build "#r \"nuget: FS.Skia.UI.Build" "build references the published engine package"
+            Expect.stringContains build "open FS.Skia.UI.Build.Evidence" "build opens the evidence engine namespace"
+            Expect.stringContains build "Engine.runGraph inputs" "graph command runs the in-process engine"
+            Expect.stringContains build "authority=in-process-engine" "graph report records in-process authority"
+            Expect.stringContains build "status={status}" "graph report has an explicit status path"
+            Expect.stringContains build "in-process validation failed" "graph failure is reported before any pass claim"
             Expect.stringContains build "let runGeneratedEvidenceAudit" "generated build exposes audit command runner"
-            Expect.stringContains build "let graphExitCode, graphStdout, graphStderr = runAuthoritativeEvidence \"EvidenceGraph\" featureDir true" "audit command requires graph validation first"
-            Expect.stringContains build "runAuthoritativeEvidence \"EvidenceAudit\" featureDir false" "audit command delegates full audit validation"
+            Expect.stringContains build "Engine.runAudit inputs" "audit command runs the in-process merge-gate audit"
             Expect.stringContains build "readiness-contract" "audit report distinguishes readiness contract failures"
             Expect.stringContains build "synthetic-evidence" "audit report distinguishes synthetic evidence failures"
             Expect.isFalse (build.Contains("| \"EvidenceGraph\"\n    | \"EvidenceAudit\" -> writeLog target")) "evidence commands are not completion-only logs"
         }
 
-        test "generated evidence graph and audit use bash script invocation" {
+        test "generated evidence graph and audit do not shell the decommissioned scripts" {
             let build = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "build.fsx"))
 
-            Expect.stringContains build "ProcessStartInfo(\"bash\", arguments)" "generated evidence scripts run through bash"
-            Expect.stringContains build "let script = authoritativeEvidenceScriptContract" "script path is an argument, not the executable"
-            Expect.stringContains build "runAuthoritativeEvidence \"EvidenceGraph\" featureDir true" "graph command delegates through shared bash runner"
-            Expect.stringContains build "runAuthoritativeEvidence \"EvidenceAudit\" featureDir false" "audit command delegates through shared bash runner"
-            Expect.isFalse (build.Contains("ProcessStartInfo(script", StringComparison.Ordinal)) "generated evidence scripts are not launched directly by executable mode"
+            Expect.stringContains build "SkillRegistry.build repoRoot" "audit resolves the skill registry in-process"
+            [ "run-audit.sh"; "compute-task-graph.py"; "python3"; "ProcessStartInfo(\"bash\"" ]
+            |> List.iter (fun forbidden ->
+                Expect.isFalse (build.Contains(forbidden, StringComparison.Ordinal)) $"generated evidence workflow excludes the decommissioned {forbidden}")
             Expect.isFalse (build.Contains("chmod", StringComparison.OrdinalIgnoreCase)) "generated evidence workflow does not repair executable mode"
         }
 

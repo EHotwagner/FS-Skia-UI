@@ -27,7 +27,6 @@
     <Compile Include="ControlsBoundaryGeneratedGuidanceTests.fs" />
     <Compile Include="ControlsBoundaryCompositionTests.fs" />
     <Compile Include="SkillValidationTests.fs" />
-    <Compile Include="TaskValidatorFeedbackTests.fs" />
     <Compile Include="PersistentViewerEvidenceTests.fs" />
     <Compile Include="GovernanceEvidenceTests.fs" />
     <Compile Include="AsteroidsFeedbackSkillGuidanceTests.fs" />
@@ -37,7 +36,6 @@
     <Compile Include="PublicRecordInvariantTests.fs" />
     <Compile Include="AgentValidationFrameworkTests.fs" />
     <Compile Include="ArchiveReadinessApiDocsTests.fs" />
-    <Compile Include="FeatureResolutionRobustnessTests.fs" />
     <Compile Include="AuditStatusRegionTests.fs" />
     <Compile Include="GeneratedFsiLoadScriptTests.fs" />
     <Compile Include="SkillSyncTests.fs" />
@@ -47,6 +45,8 @@
     <Compile Include="ReportParityTests.fs" />
     <Compile Include="RoutingTests.fs" />
     <Compile Include="ContractViewTests.fs" />
+    <Compile Include="EvidenceGoldenParityTests.fs" />
+    <Compile Include="EvidenceAlgorithmTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -56,6 +56,8 @@
     <PackageReference Include="Expecto" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" />
+    <PackageReference Include="DiffPlex" />
+    <PackageReference Include="FsCheck" />
   </ItemGroup>
 
 </Project>

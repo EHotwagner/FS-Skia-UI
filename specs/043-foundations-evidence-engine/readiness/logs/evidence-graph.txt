@@ -1,0 +1,4 @@
+=== speckit.evidence.graph (in-process) ===
+feature: 043-foundations-evidence-engine
+tasks: 34
+verdict: ok

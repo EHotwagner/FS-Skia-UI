@@ -17,14 +17,14 @@ files), validate task `skillist` metadata and mirrors, and render
 ## How to invoke
 
 ```bash
-.specify/extensions/evidence/scripts/python/compute-task-graph.py specs/<FEATURE_ID>
+./fake.sh build -t EvidenceGraph
 ```
 
-or via the audit runner in graph-only mode:
-
-```bash
-.specify/extensions/evidence/scripts/bash/run-audit.sh specs/<FEATURE_ID> --graph-only
-```
+The graph computes **in-process** in compiled F#
+(`FS.Skia.UI.Build.Evidence.Engine.runGraph`); there is no Python or shell audit
+runner. The gate reads `tasks.md` / `tasks.deps.yml` / `readiness/` at
+the `build.fsx` interpreter edge and writes `readiness/task-graph.json` +
+`readiness/task-graph.md`.
 
 ## When to run
 

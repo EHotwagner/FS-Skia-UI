@@ -147,12 +147,13 @@ or depend on `.fake`.
 1. `./fake.sh build -t EvidenceGraph`
 2. `./fake.sh build -t EvidenceAudit`
 
-These targets launch `.specify/extensions/evidence/scripts/bash/run-audit.sh`
-through `bash`; do not repair executable bits as part of normal evidence
-collection. Use `./fake.sh build -t Verify > readiness/logs/verify.txt 2>&1`
-when capturing review logs. The generated build writes redirected stdout/stderr
-as text, preserving command diagnostics and exit-code context without binary
-padding.
+These targets run the evidence graph and merge-gate audit in-process through the
+packaged `FS.Skia.UI.Build.Evidence` engine — there is no Python or `run-audit.sh`
+copied into the generated project, so there are no executable bits to repair as
+part of normal evidence collection. Use
+`./fake.sh build -t Verify > readiness/logs/verify.txt 2>&1` when capturing
+review logs. The generated build writes redirected stdout/stderr as text,
+preserving command diagnostics and exit-code context without binary padding.
 
 If a generated FAKE-backed failure looks race-like or the concurrent FAKE
 context is unknown, record the failed command, suspected `.fake` race status,

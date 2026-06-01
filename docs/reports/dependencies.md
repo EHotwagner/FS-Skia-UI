@@ -54,6 +54,28 @@ resolved transitively and are not declared as separate top-level entries.
 `dotnet list build/Build.fsproj package --include-transitive` and recorded in
 `docs/reports/_baselines/2026-05-31-spike-d2-outcome.md`.
 
+### Published governance-library package (feature 043 — ADR D1 / research R8)
+
+`FS.Skia.UI.Build` (`build/Governance/FS.Skia.UI.Build.fsproj`) is the only
+`build/**` project that is **packed and published** (`IsPackable=true`, packed
+by `PackLocal`). Generated `dotnet new fs-skia-ui` projects add a
+`FS.Skia.UI.Build` `PackageVersion` pin (`template/base/Directory.Packages.props`)
+and call its `FS.Skia.UI.Build.Evidence.*` engine in-process from their
+`build.fsx`, replacing the copied Python + `run-audit.sh` evidence scripts
+(FR-013). It carries the same package version line as the runtime
+`FS.Skia.UI.*` packages and is bumped with them.
+
+| Package | Version | Purpose | Owner | License posture | Upgrade expectation | Preview risk |
+|---------|---------|---------|-------|-----------------|---------------------|--------------|
+| FS.Skia.UI.Build | 0.1.45-preview.1 | Compiled-F# evidence graph + merge-gate audit engine consumed in-process by repo and generated-product build tooling (043). Transitively brings `YamlDotNet`. | Build tooling / governance | Repo-owned package. | Bumped with the other `FS.Skia.UI.*` packages. | None — no `FSharp.Compiler.*`. |
+
+The published package's only library dependency is `YamlDotNet` (the typed
+`tasks.deps.yml` / `audit-patterns.yml` reader); it introduces **no**
+`FSharp.Compiler.*` (SC-004). As a repo-owned `FS.*` package its version lives
+in the `.fsproj` `<Version>` (consistent with the other nine packages), not in
+the central `Directory.Packages.props`; consumers pin it via their own
+`Directory.Packages.props`.
+
 ### Capability adopt-set (feature 040 — `build/SkillExamples` + `tests/Governance.Tests` only)
 
 The six `fsharp-*` capability skills carry compile-verified ` ```fsharp ` cookbook

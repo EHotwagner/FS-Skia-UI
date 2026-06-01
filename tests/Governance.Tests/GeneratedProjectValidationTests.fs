@@ -246,26 +246,32 @@ let generatedProjectValidationTests =
                 Expect.isFalse (directoryExists ".template.config") "generated products do not run source-only V3 generated-product checks"
         }
 
-        test "generated evidence targets reject placeholder-only completion logs and delegate to authoritative validation" {
+        test "generated evidence targets reject placeholder-only completion logs and run the in-process engine" {
             let build = read "template/base/build.fsx"
             let evidenceCommands = read "template/base/src/Product/EvidenceCommands.fs"
 
             Expect.isFalse (build.Contains("| \"EvidenceGraph\"\n    | \"EvidenceAudit\" -> writeLog target")) "generated evidence targets must not share the completion-only placeholder logger"
 
+            // Feature 043 (FR-013): generated EvidenceGraph/EvidenceAudit run the
+            // packaged FS.Skia.UI.Build engine in-process — no Python / run-audit.sh.
             [ "runGeneratedEvidenceGraph"
               "runGeneratedEvidenceAudit"
-              "delegated-authoritative"
+              "in-process-engine"
               "validation-area"
               "exit-code"
-              "let graphExitCode, graphStdout, graphStderr = runAuthoritativeEvidence \"EvidenceGraph\" featureDir true"
-              "if graphExitCode <> 0 then"
-              "runAuthoritativeEvidence \"EvidenceAudit\" featureDir false"
+              "let gr, graphArts = Engine.runGraph inputs"
+              "let res, arts = Engine.runAudit inputs"
               "readiness-contract"
               "synthetic-evidence"
               "unsupported-host-classification"
               "EvidenceAudit\", [ \"EvidenceGraph\" ]" ]
             |> List.iter (fun required ->
                 Expect.stringContains build required $"generated evidence target contract includes {required}")
+
+            // The decommissioned shell engine must not reappear in generated projects.
+            [ "run-audit.sh"; "compute-task-graph.py"; "python3"; "ProcessStartInfo(\"bash\"" ]
+            |> List.iter (fun forbidden ->
+                Expect.isFalse (build.Contains(forbidden, System.StringComparison.Ordinal)) $"generated build.fsx excludes the decommissioned {forbidden}")
 
             [ "type GeneratedEvidenceCommandReport"
               "Command: string"
@@ -281,20 +287,19 @@ let generatedProjectValidationTests =
                 Expect.stringContains evidenceCommands required $"generated evidence command report includes {required}")
         }
 
-        test "generated evidence graph and audit invoke Spec Kit scripts through bash" {
+        test "generated evidence graph and audit run the packaged engine in-process" {
             let build = read "template/base/build.fsx"
 
-            [ "let runAuthoritativeEvidence target featureDir graphOnly"
-              "let script = authoritativeEvidenceScriptContract"
-              "ProcessStartInfo(\"bash\", arguments)"
-              "if graphOnly then"
-              "--graph-only"
-              "runAuthoritativeEvidence \"EvidenceGraph\" featureDir true"
-              "runAuthoritativeEvidence \"EvidenceAudit\" featureDir false" ]
+            [ "#r \"nuget: FS.Skia.UI.Build"
+              "open FS.Skia.UI.Build.Evidence"
+              "let buildEvidenceInputs"
+              "Engine.runGraph inputs"
+              "Engine.runAudit inputs"
+              "SkillRegistry.build repoRoot" ]
             |> List.iter (fun required ->
-                Expect.stringContains build required $"generated evidence invocation includes {required}")
+                Expect.stringContains build required $"generated in-process evidence invocation includes {required}")
 
-            Expect.isFalse (build.Contains("ProcessStartInfo(script", System.StringComparison.Ordinal)) "generated evidence scripts are not launched directly by executable mode"
+            Expect.isFalse (build.Contains("bash", System.StringComparison.OrdinalIgnoreCase)) "generated evidence does not shell bash"
             Expect.isFalse (build.Contains("chmod", System.StringComparison.OrdinalIgnoreCase)) "generated evidence workflow does not repair executable mode"
         }
 
@@ -326,18 +331,16 @@ let generatedProjectValidationTests =
               "target="
               "generated-project-identity="
               "feature-directory="
-              "authority=delegated-authoritative"
+              "authority=in-process-engine"
+              "engine=FS.Skia.UI.Build.Evidence"
               "status="
               "exit-code="
               "validation-area="
               "report-path="
               "message="
               "diagnostics="
-              "missing authoritative evidence script"
-              "failed command launch"
               "unreadable readiness log"
-              "failed readiness log write"
-              "authoritative validation failed" ]
+              "in-process validation failed" ]
             |> List.iter (fun required ->
                 Expect.stringContains build required $"generated evidence diagnostics include {required}")
         }
@@ -347,16 +350,16 @@ let generatedProjectValidationTests =
                 "template/base/README.md"
                 [ "./fake.sh build -t EvidenceGraph"
                   "./fake.sh build -t EvidenceAudit"
-                  "delegate to the copied Spec Kit audit script through"
+                  "packaged `FS.Skia.UI.Build` engine"
                   "does not depend on executable file mode"
                   "Redirected `Verify` output is written as plain text"
                   "embedded NUL byte" ]
 
             expectFileContains
                 "template/base/docs/product.md"
-                [ ".specify/extensions/evidence/scripts/bash/run-audit.sh"
-                  "through `bash`"
-                  "do not repair executable bits"
+                [ "FS.Skia.UI.Build.Evidence"
+                  "in-process"
+                  "no Python or `run-audit.sh`"
                   "readiness/logs/verify.txt"
                   "writes redirected stdout/stderr"
                   "exit-code context" ]
@@ -364,7 +367,7 @@ let generatedProjectValidationTests =
             expectFileContains
                 "template/fragments/full-governance/README.md"
                 [ "Evidence graph and audit targets"
-                  "through `bash`"
+                  "in-process"
                   "exit-code"
                   "output-path"
                   "embedded NUL bytes" ]

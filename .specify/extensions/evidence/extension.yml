@@ -10,12 +10,10 @@ extension:
 
 requires:
   speckit_version: ">=0.7.0"
+  # Feature 043: the evidence graph + merge-gate audit are compiled F#
+  # (FS.Skia.UI.Build.Evidence) computed in-process. No Python or shell audit
+  # runner is required any more; only git (the unified diff read at the edge).
   tools:
-    - name: bash
-      required: true
-    - name: python3
-      required: true
-      minimum_version: "3.9"
     - name: git
       required: true
 

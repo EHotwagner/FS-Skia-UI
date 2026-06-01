@@ -28,6 +28,20 @@ open Fake.Core.TargetOperators
 #load "build/Governance/Routing.fs"
 #load "build/Governance/ContractView.fs"
 #load "build/Governance/Capabilities.fs"
+// Feature 043: the in-process evidence engine (curated .fsi per module, Principle II)
+// #load'd ahead of the build model so the EvidenceGraph/EvidenceAudit gate arms compute
+// the task DAG + merge-gate audit in compiled F# (no run-audit.sh / python). YamlDotNet
+// (paket header above) backs DepsParser/DiffScan; no FSharp.Compiler.* dependency.
+#load "build/Governance/Evidence/TaskParser.fs"
+#load "build/Governance/Evidence/DepsParser.fs"
+#load "build/Governance/Evidence/SkillRegistry.fs"
+#load "build/Governance/Evidence/Graph.fs"
+#load "build/Governance/Evidence/StatusRegion.fs"
+#load "build/Governance/Evidence/Scans.fs"
+#load "build/Governance/Evidence/DiffScan.fs"
+#load "build/Governance/Evidence/Audit.fs"
+#load "build/Governance/Evidence/Render.fs"
+#load "build/Governance/Evidence/Engine.fs"
 
 open FS.Skia.UI.Build
 
@@ -250,6 +264,9 @@ type BuildEffect =
     | SkillSyncGate
     | SkillExamplesGate
     | RouteSelect
+    // Feature 043: in-process evidence gates (model is re-derived in interpret, so no payload).
+    | EvidenceGraphCheck
+    | EvidenceAuditCheck
 
 #load "scripts/build/Paths.fsx"
 #load "scripts/build/Process.fsx"
@@ -435,7 +452,10 @@ let packProjects =
       "src/Testing/Testing.fsproj", "FS.Skia.UI.Testing"
       "src/Lib/Lib.fsproj", "FS.Skia.UI"
       "src/Layout/Layout.fsproj", "FS.Skia.UI.Layout"
-      "src/Controls/Controls.fsproj", "FS.Skia.UI.Controls" ]
+      "src/Controls/Controls.fsproj", "FS.Skia.UI.Controls"
+      // 043: the published governance engine; generated consumers reference it
+      // in-process instead of copying the Python + run-audit.sh scripts.
+      "build/Governance/FS.Skia.UI.Build.fsproj", "FS.Skia.UI.Build" ]
 
 let projectVersion repositoryRoot project =
     let content = File.ReadAllText(path [ repositoryRoot; project ])
@@ -1083,14 +1103,14 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
     | StartTarget Targets.EvidenceGraph ->
         model,
         [ focusedGateAssumptionCheck model "EvidenceGraph"
-          processEffect "speckit evidence graph" ".specify/extensions/evidence/scripts/bash/run-audit.sh" $"{model.FeatureDir} --graph-only" model.RepositoryRoot (path [ model.LogDir; "evidence-graph.txt" ])
+          EvidenceGraphCheck
           RequireFiles("task graph output", [ path [ model.ReadinessDir; "task-graph.json" ]; path [ model.ReadinessDir; "task-graph.md" ] ])
           WriteStructuredReport("evidence graph readiness", model.EvidenceGraphReportPath, "# Evidence Graph Evidence\n\nPASS: `EvidenceGraph` ran graph validation only and refreshed `task-graph.md` and `task-graph.json` with accepted `[SEH]`, unaccepted `[S]`, and `[S*]` counts reported separately.\n\nRun `EvidenceAudit` for full merge-gate validation, including diff-scan and synthetic-evidence blocking checks.\n")
           focusedGateSummary model "EvidenceGraph" ]
     | StartTarget Targets.EvidenceAudit ->
         model,
         [ focusedGateAssumptionCheck model "EvidenceAudit"
-          processEffect "speckit evidence audit" ".specify/extensions/evidence/scripts/bash/run-audit.sh" $"{model.FeatureDir}" model.RepositoryRoot (path [ model.LogDir; "evidence-audit.txt" ])
+          EvidenceAuditCheck
           RequireFiles("evidence audit output", [ path [ model.LogDir; "evidence-audit.txt" ]; path [ model.ReadinessDir; "diff-scan-hits.json" ] ])
           WriteStructuredReport("evidence audit readiness", model.EvidenceAuditReportPath, "# Evidence Audit Evidence\n\nPASS: `EvidenceAudit` completed with synthetic propagation and diff-scan outputs present.\n\nSee `readiness/logs/evidence-audit.txt` for `accepted-seh-tasks`, `unaccepted-synthetic-tasks`, `auto-synthetic-tasks`, and `late-seh-tasks` counts. Accepted `[SEH]` evidence remains synthetic and is reported separately from real task evidence.\n")
           focusedGateSummary model "EvidenceAudit" ]
@@ -1885,7 +1905,10 @@ let scanGeneratedRow (row: TemplateRow) =
           ".specify/templates/spec-template.md"
           ".specify/scripts/bash/setup-plan.sh"
           ".specify/workflows/speckit/workflow.yml"
-          ".specify/extensions/evidence/scripts/bash/run-audit.sh"
+          // 043 (FR-013): generated projects run evidence in-process via the
+          // packaged FS.Skia.UI.Build engine. They no longer carry run-audit.sh;
+          // they retain audit-patterns.yml (data read by the diff-scan).
+          ".specify/extensions/evidence/audit-patterns.yml"
           ".agents/skills/speckit-specify/SKILL.md"
           ".claude/skills/speckit-specify/SKILL.md"
           ".agents/skills/speckit-plan/SKILL.md"
@@ -2127,7 +2150,10 @@ let rec copyDirectoryExcept (source: string) (target: string) (excludedRelativeP
     copy source target ""
 
 let copySpecKitInstall model root =
-    copyDirectoryExcept (path [ model.RepositoryRoot; ".specify" ]) (path [ root; ".specify" ]) [ "feature.json"; "memory/constitution.md" ]
+    // 043 (FR-013): generated projects run evidence in-process via the packaged
+    // FS.Skia.UI.Build engine, so the Python + run-audit.sh scripts are NOT copied
+    // into them. audit-patterns.yml (data) stays and is still copied.
+    copyDirectoryExcept (path [ model.RepositoryRoot; ".specify" ]) (path [ root; ".specify" ]) [ "feature.json"; "memory/constitution.md"; "extensions/evidence/scripts/" ]
     copyDirectory (path [ model.RepositoryRoot; ".template.config"; "generated"; ".specify" ]) (path [ root; ".specify" ])
 
 let capabilitiesById model =
@@ -4506,6 +4532,123 @@ let runRouteSelection root =
         if not (List.isEmpty missing) then
             failwith (Routing.enforceDiagnostic selection missing)
 
+// Feature 043 (FR-009/FR-012, Principle IV): the EvidenceGraph/EvidenceAudit gates compute
+// the task DAG and merge-gate audit in-process via FS.Skia.UI.Build.Evidence. Every read
+// (tasks.md, tasks.deps.yml, readiness files, the skill registry, the git diff) and every
+// artifact write stays at this interpreter edge so the engine itself performs no I/O.
+let private evidenceReadAll p = if File.Exists p then File.ReadAllText p else ""
+
+let buildEvidenceInputs (model: BuildModel) (unifiedDiff: string) : FS.Skia.UI.Build.Evidence.EvidenceInputs =
+    let featDir = model.FeatureDir
+    let readinessDir = model.ReadinessDir
+    let repoRoot = model.RepositoryRoot
+    let featureName = Path.GetFileName(featDir.TrimEnd('/', '\\'))
+    let readinessFiles =
+        if Directory.Exists readinessDir then
+            Directory.GetFiles(readinessDir, "*", SearchOption.AllDirectories)
+            |> Array.map (fun p -> p.Substring(readinessDir.Length + 1).Replace('\\', '/'), File.ReadAllText p)
+            |> List.ofArray
+        else
+            []
+    let featureText =
+        [ "spec.md"; "plan.md"; "tasks.md" ]
+        |> List.map (fun n -> evidenceReadAll (Path.Combine(featDir, n)))
+        |> String.concat "\n"
+    let auditStatusFiles =
+        readinessFiles
+        |> List.filter (fun (rel, c) ->
+            rel.EndsWith ".md"
+            && c.Contains "```audit-status"
+            && not (rel.ToLowerInvariant().StartsWith "audit-fixtures/")
+            && not (rel.ToLowerInvariant().StartsWith "audit-rejections/"))
+    let slePath = Path.Combine(readinessDir, "skill-loading-evidence.md")
+    { FeatureName = featureName
+      TasksMd = evidenceReadAll (Path.Combine(featDir, "tasks.md"))
+      DepsYml = evidenceReadAll (Path.Combine(featDir, "tasks.deps.yml"))
+      Registry = FS.Skia.UI.Build.Evidence.SkillRegistry.build repoRoot
+      SkillLoadingEvidence = (if File.Exists slePath then Some(File.ReadAllText slePath) else None)
+      ResolvedExists = (fun p -> File.Exists(if Path.IsPathRooted p then p else Path.Combine(repoRoot, p)))
+      Canonicalize = (fun p -> Path.GetFullPath(if Path.IsPathRooted p then p else Path.Combine(repoRoot, p)))
+      RecordedFeature = Some featureName
+      Scan = { ReadinessDir = readinessDir; FeatureText = featureText; ReadinessFiles = readinessFiles }
+      AuditStatusFiles = auditStatusFiles
+      PatternsYml = evidenceReadAll (Path.Combine(repoRoot, ".specify/extensions/evidence/audit-patterns.yml"))
+      UnifiedDiff = unifiedDiff }
+
+let private evidenceWrite (p: string) (content: string) =
+    ensureParent p
+    File.WriteAllText(p, content)
+
+let runEvidenceGraphCheck (model: BuildModel) =
+    let inputs = buildEvidenceInputs model ""
+    let gr, arts = FS.Skia.UI.Build.Evidence.Engine.runGraph inputs
+    evidenceWrite (path [ model.ReadinessDir; "task-graph.json" ]) arts.TaskGraphJson
+    evidenceWrite (path [ model.ReadinessDir; "task-graph.md" ]) arts.TaskGraphMd
+    let status =
+        match gr.Verdict with
+        | FS.Skia.UI.Build.Evidence.GraphVerdict.Ok -> "ok"
+        | _ -> "error"
+    evidenceWrite
+        (path [ model.LogDir; "evidence-graph.txt" ])
+        (sprintf "=== speckit.evidence.graph (in-process) ===\nfeature: %s\ntasks: %d\nverdict: %s\n" inputs.FeatureName (List.length gr.Tasks) status)
+    match gr.Verdict with
+    | FS.Skia.UI.Build.Evidence.GraphVerdict.Error ->
+        failwithf "Evidence graph validation failed (%d errors); see %s" (List.length gr.Errors) (path [ model.ReadinessDir; "task-graph.md" ])
+    | _ -> ()
+
+let private resolveBaseRef root =
+    let hasRef name =
+        match routeGitCapture root (sprintf "show-ref --verify --quiet refs/heads/%s" name) with
+        | Ok _ -> true
+        | Error _ -> false
+    if hasRef "main" then "main"
+    elif hasRef "master" then "master"
+    else "HEAD~1"
+
+let runEvidenceAuditCheck root (model: BuildModel) =
+    let baseRef = resolveBaseRef root
+    let mergeBase =
+        match routeGitCapture root (sprintf "merge-base %s HEAD" baseRef) with
+        | Ok s when s.Trim() <> "" -> s.Trim()
+        | _ -> baseRef
+    let unifiedDiff =
+        match routeGitCapture root (sprintf "diff %s --unified=0" mergeBase) with
+        | Ok s -> s
+        | Error _ -> ""
+    let inputs = buildEvidenceInputs model unifiedDiff
+    let gr, graphArts = FS.Skia.UI.Build.Evidence.Engine.runGraph inputs
+    evidenceWrite (path [ model.ReadinessDir; "task-graph.json" ]) graphArts.TaskGraphJson
+    evidenceWrite (path [ model.ReadinessDir; "task-graph.md" ]) graphArts.TaskGraphMd
+    match gr.Verdict with
+    | FS.Skia.UI.Build.Evidence.GraphVerdict.Error ->
+        failwithf "Evidence graph compute failed; see %s" (path [ model.ReadinessDir; "task-graph.md" ])
+    | _ ->
+        let res, arts = FS.Skia.UI.Build.Evidence.Engine.runAudit inputs
+        let r = model.ReadinessDir
+        evidenceWrite (path [ r; "seh-audit-summary.json" ]) arts.SehAuditSummary
+        evidenceWrite (path [ r; "readiness-contract-hits.json" ]) arts.ReadinessContractHits
+        evidenceWrite (path [ r; "persistent-launch-hits.json" ]) arts.PersistentLaunchHits
+        evidenceWrite (path [ r; "persistent-gui-runtime-hits.json" ]) arts.PersistentGuiRuntimeHits
+        evidenceWrite (path [ r; "window-visibility-hits.json" ]) arts.WindowVisibilityHits
+        evidenceWrite (path [ r; "audit-status-hits.json" ]) arts.AuditStatusHits
+        evidenceWrite (path [ r; "diff-scan-hits.json" ]) arts.DiffScanHits
+        let verdictStr =
+            match res.Verdict with
+            | FS.Skia.UI.Build.Evidence.AuditVerdict.Pass -> "PASS"
+            | _ -> "FAIL"
+        let log =
+            sprintf
+                "=== speckit.evidence.audit (in-process) ===\nfeature: %s\nverdict=%s\nreal-tasks=%d\naccepted-seh-tasks=%d\nunaccepted-synthetic-tasks=%d\nauto-synthetic-tasks=%d\nlate-seh-tasks=%d\ndiff-scan-hits=%d\nreadiness-contract-hits=%d\npersistent-launch-hits=%d\npersistent-gui-runtime-hits=%d\nwindow-visibility-hits=%d\naudit-status-hits=%d\ntotal-blockers=%d\n"
+                inputs.FeatureName verdictStr res.RealTasks (List.length res.SehSummary.AcceptedSehTasks)
+                (List.length res.SehSummary.UnacceptedSyntheticTasks) (List.length res.SehSummary.AutoSyntheticTasks)
+                (List.length res.SehSummary.LateSehTasks) res.DiffBlocking res.ReadinessContract res.PersistentLaunch
+                res.PersistentGuiRuntime res.WindowVisibility res.AuditStatus res.TotalBlockers
+        evidenceWrite (path [ model.LogDir; "evidence-audit.txt" ]) log
+        match res.Verdict with
+        | FS.Skia.UI.Build.Evidence.AuditVerdict.Fail ->
+            failwithf "Evidence audit FAIL (%d blockers); see %s" res.TotalBlockers (path [ model.LogDir; "evidence-audit.txt" ])
+        | _ -> ()
+
 let interpret root effect =
     let model, _ = init root
 
@@ -4548,6 +4691,8 @@ let interpret root effect =
     | SkillSyncGate -> runSkillSyncGate model
     | SkillExamplesGate -> runSkillExamplesGate model
     | RouteSelect -> runRouteSelection root
+    | EvidenceGraphCheck -> runEvidenceGraphCheck model
+    | EvidenceAuditCheck -> runEvidenceAuditCheck root model
 
 let runTarget (target: Targets.Target) =
     let model, initEffects = init repositoryRoot

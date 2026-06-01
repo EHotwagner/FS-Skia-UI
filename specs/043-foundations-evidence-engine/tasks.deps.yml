@@ -1,0 +1,124 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Every Tnnn id in tasks.md appears as a key here with both `deps` and
+# `skillist`. Phase-checkpoint edges (every Phase N+1 task -> last foundation
+# task of Phase N) are auto-injected by the graph compute; only non-phase
+# cross-edges are written here (e.g. T009/T021 -> T006 for the captured golden
+# fixtures, T028 -> T005 for the published package).
+#
+# Build-tooling only (build/Governance/Evidence + build.fsx + template/base), so
+# no fs-skia-* runtime skill applies to the engine. It CONSUMES the fsharp-*
+# cookbooks (parsing -> the parsers/scans; io-globbing -> SkillRegistry;
+# graph-algorithms -> Graph + its tests; code-generation -> Render;
+# build-orchestration -> golden-diff/tests/gate-wiring/serialized run;
+# shell-process -> the edge `git diff`) and reuses fs-skia-template-update for
+# the publish/template/pack track. The graph/audit workflow skills appear only
+# on T033/T034. fs-skia-skiaviewer / fs-skia-layout-evidence are deliberately
+# NOT assigned to the Scans port (T015) -- those are text scans, not viewer
+# work (see the skill-assignment note in tasks.md).
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: [T002]
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+  T006:
+    deps: []
+    skillist: []
+  T007:
+    deps: [T004]
+    skillist: []
+  T008:
+    deps: [T004]
+    skillist: []
+  T009:
+    deps: [T006]
+    skillist: ["fsharp-build-orchestration"]
+  T010:
+    deps: []
+    skillist: ["fsharp-parsing"]
+  T011:
+    deps: []
+    skillist: ["fsharp-parsing"]
+  T012:
+    deps: []
+    skillist: ["fsharp-io-globbing"]
+  T013:
+    deps: [T010, T011]
+    skillist: ["fsharp-graph-algorithms"]
+  T014:
+    deps: []
+    skillist: ["fsharp-parsing"]
+  T015:
+    deps: []
+    skillist: ["fsharp-parsing"]
+  T016:
+    deps: []
+    skillist: ["fsharp-parsing"]
+  T017:
+    deps: [T013, T014, T015, T016]
+    skillist: []
+  T018:
+    deps: [T013, T017]
+    skillist: ["fsharp-code-generation"]
+  T019:
+    deps: [T012, T018]
+    skillist: []
+  T020:
+    deps: [T019]
+    skillist: ["fsharp-build-orchestration", "fsharp-shell-process"]
+  T021:
+    deps: [T006, T009, T020]
+    skillist: ["fsharp-build-orchestration"]
+  T022:
+    deps: []
+    skillist: ["fsharp-graph-algorithms", "fsharp-build-orchestration"]
+  T023:
+    deps: []
+    skillist: ["fsharp-graph-algorithms", "fsharp-build-orchestration"]
+  T024:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T025:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T026:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+  T027:
+    deps: [T026]
+    skillist: ["fs-skia-template-update"]
+  T028:
+    deps: [T005, T026, T027]
+    skillist: ["fs-skia-template-update"]
+  T029:
+    deps: []
+    skillist: []
+  T030:
+    deps: [T029]
+    skillist: []
+  T031:
+    deps: [T029]
+    skillist: []
+  T032:
+    deps: [T030, T031]
+    skillist: ["fsharp-build-orchestration"]
+  T033:
+    deps: [T032]
+    skillist: ["speckit-evidence-graph"]
+  T034:
+    deps: [T033]
+    skillist: ["speckit-evidence-audit"]

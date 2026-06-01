@@ -1,11 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <!-- Governance library skeleton (build-tooling, NOT a shipped runtime package).
+  <!-- Governance library (build-tooling, NOT a runtime/rendering package).
        Lives under build/ so runtime surface-baseline tooling does not sweep it.
-       Inherits net10.0 / TreatWarningsAsErrors / FSharp.Core from
-       Directory.Build.props and central package management. -->
+       Published (043 / ADR D1, research R8) so generated `dotnet new fs-skia-ui`
+       projects reference the in-process evidence engine instead of carrying the
+       Python + run-audit.sh scripts. Inherits net10.0 / TreatWarningsAsErrors /
+       FSharp.Core from Directory.Build.props and central package management. -->
   <PropertyGroup>
-    <IsPackable>false</IsPackable>
+    <OutputType>Library</OutputType>
+    <IsPackable>true</IsPackable>
+    <PackageId>FS.Skia.UI.Build</PackageId>
+    <AssemblyName>FS.Skia.UI.Build</AssemblyName>
+    <Version>0.1.45-preview.1</Version>
+    <Title>FS.Skia.UI.Build</Title>
+    <Description>Compiled-F# governance engine (evidence graph + merge-gate audit) consumed in-process by FS.Skia.UI build tooling and generated products.</Description>
+    <PackageTags>fsharp;governance;evidence;build-tooling</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,6 +36,26 @@
     <Compile Include="ContractView.fs" />
     <Compile Include="Capabilities.fsi" />
     <Compile Include="Capabilities.fs" />
+    <Compile Include="Evidence/TaskParser.fsi" />
+    <Compile Include="Evidence/TaskParser.fs" />
+    <Compile Include="Evidence/DepsParser.fsi" />
+    <Compile Include="Evidence/DepsParser.fs" />
+    <Compile Include="Evidence/SkillRegistry.fsi" />
+    <Compile Include="Evidence/SkillRegistry.fs" />
+    <Compile Include="Evidence/Graph.fsi" />
+    <Compile Include="Evidence/Graph.fs" />
+    <Compile Include="Evidence/StatusRegion.fsi" />
+    <Compile Include="Evidence/StatusRegion.fs" />
+    <Compile Include="Evidence/Scans.fsi" />
+    <Compile Include="Evidence/Scans.fs" />
+    <Compile Include="Evidence/DiffScan.fsi" />
+    <Compile Include="Evidence/DiffScan.fs" />
+    <Compile Include="Evidence/Audit.fsi" />
+    <Compile Include="Evidence/Audit.fs" />
+    <Compile Include="Evidence/Render.fsi" />
+    <Compile Include="Evidence/Render.fs" />
+    <Compile Include="Evidence/Engine.fsi" />
+    <Compile Include="Evidence/Engine.fs" />
   </ItemGroup>
 
   <ItemGroup>

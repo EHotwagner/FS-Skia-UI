@@ -22,18 +22,17 @@ signals:
 ## How to invoke
 
 ```bash
-.specify/extensions/evidence/scripts/bash/run-audit.sh specs/<FEATURE_ID>
+./fake.sh build -t EvidenceAudit
 ```
 
-Optional flags:
-
-- `--base <ref>` — override the feature-base ref (default: auto-detect
-  `main` or `master`).
-- `--patterns <path>` — override the default `audit-patterns.yml`.
-- `--accept-synthetic "justification"` — record an explicit human override
-  for remaining synthetic/blocking hits. **Does NOT change the exit code.**
-  The audit still reports failure; the override is logged to
-  `readiness/synthetic-evidence.json` so reviewers can see the decision.
+The merge-gate audit computes **in-process** in compiled F#
+(`FS.Skia.UI.Build.Evidence.Engine.runAudit`); there is no Python or shell audit
+runner. The gate reads `tasks.md` / `tasks.deps.yml` / `readiness/`
+and the unified `git diff` (resolved at the `build.fsx` edge) and writes the
+audit artifacts (`seh-audit-summary.json`, the scan hit files, `diff-scan-hits.json`).
+The feature-base ref is auto-detected (`main` / `master`); the diff-scan reads
+the retained `audit-patterns.yml` data file. `--accept-synthetic` is logged but
+**never changes the verdict** (Principle V).
 
 ## When it runs
 

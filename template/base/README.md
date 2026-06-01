@@ -33,11 +33,13 @@ If a generated FAKE-backed command fails with race-like symptoms or unknown
 concurrent context, rerun the affected FAKE-backed commands sequentially before
 classifying the failure as a product regression.
 
-The generated targets delegate to the copied Spec Kit audit script through
-`bash`, so the workflow does not depend on executable file mode being preserved
-when the checkout is copied. Redirected `Verify` output is written as plain text
-under `readiness/logs/`; pass and fail diagnostics should remain readable and
-must not contain embedded NUL byte blocks.
+The generated targets run the evidence graph and merge-gate audit in-process
+through the packaged `FS.Skia.UI.Build` engine (no Python or shell audit script
+is copied into or executed by the generated project).
+The workflow does not depend on executable file mode being preserved when the
+checkout is copied. Redirected `Verify` output is written as plain text under
+`readiness/logs/`; pass and fail diagnostics should remain readable and must not
+contain embedded NUL byte blocks.
 
 ## Explore the app in FSI
 

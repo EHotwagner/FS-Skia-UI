@@ -112,8 +112,10 @@ let skillValidationTests =
         }
 
         test "skill-loading evidence workflow derives one required row per real task skill pairing" {
+            // Feature 043 (T029): re-pointed off the deleted compute-task-graph.py
+            // source onto the compiled typed validator in build/Governance/Evidence/Audit.
             let deps = read "specs/027-generated-evidence-workflow/tasks.deps.yml"
-            let graphSource = read ".specify/extensions/evidence/scripts/python/compute-task-graph.py"
+            let auditFsi = read "build/Governance/Evidence/Audit.fsi"
 
             [ "T001:"
               "skillist: [\"speckit-tasks\", \"speckit-implement\"]"
@@ -121,16 +123,12 @@ let skillValidationTests =
               "skillist: [\"speckit-tasks\", \"speckit-implement\", \"speckit-evidence-graph\"]" ]
             |> List.iter (fun needle -> Expect.stringContains deps needle $"real task metadata includes {needle}")
 
-            [ "expected_skill_loading_rows"
-              "generate_skill_loading_evidence_template"
-              "missing_skill_loading_rows"
-              "one row per task and skill pairing" ]
-            |> List.iter (fun needle ->
-                Expect.stringContains graphSource needle $"graph helper source exposes {needle}")
+            Expect.stringContains auditFsi "validateSkillLoadingEvidence" "typed engine exposes the skill-loading-evidence validator"
         }
 
         test "skill-loading evidence workflow Synthetic rejects duplicate masking and invalid timestamp ordering" {
-            let graphSource = read ".specify/extensions/evidence/scripts/python/compute-task-graph.py"
+            // Feature 043 (T029): re-pointed onto the compiled typed validator.
+            let auditSource = read "build/Governance/Evidence/Audit.fs"
 
             [ "duplicate skill-loading evidence row"
               "collapsed task range"
@@ -138,6 +136,6 @@ let skillValidationTests =
               "loaded_at must be earlier than work_started_at"
               "equal timestamps" ]
             |> List.iter (fun needle ->
-                Expect.stringContains graphSource needle $"skill-loading validator diagnoses {needle}")
+                Expect.stringContains auditSource needle $"skill-loading validator diagnoses {needle}")
         }
     ]

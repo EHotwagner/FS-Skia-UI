@@ -1,12 +1,32 @@
 module SyntheticErrorEvidenceTests
 
 (* SYNTHETIC FIXTURE: these tests create malformed-input task graphs to verify
-   the governed [SEH] audit contract; no product behavior is faked. *)
+   the governed [SEH] audit contract; no product behavior is faked.
+
+   Feature 043 (T025): re-pointed off `python3 compute-task-graph.py` /
+   `bash run-audit.sh` onto the typed `Evidence.Engine`. The committed fixture
+   inputs are unchanged; each test now asserts the typed `GraphResult` /
+   `AuditResult` and the diagnostic vocabulary in the rendered artifacts. *)
 
 open System
 open System.IO
 open Expecto
 open GovernanceTestSupport
+open FS.Skia.UI.Build.Evidence
+
+/// The union of every rendered audit artifact — the in-process equivalent of the
+/// legacy audit's stdout+stderr stream that the older tests scraped.
+let private auditText (a: AuditArtifacts) =
+    String.concat
+        "\n"
+        [ a.ReadinessContractHits
+          a.PersistentLaunchHits
+          a.PersistentGuiRuntimeHits
+          a.WindowVisibilityHits
+          a.AuditStatusHits
+          a.DiffScanHits
+          a.SehAuditSummary
+          a.TaskGraphMd ]
 
 let private writeStandardReadiness root =
     let readiness = Path.Combine(root, "readiness")
@@ -56,16 +76,6 @@ tasks:
     skillist: []
 """
     |> ignore
-
-let private runAudit root =
-    runProcess
-        "bash"
-        $".specify/extensions/evidence/scripts/bash/run-audit.sh \"{root}\" --base HEAD"
-
-let private runGraph root =
-    runProcess
-        "python3"
-        $".specify/extensions/evidence/scripts/python/compute-task-graph.py \"{root}\""
 
 let private writePersistentRuntimeReadiness root packageResolution generatedVerify =
     writeFeature
@@ -133,13 +143,13 @@ tasks:
 """
             |> ignore
 
-            let code, stdout, stderr = runGraph fixture.Root
-            Expect.equal code 0 $"graph succeeds: {stdout} {stderr}"
+            let gr, graphArts = runEvidenceGraphAt fixture.Root
+            let grErrors = String.concat "; " gr.Errors
+            Expect.equal gr.Verdict GraphVerdict.Ok $"graph succeeds: {grErrors}"
 
-            let graph = File.ReadAllText(Path.Combine(fixture.Root, "readiness", "task-graph.md"))
-            Expect.stringContains graph "accepted [SEH] synthetic" "graph reports accepted synthetic error-handling count"
-            Expect.stringContains graph "malformed parser input" "graph reports synthetic input class"
-            Expect.isFalse (graph.Contains("T002 [S*]")) "accepted SEH dependency does not taint real downstream task"
+            Expect.stringContains graphArts.TaskGraphMd "accepted [SEH] synthetic" "graph reports accepted synthetic error-handling count"
+            Expect.stringContains graphArts.TaskGraphMd "malformed parser input" "graph reports synthetic input class"
+            Expect.isFalse (graphArts.TaskGraphMd.Contains("T002 [S*]")) "accepted SEH dependency does not taint real downstream task"
         }
 
         test "EvidenceAudit Synthetic passes when every synthetic task is valid design-approved SEH" {
@@ -150,11 +160,10 @@ tasks:
                 "- [S] T001 [US1] [SEH] synthetic-error-handling-approved [skillist: []] Validate corrupt file rejection\n- [X] T002 [skillist: []] Document accepted audit report"
                 "| T001 | Corrupt file content is the error condition, not a real successful input | infeasible, see spec FR-004 | n/a | synthetic-error-handling-approved | specs/017-synthetic-error-evidence/tasks.md:T019 | corrupt file content | fail with actionable diagnostic | accepted-seh |"
 
-            let code, stdout, stderr = runAudit fixture.Root
-            Expect.equal code 0 $"audit passes: {stdout} {stderr}"
-            Expect.stringContains stdout "verdict=PASS" "audit emits pass verdict"
-            Expect.stringContains stdout "accepted-seh-tasks=1" "audit counts accepted SEH tasks"
-            Expect.stringContains stdout "unaccepted-synthetic-tasks=0" "audit reports no unaccepted synthetic tasks"
+            let res, _ = runEvidenceAuditAt fixture.Root
+            Expect.equal res.Verdict AuditVerdict.Pass "audit emits pass verdict"
+            Expect.equal (List.length res.SehSummary.AcceptedSehTasks) 1 "audit counts accepted SEH tasks"
+            Expect.isEmpty res.SehSummary.UnacceptedSyntheticTasks "audit reports no unaccepted synthetic tasks"
         }
 
         test "EvidenceAudit Synthetic rejects ordinary synthetic tasks" {
@@ -165,10 +174,9 @@ tasks:
                 "- [S] T001 [US1] [skillist: []] Validate with convenience mock\n- [X] T002 [skillist: []] Document rejection"
                 "| T001 | Convenience mock avoids real integration | real integration smoke | n/a |  | specs/017-synthetic-error-evidence/tasks.md:T030 | convenience mock | return canned success | blocking |"
 
-            let code, stdout, stderr = runAudit fixture.Root
-            Expect.equal code 2 $"audit fails: {stdout} {stderr}"
-            Expect.stringContains stdout "verdict=FAIL" "audit emits fail verdict"
-            Expect.stringContains stdout "unaccepted-synthetic-tasks=1" "ordinary synthetic task remains blocking"
+            let res, _ = runEvidenceAuditAt fixture.Root
+            Expect.equal res.Verdict AuditVerdict.Fail "audit emits fail verdict"
+            Expect.equal (List.length res.SehSummary.UnacceptedSyntheticTasks) 1 "ordinary synthetic task remains blocking"
         }
 
         test "EvidenceAudit Synthetic rejects late or non-eligible SEH classification" {
@@ -179,11 +187,11 @@ tasks:
                 "- [S] T001 [US1] [SEH] synthetic-error-handling-approved [skillist: []] Validate placeholder output shortcut\n- [X] T002 [skillist: []] Document rejection"
                 "| T001 | placeholder output shortcut added after audit failure | real product output required | n/a | synthetic-error-handling-approved | implementation readiness cleanup after audit failure | placeholder output | return canned placeholder | accepted-seh |"
 
-            let code, stdout, stderr = runAudit fixture.Root
-            Expect.equal code 2 $"audit fails: {stdout} {stderr}"
-            Expect.stringContains stdout "late-seh-tasks=1" "late SEH task is counted"
-            Expect.stringContains stdout "non-eligible synthetic evidence class" "non-eligible classification is diagnostic"
-            Expect.stringContains stdout "Return to design/task generation" "diagnostic directs contributor back to planning"
+            let res, arts = runEvidenceAuditAt fixture.Root
+            Expect.equal res.Verdict AuditVerdict.Fail "audit fails on late/non-eligible SEH"
+            Expect.equal (List.length res.SehSummary.LateSehTasks) 1 "late SEH task is counted"
+            Expect.stringContains arts.SehAuditSummary "non-eligible synthetic evidence class" "non-eligible classification is diagnostic"
+            Expect.stringContains arts.SehAuditSummary "Return to design/task generation" "diagnostic directs contributor back to planning"
         }
 
         test "EvidenceAudit Synthetic rejects malformed SEH inventory rows before implementation" {
@@ -194,22 +202,12 @@ tasks:
                 "- [S] T001 [SEH] synthetic-error-handling-approved [skillist: []] Validate malformed readiness row\n- [X] T002 [skillist: []] Document rejection"
                 "| T001 | Malformed readiness row lacks governed metadata | infeasible, see spec FR-025 | n/a | synthetic-error-handling-approved |  | malformed readiness rows |  | accepted-seh-pending |"
 
-            let code, stdout, stderr = runAudit fixture.Root
-            Expect.equal code 2 $"audit fails: {stdout} {stderr}"
-            Expect.stringContains stdout "diagnostic=T001" "audit reports the malformed SEH row task"
-            Expect.stringContains stdout "missing design-phase source" "audit identifies missing design source"
-            Expect.stringContains stdout "missing expected error behavior" "audit identifies missing expected error behavior"
-            Expect.stringContains stdout "missing accepted-seh acceptance status" "audit rejects pending acceptance"
-        }
-
-        test "EvidenceAudit Synthetic rejects invalid command arguments with usage diagnostics" {
-            let code, stdout, stderr =
-                runProcess
-                    "bash"
-                    ".specify/extensions/evidence/scripts/bash/run-audit.sh --not-a-real-audit-flag"
-
-            Expect.equal code 4 $"invalid flag exits as usage error: {stdout} {stderr}"
-            Expect.stringContains stderr "unknown flag: --not-a-real-audit-flag" "invalid command argument is diagnostic"
+            let res, arts = runEvidenceAuditAt fixture.Root
+            Expect.equal res.Verdict AuditVerdict.Fail "audit fails on malformed SEH inventory row"
+            Expect.isTrue (res.SehSummary.Diagnostics |> List.exists (fun (t, _, _, _) -> t = "T001")) "audit reports the malformed SEH row task"
+            Expect.stringContains arts.SehAuditSummary "missing design-phase source" "audit identifies missing design source"
+            Expect.stringContains arts.SehAuditSummary "missing expected error behavior" "audit identifies missing expected error behavior"
+            Expect.stringContains arts.SehAuditSummary "missing accepted-seh acceptance status" "audit rejects pending acceptance"
         }
 
         test "EvidenceAudit Synthetic rejects missing package resolution fields" {
@@ -220,10 +218,10 @@ tasks:
                 "requested-version=1.2.3 resolved-version=1.2.3 package-source=local-feed"
                 "generated-tests-exist=true generated-tests-ran=true authoritative=true"
 
-            let code, stdout, stderr = runAudit fixture.Root
-            Expect.equal code 2 $"audit fails: {stdout} {stderr}"
-            Expect.stringContains stdout "persistent GUI runtime hits" "audit classifies the readiness contract blocker"
-            Expect.stringContains stderr "unresolved package mismatch" "missing exact-match package field is rejected"
+            let res, arts = runEvidenceAuditAt fixture.Root
+            Expect.equal res.Verdict AuditVerdict.Fail "audit fails on missing package resolution fields"
+            Expect.isTrue (res.PersistentGuiRuntime > 0) "audit classifies the readiness contract blocker"
+            Expect.stringContains (auditText arts) "unresolved package mismatch" "missing exact-match package field is rejected"
         }
 
         test "task graph Synthetic rejects corrupt evidence records" {
@@ -240,9 +238,9 @@ tasks:
                 "schema_version: \"1.0\"\ntasks:\n  T001:\n    deps: [T999]\n    skillist: []\n"
             |> ignore
 
-            let code, stdout, stderr = runGraph fixture.Root
-            Expect.equal code 2 $"graph rejects corrupt evidence record: {stdout} {stderr}"
-            Expect.stringContains (stdout + stderr) "T001 depends on T999, which does not exist" "corrupt dependency record is diagnostic"
+            let gr, _ = runEvidenceGraphAt fixture.Root
+            Expect.equal gr.Verdict GraphVerdict.Error "graph rejects corrupt evidence record"
+            Expect.stringContains (String.concat "\n" gr.Errors) "T001 depends on T999, which does not exist" "corrupt dependency record is diagnostic"
         }
 
         test "guidance Synthetic documents eligible and non-eligible SEH examples" {
@@ -267,9 +265,9 @@ tasks:
                 fixture.Root
                 [ "real-image-evidence.md", "requested-image-evidence=true\nevidence-kind=screenshot\nartifact-kind=image\nartifact-decodable={not-json}\nimage-artifact=readiness/artifacts/window.png\n" ]
 
-            let code, stdout, stderr = runAudit fixture.Root
-            Expect.equal code 2 $"audit fails: {stdout} {stderr}"
-            Expect.stringContains (stdout + stderr) "corrupt image metadata record" "audit reports corrupt image metadata"
+            let res, arts = runEvidenceAuditAt fixture.Root
+            Expect.equal res.Verdict AuditVerdict.Fail "audit fails on corrupt image metadata"
+            Expect.stringContains (auditText arts) "corrupt image metadata record" "audit reports corrupt image metadata"
         }
 
         test "EvidenceAudit Synthetic rejects missing generated-validation fields" {
@@ -279,9 +277,9 @@ tasks:
                 fixture.Root
                 [ "generated-validation.md", "exact-package-match=true\nauthoritative=true\n" ]
 
-            let code, stdout, stderr = runAudit fixture.Root
-            Expect.equal code 2 $"audit fails: {stdout} {stderr}"
-            Expect.stringContains (stdout + stderr) "missing generated validation fields" "audit reports missing generated-validation fields"
+            let res, arts = runEvidenceAuditAt fixture.Root
+            Expect.equal res.Verdict AuditVerdict.Fail "audit fails on missing generated-validation fields"
+            Expect.stringContains (auditText arts) "missing generated validation fields" "audit reports missing generated-validation fields"
         }
 
         test "EvidenceAudit Synthetic rejects hostile artifact paths" {
@@ -291,8 +289,8 @@ tasks:
                 fixture.Root
                 [ "real-image-evidence.md", "requested-image-evidence=true\nevidence-kind=screenshot\nartifact-kind=image\nartifact-decodable=true\nimage-artifact=../../outside-readiness/window.png\n" ]
 
-            let code, stdout, stderr = runAudit fixture.Root
-            Expect.equal code 2 $"audit fails: {stdout} {stderr}"
-            Expect.stringContains (stdout + stderr) "hostile artifact path" "audit reports hostile artifact paths"
+            let res, arts = runEvidenceAuditAt fixture.Root
+            Expect.equal res.Verdict AuditVerdict.Fail "audit fails on hostile artifact path"
+            Expect.stringContains (auditText arts) "hostile artifact path" "audit reports hostile artifact paths"
         }
     ]

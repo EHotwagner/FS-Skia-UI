@@ -3,6 +3,10 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <!-- 043 (FR-013): the published governance engine consumed in-process by the
+         generated build.fsx (#r "nuget: FS.Skia.UI.Build"); pinned for every
+         profile and bumped with the other FS.Skia.UI.* packages. -->
+    <PackageVersion Include="FS.Skia.UI.Build" Version="0.1.45-preview.1" />
     <PackageVersion Include="FS.Skia.UI.Scene" Version="0.1.45-preview.1" />
     <!--#if (profile == "app" || profile == "sample-pack") -->
     <PackageVersion Include="FS.Skia.UI.SkiaViewer" Version="0.1.45-preview.1" />

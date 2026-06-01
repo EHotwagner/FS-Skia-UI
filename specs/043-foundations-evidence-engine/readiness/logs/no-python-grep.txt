@@ -1,0 +1,32 @@
+# SC-003 — No Python / Bash in the steady-state evidence path (T029/T030)
+
+Captured: 2026-06-01T10:22:51Z
+
+## [1] The three legacy scripts are deleted
+
+  ABSENT: .specify/extensions/evidence/scripts/python/compute-task-graph.py
+  ABSENT: .specify/extensions/evidence/scripts/python/audit-status-scan.py
+  ABSENT: .specify/extensions/evidence/scripts/bash/run-audit.sh
+  (the .specify/extensions/evidence/scripts/ directory is removed entirely)
+
+## [2] No python3 invocation / tool requirement in the evidence path
+Searched: build.fsx, build/Governance/**, template/base/**, .specify/extensions/evidence/**, tests/Governance.Tests/**
+Result: zero invocations. Remaining textual mentions are descriptive comments/negations and
+negative test assertions (forbidden-lists asserting these tokens are ABSENT from generated build.fsx):
+  template/base/tests/Product.Tests/Tests.fs:550:            [ "run-audit.sh"; "compute-task-graph.py"; "python3"; "ProcessStartInfo(\"bash\"" ]
+  tests/Governance.Tests/AuditStatusRegionTests.fs:7:   Feature 043 (T025): re-pointed off `python3 audit-status-scan.py` onto the
+  tests/Governance.Tests/GeneratedProjectValidationTests.fs:272:            [ "run-audit.sh"; "compute-task-graph.py"; "python3"; "ProcessStartInfo(\"bash\"" ]
+  tests/Governance.Tests/TestSupport.fs:355:// `python3 compute-task-graph.py` / `bash run-audit.sh`. Every read the build.fsx
+  tests/Governance.Tests/PersistentViewerEvidenceTests.fs:7:   Python audit's stdout/stderr) — no `python3` / `bash` invocation remains. *)
+  tests/Governance.Tests/SyntheticErrorEvidenceTests.fs:6:   Feature 043 (T025): re-pointed off `python3 compute-task-graph.py` /
+
+## [3] No run-audit.sh / compute-task-graph.py / audit-status-scan.py invocation
+extension.yml requires.tools now lists only: git (no bash, no python3).
+  5:  name: "Synthetic-Evidence Audit + Task DAG"
+  17:    - name: git
+  22:    - name: speckit.evidence.graph
+  25:    - name: speckit.evidence.audit
+
+## Steady-state evidence path = compiled F# only (+ git diff glue)
+  build.fsx EvidenceGraphCheck/EvidenceAuditCheck -> FS.Skia.UI.Build.Evidence.Engine.runGraph/runAudit
+  template/base/build.fsx -> #r nuget FS.Skia.UI.Build -> Engine.runGraph/runAudit

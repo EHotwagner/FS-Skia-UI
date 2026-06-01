@@ -1,0 +1,11 @@
+=== TaskParser.parse over a literal tasks.md ===
+tasks=2 errors=0; T001.declared=Done T002.declared=Synthetic
+=== Graph.propagate: T002 [S] -> T003 [X] depends on it ===
+  T001 -> done
+  T002 -> synthetic
+  T003 -> auto-synthetic
+  root-cause(T003)=Some ["T002"]
+=== StatusRegion.scan over a literal audit-status region ===
+  status=block blocking=true reasons=["process/taskbar-only declared (taskbar-only=true)"]
+=== Engine.runGraph over the minimal feature ===
+  verdict=Ok tasks=1 errors=[]

@@ -1,20 +1,23 @@
 # Golden Evidence Fixtures — Stage 4 Parity Oracle
 
-Byte-for-byte snapshots of the **current (Python) evidence engine's** output
+Byte-for-byte snapshots of the **original (Python) evidence engine's** output
 over a frozen set of merged features, captured at the foundations-baseline SHA.
-When Stage 4 re-implements the evidence engine in compiled F#, the
-re-implementation MUST reproduce these files byte-for-byte before the Python is
-deleted (FR-002, FR-003, SC-002). The engine is consumed **unchanged** (FR-011).
+Stage 4 re-implemented the evidence engine in compiled F# and proved it
+reproduces these files byte-for-byte (FR-002, FR-003, SC-002) **before** the
+Python was deleted. As of feature 043 (T029) the Python/Bash engine is
+**decommissioned**; these fixtures are now reproduced by the in-process compiled
+engine `FS.Skia.UI.Build.Evidence.Engine` and asserted in
+`EvidenceGoldenParityTests.fs`.
 
 Pinned commit: `34faf1ed61ec0ec2a8a2a81168517cb5ccf499d1` (2026-05-31).
 
 ## Files per feature
 
-| File | Producer | Command |
+| File | Reproduced by (current) | Originally captured from (historical, now removed) |
 |---|---|---|
-| `task-graph.json` | `compute-task-graph.py` | `python3 .specify/extensions/evidence/scripts/python/compute-task-graph.py specs/<F>` |
-| `task-graph.md` | `compute-task-graph.py` (same run) | (written by the same command) |
-| `audit-counts.txt` | graph-derived merge-gate counts | the four fields the audit prints (`accepted-seh-tasks`, `unaccepted-synthetic-tasks`, `auto-synthetic-tasks`, `late-seh-tasks`) plus `real-tasks`, computed from `task-graph.json` exactly as `run-audit.sh` computes them |
+| `task-graph.json` | `Engine.runGraph` → `GraphArtifacts.TaskGraphJson` | the legacy graph-compute Python script |
+| `task-graph.md` | `Engine.runGraph` → `GraphArtifacts.TaskGraphMd` | the legacy graph-compute Python script (same run) |
+| `audit-counts.txt` | `Engine.runAudit` → `AuditArtifacts.AuditCounts` | graph-derived merge-gate counts (`accepted-seh-tasks`, `unaccepted-synthetic-tasks`, `auto-synthetic-tasks`, `late-seh-tasks`, `real-tasks`) |
 
 The `task-graph.{json,md}` fixtures are identical to the committed
 `specs/<F>/readiness/task-graph.{json,md}` at this SHA — re-running the engine
@@ -52,42 +55,24 @@ chosen for. The substitution is also recorded in
 
 ## Capture procedure (reproducible, non-polluting)
 
-Run from the repo root. The engine reads the active feature from
-`.specify/feature.json`; point it at each feature during capture so the
-`recorded-feature-vs-scanned` warning stays empty (matching the committed
-`warnings: []`). Restore historical features afterward so their trees stay
-pristine — the committed `task-graph.{json,md}` are already the authoritative
-engine output at this SHA:
+The in-process engine reads the recorded feature as data
+(`EvidenceInputs.RecordedFeature`); feeding the scanned feature's own name keeps
+the `recorded-feature-vs-scanned` warning empty (matching the committed
+`warnings: []`). The committed `task-graph.{json,md}` are the authoritative
+engine output at this SHA.
 
-```bash
-cp .specify/feature.json /tmp/feature.bak
-for F in 038-authoring-guidance-consistency \
-         037-authoring-audit-robustness \
-         036-archive-readiness-api-docs; do
-  printf '{\n  "feature_directory": "specs/%s"\n}\n' "$F" > .specify/feature.json
-  python3 .specify/extensions/evidence/scripts/python/compute-task-graph.py "specs/$F"
-  cp "specs/$F/readiness/task-graph.json" "specs/$F/readiness/task-graph.md" \
-     "tests/Governance.Tests/fixtures/evidence-golden/$F/"
-  git checkout -- "specs/$F/readiness/task-graph.json" "specs/$F/readiness/task-graph.md"
-  rm -f "specs/$F/readiness/skill-loading-evidence.template.md"
-done
-cp /tmp/feature.bak .specify/feature.json
-```
-
-`audit-counts.txt` holds the graph-derived merge-gate counts; regenerate them
-from `task-graph.json` with the same logic `run-audit.sh` uses (effective-status
-tally; accepted-`[SEH]` via the `seh.accepted` flag).
+`audit-counts.txt` holds the graph-derived merge-gate counts (effective-status
+tally; accepted-`[SEH]` via the `seh.accepted` flag), emitted by
+`Engine.runAudit` as `AuditArtifacts.AuditCounts`.
 
 ## Reproducibility (FR-003 / SC-002)
 
-Verified at the pinned SHA: re-running `compute-task-graph.py` for each of the
-three features regenerates `task-graph.json` and `task-graph.md`
-**byte-for-byte identical** (SHA-1 match) to the committed fixtures. `diff`/`cmp`
-are unavailable on this host; equality is checked via SHA-1:
-
-```bash
-python3 -c "import hashlib,sys;print(hashlib.sha1(open(sys.argv[1],'rb').read()).hexdigest())" <file>
-```
+`EvidenceGoldenParityTests.fs` builds `EvidenceInputs` for each of the three
+features, runs `Engine.runGraph` / `Engine.runAudit`, and asserts the produced
+`task-graph.json`, `task-graph.md`, `audit-counts.txt`, and the five scan
+outputs are **byte-for-byte identical** to the committed fixtures (DiffPlex
+renders the first divergence on mismatch). The historical Python capture command
+that originally produced these fixtures has been removed (043 / T029).
 
 Any divergence at the pinned SHA triggers the substitution rule above.
 

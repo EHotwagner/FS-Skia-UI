@@ -6,6 +6,7 @@ open System.IO
 open System.Text.Json
 open System.Xml.Linq
 open Expecto
+open FS.Skia.UI.Build.Evidence
 
 let rec findRepositoryRoot (directory: string) =
     if Directory.GetFiles(directory, "*.sln").Length > 0 || File.Exists(Path.Combine(directory, "build.fsx")) then
@@ -348,6 +349,57 @@ let readCatalogCapabilities () =
 
     commitCurrent ()
     capabilities |> Seq.toList
+
+// Feature 043 (T025): typed evidence-engine helpers so tests exercise the
+// compiled F# graph/audit engine in-process instead of shelling
+// `python3 compute-task-graph.py` / `bash run-audit.sh`. Every read the build.fsx
+// interpreter performs at the edge (tasks.md, tasks.deps.yml, readiness files,
+// the skill registry, audit-patterns.yml) is reproduced here as data; the engine
+// stays pure. `featDir` is an absolute feature/fixture directory.
+let evidenceInputsForDir (featDir: string) (recordedFeature: string option) : EvidenceInputs =
+    let readinessDir = Path.Combine(featDir, "readiness")
+    let readinessFiles =
+        if Directory.Exists readinessDir then
+            Directory.GetFiles(readinessDir, "*", SearchOption.AllDirectories)
+            |> Array.map (fun p -> p.Substring(readinessDir.Length + 1).Replace('\\', '/'), File.ReadAllText p)
+            |> List.ofArray
+        else
+            []
+    let readFeatureFile name =
+        let p = Path.Combine(featDir, name)
+        if File.Exists p then File.ReadAllText p else ""
+    let featureText =
+        [ "spec.md"; "plan.md"; "tasks.md" ] |> List.map readFeatureFile |> String.concat "\n"
+    let auditStatusFiles =
+        readinessFiles
+        |> List.filter (fun (rel, c) ->
+            rel.EndsWith ".md"
+            && c.Contains "```audit-status"
+            && not (rel.ToLowerInvariant().StartsWith "audit-fixtures/")
+            && not (rel.ToLowerInvariant().StartsWith "audit-rejections/"))
+    let slePath = Path.Combine(readinessDir, "skill-loading-evidence.md")
+    let dirName =
+        Path.GetFileName(featDir.TrimEnd('/', '\\')) |> Option.ofObj |> Option.defaultValue ""
+    { FeatureName = (match recordedFeature with Some f -> f | None -> dirName)
+      TasksMd = readFeatureFile "tasks.md"
+      DepsYml = readFeatureFile "tasks.deps.yml"
+      Registry = SkillRegistry.build repositoryRoot
+      SkillLoadingEvidence = (if File.Exists slePath then Some(File.ReadAllText slePath) else None)
+      ResolvedExists = (fun p -> File.Exists(if Path.IsPathRooted p then p else Path.Combine(repositoryRoot, p)))
+      Canonicalize = (fun p -> Path.GetFullPath(if Path.IsPathRooted p then p else Path.Combine(repositoryRoot, p)))
+      RecordedFeature = recordedFeature
+      Scan = { ReadinessDir = readinessDir; FeatureText = featureText; ReadinessFiles = readinessFiles }
+      AuditStatusFiles = auditStatusFiles
+      PatternsYml = File.ReadAllText(Path.Combine(repositoryRoot, ".specify/extensions/evidence/audit-patterns.yml"))
+      UnifiedDiff = "" }
+
+/// Run the in-process merge-gate audit over an absolute feature/fixture dir.
+let runEvidenceAuditAt (featDir: string) : AuditResult * AuditArtifacts =
+    Engine.runAudit (evidenceInputsForDir featDir None)
+
+/// Run the in-process graph compute over an absolute feature/fixture dir.
+let runEvidenceGraphAt (featDir: string) : GraphResult * GraphArtifacts =
+    Engine.runGraph (evidenceInputsForDir featDir None)
 
 let expectPathsExist context paths =
     paths

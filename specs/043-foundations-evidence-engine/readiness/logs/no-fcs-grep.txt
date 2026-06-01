@@ -1,0 +1,6 @@
+# SC-004 — no FSharp.Compiler.* dependency added
+
+$ grep -rn 'FSharp.Compiler' build/Governance/Evidence build.fsx
+build.fsx:34:// (paket header above) backs DepsParser/DiffScan; no FSharp.Compiler.* dependency.
+
+Only match is the explanatory comment in build.fsx; no FSharp.Compiler.* package reference, open, or type usage exists in the evidence engine. (FR-016 / SC-004)
