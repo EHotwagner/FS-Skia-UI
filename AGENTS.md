@@ -1,15 +1,37 @@
-<!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-specs/041-foundations-library-validators/plan.md
-<!-- SPECKIT END -->
+specs/042-foundations-two-tier-process/plan.md
 
-FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`) share
+## Run `Route` first; run only the gates it prints
+
+Before validating a change, run `./fake.sh build -t Route`. It reads the
+working-tree diff (the union of the branch-vs-`master` merge-base diff and the
+uncommitted/untracked changes) and prints the authoritative **tier** and the
+**minimal gate list** for *this* change. Run only the gates it prints.
+
+- A routine framework-internal change (e.g. `src/Scene/**/*.fs`) routes to the
+  light **inner-loop** tier — `Dev` only.
+- Consumer-contract changes (`template/**`, `.specify/**`, public `src/**/*.fsi`,
+  `build.fsx`/`scripts/build/**`, governance paths) **escalate** automatically.
+- `./fake.sh build -t Route --enforce` additionally fails when an escalated
+  change is missing its required evidence artifacts, naming the artifact and the
+  requiring tier.
+
+The selector is compiled F# in `FS.Skia.UI.Build` (`Routing`); a mistyped gate
+is a compile error. `validation.contract.yml` is generated from `Routing.fs`
+(currency-checked by `TargetMetadataDrift`), so it can never drift.
+
+## The serialized six-target order (escalated / maintainer-verify path)
+
+The full serialized order below is the **escalated `maintainer-verify` path**,
+reserved for consumer-contract changes and **dogfood** features (such as `042`).
+It is no longer the unconditional default — run it only when `Route` escalates to
+it. FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`) share
 repository `.fake` state and are not safe to run concurrently. Agents may
 parallelize safe non-FAKE file reads and checks, but must run FAKE-backed tests
 and FAKE targets sequentially when more than one is needed.
 
-Use a deterministic FAKE-backed order, for example:
+Use the deterministic FAKE-backed order:
 
 1. `./fake.sh build -t Dev`
 2. `./fake.sh build -t GeneratedGuidanceCheck`

@@ -1,0 +1,26 @@
+SC-005 — dogfood feature forces the full pipeline (real `./fake.sh build -t Route` transcript)
+
+Feature 042 is a named dogfood feature (its numeric id "042" is in
+`Routing.dogfoodFeatureIds`; `isDogfood` matches the leading segment of the active
+feature slug "042-foundations-two-tier-process"). `selectForFeature` therefore
+forces the full serialized gate set regardless of the diff's own tier. Captured
+live on the feature working tree:
+
+    $ ./fake.sh build -t Route
+    Starting target 'Route'
+    developer-class=framework-author
+    tier=maintainer-verify
+    gates=Dev, GeneratedGuidanceCheck, TemplateCheck, GeneratedProductCheck, EvidenceGraph, EvidenceAudit
+    dogfood-forced=true
+    matched-rules=evidence-governance, specify-catchall, docs-only, package-surface, build-target-contract
+    Finished (Success) 'Route'
+    Status: Ok                       (exit 0)
+
+`dogfood-forced=true` and the gate list equal to `Routing.fullPipelineGates`
+(Dev, GeneratedGuidanceCheck, TemplateCheck, GeneratedProductCheck, EvidenceGraph,
+EvidenceAudit) confirm the dogfood override fired. The typed test
+"dogfood feature 042 forces the full pipeline on an inner-loop diff" (RoutingTests.fs)
+proves the same diff routes `inner-loop` through plain `select`, so the full
+pipeline here is the dogfood override — not merely the matched rules. This is also
+the authentic end-to-end proof that the `Route` edge (git union-diff →
+selectForFeature → renderSelection → print) runs in-process and exits 0.

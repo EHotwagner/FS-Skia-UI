@@ -1,0 +1,42 @@
+SC-003 — `Route --enforce` blocks an under-evidenced escalated change
+
+Live `./fake.sh build -t Route --enforce` on the feature working tree (the diff
+escalates to maintainer-verify; the tier's required evidence artifacts are absent):
+
+    $ ./fake.sh build -t Route --enforce
+    developer-class=framework-author
+    tier=maintainer-verify
+    gates=Dev, GeneratedGuidanceCheck, TemplateCheck, GeneratedProductCheck, EvidenceGraph, EvidenceAudit
+    dogfood-forced=true
+    matched-rules=evidence-governance, specify-catchall, docs-only, package-surface, build-target-contract
+    -> Route --enforce: tier 'maintainer-verify' requires evidence artifacts that are
+       not present: readiness/validation-contract.md, readiness/evidence-graph.md,
+       readiness/evidence-audit.md, readiness/evidence-policy-separation.md,
+       readiness/package-surface-expectations.md, readiness/target-metadata.md,
+       readiness/agent-ready-verdict.md
+    Status: Failure                  (exit 1 — the escalated change is blocked)
+
+After the named artifacts are present under `readiness/`, the same command passes:
+
+    $ ./fake.sh build -t Route --enforce
+    developer-class=framework-author
+    tier=maintainer-verify
+    ...
+    Status: Ok                       (exit 0 — required evidence present)
+
+(The PASS half was demonstrated with scratch artifacts created under the repo-root
+`readiness/` directory and removed afterwards; the directory's tracked contents are
+unchanged.)
+
+The pure `--enforce` core is also asserted by the typed tests in RoutingTests.fs for
+the exact spec scenario (a `src/**/*.fsi` change requiring
+`readiness/package-surface-expectations.md`):
+
+    unmetArtifacts Set.empty (select FrameworkAuthor {fsi-diff})
+      => [ "readiness/package-surface-expectations.md" ]            (absent)
+    unmetArtifacts (Set.ofList ["readiness/package-surface-expectations.md"]) (...)
+      => [ ]                                                        (present)
+    enforceDiagnostic (...) ["readiness/package-surface-expectations.md"]
+      => names the artifact AND the requiring tier ("focused-authority")
+
+In plain (non-enforce) mode `Route` only prints the gate list and never fails (exit 0).

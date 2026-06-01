@@ -1,0 +1,51 @@
+The last full restore is still up to date. Nothing left to do.
+run EvidenceGraph
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target EvidenceGraph:
+<== EvidenceGraph
+
+The running order is:
+Group - 1
+  - EvidenceGraph
+Starting target 'EvidenceGraph'
+Finished (Success) 'EvidenceGraph' in 00:00:00.1159857
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target          Duration
+------          --------
+EvidenceGraph   00:00:00.1141421
+Total:          00:00:00.1783166
+Status:         Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 157 milliseconds
+ - Packages: 46 milliseconds
+ - Script analyzing: 18 milliseconds
+ - Script running: 296 milliseconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 second
+ode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+
+exit-code=0
+
+## speckit evidence graph
+$ .specify/extensions/evidence/scripts/bash/run-audit.sh /home/developer/projects/FS-Skia-UI/specs/042-foundations-two-tier-process --graph-only
+=== speckit.evidence.graph (graph validation only) ===
+feature: /home/developer/projects/FS-Skia-UI/specs/042-foundations-two-tier-process
+
+[graph validation] Computing task graph only; merge-gate diff scan remains in EvidenceAudit.
+task-graph: 30 tasks parsed
+  resolved-feature: 042-foundations-two-tier-process
+  real-task-count: 30
+  wrote /home/developer/projects/FS-Skia-UI/specs/042-foundations-two-tier-process/readiness/task-graph.json
+  wrote /home/developer/projects/FS-Skia-UI/specs/042-foundations-two-tier-process/readiness/task-graph.md
+  status: 30[X]
+
+graph validation PASS; graph-only mode skipped diff scan and synthetic merge-gate checks.
+Run EvidenceAudit for full merge-gate validation.
+
+exit-code=0

@@ -1,0 +1,58 @@
+The last full restore is still up to date. Nothing left to do.
+run EvidenceAudit
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target EvidenceAudit:
+<== EvidenceAudit
+   <== EvidenceGraph
+
+The running order is:
+Group - 1
+  - EvidenceGraph
+Group - 2
+  - EvidenceAudit
+Starting target 'EvidenceGraph'
+Finished (Success) 'EvidenceGraph' in 00:00:00.1157418
+Starting target 'EvidenceAudit'
+Finished (Success) 'EvidenceAudit' in 00:00:00.6219934
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target          Duration
+------          --------
+EvidenceGraph   00:00:00.1139316
+EvidenceAudit   00:00:00.6219462
+Total:          00:00:00.8008404
+Status:         Ok
+---------------------------------------------------------------------
+Hint: The fake-runner has not been updated for at least 6 months. Please consider upgrading to get latest bugfixes, improved suggestions and F# features.
+Performance:
+ - Cli parsing: 157 milliseconds
+ - Packages: 47 milliseconds
+ - Script analyzing: 18 milliseconds
+ - Script running: 920 milliseconds
+ - Script cleanup: 0 milliseconds
+ - Runtime: 1 second
+ime readiness scan...
+  persistent-gui-runtime: 0 blocking
+
+[2d/3] Window visibility readiness scan...
+  window-visibility: 0 blocking
+
+[2e/3] Audit-status region scan...
+  audit-status: 0 blocking
+
+[3/3] Diff scan against workspace feature base...
+  diff-scan: 0 blocking, 0 advisory
+
+=== Verdict ===
+verdict=PASS
+real-tasks=30
+accepted-seh-tasks=0
+unaccepted-synthetic-tasks=0
+auto-synthetic-tasks=0
+late-seh-tasks=0
+diff-scan-hits=0
+message=PASS — accepted [SEH] tasks remain synthetic but are design-approved; no unaccepted synthetic tasks, readiness contract hits, or blocking diff-scan hits.
+
+exit-code=0

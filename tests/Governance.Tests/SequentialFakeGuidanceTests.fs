@@ -110,6 +110,32 @@ let serializedRunnerGuidanceTests =
                   "Follow-up classification" ]
         }
 
+        // Feature 042 / US4 (FR-008, SC-008): the agent guidance points at `Route`
+        // first and reframes the serialized six-target order as the escalated path.
+        test "agent guidance instructs Route-first and reframes the six-target order as escalated" {
+            [ "AGENTS.md"; "CLAUDE.md" ]
+            |> List.iter (fun path ->
+                let content = read path
+
+                Expect.isTrue
+                    (content.Contains("Route", StringComparison.Ordinal))
+                    $"{path}: names the Route entry point"
+
+                Expect.isTrue
+                    (content.Contains("run only the gates it prints", StringComparison.OrdinalIgnoreCase))
+                    $"{path}: instructs running only the gates Route prints"
+
+                Expect.isTrue
+                    (content.Contains("maintainer-verify", StringComparison.OrdinalIgnoreCase)
+                     && content.Contains("escalated", StringComparison.OrdinalIgnoreCase))
+                    $"{path}: reframes the serialized order as the escalated/maintainer-verify path"
+
+                Expect.isFalse
+                    (content.Contains("unconditional default", StringComparison.OrdinalIgnoreCase)
+                     && not (content.Contains("no longer the unconditional default", StringComparison.OrdinalIgnoreCase)))
+                    $"{path}: does not present the six-target order as the unconditional default")
+        }
+
         test "scanner Synthetic rejects unsafe FAKE guidance snippets" {
             // SYNTHETIC: malformed guidance snippets are design-approved negative scanner fixtures; real evidence is the repository guidance scan.
             let unsafeSnippets =

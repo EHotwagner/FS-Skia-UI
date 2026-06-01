@@ -83,3 +83,26 @@ automation.
 
 Deferred visual evidence remains outside V2 pass/fail validation.
 Deferred distribution automation remains outside V2 pass/fail validation.
+
+## Tiered process and the `Route` entry point (feature 042)
+
+Spec Kit work no longer applies the full serialized governance order to every
+change. Run **`./fake.sh build -t Route`** first: it selects the authoritative
+**tier** for the change and prints the **minimal gate list** to run. Routine
+framework work routes to the light `inner-loop` tier (`Dev` only); changes to the
+consumer contract (`template/**`, `.specify/**`, public `src/**/*.fsi`, the
+build-target paths) **escalate** to `focused-authority` / `agent-ready` /
+`maintainer-verify`.
+
+- **Framework-author vs consumer-agent.** The developer-class axis defaults to
+  `framework-author`. `./fake.sh build -t Route consumer-agent` raises the floor
+  to `focused-authority`; consumer-contract paths escalate regardless of class.
+- **`--enforce`.** `./fake.sh build -t Route --enforce` blocks an escalated change
+  that is missing its tier's required evidence artifacts.
+- **Dogfood features** (e.g. `042`) are forced to the full serialized pipeline so
+  the consumer-grade harness stays exercised and cannot rot.
+
+The selector is compiled F# in `FS.Skia.UI.Build.Routing` (a mistyped gate is a
+compile error); `validation.contract.yml` is generated from it. FAKE-backed
+commands share `.fake` state and are not safe to run concurrently — run escalated
+gates sequentially in the deterministic order.

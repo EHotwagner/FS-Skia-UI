@@ -1,0 +1,35 @@
+SC-002 — consumer-contract changes escalate automatically; unknown paths default-deny
+
+As with SC-001, the controlled-diff outcomes are authoritative through the typed
+selector (RoutingTests.fs) because feature 042's dogfood status forces the live
+`Route` to the full pipeline. Each case below is a PASSING typed test asserting
+the typed `Selection`.
+
+    select FrameworkAuthor { ChangedPaths = ["src/Lib/Foo.fsi"] }
+      => Tier = FocusedAuthority ; Gates include PackageSurfaceCheck, FsiTranscripts
+         (a public .fsi escalates via the package-surface rule, F1 — it does NOT
+          add a check to inner-loop)
+
+    select FrameworkAuthor { ChangedPaths = ["template/base/Program.fs"] }
+      => Tier != InnerLoop ; Gates include TemplateCheck, GeneratedProductCheck
+
+    select FrameworkAuthor { ChangedPaths = [".specify/templates/tasks-template.md"] }
+      => escalates ; Gates include GeneratedGuidanceCheck
+
+    select FrameworkAuthor { ChangedPaths = ["src/Scene/Foo.fs"; "template/base/Program.fs"] }
+      => highest tier wins (escalates, not InnerLoop) ; Gates include TemplateCheck
+
+    select FrameworkAuthor { ChangedPaths = ["weird/path.txt"] }
+      => Tier = MaintainerVerify ; Gates = [ Verify ]   (default-deny broad fallback,
+         never an empty success — unknown_gate_rejection preserved)
+
+    Broadened coverage (F2):
+      template/capabilities.yml   => FocusedAuthority (template/** now covers it)
+      .specify/extensions.yml     => FocusedAuthority (.specify/** catch-all)
+
+    ConsumerAgent floor:
+      select ConsumerAgent { ChangedPaths = ["src/Scene/Floor.fs"] } => FocusedAuthority
+      select FrameworkAuthor { same diff }                            => InnerLoop
+
+Tests: the escalation / mixed-diff / unknown-path / broadened-coverage /
+consumer-agent-floor cases in RoutingTests.fs — all green.

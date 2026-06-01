@@ -21,6 +21,12 @@ open Fake.Core.TargetOperators
 #load "build/Governance/Findings.fs"
 #load "build/Governance/Targets.fs"
 #load "build/Governance/TargetMetadata.fs"
+// Feature 042: the typed two-tier routing policy (Routing) and its generated
+// validation.contract.yml view (ContractView) are compiled build/Governance modules
+// (curated .fsi, Principle II), #load'd here ahead of the build model so the Route arm
+// and the contract-currency check can reference the pure selector. BCL-only.
+#load "build/Governance/Routing.fs"
+#load "build/Governance/ContractView.fs"
 #load "build/Governance/Capabilities.fs"
 
 open FS.Skia.UI.Build
@@ -243,6 +249,7 @@ type BuildEffect =
     | WorkflowSelfCheck
     | SkillSyncGate
     | SkillExamplesGate
+    | RouteSelect
 
 #load "scripts/build/Paths.fsx"
 #load "scripts/build/Process.fsx"
@@ -893,6 +900,10 @@ let update msg model =
     | StartTarget Targets.RefreshSurfaceBaselines ->
         model,
         [ processEffect "refresh surface baselines" "dotnet" "fsi scripts/refresh-surface-baselines.fsx" model.RepositoryRoot (path [ model.LogDir; "surface-refresh.txt" ])
+          // Feature 042 (FR-007, research R1): regenerate the retained validation.contract.yml
+          // view from the compiled Routing.fs single source of truth as part of the baseline
+          // refresh, so the currency check folded into TargetMetadataDrift cannot trip on drift.
+          WriteFile(path [ model.RepositoryRoot; "validation.contract.yml" ], ContractView.render Routing.rules Routing.dogfoodFeatureIds)
           RequireFiles(
               "stable package surface baselines",
               [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.txt" ]
@@ -1139,7 +1150,22 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
           focusedGateSummary model "TargetMetadata" ]
     | StartTarget Targets.TargetMetadataDrift ->
         let metadata = allTargetMetadata model
-        let diagnostics = validateTargetMetadataAgainstRepo model.RepositoryRoot requiredTargets metadata
+        let structuralDiagnostics = validateTargetMetadataAgainstRepo model.RepositoryRoot requiredTargets metadata
+
+        // Feature 042 (FR-007): the generated validation.contract.yml currency check folds
+        // into TargetMetadataDrift so the retained file can never silently diverge from the
+        // compiled Routing.fs source of truth. The file read stays at this interpreter edge;
+        // ContractView.currencyDrift itself is pure (Principle IV).
+        let contractPath = path [ model.RepositoryRoot; "validation.contract.yml" ]
+
+        let currencyDiagnostics =
+            if File.Exists contractPath then
+                ContractView.currencyDrift (File.ReadAllText contractPath) Routing.rules Routing.dogfoodFeatureIds
+                |> Option.toList
+            else
+                [ "validation.contract.yml is missing — regenerate from Routing.fs via ./fake.sh build -t RefreshSurfaceBaselines" ]
+
+        let diagnostics = structuralDiagnostics @ currencyDiagnostics
         let report = TargetMetadata.driftMarkdown diagnostics
 
         model,
@@ -1148,6 +1174,11 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
           if not diagnostics.IsEmpty then
               FailWith(String.Join(Environment.NewLine, diagnostics))
           focusedGateSummary model "TargetMetadataDrift" ]
+    | StartTarget Targets.Route ->
+        // Feature 042 (FR-004): the typed selector runs in-process at the edge. The git
+        // union-diff read, the --enforce File.Exists probe, and printing are interpreter I/O
+        // (Principle IV); the Routing selector itself is pure. See `runRouteSelection`.
+        model, [ RouteSelect ]
     | StartTarget Targets.VerifyPreflight ->
         model,
         [ CollectProcessHealth("Verify", model.ProcessHealthPath, model.VerificationVerdictsPath)
@@ -4386,6 +4417,95 @@ let runSkillExamplesGate (model: BuildModel) =
     ensureParent reportPath
     File.WriteAllText(reportPath, report)
 
+// Feature 042 (FR-002a, research R2): the git union-diff is read here at the `Route`
+// interpreter edge so the Routing selector stays pure and unit-testable without git.
+let routeGitCapture root (arguments: string) =
+    try
+        let startInfo = System.Diagnostics.ProcessStartInfo("git", arguments)
+        startInfo.WorkingDirectory <- root
+        startInfo.RedirectStandardOutput <- true
+        startInfo.RedirectStandardError <- true
+        startInfo.UseShellExecute <- false
+
+        use proc = System.Diagnostics.Process.Start startInfo
+        let stdout = proc.StandardOutput.ReadToEnd()
+        let stderr = proc.StandardError.ReadToEnd()
+        proc.WaitForExit() |> ignore
+
+        if proc.ExitCode = 0 then Ok stdout else Error(stderr.Trim())
+    with ex ->
+        Error ex.Message
+
+let routeWorkingTreePaths (porcelain: string) =
+    porcelain.Replace("\r\n", "\n").Split('\n')
+    |> Array.toList
+    |> List.collect (fun line ->
+        let trimmed = line.TrimEnd()
+
+        if trimmed.Length <= 3 then
+            []
+        else
+            let payload = trimmed.Substring(3)
+            // `git status --porcelain` renders renames as "old -> new"; take the new path.
+            let arrow = payload.IndexOf(" -> ", StringComparison.Ordinal)
+            if arrow >= 0 then [ payload.Substring(arrow + 4) ] else [ payload ])
+
+let runRouteSelection root =
+    let argv = System.Environment.GetCommandLineArgs() |> Array.toList
+    let enforce = argv |> List.exists (fun arg -> arg = "--enforce")
+
+    let developerClass =
+        if argv |> List.exists (fun arg -> arg = "consumer-agent") then
+            Routing.ConsumerAgent
+        else
+            Routing.FrameworkAuthor
+
+    let mergeBase =
+        match routeGitCapture root "merge-base HEAD master" with
+        | Ok value when value.Trim() <> "" -> Some(value.Trim())
+        | _ ->
+            printfn "Route: could not resolve 'git merge-base HEAD master'; using working-tree changes only (no branch baseline)."
+            None
+
+    let committedPaths =
+        match mergeBase with
+        | Some baseCommit ->
+            match routeGitCapture root (sprintf "diff --name-only %s...HEAD" baseCommit) with
+            | Ok value -> value.Replace("\r\n", "\n").Split('\n') |> Array.toList
+            | Error message ->
+                printfn "Route: 'git diff' against the merge-base failed (%s); continuing with working-tree changes." message
+                []
+        | None -> []
+
+    let workingPaths =
+        match routeGitCapture root "status --porcelain --untracked-files=all" with
+        | Ok value -> routeWorkingTreePaths value
+        | Error message ->
+            printfn "Route: 'git status' failed (%s)." message
+            []
+
+    let changedPaths =
+        committedPaths @ workingPaths
+        |> List.map (fun p -> p.Trim().Trim('"'))
+        |> List.filter (fun p -> p <> "")
+        |> List.distinct
+
+    let selection =
+        Routing.selectForFeature developerClass featureId { Routing.Diff.ChangedPaths = changedPaths }
+
+    printfn "%s" (Routing.renderSelection selection)
+
+    if enforce then
+        let present =
+            selection.ExpectedArtifacts
+            |> List.filter (fun artifact -> File.Exists(path [ root; artifact ]))
+            |> Set.ofList
+
+        let missing = Routing.unmetArtifacts present selection
+
+        if not (List.isEmpty missing) then
+            failwith (Routing.enforceDiagnostic selection missing)
+
 let interpret root effect =
     let model, _ = init root
 
@@ -4427,6 +4547,7 @@ let interpret root effect =
     | WorkflowSelfCheck -> workflowSelfCheck root
     | SkillSyncGate -> runSkillSyncGate model
     | SkillExamplesGate -> runSkillExamplesGate model
+    | RouteSelect -> runRouteSelection root
 
 let runTarget (target: Targets.Target) =
     let model, initEffects = init repositoryRoot

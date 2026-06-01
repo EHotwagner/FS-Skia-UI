@@ -1,0 +1,30 @@
+SC-001 — a routine framework change routes to the light inner-loop tier
+
+NOTE on live capture: feature 042 is a *dogfood* feature, so `./fake.sh build -t
+Route` on this repository always forces the full pipeline (see route-dogfood.txt).
+A live `inner-loop` print therefore cannot be produced on this repo without
+disabling the dogfood policy. The authoritative controlled-diff evidence for
+SC-001 is the typed selector test, which calls the same pure `Routing.select`
+function the `Route` edge calls — exactly as the spec's "Independent test"
+prescribes ("Asserted directly against the typed selector in Governance.Tests").
+
+Typed selector outcome (RoutingTests.fs, PASSING):
+
+    select FrameworkAuthor { ChangedPaths = ["src/Scene/Foo.fs"] }
+      => Tier = InnerLoop
+         Gates = [ Dev ]          (no PackageSurfaceCheck, not the full six-target set)
+
+    select FrameworkAuthor { ChangedPaths = [] }   (empty diff)
+      => Tier = InnerLoop
+         Gates = [ Dev ]          (deterministic default, never a failure)
+
+renderSelection of that selection prints:
+    developer-class=framework-author
+    tier=inner-loop
+    gates=Dev
+    dogfood-forced=false
+    matched-rules=(none)
+
+Tests: "src/Scene/*.fs only routes framework-author to inner-loop / [Dev]" and
+"empty diff routes deterministically to inner-loop / [Dev]" — both green
+(full Governance.Tests: 313 passed, 0 failed).

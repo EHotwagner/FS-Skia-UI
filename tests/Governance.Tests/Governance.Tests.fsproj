@@ -45,6 +45,8 @@
     <Compile Include="TargetMetadataTests.fs" />
     <Compile Include="CapabilityCatalogTests.fs" />
     <Compile Include="ReportParityTests.fs" />
+    <Compile Include="RoutingTests.fs" />
+    <Compile Include="ContractViewTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

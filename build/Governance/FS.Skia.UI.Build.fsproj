@@ -21,6 +21,10 @@
     <Compile Include="Targets.fs" />
     <Compile Include="TargetMetadata.fsi" />
     <Compile Include="TargetMetadata.fs" />
+    <Compile Include="Routing.fsi" />
+    <Compile Include="Routing.fs" />
+    <Compile Include="ContractView.fsi" />
+    <Compile Include="ContractView.fs" />
     <Compile Include="Capabilities.fsi" />
     <Compile Include="Capabilities.fs" />
   </ItemGroup>

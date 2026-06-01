@@ -158,3 +158,46 @@ Package consumer smoke remains available as an explicit deferred target:
 ```bash
 ./fake.sh build -t PackageSmoke
 ```
+
+## Tiered development process and the `Route` entry point (feature 042)
+
+The build defines authoritative **tiers** — `inner-loop`, `focused-authority`,
+`agent-ready`, `maintainer-verify`, `automation-final` — and a single entry point
+that selects the right one for a change: **`./fake.sh build -t Route`**.
+
+`Route` computes the change's `Diff` (the union of the branch-vs-`master`
+merge-base diff and the uncommitted/untracked working tree), runs the **pure**
+compiled selector in `FS.Skia.UI.Build.Routing`, and prints:
+
+- `developer-class` — `framework-author` (default) or `consumer-agent`
+  (`./fake.sh build -t Route consumer-agent`, which raises the floor to
+  `focused-authority`). Consumer-contract **paths** escalate regardless of class.
+- `tier` — the highest applicable tier (escalation always wins).
+- `gates` — the minimal, registry-ordered list of targets to run.
+
+### How `Route` selects
+
+- A routine framework-internal change (`src/**/*.fs`, no surface) → **inner-loop**,
+  gate list `Dev` only.
+- A public `src/**/*.fsi` surface edit → escalates via the `package-surface` rule
+  (`PackageSurfaceCheck`, `FsiTranscripts`).
+- `template/**` → `TemplateCheck`, `GeneratedProductCheck`; `.specify/**` →
+  `GeneratedGuidanceCheck`, `TemplateDrift`; `build.fsx`/`scripts/build/**` →
+  the `maintainer-verify` escalated path.
+- An unrecognised path **default-denies** to the broad `Verify` fallback (never an
+  empty success), and a **dogfood** feature (e.g. `042`) is forced to the full
+  pipeline regardless of its diff.
+
+### `--enforce`
+
+`./fake.sh build -t Route --enforce` exits non-zero when an escalated change is
+being shipped without the tier's required evidence artifacts, naming each missing
+artifact and the requiring tier; in plain mode it only prints the gate list.
+
+`validation.contract.yml` is **generated** from `Routing.fs` (the single source of
+truth) and currency-checked by `TargetMetadataDrift`; regenerate it with
+`./fake.sh build -t RefreshSurfaceBaselines`.
+
+FAKE-backed commands share repository `.fake` state and are **not safe to run
+concurrently**; when `Route` escalates to several gates, run them sequentially in
+the deterministic order documented above.

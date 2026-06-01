@@ -1,5 +1,9 @@
 schema_version: 1
 
+# GENERATED from build/Governance/Routing.fs (feature 042). Do not hand-edit;
+# regenerate via ./fake.sh build -t RefreshSurfaceBaselines. The compiled
+# Routing module is the single source of truth for tiers and routing rules.
+
 defaults:
   broad_fallback_command: "./fake.sh build -t Verify"
   unknown_gate_rejection:
@@ -10,16 +14,6 @@ defaults:
     - EvidenceAudit
 
 tiers:
-  tier1:
-    authority: focused-authoritative
-    default_gates:
-      - AgentReady
-      - EvidenceGraph
-      - EvidenceAudit
-  tier2:
-    authority: non-authoritative
-    default_gates:
-      - Dev
   inner-loop:
     authority: non-authoritative
     default_gates:
@@ -42,14 +36,24 @@ tiers:
     authority: broad-authoritative
     default_gates:
       - Ci
+  tier1:
+    authority: focused-authoritative
+    default_gates:
+      - AgentReady
+      - EvidenceGraph
+      - EvidenceAudit
+  tier2:
+    authority: non-authoritative
+    default_gates:
+      - Dev
 
 routing_rules:
   - id: controls-public-surface
+    tier: focused-authority
     paths:
       - "src/Controls/**"
     feature_concerns:
       - controls-public-surface
-      - typed-controls
     required_gates:
       - ControlsCatalogCheck
       - ControlsInteractionCheck
@@ -62,14 +66,14 @@ routing_rules:
       - readiness/package-surface-expectations.md
     timeout_class: focused
     failure_owner: product
-
   - id: generated-template
+    tier: focused-authority
     paths:
       - "template/base/**"
       - "template/fragments/**"
+      - "template/**"
     feature_concerns:
       - generated-template
-      - generated-product
     required_gates:
       - TemplateCheck
       - GeneratedProductCheck
@@ -77,8 +81,8 @@ routing_rules:
       - readiness/evidence-policy-separation.md
     timeout_class: focused
     failure_owner: template
-
   - id: evidence-governance
+    tier: agent-ready
     paths:
       - "specs/**/tasks.md"
       - "specs/**/tasks.deps.yml"
@@ -95,8 +99,8 @@ routing_rules:
       - readiness/evidence-audit.md
     timeout_class: focused
     failure_owner: governance
-
   - id: generated-guidance
+    tier: focused-authority
     paths:
       - ".specify/templates/**"
       - ".specify/presets/**"
@@ -111,8 +115,21 @@ routing_rules:
       - readiness/evidence-policy-separation.md
     timeout_class: focused
     failure_owner: governance
-
+  - id: specify-catchall
+    tier: focused-authority
+    paths:
+      - ".specify/**"
+    feature_concerns:
+      - specify-catchall
+    required_gates:
+      - GeneratedGuidanceCheck
+      - TemplateDrift
+    expected_artifacts:
+      - readiness/evidence-policy-separation.md
+    timeout_class: focused
+    failure_owner: governance
   - id: docs-only
+    tier: focused-authority
     paths:
       - "docs/**"
       - "specs/**/contracts/**"
@@ -125,8 +142,8 @@ routing_rules:
       - readiness/validation-contract.md
     timeout_class: focused
     failure_owner: governance
-
   - id: package-surface
+    tier: focused-authority
     paths:
       - "src/**/*.fsi"
       - "readiness/surface-baselines/**"
@@ -139,8 +156,8 @@ routing_rules:
       - readiness/package-surface-expectations.md
     timeout_class: focused
     failure_owner: product
-
   - id: build-target-contract
+    tier: maintainer-verify
     paths:
       - "build.fsx"
       - "scripts/build/**"
@@ -159,3 +176,6 @@ routing_rules:
       - readiness/agent-ready-verdict.md
     timeout_class: broad
     failure_owner: governance
+
+dogfood_feature_ids:
+  - "042"

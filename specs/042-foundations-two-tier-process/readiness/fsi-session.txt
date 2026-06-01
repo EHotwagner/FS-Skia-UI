@@ -1,0 +1,28 @@
+T006 — exercising the draft Routing.fsi / ContractView.fsi (Principle I)
+
+Per the maintainer's decision and the 041 pattern, the typed signatures are
+exercised through the compiled Governance.Tests (which reference the same curated
+.fsi via the project reference) rather than an ad-hoc `dotnet fsi` session — and
+SC-006 forbids introducing a `dotnet fsi` selector path. The representative calls
+over literal `Diff` values that the FSI sketch would make are captured as PASSING
+typed tests in RoutingTests.fs / ContractViewTests.fs and exercised end-to-end
+through the real `./fake.sh build -t Route` edge:
+
+    Routing.select FrameworkAuthor { ChangedPaths = ["src/Scene/Foo.fs"] }
+      => { Tier = InnerLoop; Gates = [Dev]; DogfoodForced = false; ... }
+
+    Routing.select FrameworkAuthor { ChangedPaths = ["src/Lib/Foo.fsi"] }
+      => Tier = FocusedAuthority; Gates include PackageSurfaceCheck
+
+    Routing.selectForFeature FrameworkAuthor "042" { ChangedPaths = ["src/Scene/Foo.fs"] }
+      => Tier = MaintainerVerify; Gates = fullPipelineGates; DogfoodForced = true
+
+    Routing.unmetArtifacts Set.empty (select FrameworkAuthor {fsi-diff})
+      => ["readiness/package-surface-expectations.md"]
+
+    ContractView.render Routing.rules Routing.dogfoodFeatureIds
+      => deterministic validation.contract.yml text (currencyDrift = None)
+
+The live `./fake.sh build -t Route` transcript (route-dogfood.txt) is the
+end-to-end FSI-equivalent exercise of these signatures through the public entry
+point.

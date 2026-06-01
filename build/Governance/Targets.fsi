@@ -50,6 +50,7 @@ type Target =
     | FinalReadiness
     | Verify
     | Ci
+    | Route
     | PackageSmoke
     | BuildWorkflowCheck
 

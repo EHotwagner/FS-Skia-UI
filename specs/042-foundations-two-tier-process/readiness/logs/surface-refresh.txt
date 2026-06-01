@@ -1,0 +1,40 @@
+
+## refresh surface baselines
+$ dotnet fsi scripts/refresh-surface-baselines.fsx
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.Layout.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.KeyboardInput.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.Controls.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.Controls.Elmish.txt
+
+exit-code=0
+
+## refresh surface baselines
+$ dotnet fsi scripts/refresh-surface-baselines.fsx
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.Layout.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.KeyboardInput.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.Controls.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.Controls.Elmish.txt
+
+exit-code=0
+
+## refresh surface baselines
+$ dotnet fsi scripts/refresh-surface-baselines.fsx
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.Layout.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.KeyboardInput.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.Controls.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.Controls.Elmish.txt
+
+exit-code=0
+
+## refresh surface baselines
+$ dotnet fsi scripts/refresh-surface-baselines.fsx
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.Layout.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.KeyboardInput.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.Controls.txt
+wrote /home/developer/projects/FS-Skia-UI/scripts/../readiness/surface-baselines/FS.Skia.UI.Controls.Elmish.txt
+
+exit-code=0

@@ -39,6 +39,7 @@ type Target =
     | FinalReadiness
     | Verify
     | Ci
+    | Route
     | PackageSmoke
     | BuildWorkflowCheck
 
@@ -90,7 +91,8 @@ let allTargets =
       StaleBoundaryScan
       FinalReadiness
       Verify
-      Ci ]
+      Ci
+      Route ]
 
 let dispatchTargets = allTargets @ [ PackageSmoke; BuildWorkflowCheck ]
 
@@ -134,6 +136,7 @@ let name target =
     | FinalReadiness -> "FinalReadiness"
     | Verify -> "Verify"
     | Ci -> "Ci"
+    | Route -> "Route"
     | PackageSmoke -> "PackageSmoke"
     | BuildWorkflowCheck -> "BuildWorkflowCheck"
 
@@ -195,6 +198,7 @@ let directPrerequisites target =
           EvidenceAudit
           TargetMetadataDrift ]
     | Ci -> [ CiPreflight; Verify ]
+    | Route -> []
     | PackageSmoke -> [ PackageSurfaceCheck ]
     | BuildWorkflowCheck -> []
 

@@ -6,7 +6,8 @@
   - **Stage 0 IMPLEMENTED** as feature `039-foundations-baseline-spike` (all 26 tasks complete; evidence graph `ok`, evidence audit `PASS`; D2 spike **confirmed**). See [Stage 0 — Implementation status](#stage-0--implementation-status-2026-05-31-feature-039) below.
   - **Stage 2.1 IMPLEMENTED** (the `.claude`↔`.agents` byte-identity stopgap) as feature `040-foundations-capability-skills`, which shipped `SkillSyncCheck` (in-process SHA-256 sync) + `SkillExamplesCheck` (compile-verified cookbooks). The rest of Stage 2 (2.2–2.5) is not yet started. See [Stage 2 — Implementation status](#stage-2--implementation-status-2026-05-31-feature-040).
   - **Stage 3 IMPLEMENTED** as feature `041-foundations-library-validators` (the first two real validators extracted into the compiled `FS.Skia.UI.Build` library + the typed `Target` single-source DU; squash-merged to `master`, evidence audit `PASS`). See [Stage 3 — Implementation status](#stage-3--implementation-status-2026-05-31-feature-041).
-  - **Stages 1, 2.2–2.5, 4–7 not yet started.**
+  - **Stage 1 IMPLEMENTED** as feature `042-foundations-two-tier-process` (the two-tier process made authoritative and enforced via a compiled `Routing.fs` selector + a new `Route` target; the interim `select-tier.fsx` was **skipped** and Stage 5.5's `Routing.fs` pulled forward, mirroring how 041 pulled the typed `Target` work forward; evidence audit `PASS`, dogfood serialized pipeline green). See [Stage 1 — Implementation status](#stage-1--implementation-status-2026-06-01-feature-042).
+  - **Stages 2.2–2.5, 4–7 not yet started.**
 - **Companion analysis:** [`2026-05-31-0908-foundations-rewrite-analysis.md`](./2026-05-31-0908-foundations-rewrite-analysis.md)
 - **Baseline at authoring time:** `build.fsx` = 4,688 lines; `tests/Governance.Tests/` = 34 test files; `validation.contract.yml` already defines tiers + path routing; evidence graph/audit computed by `.specify/extensions/evidence/scripts/python/*` orchestrated by `run-audit.sh` (1,284 lines) and shelled to from `build.fsx:1266,1273`.
 
@@ -376,6 +377,100 @@ order on everything," which is the suffocation. The framework-author path is und
 **Effort:** ~2–3 days. **Revert:** drop the `Route` target + selector; revert the two guidance
 files; the contract additions are inert if unused.
 
+### Stage 1 — Implementation status (2026-06-01, feature 042)
+
+**Status: IMPLEMENTED.** Stage 1 shipped as feature
+`042-foundations-two-tier-process` (branch `042-foundations-two-tier-process`).
+All 30 tasks are `[X]` with **real evidence** (zero synthetic);
+`speckit.evidence.graph` returns `verdict=ok` and `speckit.evidence.audit`
+returns **verdict=PASS** (0 unaccepted-synthetic, 0 auto-synthetic, 0 diff-scan,
+0 readiness-contract blocking). As a designated **dogfood** feature (FR-015) it
+ran the full serialized FAKE gate sequence for itself — `Dev` →
+`GeneratedGuidanceCheck` → `TemplateCheck` → `GeneratedProductCheck` →
+`EvidenceGraph` → `EvidenceAudit`, all green — plus the Governance.Tests suite
+(312/312). Runtime untouched: `git diff` over `src/**` = 0 changes; no product
+`.fsi`, surface baseline, or `PackageVersion` change (SC-009/FR-012/FR-013).
+
+**Key deviation from the staged plan (the central design decision, resolved with
+the maintainer):** because `FS.Skia.UI.Build` now exists (039/040/041), the
+interim `scripts/build/select-tier.fsx` + grown-YAML path in work items 1.1–1.2
+was **skipped entirely**. Stage 5.5's `Routing.fs` was **pulled forward** — the
+tier/routing policy is **compiled F#** from the start (mirroring how 041 pulled
+the typed `Target` work forward). No `select-tier.fsx`, no `dotnet fsi` selector,
+and no `FSharp.Compiler.*` dependency was ever introduced (SC-006, verified by
+grep). This means the bulk of what Stage 5.5 prescribed is **already done**;
+Stage 5's remaining scope is the MEL-engine relocation / `build.fsx` retirement,
+not the routing migration.
+
+What landed against the Stage-1 work items:
+
+- **1.1 framework-author inner loop — done, as compiled F#.** `Routing.fs` ships
+  typed `DeveloperClass` (`FrameworkAuthor` default | `ConsumerAgent`), `Tier`
+  (the five authoritative tiers + retained `Tier1`/`Tier2` aliases) with a total
+  `tierRank`, and the rule table as glob predicates over a `Diff`. `inner-loop`
+  gates = `[Dev]` only; a public `src/**/*.fsi` edit **escalates** via the
+  `package-surface` rule rather than adding a check to inner-loop. The
+  `ConsumerAgent` floor raises the base tier to `focused-authority`;
+  consumer-contract **paths** escalate regardless of class. `template/**` and
+  `.specify/**` were broadened (F2) for full consumer-contract coverage. The YAML
+  schema was **not** grown — the contract became typed F# as the ADR intended.
+- **1.2 tier-selection gate — done, compiled (no interim FSX).** `select`
+  (default-deny unmatched → `Verify`; `maxBy tierRank` escalation;
+  registry-order gate de-dup) and `selectForFeature` (dogfood override) are
+  **pure**; `unmetArtifacts`/`enforceDiagnostic` back `--enforce`. Git union-diff
+  (`merge-base HEAD master`…`HEAD` ∪ `status --porcelain --untracked-files=all`),
+  `File.Exists`, and printing stay at the `build.fsx` interpreter edge
+  (Principle IV), so the selector is unit-testable without git.
+- **1.3 `Route` FAKE target — done.** An additive `Targets.Route` case (DU +
+  derived metadata + dispatch wiring; no existing target moved) runs the selector
+  in-process and prints `developer-class` / `tier` / `gates`. `--enforce` exits
+  non-zero naming each missing artifact and the requiring tier.
+- **1.4 guidance rewrite — done.** `CLAUDE.md` and `AGENTS.md` now lead with "run
+  `Route` first; run only the gates it prints" and reframe the serialized
+  six-target order as the escalated `maintainer-verify` path (no longer the
+  unconditional default); `SequentialFakeGuidanceTests.fs` asserts both.
+  `docs/reports/build.md` and `docs/reports/speckit.md` document the tiers, the
+  developer-class axis, how `Route` selects, and `--enforce` (FR-009).
+- **1.5 dogfood marker — done, as typed policy.** The dogfood set is a typed
+  `dogfoodFeatureIds` list in `Routing.fs` (ADR D6), including `"042"`;
+  `isDogfood` matches the leading numeric segment of the active feature slug, so
+  `Route` forces the full pipeline for feature 042 (`dogfood-forced=true`,
+  gate set = `fullPipelineGates`) even on a would-be inner-loop diff.
+- **Single source of truth (work the plan deferred to 5.5, delivered now).**
+  `validation.contract.yml` is **retained but generated** from `Routing.fs` via
+  `ContractView.render` (the single emitter), so its existing consumers
+  (`build.fsx`, the `TargetMetadataDrift` reference check, `AgentReady`, and the
+  feature-028 `src/Lib/AgentValidation.fs` parser) keep reading a coherent file.
+  Regeneration folds into `RefreshSurfaceBaselines`; the pure
+  `ContractView.currencyDrift` currency check folds into `TargetMetadataDrift`,
+  so drift is structurally impossible (a hand-edit fails with a "regenerate from
+  `Routing.fs`" diagnostic). Demonstrated live: accept(0) → hand-edit reject(1) →
+  regenerate(0) → re-accept(0).
+
+**Tests (SC-004 / FR-010).** `RoutingTests.fs` adds 14 typed-selector cases
+(inner-loop, empty-diff default, `.fsi` escalation, `template/base/**`,
+`.specify/**`, mixed-diff highest-tier, unknown-path default-deny, the
+`ConsumerAgent` floor, the F2 broadened coverage, the dogfood override, and the
+`--enforce` core); `ContractViewTests.fs` adds the `currencyDrift` None/Some
+cases. All assert typed `Selection` values, not strings.
+
+**Invariants held.** 1 (public surface unchanged), 2 (runtime untouched), 3
+(generated consumers still pass `TemplateCheck`/`GeneratedProductCheck`/
+`GeneratedGuidanceCheck`), 4 (net10 conventions; no new `PackageVersion`), 5
+(FAKE sequencing — gates run serially, never concurrently), 6 (evidence output
+parity — graph/audit vocabulary and counts unchanged) all hold.
+
+**Stage 1 exit criteria: met** — `Route` routes a routine framework change light
+(typed-selector evidence; the live `Route` is dogfood-forced on this very
+feature, so the controlled inner-loop result is proven through the same pure
+`Routing.select` the spec's Independent Test names), escalates consumer-contract
+changes, `--enforce` blocks an under-evidenced escalated change, ≥6
+Governance.Tests cases assert tier selection (delivered as typed assertions, the
+Stage-3 upgrade the plan anticipated — already realized since the library
+exists), and invariants 1–6 hold. The Stage-1 exit criterion that the
+Governance.Tests selector test would be "string/IO today, Stage 3 upgrades it to
+typed" is satisfied directly: the test is typed from the start.
+
 ---
 
 ## Stage 2 — Single-source generation (kill the hand-synced duplicates)
@@ -729,13 +824,15 @@ orchestration skeleton, which is the cleanest thing to relocate last.
    gone), or reduced to the <200-line shim only under the spike-fallback path.
 
 5.5 **Migrate the validation contract from YAML to compiled F#** (per the config-representation
-   ADR / analysis §6). Fold Stage 1's interim `select-tier.fsx` + `validation.contract.yml` into a
-   typed `Routing.fs`: tiers become typed values and routing rules become predicates over a diff
-   (`Diff -> Tier`) sharing the `Target` union, so a mistyped target name or gate fails to
-   compile. The `Route` target calls `Routing.fs` in-process; `select-tier.fsx` is deleted and
-   `validation.contract.yml` is retired (or reduced to a generated, human-readable *view* emitted
-   from the F# source for documentation, never the source of truth). No FCS / runtime script
-   loading is introduced — the contract is compiled into the library like any other module.
+   ADR / analysis §6). **DONE EARLY in feature 042 (Stage 1) — pulled forward.** Because the
+   library already existed, the interim `select-tier.fsx` was skipped and this item was delivered
+   as part of Stage 1: tiers and routing rules are typed values/predicates in `Routing.fs` sharing
+   the `Target` union (a mistyped gate is a compile error); the `Route` target calls it in-process;
+   `validation.contract.yml` is **retained but generated** from `Routing.fs` (via
+   `ContractView.render`), currency-checked by `TargetMetadataDrift`, never a hand-maintained
+   source; no `select-tier.fsx` was ever created and no FCS / runtime script loading was
+   introduced. See [Stage 1 — Implementation status](#stage-1--implementation-status-2026-06-01-feature-042).
+   Nothing remains for Stage 5 here beyond consuming `Routing.fs` from the relocated front-end.
 
 ### New / changed artifacts
 
