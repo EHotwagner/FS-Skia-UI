@@ -25,6 +25,8 @@
   <ItemGroup>
     <Compile Include="Spike.fsi" />
     <Compile Include="Spike.fs" />
+    <Compile Include="AgentValidation.fsi" />
+    <Compile Include="AgentValidation.fs" />
     <Compile Include="SkillTreeGen.fsi" />
     <Compile Include="SkillTreeGen.fs" />
     <Compile Include="SkillSync.fsi" />

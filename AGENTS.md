@@ -1,7 +1,7 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
 <!-- SPECKIT START -->
-specs/050-v3-host-extraction/plan.md
+specs/051-relocate-agentvalidation/plan.md
 <!-- SPECKIT END -->
 
 ## Run `Route` first; run only the gates it prints

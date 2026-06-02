@@ -13,8 +13,6 @@
 
   <ItemGroup>
     <Compile Include="InternalsVisibleTo.fs" />
-    <Compile Include="AgentValidation.fsi" />
-    <Compile Include="AgentValidation.fs" />
     <Compile Include="Library.fsi" />
     <Compile Include="Library.fs" />
     <Compile Include="KeyboardInput.fsi" />

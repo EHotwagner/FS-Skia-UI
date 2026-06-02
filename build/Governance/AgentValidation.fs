@@ -1,4 +1,4 @@
-namespace FS.Skia.UI.AgentValidation
+namespace FS.Skia.UI.Build.AgentValidation
 
 open System
 open System.Diagnostics

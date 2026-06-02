@@ -5,7 +5,7 @@ open System.Diagnostics
 open System.IO
 open System.Text.Json
 open Expecto
-open FS.Skia.UI.AgentValidation
+open FS.Skia.UI.Build.AgentValidation
 open GovernanceTestSupport
 
 let private contractPath = "validation.contract.yml"

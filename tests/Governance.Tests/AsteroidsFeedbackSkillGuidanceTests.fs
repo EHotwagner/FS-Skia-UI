@@ -26,7 +26,7 @@ let layoutEvidenceGuidancePaths =
       "template/base/tests/Product.Tests/Tests.fs" ]
 
 let packableProjectPaths =
-    [ "src/Lib/Lib.fsproj", "FS.Skia.UI", [ "src/Lib/Library.fsi"; "src/Lib/KeyboardInput.fsi"; "src/Lib/AgentValidation.fsi" ]
+    [ "src/Lib/Lib.fsproj", "FS.Skia.UI", [ "src/Lib/Library.fsi"; "src/Lib/KeyboardInput.fsi" ]
       "src/Scene/Scene.fsproj", "FS.Skia.UI.Scene", [ "src/Scene/Scene.fsi" ]
       "src/SkiaViewer/SkiaViewer.fsproj", "FS.Skia.UI.SkiaViewer", [ "src/SkiaViewer/SkiaViewer.fsi"; "src/SkiaViewer/Host/Diagnostics.fsi"; "src/SkiaViewer/Host/Vulkan.fsi"; "src/SkiaViewer/Host/Viewer.fsi" ]
       "src/Elmish/Elmish.fsproj", "FS.Skia.UI.Elmish", [ "src/Elmish/Elmish.fsi" ]
