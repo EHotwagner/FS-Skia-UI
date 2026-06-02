@@ -1,0 +1,713 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T2",
+      "parallel": false,
+      "title": "Record the feature's Tier 2 governance classification (internal build-tooling: no public `.fsi`, surface-baseline, or `PackageVersion` change \u2014 `Route` escalates it to `maintainer-verify` via default-deny because the changed paths under `build/**` and `tests/**` fall outside the inner-loop `src/**` allowance), the affected surfaces (`build/Governance/Front/BuildEnvironment.fs`, `BuildProcess.fs`, `BuildProcessHealth.fs`, `build/Program.fs`, `tests/Governance.Tests/GraphicsEnvironmentTests.fs`, and `specs/049-fix-escalated-flake/readiness/**`), the public-API impact (none), the Elmish/MVU applicability (N/A \u2014 the build front-end already owns an Engine `Model`/`Update`/`Interpret`; the new `normalizeGraphicsEnv` is a pure function consumed at the existing interpreter edge and adds no new `Model`/`Msg`/`Effect`), and the real-evidence obligations (failing-first unit + property + spawn-contract tests, a single-run escalated execution, and the named readiness set; zero synthetic)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T001",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T001: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T2",
+      "parallel": true,
+      "title": "Create placeholder evidence files listed by the plan under `specs/049-fix-escalated-flake/readiness/` so the audit-enforced readiness files are discoverable at setup: `aggregate-hang-diagnostics.md`, `runtime-limitations.md`, `graphics-env-contract.md`, `governance-risk-levels.md`, the escalated-path evidence set `target-metadata.md` and `agent-ready-verdict.md`, and `logs/` (`dev.log`, `generated-guidance-check.log`, `template-check.log`, `generated-product-check.log`, `evidence-graph.log`, `evidence-audit.log`)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T002",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T002: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T2",
+      "parallel": false,
+      "title": "Complete readiness notes for the feature's required readiness placeholder files \u2014 `governance-risk-levels.md` (the small / medium / broad levels, their required evidence, and when broad validation is required), `aggregate-hang-diagnostics.md` (verdict / stage / elapsed duration / last observed command / whether a focused rerun was needed / the now-authoritative single-run aggregate), and `runtime-limitations.md` (deterministic graphics-backend selection in headless/unsupported environments, no software-renderer fallback, unsupported macOS/mobile/browser) \u2014 each naming its authoritative command, artifact path, failure class, and next action",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T003",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T003: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T002"
+      ],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": "T2",
+      "parallel": false,
+      "title": "Author the graphics-environment decision-table mirror at `specs/049-fix-escalated-flake/readiness/graphics-env-contract.md` reflecting `contracts/graphics-env-contract.md` \u2014 the display-state classification (DualDisplay / WaylandOnly / X11Only / Neither), the per-condition mutation table (`WAYLAND_DISPLAY` removed, `GDK_BACKEND=x11`, `SDL_VIDEODRIVER=x11` on DualDisplay; identity otherwise), the child-propagation guarantee, the safety clause on already-working hosts, the bounded-failure clause, and the no-exit-code-masking clause \u2014 and record the no-`.fsi` exemption rationale (the build front-end is an internal compiled application, not a packed library with a curated public surface, so Principle II's `.fsi` requirement is N/A)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T004",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T004: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T003"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing-first Expecto unit tests plus an FsCheck property test for `normalizeGraphicsEnv` in `tests/Governance.Tests/GraphicsEnvironmentTests.fs` \u2014 DualDisplay input \u2192 `WAYLAND_DISPLAY` removed and `GDK_BACKEND=x11` / `SDL_VIDEODRIVER=x11` set; WaylandOnly / X11Only / Neither inputs \u2192 identity (unchanged); and the totality + idempotence properties (`normalize (normalize m) = normalize m`, defined for every map including empty, no entries touched beyond the three named keys)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T005",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T005: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `build/Governance/Front/BuildEnvironment.fs` \u2014 the `GraphicsDisplayState` classification derived from `WAYLAND_DISPLAY` / `DISPLAY` presence, and the pure `normalizeGraphicsEnv : Map<string,string> -> Map<string,string>` that applies the DualDisplay mutation only and is identity for every other classification, until T005's tests pass green (FR-002/FR-007)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T006",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T006: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Record the safety-boundary outcome in `readiness/runtime-limitations.md` \u2014 that under WaylandOnly / X11Only / Neither the guard is a no-op, so backend selection, behavior, and visual output are unchanged from before this feature \u2014 citing the green single-display / no-display unit cases as the authoritative evidence (FR-007, SC-004)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T007",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T007: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T006"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add a failing-first real process-spawn contract test in `tests/Governance.Tests/GraphicsEnvironmentTests.fs` \u2014 under a synthesized DualDisplay ambient environment, a child launched by `BuildProcess.runProcessWithAllowedExitCodes` MUST observe **no** `WAYLAND_DISPLAY` and MUST observe `GDK_BACKEND=x11` (contract C2 / FR-003); **and a child that returns a non-zero exit code under the same normalized spawn MUST still be reported as failing \u2014 its exit code is propagated unchanged (C5 / FR-008 / SC-006)**; the test inspects the spawned child's real inherited environment and real exit code, not a mock",
+      "skillist": [
+        "fsharp-shell-process"
+      ],
+      "skillist_mirror": [
+        "fsharp-shell-process"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T008",
+          "declared_skillist": [
+            "fsharp-shell-process"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T008: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Wire `normalizeGraphicsEnv` into the spawn edge \u2014 build each child's `startInfo.Environment` from the current environment plus the caller's map, then normalize, in `build/Governance/Front/BuildProcess.fs` (`runProcessWithAllowedExitCodes`) and `build/Governance/Front/BuildProcessHealth.fs` (`runShortCommand`), and preserve the child's exit code unchanged so genuine failures still surface (C2 / C5, FR-003 / FR-008), until T008 passes green",
+      "skillist": [
+        "fsharp-shell-process"
+      ],
+      "skillist_mirror": [
+        "fsharp-shell-process"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T009",
+          "declared_skillist": [
+            "fsharp-shell-process"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T009: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T008"
+      ],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Normalize the ambient process environment once at `build/Program.fs` startup when DualDisplay holds (remove `WAYLAND_DISPLAY`; set `GDK_BACKEND=x11` / `SDL_VIDEODRIVER=x11`) so every descendant \u2014 `dotnet test`, FSI, and nested `bash ./fake.sh build -t <target>` \u2014 inherits the deterministic selection, and log the decision once (forced/removed keys, or \"no-op: condition not met\") (FR-002 / FR-003)",
+      "skillist": [
+        "fsharp-shell-process"
+      ],
+      "skillist_mirror": [
+        "fsharp-shell-process"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T010",
+          "declared_skillist": [
+            "fsharp-shell-process"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T010: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T009"
+      ],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add a failing-first Expecto unit test in `tests/Governance.Tests/GraphicsEnvironmentTests.fs` for the kill-on-timeout diagnostic builder \u2014 given a process killed at its `WaitForExit` bound, the produced message MUST name a probable graphics-backend initialization failure as a candidate cause and point to `readiness/runtime-limitations.md`, while remaining distinct from an ordinary nonzero-exit message (FR-005, SC-005)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T011",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T011: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Enrich the timeout/kill branch in `build/Governance/Front/BuildProcess.fs` so a kill-at-`WaitForExit` appends the diagnostic from T011 (probable graphics-backend init failure + pointer to `runtime-limitations.md`), leaving the existing 30-minute bound and the child exit code unchanged so the fix fails fast without masking real regressions (FR-005 / FR-008, SC-005), until T011 passes green",
+      "skillist": [
+        "fsharp-shell-process"
+      ],
+      "skillist_mirror": [
+        "fsharp-shell-process"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T012",
+          "declared_skillist": [
+            "fsharp-shell-process"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T012: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T011"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T2",
+      "parallel": true,
+      "title": "Run the escalated serialized targets **once**, **sequentially** (shared `.fake` state), with no manual `env -u WAYLAND_DISPLAY` prefix \u2014 `Dev` \u2192 `GeneratedGuidanceCheck` \u2192 `TemplateCheck` \u2192 `GeneratedProductCheck` \u2014 capturing each log under `readiness/logs/` and recording the single-run authoritative verdict in `readiness/aggregate-hang-diagnostics.md`: no `libdecor-gtk` teardown crash \u2014 the GUI/viewer tests pass their assertions **and are reported as passing**, with the focused `dotnet test tests/SkiaViewer.Tests -m:1` control captured under `readiness/logs/` as corroboration that a green run is no longer turned red on teardown (US1 / FR-001 / FR-004, SC-001), `GeneratedProductCheck` within its normal envelope with no ~20-minute graphics-init stall (US2 / FR-003, SC-002), and an authoritative pass obtained from a single run with the obsolete \"non-authoritative aggregate / rerun by hand\" caveat removed for this flake class (FR-006 / FR-009, SC-003)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T013",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T013: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T2",
+      "parallel": false,
+      "title": "Record the escalated-path evidence set and the standing-invariants proof \u2014 `readiness/target-metadata.md` (no FAKE target added, removed, or renamed; `validation.contract.yml` / `TargetMetadata` / `TargetMetadataDrift` outputs unchanged, contract C6) and `readiness/agent-ready-verdict.md` (the agent-ready judgement from the single-run escalated evidence) \u2014 and confirm `git diff --stat -- 'src/**'` is empty so product runtime and `.fsi` are byte-unchanged (SC-004, plan Tier 2)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T014",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T014: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T013"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run the in-process compiled-F# graph gate (`./fake.sh build -t EvidenceGraph`) \u2014 confirm the DAG is acyclic, no dangling refs, no `[S*]` surprises, and the structured `skillist` metadata and visible mirrors are valid (`verdict=ok`)",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T015",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "EvidenceGraph"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T015: task text matches speckit-evidence-graph; trigger_group=graph validation; matched_trigger=EvidenceGraph"
+        }
+      ],
+      "explicit_deps": [
+        "T014"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run the merge-gate audit (`./fake.sh build -t EvidenceAudit`) \u2014 confirm `verdict=PASS` (0 unaccepted-synthetic, 0 auto-synthetic, 0 late-seh, 0 blocking diff-scan, 0 blocking readiness-contract) with zero synthetic evidence to accept",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T016",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "diff-scan"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T016: task text matches speckit-evidence-audit; trigger_group=evidence audit; matched_trigger=diff-scan"
+        }
+      ],
+      "explicit_deps": [
+        "T015"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    }
+  ]
+}

@@ -13,6 +13,15 @@ open FS.Skia.UI.Build
 
 [<EntryPoint>]
 let main argv =
+    // Feature 049: normalize this process's ambient graphics environment once at startup. When the
+    // host advertises BOTH a Wayland and an X11 display (the headless dual-display failure
+    // condition), this removes WAYLAND_DISPLAY and forces GDK_BACKEND/SDL_VIDEODRIVER=x11; on every
+    // other host it is a strict no-op. Because children are spawned with UseShellExecute=false they
+    // inherit this environment, and nested generated-product validation re-enters the front-end via
+    // `bash ./fake.sh build -t <target>`, so one normalization propagates to every descendant
+    // (dotnet test, FSI, nested fake.sh) (FR-002/FR-003). The decision is logged once.
+    printfn "%s" (BuildEnvironment.normalizeAmbient ())
+
     // The `dotnet fake build -t <name>` CLI consumed the leading `build` subcommand and
     // forwarded only `-t <name> [flags]` to the script's runOrDefaultWithArguments. The
     // launchers still pass `build -t <name>`, so strip a leading `build` token here to

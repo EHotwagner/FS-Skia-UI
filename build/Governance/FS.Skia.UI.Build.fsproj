@@ -71,6 +71,9 @@
          library. Helper modules first (BCL/regex only), then the value types, the MEL
          engine (Model/Update/Interpret), and the relocated heavy validators. -->
     <Compile Include="Front/BuildPaths.fs" />
+    <!-- Feature 049: pure graphics-env classification + normalization; consumed by the
+         spawn edge below and by Program startup. BCL-only; compiled before BuildProcess. -->
+    <Compile Include="Front/BuildEnvironment.fs" />
     <Compile Include="Front/BuildProcess.fs" />
     <Compile Include="Front/BuildReports.fs" />
     <Compile Include="Front/BuildGeneratedScanning.fs" />

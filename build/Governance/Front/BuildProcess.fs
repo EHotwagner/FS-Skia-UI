@@ -18,8 +18,23 @@ let runProcessWithAllowedExitCodes (label: string) (fileName: string) (arguments
     startInfo.RedirectStandardError <- true
     startInfo.UseShellExecute <- false
 
+    // Feature 049: overlay the caller's map onto the inherited ambient environment, then force
+    // the deterministic graphics backend (no-op unless the host is DualDisplay). Re-applying at
+    // the spawn edge guarantees the child is normalized independent of inheritance (C2/FR-003).
+    // The child's exit code is never rewritten, so genuine failures still surface (C5/FR-008).
     environment
     |> Map.iter (fun key value -> startInfo.Environment.[key] <- value)
+
+    let merged =
+        [ for entry in startInfo.Environment do
+              match entry.Value with
+              | null -> ()
+              | value -> yield entry.Key, value ]
+        |> Map.ofList
+
+    let normalized = BuildEnvironment.normalizeGraphicsEnv merged
+    startInfo.Environment.Clear()
+    normalized |> Map.iter (fun key value -> startInfo.Environment.[key] <- value)
 
     use proc =
         match Process.Start startInfo |> Option.ofObj with
@@ -39,8 +54,13 @@ let runProcessWithAllowedExitCodes (label: string) (fileName: string) (arguments
         if allowedExitCodes |> Set.contains proc.ExitCode |> not then
             failwithf "%s failed with exit code %d. See %s" label proc.ExitCode outputPath
     else
+        // Feature 049: the existing 30-minute bound is unchanged; on a kill, enrich the diagnostic
+        // so a no-usable-backend failure fails fast and legibly instead of looking like a product
+        // regression (C4/FR-005). The child's exit code is not rewritten (C5/FR-008).
         proc.Kill()
-        failwithf "%s timed out. See %s" label outputPath
+        let diagnostic = BuildEnvironment.graphicsTimeoutDiagnostic label outputPath
+        File.AppendAllText(outputPath, "\n" + diagnostic + "\n")
+        failwith diagnostic
 
 let runProcess label fileName arguments workingDirectory outputPath environment =
     runProcessWithAllowedExitCodes label fileName arguments workingDirectory outputPath environment (Set.singleton 0)

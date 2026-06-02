@@ -1,0 +1,19 @@
+
+## app/source generated Verify
+$ bash ./fake.sh build -t Verify
+Dev completed for generated product
+GeneratedGuidanceCheck completed for generated product
+TemplateDrift completed for generated product
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Product -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/049-fix-escalated-flake/app-source/src/Product/bin/Debug/net10.0/Product.dll
+  Product.Tests -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/049-fix-escalated-flake/app-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/artifacts/generated-products/049-fix-escalated-flake/app-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    28, Skipped:     0, Total:    28, Duration: 62 ms - Product.Tests.dll (net10.0)
+Test completed for generated product
+Verify completed for generated product
+Verify completed for generated product
+
+exit-code=0

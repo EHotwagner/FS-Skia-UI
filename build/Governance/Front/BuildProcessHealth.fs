@@ -103,6 +103,19 @@ let runShortCommand workingDirectory (fileName: string) (arguments: string) (tim
     startInfo.RedirectStandardError <- true
     startInfo.UseShellExecute <- false
 
+    // Feature 049: force the deterministic graphics backend on the short-command child too
+    // (no-op unless DualDisplay), matching the BuildProcess spawn-edge guarantee (C2/FR-003).
+    let merged =
+        [ for entry in startInfo.Environment do
+              match entry.Value with
+              | null -> ()
+              | value -> yield entry.Key, value ]
+        |> Map.ofList
+
+    let normalized = BuildEnvironment.normalizeGraphicsEnv merged
+    startInfo.Environment.Clear()
+    normalized |> Map.iter (fun key value -> startInfo.Environment.[key] <- value)
+
     try
         use proc =
             match Process.Start startInfo |> Option.ofObj with

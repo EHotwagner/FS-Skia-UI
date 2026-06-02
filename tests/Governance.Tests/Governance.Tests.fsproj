@@ -59,6 +59,8 @@
     <Compile Include="GeneratedProductContractTests.fs" />
     <!-- Feature 048 (US2): pure diff algebra + real-tree interpreter zero-drift at the pin. -->
     <Compile Include="PerPackageSurfaceTests.fs" />
+    <!-- Feature 049 (US1/US2/US3): deterministic graphics-env normalization + spawn-edge contract. -->
+    <Compile Include="GraphicsEnvironmentTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

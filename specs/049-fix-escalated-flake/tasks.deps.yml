@@ -1,0 +1,82 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Every Tnnn id in tasks.md appears as a key here with both `deps` and
+# `skillist`. Phase-checkpoint edges (every Phase N+1 task -> last task of
+# Phase N) are auto-injected by the graph compute; only non-phase cross-edges
+# and within-phase edges are written here.
+#
+# Build-tooling-behavior feature: the change is confined to the compiled build
+# front-end (build/Governance/Front/**, build/Program.fs) and tests/Governance.Tests/**.
+# No scene/viewer/Elmish/layout/widgets surface and no visual output exist, so no
+# fs-skia-* runtime skill applies (see the Skill-assignment note in tasks.md). Two
+# fsharp-* cookbooks apply:
+#   * fsharp-build-orchestration -> Expecto/FsCheck unit+property tests in
+#     tests/Governance.Tests (T005 pure-normalization tests; T011 diagnostic-builder test).
+#   * fsharp-shell-process -> Fake.Core.Process spawn orchestration + the exit-code
+#     contract (T008 spawn contract test; T009 spawn-edge wiring; T010 startup
+#     ambient normalization; T012 kill-on-timeout diagnostic).
+# Genuine workflow tasks: T015 -> speckit-evidence-graph ; T016 -> speckit-evidence-audit
+# (graph before audit). Every other task takes a justified valid-empty skillist
+# (a pure Map->Map function and Markdown/log evidence capture carry no cookbook).
+#
+# Non-phase cross-edges and within-phase edges captured below:
+#   T003 -> T002                 readiness notes after the placeholders exist
+#   T006 -> T005                 pure impl after its failing-first unit+property tests
+#   T007 -> T006                 safety-boundary record after the guard exists
+#   T009 -> T008                 spawn-edge wiring after its failing-first contract test
+#   T010 -> T009                 startup normalization after the spawn edge
+#   T012 -> T011                 timeout diagnostic after its failing-first test
+#   T014 -> T013                 evidence-set + invariants record after the escalated run
+#   T015 -> T014 ; T016 -> T015  graph before audit, after the records
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: [T002]
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: [fsharp-build-orchestration]
+  T006:
+    deps: [T005]
+    skillist: []
+  T007:
+    deps: [T006]
+    skillist: []
+  T008:
+    deps: []
+    skillist: [fsharp-shell-process]
+  T009:
+    deps: [T008]
+    skillist: [fsharp-shell-process]
+  T010:
+    deps: [T009]
+    skillist: [fsharp-shell-process]
+  T011:
+    deps: []
+    skillist: [fsharp-build-orchestration]
+  T012:
+    deps: [T011]
+    skillist: [fsharp-shell-process]
+  T013:
+    deps: []
+    skillist: []
+  T014:
+    deps: [T013]
+    skillist: []
+  T015:
+    deps: [T014]
+    skillist: [speckit-evidence-graph]
+  T016:
+    deps: [T015]
+    skillist: [speckit-evidence-audit]
