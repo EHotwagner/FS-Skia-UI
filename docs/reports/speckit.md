@@ -103,6 +103,11 @@ build-target paths) **escalate** to `focused-authority` / `agent-ready` /
   the consumer-grade harness stays exercised and cannot rot.
 
 The selector is compiled F# in `FS.Skia.UI.Build.Routing` (a mistyped gate is a
-compile error); `validation.contract.yml` is generated from it. FAKE-backed
-commands share `.fake` state and are not safe to run concurrently — run escalated
-gates sequentially in the deterministic order.
+compile error). The governance library `FS.Skia.UI.Build` (`build/Governance/**`)
+is the **single home of all rules**, and governance artifacts are **generated from
+a single source, not hand-synced**: `validation.contract.yml` is generated from
+`Routing.fs`, and the `.claude` skill tree is generated from the canonical `.agents`
+tree (currency enforced by `TargetMetadataDrift` / `SkillSyncCheck`, regenerated via
+`./fake.sh build -t RefreshSurfaceBaselines`). FAKE-backed commands share `.fake`
+state and are not safe to run concurrently — run escalated gates sequentially in the
+deterministic order.

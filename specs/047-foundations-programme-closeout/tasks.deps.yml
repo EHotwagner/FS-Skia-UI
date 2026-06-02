@@ -1,0 +1,91 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Every Tnnn id in tasks.md appears as a key here with both `deps` and
+# `skillist`. Phase-checkpoint edges (every Phase N+1 task -> last task of
+# Phase N) are auto-injected by the graph compute; only non-phase cross-edges
+# and within-phase edges are written here.
+#
+# Documentation / measurement / verification-record feature: NO F# source is
+# authored (no build/**, no src/**), no scene/viewer/Elmish/layout/widgets
+# surface exists, and no behaviour changes. Therefore no fs-skia-* runtime skill
+# and no fsharp-* cookbook applies -- see the Skill-assignment note in tasks.md.
+# Only the two genuine workflow tasks carry a capability skill:
+#   T019 -> speckit-evidence-graph ; T020 -> speckit-evidence-audit
+# Every other task takes a justified valid-empty skillist (Markdown / git /
+# gate-run evidence capture carries no cookbook).
+#
+# Non-phase cross-edges and within-phase edges captured below:
+#   T003 -> T002                 readiness notes after the placeholders exist
+#   T007 -> {T005,T006}          residual removal after both sweeps are recorded
+#   T010 -> T008                 reproducibility re-run after Section A is filled
+#   T013 -> T011                 doc-coverage proof after the five surfaces change
+#   T016 -> {T014,T015}          mechanism verify after retrospective + schedule exist
+#   T018 -> T017                 serialized gates after the runtime-untouched proof
+#   T019 -> T018 ; T020 -> T019  graph before audit, after the serialized gates
+#
+# The after-baseline (T008/T010) and the closing ADR (T012) reference each other
+# by fixed path only; no backward edge is written so the DAG stays acyclic.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: [T002]
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: []
+  T006:
+    deps: []
+    skillist: []
+  T007:
+    deps: [T005, T006]
+    skillist: []
+  T008:
+    deps: []
+    skillist: []
+  T009:
+    deps: []
+    skillist: []
+  T010:
+    deps: [T008]
+    skillist: []
+  T011:
+    deps: []
+    skillist: []
+  T012:
+    deps: []
+    skillist: []
+  T013:
+    deps: [T011]
+    skillist: []
+  T014:
+    deps: []
+    skillist: []
+  T015:
+    deps: []
+    skillist: []
+  T016:
+    deps: [T014, T015]
+    skillist: []
+  T017:
+    deps: []
+    skillist: []
+  T018:
+    deps: [T017]
+    skillist: []
+  T019:
+    deps: [T018]
+    skillist: ["speckit-evidence-graph"]
+  T020:
+    deps: [T019]
+    skillist: ["speckit-evidence-audit"]

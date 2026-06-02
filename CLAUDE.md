@@ -16,8 +16,12 @@ consumer-contract changes (`template/**`, `.specify/**`, public `src/**/*.fsi`,
 `build.fsx`, governance paths) **escalate** automatically. `./fake.sh build -t
 Route --enforce` fails when an escalated change is missing a required evidence
 artifact. The selector is compiled F# in `FS.Skia.UI.Build` (`Routing`); a
-mistyped gate is a compile error, and `validation.contract.yml` is generated
-from `Routing.fs`.
+mistyped gate is a compile error. `FS.Skia.UI.Build` (`build/Governance/**`) is
+the **single home of all rules**, and governance artifacts are **generated from a
+single source, not hand-synced**: `validation.contract.yml` is generated from
+`Routing.fs`, and the `.claude` skill tree is generated from the canonical
+`.agents` tree (regenerate with `./fake.sh build -t RefreshSurfaceBaselines`;
+currency enforced by `TargetMetadataDrift` / `SkillSyncCheck`).
 
 ## The serialized six-target order (escalated / maintainer-verify path)
 

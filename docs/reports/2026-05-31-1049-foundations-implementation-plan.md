@@ -9,7 +9,8 @@
   - **Stage 1 IMPLEMENTED** as feature `042-foundations-two-tier-process` (the two-tier process made authoritative and enforced via a compiled `Routing.fs` selector + a new `Route` target; the interim `select-tier.fsx` was **skipped** and Stage 5.5's `Routing.fs` pulled forward, mirroring how 041 pulled the typed `Target` work forward; evidence audit `PASS`, dogfood serialized pipeline green). See [Stage 1 — Implementation status](#stage-1--implementation-status-2026-06-01-feature-042).
   - **Stage 4 IMPLEMENTED** as feature `043-foundations-evidence-engine` (the tri-language evidence gate — `build.fsx → run-audit.sh → compute-task-graph.py + audit-status-scan.py → JSON` — replaced by compiled, unit/property-tested F# in `FS.Skia.UI.Build.Evidence`, computing graph + merge-gate audit **in-process**; byte-for-byte parity against the Stage-0 golden fixtures proven *before* the Python and `run-audit.sh` were deleted; `FS.Skia.UI.Build` packed/published and consumed by generated projects per D1; squash-merged to `main`, all 34 tasks complete, evidence audit `PASS`, zero synthetic). See [Stage 4 — Implementation status](#stage-4--implementation-status-2026-06-01-feature-043).
   - **Stage 5 IMPLEMENTED** as feature `045-foundations-build-frontend` (the keystone completed: `build.fsx` **deleted in full** — 4,767 working / 4,688 Stage-0 → **0 lines, no shim** — with the MEL engine relocated into compiled `build/Governance/Engine/{Model,Update,Interpret}.fs`, the three remaining heavy validators into `GeneratedProduct.fs`/`Guidance.fs`/`Preflight.fs`, the former `scripts/build/*.fsx` into `build/Governance/Front/**`, and a dedicated normally-compiled FAKE exe `build/Build.fsproj`+`Program.fs` registering every target off the typed `Targets.dispatchTargets` and delegating each body to `Engine.Interpret.runTarget`; `fake.sh`/`fake.cmd` now run `dotnet run --project build/Build.fsproj` with `fake-cli`/`dotnet fake`/`FSharp.Compiler.*` all gone; squash-merged to `main` as `4ba2232`, evidence audit `PASS`, 25 real tasks, zero synthetic). Stage 5.5's routing migration was already pulled forward into Stage 1/feature 042, so it carried no new work here beyond consuming `Routing.fs` from the relocated front-end. See [Stage 5 — Implementation status](#stage-5--implementation-status-2026-06-01-feature-045) below.
-  - **Stages 6–7 not yet started.** (Stage 6 — codify the remaining bucket-(a) prose rules into self-enforcing library gates, trim bucket-(b) prose, version the generated-product contract, evidence-hygiene `.gitignore` — is the next part of the plan.)
+  - **Stage 6 IMPLEMENTED** as feature `046-foundations-rule-codification` (squash-merged to `main` as `5ebd6ad`; the remaining bucket-(a) rule — Constitution-Check completeness — codified as the new self-enforcing `ConstitutionCheck` library gate, the generated-product contract given an explicit `schema_version` + deprecation window + typed changelog, the rule prose that code now enforces trimmed, and the evidence-hygiene `.gitignore` closed; three of the four named bucket-(a) rules were already enforced by 041/043 and stay that way). See [Stage 6 — Implementation status](#stage-6--implementation-status-2026-06-01-feature-046).
+  - **Stage 7 IMPLEMENTED** as feature `047-foundations-programme-closeout` (the closeout: committed grep-proofs that the interim scaffolding is gone, the final before/after measurement report `docs/reports/_baselines/2026-06-02-foundations-after.md` pairing all 11 whole-programme definition-of-done dimensions with their Stage-0 baselines, the new-normal documentation pass across `README.md`/`build.md`/`speckit.md`/`CLAUDE.md`/`AGENTS.md`, the closing **ADR 0006**, and the dogfood retrospective + a tracked recurring-run schedule definition; no runtime/`.fsi`/`PackageVersion` change, escalated/dogfood serialized six-target set green, evidence audit `PASS`, zero synthetic). This **completes the foundations programme.** See [ADR 0006](../adr/0006-foundations-programme-closeout.md) and the [after-baseline](./_baselines/2026-06-02-foundations-after.md).)
 - **Companion analysis:** [`2026-05-31-0908-foundations-rewrite-analysis.md`](./2026-05-31-0908-foundations-rewrite-analysis.md)
 - **Baseline at authoring time:** `build.fsx` = 4,688 lines; `tests/Governance.Tests/` = 34 test files; `validation.contract.yml` already defines tiers + path routing; evidence graph/audit computed by `.specify/extensions/evidence/scripts/python/*` orchestrated by `run-audit.sh` (1,284 lines) and shelled to from `build.fsx:1266,1273`.
 
@@ -1157,6 +1158,68 @@ gates (full pipeline).
 
 **Effort:** ~5–8 days. **Revert:** prose deletions are git-revertible; gates are additive and can
 be downgraded to warnings.
+
+### Stage 6 — Implementation status (2026-06-01, feature 046)
+
+**Status: IMPLEMENTED** (squash-merged to `main` as `5ebd6ad`). Feature
+`046-foundations-rule-codification` codified the last bucket-(a) prose rule,
+versioned the generated-product contract, trimmed the rule prose that code now
+enforces, and closed the evidence-hygiene gap. All **27 tasks** are `[X]` with
+**real evidence** (zero synthetic); `speckit.evidence.audit` returns
+**verdict=PASS** and `speckit.evidence.graph` returns **verdict=ok**. As a
+governance + generated-product-contract change it escalated via `Route` to the
+full serialized FAKE gate set. Runtime untouched: no product `.fsi`/surface
+baseline / `PackageVersion` change.
+
+What landed against the Stage-6 work items:
+
+- **6.1 remaining bucket-(a) rules — done.** The plan named four rules; the
+  feature verified that **three were already production gates** and must stay so
+  (so it did **not** redo them): `[SEH]` design-phase-only timing (drives
+  `verdict=Fail` via `Evidence/Audit.fs` `late-seh-tasks`, feature 043),
+  skill-id resolution / no-dangling-ids (drives graph `verdict=error`, feature
+  043), and surface-baseline presence per public capability (build-failing
+  finding in `Capabilities.fs`, feature 041). The **fourth** — Constitution-Check
+  completeness — was the genuinely-remaining rule and shipped as a new
+  self-enforcing validator: a hard-coded typed list of required decision-area
+  identifiers owns the canonical set; the live `plan-template.md` is read only to
+  detect an unrecognized template revision; an area counts unfilled if empty,
+  still verbatim boilerplate, or carrying a NEEDS CLARIFICATION / TODO placeholder
+  (N/A-with-rationale counts as filled).
+- **6.4 contract versioning — done.** `GeneratedProductContract.fs` gives the
+  generated-product contract an explicit `schema_version: 1.0`, a
+  warn→promote→fail deprecation window, and a **typed changelog embedded as data**
+  in the F# module (no separate file to sync), surfaced in `GeneratedProductCheck`
+  output. All 14 existing structural checks are wrapped as `Required` rules, so
+  the gate stays behaviour-identical and the current generated project validates
+  green.
+- **6.2 / 6.3 prose trim — done, with a baseline correction.** The plan's "~23,000
+  lines, 21:1" headline counted the whole corpus (incl. `specs/**` and the
+  then-duplicated `.claude`+`.agents` mirror); after feature 044 single-sourced
+  `.claude` from `.agents`, the *rule/guidance* Markdown the agent actually reads
+  is ≈ **6,882** lines (`.agents/skills/**` ≈ 4,065 + `.specify/**` ≈ 2,817). The
+  feature reframed 6.2/6.3 as "delete only the rule prose code now enforces, keep
+  genuine rationale/intent" under a **gate-before-prose** rule (every deletion
+  backed by a seeded-violation proof that its enforcing gate fails), and recorded
+  the measured **−6** canonical-line delta (mirrored −6 in the generated `.claude`
+  tree, byte-identity preserved) rather than chasing the overstated figure.
+- **6.5 evidence-hygiene `.gitignore` — done (D3 minimal).** `.gitignore` now
+  excludes future regenerable `specs/*/readiness/logs/**` and
+  `specs/*/readiness/**/readiness*.zip`; authored `*.md` evidence notes stay
+  committed. No tree cleanup, no history rewrite.
+
+**Invariants held.** 1 (public surface unchanged), 2 (runtime untouched), 3
+(generated consumers still fully governed — `GeneratedProductCheck` green through
+the versioned contract), 4 (net10; no new `PackageVersion`), 5 (FAKE sequencing),
+6 (evidence output parity) all hold.
+
+**Stage 6 exit criteria: met with a recorded baseline correction** — every
+bucket-(a) rule has a failing-build gate proven by a seeded violation; the
+generated-product contract carries a version + deprecation path + changelog; the
+rule-prose line count dropped (measured, gate-backed); `.gitignore` prevents
+future regenerable logs/zips; invariants 1–6 hold. The single variance is the
+**prose-reduction baseline** (≈ 6,882 rule/guidance lines, not the plan's
+overstated ~23,000), disclosed above and in `readiness/prose-delta.md`.
 
 ---
 

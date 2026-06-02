@@ -43,12 +43,22 @@ alone:
   `EvidenceGraph` tracks unproven (synthetic) tasks; `EvidenceAudit` is a merge
   gate that **hard-blocks** on unjustified synthetic tasks or block-severity
   findings. An agent can't hand-wave a feature past the gate.
-- **Extensive, markdown-driven governance via FAKE.** A large
-  [FAKE](https://fake.build/) build (`build.fsx`) drives the test suites,
-  package-surface checks, template/generated-product validation, dependency
-  ownership, and the evidence audits — emitting human-readable Markdown
-  readiness reports. `validation.contract.yml` routes each change to the gates
-  and artifacts it owes.
+- **Extensive, markdown-driven governance via a compiled F# build.** A
+  dedicated [FAKE](https://fake.build/) build front-end (`build/Build.fsproj`,
+  run via `./fake.sh`) drives the test suites, package-surface checks,
+  template/generated-product validation, dependency ownership, and the evidence
+  audits — emitting human-readable Markdown readiness reports. All rules live in
+  one compiled library, `FS.Skia.UI.Build`, so a mistyped gate is a compile
+  error; generated artifacts (the routing contract, the `.claude` skill mirror)
+  are generated from a single source, not hand-synced.
+- **A two-tier process with one entry point.** Run **`./fake.sh build -t Route`**
+  first: it reads your change and prints the authoritative *tier* and the
+  *minimal gate list* to run. Routine framework work routes to a light
+  `inner-loop` tier (`Dev`); consumer-contract changes escalate automatically.
+  The full serialized gate order is the escalated path, not the default — a new
+  contributor runs `Route` and proceeds without reading the whole governance
+  corpus. (See `docs/adr/0006-foundations-programme-closeout.md` and the
+  before/after measurement in `docs/reports/_baselines/`.)
 
 ---
 
@@ -268,7 +278,7 @@ Silk.NET/SkiaSharp/Elmish directly, keeping the layers honest.
 
 | Tool | Version | Role |
 |------|---------|------|
-| [FAKE](https://fake.build/) | — | F# Make build automation (`build.fsx`). |
+| [FAKE](https://fake.build/) | 6.1.4 | F# Make build automation — the `Fake.Core.Target` library, compiled into the `build/Build.fsproj` front-end (no FSX runner). |
 | [Spec Kit](https://github.com/github/spec-kit) | — | Spec-driven development and evidence governance. |
 | [Expecto](https://github.com/haf/expecto) | 10.2.2 | F# test framework. |
 | [YoloDev.Expecto.TestSdk](https://github.com/YoloDev/YoloDev.Expecto.TestSdk) | 0.15.3 | Expecto adapter for `dotnet test`. |

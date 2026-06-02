@@ -1,0 +1,66 @@
+# Recurring-run schedule — foundations dogfood full-pipeline (FR-009, SC-005)
+#
+# A tracked, discoverable schedule definition that keeps the consumer-governance
+# pipeline from rotting after framework-author work moved to the light `inner-loop`
+# tier by default. It is a *committed* routine/cron spec (NOT the transient runtime
+# `.claude/scheduled_tasks.lock`), living under the existing `.specify/` governance
+# surface beside `extensions.yml`. It mirrors the Claude Code `schedule` routine shape.
+#
+# This file requires NO live external CI service to exist; it DEFINES the recurring run
+# and is runnable by hand via the documented manual fallback below (spec Clarifications /
+# Unsupported scope). The retrospective
+# (specs/047-foundations-programme-closeout/readiness/retrospective.md) identifies it.
+
+schema_version: "1.0"
+
+routine:
+  id: foundations-dogfood-pipeline
+  name: Foundations dogfood full-pipeline run
+  description: >
+    Re-run the full serialized six-target governance pipeline on the dogfood feature set
+    so the consumer-grade Spec Kit + evidence harness stays exercised and cannot silently
+    decay. Framework-author changes now route to the light `inner-loop` tier by default
+    (Routing.fs), so this scheduled run is what keeps the heavy consumer path honest.
+  enabled: true
+
+  # The dogfood feature set that exercised the full pipeline green during the programme.
+  dogfood_features:
+    - id: "042"
+      slug: 042-foundations-two-tier-process
+      stage: 1 (two-tier process)
+    - id: "043"
+      slug: 043-foundations-evidence-engine
+      stage: 4 (evidence-engine port)
+
+  # Cadence. Cron is a discoverable hint; no live scheduler need be provisioned.
+  cadence:
+    cron: "0 6 * * 1"        # weekly, Mondays 06:00 (local)
+    description: weekly
+
+  # The body to re-run: the full serialized six-target pipeline, in order.
+  # FAKE shares .fake state and is NOT concurrency-safe — run sequentially.
+  pipeline:
+    serialized: true
+    concurrency_safe: false
+    targets:
+      - ./fake.sh build -t Dev
+      - ./fake.sh build -t GeneratedGuidanceCheck
+      - ./fake.sh build -t TemplateCheck
+      - ./fake.sh build -t GeneratedProductCheck
+      - ./fake.sh build -t EvidenceGraph
+      - ./fake.sh build -t EvidenceAudit
+
+  # Documented manual full-pipeline fallback — runnable by hand, no live CI dependency.
+  manual_fallback:
+    description: >
+      Run the six targets sequentially from the repo root (one to completion before the
+      next; never concurrently — shared .fake state). On Windows use `fake.cmd`.
+    commands:
+      - ./fake.sh build -t Dev
+      - ./fake.sh build -t GeneratedGuidanceCheck
+      - ./fake.sh build -t TemplateCheck
+      - ./fake.sh build -t GeneratedProductCheck
+      - ./fake.sh build -t EvidenceGraph
+      - ./fake.sh build -t EvidenceAudit
+
+  no_live_ci: true           # complete when defined, discoverable, and runnable

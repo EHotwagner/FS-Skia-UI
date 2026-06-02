@@ -1,6 +1,6 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-specs/046-foundations-rule-codification/plan.md
+specs/047-foundations-programme-closeout/plan.md
 
 ## Run `Route` first; run only the gates it prints
 
@@ -18,8 +18,12 @@ uncommitted/untracked changes) and prints the authoritative **tier** and the
   requiring tier.
 
 The selector is compiled F# in `FS.Skia.UI.Build` (`Routing`); a mistyped gate
-is a compile error. `validation.contract.yml` is generated from `Routing.fs`
-(currency-checked by `TargetMetadataDrift`), so it can never drift.
+is a compile error. `FS.Skia.UI.Build` (`build/Governance/**`) is the **single
+home of all rules**, and governance artifacts are **generated from a single
+source, not hand-synced**: `validation.contract.yml` is generated from
+`Routing.fs` (currency-checked by `TargetMetadataDrift`), and the `.claude` skill
+tree is generated from the canonical `.agents` tree (`SkillSyncCheck`-enforced),
+so neither can drift.
 
 ## The serialized six-target order (escalated / maintainer-verify path)
 

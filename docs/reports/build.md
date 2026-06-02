@@ -20,13 +20,23 @@ starting the next and preserve that order in readiness evidence. Non-FAKE
 checks may still run in parallel when they do not invoke FAKE or depend on
 `.fake`.
 
-The wrappers restore the local `fake-cli` tool from `.config/dotnet-tools.json`
-and run the shared `build.fsx` target graph. Automation should call
-`./fake.sh build -t Ci`.
+The wrappers run the dedicated compiled build front-end
+`dotnet run --project build/Build.fsproj` (feature 045): there is **no** `fake-cli`
+tool, no FSX script runner, and no `build.fsx` — the front-end is a normally-compiled
+exe that registers every target off the typed `Targets` registry and delegates each
+body to the compiled governance library. Automation should call `./fake.sh build -t Ci`.
 Targets are registered through FAKE's native target graph. `./fake.sh build
 --list` is the supported discovery surface for runnable target names, and
 `TargetMetadataDrift` verifies that discovered targets, metadata, docs, and
 `validation.contract.yml` stay aligned.
+
+All build/governance rules live in the single compiled library
+`FS.Skia.UI.Build` (`build/Governance/**`) — a mistyped gate is a compile error.
+Generated artifacts are **generated from that single source, not hand-synced**:
+`validation.contract.yml` is generated from `Routing.fs`, and the `.claude` skill
+tree is generated from the canonical `.agents` tree (regenerate with
+`./fake.sh build -t RefreshSurfaceBaselines`; currency is enforced by
+`TargetMetadataDrift` / `SkillSyncCheck`).
 
 ## Targets
 
@@ -165,7 +175,7 @@ The build defines authoritative **tiers** — `inner-loop`, `focused-authority`,
 `agent-ready`, `maintainer-verify`, `automation-final` — and a single entry point
 that selects the right one for a change: **`./fake.sh build -t Route`**.
 
-`Route` computes the change's `Diff` (the union of the branch-vs-`master`
+`Route` computes the change's `Diff` (the union of the branch-vs-`main`
 merge-base diff and the uncommitted/untracked working tree), runs the **pure**
 compiled selector in `FS.Skia.UI.Build.Routing`, and prints:
 
