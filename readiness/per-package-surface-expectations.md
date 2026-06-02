@@ -1,7 +1,7 @@
 # Per-package surface expectations
 
 The additive `PerPackageSurfaceDiff` capability (feature 048, FR-007/008) compares each
-of the eight public split packages' captured baseline against its current normalized
+of the nine public split packages' captured baseline against its current normalized
 `.fsi` surface and reports drift per package.
 
 ## Route-gating deferred (runtime-coupling finding)
@@ -18,11 +18,14 @@ the capability contract already defers). When Stage 2 relocates `AgentValidation
 governance library (ADR 0009), the known-gate allowlist becomes governance config and the
 rule can be added without touching runtime code.
 
-## Packages in scope (8)
+## Packages in scope (9)
 
 `FS.Skia.UI.Scene`, `FS.Skia.UI.SkiaViewer`, `FS.Skia.UI.Elmish`,
-`FS.Skia.UI.KeyboardInput`, `FS.Skia.UI.Layout`, `FS.Skia.UI.Controls`,
+`FS.Skia.UI.KeyboardInput`, `FS.Skia.UI.Input`, `FS.Skia.UI.Layout`, `FS.Skia.UI.Controls`,
 `FS.Skia.UI.Controls.Elmish`, `FS.Skia.UI.Testing`.
+
+`FS.Skia.UI.Input` (the rich host-coupled input runtime) joined the scope in feature 052,
+rehomed out of the retiring monolith.
 
 **Excluded:** the retiring monolith `FS.Skia.UI` (`src/Lib`) and the build-tooling
 library `FS.Skia.UI.Build`.

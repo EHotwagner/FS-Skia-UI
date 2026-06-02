@@ -5,7 +5,7 @@ open System.Diagnostics
 open System.IO
 open System.Threading
 open Elmish
-open FS.Skia.UI
+open FS.Skia.UI.Input
 open FS.Skia.UI.Scene
 open FS.Skia.UI.SkiaViewer.Host
 

@@ -26,11 +26,12 @@ let layoutEvidenceGuidancePaths =
       "template/base/tests/Product.Tests/Tests.fs" ]
 
 let packableProjectPaths =
-    [ "src/Lib/Lib.fsproj", "FS.Skia.UI", [ "src/Lib/Library.fsi"; "src/Lib/KeyboardInput.fsi" ]
+    [ "src/Lib/Lib.fsproj", "FS.Skia.UI", [ "src/Lib/Library.fsi" ]
       "src/Scene/Scene.fsproj", "FS.Skia.UI.Scene", [ "src/Scene/Scene.fsi" ]
       "src/SkiaViewer/SkiaViewer.fsproj", "FS.Skia.UI.SkiaViewer", [ "src/SkiaViewer/SkiaViewer.fsi"; "src/SkiaViewer/Host/Diagnostics.fsi"; "src/SkiaViewer/Host/Vulkan.fsi"; "src/SkiaViewer/Host/Viewer.fsi" ]
       "src/Elmish/Elmish.fsproj", "FS.Skia.UI.Elmish", [ "src/Elmish/Elmish.fsi" ]
       "src/KeyboardInput/KeyboardInput.fsproj", "FS.Skia.UI.KeyboardInput", [ "src/KeyboardInput/KeyboardInput.fsi" ]
+      "src/Input/Input.fsproj", "FS.Skia.UI.Input", [ "src/Input/KeyboardInput.fsi" ]
       "src/Layout/Layout.fsproj", "FS.Skia.UI.Layout", [ "src/Layout/Layout.fsi"; "src/Layout/Types.fsi"; "src/Layout/Graph.fsi"; "src/Layout/GraphValidation.fsi" ]
       "src/Controls/Controls.fsproj", "FS.Skia.UI.Controls", [ "src/Controls/Accessibility.fsi"; "src/Controls/Attributes.fsi"; "src/Controls/Catalog.fsi"; "src/Controls/Charts.fsi"; "src/Controls/Collections.fsi"; "src/Controls/Control.fsi"; "src/Controls/ControlRuntime.fsi"; "src/Controls/CustomControl.fsi"; "src/Controls/DataGrid.fsi"; "src/Controls/Diagnostics.fsi"; "src/Controls/RichText.fsi"; "src/Controls/TextInput.fsi"; "src/Controls/Theme.fsi"; "src/Controls/Types.fsi" ]
       "src/Controls.Elmish/Controls.Elmish.fsproj", "FS.Skia.UI.Controls.Elmish", [ "src/Controls.Elmish/ControlsElmish.fsi" ]

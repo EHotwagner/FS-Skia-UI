@@ -14,15 +14,15 @@
   <ItemGroup Condition="'$(UsePackedPackage)' != 'true'">
     <ProjectReference Include="..\..\src\Scene\Scene.fsproj" />
     <ProjectReference Include="..\..\src\SkiaViewer\SkiaViewer.fsproj" />
-    <!-- Retains the monolith reference only for the residual rich KeyboardInput module this sample
-         exercises (the input runtime has no split-package home until its own V3 stage). -->
-    <ProjectReference Include="..\..\src\Lib\Lib.fsproj" />
+    <!-- The rich interactive input runtime now lives in its own split package, FS.Skia.UI.Input
+         (downstream of SkiaViewer); the sample no longer references the retiring Lib monolith. -->
+    <ProjectReference Include="..\..\src\Input\Input.fsproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(UsePackedPackage)' == 'true'">
     <PackageReference Include="FS.Skia.UI.Scene" Version="$(FsSkiaUiPackageVersion)" />
     <PackageReference Include="FS.Skia.UI.SkiaViewer" Version="$(FsSkiaUiPackageVersion)" />
-    <PackageReference Include="FS.Skia.UI" Version="$(FsSkiaUiPackageVersion)" />
+    <PackageReference Include="FS.Skia.UI.Input" Version="$(FsSkiaUiPackageVersion)" />
   </ItemGroup>
 
 </Project>

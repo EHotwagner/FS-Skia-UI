@@ -1,4 +1,4 @@
-namespace FS.Skia.UI
+namespace FS.Skia.UI.Input
 
 open System
 open System.IO

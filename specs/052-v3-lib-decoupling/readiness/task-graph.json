@@ -1,0 +1,892 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Record the feature Tier (Tier 1 for the monolith \u2014 the published `FS.Skia.UI` package loses the rich `KeyboardInput` surface now and the `Parity` helper after sign-off, and its surface baseline shrinks; a new published package `FS.Skia.UI.Input` is added with its own baseline), the affected surfaces (new `src/Input/Input.fsproj` + the moved `KeyboardInput.fs(i)`, `src/Lib/Lib.fsproj` + `Library.fs(i)`, `samples/InteractiveViewer`, `tests/{Lib.Tests,Parity.Tests,Package.Tests}`, new `tests/Input.Tests`, `readiness/per-package-surface/{FS.Skia.UI.Input,FS.Skia.UI}.fsi.txt`, the aggregate `PackageSurfaceCheck` baseline, and `specs/052-v3-lib-decoupling/readiness/**`), the public-API impact (monolith `.fsi` shrinks; new package `.fsi` is a namespace-rename of the moved module; `validation.contract.yml` unchanged), the Elmish/MVU applicability (the `InputRuntime`/`InputMsg`/`InputEffect`/`init`/pure `update` input model **moves intact** with behaviour preserved \u2014 `update` stays pure and YAML/file I/O stays at the interpreter edge, proven by the migrated suite, not redesigned), and the real-evidence obligations (migrated suite green with the same assertion count, structural-rename diff, scene-output byte-identity vs the Stage-0 golden, the no-consumer grep, generated-consumer gates green, and the serialized escalated FAKE gate logs; zero synthetic)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T001",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T001: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T2",
+      "parallel": true,
+      "title": "Create placeholder evidence files listed by the plan under `specs/052-v3-lib-decoupling/readiness/` so the audit-enforced readiness files are discoverable at setup: the always-required contract trio `governance-risk-levels.md`, `aggregate-hang-diagnostics.md`, `runtime-limitations.md`; the record notes `acyclic-graph-proof.md`, `structural-parity.md`, `surface-baseline-diff.md`, `no-consumer-grep.md`, `parity-signoff.md`, `paritygallery-policy.md`; the gate records `validation-contract.md`, `evidence-graph.md`, `evidence-audit.md`; and `logs/` (`dev.log`, `generated-guidance-check.log`, `template-check.log`, `generated-product-check.log`, `evidence-graph.log`, `evidence-audit.log`)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T002",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T002: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T2",
+      "parallel": false,
+      "title": "Complete readiness notes for the feature's required readiness placeholder files \u2014 `governance-risk-levels.md` (the small / medium / broad levels, their required evidence, and when broad validation is required), `aggregate-hang-diagnostics.md` (verdict / stage / elapsed duration / last observed command / focused rerun / non-authoritative aggregate), and `runtime-limitations.md` (the .NET 10 build-host statements; the rich input runtime couples to `SkiaViewer.Host` but no Vulkan/Skia behaviour changes; reference-frame re-capture stays headless-GPU-infeasible \u2014 disclosed, not synthetic) \u2014 each naming its authoritative command, artifact path, failure class, and next action",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T003",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T003: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Re-verify the consumer work-list and the acyclic package edge per `research.md` (R1/R4) \u2014 `grep -rn -E \"Lib\\.fsproj|Include=\\\"FS\\.Skia\\.UI\\\"\" samples tests src --include=*.fsproj` confirms exactly the four consumers (`samples/InteractiveViewer`, `tests/Lib.Tests`, `tests/Parity.Tests`, `tests/Package.Tests`) plus the files being moved, and that `samples/ParityGallery` is already monolith-free; record that the new edge `FS.Skia.UI.Input \u2192 SkiaViewer \u2192 {Scene, KeyboardInput}` and `\u2192 Scene` is acyclic (no package depends on `Input`), and list the `FS.Skia.UI.*` baseline lines to shed \u2014 the work-list, no edits yet",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T004",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T004: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T003"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Create `tests/Input.Tests/Input.Tests.fsproj` referencing the new `FS.Skia.UI.Input` package (+ `Scene`/`SkiaViewer` as needed) and move `tests/Lib.Tests/KeyboardInputTests.fs` into it, rewriting its `open FS.Skia.UI` (keyboard input) to `open FS.Skia.UI.Input` as the **failing-first** compile break (the relocated namespace does not exist until T007); preserve every fixture and assertion unchanged so the suite stays the behavioural-parity oracle with the **same** assertion count (FR-002/004, SC-004)",
+      "skillist": [
+        "fs-skia-keyboard-input"
+      ],
+      "skillist_mirror": [
+        "fs-skia-keyboard-input"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T005",
+          "declared_skillist": [
+            "fs-skia-keyboard-input"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T005: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Add `src/Input/Input.fsproj` (PackageId `FS.Skia.UI.Input`, net10 conventions inherited from `Directory.Build.props`, `ProjectReference` to `..\\Scene\\Scene.fsproj` + `..\\SkiaViewer\\SkiaViewer.fsproj`, no new external `PackageVersion`), add it to the solution and to `PackLocal`/the dependency report \u2014 the empty package builds green and introduces no `Directory.Packages.props` change (FR-008, plan \u00a7Dependency impact)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T006",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T006: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "`git mv` `src/Lib/KeyboardInput.fsi` + `.fs` into `src/Input/`, rewrite only the `namespace` line (`FS.Skia.UI` \u2192 `FS.Skia.UI.Input`), add the two `<Compile Include>` items to `Input.fsproj`, remove them from `src/Lib/Lib.fsproj`, and build both `FS.Skia.UI.Input` and the shrunk monolith green \u2014 no `val`/`type`/field/case added, removed, or retyped (FR-001/002, R1/R2); confirm `git ls-files src/Lib/KeyboardInput.*` returns nothing",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T007",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T007: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T006"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Run `./fake.sh build -t Dev` \u2014 the migrated `Input.Tests` suite builds and passes against the relocated module with the **same** assertion count, turning T005 green; this is the behavioural-parity oracle for the rich input runtime (binding/mode/sequence semantics, command intents, diagnostics, state-display projection) (FR-002, SC-004)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T008",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T008: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005",
+        "T007"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Record structural parity in `readiness/structural-parity.md` \u2014 `git diff -M --stat` shows `KeyboardInput.fs(i)` as renamed `src/Lib` \u2192 `src/Input` at ~100% similarity (only the namespace line differs) \u2014 and confirm via the migrated suite that the relocated runtime yields identical behaviour vs the pre-move module (SC-004); record the `FS.Skia.UI.Input` per-package baseline equals the post-move `.fsi` modulo the namespace line",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T009",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T009: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T007",
+        "T008"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Repoint `samples/InteractiveViewer/InteractiveViewer.fsproj` off the monolith \u2014 drop the `ProjectReference` to `..\\..\\src\\Lib\\Lib.fsproj` and the `PackageReference` to `FS.Skia.UI`; add `FS.Skia.UI.Input` (`ProjectReference` on the source path, `PackageReference` on the `UsePackedPackage` path) alongside the existing `Scene`/`SkiaViewer` references (FR-003)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T010",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T010: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T007"
+      ],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Triage `tests/Lib.Tests` (its `KeyboardInputTests.fs` migrated to `tests/Input.Tests` in T005): the residual `Tests.fs` (930 LOC of Viewer/Scene/Diagnostics assertions) has **no** `Lib` dependency, so `Lib.Tests` keeps `Tests.fs` + `Program.fs` and the `Lib.fsproj` `ProjectReference` is dropped \u2014 it now references only `Scene` + `SkiaViewer`. **Scope deviation (maintainer-confirmed):** `tests/Package.Tests` retains its `Lib.fsproj` reference \u2014 it is a deliberate *packaging-contract* consumer that asserts the still-published `FS.Skia.UI` surface (`typeof<FS.Skia.UI.ParityReport>.Assembly`, the `VulkanResources`/`VulkanStartup` non-exports, the `PackLocal` entry); that decoupling retires **with the monolith in Stage 5** (FR-011). Recorded in `readiness/no-consumer-grep.md` (FR-004)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T011",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T011: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T005",
+        "T007"
+      ],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Run `./fake.sh build -t Dev` \u2014 `InteractiveViewer`, `Input.Tests`, and `Package.Tests` restore/build/run green with **no** link back into `src/Lib` for the keyboard-input path, proving the rich input runtime without the monolith reference (FR-003/004/006, SC-003)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T012",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T012: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T010",
+        "T011"
+      ],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Sign off parity in `readiness/parity-signoff.md` \u2014 confirm the deterministic scene-output check (`tests/Parity.Tests` over `tests/Parity.Tests/fixtures/v3-host-golden/scene-output/<seed>.txt`, format `scene-output/v1`) re-derives **byte-identically** to the Stage-0 golden for `basic-viewer`/`effects-gallery`/`screenshot-gallery`; record this byte-identity as the merge-gate sign-off that justifies retiring the bridge (FR-005)",
+      "skillist": [
+        "fs-skia-layout-evidence"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-evidence"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T013",
+          "declared_skillist": [
+            "fs-skia-layout-evidence"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T013: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T008"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Retire the obsolete old-vs-new `Parity`-helper report bridge: `git rm tests/Parity.Tests/Tests.fs` and drop the `Lib.fsproj` `ProjectReference` from `Parity.Tests.fsproj`. **The scene-output oracle is preserved in place** (`SceneOutput.fs`/`SceneOutputTests.fs` + fixtures stay in the now Scene-only `Parity.Tests` \u2014 no migration to `Scene.Tests`, which would churn the hardcoded fixture path + the governance scanning lists that reference `tests/Parity.Tests` for no gain). **Scope deviation (maintainer-confirmed):** the `Parity` helper itself (`src/Lib/Library.fs(i)`) is **kept** \u2014 it is the monolith's surface anchor asserted by `Package.Tests`, so it retires **with the monolith in Stage 5** (FR-011). `Dev` stays green (FR-005)",
+      "skillist": [
+        "fs-skia-scene"
+      ],
+      "skillist_mirror": [
+        "fs-skia-scene"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T014",
+          "declared_skillist": [
+            "fs-skia-scene"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T014: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T013"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T2",
+      "parallel": false,
+      "title": "Settle the `ParityGallery` policy per ADR 0010 in `readiness/paritygallery-policy.md` \u2014 record the keep-vs-retire decision (recommended: retire `samples/ParityGallery` together with the bridge, since it visualized the old-vs-new report that no longer exists; if kept, note the supported capability it still demonstrates on `Scene`+`SkiaViewer`) and confirm it references no monolith either way (FR-007)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T015",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T015: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T014"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US1",
+      "tier": "T2",
+      "parallel": false,
+      "title": "Capture the no-consumer grep in `readiness/no-consumer-grep.md` \u2014 `grep -rn -E \"Lib\\.fsproj|Include=\\\"FS\\.Skia\\.UI\\\"\" samples tests src --include=*.fsproj` shows **zero** sample consumers (SC-001) and that the **only** remaining `src/Lib` consumer is `tests/Package.Tests` \u2014 the deliberate monolith-packaging contract that asserts the still-published `FS.Skia.UI` (kept by maintainer decision; retires with the monolith in Stage 5). Every keyboard-input + parity-bridge consumer is off `Lib`; record that `src/Lib` is still present and `FS.Skia.UI` still packable (FR-010/011). **SC-007 amended:** \"fully reference-free\" is a Stage 5 outcome \u2014 it cannot hold while `FS.Skia.UI` is a published package under packaging tests",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T016",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T016: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T012",
+        "T014",
+        "T015"
+      ],
+      "phase_deps": [
+        "T015"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Record the surface deltas in `readiness/surface-baseline-diff.md` and run `./fake.sh build -t PerPackageSurfaceDiff` clean \u2014 the new `readiness/per-package-surface/FS.Skia.UI.Input.fsi.txt` baseline is captured, `readiness/per-package-surface/FS.Skia.UI.fsi.txt` sheds exactly the rich `KeyboardInput` lines (and the `Parity` lines after T014), the aggregate `PackageSurfaceCheck` baseline records `FS.Skia.UI.Input.*` and drops the monolith's removed types, and `validation.contract.yml` is unchanged (FR-009, SC-006)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T017",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T017: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T007",
+        "T014"
+      ],
+      "phase_deps": [
+        "T015"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T2",
+      "parallel": false,
+      "title": "First confirm `./fake.sh build -t Route --enforce` reports the escalated tier with every required evidence artifact present, then run the escalated serialized FAKE gate set sequentially \u2014 `Dev` \u2192 `GeneratedGuidanceCheck` \u2192 `TemplateCheck` \u2192 `GeneratedProductCheck` \u2192 the final graph and audit gates (T019/T020) \u2014 never concurrently; confirm the default `app` still restores/builds/runs and does not pull the monolith transitively, and the generated-consumer gates stay green (FR-012); record aggregate FAKE results as **non-authoritative** and rerun any race-like or environment-flaky failure in focused isolation as the authoritative result; logs under `readiness/logs/`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T018",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T018: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T012",
+        "T016",
+        "T017"
+      ],
+      "phase_deps": [
+        "T015"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T2",
+      "parallel": false,
+      "title": "Run the in-process compiled-F# graph gate (`./fake.sh build -t EvidenceGraph`) \u2014 confirm the DAG is acyclic, no dangling refs, no `[S*]` surprises, and the structured task metadata and visible mirrors are valid (`verdict=ok`)",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T019",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "structured task metadata"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T019: task text matches speckit-evidence-graph; trigger_group=graph validation; matched_trigger=structured task metadata"
+        }
+      ],
+      "explicit_deps": [
+        "T018"
+      ],
+      "phase_deps": [
+        "T015"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T2",
+      "parallel": false,
+      "title": "Run the merge-gate audit (`./fake.sh build -t EvidenceAudit`) \u2014 confirm `verdict=PASS` (0 unaccepted-synthetic, 0 auto-synthetic, 0 late-seh, 0 blocking diff-scan, 0 blocking readiness-contract) with zero synthetic evidence to accept (SC-008)",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T020",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "diff-scan"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T020: task text matches speckit-evidence-audit; trigger_group=evidence audit; matched_trigger=diff-scan"
+        }
+      ],
+      "explicit_deps": [
+        "T019"
+      ],
+      "phase_deps": [
+        "T015"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    }
+  ]
+}

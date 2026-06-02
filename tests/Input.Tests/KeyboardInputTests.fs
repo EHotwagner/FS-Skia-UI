@@ -1,7 +1,7 @@
 module FS.Skia.UI.KeyboardInputTests
 
 open Expecto
-open FS.Skia.UI
+open FS.Skia.UI.Input
 open FS.Skia.UI.Scene
 open FS.Skia.UI.SkiaViewer.Host
 

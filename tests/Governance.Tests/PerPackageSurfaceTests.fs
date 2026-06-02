@@ -19,8 +19,9 @@ let perPackageSurfaceTests =
 
         // --- pure core (T011) ---
 
-        test "scope is exactly the eight split packages, monolith and build-tooling excluded" {
-            Expect.equal (List.length packagesInScope) 8 "eight packages in scope"
+        test "scope is exactly the nine split packages, monolith and build-tooling excluded" {
+            Expect.equal (List.length packagesInScope) 9 "nine packages in scope"
+            Expect.isTrue (List.contains "FS.Skia.UI.Input" packagesInScope) "FS.Skia.UI.Input in scope (feature 052)"
             Expect.isFalse (List.contains "FS.Skia.UI" packagesInScope) "monolith excluded"
             Expect.isFalse (List.contains "FS.Skia.UI.Build" packagesInScope) "build-tooling excluded"
         }
@@ -74,7 +75,7 @@ let perPackageSurfaceTests =
 
         // --- edge interpreter over the real tree + committed baselines (T012, SC-004) ---
 
-        test "captureCurrent over the real tree matches the eight committed baselines at the pin" {
+        test "captureCurrent over the real tree matches the nine committed baselines at the pin" {
             // captureCurrent discovers the repository root from the current directory; pin it
             // to the located repo root so the edge resolves src/<package>/*.fsi deterministically.
             Directory.SetCurrentDirectory repositoryRoot
@@ -83,9 +84,9 @@ let perPackageSurfaceTests =
             let current = captureCurrent packagesInScope
             let outcome = diff baselines current
 
-            Expect.equal (List.length current) 8 "captured eight package surfaces"
-            Expect.equal (List.length baselines) 8 "loaded eight committed baselines"
+            Expect.equal (List.length current) 9 "captured nine package surfaces"
+            Expect.equal (List.length baselines) 9 "loaded nine committed baselines"
             Expect.isEmpty outcome.MissingBaselines "every in-scope package has a committed baseline"
-            Expect.isEmpty outcome.Drifted "zero drift across the eight packages at the pin (SC-004)"
+            Expect.isEmpty outcome.Drifted "zero drift across the nine packages at the pin (SC-004)"
         }
     ]

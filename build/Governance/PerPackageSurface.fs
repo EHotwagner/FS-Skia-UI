@@ -25,14 +25,16 @@ type DiffOutcome =
       CheckedPackages: PackageId list
       MissingBaselines: PackageId list }
 
-// The 8 public split packages, in declared scope order. The retiring monolith
+// The public split packages, in declared scope order. The retiring monolith
 // `FS.Skia.UI` (src/Lib) and the build-tooling `FS.Skia.UI.Build` are excluded by
-// construction (plan §Packages-in-scope; FR-006).
+// construction (plan §Packages-in-scope; FR-006). `FS.Skia.UI.Input` joined in
+// feature 052 (the rich host-coupled input runtime rehomed out of the monolith).
 let packagesInScope: PackageId list =
     [ "FS.Skia.UI.Scene"
       "FS.Skia.UI.SkiaViewer"
       "FS.Skia.UI.Elmish"
       "FS.Skia.UI.KeyboardInput"
+      "FS.Skia.UI.Input"
       "FS.Skia.UI.Layout"
       "FS.Skia.UI.Controls"
       "FS.Skia.UI.Controls.Elmish"
@@ -47,6 +49,7 @@ let private packageSourceDir (packageId: PackageId) =
     | "FS.Skia.UI.SkiaViewer" -> "SkiaViewer"
     | "FS.Skia.UI.Elmish" -> "Elmish"
     | "FS.Skia.UI.KeyboardInput" -> "KeyboardInput"
+    | "FS.Skia.UI.Input" -> "Input"
     | "FS.Skia.UI.Layout" -> "Layout"
     | "FS.Skia.UI.Controls" -> "Controls"
     | "FS.Skia.UI.Controls.Elmish" -> "Controls.Elmish"

@@ -7,7 +7,7 @@ open GovernanceTestSupport
 
 let signatureFiles =
     [ "src/Lib/Library.fsi"
-      "src/Lib/KeyboardInput.fsi"
+      "src/Input/KeyboardInput.fsi"
       "src/Layout/Types.fsi"
       "src/Charts/Types.fsi"
       "src/Charts/Candlestick.fsi" ]

@@ -2,7 +2,7 @@
 
 - **Date:** 2026-06-02 CEST
 - **Author:** Claude Code (planning, requested by maintainer)
-- **Status:** In progress. **Stage 0 ✔ implemented and merged-ready (feature `048-v3-retirement-baseline`).** **Stage 1 ✔ implemented (feature `050-v3-host-extraction`, branch `050-v3-host-extraction`, commit `0cba132`)** — host extracted into `FS.Skia.UI.SkiaViewer/Host`, retyped onto `FS.Skia.UI.Scene`; the modularity leak is closed; parity byte-identical; all `Route` gates green (`EvidenceAudit` PASS). The mechanical sample/test repointing was pulled forward into Stage 1 (work items 1.7–1.8). **Stage 2 ✔ implemented and merged (feature `051-relocate-agentvalidation`, squash-merged to `main` as `388737e`, branch commit `38d1356`)** — `AgentValidation` relocated `src/Lib` → `FS.Skia.UI.Build` governance library; `knownGates` is now governance config (unblocks the deferred per-package Route rule); all `Route` gates green (`EvidenceAudit` PASS, zero synthetic). Stage 5 not started; Stages 3–4 reduced to policy/retirement residue. Each stage becomes one Spec Kit feature via `/speckit-specify`. **Re-scoping (2026-06-02):** at the maintainer's direction Stage 1 also deletes `Lib`'s host + duplicate scene vocabulary **and pulls the mechanical sample/test repointing forward**. See the Stage 1 and Stage 2 implementation outcomes below.
+- **Status:** In progress. **Stage 0 ✔ implemented and merged-ready (feature `048-v3-retirement-baseline`).** **Stage 1 ✔ implemented (feature `050-v3-host-extraction`, branch `050-v3-host-extraction`, commit `0cba132`)** — host extracted into `FS.Skia.UI.SkiaViewer/Host`, retyped onto `FS.Skia.UI.Scene`; the modularity leak is closed; parity byte-identical; all `Route` gates green (`EvidenceAudit` PASS). The mechanical sample/test repointing was pulled forward into Stage 1 (work items 1.7–1.8). **Stage 2 ✔ implemented and merged (feature `051-relocate-agentvalidation`, squash-merged to `main` as `388737e`, branch commit `38d1356`)** — `AgentValidation` relocated `src/Lib` → `FS.Skia.UI.Build` governance library; `knownGates` is now governance config (unblocks the deferred per-package Route rule); all `Route` gates green (`EvidenceAudit` PASS, zero synthetic). **Stages 3–4 residual ✔ implemented (feature `052-v3-lib-decoupling`)** — the rich `KeyboardInput` runtime rehomed into a new dedicated package `FS.Skia.UI.Input` (downstream of `SkiaViewer`, acyclic); `InteractiveViewer` + `Lib.Tests` decoupled from `Lib`; the `Parity.Tests` old-vs-new bridge retired with the Scene-only scene-output oracle preserved; all `Route` gates green (`EvidenceAudit` PASS, zero synthetic). A maintainer-confirmed deviation defers the monolith *packaging-contract* unit (`Package.Tests`'s `Lib` ref + the `Parity` helper) to Stage 5. Stage 5 (closeout) not started. Each stage becomes one Spec Kit feature via `/speckit-specify`. **Re-scoping (2026-06-02):** at the maintainer's direction Stage 1 also deletes `Lib`'s host + duplicate scene vocabulary **and pulls the mechanical sample/test repointing forward**. See the Stage 1 and Stage 2 implementation outcomes below.
 
 ## Programme progress
 
@@ -11,9 +11,9 @@
 | 0 — Baseline, ADRs, per-package surface baselines, parity oracle | **✔ Done** | `048-v3-retirement-baseline` | All success criteria met; `EvidenceAudit` PASS (24 real tasks, 0 blockers, zero synthetic). See per-stage status below. |
 | 1 — KEYSTONE host extraction + type unification | **✔ Done** | `050-v3-host-extraction` (commit `0cba132`) | Host → `SkiaViewer/Host` retyped onto `Scene`; `SceneConversion.fs` + `SkiaViewer→Lib` ref + `Lib` duplicate scene/host deleted; leak closed; parity 0-byte; samples/tests repointed (1.7–1.8). All `Route` gates green; `EvidenceAudit` PASS. **Deviations from plan recorded in the Stage 1 outcome below** (Scene was *not* already complete; `Lib` `KeyboardInput` retyped not deleted; `Route` routed agent-ready not dogfood). |
 | 2 — Relocate `AgentValidation` | **✔ Done** | `051-relocate-agentvalidation` (merged `388737e`) | `AgentValidation.fs(i)` moved `src/Lib` → `build/Governance` (namespace `FS.Skia.UI.AgentValidation` → `FS.Skia.UI.Build.AgentValidation`); near-100% rename; `knownGates` now governance config — **unblocks the deferred per-package Route rule**. `FS.Skia.UI` surface baseline shed its 47 `AgentValidation.*` lines; `validation.contract.yml` unchanged (SC-007). All `Route` gates green (`agent-ready`); `EvidenceAudit` PASS, zero synthetic. **Deviation: a second consumer surfaced — see the Stage 2 outcome below.** |
-| 3 — Repoint/retire legacy samples | ◔ Reduced — repointing done | — | **Mechanical repointing done in Stage 1** (samples build green on `Scene`+`SkiaViewer`). Residual: sample-pack/opt-in policy + `ParityGallery` retirement. |
-| 4 — Repoint legacy tests; retire parity bridge | ◔ Reduced — repointing done | — | **Mechanical test repointing done in Stage 1** (incl. native startup/cleanup test moved to `SkiaViewer.Tests`). Residual: **retire** `Parity.Tests` after parity sign-off; relocate the residual rich `Lib` `KeyboardInput` it/InteractiveViewer/`Lib.Tests` still consume. |
-| 5 — Delete `src/Lib`, decommission `FS.Skia.UI`, enforce | ☐ Not started | — | Picks up the deferred per-package Route rule + enforcement (see Stage 0 finding). |
+| 3 — Repoint/retire legacy samples | **✔ Done** | `052-v3-lib-decoupling` | Residual settled: `InteractiveViewer` repointed onto the new `FS.Skia.UI.Input` package; `ParityGallery` confirmed monolith-free (kept on `Scene`+`SkiaViewer` per ADR 0010). No sample references the monolith. |
+| 4 — Repoint legacy tests; retire parity bridge | **✔ Done (residual)** | `052-v3-lib-decoupling` | The rich `KeyboardInput` rehomed to `FS.Skia.UI.Input` (99% rename); `Lib.Tests` decoupled (rich tests → new `Input.Tests`, 12/12); the `Parity.Tests` old-vs-new bridge (`Tests.fs`) retired with the Scene-only scene-output oracle **preserved** (4/4 byte-identical). **Deferred to Stage 5:** `Package.Tests`'s `Lib` reference + the `Parity` helper — they form the monolith *packaging-contract* unit that must stand while `FS.Skia.UI` is published. |
+| 5 — Delete `src/Lib`, decommission `FS.Skia.UI`, enforce | ☐ Not started | — | Picks up the deferred per-package Route rule + enforcement (Stage 0 finding) **and the feature-052 deferral**: drop `Package.Tests`'s `Lib` ref + retire the `Parity` helper, then `src/Lib` is fully reference-free for deletion. |
 - **Companion design:** [`v3Design.md`](./v3Design.md) — the V3 modular-distribution design (the "analysis" for this plan; this plan is its executable, staged form).
 - **Baseline pin:** SHA `031e56072779c736adf6dd8b0345e17b58a62e73` (branch `main`).
 
@@ -578,8 +578,16 @@ docs, and produce the after-measurement.
 
 ### Work items
 
-5.1 **Delete `src/Lib`** (`git rm`): `Library.fs(i)`, the duplicate `KeyboardInput.fs(i)`,
-   `VulkanStartup`/`VulkanResources` residue, `InternalsVisibleTo.fs`. Remove `Lib` from the solution.
+5.1 **Decouple the last consumer, then delete `src/Lib`.** First (feature-052 deferral): drop
+   `tests/Package.Tests`'s `Lib.fsproj` reference and rewrite/retire its monolith *packaging-contract*
+   assertions (`typeof<FS.Skia.UI.ParityReport>.Assembly`, the `VulkanResources`/`VulkanStartup`
+   non-exports, the `PackLocal` `src/Lib/Lib.fsproj`→`FS.Skia.UI` entry), and remove the `Parity`
+   evidence helper from `Library.fs(i)`. Then `git rm` `src/Lib`: `Library.fs(i)`, `InternalsVisibleTo.fs`
+   (the rich `KeyboardInput` already rehomed to `FS.Skia.UI.Input` in feature 052), and any
+   `VulkanStartup`/`VulkanResources` residue. Drop `FS.Skia.UI` from `packProjects` (Helpers.fs) and the
+   `AsteroidsFeedbackSkillGuidanceTests` packable list. Remove `Lib` from the solution. Also retire/relocate
+   the Scene-only `Parity.Tests` scene-output oracle + `ParityGallery` and clean the governance scanning
+   lists that name `tests/Parity.Tests`.
 5.2 **Stop publishing `FS.Skia.UI`.** Remove `Lib`'s `IsPackable`/`PackageId`; drop it from `PackLocal`
    / the pack-version flow / `docs/reports/dependencies.md`. Verify no `Directory.Packages.props` or
    template pin still names `FS.Skia.UI`.
@@ -655,18 +663,20 @@ keep `Lib` recoverable behind the solution until 5.6 signs off.
 
 ## Suggested entry point
 
-**Stages 0, 1, and 2 are done** (features 048, 050, 051): the parity oracle + per-package baselines
-exist, the **keystone host extraction has landed** (`SkiaViewer/Host`, leak closed, parity 0-byte, all
-gates green), and **`AgentValidation` has been relocated** into `FS.Skia.UI.Build` (`knownGates` is now
-governance config). The mechanical sample/test repointing was absorbed into Stage 1. **The remaining
-work is now independent and lower-risk:**
+**Stages 0–4 are done** (features 048, 050, 051, 052): the parity oracle + per-package baselines
+exist, the **keystone host extraction has landed** (`SkiaViewer/Host`, leak closed, parity 0-byte),
+**`AgentValidation` has been relocated** into `FS.Skia.UI.Build` (`knownGates` is now governance
+config), and the **Stages 3–4 residual is decoupled** (feature 052): the rich `KeyboardInput` runtime
+now lives in its own dedicated package `FS.Skia.UI.Input`, `InteractiveViewer`/`Lib.Tests` are off
+`Lib`, and the `Parity.Tests` bridge retired with the scene-output oracle preserved. **Only the
+closeout remains:**
 
-- **Stages 3–4 residual** — opt-in sample-pack policy + `ParityGallery`/`Parity.Tests` retirement after
-  parity sign-off, and finding a permanent home for the residual rich `KeyboardInput` module that
-  `Lib` still hosts (see Stage 1 outcome item 3).
-- **Stage 5 — closeout** — delete `src/Lib`, unpublish `FS.Skia.UI`, Route-gate + enforce the
-  per-package baselines (now unblocked — Stage 2 moved `knownGates` out of the runtime), generated-
-  project cleanliness gate, V2→V3 migration docs, after-measurement.
+- **Stage 5 — closeout** — decouple the last `Lib` consumer (`Package.Tests`'s packaging-contract
+  assertions + the `Parity` helper — feature-052 deferral), delete `src/Lib`, unpublish `FS.Skia.UI`,
+  Route-gate + enforce the per-package baselines (now unblocked — Stage 2 moved `knownGates` out of the
+  runtime; Stage 0's `FS.Skia.UI.Input` is the ninth in-scope package), generated-project cleanliness
+  gate, V2→V3 migration docs (now including the `FS.Skia.UI` keyboard input → `FS.Skia.UI.Input`
+  mapping), after-measurement.
 
 Each remaining stage becomes one Spec Kit feature: run `/speckit-specify` with the stage's goal + work
 items, then `/speckit-plan`, `/speckit-tasks`, `/speckit-implement`.

@@ -15,8 +15,6 @@
     <Compile Include="InternalsVisibleTo.fs" />
     <Compile Include="Library.fsi" />
     <Compile Include="Library.fs" />
-    <Compile Include="KeyboardInput.fsi" />
-    <Compile Include="KeyboardInput.fs" />
   </ItemGroup>
 
   <ItemGroup>

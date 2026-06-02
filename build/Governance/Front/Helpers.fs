@@ -30,6 +30,7 @@ let packProjects =
       "src/SkiaViewer/SkiaViewer.fsproj", "FS.Skia.UI.SkiaViewer"
       "src/Elmish/Elmish.fsproj", "FS.Skia.UI.Elmish"
       "src/KeyboardInput/KeyboardInput.fsproj", "FS.Skia.UI.KeyboardInput"
+      "src/Input/Input.fsproj", "FS.Skia.UI.Input"
       "src/Controls.Elmish/Controls.Elmish.fsproj", "FS.Skia.UI.Controls.Elmish"
       "src/Testing/Testing.fsproj", "FS.Skia.UI.Testing"
       "src/Lib/Lib.fsproj", "FS.Skia.UI"

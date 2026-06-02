@@ -1,0 +1,75 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Every Tnnn id that appears in tasks.md MUST appear as a key here. Each task
+# value MUST include:
+#   deps: ordered list of explicit non-phase dependencies
+#   skillist: ordered list of applicable capability skill identifiers
+# Use skillist: [] when no capability skill applies.
+#
+# Phase-checkpoint edges are auto-injected by the script (every task in
+# Phase N+1 implicitly depends on the last foundation task of Phase N).
+# Only non-phase cross-edges are written here.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: ["fs-skia-keyboard-input"]
+  T006:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T007:
+    deps: [T006]
+    skillist: ["fsharp-build-orchestration"]
+  T008:
+    deps: [T005, T007]
+    skillist: []
+  T009:
+    deps: [T007, T008]
+    skillist: []
+  T010:
+    deps: [T007]
+    skillist: []
+  T011:
+    deps: [T005, T007]
+    skillist: []
+  T012:
+    deps: [T010, T011]
+    skillist: []
+  T013:
+    deps: [T008]
+    skillist: ["fs-skia-layout-evidence"]
+  T014:
+    deps: [T013]
+    skillist: ["fs-skia-scene"]
+  T015:
+    deps: [T014]
+    skillist: []
+  T016:
+    deps: [T012, T014, T015]
+    skillist: []
+  T017:
+    deps: [T007, T014]
+    skillist: ["fsharp-build-orchestration"]
+  T018:
+    deps: [T012, T016, T017]
+    skillist: []
+  T019:
+    deps: [T018]
+    skillist: ["speckit-evidence-graph"]
+  T020:
+    deps: [T019]
+    skillist: ["speckit-evidence-audit"]
