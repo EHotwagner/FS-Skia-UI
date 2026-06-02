@@ -9,7 +9,7 @@ open GovernanceTestSupport
 let artifactPathTests =
     testList "Governance artifact paths" [
         test "surface baselines live at stable root readiness path" {
-            [ "FS.Skia.UI.txt"; "FS.Skia.UI.Controls.txt"; "FS.Skia.UI.Layout.txt" ]
+            [ "FS.Skia.UI.Scene.txt"; "FS.Skia.UI.Controls.txt"; "FS.Skia.UI.Layout.txt" ]
             |> List.iter (fun fileName ->
                 let baselinePath = fullPath $"readiness/surface-baselines/{fileName}"
                 Expect.isTrue (File.Exists baselinePath) $"{fileName} exists in stable baseline directory")

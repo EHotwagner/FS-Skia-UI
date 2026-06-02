@@ -33,10 +33,20 @@ let routingTests =
 
         // US2 — a public .fsi surface edit escalates via the package-surface rule (F1).
         test "src/**/*.fsi escalates and requires PackageSurfaceCheck" {
-            let selection = select FrameworkAuthor (diff [ "src/Lib/Foo.fsi" ])
+            let selection = select FrameworkAuthor (diff [ "src/Scene/Foo.fsi" ])
             Expect.equal selection.Tier FocusedAuthority ".fsi surface edit escalates to focused-authority"
             Expect.contains selection.Gates Targets.PackageSurfaceCheck "package-surface rule requires PackageSurfaceCheck"
             Expect.contains selection.Gates Targets.FsiTranscripts "package-surface rule requires FsiTranscripts"
+        }
+
+        // Feature 053 / US2 (C1) — a public split-package `.fsi` edit additionally requires
+        // PerPackageSurfaceDiff, so an unrecorded per-package surface change fails the gate.
+        test "src/<InScopePackage>/**/*.fsi requires PerPackageSurfaceDiff at focused-authority" {
+            let selection = select FrameworkAuthor (diff [ "src/Scene/Foo.fsi" ])
+            Expect.equal selection.Tier FocusedAuthority ".fsi surface edit escalates to focused-authority"
+            Expect.contains selection.Gates Targets.PerPackageSurfaceDiff "package-surface rule requires PerPackageSurfaceDiff (053 FR-007)"
+            Expect.contains selection.Gates Targets.PackageSurfaceCheck "package-surface rule still requires PackageSurfaceCheck"
+            Expect.contains selection.Gates Targets.FsiTranscripts "package-surface rule still requires FsiTranscripts"
         }
 
         // US2 — a template change escalates to the template gate set.
@@ -106,7 +116,7 @@ let routingTests =
 
         // US3 — the pure --enforce core reports the missing escalated artifact (SC-003).
         test "unmetArtifacts reports the package-surface artifact when absent and clears when present" {
-            let selection = select FrameworkAuthor (diff [ "src/Lib/Foo.fsi" ])
+            let selection = select FrameworkAuthor (diff [ "src/Scene/Foo.fsi" ])
             let absent = unmetArtifacts Set.empty selection
             Expect.contains absent "readiness/package-surface-expectations.md" "the escalated .fsi tier requires the surface artifact"
 
@@ -116,7 +126,7 @@ let routingTests =
 
         // US3 — the enforce diagnostic names the artifact and the requiring tier (FR-005).
         test "enforceDiagnostic names the missing artifact and the requiring tier" {
-            let selection = select FrameworkAuthor (diff [ "src/Lib/Foo.fsi" ])
+            let selection = select FrameworkAuthor (diff [ "src/Scene/Foo.fsi" ])
             let message = enforceDiagnostic selection [ "readiness/package-surface-expectations.md" ]
             Expect.stringContains message "readiness/package-surface-expectations.md" "the diagnostic names the missing artifact"
             Expect.stringContains message "focused-authority" "the diagnostic names the requiring tier"

@@ -93,8 +93,7 @@ let update msg model =
           RegenerateConstitutionFragments
           RequireFiles(
               "stable package surface baselines",
-              [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.txt" ]
-                path [ model.SurfaceBaselineDir; "FS.Skia.UI.Layout.txt" ]
+              [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.Layout.txt" ]
                 path [ model.SurfaceBaselineDir; "FS.Skia.UI.KeyboardInput.txt" ]
                 path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.Elmish.txt" ]
                 path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.txt" ] ]
@@ -106,7 +105,7 @@ let update msg model =
           focusedGateAssumptionCheck model "PackageSurfaceCheck"
           processEffect "package surface check" "dotnet" "test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore" model.RepositoryRoot (path [ model.LogDir; "package-surface-check.txt" ])
           PackageSurfaceReport
-          RequireFiles("stable package surface baselines", [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.KeyboardInput.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.Elmish.txt" ] ])
+          RequireFiles("stable package surface baselines", [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.KeyboardInput.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.Elmish.txt" ] ])
           focusedGateSummary model "PackageSurfaceCheck" ]
     | StartTarget Targets.PerPackageSurfaceDiff ->
         model,

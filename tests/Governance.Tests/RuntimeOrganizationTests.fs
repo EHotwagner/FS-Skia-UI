@@ -37,8 +37,7 @@ let runtimeOrganizationTests =
         test "runtime implementation files do not use top-level visibility modifiers in fs files" {
             [ "src/SkiaViewer/Host/Diagnostics.fs"
               "src/SkiaViewer/Host/Vulkan.fs"
-              "src/SkiaViewer/Host/Viewer.fs"
-              "src/Lib/Library.fs" ]
+              "src/SkiaViewer/Host/Viewer.fs" ]
             |> List.iter (fun relative ->
                 let lines = read relative |> fun content -> content.Replace("\r\n", "\n").Split('\n')
 

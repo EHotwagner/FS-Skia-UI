@@ -152,6 +152,7 @@ routing_rules:
     required_gates:
       - PackageSurfaceCheck
       - FsiTranscripts
+      - PerPackageSurfaceDiff
     expected_artifacts:
       - readiness/package-surface-expectations.md
     timeout_class: focused

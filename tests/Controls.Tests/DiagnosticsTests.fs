@@ -11,25 +11,25 @@ let diagnosticsTests =
     testList "Controls boundary diagnostics" [
         test "boundary diagnostics name stale references and leaking dependencies" {
             let stale = Diagnostics.stalePackageReference "FS.Skia.UI.Charts" "template/capabilities.yml"
-            let leak = Diagnostics.dependencyLeak "FS.Skia.UI.Controls" "src/Lib/Lib.fsproj"
+            let leak = Diagnostics.dependencyLeak "FS.Skia.UI.Controls" "src/SkiaViewer/SkiaViewer.fsproj"
 
             Expect.equal stale.Code StaleGeneratedReference "stale package references use stale-reference code"
             assertMessageContains stale "FS.Skia.UI.Charts"
             assertMessageContains stale "template/capabilities.yml"
             assertMessageContains leak "FS.Skia.UI.Controls"
-            assertMessageContains leak "src/Lib/Lib.fsproj"
+            assertMessageContains leak "src/SkiaViewer/SkiaViewer.fsproj"
         }
 
         test "runtime catalog target and scope diagnostics name actionable subjects" {
             let catalog = Diagnostics.catalogOmission "data-grid" "evidence"
-            let duplicate = Diagnostics.duplicateRuntimeDefinition "KeyboardInput" "src/Lib/KeyboardInput.fs"
+            let duplicate = Diagnostics.duplicateRuntimeDefinition "KeyboardInput" "src/Input/KeyboardInput.fs"
             let staleTarget = Diagnostics.staleEventTarget "save-button" "click"
             let unsupported = Diagnostics.unsupportedScopeExpansion "renderer-neutral controls" "template guidance"
 
             assertMessageContains catalog "data-grid"
             assertMessageContains catalog "evidence"
             assertMessageContains duplicate "KeyboardInput"
-            assertMessageContains duplicate "src/Lib/KeyboardInput.fs"
+            assertMessageContains duplicate "src/Input/KeyboardInput.fs"
             assertMessageContains staleTarget "save-button"
             assertMessageContains staleTarget "click"
             assertMessageContains unsupported "renderer-neutral controls"

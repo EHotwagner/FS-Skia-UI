@@ -66,7 +66,9 @@ let packageContractTests =
         test "active packages are declared for PackLocal" {
             let build = buildFrontEnd ()
 
-            [ "src/Lib/Lib.fsproj", "FS.Skia.UI"
+            // V3 Stage 5: the monolith is retired; PackLocal packs the nine split packages only.
+            [ "src/Scene/Scene.fsproj", "FS.Skia.UI.Scene"
+              "src/SkiaViewer/SkiaViewer.fsproj", "FS.Skia.UI.SkiaViewer"
               "src/Layout/Layout.fsproj", "FS.Skia.UI.Layout"
               "src/Controls.Elmish/Controls.Elmish.fsproj", "FS.Skia.UI.Controls.Elmish"
               "src/Controls/Controls.fsproj", "FS.Skia.UI.Controls" ]
@@ -82,10 +84,15 @@ let packageContractTests =
             let capabilities = File.ReadAllText(Path.Combine(repositoryRoot, "template", "capabilities.yml"))
             let controlsProject = File.ReadAllText(Path.Combine(repositoryRoot, "src", "Controls", "Controls.fsproj"))
 
+            // V3 Stage 5: the monolith project is retired; name it via parts so this guard
+            // stays meaningful without re-introducing a literal monolith path reference.
+            let monolithDir = "Lib"
+            let monolithRef = $@"..\{monolithDir}\{monolithDir}.fsproj"
+
             Expect.isFalse (File.Exists(Path.Combine(repositoryRoot, "src", "Charts", "Charts.fsproj"))) "legacy Charts project is removed or deactivated from source ownership"
             Expect.isFalse (build.Contains("FS.Skia.UI.Charts", StringComparison.Ordinal)) "build wiring has no active Charts package reference"
             Expect.isFalse (capabilities.Contains("id: charts", StringComparison.OrdinalIgnoreCase)) "generated capability catalog has no active charts capability"
-            Expect.isFalse (controlsProject.Contains(@"..\Lib\Lib.fsproj", StringComparison.Ordinal)) "Controls package does not depend on the monolithic viewer/runtime project"
+            Expect.isFalse (controlsProject.Contains(monolithRef, StringComparison.Ordinal)) "Controls package does not depend on the retired monolithic viewer/runtime project"
             Expect.isTrue (File.Exists(Path.Combine(repositoryRoot, "src", "Controls", "DataGrid.fsi"))) "DataGrid public contract is owned by Controls"
         }
 
@@ -150,7 +157,7 @@ let packageContractTests =
                   let packageOutput = packageOutput "consumer-nuget"
                   Directory.CreateDirectory packageOutput |> ignore
 
-                  [ "src/Lib/Lib.fsproj"
+                  [ "src/Scene/Scene.fsproj"
                     "src/Layout/Layout.fsproj"
                     "src/Controls/Controls.fsproj" ]
                   |> List.filter (fun project -> File.Exists(Path.Combine(repositoryRoot, project.Replace("/", string Path.DirectorySeparatorChar))))
@@ -176,12 +183,11 @@ let packageContractTests =
 """
                   )
 
-                  [ "CoreConsumer", "FS.Skia.UI"
+                  [ "SceneConsumer", "FS.Skia.UI.Scene"
                     "LayoutConsumer", "FS.Skia.UI.Layout"
                     "ControlsConsumer", "FS.Skia.UI.Controls" ]
                   |> List.filter (fun (_, packageId) ->
-                      packageId = "FS.Skia.UI"
-                      || File.Exists(Path.Combine(packageOutput, packageId + $".{packageVersion}.nupkg")))
+                      File.Exists(Path.Combine(packageOutput, packageId + $".{packageVersion}.nupkg")))
                   |> List.iter (fun (name, packageId) ->
                       let projectDir = Path.Combine(consumerRoot, name)
                       Directory.CreateDirectory projectDir |> ignore

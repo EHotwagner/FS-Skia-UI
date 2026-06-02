@@ -370,6 +370,7 @@ module ValidationContract =
           "GeneratedGuidanceCheck"
           "GeneratedProductCheck"
           "PackageSurfaceCheck"
+          "PerPackageSurfaceDiff"
           "TargetMetadataDrift"
           "TemplateCheck"
           "TemplateDrift"

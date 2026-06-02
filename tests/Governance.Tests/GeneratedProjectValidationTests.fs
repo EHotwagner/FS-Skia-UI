@@ -206,7 +206,6 @@ let generatedProjectValidationTests =
                       "tests/Parity.Tests"
                       "specs/00"
                       "readiness/"
-                      "src/Lib/Lib.fsproj"
                       ".template.package" ]
             else
                 Expect.isFalse (directoryExists ".template.config") "generated products do not carry source-only V3 generated product reports"
@@ -457,7 +456,6 @@ let generatedProjectValidationTests =
                           "samples/"
                           "specs/00"
                           "readiness/"
-                          "src/Lib/Lib.fsproj"
                           ".template.package"
                           "docs/reports/architecture.md" ])
             else

@@ -25,10 +25,11 @@ type DiffOutcome =
       CheckedPackages: PackageId list
       MissingBaselines: PackageId list }
 
-// The public split packages, in declared scope order. The retiring monolith
-// `FS.Skia.UI` (src/Lib) and the build-tooling `FS.Skia.UI.Build` are excluded by
-// construction (plan §Packages-in-scope; FR-006). `FS.Skia.UI.Input` joined in
-// feature 052 (the rich host-coupled input runtime rehomed out of the monolith).
+// The public split packages, in declared scope order. The build-tooling
+// `FS.Skia.UI.Build` is excluded by construction (plan §Packages-in-scope; FR-006).
+// The legacy monolith was deleted in V3 Stage 5 (feature 053), so it no longer exists
+// to exclude. `FS.Skia.UI.Input` joined in feature 052 (the rich host-coupled input
+// runtime rehomed out of the monolith).
 let packagesInScope: PackageId list =
     [ "FS.Skia.UI.Scene"
       "FS.Skia.UI.SkiaViewer"

@@ -33,7 +33,6 @@ let packProjects =
       "src/Input/Input.fsproj", "FS.Skia.UI.Input"
       "src/Controls.Elmish/Controls.Elmish.fsproj", "FS.Skia.UI.Controls.Elmish"
       "src/Testing/Testing.fsproj", "FS.Skia.UI.Testing"
-      "src/Lib/Lib.fsproj", "FS.Skia.UI"
       "src/Layout/Layout.fsproj", "FS.Skia.UI.Layout"
       "src/Controls/Controls.fsproj", "FS.Skia.UI.Controls"
       // 043: the published governance engine; generated consumers reference it

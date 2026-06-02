@@ -488,7 +488,7 @@ let private sampleSource =
     { Kind = GitMergeBaseDiff
       Feature = Some "028-agent-validation-framework"
       MergeBase = Some "abc123"
-      Paths = [ "src/Lib/AgentValidation.fsi" ]
+      Paths = [ "src/Scene/Scene.fsi" ]
       Diagnostics = [] }
 
 let private verdictFor gateResults requiredGates =

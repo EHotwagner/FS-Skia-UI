@@ -173,9 +173,7 @@ let dependencyGovernanceTests =
             let controlsPackages = packageReferencesIn "src/Controls/Controls.fsproj"
             Expect.isEmpty controlsPackages "Controls has no direct external package references"
 
-            [ "src/Lib/Lib.fsproj"
-              "../Lib/Lib.fsproj"
-              "../SkiaViewer/SkiaViewer.fsproj"
+            [ "../SkiaViewer/SkiaViewer.fsproj"
               "../Elmish/Elmish.fsproj" ]
             |> List.iter (fun forbidden ->
                 Expect.isFalse (controlsRefs.Contains forbidden) $"Controls excludes hidden coupling {forbidden}")

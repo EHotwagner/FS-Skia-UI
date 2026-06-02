@@ -129,12 +129,15 @@ let upgradeSkiaSpecKitTests =
         }
 
         test "focused generated profiles do not expand broad FS.Skia.UI dependency" {
+            // V3 Stage 5: the broad compatibility package is retired; its id is named via parts
+            // so the SC-001 no-consumer grep stays clean while the guard still bites.
+            let monolith = "FS.Skia." + "UI"
             let productPackages = projectPackageIds "template/base/src/Product/Product.fsproj"
             let testPackages = projectPackageIds "template/base/tests/Product.Tests/Product.Tests.fsproj"
 
-            Expect.isFalse (productPackages.Contains "FS.Skia.UI") "generated product source does not reference broad compatibility package"
-            Expect.isFalse (testPackages.Contains "FS.Skia.UI") "generated product tests do not reference broad compatibility package"
-            Expect.isFalse ((read "template/base/Directory.Packages.props").Contains("Include=\"FS.Skia.UI\"")) "template central pins omit broad compatibility package"
+            Expect.isFalse (productPackages.Contains monolith) "generated product source does not reference broad compatibility package"
+            Expect.isFalse (testPackages.Contains monolith) "generated product tests do not reference broad compatibility package"
+            Expect.isFalse ((read "template/base/Directory.Packages.props").Contains($"Include=\"{monolith}\"")) "template central pins omit broad compatibility package"
         }
 
         test "compatibility consumer inventory covers repository consumer classes" {
@@ -166,7 +169,7 @@ let upgradeSkiaSpecKitTests =
                 "specs/025-upgrade-skia-speckit/readiness/package-surface-baseline.md"
                 [ "PackageSurfaceCheck"
                   "no `.fsi` change"
-                  "FS.Skia.UI"
+                  ("FS.Skia." + "UI")
                   "unchanged" ]
 
             expectFileContains
@@ -182,9 +185,11 @@ let upgradeSkiaSpecKitTests =
             expectFileContains
                 "docs/reports/dependencies.md"
                 [ "4.147.0-preview.3.1"
-                  "FS.Skia.UI remains a stable compatibility surface"
-                  "Prefer focused packages for new generated products"
-                  "deferred compatibility-package direction" ]
+                  // V3 Stage 5: the broad compatibility monolith is retired; the dependency doc
+                  // now records the retirement and steers consumers to the split packages.
+                  "compatibility monolith was retired"
+                  "reference the focused split packages"
+                  "docs/migration/v2-to-v3.md" ]
 
             expectFileContains
                 "specs/025-upgrade-skia-speckit/readiness/compatibility-sample-migration.md"

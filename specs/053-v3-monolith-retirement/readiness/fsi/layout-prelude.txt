@@ -1,0 +1,26 @@
+
+## dotnet fsi scripts/layout-prelude.fsx
+$ dotnet fsi scripts/layout-prelude.fsx
+
+
+/home/developer/projects/FS-Skia-UI/scripts/layout-prelude.fsx(3,1): error FS0078: Unable to find the file '../src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll' in any of
+ /usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.8
+ /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/10.0.8/ref/net10.0
+ /home/developer/projects/FS-Skia-UI/scripts
+ /usr/share/dotnet/sdk/10.0.300/FSharp/
+
+
+exit-code=1
+
+## dotnet fsi scripts/layout-prelude.fsx
+$ dotnet fsi scripts/layout-prelude.fsx
+layout-prelude scene=true
+automatic-layout bounds=4 diagnostics=0
+automatic-layout hit=Some "title" scene=[GroupElement; TextElement; TextElement; TextElement]
+automatic-layout focus-region={ X = 596.0
+  Y = 12.0
+  Width = 32.0
+  Height = 18.0 }
+automatic-layout workflow-start-effects=[EvaluateLayout] resize-effects=[EvaluateIncrementalLayout ["root"]] result=true
+
+exit-code=0

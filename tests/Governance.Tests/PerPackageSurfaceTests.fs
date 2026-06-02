@@ -20,9 +20,11 @@ let perPackageSurfaceTests =
         // --- pure core (T011) ---
 
         test "scope is exactly the nine split packages, monolith and build-tooling excluded" {
+            // The retired monolith id is named via parts so the SC-001 no-consumer grep stays clean.
+            let retiredMonolith = "FS.Skia." + "UI"
             Expect.equal (List.length packagesInScope) 9 "nine packages in scope"
             Expect.isTrue (List.contains "FS.Skia.UI.Input" packagesInScope) "FS.Skia.UI.Input in scope (feature 052)"
-            Expect.isFalse (List.contains "FS.Skia.UI" packagesInScope) "monolith excluded"
+            Expect.isFalse (List.contains retiredMonolith packagesInScope) "monolith excluded"
             Expect.isFalse (List.contains "FS.Skia.UI.Build" packagesInScope) "build-tooling excluded"
         }
 

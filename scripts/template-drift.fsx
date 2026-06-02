@@ -87,7 +87,7 @@ let changedPathsFromGit () =
 
 let changedPaths =
     match fixture with
-    | Some "missing-alignment" -> [ "src/Lib/Library.fs" ]
+    | Some "missing-alignment" -> [ "src/Scene/Scene.fs" ]
     | Some "invalid-deferral" -> [ "scripts/template-drift.fsx"; "readiness/template-deferrals.yml" ]
     | Some "codex-claude-codex-drift" -> [ ".agents/skills/speckit-plan/SKILL.md" ]
     | Some "codex-claude-claude-drift" -> [ ".claude/skills/speckit-plan/SKILL.md" ]

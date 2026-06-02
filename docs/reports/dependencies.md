@@ -11,7 +11,7 @@ It moves dependency placement into explicit package owners:
 
 | Package owner | Direct project references | Direct external packages | Boundary rule |
 |---------------|---------------------------|--------------------------|---------------|
-| `FS.Skia.UI.SkiaViewer` | `FS.Skia.UI`, `FS.Skia.UI.Scene`, `FS.Skia.UI.KeyboardInput` | `Fable.Elmish`, `Silk.NET.Input`, `Silk.NET.Vulkan`, `Silk.NET.Vulkan.Extensions.KHR`, `Silk.NET.Windowing`, `Silk.NET.Windowing.Extensions`, `SkiaSharp`, `SkiaSharp.NativeAssets.Linux`, `SkiaSharp.NativeAssets.Win32` | Owns public generated-app viewer contracts, persistent launch validation, and desktop window hosting. It may bridge to the legacy `FS.Skia.UI` Vulkan presenter to commit real swapchain frames for visible interactive launches. |
+| `FS.Skia.UI.SkiaViewer` | `FS.Skia.UI.Scene`, `FS.Skia.UI.KeyboardInput` | `Fable.Elmish`, `Silk.NET.Input`, `Silk.NET.Vulkan`, `Silk.NET.Vulkan.Extensions.KHR`, `Silk.NET.Windowing`, `Silk.NET.Windowing.Extensions`, `SkiaSharp`, `SkiaSharp.NativeAssets.Linux`, `SkiaSharp.NativeAssets.Win32` | Owns public generated-app viewer contracts, persistent launch validation, and desktop window hosting. The Vulkan presenter and swapchain frame commit now live in `FS.Skia.UI.SkiaViewer.Host` (relocated out of the retired monolith in V3 Stage 1); there is no longer any bridge back to a legacy package. |
 | `FS.Skia.UI.Controls` | `FS.Skia.UI.Scene`, `FS.Skia.UI.Layout`, `FS.Skia.UI.KeyboardInput` | None | Owns form controls, rich rendering, chart controls, graph views, DataGrid, and product-owned `ControlRuntime` declarations without taking a direct Elmish or viewer dependency. |
 | `FS.Skia.UI.KeyboardInput` | `FS.Skia.UI.Scene` | `YamlDotNet` | Owns the rich keyboard input runtime, reducer/effect contracts, diagnostics, and YAML configuration parsing. |
 | `FS.Skia.UI.Controls.Elmish` | `FS.Skia.UI.Controls`, `FS.Skia.UI.KeyboardInput` | `Fable.Elmish` | Owns command, subscription, and program adapter integration so base Controls remains generic over product messages. |
@@ -130,13 +130,12 @@ SkiaSharp managed and native asset packages are version-aligned at
 `4.147.0-preview.3.1`, selected from official NuGet package metadata during
 feature `025-upgrade-skia-speckit`.
 
-FS.Skia.UI remains a stable compatibility surface for existing broad-package
-consumers. Prefer focused packages for new generated products:
+The broad `FS.Skia.UI` compatibility monolith was retired in V3 Stage 5
+(feature `053-v3-monolith-retirement`): the project is deleted and the package
+is no longer published. All consumers — repository and generated products alike —
+reference the focused split packages:
 `FS.Skia.UI.Scene`, `FS.Skia.UI.SkiaViewer`, `FS.Skia.UI.Elmish`,
-`FS.Skia.UI.KeyboardInput`, `FS.Skia.UI.Layout`, `FS.Skia.UI.Controls`,
-`FS.Skia.UI.Controls.Elmish`, and `FS.Skia.UI.Testing`.
-
-The deferred compatibility-package direction is deliberate: this upgrade does
-not remove public APIs, collapse generated profiles, or decide permanent
-facade/deprecation policy beyond the conservative broad-package guidance in the
-feature readiness artifacts.
+`FS.Skia.UI.KeyboardInput`, `FS.Skia.UI.Input`, `FS.Skia.UI.Layout`,
+`FS.Skia.UI.Controls`, `FS.Skia.UI.Controls.Elmish`, and `FS.Skia.UI.Testing`.
+The V2→V3 surface map and reference-move steps are documented in
+`docs/migration/v2-to-v3.md`.

@@ -47,23 +47,13 @@ let assertBaseline packageName (assembly: Assembly) =
 let surfaceAreaTests =
     testList "Surface baselines" [
         test "surface baselines use stable root readiness path" {
+            // V3 Stage 5: the retired FS.Skia.UI monolith no longer owns a surface baseline;
+            // the stable-root-path invariant is asserted against a live split package.
             let baselinePath =
-                Path.Combine(repositoryRoot, "readiness", "surface-baselines", "FS.Skia.UI.txt")
+                Path.Combine(repositoryRoot, "readiness", "surface-baselines", "FS.Skia.UI.Scene.txt")
 
-            Expect.isTrue (File.Exists baselinePath) "stable FS.Skia.UI package surface baseline exists"
+            Expect.isTrue (File.Exists baselinePath) "stable FS.Skia.UI.Scene package surface baseline exists"
             Expect.isFalse (baselinePath.Contains("specs/002-skia-feature-parity", StringComparison.Ordinal)) "baseline path is not historical feature readiness"
-        }
-
-        test "FS.Skia.UI baseline exports expected contract names" {
-            assertBaseline "FS.Skia.UI" typeof<FS.Skia.UI.ParityReport>.Assembly
-        }
-
-        test "internal runtime helper modules are not package-visible exports" {
-            let actual = exportedNames typeof<FS.Skia.UI.ParityReport>.Assembly
-
-            [ "FS.Skia.UI.VulkanResources"
-              "FS.Skia.UI.VulkanStartup" ]
-            |> List.iter (fun helper -> Expect.isFalse (actual.Contains helper) $"{helper} is not package-visible")
         }
 
         test "FS.Skia.UI.Layout baseline exports expected contract names" {

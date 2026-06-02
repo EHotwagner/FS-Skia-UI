@@ -1,0 +1,150 @@
+
+## package template install uninstall
+$ dotnet new uninstall "/home/developer/projects/FS-Skia-UI"
+Success: /home/developer/projects/FS-Skia-UI was uninstalled.
+
+exit-code=0
+
+## package template install uninstall
+$ dotnet new uninstall "FS.Skia.UI.Template"
+The template package 'FS.Skia.UI.Template' is not found.
+To list installed template packages use:
+   dotnet new uninstall
+
+
+For details on the exit code, refer to https://aka.ms/templating-exit-codes#103
+
+exit-code=103
+
+## package template install
+$ dotnet new install "/home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.70-preview.1.nupkg"
+The following template packages will be installed:
+   /home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.70-preview.1.nupkg
+
+Success: FS.Skia.UI.Template@0.1.70-preview.1 installed the following templates:
+Template Name                Short Name  Language  Tags                   
+---------------------------  ----------  --------  -----------------------
+FS Skia UI Governed Project  fs-skia-ui            F#/Skia/Elmish/Template
+
+
+exit-code=0
+
+## package template install uninstall
+$ dotnet new uninstall "/home/developer/projects/FS-Skia-UI"
+Success: /home/developer/projects/FS-Skia-UI was uninstalled.
+
+exit-code=0
+
+## package template install uninstall
+$ dotnet new uninstall "FS.Skia.UI.Template"
+The template package 'FS.Skia.UI.Template' is not found.
+To list installed template packages use:
+   dotnet new uninstall
+
+
+For details on the exit code, refer to https://aka.ms/templating-exit-codes#103
+
+exit-code=103
+
+## package template install
+$ dotnet new install "/home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.70-preview.1.nupkg"
+The following template packages will be installed:
+   /home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.70-preview.1.nupkg
+
+Success: FS.Skia.UI.Template@0.1.70-preview.1 installed the following templates:
+Template Name                Short Name  Language  Tags                   
+---------------------------  ----------  --------  -----------------------
+FS Skia UI Governed Project  fs-skia-ui            F#/Skia/Elmish/Template
+
+
+exit-code=0
+
+## package template install uninstall
+$ dotnet new uninstall "/home/developer/projects/FS-Skia-UI"
+Success: /home/developer/projects/FS-Skia-UI was uninstalled.
+
+exit-code=0
+
+## package template install uninstall
+$ dotnet new uninstall "FS.Skia.UI.Template"
+The template package 'FS.Skia.UI.Template' is not found.
+To list installed template packages use:
+   dotnet new uninstall
+
+
+For details on the exit code, refer to https://aka.ms/templating-exit-codes#103
+
+exit-code=103
+
+## package template install
+$ dotnet new install "/home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.70-preview.1.nupkg"
+The following template packages will be installed:
+   /home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.70-preview.1.nupkg
+
+Success: FS.Skia.UI.Template@0.1.70-preview.1 installed the following templates:
+Template Name                Short Name  Language  Tags                   
+---------------------------  ----------  --------  -----------------------
+FS Skia UI Governed Project  fs-skia-ui            F#/Skia/Elmish/Template
+
+
+exit-code=0
+
+## package template install uninstall
+$ dotnet new uninstall "/home/developer/projects/FS-Skia-UI"
+Success: /home/developer/projects/FS-Skia-UI was uninstalled.
+
+exit-code=0
+
+## package template install uninstall
+$ dotnet new uninstall "FS.Skia.UI.Template"
+The template package 'FS.Skia.UI.Template' is not found.
+To list installed template packages use:
+   dotnet new uninstall
+
+
+For details on the exit code, refer to https://aka.ms/templating-exit-codes#103
+
+exit-code=103
+
+## package template install
+$ dotnet new install "/home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.70-preview.1.nupkg"
+The following template packages will be installed:
+   /home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.70-preview.1.nupkg
+
+Success: FS.Skia.UI.Template@0.1.70-preview.1 installed the following templates:
+Template Name                Short Name  Language  Tags                   
+---------------------------  ----------  --------  -----------------------
+FS Skia UI Governed Project  fs-skia-ui            F#/Skia/Elmish/Template
+
+
+exit-code=0
+
+## package template install uninstall
+$ dotnet new uninstall "/home/developer/projects/FS-Skia-UI"
+Success: /home/developer/projects/FS-Skia-UI was uninstalled.
+
+exit-code=0
+
+## package template install uninstall
+$ dotnet new uninstall "FS.Skia.UI.Template"
+The template package 'FS.Skia.UI.Template' is not found.
+To list installed template packages use:
+   dotnet new uninstall
+
+
+For details on the exit code, refer to https://aka.ms/templating-exit-codes#103
+
+exit-code=103
+
+## package template install
+$ dotnet new install "/home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.70-preview.1.nupkg"
+The following template packages will be installed:
+   /home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.70-preview.1.nupkg
+
+Success: FS.Skia.UI.Template@0.1.70-preview.1 installed the following templates:
+Template Name                Short Name  Language  Tags                   
+---------------------------  ----------  --------  -----------------------
+FS Skia UI Governed Project  fs-skia-ui            F#/Skia/Elmish/Template
+
+
+exit-code=0

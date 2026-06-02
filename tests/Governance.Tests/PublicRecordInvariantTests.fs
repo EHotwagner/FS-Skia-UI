@@ -6,8 +6,7 @@ open Expecto
 open GovernanceTestSupport
 
 let signatureFiles =
-    [ "src/Lib/Library.fsi"
-      "src/Input/KeyboardInput.fsi"
+    [ "src/Input/KeyboardInput.fsi"
       "src/Layout/Types.fsi"
       "src/Charts/Types.fsi"
       "src/Charts/Candlestick.fsi" ]

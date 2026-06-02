@@ -48,7 +48,6 @@ let expectNoCopiedFrameworkAssets relativeRoot =
       "readiness"
       "src/Controls"
       "src/Charts"
-      "src/Lib"
       "tests/Controls.Tests"
       "tests/Charts.Tests"
       "docs/reports/architecture.md"

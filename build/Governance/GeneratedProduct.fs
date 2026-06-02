@@ -176,8 +176,7 @@ let scanGeneratedRow (row: TemplateRow) =
             []
 
     let forbiddenFrameworkPaths =
-        [ "src/Lib"
-          "src/Scene"
+        [ "src/Scene"
           "src/SkiaViewer"
           "src/Elmish"
           "src/KeyboardInput"
@@ -956,17 +955,23 @@ let scanV3GeneratedRow model row =
     let testProjects =
         files |> List.filter (fun file -> file.StartsWith("tests/", StringComparison.Ordinal) && file.EndsWith(".fsproj", StringComparison.Ordinal))
 
+    // Feature 053 (V3 Stage 5, US3 / FR-008): the generated-project cleanliness gate.
+    // The forbidden top-level globs are pinned exactly so a planted framework artifact fails
+    // deterministically, naming the offending artifact. A generated `app`/`governed` profile
+    // references the split packages and carries only its OWN starter docs (`docs/product.md`,
+    // `docs/effects-boundary.md`, `docs/api-surface/**`) and README — never the framework's
+    // `samples/`, `docs/reports/` report set, historical `specs/`, readiness evidence, or a
+    // copy of the framework root README (asserted separately below by content).
     let forbidden =
-        [ "framework implementation projects", "src/Lib/Lib.fsproj"
-          "framework implementation projects", "src/Charts"
+        [ "framework implementation projects", "src/Charts"
           "framework implementation projects", "tests/Charts.Tests"
           "framework sample content", "samples/"
-          "historical specs", "specs/00"
+          // The generated product legitimately ships a starter `specs/generated-evidence-workflow`
+          // (the speckit demo feature), so the historical-specs guard pins the framework's numbered
+          // feature directories (`specs/00N-…`), which a generated product must never copy.
+          "historical framework specs", "specs/00"
           "framework readiness evidence", "readiness/"
-          "framework README content", "docs/reports/architecture.md"
-          "framework README content", "docs/reports/V2Analysis.md"
-          "framework README content", "docs/reports/subsystem-design.md"
-          "framework README content", "docs/reports/technical-design.md"
+          "framework documentation set", "docs/reports/"
           "framework implementation projects", "tests/Parity.Tests"
           "framework implementation projects", ".template.package" ]
 
@@ -1189,6 +1194,17 @@ let scanV3GeneratedRow model row =
         if not allowedGeneratedSamplePackContent
            && files |> List.exists (fun file -> file.StartsWith(forbiddenPath, StringComparison.Ordinal)) then
             failwithf "%s/%s copied %s: %s" row.Artifact row.Profile rule forbiddenPath
+
+    // Feature 053 (US3 / FR-008): the generated product carries its OWN starter README, never a
+    // copy of the framework root README. The path check above cannot catch this (README.md is a
+    // required product file), so compare content: a byte-identical copy of the repository root
+    // README is a planted framework artifact and fails the cleanliness gate naming README.md.
+    let generatedReadme = path [ row.Root; "README.md" ]
+    let frameworkRootReadme = path [ model.RepositoryRoot; "README.md" ]
+
+    if File.Exists generatedReadme && File.Exists frameworkRootReadme
+       && File.ReadAllText generatedReadme = File.ReadAllText frameworkRootReadme then
+        failwithf "%s/%s copied framework README content: README.md" row.Artifact row.Profile
 
     let productProject = File.ReadAllText(path [ row.Root; "src"; "Product"; "Product.fsproj" ])
     let productProgram = File.ReadAllText(path [ row.Root; "src"; "Product"; "Program.fs" ])
@@ -1871,11 +1887,7 @@ let runDependencyOwnershipReport model =
         if sceneProject.IndexOf(forbidden, StringComparison.Ordinal) >= 0 then
             failwithf "Scene dependency leak: %s" forbidden)
 
-    [ "Lib",
-      [ @"Include=""..\Lib\Lib.fsproj"""
-        "Include=\"../Lib/Lib.fsproj\""
-        "PackageReference Include=\"FS.Skia.UI\"" ]
-      "SkiaViewer",
+    [ "SkiaViewer",
       [ @"Include=""..\SkiaViewer\SkiaViewer.fsproj"""
         "Include=\"../SkiaViewer/SkiaViewer.fsproj\""
         "PackageReference Include=\"FS.Skia.UI.SkiaViewer\"" ]

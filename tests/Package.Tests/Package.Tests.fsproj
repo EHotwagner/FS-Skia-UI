@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Lib\Lib.fsproj" Condition="Exists('..\..\src\Lib\Lib.fsproj')" />
+    <ProjectReference Include="..\..\src\Scene\Scene.fsproj" Condition="Exists('..\..\src\Scene\Scene.fsproj')" />
     <ProjectReference Include="..\..\src\Layout\Layout.fsproj" Condition="Exists('..\..\src\Layout\Layout.fsproj')" />
     <ProjectReference Include="..\..\src\Controls\Controls.fsproj" Condition="Exists('..\..\src\Controls\Controls.fsproj')" />
   </ItemGroup>

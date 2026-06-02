@@ -198,26 +198,23 @@ let rules =
           "focused"
           "governance"
 
+      // Feature 053 (V3 Stage 5, FR-007): `PerPackageSurfaceDiff` is now a Route-gated
+      // requirement of the package-surface rule, so a public `src/**/*.fsi` change
+      // selects the per-package DiffPlex surface check alongside the aggregate
+      // `PackageSurfaceCheck` and the FSI transcripts. The Stage-0 (feature 048) deferral
+      // is cleared: the contract validator's `knownGates` allowlist moved out of the
+      // retired runtime monolith into `FS.Skia.UI.Build` (`AgentValidation.fs`) in Stage 2,
+      // so wiring the gate is a governance/build edit with no runtime change. The rule, its
+      // `validation.contract.yml` rendering, and the allowlist entry land together
+      // (TargetMetadataDrift enforces currency).
       internalRule
           "package-surface"
           [ "src/**/*.fsi"; "readiness/surface-baselines/**" ]
           FocusedAuthority
-          [ Targets.PackageSurfaceCheck; Targets.FsiTranscripts ]
+          [ Targets.PackageSurfaceCheck; Targets.FsiTranscripts; Targets.PerPackageSurfaceDiff ]
           [ "readiness/package-surface-expectations.md" ]
           "focused"
           "product"
-
-      // Feature 048: the additive `PerPackageSurfaceDiff` target is intentionally NOT
-      // wired as a Routing rule in this Stage-0 feature. A rule would render
-      // `PerPackageSurfaceDiff` into validation.contract.yml's `routing_rules`, and the
-      // contract validator's known-gate allowlist lives in the RUNTIME monolith
-      // (`src/Lib/AgentValidation.fs` `knownGates`). Teaching it the new gate would
-      // modify runtime code, violating this feature's defining constraint — Stage 0 is
-      // record-and-oracle only, `src/**` byte-unchanged (FR-010/SC-007). The target stays
-      // additive and runnable directly (`./fake.sh build -t PerPackageSurfaceDiff`, the
-      // escalated set, and quickstart); Route-gating it is deferred with the Stage-5
-      // hard-gate enforcement (per the capability contract's non-goals). See
-      // `readiness/per-package-surface-expectations.md`.
 
       internalRule
           "build-target-contract"
