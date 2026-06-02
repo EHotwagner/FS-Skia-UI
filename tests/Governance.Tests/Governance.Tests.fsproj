@@ -57,6 +57,8 @@
     <!-- Feature 046 (US1/US2): Constitution-Check completeness + versioned contract. -->
     <Compile Include="ConstitutionCheckTests.fs" />
     <Compile Include="GeneratedProductContractTests.fs" />
+    <!-- Feature 048 (US2): pure diff algebra + real-tree interpreter zero-drift at the pin. -->
+    <Compile Include="PerPackageSurfaceTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

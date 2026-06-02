@@ -59,6 +59,7 @@ let interpret root effect =
     | RouteSelect -> runRouteSelection root
     | EvidenceGraphCheck -> runEvidenceGraphCheck model
     | EvidenceAuditCheck -> runEvidenceAuditCheck root model
+    | PerPackageSurfaceDiffCheck -> runPerPackageSurfaceDiff model
 
 let runTarget (target: Targets.Target) =
     let model, initEffects = init repositoryRoot

@@ -89,6 +89,8 @@ type BuildEffect =
     // Feature 043: in-process evidence gates (model is re-derived in interpret, so no payload).
     | EvidenceGraphCheck
     | EvidenceAuditCheck
+    // Feature 048: additive per-package surface diff (re-derived in interpret, so no payload).
+    | PerPackageSurfaceDiffCheck
 
 /// Repository root (discovered by walking up for .specify/feature.json).
 val repositoryRoot: string

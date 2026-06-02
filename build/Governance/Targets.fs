@@ -9,6 +9,7 @@ type Target =
     | PackLocal
     | RefreshSurfaceBaselines
     | PackageSurfaceCheck
+    | PerPackageSurfaceDiff
     | FsiTranscripts
     | SampleContractSmoke
     | TemplatePack
@@ -62,6 +63,7 @@ let allTargets =
       PackLocal
       RefreshSurfaceBaselines
       PackageSurfaceCheck
+      PerPackageSurfaceDiff
       FsiTranscripts
       SampleContractSmoke
       TemplatePack
@@ -105,6 +107,7 @@ let name target =
     | PackLocal -> "PackLocal"
     | RefreshSurfaceBaselines -> "RefreshSurfaceBaselines"
     | PackageSurfaceCheck -> "PackageSurfaceCheck"
+    | PerPackageSurfaceDiff -> "PerPackageSurfaceDiff"
     | FsiTranscripts -> "FsiTranscripts"
     | SampleContractSmoke -> "SampleContractSmoke"
     | TemplatePack -> "TemplatePack"
@@ -148,6 +151,7 @@ let directPrerequisites target =
     | PackLocal -> []
     | RefreshSurfaceBaselines -> [ Build ]
     | PackageSurfaceCheck -> [ Build ]
+    | PerPackageSurfaceDiff -> [ Build ]
     | FsiTranscripts -> [ Build ]
     | SampleContractSmoke -> [ Build ]
     | TemplatePack -> []

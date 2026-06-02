@@ -108,6 +108,16 @@ let update msg model =
           PackageSurfaceReport
           RequireFiles("stable package surface baselines", [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.KeyboardInput.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.Elmish.txt" ] ])
           focusedGateSummary model "PackageSurfaceCheck" ]
+    | StartTarget Targets.PerPackageSurfaceDiff ->
+        model,
+        [ focusedGateAssumptionCheck model "PerPackageSurfaceDiff"
+          PerPackageSurfaceDiffCheck
+          RequireFiles(
+              "per-package surface diff artifacts",
+              [ path [ model.ReadinessDir; "per-package-surface-diff.md" ]
+                path [ model.RepositoryRoot; "readiness"; "per-package-surface-expectations.md" ] ]
+          )
+          focusedGateSummary model "PerPackageSurfaceDiff" ]
     | StartTarget Targets.FsiTranscripts ->
         model,
         [ focusedGateAssumptionCheck model "FsiTranscripts"

@@ -1,0 +1,31 @@
+format: scene-output/v1
+seed: basic-viewer
+size: 640x480
+elements:
+  GroupElement
+  RectangleElement
+  RectangleElement
+  TextElement
+  ClipElement
+  GroupElement
+  PathElement
+  LineElement
+  PerspectiveElement
+  RectangleElement
+  ImageElement
+  ChartElement
+diagnostics: 1
+  Error/FrameRender Invalid image resource declaration.
+readback:
+  capability-count: 9
+  capabilities:
+    ChartElement
+    ClipElement
+    GroupElement
+    ImageElement
+    LineElement
+    PathElement
+    PerspectiveElement
+    RectangleElement
+    TextElement
+  deterministic-hash: 802f1f44c3d423725b3a885080a832b8086dc2f27ed353e46c95fa9ba4e8489a

@@ -8,6 +8,9 @@
 
   <ItemGroup>
     <Compile Include="Tests.fs" />
+    <!-- Feature 048 (US1): deterministic scene-output encoder + byte-identical golden re-derivation. -->
+    <Compile Include="SceneOutput.fs" />
+    <Compile Include="SceneOutputTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

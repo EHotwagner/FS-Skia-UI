@@ -1,0 +1,45 @@
+namespace FS.Skia.UI.Controls.Elmish
+
+open FS.Skia.UI.Controls
+open FS.Skia.UI.KeyboardInput
+
+type AdapterDiagnostic =
+    { Code: string
+      Message: string
+      Source: string }
+
+type AdapterEffect<'msg> =
+    | DispatchProductMessage of 'msg
+    | DispatchControlRuntimeMessage of ControlRuntimeMsg
+    | DispatchKeyboardMessage of KeyboardMsg
+    | DispatchHostCommand of string
+    | ReportAdapterDiagnostic of AdapterDiagnostic
+
+type AdapterCommand<'msg> = AdapterEffect<'msg> list
+
+type AdapterSubscription<'msg> =
+    { Id: string
+      Subscribe: unit -> AdapterCommand<'msg> }
+
+type AdapterProgram<'model, 'msg> =
+    { Init: unit -> 'model * AdapterCommand<'msg>
+      Update: 'msg -> 'model -> 'model * AdapterCommand<'msg>
+      View: 'model -> Control<'msg>
+      Subscriptions: 'model -> AdapterSubscription<'msg> list }
+
+module ControlsElmish =
+
+    val interpretKeyboardEffect: mapCommand: (CommandId -> 'msg) -> effect: KeyboardEffect -> AdapterCommand<'msg>
+
+    val interpretControlEffect: mapRuntime: (ControlRuntimeMsg -> 'msg) -> effect: ControlRuntimeEffect -> AdapterCommand<'msg>
+
+    val subscriptions: keyboard: AdapterSubscription<'msg> list -> controls: AdapterSubscription<'msg> list -> AdapterSubscription<'msg> list
+
+    val program:
+        init: (unit -> 'model * AdapterCommand<'msg>) ->
+        update: ('msg -> 'model -> 'model * AdapterCommand<'msg>) ->
+        view: ('model -> Control<'msg>) ->
+        subscriptions: ('model -> AdapterSubscription<'msg> list) ->
+            AdapterProgram<'model, 'msg>
+
+    val diagnostic: source: string -> code: string -> message: string -> AdapterDiagnostic

@@ -1,0 +1,20 @@
+format: scene-output/v1
+seed: screenshot-gallery
+size: 760x460
+elements:
+  GroupElement
+  RectangleElement
+  RectangleElement
+  RectangleElement
+  TextElement
+  TextElement
+  TextElement
+  TextElement
+diagnostics: 0
+readback:
+  capability-count: 3
+  capabilities:
+    GroupElement
+    RectangleElement
+    TextElement
+  deterministic-hash: 2e8539372490e1e706e63fa1f4fcb36f688b09ef4ceac319d675d6e484fe0d99

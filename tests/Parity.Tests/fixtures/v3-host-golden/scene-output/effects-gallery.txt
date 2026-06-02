@@ -1,0 +1,35 @@
+format: scene-output/v1
+seed: effects-gallery
+size: 640x480
+elements:
+  GroupElement
+  RectangleElement
+  TextElement
+  PathElement
+  EllipseElement
+  LineElement
+  ArcElement
+  ClipElement
+  GroupElement
+  RectangleElement
+  TextRunElement
+  PerspectiveElement
+  RectangleElement
+  ColorSpaceElement
+  RectangleElement
+diagnostics: 0
+readback:
+  capability-count: 11
+  capabilities:
+    ArcElement
+    ClipElement
+    ColorSpaceElement
+    EllipseElement
+    GroupElement
+    LineElement
+    PathElement
+    PerspectiveElement
+    RectangleElement
+    TextElement
+    TextRunElement
+  deterministic-hash: dbc2c24b9d42528a6d0dc372875f871685350d9b469c244e5c85ab8e2372b806

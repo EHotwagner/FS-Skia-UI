@@ -1,6 +1,6 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-specs/047-foundations-programme-closeout/plan.md
+specs/048-v3-retirement-baseline/plan.md
 
 ## Run `Route` first; run only the gates it prints
 

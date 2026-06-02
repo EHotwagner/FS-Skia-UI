@@ -273,6 +273,32 @@ let runRouteSelection root =
 // the task DAG and merge-gate audit in-process via FS.Skia.UI.Build.Evidence. Every read
 // (tasks.md, tasks.deps.yml, readiness files, the skill registry, the git diff) and every
 // artifact write stays at this interpreter edge so the engine itself performs no I/O.
+// Feature 048 (FR-007/008, Principle IV/VII): the PerPackageSurfaceDiff gate runs the
+// additive per-package surface diff in-process. The pure diff lives in the library
+// (`PerPackageSurface`); every file read (the eight `.fsi` surfaces, the committed
+// baselines) and the report write stays at this interpreter edge.
+let runPerPackageSurfaceDiff (model: BuildModel) =
+    let baselineDir = path [ model.RepositoryRoot; "readiness"; "per-package-surface" ]
+    let baselines = FS.Skia.UI.Build.PerPackageSurface.loadBaselines baselineDir
+    let current = FS.Skia.UI.Build.PerPackageSurface.captureCurrent FS.Skia.UI.Build.PerPackageSurface.packagesInScope
+    let outcome = FS.Skia.UI.Build.PerPackageSurface.diff baselines current
+    let reportPath = path [ model.ReadinessDir; "per-package-surface-diff.md" ]
+    let clean = FS.Skia.UI.Build.PerPackageSurface.runReport reportPath outcome
+
+    if not clean then
+        let drifted =
+            outcome.Drifted
+            |> List.map (fun d -> d.PackageId)
+            |> String.concat ", "
+
+        let missing = outcome.MissingBaselines |> String.concat ", "
+
+        failwithf
+            "PerPackageSurfaceDiff: surface drift detected (drifted: [%s]; missing baselines: [%s]). See %s and update readiness/per-package-surface/<PackageId>.fsi.txt."
+            drifted
+            missing
+            reportPath
+
 let private evidenceReadAll p = if File.Exists p then File.ReadAllText p else ""
 
 let buildEvidenceInputs (model: BuildModel) (unifiedDiff: string) : FS.Skia.UI.Build.Evidence.EvidenceInputs =

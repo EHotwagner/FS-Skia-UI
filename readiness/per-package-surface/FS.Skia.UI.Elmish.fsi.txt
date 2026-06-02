@@ -1,0 +1,31 @@
+namespace FS.Skia.UI.Elmish
+
+open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer
+
+type ElmishAdapterModel<'model> =
+    { UserModel: 'model
+      Scene: SceneNode
+      Viewer: ViewerModel }
+
+type ElmishAdapterMsg<'msg> =
+    | UserMsg of 'msg
+    | ViewerMsg of ViewerMsg
+
+type ElmishAdapterEffect<'msg> =
+    | DispatchUser of 'msg
+    | DispatchViewer of ViewerEffect
+
+module ElmishAdapter =
+
+    val init:
+        viewerOptions: ViewerOptions ->
+        userModel: 'model ->
+        scene: SceneNode ->
+            ElmishAdapterModel<'model> * ElmishAdapterEffect<'msg> list
+
+    val update:
+        render: ('model -> SceneNode) ->
+        msg: ElmishAdapterMsg<'msg> ->
+        model: ElmishAdapterModel<'model> ->
+            ElmishAdapterModel<'model> * ElmishAdapterEffect<'msg> list

@@ -1,0 +1,91 @@
+module PerPackageSurfaceTests
+
+// Feature 048 (US2, FR-007/008, Principle I/VI/VII): failing-first semantic tests for the
+// additive PerPackageSurfaceDiff capability, exercised through its `.fsi`. The pure tests
+// pin the drift algebra (identical ⇒ empty; one mutated signature ⇒ exactly one package;
+// missing baseline ⇒ fail loud). The interpreter test runs the real edge over the real
+// source tree + the eight committed baselines and asserts zero drift at the pin (SC-004).
+
+open System.IO
+open Expecto
+open FS.Skia.UI.Build.PerPackageSurface
+open GovernanceTestSupport
+
+let private surface id text : Surface = { PackageId = id; NormalizedText = text }
+
+[<Tests>]
+let perPackageSurfaceTests =
+    testList "PerPackageSurface" [
+
+        // --- pure core (T011) ---
+
+        test "scope is exactly the eight split packages, monolith and build-tooling excluded" {
+            Expect.equal (List.length packagesInScope) 8 "eight packages in scope"
+            Expect.isFalse (List.contains "FS.Skia.UI" packagesInScope) "monolith excluded"
+            Expect.isFalse (List.contains "FS.Skia.UI.Build" packagesInScope) "build-tooling excluded"
+        }
+
+        test "normalize strips comments, collapses blank runs, and is idempotent" {
+            let raw = "namespace X\n// line comment\n(* block\n spanning *)\nval f: int  \n\n\n\nval g: int\n"
+            let once = normalize raw
+            Expect.isFalse (once.Contains "//") "line comments stripped"
+            Expect.isFalse (once.Contains "block") "block comments stripped"
+            Expect.isFalse (once.Contains "\n\n\n") "blank-line runs collapsed"
+            Expect.equal (normalize once) once "normalize is idempotent"
+        }
+
+        test "identical surfaces yield empty Drifted and no missing baselines" {
+            let baselines = [ surface "FS.Skia.UI.Scene" "val a: int\nval b: int" ]
+            let current = [ surface "FS.Skia.UI.Scene" "val a: int\nval b: int" ]
+            let outcome = diff baselines current
+            Expect.isEmpty outcome.Drifted "no drift on identical surfaces"
+            Expect.isEmpty outcome.MissingBaselines "no missing baselines"
+            Expect.equal outcome.CheckedPackages [ "FS.Skia.UI.Scene" ] "checked the package"
+        }
+
+        test "a single mutated signature drifts exactly one package and no other (SC-005)" {
+            let baselines =
+                [ surface "FS.Skia.UI.Scene" "val a: int\nval b: int"
+                  surface "FS.Skia.UI.Layout" "val x: int" ]
+
+            let current =
+                [ surface "FS.Skia.UI.Scene" "val a: int\nval b: string"
+                  surface "FS.Skia.UI.Layout" "val x: int" ]
+
+            let outcome = diff baselines current
+            Expect.equal (List.length outcome.Drifted) 1 "exactly one package drifts"
+            Expect.equal outcome.Drifted.[0].PackageId "FS.Skia.UI.Scene" "the mutated package drifts"
+            Expect.isEmpty outcome.MissingBaselines "no missing baselines"
+            Expect.contains outcome.Drifted.[0].Changes (Removed "val b: int") "baseline line removed"
+            Expect.contains outcome.Drifted.[0].Changes (Added "val b: string") "current line added"
+        }
+
+        test "a current package with no baseline lands in MissingBaselines (Principle VII)" {
+            let baselines = [ surface "FS.Skia.UI.Scene" "val a: int" ]
+
+            let current =
+                [ surface "FS.Skia.UI.Scene" "val a: int"
+                  surface "FS.Skia.UI.Testing" "val t: int" ]
+
+            let outcome = diff baselines current
+            Expect.equal outcome.MissingBaselines [ "FS.Skia.UI.Testing" ] "the unbaselined package is reported"
+            Expect.isEmpty outcome.Drifted "no false drift for the baselined package"
+        }
+
+        // --- edge interpreter over the real tree + committed baselines (T012, SC-004) ---
+
+        test "captureCurrent over the real tree matches the eight committed baselines at the pin" {
+            // captureCurrent discovers the repository root from the current directory; pin it
+            // to the located repo root so the edge resolves src/<package>/*.fsi deterministically.
+            Directory.SetCurrentDirectory repositoryRoot
+            let baselineDir = Path.Combine(repositoryRoot, "readiness", "per-package-surface")
+            let baselines = loadBaselines baselineDir
+            let current = captureCurrent packagesInScope
+            let outcome = diff baselines current
+
+            Expect.equal (List.length current) 8 "captured eight package surfaces"
+            Expect.equal (List.length baselines) 8 "loaded eight committed baselines"
+            Expect.isEmpty outcome.MissingBaselines "every in-scope package has a committed baseline"
+            Expect.isEmpty outcome.Drifted "zero drift across the eight packages at the pin (SC-004)"
+        }
+    ]

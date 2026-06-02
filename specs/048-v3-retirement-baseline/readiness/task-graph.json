@@ -1,0 +1,1097 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Record the feature Tier (Tier 1 for the governance/build surface only \u2014 one new curated `build/Governance/PerPackageSurface.fsi`, the `PerPackageSurfaceDiff` target, a Routing rule, and new baseline artifacts; Tier 2-equivalent for the runtime \u2014 no runtime `.fsi`, package identity/version, or rendering behaviour change, FR-010/FR-011/SC-007), the affected surfaces (`docs/reports/_baselines/2026-06-02-v3-before.md`, `tests/Parity.Tests/fixtures/v3-host-golden/**`, `readiness/per-package-surface/**`, `readiness/per-package-surface-expectations.md`, `build/Governance/PerPackageSurface.fs(i)`, `build/Governance/Targets.fs(i)` / `Routing.fs` / `Engine/Model.fs` / `Engine/Update.fs`, `tests/Governance.Tests/PerPackageSurfaceTests.fs`, `docs/adr/0007\u20130011`, and `specs/048-v3-retirement-baseline/readiness/**`), the public-API impact (no runtime `.fsi`; exactly one new governance `.fsi`), the Elmish/MVU applicability (N/A \u2014 the capability is a pure `diff` with file reads at a thin edge interpreter; no `Model`/`Msg`/`Cmd`/subscription, Principle IV not warranted), and the real-evidence obligations (SHA-pinned baseline report with per-metric reproduction commands, byte-identical parity golden re-derivation, eight zero-drift per-package baselines, a reverted one-package seeded drift, ADRs 0007\u20130011, the runtime-untouched proof, and the serialized escalated FAKE gate logs; zero synthetic)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T001",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T001: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T2",
+      "parallel": true,
+      "title": "Create placeholder evidence files listed by the plan under `specs/048-v3-retirement-baseline/readiness/` so the audit-enforced readiness files are discoverable at setup: `per-package-surface-diff.md`, `seeded-violation.md`, `baseline-repro.md`, `parity-oracle.md`, `runtime-untouched.md`, the always-required contract trio `governance-risk-levels.md`, `aggregate-hang-diagnostics.md`, `runtime-limitations.md`, the gate records `validation-contract.md`, `evidence-graph.md`, `evidence-audit.md`, the `fsi/per-package-surface-diff.txt` transcript placeholder, and `logs/` (`dev.log`, `per-package-surface-diff.log`, `generated-guidance-check.log`, `template-check.log`, `generated-product-check.log`, `evidence-graph.log`, `evidence-audit.log`)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T002",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T002: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T2",
+      "parallel": false,
+      "title": "Complete readiness notes for the feature's required readiness placeholder files \u2014 `governance-risk-levels.md` (the small / medium / broad levels, their required evidence, and when broad validation is required), `aggregate-hang-diagnostics.md` (verdict / stage / elapsed duration / last observed command / focused rerun / non-authoritative aggregate, for the known `SkiaViewer.Tests` headless crash), and `runtime-limitations.md` (the .NET 10 desktop / Vulkan / SkiaSharp preview / unsupported macOS/mobile/browser / no software-renderer fallback statements) \u2014 each naming its authoritative command, artifact path, failure class, and next action",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T003",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T003: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T002"
+      ],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Draft the curated public surface `build/Governance/PerPackageSurface.fsi` per `contracts/per-package-surface-diff.md` \u2014 `PackageId`, `Surface`, `SurfaceLineChange` (`Added`/`Removed`), `PackageDrift`, `DiffOutcome` (`Drifted`/`CheckedPackages`/`MissingBaselines`), and the vals `packagesInScope`, `normalize`, `diffPackage`, `diff`, `captureCurrent`, `loadBaselines`, `runReport` \u2014 with the eight in-scope split packages and the monolith + `FS.Skia.UI.Build` exclusion encoded as the surface contract (signatures only; implementation follows in US2)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T004",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T004: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T003"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": "T2",
+      "parallel": true,
+      "title": "Scaffold the SHA-pinned baseline report document shape `docs/reports/_baselines/2026-06-02-v3-before.md` per `contracts/baseline-report.md` \u2014 the pin header, and the empty labelled sections for monolith LOC (per file), runtime dependency graph, duplicate-type inventory, leak proof, and consumer inventory, each with a placeholder for its reproduction command (values filled in US1)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T005",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T005: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T003"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T2",
+      "parallel": true,
+      "title": "Add the failing-first scene-output golden re-derivation test under `tests/Parity.Tests/fixtures/v3-host-golden/` that re-runs the deterministic encoder over the current host's seed scenes and asserts **byte-identical** output (0-byte diff, SC-003); it is red until the encoder and committed fixtures exist (T008)",
+      "skillist": [
+        "fs-skia-scene",
+        "fs-skia-layout-evidence"
+      ],
+      "skillist_mirror": [
+        "fs-skia-scene",
+        "fs-skia-layout-evidence"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T006",
+          "declared_skillist": [
+            "fs-skia-scene",
+            "fs-skia-layout-evidence"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T006: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T2",
+      "parallel": true,
+      "title": "Fill the baseline report `docs/reports/_baselines/2026-06-02-v3-before.md` sections with measured values \u2014 `src/Lib/*.fs(i)` LOC per file, the runtime package dependency graph, the duplicate-type inventory across `src/Scene/Scene.fsi` and `src/Lib/Library.fsi`, the leak proof showing `FS.Skia.UI.SkiaViewer \u2192 FS.Skia.UI` and a generated default `app` resolving the monolith, and the complete consumer inventory (runtime `src/SkiaViewer`, all sample projects at the pin classified monolith-consumer vs split-package-only, the test projects, and `build/Governance/Front/Support.fs`) \u2014 each headline metric naming the exact command that reproduces it (FR-001/002/003, SC-001/002)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T007",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T007: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T2",
+      "parallel": false,
+      "title": "Implement the deterministic scene-output encoder (stable node ordering, canonical numeric formatting, no timestamps/environment-dependent fields, versioned with the fixture) and capture the golden fixtures under `tests/Parity.Tests/fixtures/v3-host-golden/scene-output/<seed>.txt` from the current host, turning T006 green (FR-004, SC-003)",
+      "skillist": [
+        "fs-skia-scene",
+        "fs-skia-layout-evidence"
+      ],
+      "skillist_mirror": [
+        "fs-skia-scene",
+        "fs-skia-layout-evidence"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T008",
+          "declared_skillist": [
+            "fs-skia-scene",
+            "fs-skia-layout-evidence"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T008: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T006"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T2",
+      "parallel": true,
+      "title": "Capture reference rendered-frame screenshots under `tests/Parity.Tests/fixtures/v3-host-golden/screenshots/<sample>.png` from the current host (`ScreenshotGallery`/`EffectsGallery`/`BasicViewer`) together with `capture-environment.md` (OS, GPU/driver, .NET/toolchain, capture command, timestamp), recorded as **corroboration only** with scene-output documented as the authoritative oracle; if the known `SkiaViewer.Tests` libdecor-gtk headless crash prevents capture in this environment, mark the screenshot capture `[-]` with a Principle V infeasibility note in `capture-environment.md` (environment + failure class + the GPU-passthrough host required) rather than faking frames \u2014 scene-output (T008) remains the authoritative gate (FR-005)",
+      "skillist": [
+        "fs-skia-skiaviewer",
+        "fs-skia-layout-evidence"
+      ],
+      "skillist_mirror": [
+        "fs-skia-skiaviewer",
+        "fs-skia-layout-evidence"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T009",
+          "declared_skillist": [
+            "fs-skia-skiaviewer",
+            "fs-skia-layout-evidence"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T009: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T2",
+      "parallel": false,
+      "title": "Reproduce the US1 before-state \u2014 re-run every baseline headline metric and the leak-proof dump from their recorded commands and confirm the report values match, and re-derive the scene-output golden byte-identically \u2014 recording the re-runs (command + output) in `readiness/baseline-repro.md` and `readiness/parity-oracle.md` (SC-001/002/003)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T010",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T010: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T007",
+        "T008",
+        "T009"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Add the failing-first pure semantic tests in `tests/Governance.Tests/PerPackageSurfaceTests.fs` exercising the `PerPackageSurface` surface through its `.fsi` \u2014 identical surfaces yield empty `Drifted`; a single mutated signature yields exactly one `PackageDrift` for that package and no other (the SC-005 oracle over literal-but-real surface text); a current package with no baseline lands in `MissingBaselines` and fails (Principle VII)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T011",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T011: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T004"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Add the failing-first interpreter test that runs `captureCurrent`/`loadBaselines` over the real source tree and committed baselines and asserts `Drifted = []` and `MissingBaselines = []` at the pin (the SC-004 oracle); red until the edge interpreter and the eight baselines exist",
+      "skillist": [
+        "fsharp-build-orchestration",
+        "fsharp-io-globbing"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration",
+        "fsharp-io-globbing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T012",
+          "declared_skillist": [
+            "fsharp-build-orchestration",
+            "fsharp-io-globbing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T012: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T004"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Implement the pure core in `build/Governance/PerPackageSurface.fs` \u2014 `normalize` (strip `//` and `(* *)` comments, trim trailing whitespace, collapse blank-line runs, normalize newlines to `\\n`, preserve declaration order), `diffPackage` (DiffPlex line comparison, `None` \u21d2 zero drift), and `diff` (per-package, missing baseline \u21d2 `MissingBaselines`), turning T011 green",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T013",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T013: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T011"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Implement the edge interpreter in `build/Governance/PerPackageSurface.fs` \u2014 `captureCurrent` (read each in-scope package's `.fsi` file(s) and normalize, aggregating the `Controls` package's multiple `.fsi` files in filename order), `loadBaselines` (read `readiness/per-package-surface/*.fsi.txt`), and `runReport` (write the per-package drift report, return clean \u21d4 no drift and no missing) \u2014 failing loud with the package, the added/removed lines, and the baseline path on drift",
+      "skillist": [
+        "fsharp-io-globbing"
+      ],
+      "skillist_mirror": [
+        "fsharp-io-globbing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T014",
+          "declared_skillist": [
+            "fsharp-io-globbing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T014: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T013",
+        "T012"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Capture the eight per-package public-surface baselines at the pin under `readiness/per-package-surface/<PackageId>.fsi.txt` (`Scene`, `SkiaViewer`, `Elmish`, `KeyboardInput`, `Layout`, `Controls`, `Controls.Elmish`, `Testing`), excluding the monolith `FS.Skia.UI` and the build-tooling `FS.Skia.UI.Build`, turning T012 green",
+      "skillist": [
+        "fsharp-io-globbing"
+      ],
+      "skillist_mirror": [
+        "fsharp-io-globbing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T015",
+          "declared_skillist": [
+            "fsharp-io-globbing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T015: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T014"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Register the `PerPackageSurfaceDiff` FAKE target (`Targets.fs(i)` `allTargets`/`name`/`directPrerequisites = [ Build ]`/metadata), wire the `BuildEffect`/`StartTarget` arm in `Engine/Model.fs` + `Engine/Update.fs`, add the new `Routing.fs` rule over `readiness/per-package-surface/**` + the new module path (tier `FocusedAuthority`, gates `[ PerPackageSurfaceDiff ]`, expected artifact `readiness/per-package-surface-expectations.md`), author that expectations doc. **Routing-rule sub-step deferred (runtime-coupling finding):** a rule would render `PerPackageSurfaceDiff` into `validation.contract.yml`, whose known-gate allowlist is validated by the runtime monolith (`src/Lib/AgentValidation.fs` `knownGates`); adding the gate there would modify runtime code, violating SC-007 (`src/**` byte-unchanged). The target ships additive + runnable directly; Route-gating is deferred with the Stage-5 hard-gate enforcement and the Stage-2 `AgentValidation` relocation (ADR 0009). `validation.contract.yml` is therefore unchanged. See `readiness/per-package-surface-expectations.md` and `readiness/runtime-untouched.md`",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T016",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T016: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T014"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Run `./fake.sh build -t PerPackageSurfaceDiff` green at the pin (zero drift across the eight packages, SC-004), capture the FSI transcript exercising `diff`/`captureCurrent` to `readiness/fsi/per-package-surface-diff.txt`, and record the zero-drift run in `readiness/per-package-surface-diff.md`",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T017",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T017: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T015",
+        "T016"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Demonstrate the seeded one-package violation \u2014 make a reverted scratch edit to one public `.fsi` (e.g. `src/Scene/Scene.fsi`), re-run the target so `Drifted` reports exactly that one package and no other, then `git checkout --` the file and re-run to confirm zero drift \u2014 recording the demonstration in `readiness/seeded-violation.md` (real reverted edit over real files, SC-005)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T018",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T018: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T017"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T2",
+      "parallel": true,
+      "title": "Author the retirement decision records `docs/adr/0007-host-ownership.md`, `0008-scene-vocabulary-single-source.md`, `0009-agentvalidation-placement.md`, `0010-legacy-sample-policy.md`, `0011-parity-oracle-method.md` in the existing `0006-*` ADR format \u2014 each with Status, Date, Decision source, Context, Decision, Alternatives, Rationale, and **Affected stages** (research.md D8)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T019",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T019: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T2",
+      "parallel": false,
+      "title": "Link ADRs 0007\u20130011 from `docs/reports/2026-06-02-v3-modular-distribution-implementation-plan.md` and confirm each ADR is present with all required sections, recording the presence + link check in `readiness/baseline-repro.md` (FR-009, SC-006)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T020",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T020: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T019"
+      ],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T2",
+      "parallel": true,
+      "title": "Capture the runtime-untouched standing-invariants proof in `readiness/runtime-untouched.md` \u2014 `git diff --stat -- 'src/**'` is empty (monolith, split packages, host, and `SceneConversion.fs` byte-unchanged, SC-007) and the existing aggregate `PackageSurfaceCheck` stays green and unchanged with no new `PackageVersion` outside `Directory.Packages.props` (FR-010/FR-011)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T021",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T021: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T2",
+      "parallel": false,
+      "title": "Run the escalated serialized FAKE gate set sequentially \u2014 `Dev` \u2192 `PerPackageSurfaceDiff` \u2192 `GeneratedGuidanceCheck` \u2192 `TemplateCheck` \u2192 `GeneratedProductCheck` \u2192 the final graph and audit gates (T023/T024) \u2014 never concurrently; record aggregate FAKE results as **non-authoritative** and rerun any race-like or environment-flaky failure (the known `SkiaViewer.Tests` headless crash) in focused isolation as the authoritative result; logs under `readiness/logs/`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T022",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T022: no high-confidence capability signal detected"
+        }
+      ],
+      "explicit_deps": [
+        "T021"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T2",
+      "parallel": false,
+      "title": "Run the in-process compiled-F# graph gate (`./fake.sh build -t EvidenceGraph`) \u2014 confirm the DAG is acyclic, no dangling refs, no `[S*]` surprises, and the structured task metadata and visible mirrors are valid (`verdict=ok`)",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T023",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "structured task metadata"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T023: task text matches speckit-evidence-graph; trigger_group=graph validation; matched_trigger=structured task metadata"
+        }
+      ],
+      "explicit_deps": [
+        "T022"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T2",
+      "parallel": false,
+      "title": "Run the merge-gate audit (`./fake.sh build -t EvidenceAudit`) \u2014 confirm `verdict=PASS` (0 unaccepted-synthetic, 0 auto-synthetic, 0 late-seh, 0 blocking diff-scan, 0 blocking readiness-contract) with zero synthetic evidence to accept (SC-008)",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T024",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "diff-scan"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T024: task text matches speckit-evidence-audit; trigger_group=evidence audit; matched_trigger=diff-scan"
+        }
+      ],
+      "explicit_deps": [
+        "T023"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    }
+  ]
+}

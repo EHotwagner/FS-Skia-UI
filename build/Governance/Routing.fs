@@ -207,6 +207,18 @@ let rules =
           "focused"
           "product"
 
+      // Feature 048: the additive `PerPackageSurfaceDiff` target is intentionally NOT
+      // wired as a Routing rule in this Stage-0 feature. A rule would render
+      // `PerPackageSurfaceDiff` into validation.contract.yml's `routing_rules`, and the
+      // contract validator's known-gate allowlist lives in the RUNTIME monolith
+      // (`src/Lib/AgentValidation.fs` `knownGates`). Teaching it the new gate would
+      // modify runtime code, violating this feature's defining constraint — Stage 0 is
+      // record-and-oracle only, `src/**` byte-unchanged (FR-010/SC-007). The target stays
+      // additive and runnable directly (`./fake.sh build -t PerPackageSurfaceDiff`, the
+      // escalated set, and quickstart); Route-gating it is deferred with the Stage-5
+      // hard-gate enforcement (per the capability contract's non-goals). See
+      // `readiness/per-package-surface-expectations.md`.
+
       internalRule
           "build-target-contract"
           [ "build.fsx"; "scripts/build/**"; "validation.contract.yml" ]

@@ -39,6 +39,8 @@
     <Compile Include="Routing.fs" />
     <Compile Include="ContractView.fsi" />
     <Compile Include="ContractView.fs" />
+    <Compile Include="PerPackageSurface.fsi" />
+    <Compile Include="PerPackageSurface.fs" />
     <Compile Include="Capabilities.fsi" />
     <Compile Include="Capabilities.fs" />
     <Compile Include="SkillistView.fsi" />
@@ -96,6 +98,10 @@
 
   <ItemGroup>
     <PackageReference Include="YamlDotNet" />
+    <!-- Feature 048: DiffPlex backs the additive PerPackageSurfaceDiff line comparison.
+         Centrally pinned in Directory.Packages.props (no new PackageVersion); reuses the
+         repository's existing golden-diff facility (plan §Dependency impact). -->
+    <PackageReference Include="DiffPlex" />
   </ItemGroup>
 
 </Project>

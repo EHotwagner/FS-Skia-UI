@@ -21,6 +21,7 @@ type Target =
     | PackLocal
     | RefreshSurfaceBaselines
     | PackageSurfaceCheck
+    | PerPackageSurfaceDiff
     | FsiTranscripts
     | SampleContractSmoke
     | TemplatePack

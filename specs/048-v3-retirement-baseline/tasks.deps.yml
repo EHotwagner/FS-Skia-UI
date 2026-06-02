@@ -1,0 +1,115 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Every Tnnn id in tasks.md appears as a key here with both `deps` and
+# `skillist`. Phase-checkpoint edges (every Phase N+1 task -> last task of
+# Phase N) are auto-injected by the graph compute; only non-phase cross-edges
+# and within-phase edges are written here.
+#
+# Three deliverable classes, three skill profiles (see the Skill-assignment note
+# in tasks.md):
+#   * Record-and-oracle Markdown (baseline report, ADRs, verification records) ->
+#     justified valid-empty skillist (no F# authored; existing wc/grep/git/dotnet
+#     commands run by hand).
+#   * Parity oracle -> scene-output encoder/test takes
+#     [fs-skia-scene, fs-skia-layout-evidence]; screenshot + environment capture
+#     takes [fs-skia-skiaviewer, fs-skia-layout-evidence].
+#   * PerPackageSurfaceDiff capability -> FAKE target + DiffPlex line diff takes
+#     fsharp-build-orchestration; the edge interpreter reading/aggregating .fsi
+#     files takes fsharp-io-globbing.
+# Genuine workflow tasks: T023 -> speckit-evidence-graph ; T024 ->
+# speckit-evidence-audit (graph before audit).
+#
+# Non-phase cross-edges and within-phase edges captured below:
+#   T003 -> T002                 readiness notes after the placeholders exist
+#   T008 -> T006                 encoder after its failing-first golden test
+#   T010 -> {T007,T008,T009}     US1 reproduction after report + golden + shots
+#   T011 -> T004 ; T012 -> T004  US2 tests bind to the capability .fsi contract
+#   T013 -> T011                 pure core after its failing-first tests
+#   T014 -> {T013,T012}          edge interpreter after pure core + interpreter test
+#   T015 -> T014                 capture baselines via the edge interpreter
+#   T016 -> T014                 target/Routing after the capability is implemented
+#   T017 -> {T015,T016}          green run after baselines + target exist
+#   T018 -> T017                 seeded one-package drift after the green baseline run
+#   T020 -> T019                 ADR link/verify after the ADRs are authored
+#   T022 -> T021                 serialized gates after the runtime-untouched proof
+#   T023 -> T022 ; T024 -> T023  graph before audit, after the serialized gates
+#
+# The baseline report (T007/T010) and the ADRs (T019/T020) cross-reference each
+# other by fixed path only; no backward task edge is written so the DAG stays
+# acyclic.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: [T002]
+    skillist: []
+  T004:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T005:
+    deps: []
+    skillist: []
+  T006:
+    deps: []
+    skillist: ["fs-skia-scene", "fs-skia-layout-evidence"]
+  T007:
+    deps: []
+    skillist: []
+  T008:
+    deps: [T006]
+    skillist: ["fs-skia-scene", "fs-skia-layout-evidence"]
+  T009:
+    deps: []
+    skillist: ["fs-skia-skiaviewer", "fs-skia-layout-evidence"]
+  T010:
+    deps: [T007, T008, T009]
+    skillist: []
+  T011:
+    deps: [T004]
+    skillist: ["fsharp-build-orchestration"]
+  T012:
+    deps: [T004]
+    skillist: ["fsharp-build-orchestration", "fsharp-io-globbing"]
+  T013:
+    deps: [T011]
+    skillist: ["fsharp-build-orchestration"]
+  T014:
+    deps: [T013, T012]
+    skillist: ["fsharp-io-globbing"]
+  T015:
+    deps: [T014]
+    skillist: ["fsharp-io-globbing"]
+  T016:
+    deps: [T014]
+    skillist: ["fsharp-build-orchestration"]
+  T017:
+    deps: [T015, T016]
+    skillist: ["fsharp-build-orchestration"]
+  T018:
+    deps: [T017]
+    skillist: ["fsharp-build-orchestration"]
+  T019:
+    deps: []
+    skillist: []
+  T020:
+    deps: [T019]
+    skillist: []
+  T021:
+    deps: []
+    skillist: []
+  T022:
+    deps: [T021]
+    skillist: []
+  T023:
+    deps: [T022]
+    skillist: ["speckit-evidence-graph"]
+  T024:
+    deps: [T023]
+    skillist: ["speckit-evidence-audit"]

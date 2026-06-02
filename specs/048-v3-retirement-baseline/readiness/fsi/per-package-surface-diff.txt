@@ -1,0 +1,28 @@
+=== packagesInScope (8 split packages; monolith + FS.Skia.UI.Build excluded) ===
+  FS.Skia.UI.Scene
+  FS.Skia.UI.SkiaViewer
+  FS.Skia.UI.Elmish
+  FS.Skia.UI.KeyboardInput
+  FS.Skia.UI.Layout
+  FS.Skia.UI.Controls
+  FS.Skia.UI.Controls.Elmish
+  FS.Skia.UI.Testing
+
+=== captureCurrent + loadBaselines + diff at the pin ===
+CheckedPackages = 8
+Drifted = []
+MissingBaselines = []
+
+=== normalize is idempotent ===
+normalize(raw):
+namespace X
+
+val f: int -> int
+
+val g: int
+idempotent = true
+
+=== diffPackage: identical -> None; one mutated signature -> drift ===
+identical -> None
+mutated -> Some { PackageId = "FS.Skia.UI.Scene"
+       Changes = [Removed "val b: int"; Added "val b: string"] }

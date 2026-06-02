@@ -175,6 +175,9 @@ type BuildEffect =
     // Feature 043: in-process evidence gates (model is re-derived in interpret, so no payload).
     | EvidenceGraphCheck
     | EvidenceAuditCheck
+    // Feature 048: additive per-package surface diff (pure diff + edge interpreter re-derived
+    // in interpret over the real source tree + committed baselines, so no payload).
+    | PerPackageSurfaceDiffCheck
 
 let init root =
     let readiness = featureReadiness root
