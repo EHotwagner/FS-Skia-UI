@@ -8,7 +8,8 @@
   - **Stage 3 IMPLEMENTED** as feature `041-foundations-library-validators` (the first two real validators extracted into the compiled `FS.Skia.UI.Build` library + the typed `Target` single-source DU; squash-merged to `master`, evidence audit `PASS`). See [Stage 3 — Implementation status](#stage-3--implementation-status-2026-05-31-feature-041).
   - **Stage 1 IMPLEMENTED** as feature `042-foundations-two-tier-process` (the two-tier process made authoritative and enforced via a compiled `Routing.fs` selector + a new `Route` target; the interim `select-tier.fsx` was **skipped** and Stage 5.5's `Routing.fs` pulled forward, mirroring how 041 pulled the typed `Target` work forward; evidence audit `PASS`, dogfood serialized pipeline green). See [Stage 1 — Implementation status](#stage-1--implementation-status-2026-06-01-feature-042).
   - **Stage 4 IMPLEMENTED** as feature `043-foundations-evidence-engine` (the tri-language evidence gate — `build.fsx → run-audit.sh → compute-task-graph.py + audit-status-scan.py → JSON` — replaced by compiled, unit/property-tested F# in `FS.Skia.UI.Build.Evidence`, computing graph + merge-gate audit **in-process**; byte-for-byte parity against the Stage-0 golden fixtures proven *before* the Python and `run-audit.sh` were deleted; `FS.Skia.UI.Build` packed/published and consumed by generated projects per D1; squash-merged to `main`, all 34 tasks complete, evidence audit `PASS`, zero synthetic). See [Stage 4 — Implementation status](#stage-4--implementation-status-2026-06-01-feature-043).
-  - **Stages 5–7 not yet started.** (Stage 5.5's routing migration was already pulled forward into Stage 1/feature 042, so Stage 5's remaining scope is the dedicated build front-end + MEL-engine relocation + remaining heavy-validator moves + `build.fsx` retirement.)
+  - **Stage 5 IMPLEMENTED** as feature `045-foundations-build-frontend` (the keystone completed: `build.fsx` **deleted in full** — 4,767 working / 4,688 Stage-0 → **0 lines, no shim** — with the MEL engine relocated into compiled `build/Governance/Engine/{Model,Update,Interpret}.fs`, the three remaining heavy validators into `GeneratedProduct.fs`/`Guidance.fs`/`Preflight.fs`, the former `scripts/build/*.fsx` into `build/Governance/Front/**`, and a dedicated normally-compiled FAKE exe `build/Build.fsproj`+`Program.fs` registering every target off the typed `Targets.dispatchTargets` and delegating each body to `Engine.Interpret.runTarget`; `fake.sh`/`fake.cmd` now run `dotnet run --project build/Build.fsproj` with `fake-cli`/`dotnet fake`/`FSharp.Compiler.*` all gone; squash-merged to `main` as `4ba2232`, evidence audit `PASS`, 25 real tasks, zero synthetic). Stage 5.5's routing migration was already pulled forward into Stage 1/feature 042, so it carried no new work here beyond consuming `Routing.fs` from the relocated front-end. See [Stage 5 — Implementation status](#stage-5--implementation-status-2026-06-01-feature-045) below.
+  - **Stages 6–7 not yet started.** (Stage 6 — codify the remaining bucket-(a) prose rules into self-enforcing library gates, trim bucket-(b) prose, version the generated-product contract, evidence-hygiene `.gitignore` — is the next part of the plan.)
 - **Companion analysis:** [`2026-05-31-0908-foundations-rewrite-analysis.md`](./2026-05-31-0908-foundations-rewrite-analysis.md)
 - **Baseline at authoring time:** `build.fsx` = 4,688 lines; `tests/Governance.Tests/` = 34 test files; `validation.contract.yml` already defines tiers + path routing; evidence graph/audit computed by `.specify/extensions/evidence/scripts/python/*` orchestrated by `run-audit.sh` (1,284 lines) and shelled to from `build.fsx:1266,1273`.
 
@@ -995,6 +996,93 @@ orchestration skeleton, which is the cleanest thing to relocate last.
 
 **Effort:** ~7–10 days. **Revert:** keep `build.fsx` alongside the new front-end behind a chooser
 until the golden diff across all 36 targets is clean, then remove.
+
+### Stage 5 — Implementation status (2026-06-01, feature 045)
+
+**Status: IMPLEMENTED** (squash-merged to `main` as `4ba2232`). Feature
+`045-foundations-build-frontend` completed the keystone: it relocated the build's
+orchestration core and the remaining heavy validators out of `build.fsx` into the
+compiled `FS.Skia.UI.Build` library, stood up a dedicated normally-compiled FAKE
+front-end, and **deleted `build.fsx` in full**. `speckit.evidence.audit` returns
+**verdict=PASS** (25 real tasks; 0 accepted-seh, 0 unaccepted-synthetic, 0
+auto-synthetic, 0 late-seh, 0 diff-scan, 0 readiness-contract, 0 total-blockers).
+As a Tier-2 build-tooling change touching `build.fsx`/launchers/
+`.config/dotnet-tools.json`/governance paths it was escalated by `Route` to the
+full serialized gate set. Runtime untouched: no product `.fsi`/surface-baseline/
+`PackageVersion` change (only curated build-tooling `.fsi` per Principle II).
+
+What landed against the Stage-5 work items:
+
+- **5.1 MEL engine extracted — done.** `build/Governance/Engine/Model.fs`
+  (`BuildModel`, `BuildMsg` with the typed `StartTarget of Targets.Target`, the
+  ~35-case `BuildEffect` DU, `init`), `Engine/Update.fs` (the **pure** `update :
+  BuildMsg -> BuildModel -> BuildModel * BuildEffect list`, whose `.fsi` exposes
+  **no** filesystem/`git`/process symbol so the compiler enforces Principle IV),
+  and `Engine/Interpret.fs` (the sole I/O module; `interpret` + `runTarget = init
+  → update (StartTarget t) → interpret`). Each has a curated `.fsi`.
+- **5.2 remaining heavy validators moved — done.** Generated-product validation
+  (~800 lines) → `GeneratedProduct.fs`; generated-guidance / skill-section
+  scanners (~200 lines) → `Guidance.fs`; process-health / bootstrap preflight
+  (~267 lines) → `Preflight.fs`; the former `scripts/build/*.fsx` helpers →
+  `build/Governance/Front/**`. All return typed `Findings.ValidationFinding`
+  results plus their byte-identical rendered reports. The generated-product
+  `schema_version` / deprecation-window was explicitly **left to Stage 6.4**.
+- **5.3 dedicated build front-end — done (D2 realized).** `build/Build.fsproj`
+  (Exe) + `Program.fs` iterate `Targets.dispatchTargets` registering **every**
+  target via `Fake.Core.Target`, wire `==>` from `Targets.targetDependencyRows`,
+  and delegate each `Target.create` body to `Engine.Interpret.runTarget` — the exe
+  carries **no** inlined orchestration/validation logic; the exhaustive `Target`
+  match makes a missing registration a compile error. `fake.sh`/`fake.cmd` now run
+  `dotnet run --project build/Build.fsproj -- "$@"` (stripping the legacy leading
+  `build` token for identical arg semantics); `dotnet tool restore`/`dotnet fake`
+  and the `fake-cli` tool entry are gone. Grep proofs confirm no `dotnet fake`,
+  no `fake-cli`, and **no `FSharp.Compiler.*`/FCS** anywhere (SC-003/SC-004).
+- **5.4 `build.fsx` retired — done.** Deleted in full (`git rm build.fsx`);
+  4,767 working / 4,688 Stage-0 → **0 lines**. No concrete blocker surfaced, so
+  the documented `≤200-line #r`-the-DLL shim was **not needed** (residual = 0).
+  Recorded in `readiness/build-fsx-line-delta.md`.
+- **5.5 contract migration — already delivered in feature 042.** The front-end
+  consumes the existing compiled `Routing.fs` in-process for the `Route` target
+  with no new routing logic; `validation.contract.yml` remains generated from
+  `Routing.fs`. Nothing remained for Stage 5 beyond this consumption.
+
+**Exit-criterion variance (honest disclosure):** the plan's parity proof —
+a stored target-by-target byte-diff against a pre-relocation `baseline/` captured
+from the live `dotnet fake` path — was **not** performed as written. **T004**
+(capture golden baseline before relocation) and **T017** (stored pre/post
+byte-diff per target) are marked **`[-]` skipped-with-written-rationale**, not
+`[X]`. The launcher/tool rewire had already removed the `fake-cli` path before a
+baseline could be captured, so parity instead rests on (a) **verbatim byte-range
+extraction** (report text is identical *by construction* — string literals and
+rendering code moved unchanged, only repackaged into modules), (b) the green
+**304-test `Governance.Tests`** governance-contract suite (command contract,
+target graph, report-output strings, artifact failures), and (c) focused
+spot-checks (`Route` tier/gates; `Guidance`/`Preflight`/`GeneratedProduct`
+report headings via the new unit tests). The only intentional behaviour changes
+— `repositoryRoot` now discovered at runtime by walking up to
+`.specify/feature.json` (launchers `cd` to repo root → identical path), and the
+leading-`build`-token strip in `Program.fs` — are individually verified. The two
+pre-existing-RED gates (`FsiTranscripts`; `TemplateCheck`'s `SkiaViewer.Tests`
+headless flake) are excluded as Class-C via the same stash-control disclosure
+feature 039 used. Full rationale: `readiness/parity/exclusions.md`. The
+warm-build wall-clock criterion (SC-007) was **recorded, not merge-blocking**,
+per the feature's clarification.
+
+**Invariants held.** 1 (public surface unchanged — only build-tooling `.fsi`),
+2 (runtime untouched — `git diff` over product `src/**` = 0), 3 (generated
+consumers still fully governed via the packaged engine), 4 (net10; `Fake.Core.*`/
+`YamlDotNet` already central, no new `PackageVersion`), 5 (FAKE sequencing — the
+front-end is single-process; gates run serially), 6 (evidence output parity —
+graph/audit vocabulary and counts unchanged) all hold.
+
+**Stage 5 exit criteria: met with one recorded variance** — `build.fsx` deleted
+(criterion met more strongly than "≤200-line shim"); `update` has typed
+effect-list unit tests; `Route`/routing run in-process with `Routing.fs` as the
+compiled-F# source; no FCS/runtime-script-loading introduced; cold/warm build
+wall-clock recorded; invariants 1–6 hold and the serialized gate sequence is
+green. The single variance is the **parity-oracle method** (extraction-by-
+construction + contract suite + spot-checks instead of a stored per-target
+byte-diff), disclosed above and in `readiness/parity/exclusions.md`.
 
 ---
 

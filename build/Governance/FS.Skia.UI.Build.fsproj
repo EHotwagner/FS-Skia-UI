@@ -83,6 +83,8 @@
     <Compile Include="Front/Helpers.fs" />
     <Compile Include="Engine/Update.fsi" />
     <Compile Include="Engine/Update.fs" />
+    <Compile Include="GeneratedProductContract.fsi" />
+    <Compile Include="GeneratedProductContract.fs" />
     <Compile Include="GeneratedProduct.fsi" />
     <Compile Include="GeneratedProduct.fs" />
     <Compile Include="Guidance.fsi" />

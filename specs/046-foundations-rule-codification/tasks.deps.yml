@@ -1,0 +1,121 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Every Tnnn id in tasks.md appears as a key here with both `deps` and
+# `skillist`. Phase-checkpoint edges (every Phase N+1 task -> last task of
+# Phase N) are auto-injected by the graph compute; only non-phase cross-edges
+# and within-phase edges are written here.
+#
+# Build-tooling / governance only (build/Governance/** + tests/Governance.Tests/**
+# + .agents/skills/** + .gitignore + the active spec tree), so no fs-skia-*
+# runtime skill applies. It CONSUMES the fsharp-* cookbooks:
+#   parsing            -> the plan.md Repository-Governance-Decisions parser
+#                         (classifyConstitutionCheck) + its typed-result test;
+#   code-generation    -> the typed versioned-contract data + renderContractHeader;
+#   build-orchestration-> the Expecto typed tests, folding the finding into
+#                         GeneratedGuidanceCheck, and the serialized FAKE run.
+# The graph/audit workflow skills appear only on T025/T026. fsharp-graph-algorithms,
+# fsharp-io-globbing, fsharp-shell-process, fs-skia-template-update, and
+# speckit-constitution are NOT assigned -- see the skill-assignment note in tasks.md
+# (the new gate uses the camelCase `ConstitutionCheck` identifier in titles so the
+# `constitution` trigger group is not falsely fired).
+#
+# Non-phase cross-edges and within-phase edges captured below:
+#   T003 -> T002                 readiness notes after the placeholders exist
+#   T006 -> {T004,T005}          FSI exercises both drafted .fsi surfaces
+#   T007 -> T006                 record surface handling after the FSI exercise
+#   T010 -> {T008,T009}          impl after the failing tests + fixtures exist
+#   T011 -> T010 ; T012 -> T011  gate wiring then live run, in order
+#   T014 -> T013 ; T015 -> T014 ; T016 -> T015   contract impl -> consult -> live
+#   T027 -> T014                 changelog/schema consistency test+impl over `current`
+#   T018 -> {T012,T017}          gate-before-prose: trim only after the new gate
+#                                (T012) and the three shipped gates (T017) are proven
+#   T019 -> T018 ; T020 -> T019  regenerate then measure after the trim
+#   T022 -> T021                 git check-ignore proof after the .gitignore edit
+#   T024 -> {T016,T020,T022,T023,T027}  serialized run after contract live, prose
+#                                measured, gitignore proven, invariants captured
+#   T025 -> T024 ; T026 -> T025  graph before audit, after the serialized gates
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: [T002]
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: []
+  T006:
+    deps: [T004, T005]
+    skillist: []
+  T007:
+    deps: [T006]
+    skillist: []
+  T008:
+    deps: []
+    skillist: ["fsharp-parsing", "fsharp-build-orchestration"]
+  T009:
+    deps: []
+    skillist: []
+  T010:
+    deps: [T008, T009]
+    skillist: ["fsharp-parsing"]
+  T011:
+    deps: [T010]
+    skillist: ["fsharp-build-orchestration"]
+  T012:
+    deps: [T011]
+    skillist: []
+  T013:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T014:
+    deps: [T013]
+    skillist: ["fsharp-code-generation"]
+  T015:
+    deps: [T014]
+    skillist: ["fsharp-code-generation"]
+  T016:
+    deps: [T015]
+    skillist: []
+  T027:
+    deps: [T014]
+    skillist: ["fsharp-build-orchestration"]
+  T017:
+    deps: []
+    skillist: []
+  T018:
+    deps: [T012, T017]
+    skillist: []
+  T019:
+    deps: [T018]
+    skillist: []
+  T020:
+    deps: [T019]
+    skillist: []
+  T021:
+    deps: []
+    skillist: []
+  T022:
+    deps: [T021]
+    skillist: []
+  T023:
+    deps: []
+    skillist: []
+  T024:
+    deps: [T016, T020, T022, T023, T027]
+    skillist: ["fsharp-build-orchestration"]
+  T025:
+    deps: [T024]
+    skillist: ["speckit-evidence-graph"]
+  T026:
+    deps: [T025]
+    skillist: ["speckit-evidence-audit"]

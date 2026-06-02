@@ -1005,7 +1005,15 @@ let scanV3GeneratedRow model row =
         failwithf "%s/%s expected exactly one product test suite, found %d" row.Artifact row.Profile testProjects.Length
 
     if not missing.IsEmpty then
-        failwithf "%s/%s generated product missing files:%s%s" row.Artifact row.Profile Environment.NewLine (String.Join(Environment.NewLine, missing))
+        // US2 (FR-005): route the structural violation through the versioned contract.
+        // `required-files-present` is Required at the current schema version, so this
+        // still hard-fails (behaviour-identical); a Deprecated rule would warn instead.
+        let missingMessage =
+            sprintf "%s/%s generated product missing files:%s%s" row.Artifact row.Profile Environment.NewLine (String.Join(Environment.NewLine, missing))
+
+        match GeneratedProductContract.classifyViolation GeneratedProductContract.current "required-files-present" with
+        | GeneratedProductContract.Warn warning -> printfn "WARN [required-files-present] %s — %s" warning missingMessage
+        | _ -> failwith missingMessage
 
     // US2 (FR-004, SC-002): every consumed package's signatures are bundled
     // verbatim under docs/api-surface/ and stay in lockstep with source.
@@ -1289,11 +1297,26 @@ let scanV3GeneratedRow model row =
     File.WriteAllText(row.FileListPath, report + Environment.NewLine)
 
 let runScanV3GeneratedProducts model =
+    // US2 (FR-006, SC-011): the versioned contract must be internally consistent —
+    // every breaking changelog entry carries a version bump. A drift here fails the
+    // gate instead of relying on reviewer attention.
+    let contractConsistency = GeneratedProductContract.changelogConsistencyFindings GeneratedProductContract.current
+
+    if not (List.isEmpty contractConsistency) then
+        failwithf
+            "Generated-product contract is inconsistent:%s%s"
+            Environment.NewLine
+            (String.Join(Environment.NewLine, contractConsistency))
+
     v3GeneratedRows model
     |> List.iter (scanV3GeneratedRow model)
 
     let summary =
         [ "# Generated Product Check"
+          ""
+          // US2 (FR-004, SC-003): the contract schema_version + rule lifecycle is
+          // discoverable in the gate output.
+          GeneratedProductContract.renderContractHeader GeneratedProductContract.current
           ""
           "PASS: generated product file lists, selected skills, Controls-owned form/chart/graph/DataGrid authoring, Controls.Elmish adapter references, consumer-mode package references, stale Charts exclusions, full product governance command logs, and framework-source exclusions passed."
           ""

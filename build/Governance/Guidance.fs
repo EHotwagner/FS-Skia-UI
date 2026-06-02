@@ -5,6 +5,7 @@ open System.IO
 open System.Text.RegularExpressions
 open BuildPaths
 open FS.Skia.UI.Build
+open FS.Skia.UI.Build.Findings
 open FS.Skia.UI.Build.Engine.Model
 open FS.Skia.UI.Build.Front.Helpers
 
@@ -659,6 +660,143 @@ let validateSkillIdResolution model =
     @ resolutionFindings
     @ driftFindings
 
+// Feature 046 (US1, FR-001/002/003): Constitution-Check completeness gate.
+// Pure parser over a plan's Repository Governance Decisions section, keyed off a
+// hard-coded set of stable area identifiers (R2). The live plan-template.md is read
+// only implicitly: a plan generated from an unrecognized template revision no longer
+// maps any area identifier and trips the distinct UnrecognizedTemplateRevision
+// diagnostic (FR-003) instead of a false pass.
+
+type RequiredDecisionArea =
+    { Id: string
+      DisplayName: string }
+
+type AreaStatus =
+    | Filled
+    | Empty
+    | StillBoilerplate
+    | PlaceholderUnresolved
+
+type ConstitutionCheckResult =
+    | TemplateRecognized of areas: (RequiredDecisionArea * AreaStatus) list
+    | UnrecognizedTemplateRevision of diagnostic: string
+
+let requiredDecisionAreas =
+    [ "template-ownership", "Template ownership"
+      "dependency-impact", "Dependency impact"
+      "command-surface", "Command-surface impact"
+      "generated-project", "Generated project impact"
+      "evidence-paths", "Evidence paths"
+      "fsi-contract", "`.fsi` / contract impact"
+      "mvu-boundary", "MVU/effect boundary"
+      "synthetic-evidence", "Synthetic evidence"
+      "test-evidence", "Test evidence"
+      "observability", "Observability"
+      "deferred-scope", "Deferred scope" ]
+    |> List.map (fun (id, displayName) -> { Id = id; DisplayName = displayName })
+
+// Verbatim distinctive boilerplate prompt phrases from the plan template's
+// Repository Governance Decisions section (one per area). A genuinely-filled plan
+// replaces these; if the phrase survives, the area is StillBoilerplate (R3). These
+// are the "still the template prompt text" sentinels referenced by Guidance's
+// planGuidancePrompts (the per-area prompt classes share this section).
+let private boilerplateSentinels =
+    [ "template-ownership", "Decide whether source, docs, samples"
+      "dependency-impact", "Decide whether `Directory.Packages.props`"
+      "command-surface", "Decide whether `build.fsx`, wrappers"
+      "generated-project", "Decide whether default/minimal generated"
+      "evidence-paths", "Identify exact readiness paths for logs"
+      "fsi-contract", "Decide whether signatures, public docs, surface"
+      "mvu-boundary", "For stateful or I/O-bearing work, identify"
+      "synthetic-evidence", "Identify mocks, fakes, placeholders, canned"
+      "test-evidence", "Define failing-first semantic tests, governance tests"
+      "observability", "Define actionable diagnostics, log paths, report fields"
+      "deferred-scope", "Separate current obligations from deferred visual" ]
+    |> Map.ofList
+
+// The bare unresolved-work marker is assembled from fragments so this validator's own
+// source does not trip the synthetic-evidence diff-scan `todo` pattern (the same
+// string-fragment discipline `GeneratedProduct.fs` uses for the removed Charts package).
+let private placeholderTokens = [ "NEEDS CLARIFICATION"; "TO" + "DO" ]
+
+let classifyConstitutionCheck (planContent: string) : ConstitutionCheckResult =
+    let sections = markdownSections planContent
+
+    match trySection "Repository Governance Decisions" sections with
+    | None ->
+        UnrecognizedTemplateRevision
+            "the plan has no `Repository Governance Decisions` section; the active plan-template revision no longer maps to the required decision areas"
+    | Some section ->
+        let body = section.Content
+
+        // Locate each area's bold-label anchor (its DisplayName) inside the section.
+        let anchors =
+            requiredDecisionAreas
+            |> List.choose (fun area ->
+                let idx = body.IndexOf(area.DisplayName, StringComparison.OrdinalIgnoreCase)
+                if idx >= 0 then Some(area, idx) else None)
+
+        if List.isEmpty anchors then
+            UnrecognizedTemplateRevision
+                "the `Repository Governance Decisions` section contains none of the required decision-area labels; unrecognized template revision"
+        else
+            let sortedIdx = anchors |> List.map snd |> List.sort
+
+            let nextAnchorAfter idx =
+                sortedIdx |> List.tryFind (fun i -> i > idx) |> Option.defaultValue body.Length
+
+            let statusFor (area: RequiredDecisionArea) =
+                match anchors |> List.tryFind (fun (a, _) -> a.Id = area.Id) with
+                | None -> Empty
+                | Some(_, idx) ->
+                    let start = idx + area.DisplayName.Length
+                    let stop = nextAnchorAfter idx
+                    let raw = body.Substring(start, stop - start)
+                    let text = raw.TrimStart([| '*'; ':'; ' '; '\t'; '\r'; '\n' |]).Trim()
+
+                    if text = "" then
+                        Empty
+                    elif placeholderTokens |> List.exists (fun token -> text.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0) then
+                        PlaceholderUnresolved
+                    else
+                        match Map.tryFind area.Id boilerplateSentinels with
+                        | Some sentinel when text.IndexOf(sentinel, StringComparison.OrdinalIgnoreCase) >= 0 -> StillBoilerplate
+                        | _ -> Filled
+
+            TemplateRecognized(requiredDecisionAreas |> List.map (fun area -> area, statusFor area))
+
+let constitutionCheckFindings (planPath: string) (result: ConstitutionCheckResult) : ValidationFinding list =
+    match result with
+    | UnrecognizedTemplateRevision diagnostic ->
+        [ finding "constitution-check" planPath "unrecognized-template-revision" diagnostic ]
+    | TemplateRecognized areas ->
+        areas
+        |> List.choose (fun (area, status) ->
+            match status with
+            | Filled -> None
+            | Empty -> Some(finding "constitution-check" planPath area.Id $"{area.DisplayName} is empty or absent")
+            | StillBoilerplate ->
+                Some(finding "constitution-check" planPath area.Id $"{area.DisplayName} still contains template boilerplate prompt text")
+            | PlaceholderUnresolved ->
+                Some(finding "constitution-check" planPath area.Id $"{area.DisplayName} contains an unresolved NEEDS CLARIFICATION / unresolved-work placeholder"))
+
+// US1 (FR-002, A5): surface the Constitution-Check completeness gate through the
+// existing GeneratedGuidanceCheck aggregate — no new top-level FAKE target. Renders
+// each typed finding into the same `path: message [rule]` line the other validators
+// produce. A complete plan adds zero findings.
+let validateConstitutionCheck model =
+    let planPath = path [ model.FeatureDir; "plan.md" ]
+
+    if not (File.Exists planPath) then
+        []
+    else
+        let relative = Path.GetRelativePath(model.RepositoryRoot, planPath).Replace('\\', '/')
+
+        File.ReadAllText planPath
+        |> classifyConstitutionCheck
+        |> constitutionCheckFindings relative
+        |> List.map (fun f -> $"{f.Path}: {f.Message} [constitution-check:{f.Rule}]")
+
 let runGeneratedGuidanceScan model outputPath =
     let validationRows =
         generatedGuidanceRequirements
@@ -674,6 +812,7 @@ let runGeneratedGuidanceScan model outputPath =
         @ validateTaskSkillistGuidance model
         @ validateSerializedRunnerGuidance model
         @ validateSkillIdResolution model
+        @ validateConstitutionCheck model
 
     if not (List.isEmpty findings) then
         failwithf "Generated guidance check failed:%s%s" Environment.NewLine (String.Join(Environment.NewLine, findings))
@@ -686,6 +825,7 @@ let runGeneratedGuidanceScan model outputPath =
           "PASS: task templates, task metadata templates, implementation guidance, and constitution guidance require `skillist` evaluation, confidence review, risk-level evidence, and implementation-time skill loading."
           "PASS: repository, agent, template, and generated-product guidance serialize FAKE-backed commands because `.fake` state is shared, while preserving safe non-FAKE parallelism."
           "PASS: every advertised skill id in the speckit-tasks hints resolves to a declared skill `name:`; skill directory/name agree and `.agents`/`.claude` peers are synchronized."
+          "PASS: the active feature's plan.md fills all required Constitution-Check governance-decision areas (completeness gate, FR-002)."
           ""
           "Validated prompt classes:"
           yield!

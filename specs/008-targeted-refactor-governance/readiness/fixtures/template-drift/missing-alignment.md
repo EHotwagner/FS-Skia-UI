@@ -17,7 +17,7 @@ FAIL
 
 - Changed alignment classes: ``
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/044-foundations-single-source-generation`
+- Active feature evidence: `specs/046-foundations-rule-codification`
 
 ## Controls Boundary Guidance
 

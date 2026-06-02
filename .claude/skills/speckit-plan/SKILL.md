@@ -145,3 +145,4 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 - Use absolute paths for filesystem operations; use project-relative paths for references in documentation and agent context files
 - ERROR on gate failures or unresolved clarifications
+- Constitution Check completeness is **machine-enforced**: the `GeneratedGuidanceCheck` gate fails the build if any required *Repository Governance Decisions* area is empty, still boilerplate, or carries a `NEEDS CLARIFICATION`/`TODO` placeholder (N/A-with-rationale counts as filled)

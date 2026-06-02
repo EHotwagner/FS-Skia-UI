@@ -1,0 +1,14 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "build/Governance/Guidance.fs",
+      "line": 692,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "\"synthetic-evidence\", \"Synthetic evidence\""
+    }
+  ]
+}

@@ -14,6 +14,13 @@ obj/
 packages/
 specs/*/readiness/generated-consumer-validation/nuget-packages/
 
+# Feature 046 (US4, FR-011/012, D3): forward-looking evidence hygiene — ignore future
+# regenerable readiness logs and zip archives only. Authored evidence (all *.md notes
+# AND the fsi-session.txt transcript) stays tracked; no broad non-.md sweep, no removal
+# of committed evidence, no history rewrite.
+specs/*/readiness/logs/**
+specs/*/readiness/**/readiness*.zip
+
 # Test output
 TestResults/
 artifacts/
