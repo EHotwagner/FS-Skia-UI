@@ -3,6 +3,8 @@ namespace FS.Skia.UI
 open System
 open System.IO
 open YamlDotNet.RepresentationModel
+open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer.Host
 
 type CommandId = string
 type ModeId = string

@@ -1,6 +1,10 @@
 #r "../src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll"
+#r "../src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll"
+#r "../src/SkiaViewer/bin/Debug/net10.0/FS.Skia.UI.SkiaViewer.dll"
 
 open FS.Skia.UI
+open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer.Host
 
 let red = Colors.rgba 220uy 64uy 52uy 255uy
 let blue = Colors.rgba 52uy 112uy 220uy 255uy

@@ -4,10 +4,13 @@
 //   dotnet fsi scripts/prelude.fsx
 
 #r "nuget: Fable.Elmish, 4.2.0"
-#r "../src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll"
+#r "../src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll"
+#r "../src/SkiaViewer/bin/Debug/net10.0/FS.Skia.UI.SkiaViewer.dll"
 
 open Elmish
-open FS.Skia.UI
+open FS.Skia.UI.Scene
+// Open the viewer host last so its diagnostic/effect types resolve over the Scene vocabulary.
+open FS.Skia.UI.SkiaViewer.Host
 
 type Msg =
     | Tick

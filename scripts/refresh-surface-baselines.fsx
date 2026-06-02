@@ -26,7 +26,7 @@ let write packageName values =
     File.WriteAllLines(path, values)
     printfn "wrote %s" path
 
-write "FS.Skia.UI" (names typeof<FS.Skia.UI.ViewerProgram<int, int>>.Assembly)
+write "FS.Skia.UI" (names typeof<FS.Skia.UI.ParityReport>.Assembly)
 write "FS.Skia.UI.Layout" (names typeof<FS.Skia.UI.Layout.GraphDefinition>.Assembly)
 write "FS.Skia.UI.KeyboardInput" (names typeof<FS.Skia.UI.KeyboardInput.KeyboardModel>.Assembly)
 write "FS.Skia.UI.Controls" (names typeof<FS.Skia.UI.Controls.Control<int>>.Assembly)

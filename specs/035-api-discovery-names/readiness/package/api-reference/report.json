@@ -6,7 +6,7 @@
       "src/Scene/Scene.fsi"
     ],
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.Scene.md",
-    "SymbolCount": 341,
+    "SymbolCount": 354,
     "SampledSymbols": [
       "type Rect =",
       "Width: float",
@@ -16,7 +16,7 @@
       "TextRun",
       "SceneElementKind"
     ],
-    "XmlSummaryCount": 111,
+    "XmlSummaryCount": 124,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"

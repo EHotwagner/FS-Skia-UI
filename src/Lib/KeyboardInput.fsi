@@ -1,6 +1,8 @@
 namespace FS.Skia.UI
 
 open System
+open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer.Host
 
 /// Public contract type exposed by this FS.Skia.UI package.
 type CommandId = string

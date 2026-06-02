@@ -1,0 +1,55 @@
+
+## dotnet fsi scripts/controls-prelude.fsx
+$ dotnet fsi scripts/controls-prelude.fsx
+
+
+/home/developer/projects/FS-Skia-UI/scripts/controls-prelude.fsx(58,16): error FS0001: This expression was expected to have type
+    'ControlEventOrigin'    
+but here has type
+    '(float * float) * string * Color -> SceneNode'    
+
+
+exit-code=1
+
+## dotnet fsi scripts/controls-prelude.fsx
+$ dotnet fsi scripts/controls-prelude.fsx
+controls-node-count=13
+controls-diagnostics=[]
+controls-scene=[GroupElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ChartElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ChartElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement]
+controls-catalog-count=47
+controls-chart-graph-datagrid=("columns",
+ [GroupElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+  GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+  RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+  ClipElement; TextRunElement; GroupElement; RectangleElement; ChartElement;
+  ClipElement; TextRunElement; GroupElement; RectangleElement; ChartElement;
+  ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+  TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+  GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+  RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+  ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+  TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement])
+controls-text-dispatch=[NameChanged "Grace"]
+control-runtime-init-effects=[]
+control-runtime-focus-effects=[FocusChanged (Some "save-button")] focused=Some "save-button"
+control-runtime-recovery-effects=[StaleTarget "missing-button";
+ ReportControlRuntimeDiagnostic
+   { ControlId = Some "missing-button"
+     ControlKind = "control-runtime"
+     Code = StaleGeneratedReference
+     Severity = Warning
+     Message =
+      "Stale interaction target 'missing-button' was recovered by ControlRuntime."
+     EvidencePath = None }] diagnostics=1
+
+exit-code=0

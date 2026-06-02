@@ -2,8 +2,12 @@ open System
 open System.IO
 
 #r "../src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll"
+#r "../src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll"
+#r "../src/SkiaViewer/bin/Debug/net10.0/FS.Skia.UI.SkiaViewer.dll"
 
 open FS.Skia.UI
+open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer.Host
 
 let repoRoot = Path.GetFullPath(Path.Combine(__SOURCE_DIRECTORY__, ".."))
 let historicalFeature = Path.Combine(repoRoot, "specs", "002-skia-feature-parity")

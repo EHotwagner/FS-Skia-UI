@@ -3,7 +3,8 @@ module BasicViewer.Program
 open System
 open System.Diagnostics
 open Elmish
-open FS.Skia.UI
+open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer.Host
 
 type Model =
     { Title: string

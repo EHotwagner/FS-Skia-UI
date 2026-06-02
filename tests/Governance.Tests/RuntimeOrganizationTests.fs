@@ -5,33 +5,39 @@ open System.IO
 open Expecto
 open GovernanceTestSupport
 
+// V3 Stage 1 (050): the Vulkan/Skia host moved out of the FS.Skia.UI monolith into the
+// FS.Skia.UI.SkiaViewer package under Host/. The resource/startup helpers travel with it and keep
+// their paired signatures, compiling before the package facade (SkiaViewer.fs).
 let helperFiles =
-    [ "src/Lib/VulkanResources.fsi"
-      "src/Lib/VulkanResources.fs"
-      "src/Lib/VulkanStartup.fsi"
-      "src/Lib/VulkanStartup.fs" ]
+    [ "src/SkiaViewer/Host/Diagnostics.fsi"
+      "src/SkiaViewer/Host/Diagnostics.fs"
+      "src/SkiaViewer/Host/Vulkan.fsi"
+      "src/SkiaViewer/Host/Vulkan.fs"
+      "src/SkiaViewer/Host/Viewer.fsi"
+      "src/SkiaViewer/Host/Viewer.fs" ]
 
 [<Tests>]
 let runtimeOrganizationTests =
     testList "Runtime organization guardrails" [
-        test "accepted internal helper files have paired signatures and compile before Library.fs" {
+        test "accepted internal helper files have paired signatures and compile before the package facade" {
             helperFiles
             |> List.iter (fun relative -> Expect.isTrue (fileExists relative) $"{relative} exists")
 
-            let project = read "src/Lib/Lib.fsproj"
-            let resourcesIndex = project.IndexOf("VulkanResources.fsi", StringComparison.Ordinal)
-            let startupIndex = project.IndexOf("VulkanStartup.fsi", StringComparison.Ordinal)
-            let libraryIndex = project.IndexOf("Library.fsi", StringComparison.Ordinal)
+            let project = read "src/SkiaViewer/SkiaViewer.fsproj"
+            let resourcesIndex = project.IndexOf("Host/Vulkan.fsi", StringComparison.Ordinal)
+            let diagnosticsIndex = project.IndexOf("Host/Diagnostics.fsi", StringComparison.Ordinal)
+            let facadeIndex = project.IndexOf("SkiaViewer.fsi", StringComparison.Ordinal)
 
-            Expect.isGreaterThanOrEqual resourcesIndex 0 "VulkanResources signature appears in project"
-            Expect.isGreaterThanOrEqual startupIndex 0 "VulkanStartup signature appears in project"
-            Expect.isLessThan resourcesIndex libraryIndex "resource helper compiles before public facade"
-            Expect.isLessThan startupIndex libraryIndex "startup helper compiles before public facade"
+            Expect.isGreaterThanOrEqual resourcesIndex 0 "Vulkan host signature appears in project"
+            Expect.isGreaterThanOrEqual diagnosticsIndex 0 "host diagnostics signature appears in project"
+            Expect.isLessThan resourcesIndex facadeIndex "Vulkan host compiles before package facade"
+            Expect.isLessThan diagnosticsIndex facadeIndex "host diagnostics compiles before package facade"
         }
 
         test "runtime implementation files do not use top-level visibility modifiers in fs files" {
-            [ "src/Lib/VulkanResources.fs"
-              "src/Lib/VulkanStartup.fs"
+            [ "src/SkiaViewer/Host/Diagnostics.fs"
+              "src/SkiaViewer/Host/Vulkan.fs"
+              "src/SkiaViewer/Host/Viewer.fs"
               "src/Lib/Library.fs" ]
             |> List.iter (fun relative ->
                 let lines = read relative |> fun content -> content.Replace("\r\n", "\n").Split('\n')

@@ -15,6 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Scene vocabulary for the scene-output oracle (SceneOutput.fs); Lib retained only for the
+         residual `Parity` helper module exercised by Tests.fs (retires in a later V3 stage). -->
+    <ProjectReference Include="..\..\src\Scene\Scene.fsproj" />
     <ProjectReference Include="..\..\src\Lib\Lib.fsproj" />
   </ItemGroup>
 

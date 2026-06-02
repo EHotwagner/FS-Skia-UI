@@ -14,7 +14,7 @@ module ParitySceneOutput
 // built through the host's public `Scene` vocabulary.
 
 open System.Text
-open FS.Skia.UI
+open FS.Skia.UI.Scene
 
 let formatVersion = "scene-output/v1"
 

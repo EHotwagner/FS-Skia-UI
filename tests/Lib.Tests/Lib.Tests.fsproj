@@ -8,12 +8,15 @@
 
   <ItemGroup>
     <Compile Include="KeyboardInputTests.fs" />
-    <Compile Include="NativeStartupCleanupTests.fs" />
     <Compile Include="Tests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Scene + SkiaViewer host for the scene/host assertions (Tests.fs); Lib retained for the
+         residual rich KeyboardInput module (KeyboardInputTests.fs). -->
+    <ProjectReference Include="..\..\src\Scene\Scene.fsproj" />
+    <ProjectReference Include="..\..\src\SkiaViewer\SkiaViewer.fsproj" />
     <ProjectReference Include="..\..\src\Lib\Lib.fsproj" />
   </ItemGroup>
 

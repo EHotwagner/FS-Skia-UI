@@ -55,11 +55,11 @@ let surfaceAreaTests =
         }
 
         test "FS.Skia.UI baseline exports expected contract names" {
-            assertBaseline "FS.Skia.UI" typeof<FS.Skia.UI.ViewerProgram<int, int>>.Assembly
+            assertBaseline "FS.Skia.UI" typeof<FS.Skia.UI.ParityReport>.Assembly
         }
 
         test "internal runtime helper modules are not package-visible exports" {
-            let actual = exportedNames typeof<FS.Skia.UI.ViewerProgram<int, int>>.Assembly
+            let actual = exportedNames typeof<FS.Skia.UI.ParityReport>.Assembly
 
             [ "FS.Skia.UI.VulkanResources"
               "FS.Skia.UI.VulkanStartup" ]

@@ -385,7 +385,21 @@ module Paint =
     /// Public contract function exposed by this FS.Skia.UI package.
     val withBlendMode: blendMode: BlendMode -> paint: Paint -> Paint
     /// Public contract function exposed by this FS.Skia.UI package.
+    val withAntialias: antialias: bool -> paint: Paint -> Paint
+    /// Public contract function exposed by this FS.Skia.UI package.
     val withStrokeCap: cap: StrokeCap -> paint: Paint -> Paint
+    /// Public contract function exposed by this FS.Skia.UI package.
+    val withStrokeJoin: join: StrokeJoin -> paint: Paint -> Paint
+    /// Public contract function exposed by this FS.Skia.UI package.
+    val withMiter: miter: float -> paint: Paint -> Paint
+    /// Public contract function exposed by this FS.Skia.UI package.
+    val withShader: shader: Shader -> paint: Paint -> Paint
+    /// Public contract function exposed by this FS.Skia.UI package.
+    val withColorFilter: filter: ColorFilter -> paint: Paint -> Paint
+    /// Public contract function exposed by this FS.Skia.UI package.
+    val withMaskFilter: filter: MaskFilter -> paint: Paint -> Paint
+    /// Public contract function exposed by this FS.Skia.UI package.
+    val withImageFilter: filter: ImageFilter -> paint: Paint -> Paint
     /// Public contract function exposed by this FS.Skia.UI package.
     val withPathEffect: effect: PathEffect -> paint: Paint -> Paint
 
@@ -398,7 +412,19 @@ module Path =
     /// Public contract function exposed by this FS.Skia.UI package.
     val lineTo: x: float -> y: float -> PathCommand
     /// Public contract function exposed by this FS.Skia.UI package.
+    val quadTo: control: Point -> point: Point -> PathCommand
+    /// Public contract function exposed by this FS.Skia.UI package.
+    val cubicTo: control1: Point -> control2: Point -> point: Point -> PathCommand
+    /// Public contract function exposed by this FS.Skia.UI package.
     val close: PathCommand
+    /// Public contract function exposed by this FS.Skia.UI package.
+    val bounds: path: PathSpec -> Rect option
+    /// Public contract function exposed by this FS.Skia.UI package.
+    val measure: path: PathSpec -> PathMeasure
+    /// Public contract function exposed by this FS.Skia.UI package.
+    val segment: startDistance: float -> endDistance: float -> path: PathSpec -> PathSpec
+    /// Public contract function exposed by this FS.Skia.UI package.
+    val combine: operation: PathOperation -> left: PathSpec -> right: PathSpec -> PathSpec
 
 /// Public contract module exposed by this FS.Skia.UI package.
 module Scene =

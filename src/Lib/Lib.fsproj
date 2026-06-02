@@ -13,10 +13,6 @@
 
   <ItemGroup>
     <Compile Include="InternalsVisibleTo.fs" />
-    <Compile Include="VulkanResources.fsi" />
-    <Compile Include="VulkanResources.fs" />
-    <Compile Include="VulkanStartup.fsi" />
-    <Compile Include="VulkanStartup.fs" />
     <Compile Include="AgentValidation.fsi" />
     <Compile Include="AgentValidation.fs" />
     <Compile Include="Library.fsi" />
@@ -26,6 +22,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The residual rich KeyboardInput module is retyped onto the split scene vocabulary + viewer
+         host; Lib (the retiring monolith) consumes the split packages. SkiaViewer keeps NO reference
+         back to Lib, so the modularity leak stays closed. -->
+    <ProjectReference Include="..\Scene\Scene.fsproj" />
+    <ProjectReference Include="..\SkiaViewer\SkiaViewer.fsproj" />
     <PackageReference Include="Fable.Elmish" />
     <PackageReference Include="Silk.NET.Input" />
     <PackageReference Include="Silk.NET.Vulkan" />

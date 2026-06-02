@@ -360,10 +360,30 @@ module Paint =
     let withBlendMode blendMode paint =
         { paint with BlendMode = blendMode }
 
+    let withAntialias antialias paint =
+        { paint with Antialias = antialias }
+
+    let private ensureStroke paint =
+        paint.Stroke
+        |> Option.defaultValue
+            { Width = 1.0
+              Cap = StrokeCap.Butt
+              Join = StrokeJoin.Miter
+              Miter = 4.0 }
+
     let withStrokeCap cap paint =
-        match paint.Stroke with
-        | Some stroke -> { paint with Stroke = Some { stroke with Cap = cap } }
-        | None -> paint
+        { paint with Stroke = Some { ensureStroke paint with Cap = cap } }
+
+    let withStrokeJoin join paint =
+        { paint with Stroke = Some { ensureStroke paint with Join = join } }
+
+    let withMiter miter paint =
+        { paint with Stroke = Some { ensureStroke paint with Miter = miter } }
+
+    let withShader shader paint = { paint with Shader = Some shader }
+    let withColorFilter filter paint = { paint with ColorFilter = filter }
+    let withMaskFilter filter paint = { paint with MaskFilter = filter }
+    let withImageFilter filter paint = { paint with ImageFilter = filter }
 
     let withPathEffect effect paint =
         { paint with PathEffect = effect }
@@ -375,7 +395,76 @@ module Path =
 
     let moveTo x y = MoveTo { X = x; Y = y }
     let lineTo x y = LineTo { X = x; Y = y }
+    let quadTo control point = QuadTo(control, point)
+    let cubicTo control1 control2 point = CubicTo(control1, control2, point)
     let close = Close
+
+    let private commandPoints path =
+        path.Commands
+        |> List.collect (function
+            | MoveTo p
+            | LineTo p -> [ p ]
+            | QuadTo(c, p) -> [ c; p ]
+            | CubicTo(c1, c2, p) -> [ c1; c2; p ]
+            | ArcTo(bounds, _, _) ->
+                [ { X = bounds.X; Y = bounds.Y }
+                  { X = bounds.X + bounds.Width; Y = bounds.Y + bounds.Height } ]
+            | Close -> [])
+
+    let bounds path =
+        match commandPoints path with
+        | [] -> None
+        | pts ->
+            let minX = pts |> List.map _.X |> List.min
+            let minY = pts |> List.map _.Y |> List.min
+            let maxX = pts |> List.map _.X |> List.max
+            let maxY = pts |> List.map _.Y |> List.max
+
+            Some
+                { X = minX
+                  Y = minY
+                  Width = maxX - minX
+                  Height = maxY - minY }
+
+    let private distance (a: Point) (b: Point) =
+        let dx = b.X - a.X
+        let dy = b.Y - a.Y
+        Math.Sqrt(dx * dx + dy * dy)
+
+    let measure (path: PathSpec) =
+        let folder (last: Point option, length: float) command =
+            match command, last with
+            | MoveTo p, _ -> Some p, length
+            | LineTo p, Some previous -> Some p, length + distance previous p
+            | QuadTo(_, p), Some previous -> Some p, length + distance previous p
+            | CubicTo(_, _, p), Some previous -> Some p, length + distance previous p
+            | ArcTo(bounds, _, sweep), _ ->
+                let radius = (abs bounds.Width + abs bounds.Height) / 4.0
+                last, length + (Math.PI * 2.0 * radius * abs sweep / 360.0)
+            | Close, _ -> last, length
+            | _, None -> last, length
+
+        let _, length = path.Commands |> List.fold folder (None, 0.0)
+
+        { Length = length
+          IsClosed = path.Commands |> List.exists ((=) Close) }
+
+    let segment (startDistance: float) (endDistance: float) (path: PathSpec) =
+        if endDistance <= startDistance then
+            { path with Commands = [] }
+        else
+            path
+
+    let combine operation (left: PathSpec) (right: PathSpec) =
+        let marker =
+            match operation with
+            | Union -> []
+            | Intersect -> []
+            | Difference -> []
+            | Xor -> []
+
+        { FillType = left.FillType
+          Commands = left.Commands @ marker @ right.Commands }
 
 module Scene =
     let empty = { Nodes = [ Empty ] }
@@ -518,6 +607,7 @@ module Scene =
             | RegionNode(_, paint)
             | TextRun { Paint = paint } -> paintDiagnostics paint
             | Image(_, source) when String.IsNullOrWhiteSpace source -> [ diagnostic Error "Invalid image resource declaration." (Some "Image source path is empty.") ]
+            | Image(_, source) when not (IO.File.Exists source) -> [ diagnostic Error "Invalid image resource declaration." (Some $"Image source '{source}' does not exist.") ]
             | ClipNode(_, scene)
             | ColorSpaceNode(_, scene)
             | PerspectiveNode(_, scene) -> diagnostics scene

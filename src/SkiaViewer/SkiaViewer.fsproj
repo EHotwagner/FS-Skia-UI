@@ -12,13 +12,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="SceneConversion.fs" />
+    <Compile Include="Host/Diagnostics.fsi" />
+    <Compile Include="Host/Diagnostics.fs" />
+    <Compile Include="Host/Vulkan.fsi" />
+    <Compile Include="Host/Vulkan.fs" />
+    <Compile Include="Host/Viewer.fsi" />
+    <Compile Include="Host/Viewer.fs" />
     <Compile Include="SkiaViewer.fsi" />
     <Compile Include="SkiaViewer.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Lib\Lib.fsproj" />
     <ProjectReference Include="..\KeyboardInput\KeyboardInput.fsproj" />
     <ProjectReference Include="..\Scene\Scene.fsproj" />
     <PackageReference Include="Fable.Elmish" />

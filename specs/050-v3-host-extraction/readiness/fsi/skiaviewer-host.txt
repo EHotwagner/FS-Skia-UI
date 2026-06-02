@@ -1,0 +1,8 @@
+# FSI transcript — moved viewer host public surface (FR-001, T013)
+# Exercises FS.Skia.UI.SkiaViewer.Host.Viewer create/defaultConfiguration/withEventMapping/
+#  withEffectMapping + ViewerEffect.RenderFrame through the packed SkiaViewer surface.
+# ---
+create: configuration.Title=SkiaViewer Host InitialSize=640x480
+init/update: 0 -> 1
+effect shape preserved: "RenderFrame Scene"
+run shape: ViewerProgram -> Result<unit, RenderDiagnostic> (validated edge; native launch not invoked headlessly)

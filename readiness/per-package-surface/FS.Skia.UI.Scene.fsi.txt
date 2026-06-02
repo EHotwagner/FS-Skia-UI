@@ -335,7 +335,21 @@ module Paint =
 
     val withBlendMode: blendMode: BlendMode -> paint: Paint -> Paint
 
+    val withAntialias: antialias: bool -> paint: Paint -> Paint
+
     val withStrokeCap: cap: StrokeCap -> paint: Paint -> Paint
+
+    val withStrokeJoin: join: StrokeJoin -> paint: Paint -> Paint
+
+    val withMiter: miter: float -> paint: Paint -> Paint
+
+    val withShader: shader: Shader -> paint: Paint -> Paint
+
+    val withColorFilter: filter: ColorFilter -> paint: Paint -> Paint
+
+    val withMaskFilter: filter: MaskFilter -> paint: Paint -> Paint
+
+    val withImageFilter: filter: ImageFilter -> paint: Paint -> Paint
 
     val withPathEffect: effect: PathEffect -> paint: Paint -> Paint
 
@@ -347,7 +361,19 @@ module Path =
 
     val lineTo: x: float -> y: float -> PathCommand
 
+    val quadTo: control: Point -> point: Point -> PathCommand
+
+    val cubicTo: control1: Point -> control2: Point -> point: Point -> PathCommand
+
     val close: PathCommand
+
+    val bounds: path: PathSpec -> Rect option
+
+    val measure: path: PathSpec -> PathMeasure
+
+    val segment: startDistance: float -> endDistance: float -> path: PathSpec -> PathSpec
+
+    val combine: operation: PathOperation -> left: PathSpec -> right: PathSpec -> PathSpec
 
 module Scene =
 

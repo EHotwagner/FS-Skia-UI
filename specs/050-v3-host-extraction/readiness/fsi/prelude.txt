@@ -1,0 +1,75 @@
+
+## dotnet fsi scripts/prelude.fsx
+$ dotnet fsi scripts/prelude.fsx
+
+
+/home/developer/projects/FS-Skia-UI/scripts/prelude.fsx(16,5): error FS0039: The value, namespace, type or module 'Viewer' is not defined.
+
+
+exit-code=1
+
+## dotnet fsi scripts/prelude.fsx
+$ dotnet fsi scripts/prelude.fsx
+prelude: Prelude Viewer model=0 next=1 screenshot=Png render=RenderFrame
+  { Nodes =
+     [Group
+        [{ Nodes = [Rectangle ((0.0, 0.0, 180.0, 80.0), { Red = 28uy
+                                                          Green = 88uy
+                                                          Blue = 140uy
+                                                          Alpha = 255uy })] };
+         { Nodes = [Text ((16.0, 42.0), "FS.Skia.UI", { Red = 255uy
+                                                        Green = 255uy
+                                                        Blue = 255uy
+                                                        Alpha = 255uy })] };
+         { Nodes = [Chart [2.0; 4.0; 3.0; 8.0]] }]] } capture=CaptureScreenshot { Destination = "prelude.png"
+                    Format = Png }
+
+
+/home/developer/projects/FS-Skia-UI/scripts/prelude.fsx(37,5): info FS3886: This list expression contains a single tuple element. Did you mean to use ';' instead of ',' to separate list elements?
+
+
+exit-code=0
+
+## dotnet fsi scripts/prelude.fsx
+$ dotnet fsi scripts/prelude.fsx
+prelude: Prelude Viewer model=0 next=1 screenshot=Png render=RenderFrame
+  { Nodes =
+     [Group
+        [{ Nodes = [Rectangle ((0.0, 0.0, 180.0, 80.0), { Red = 28uy
+                                                          Green = 88uy
+                                                          Blue = 140uy
+                                                          Alpha = 255uy })] };
+         { Nodes = [Text ((16.0, 42.0), "FS.Skia.UI", { Red = 255uy
+                                                        Green = 255uy
+                                                        Blue = 255uy
+                                                        Alpha = 255uy })] };
+         { Nodes = [Chart [2.0; 4.0; 3.0; 8.0]] }]] } capture=CaptureScreenshot { Destination = "prelude.png"
+                    Format = Png }
+
+
+/home/developer/projects/FS-Skia-UI/scripts/prelude.fsx(37,5): info FS3886: This list expression contains a single tuple element. Did you mean to use ';' instead of ',' to separate list elements?
+
+
+exit-code=0
+
+## dotnet fsi scripts/prelude.fsx
+$ dotnet fsi scripts/prelude.fsx
+prelude: Prelude Viewer model=0 next=1 screenshot=Png render=RenderFrame
+  { Nodes =
+     [Group
+        [{ Nodes = [Rectangle ((0.0, 0.0, 180.0, 80.0), { Red = 28uy
+                                                          Green = 88uy
+                                                          Blue = 140uy
+                                                          Alpha = 255uy })] };
+         { Nodes = [Text ((16.0, 42.0), "FS.Skia.UI", { Red = 255uy
+                                                        Green = 255uy
+                                                        Blue = 255uy
+                                                        Alpha = 255uy })] };
+         { Nodes = [Chart [2.0; 4.0; 3.0; 8.0]] }]] } capture=CaptureScreenshot { Destination = "prelude.png"
+                    Format = Png }
+
+
+/home/developer/projects/FS-Skia-UI/scripts/prelude.fsx(37,5): info FS3886: This list expression contains a single tuple element. Did you mean to use ';' instead of ',' to separate list elements?
+
+
+exit-code=0

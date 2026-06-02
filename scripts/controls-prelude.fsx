@@ -55,7 +55,7 @@ let recoveredRuntime, recoveryEffects = ControlRuntime.update (RecoverStaleTarge
 let changed =
     { Kind = "changed"
       ControlId = Some "text-box"
-      Origin = Text
+      Origin = ControlEventOrigin.Text
       Payload = Some "Grace" }
 
 printfn "controls-node-count=%d" rendered.NodeCount

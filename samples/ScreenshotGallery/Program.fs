@@ -2,7 +2,8 @@ module ScreenshotGallery.Program
 
 open System
 open Elmish
-open FS.Skia.UI
+open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer.Host
 
 type Model =
     { Size: Size

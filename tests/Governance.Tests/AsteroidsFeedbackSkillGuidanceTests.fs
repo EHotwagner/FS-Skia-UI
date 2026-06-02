@@ -26,9 +26,9 @@ let layoutEvidenceGuidancePaths =
       "template/base/tests/Product.Tests/Tests.fs" ]
 
 let packableProjectPaths =
-    [ "src/Lib/Lib.fsproj", "FS.Skia.UI", [ "src/Lib/Library.fsi"; "src/Lib/VulkanResources.fsi"; "src/Lib/VulkanStartup.fsi"; "src/Lib/KeyboardInput.fsi"; "src/Lib/AgentValidation.fsi" ]
+    [ "src/Lib/Lib.fsproj", "FS.Skia.UI", [ "src/Lib/Library.fsi"; "src/Lib/KeyboardInput.fsi"; "src/Lib/AgentValidation.fsi" ]
       "src/Scene/Scene.fsproj", "FS.Skia.UI.Scene", [ "src/Scene/Scene.fsi" ]
-      "src/SkiaViewer/SkiaViewer.fsproj", "FS.Skia.UI.SkiaViewer", [ "src/SkiaViewer/SkiaViewer.fsi" ]
+      "src/SkiaViewer/SkiaViewer.fsproj", "FS.Skia.UI.SkiaViewer", [ "src/SkiaViewer/SkiaViewer.fsi"; "src/SkiaViewer/Host/Diagnostics.fsi"; "src/SkiaViewer/Host/Vulkan.fsi"; "src/SkiaViewer/Host/Viewer.fsi" ]
       "src/Elmish/Elmish.fsproj", "FS.Skia.UI.Elmish", [ "src/Elmish/Elmish.fsi" ]
       "src/KeyboardInput/KeyboardInput.fsproj", "FS.Skia.UI.KeyboardInput", [ "src/KeyboardInput/KeyboardInput.fsi" ]
       "src/Layout/Layout.fsproj", "FS.Skia.UI.Layout", [ "src/Layout/Layout.fsi"; "src/Layout/Types.fsi"; "src/Layout/Graph.fsi"; "src/Layout/GraphValidation.fsi" ]

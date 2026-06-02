@@ -2,6 +2,8 @@ module FS.Skia.UI.KeyboardInputTests
 
 open Expecto
 open FS.Skia.UI
+open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer.Host
 
 let registry =
     [ { Id = "move.left"; DisplayName = "Move left"; Category = Some "movement" }

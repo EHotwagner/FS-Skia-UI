@@ -1,9 +1,13 @@
 #r "nuget: YamlDotNet, 17.1.0"
 #r "../src/Lib/bin/Debug/net10.0/FS.Skia.UI.dll"
+#r "../src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll"
+#r "../src/SkiaViewer/bin/Debug/net10.0/FS.Skia.UI.SkiaViewer.dll"
 
 open System
 open System.IO
 open FS.Skia.UI
+open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer.Host
 
 let root =
     let rec find directory =
