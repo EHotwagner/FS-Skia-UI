@@ -201,7 +201,8 @@ let loadBaselines (directory: string) =
         Directory.GetFiles(directory, "*.fsi.txt")
         |> Array.sortBy Path.GetFileName
         |> Array.map (fun file ->
-            let packageId = Path.GetFileName(file).Replace(".fsi.txt", "")
+            let packageId =
+                (Path.GetFileName(file) |> Option.ofObj |> Option.defaultValue "").Replace(".fsi.txt", "")
 
             { PackageId = packageId
               NormalizedText = normalize (File.ReadAllText file) })
@@ -257,7 +258,7 @@ let runReport (reportPath: string) (outcome: DiffOutcome) =
                       yield "" ]
         |> String.concat "\n"
 
-    let parent = Path.GetDirectoryName reportPath
+    let parent = Path.GetDirectoryName reportPath |> Option.ofObj |> Option.defaultValue ""
 
     if not (String.IsNullOrEmpty parent) then
         Directory.CreateDirectory parent |> ignore

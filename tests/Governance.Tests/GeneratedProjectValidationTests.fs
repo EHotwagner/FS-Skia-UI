@@ -302,6 +302,27 @@ let generatedProjectValidationTests =
             Expect.isFalse (build.Contains("chmod", System.StringComparison.OrdinalIgnoreCase)) "generated evidence workflow does not repair executable mode"
         }
 
+        test "template build.fsx engine pin equals Directory.Packages.props pin" {
+            // Feature 054 (FR-003, contract C1): the #r engine pin in template/base/build.fsx
+            // MUST byte-equal the FS.Skia.UI.Build PackageVersion in Directory.Packages.props.
+            // The prefix-only `stringContains "#r \"nuget: FS.Skia.UI.Build"` check cannot catch
+            // version drift; this asserts exact string equality (tolerates any -preview.N suffix).
+            let build = read "template/base/build.fsx"
+            let props = read "template/base/Directory.Packages.props"
+
+            let extract context pattern (text: string) =
+                let m = System.Text.RegularExpressions.Regex.Match(text, pattern)
+                if m.Success then m.Groups[1].Value
+                else failtestf "could not extract %s" context
+
+            let scriptVer =
+                extract "build.fsx #r FS.Skia.UI.Build version" "#r \"nuget: FS\\.Skia\\.UI\\.Build, ([^\"]+)\"" build
+            let propsVer =
+                extract "Directory.Packages.props FS.Skia.UI.Build PackageVersion" "Include=\"FS\\.Skia\\.UI\\.Build\" Version=\"([^\"]+)\"" props
+
+            Expect.equal scriptVer propsVer (sprintf "template build.fsx #r pins FS.Skia.UI.Build %s but Directory.Packages.props pins %s — they must match exactly" scriptVer propsVer)
+        }
+
         test "generated Verify writes redirected logs as text without binary padding paths" {
             let build = read "template/base/build.fsx"
 

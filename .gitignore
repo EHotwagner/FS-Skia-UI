@@ -20,6 +20,10 @@ specs/*/readiness/generated-consumer-validation/nuget-packages/
 # of committed evidence, no history rewrite.
 specs/*/readiness/logs/**
 specs/*/readiness/**/readiness*.zip
+# Feature 054 (US3, FR-007): pack-flow scratch (e.g. local-packages.md) is regenerable;
+# scope the ignore to the `package/` subdir only so authored `.md` evidence elsewhere
+# under readiness/ stays tracked.
+specs/*/readiness/package/
 
 # Test output
 TestResults/

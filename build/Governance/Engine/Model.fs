@@ -17,7 +17,7 @@ let rec private findRepoRoot (dir: string) =
     elif File.Exists(Path.Combine(dir, ".specify", "feature.json")) then
         dir
     else
-        findRepoRoot (Path.GetDirectoryName dir)
+        findRepoRoot (Path.GetDirectoryName dir |> Option.ofObj |> Option.defaultValue "")
 
 let repositoryRoot = findRepoRoot (Directory.GetCurrentDirectory())
 
@@ -68,6 +68,8 @@ let activeFeatureId root =
                             fail "the \"feature_directory\" value is empty"
                         else
                             Path.GetFileName(featureDirectory.TrimEnd('/', '\\'))
+                            |> Option.ofObj
+                            |> Option.defaultValue ""
 
 let featureId = activeFeatureId repositoryRoot
 

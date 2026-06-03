@@ -181,12 +181,15 @@ let routeGitCapture root (arguments: string) =
         startInfo.RedirectStandardError <- true
         startInfo.UseShellExecute <- false
 
-        use proc = System.Diagnostics.Process.Start startInfo
-        let stdout = proc.StandardOutput.ReadToEnd()
-        let stderr = proc.StandardError.ReadToEnd()
-        proc.WaitForExit() |> ignore
+        match System.Diagnostics.Process.Start startInfo with
+        | null -> Error(sprintf "git %s could not be started (no process handle)" arguments)
+        | started ->
+            use proc = started
+            let stdout = proc.StandardOutput.ReadToEnd()
+            let stderr = proc.StandardError.ReadToEnd()
+            proc.WaitForExit() |> ignore
 
-        if proc.ExitCode = 0 then Ok stdout else Error(stderr.Trim())
+            if proc.ExitCode = 0 then Ok stdout else Error(stderr.Trim())
     with ex ->
         Error ex.Message
 
@@ -305,7 +308,8 @@ let buildEvidenceInputs (model: BuildModel) (unifiedDiff: string) : FS.Skia.UI.B
     let featDir = model.FeatureDir
     let readinessDir = model.ReadinessDir
     let repoRoot = model.RepositoryRoot
-    let featureName = Path.GetFileName(featDir.TrimEnd('/', '\\'))
+    let featureName =
+        Path.GetFileName(featDir.TrimEnd('/', '\\')) |> Option.ofObj |> Option.defaultValue ""
     let readinessFiles =
         if Directory.Exists readinessDir then
             Directory.GetFiles(readinessDir, "*", SearchOption.AllDirectories)

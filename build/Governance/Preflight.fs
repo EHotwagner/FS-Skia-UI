@@ -392,14 +392,16 @@ let checkFocusedGateAssumptions root (contract: FocusedGateContract) =
     |> List.iter (fun assumption ->
         if assumption.StartsWith("requires-restored-project:", StringComparison.Ordinal) then
             let project = assumption.Substring("requires-restored-project:".Length)
-            let projectDir = Path.GetDirectoryName(path [ root; project ])
+            let projectDir =
+                Path.GetDirectoryName(path [ root; project ]) |> Option.ofObj |> Option.defaultValue ""
             let assets = path [ projectDir; "obj"; "project.assets.json" ]
 
             if not (File.Exists assets) then
                 failwithf "stale-build-restore-assumption: affected-gate=%s remediation-command=`dotnet restore %s` missing `%s`" contract.TargetName project assets
         elif assumption.StartsWith("requires-built-project:", StringComparison.Ordinal) then
             let project = assumption.Substring("requires-built-project:".Length)
-            let projectDir = Path.GetDirectoryName(path [ root; project ])
+            let projectDir =
+                Path.GetDirectoryName(path [ root; project ]) |> Option.ofObj |> Option.defaultValue ""
             let projectName = Path.GetFileNameWithoutExtension project
             let assembly = path [ projectDir; "bin"; "Debug"; "net10.0"; $"{projectName}.dll" ]
 

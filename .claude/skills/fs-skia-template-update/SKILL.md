@@ -40,7 +40,19 @@ Primary files:
      ```bash
      sed -i 's/Version="<old-version>"/Version="<new-version>"/g' template/base/Directory.Packages.props
      ```
-   - This must update every `FS.Skia.UI*` `<PackageVersion ... Version="...">`
+   - Also rewrite the `FS.Skia.UI.Build` engine pin in `template/base/build.fsx`
+     in the **same** bump. The generated `build.fsx` loads the in-process
+     evidence engine via a `#r` literal whose version uses a different form
+     (`, <ver>`) than the props `Version="<ver>"` form, so the props `sed` above
+     does **not** touch it. Rewrite it explicitly so both pins move together and
+     never drift (Feature 054 / FR-002; the `GeneratedProjectValidationTests`
+     parity assertion fails the build if they diverge):
+     ```bash
+     # NOTE: use a `|` delimiter (not `#`) — the pattern contains `#r`, which would
+     # otherwise terminate a `s#...#...#` expression early.
+     sed -i 's|\(#r "nuget: FS\.Skia\.UI\.Build, \)[^"]*"|\1<new-version>"|' template/base/build.fsx
+     ```
+   - The props `sed` must update every `FS.Skia.UI*` `<PackageVersion ... Version="...">`
      entry to the current package version (nine repo packages):
      - `FS.Skia.UI.Build`
      - `FS.Skia.UI.Scene`
@@ -178,6 +190,7 @@ Primary files:
    - Commit at least:
      - `.template.package/FS.Skia.UI.Template.fsproj`
      - `template/base/Directory.Packages.props`
+     - `template/base/build.fsx` (the `#r` engine pin bumped in step 3)
      - any readiness files updated by `TemplatePack`
    - Suggested commit message:
      ```text

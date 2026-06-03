@@ -68,7 +68,7 @@ let tryZombieProcessCount () =
         try
             Directory.GetDirectories proc
             |> Array.choose (fun directory ->
-                let name = Path.GetFileName directory
+                let name = Path.GetFileName directory |> Option.ofObj |> Option.defaultValue ""
                 let isPid = name |> Seq.forall Char.IsDigit
 
                 if isPid then
@@ -107,9 +107,9 @@ let runShortCommand workingDirectory (fileName: string) (arguments: string) (tim
     // (no-op unless DualDisplay), matching the BuildProcess spawn-edge guarantee (C2/FR-003).
     let merged =
         [ for entry in startInfo.Environment do
-              match entry.Value with
-              | null -> ()
-              | value -> yield entry.Key, value ]
+              match Option.ofObj entry.Value with
+              | None -> ()
+              | Some value -> yield entry.Key, value ]
         |> Map.ofList
 
     let normalized = BuildEnvironment.normalizeGraphicsEnv merged
@@ -134,8 +134,10 @@ let runShortCommand workingDirectory (fileName: string) (arguments: string) (tim
         -1, ex.Message
 
 let thresholdDecision ruleId signal defaultValue comparison actualValue envVar platform =
-    let overrideText = Environment.GetEnvironmentVariable envVar
-    let reasonText = Environment.GetEnvironmentVariable(envVar + "_REASON")
+    let overrideText =
+        Environment.GetEnvironmentVariable envVar |> Option.ofObj |> Option.defaultValue ""
+    let reasonText =
+        Environment.GetEnvironmentVariable(envVar + "_REASON") |> Option.ofObj |> Option.defaultValue ""
 
     let overrideValue, overrideSource, overrideReason, overrideDiagnostic =
         if String.IsNullOrWhiteSpace overrideText then

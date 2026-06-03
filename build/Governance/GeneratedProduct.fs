@@ -465,10 +465,10 @@ let rec copyDirectory source target =
     Directory.CreateDirectory target |> ignore
 
     for file in Directory.GetFiles source do
-        File.Copy(file, path [ target; Path.GetFileName file ], true)
+        File.Copy(file, path [ target; Path.GetFileName file |> Option.ofObj |> Option.defaultValue "" ], true)
 
     for directory in Directory.GetDirectories source do
-        copyDirectory directory (path [ target; Path.GetFileName directory ])
+        copyDirectory directory (path [ target; Path.GetFileName directory |> Option.ofObj |> Option.defaultValue "" ])
 
 let rec copyDirectoryExcept (source: string) (target: string) (excludedRelativePaths: string list) =
     Directory.CreateDirectory target |> ignore
@@ -482,13 +482,14 @@ let rec copyDirectoryExcept (source: string) (target: string) (excludedRelativeP
         Directory.CreateDirectory currentTarget |> ignore
 
         for file in Directory.GetFiles currentSource do
-            let relative = (relativePrefix + Path.GetFileName file).Replace('\\', '/')
+            let fileName = Path.GetFileName file |> Option.ofObj |> Option.defaultValue ""
+            let relative = (relativePrefix + fileName).Replace('\\', '/')
 
             if Set.contains relative excluded |> not then
-                File.Copy(file, path [ currentTarget; Path.GetFileName file ], true)
+                File.Copy(file, path [ currentTarget; fileName ], true)
 
         for directory in Directory.GetDirectories currentSource do
-            let name = Path.GetFileName directory
+            let name = Path.GetFileName directory |> Option.ofObj |> Option.defaultValue ""
             let relative = (relativePrefix + name + "/").Replace('\\', '/')
 
             if Set.contains relative excluded |> not then
@@ -746,7 +747,7 @@ let copySelectedSkills model row capabilities =
 
     Directory.GetDirectories(path [ model.RepositoryRoot; ".agents"; "skills" ], "speckit-*", SearchOption.TopDirectoryOnly)
     |> Array.iter (fun directory ->
-        let skillName = Path.GetFileName directory
+        let skillName = Path.GetFileName directory |> Option.ofObj |> Option.defaultValue ""
         copyDirectory directory (path [ skillRoot; skillName ])
         copyDirectory directory (path [ claudeSkillRoot; skillName ]))
 
@@ -840,7 +841,7 @@ let emitFsiLoadScript row =
             "%s/%s could not emit load-product.fsx: no built Product.dll under %s (generated build must run first)"
             row.Artifact row.Profile productBin
     | Some dll ->
-        let outDir = Path.GetDirectoryName dll
+        let outDir = Path.GetDirectoryName dll |> Option.ofObj |> Option.defaultValue ""
         let outRel = (relativePathFrom row.Root outDir).Replace('\\', '/')
 
         let fsAssemblies =

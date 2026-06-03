@@ -27,9 +27,9 @@ let runProcessWithAllowedExitCodes (label: string) (fileName: string) (arguments
 
     let merged =
         [ for entry in startInfo.Environment do
-              match entry.Value with
-              | null -> ()
-              | value -> yield entry.Key, value ]
+              match Option.ofObj entry.Value with
+              | None -> ()
+              | Some value -> yield entry.Key, value ]
         |> Map.ofList
 
     let normalized = BuildEnvironment.normalizeGraphicsEnv merged
@@ -77,7 +77,7 @@ let solutionFor root preferredSolution =
     else
         Directory.GetFiles(root, "*.sln")
         |> Array.tryHead
-        |> Option.map Path.GetFileName
+        |> Option.map (fun file -> Path.GetFileName file |> Option.ofObj |> Option.defaultValue "")
 
 let runDotnetAction label action solutionFile projects extraArguments outputPath root =
     let existing = existingProjects root projects

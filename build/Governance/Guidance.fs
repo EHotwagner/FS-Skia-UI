@@ -519,7 +519,7 @@ let collectSkillIdentityRecords root =
                 if File.Exists file then
                     Some
                         { Registry = registry
-                          KeyDir = Path.GetFileName dir
+                          KeyDir = Path.GetFileName dir |> Option.ofObj |> Option.defaultValue ""
                           DeclaredName = readDeclaredSkillName file
                           RelativeFile = toRelative file
                           EnforceDirEqualsName = enforce }
@@ -540,7 +540,7 @@ let collectSkillIdentityRecords root =
                 if File.Exists file then
                     Some
                         { Registry = parentRelative
-                          KeyDir = Path.GetFileName dir
+                          KeyDir = Path.GetFileName dir |> Option.ofObj |> Option.defaultValue ""
                           DeclaredName = readDeclaredSkillName file
                           RelativeFile = toRelative file
                           EnforceDirEqualsName = false }

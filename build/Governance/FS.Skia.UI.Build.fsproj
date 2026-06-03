@@ -15,11 +15,10 @@
     <Title>FS.Skia.UI.Build</Title>
     <Description>Compiled-F# governance engine (evidence graph + merge-gate audit) consumed in-process by FS.Skia.UI build tooling and generated products.</Description>
     <PackageTags>fsharp;governance;evidence;build-tooling</PackageTags>
-    <!-- Feature 045: the build front-end relocated out of build.fsx (which ran under the
-         FSX runner without nullable reference analysis). Keep Nullable=enable so the
-         Evidence engine modules keep their annotations, but downgrade the relocated
-         body's nullness diagnostics from error to warning (behaviour-preserving). -->
-    <WarningsNotAsErrors>$(WarningsNotAsErrors);FS3261</WarningsNotAsErrors>
+    <!-- Feature 054 (FR-009): every relocated-front-end FS3261 nullness site was resolved by
+         safe null handling, so the project-local WarningsNotAsErrors escape hatch for FS3261
+         is removed. Nullable=enable (from Directory.Build.props) plus the repo-wide
+         TreatWarningsAsErrors now make any re-introduced FS3261 a build error for this project. -->
   </PropertyGroup>
 
   <ItemGroup>
