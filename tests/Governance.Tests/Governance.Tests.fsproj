@@ -42,6 +42,7 @@
     <Compile Include="SkillSyncTests.fs" />
     <Compile Include="SkillistViewTests.fs" />
     <Compile Include="ConstitutionFragmentsTests.fs" />
+    <Compile Include="GovernedBlocksTests.fs" />
     <Compile Include="TargetMetadataTests.fs" />
     <Compile Include="CapabilityCatalogTests.fs" />
     <Compile Include="ReportParityTests.fs" />

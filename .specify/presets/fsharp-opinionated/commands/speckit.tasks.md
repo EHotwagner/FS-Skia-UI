@@ -126,7 +126,7 @@ derived from the spec and plan.
   implementation-before-evidence, graph-before-audit, and
   debug-before-broad-rerun ordering; the visible mirror
   `[skillist: speckit-tasks, fs-skia-layout-evidence]` illustrates exact
-  structured order. Exact skill phrases for scans: scene rendering -> fs-skia-scene; screenshot capture -> fs-skia-skiaviewer; layout readability -> fs-skia-layout-evidence; persistent viewer launch -> fs-skia-skiaviewer; deterministic evidence mode -> fs-skia-layout-evidence; generated-package validation -> fs-skia-template-update; graph validation -> speckit-evidence-graph; audit validation -> speckit-evidence-audit; debug-loop skills -> speckit-debug-loop.
+  structured order.
 - **Visual demo readiness scaffolds.** Enumerate
   `readiness/visual-evidence-honesty.md`, `readiness/window-visibility.md`,
   `readiness/governance-risk-levels.md`,
@@ -135,7 +135,6 @@ derived from the spec and plan.
   `readiness/generated-guidance-validation.md`, and
   `readiness/real-image-evidence.md` before audit. Each readiness file names
   the authoritative command, artifact path, failure class, and next action.
-  Exact readiness phrases for scans: authoritative command.
 
 ## Validation
 

@@ -173,6 +173,9 @@ type BuildEffect =
     // enumeration / file reads / writes live in interpret; update emits effect data only).
     | RegenerateSkillTree
     | RegenerateConstitutionFragments
+    // Feature 057: splice every canonical GovernedBlock into its home files (same edge,
+    // same precedent as the skill-tree / constitution-fragment regeneration above).
+    | RegenerateGovernedBlocks
     | RouteSelect
     // Feature 043: in-process evidence gates (model is re-derived in interpret, so no payload).
     | EvidenceGraphCheck

@@ -63,9 +63,12 @@ let hasDocCommentBefore (lines: string array) index =
 let asteroidsFeedbackSkillGuidanceTests =
     testList "Asteroids feedback skill guidance" [
         test "generated task guidance assigns visual demo skills and preserves ordered mirrors" {
+            // Feature 057 (FR-006): the skill-mapping phrases are read from the canonical
+            // natural prose with incidental Markdown line-wrapping collapsed; the redundant
+            // "Exact skill phrases for scans:" echo lines were single-sourced away.
             tasksGuidancePaths
             |> List.iter (fun path ->
-                expectFileContains
+                expectFileContainsNormalized
                     path
                     [ "scene rendering -> fs-skia-scene"
                       "screenshot capture -> fs-skia-skiaviewer"
@@ -94,9 +97,12 @@ let asteroidsFeedbackSkillGuidanceTests =
         }
 
         test "generated guidance enumerates readiness scaffolds and field cues before audit" {
+            // Feature 057 (FR-006): the readiness field cues are read from canonical prose
+            // (line-wrapping collapsed); the "Exact readiness phrases for scans:" echoes were
+            // single-sourced away.
             tasksGuidancePaths
             |> List.iter (fun path ->
-                expectFileContains
+                expectFileContainsNormalized
                     path
                     [ "readiness/visual-evidence-honesty.md"
                       "readiness/window-visibility.md"

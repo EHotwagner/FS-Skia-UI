@@ -171,6 +171,32 @@ let regenerateConstitutionFragments (model: BuildModel) =
         let spliced = ConstitutionFragments.splice fragments (File.ReadAllText templatePath)
         File.WriteAllText(templatePath, spliced)
 
+// Feature 057 — RefreshSurfaceBaselines regeneration edge (US1). Splice every canonical
+// GovernedBlock into each of its home files' `BEGIN/END GENERATED: gov/<id>` regions,
+// preserving every out-of-marker byte (FR-006). A home file missing its marker region is
+// left untouched here; TargetMetadataDrift reports it as Missing (loud, not silent).
+let regenerateGovernedBlocks (model: BuildModel) =
+    for block in GovernedBlocks.governedBlocks do
+        for (relTarget, mode) in block.Targets do
+            let targetPath = repoRelPath model.RepositoryRoot relTarget
+
+            if File.Exists targetPath then
+                let spliced = GovernedBlocks.splice block mode (File.ReadAllText targetPath)
+                File.WriteAllText(targetPath, spliced)
+
+    // Feature 057 (class 4, FR-007): render the concrete `constitution.md` and the preset
+    // twin from the canonical placeholder-bearing twin. Rendered here (before the
+    // skill-tree / constitution-fragment regen in RefreshSurfaceBaselines) so the
+    // fragment extraction reads the fresh constitution.md.
+    let canonicalConst = repoRelPath model.RepositoryRoot GovernedBlocks.constitutionCanonicalRel
+
+    if File.Exists canonicalConst then
+        let canonicalText = File.ReadAllText canonicalConst
+        let concretePath = repoRelPath model.RepositoryRoot GovernedBlocks.constitutionConcreteRel
+        File.WriteAllText(concretePath, GovernedBlocks.renderConstitution GovernedBlocks.Concrete canonicalText)
+        let twinPath = repoRelPath model.RepositoryRoot GovernedBlocks.constitutionTwinRel
+        File.WriteAllText(twinPath, GovernedBlocks.renderConstitution GovernedBlocks.Twin canonicalText)
+
 // Feature 042 (FR-002a, research R2): the git union-diff is read here at the `Route`
 // interpreter edge so the Routing selector stays pure and unit-testable without git.
 let routeGitCapture root (arguments: string) =

@@ -84,14 +84,18 @@ Accepted proof names a decodable image, image dimensions, non-trivial content,
 renderer mode, fallback classification, and unsupported reason. Metadata-only
 reports do not satisfy visual proof, 1x1 fallback images do not satisfy visual
 proof, and layout-only bounds claims do not satisfy visual proof.
+<!-- BEGIN GENERATED: gov/visual-proof-phrases -->
 Exact visual proof rejection phrases for scans: metadata-only reports do not satisfy visual proof; 1x1 fallback images do not satisfy visual proof; layout-only bounds claims do not satisfy visual proof.
+<!-- END GENERATED: gov/visual-proof-phrases -->
 
 Asteroids feedback findings are classified as framework runtime, generated
 template workflow, documentation discoverability, or consumer authoring.
 Host-friction notes preserve persistent-window blocking, display/session
 availability, auto-close smoke, benign warning, blocking warning, deferred
 warning, and name-collision guidance outcomes.
+<!-- BEGIN GENERATED: gov/owner-phrases -->
 Exact owner phrases for scans: framework runtime; generated template workflow; documentation discoverability; consumer authoring; persistent-window blocking; display/session availability; auto-close smoke; benign warning; blocking warning; deferred warning; name-collision guidance.
+<!-- END GENERATED: gov/owner-phrases -->
 
 ## Compact Consumer API Map
 

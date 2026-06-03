@@ -56,6 +56,7 @@ let interpret root effect =
     | SkillSyncGate -> runSkillSyncGate model
     | RegenerateSkillTree -> regenerateSkillTree model
     | RegenerateConstitutionFragments -> regenerateConstitutionFragments model
+    | RegenerateGovernedBlocks -> regenerateGovernedBlocks model
     | RouteSelect -> runRouteSelection root
     | EvidenceGraphCheck -> runEvidenceGraphCheck model
     | EvidenceAuditCheck -> runEvidenceAuditCheck root model

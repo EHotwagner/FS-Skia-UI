@@ -88,6 +88,22 @@ let expectFileContains (relativePath: string) (needles: string list) =
     needles
     |> List.iter (fun needle -> expectContains content needle $"{relativePath} contains {needle}")
 
+// Feature 057 (FR-006): single-source the in-file scanner echoes. The "Exact … phrases
+// for scans:" echo lines existed only so a literal-substring scanner would match a phrase
+// the surrounding natural prose already states but line-wraps. The faithful fix is to make
+// the scanner read the canonical prose with incidental line-wrapping collapsed, then delete
+// the echo. This still fails on a genuinely-absent concept (drift detection preserved); it
+// only ignores newline/indent runs introduced by Markdown wrapping.
+let private collapseWhitespace (s: string) =
+    System.Text.RegularExpressions.Regex.Replace(s, @"\s+", " ")
+
+let expectFileContainsNormalized (relativePath: string) (needles: string list) =
+    let content = collapseWhitespace (read relativePath)
+
+    needles
+    |> List.iter (fun needle ->
+        expectContains content (collapseWhitespace needle) $"{relativePath} contains (whitespace-normalized) {needle}")
+
 type MarkdownSection =
     { Heading: string
       Level: int

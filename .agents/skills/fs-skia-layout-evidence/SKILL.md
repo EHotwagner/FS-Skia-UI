@@ -115,14 +115,18 @@ layout readability proof, fallback classification, and unsupported proof to be
 separate. Accepted visual proof names a decodable image, image dimensions,
 non-trivial content, renderer mode, fallback classification, and unsupported
 reason.
+<!-- BEGIN GENERATED: gov/visual-proof-phrases -->
 Exact visual proof rejection phrases for scans: metadata-only reports do not satisfy visual proof; 1x1 fallback images do not satisfy visual proof; layout-only bounds claims do not satisfy visual proof.
+<!-- END GENERATED: gov/visual-proof-phrases -->
 
 Asteroids feedback findings must be classified by owner (framework runtime,
 generated template workflow, documentation discoverability, consumer authoring),
 and host feedback must distinguish persistent-window blocking, display/session
 availability, auto-close smoke needs, benign warning, blocking warning, deferred
 warning, and name-collision guidance.
+<!-- BEGIN GENERATED: gov/owner-phrases -->
 Exact owner phrases for scans: framework runtime; generated template workflow; documentation discoverability; consumer authoring; persistent-window blocking; display/session availability; auto-close smoke; benign warning; blocking warning; deferred warning; name-collision guidance.
+<!-- END GENERATED: gov/owner-phrases -->
 
 ## Package Boundary
 

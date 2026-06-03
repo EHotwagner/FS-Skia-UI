@@ -97,6 +97,10 @@ let update msg model =
           // regenerates the derived .claude/skills tree from canonical .agents/skills, and
           // splices the constitution principle fragments into the two templates, so the
           // SkillSyncCheck and TargetMetadataDrift currency checks cannot trip on drift.
+          // Feature 057 (US1): splice every canonical GovernedBlock into its home files
+          // BEFORE the skill-tree regen, so a gov-block spliced into a `.agents` SKILL.md
+          // propagates into its `.claude` peer in the same refresh (SkillSyncCheck stays green).
+          RegenerateGovernedBlocks
           RegenerateSkillTree
           RegenerateConstitutionFragments
           RequireFiles(
@@ -388,7 +392,56 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
                           | Some diagnostic -> yield diagnostic
                           | None -> () ]
 
-        let diagnostics = structuralDiagnostics @ currencyDiagnostics @ constitutionDiagnostics
+        // Feature 057 (US1/US2, FR-003/FR-005): every canonical GovernedBlock's generated
+        // copy is currency-checked here next to the contract- and constitution-fragment
+        // checks (same home, same precedent). A hand-edited generated copy that diverges
+        // from its canonical source fails with a diagnostic naming the drifted file AND its
+        // source block. The home-file reads stay at this interpreter edge;
+        // GovernedBlocks.currency/currencyDrift are pure (Principle IV).
+        let governedBlockDiagnostics =
+            let lookup (rel: string) =
+                let full = repoRelPath model.RepositoryRoot rel
+                if File.Exists full then Some(File.ReadAllText full) else None
+
+            FS.Skia.UI.Build.GovernedBlocks.governedBlocks
+            |> List.collect (FS.Skia.UI.Build.GovernedBlocks.blockCurrencies lookup)
+            |> List.choose FS.Skia.UI.Build.GovernedBlocks.currencyDrift
+
+        // Feature 057 (US1, class 4 / FR-007): the placeholder-bearing constitution twin is
+        // canonical; constitution.md (concrete render) and the preset twin (verbatim) are
+        // generated and currency-checked here. A hand-edited generated copy fails naming the
+        // drifted file and its canonical source.
+        let constitutionRenderDiagnostics =
+            let canonicalFull = repoRelPath model.RepositoryRoot GovernedBlocks.constitutionCanonicalRel
+
+            if not (File.Exists canonicalFull) then
+                [ sprintf "%s is missing — cannot render constitution targets" GovernedBlocks.constitutionCanonicalRel ]
+            else
+                let canonicalText = File.ReadAllText canonicalFull
+
+                let checkTarget targetRel mode =
+                    let targetFull = repoRelPath model.RepositoryRoot targetRel
+
+                    if not (File.Exists targetFull) then
+                        [ sprintf "%s is missing — cannot check generated constitution render" targetRel ]
+                    else
+                        GovernedBlocks.constitutionDrift
+                            targetRel
+                            GovernedBlocks.constitutionCanonicalRel
+                            (GovernedBlocks.renderConstitution mode canonicalText)
+                            (File.ReadAllText targetFull)
+                        |> Option.toList
+
+                checkTarget GovernedBlocks.constitutionConcreteRel GovernedBlocks.Concrete
+                @ checkTarget GovernedBlocks.constitutionTwinRel GovernedBlocks.Twin
+
+        let diagnostics =
+            structuralDiagnostics
+            @ currencyDiagnostics
+            @ constitutionDiagnostics
+            @ governedBlockDiagnostics
+            @ constitutionRenderDiagnostics
+
         let report = TargetMetadata.driftMarkdown diagnostics
 
         model,

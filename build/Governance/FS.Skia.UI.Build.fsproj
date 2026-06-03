@@ -48,6 +48,10 @@
     <Compile Include="SkillistView.fs" />
     <Compile Include="ConstitutionFragments.fsi" />
     <Compile Include="ConstitutionFragments.fs" />
+    <!-- Feature 057 (US1): canonical governed-block store + marker-splice render/currency
+         generalizing the ConstitutionFragments splice to arbitrary keyed blocks. No .fsi
+         (build front-end convention for new internal modules; plan §`.fsi` impact). -->
+    <Compile Include="GovernedBlocks.fs" />
     <Compile Include="Evidence/TaskParser.fsi" />
     <Compile Include="Evidence/TaskParser.fs" />
     <Compile Include="Evidence/DepsParser.fsi" />
