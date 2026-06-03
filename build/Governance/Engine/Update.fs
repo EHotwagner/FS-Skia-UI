@@ -50,8 +50,16 @@ let update msg model =
               defaultTestProjects
               |> List.filter (fun project -> File.Exists(path [ model.RepositoryRoot; project ]))
               |> List.map (fun project ->
-                  if project.Replace('\\', '/').EndsWith("tests/Smoke.Tests/Smoke.Tests.fsproj", StringComparison.Ordinal) then
+                  let normalizedProject = project.Replace('\\', '/')
+                  // Native-GUI Expecto suites bypass the VSTest/YoloDev adapter and run as direct
+                  // Expecto executables: the adapter testhost crashes on the libdecor-gtk init path
+                  // under a dual Wayland/X11 display (049). A direct `dotnet run` has no testhost
+                  // grandchild and inherits the normalized X11 env from the spawn edge. SkiaViewer.Tests
+                  // keeps its sequential execution (`-- --sequenced`) because it exercises native startup.
+                  if normalizedProject.EndsWith("tests/Smoke.Tests/Smoke.Tests.fsproj", StringComparison.Ordinal) then
                       processEffect $"dotnet run {project}" "dotnet" $"run --project {project} --no-restore" model.RepositoryRoot (path [ model.LogDir; "test.txt" ])
+                  elif normalizedProject.EndsWith("tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj", StringComparison.Ordinal) then
+                      processEffect $"dotnet run {project}" "dotnet" $"run --project {project} --no-restore -- --sequenced" model.RepositoryRoot (path [ model.LogDir; "test.txt" ])
                   else
                       let extra =
                           if project.IndexOf("Governance.Tests", StringComparison.Ordinal) >= 0 then

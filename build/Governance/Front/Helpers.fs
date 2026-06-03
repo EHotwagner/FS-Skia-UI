@@ -175,7 +175,7 @@ validation_verdict:
     command: dotnet run --project samples/KeyboardInputGallery/KeyboardInputGallery.fsproj --no-build --no-restore -- --contract-smoke
     result: passed and printed contract smoke output
   final_classification: VSTest/YoloDev adapter orchestration concern for the smoke executable, not a sample or product failure
-  diagnostic: The FAKE Test target now runs only Smoke.Tests via direct Expecto execution; all other test projects continue to use dotnet test.
+  diagnostic: The FAKE Test target runs the native-GUI Expecto suites (Smoke.Tests and SkiaViewer.Tests) via direct Expecto execution to bypass the VSTest/YoloDev adapter testhost (libdecor-gtk crash under a dual Wayland/X11 display); all other test projects continue to use dotnet test.
 """
 
 let focusedGateContract model target =

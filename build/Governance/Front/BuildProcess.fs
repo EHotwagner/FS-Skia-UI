@@ -96,8 +96,13 @@ let runDotnetAction label action solutionFile projects extraArguments outputPath
     else
         existing
         |> List.iter (fun project ->
-            if action = "test" && project.Replace('\\', '/').EndsWith("tests/Smoke.Tests/Smoke.Tests.fsproj", StringComparison.Ordinal) then
+            let normalizedProject = project.Replace('\\', '/')
+            // Native-GUI Expecto suites bypass the VSTest/YoloDev adapter (libdecor-gtk testhost crash
+            // under a dual Wayland/X11 display, 049) and run as direct Expecto executables.
+            if action = "test" && normalizedProject.EndsWith("tests/Smoke.Tests/Smoke.Tests.fsproj", StringComparison.Ordinal) then
                 runProcess $"{label} {project}" "dotnet" $"run --project {quote project} --no-restore" root outputPath Map.empty
+            elif action = "test" && normalizedProject.EndsWith("tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj", StringComparison.Ordinal) then
+                runProcess $"{label} {project}" "dotnet" $"run --project {quote project} --no-restore -- --sequenced" root outputPath Map.empty
             else
                 let arguments =
                     [ action; quote project; extraArguments ]

@@ -175,13 +175,18 @@ let processReliabilityContractTests =
                   "remediation-command" ]
         }
 
-        test "smoke tests run through direct Expecto executable instead of VSTest adapter" {
+        test "smoke and native-viewer tests run through direct Expecto executable instead of VSTest adapter" {
             let content = buildGovernanceSource ()
 
             Expect.stringContains
                 content
                 "EndsWith(\"tests/Smoke.Tests/Smoke.Tests.fsproj\""
                 "FAKE detects the Smoke.Tests project explicitly"
+
+            Expect.stringContains
+                content
+                "EndsWith(\"tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj\""
+                "FAKE routes SkiaViewer.Tests through direct Expecto to avoid the libdecor testhost crash"
 
             Expect.stringContains
                 content
