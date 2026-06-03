@@ -276,6 +276,12 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
           SkillSyncGate
           RequireFiles("skill sync report", [ path [ model.ReadinessDir; "skill-sync-check.md" ]; path [ model.LogDir; "skill-sync-check.txt" ] ])
           focusedGateSummary model "SkillSyncCheck" ]
+    | StartTarget Targets.SkillQualityCheck ->
+        model,
+        [ focusedGateAssumptionCheck model "SkillQualityCheck"
+          SkillQualityScan
+          RequireFiles("skill quality report", [ path [ model.ReadinessDir; "skill-quality-check.md" ]; path [ model.LogDir; "skill-quality-check.txt" ] ])
+          focusedGateSummary model "SkillQualityCheck" ]
     | StartTarget Targets.TemplateDrift ->
         model,
         [ focusedGateAssumptionCheck model "TemplateDrift"

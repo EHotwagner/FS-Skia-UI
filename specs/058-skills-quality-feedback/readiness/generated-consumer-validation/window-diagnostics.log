@@ -1,0 +1,9 @@
+
+## generated consumer window diagnostics
+$ dotnet run --project src/Product/Product.fsproj --no-restore -- --window-diagnostics "/home/developer/projects/FS-Skia-UI/specs/058-skills-quality-feedback/readiness/generated-consumer-validation/window-diagnostics.txt"
+status=unsupported mode=interactive-window command=--window-diagnostics diagnostic-class=environment-session native-handle=unsupported visible=unsupported focusable=unsupported focused=unsupported minimized=unsupported maximized=unsupported client-size=unavailable renderable-surface=unsupported input-devices=unsupported fallback-is-full-desktop-session=False message=Desktop session prerequisites are present.
+status=failed mode=interactive-window command=--window-diagnostics diagnostic-class=window-visibility native-handle=observed:true visible=observed:false focusable=observed:false focused=unsupported minimized=observed:false maximized=observed:false client-size=640x480 renderable-surface=observed:true input-devices=observed:false message=taskbar-only window has no accessible visible surface
+status=failed mode=interactive-window command=--window-diagnostics diagnostic-class=app-lifecycle native-handle=observed:true visible=observed:true focusable=observed:true focused=observed:true minimized=observed:false maximized=observed:false client-size=640x480 renderable-surface=observed:true input-devices=observed:true message=app lifecycle failed after visible window diagnostics
+status=failed mode=interactive-window command=--window-diagnostics diagnostic-class=product-defect native-handle=observed:true visible=observed:true focusable=observed:true focused=unsupported minimized=observed:false maximized=observed:false client-size=0x0 renderable-surface=observed:false input-devices=unavailable message=product requested a zero-sized or surface-less window
+
+exit-code=0

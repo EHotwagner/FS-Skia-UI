@@ -19,10 +19,12 @@ let perPackageSurfaceTests =
 
         // --- pure core (T011) ---
 
-        test "scope is exactly the nine split packages, monolith and build-tooling excluded" {
+        test "scope is exactly the ten split packages, monolith and build-tooling excluded" {
             // The retired monolith id is named via parts so the SC-001 no-consumer grep stays clean.
             let retiredMonolith = "FS.Skia." + "UI"
-            Expect.equal (List.length packagesInScope) 9 "nine packages in scope"
+            // Feature 058 (US2): FS.Skia.UI.SkillSupport joined as the 10th in-scope package.
+            Expect.equal (List.length packagesInScope) 10 "ten packages in scope"
+            Expect.isTrue (List.contains "FS.Skia.UI.SkillSupport" packagesInScope) "FS.Skia.UI.SkillSupport in scope (feature 058)"
             Expect.isTrue (List.contains "FS.Skia.UI.Input" packagesInScope) "FS.Skia.UI.Input in scope (feature 052)"
             Expect.isFalse (List.contains retiredMonolith packagesInScope) "monolith excluded"
             Expect.isFalse (List.contains "FS.Skia.UI.Build" packagesInScope) "build-tooling excluded"
@@ -77,7 +79,7 @@ let perPackageSurfaceTests =
 
         // --- edge interpreter over the real tree + committed baselines (T012, SC-004) ---
 
-        test "captureCurrent over the real tree matches the nine committed baselines at the pin" {
+        test "captureCurrent over the real tree matches the ten committed baselines at the pin" {
             // captureCurrent discovers the repository root from the current directory; pin it
             // to the located repo root so the edge resolves src/<package>/*.fsi deterministically.
             Directory.SetCurrentDirectory repositoryRoot
@@ -86,9 +88,9 @@ let perPackageSurfaceTests =
             let current = captureCurrent packagesInScope
             let outcome = diff baselines current
 
-            Expect.equal (List.length current) 9 "captured nine package surfaces"
-            Expect.equal (List.length baselines) 9 "loaded nine committed baselines"
+            Expect.equal (List.length current) 10 "captured ten package surfaces"
+            Expect.equal (List.length baselines) 10 "loaded ten committed baselines"
             Expect.isEmpty outcome.MissingBaselines "every in-scope package has a committed baseline"
-            Expect.isEmpty outcome.Drifted "zero drift across the nine packages at the pin (SC-004)"
+            Expect.isEmpty outcome.Drifted "zero drift across the ten packages at the pin (SC-004)"
         }
     ]

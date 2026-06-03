@@ -157,6 +157,23 @@ routing_rules:
       - readiness/package-surface-expectations.md
     timeout_class: focused
     failure_owner: product
+  - id: skill-quality
+    tier: focused-authority
+    paths:
+      - ".agents/skills/**"
+      - "src/**/skill/SKILL.md"
+      - "template/product-skills/**"
+      - "template/fragments/**/skill/SKILL.md"
+      - "template/base/.agents/skills/**"
+    feature_concerns:
+      - skill-quality
+    required_gates:
+      - SkillQualityCheck
+      - SkillSyncCheck
+    expected_artifacts:
+      - readiness/skill-quality-check.md
+    timeout_class: focused
+    failure_owner: governance
   - id: build-target-contract
     tier: maintainer-verify
     paths:

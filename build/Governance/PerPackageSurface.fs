@@ -39,7 +39,11 @@ let packagesInScope: PackageId list =
       "FS.Skia.UI.Layout"
       "FS.Skia.UI.Controls"
       "FS.Skia.UI.Controls.Elmish"
-      "FS.Skia.UI.Testing" ]
+      "FS.Skia.UI.Testing"
+      // Feature 058 (US2, FR-010): the shipped skill-support library joins the
+      // per-package surface scope (the 10th in-scope package). Its source lives at
+      // src/SkillSupport; baseline at readiness/per-package-surface/FS.Skia.UI.SkillSupport.fsi.txt.
+      "FS.Skia.UI.SkillSupport" ]
 
 // Each in-scope PackageId maps to its `src/<dir>` source directory; `captureCurrent`
 // aggregates every `*.fsi` under it in filename order (so Layout/Controls multi-file
@@ -55,6 +59,7 @@ let private packageSourceDir (packageId: PackageId) =
     | "FS.Skia.UI.Controls" -> "Controls"
     | "FS.Skia.UI.Controls.Elmish" -> "Controls.Elmish"
     | "FS.Skia.UI.Testing" -> "Testing"
+    | "FS.Skia.UI.SkillSupport" -> "SkillSupport"
     | other -> failwithf "PerPackageSurface: %s is not an in-scope split package" other
 
 // --- pure core ----------------------------------------------------------------

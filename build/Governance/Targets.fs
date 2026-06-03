@@ -27,6 +27,7 @@ type Target =
     | DependencyReport
     | GeneratedGuidanceCheck
     | SkillSyncCheck
+    | SkillQualityCheck
     | TemplateDrift
     | EvidenceGraph
     | EvidenceAudit
@@ -81,6 +82,7 @@ let allTargets =
       DependencyReport
       GeneratedGuidanceCheck
       SkillSyncCheck
+      SkillQualityCheck
       TemplateDrift
       EvidenceGraph
       EvidenceAudit
@@ -125,6 +127,7 @@ let name target =
     | DependencyReport -> "DependencyReport"
     | GeneratedGuidanceCheck -> "GeneratedGuidanceCheck"
     | SkillSyncCheck -> "SkillSyncCheck"
+    | SkillQualityCheck -> "SkillQualityCheck"
     | TemplateDrift -> "TemplateDrift"
     | EvidenceGraph -> "EvidenceGraph"
     | EvidenceAudit -> "EvidenceAudit"
@@ -169,6 +172,7 @@ let directPrerequisites target =
     | DependencyReport -> []
     | GeneratedGuidanceCheck -> []
     | SkillSyncCheck -> []
+    | SkillQualityCheck -> []
     | TemplateDrift -> []
     | EvidenceGraph -> []
     | EvidenceAudit -> [ EvidenceGraph ]

@@ -34,3 +34,36 @@ Layout may depend on Scene and Yoga.Net. Do not introduce viewer, keyboard, cont
 ## Generated Product
 
 Products that select Controls receive `FS.Skia.UI.Layout` as a runtime dependency but use `fs-skia-ui-widgets` for generated widget guidance. Use this skill only for lower-level layout engine work.
+
+## Runnable example
+
+Open the package namespace and evaluate a single layout node:
+
+```fsharp
+open FS.Skia.UI.Layout
+
+let root = Defaults.layoutNode "root"
+let available = Defaults.availableSpace 320.0 240.0
+let result = Layout.evaluate available root
+printfn "revision=%d bounds=%d" result.Revision result.Bounds.Length
+```
+
+## Persistent problems
+
+When a problem outlasts reasonable in-repo attempts, extensive external research is
+**mandatory** — consult **official online docs first** (the F#/.NET docs and the driven
+library's own documentation/API reference), then community sources (forums, Reddit, Q&A
+sites, issue trackers and changelogs). Record the findings and resolving links in the
+feature's `specs/<feature>/feedback/` folder and, for durable lessons, in this skill's
+**Sources** line. Offline, the mandate degrades to recording "research blocked — <why>"
+rather than hard-failing the phase.
+
+## Related
+
+- [[fs-skia-scene]] is the render target of `Layout.renderComputed`.
+- [[fs-skia-ui-widgets]] owns generated layout-control and widget examples.
+
+## Sources / links
+
+- F#/.NET docs: https://learn.microsoft.com/en-us/dotnet/fsharp/
+- Yoga (the driven layout engine): https://www.yogalayout.dev/

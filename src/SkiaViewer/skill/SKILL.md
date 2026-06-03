@@ -35,3 +35,40 @@ Keep native window and render effects at the interpreter edge. Scene description
 ## Generated Product
 
 Products that select SkiaViewer receive viewer package references, this skill, and product commands that avoid framework gallery checks.
+
+## Runnable example
+
+Open the package namespace and drive a bounded, headless-friendly run:
+
+```fsharp
+open System
+open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer
+
+let options = { Title = "demo"; InitialSize = { Width = 320; Height = 240 } }
+let scene = Rectangle((0.0, 0.0, 320.0, 240.0), Colors.rgb 16uy 16uy 24uy)
+
+match Viewer.runUntilFirstFrame options scene with
+| Ok evidence -> printfn "frames=%d renderer=%s" evidence.FramesRendered evidence.RendererMode
+| Error failure -> printfn "blocked: %A" failure.BlockedStage
+```
+
+## Persistent problems
+
+When a problem outlasts reasonable in-repo attempts, extensive external research is
+**mandatory** — consult **official online docs first** (the F#/.NET docs and the driven
+library's own documentation/API reference), then community sources (forums, Reddit, Q&A
+sites, issue trackers and changelogs). Record the findings and resolving links in the
+feature's `specs/<feature>/feedback/` folder and, for durable lessons, in this skill's
+**Sources** line. Offline, the mandate degrades to recording "research blocked — <why>"
+rather than hard-failing the phase.
+
+## Related
+
+- [[fs-skia-scene]] supplies the scene descriptions this host renders.
+- [[fs-skia-elmish]] wires viewer hosting into an Elmish program.
+
+## Sources / links
+
+- F#/.NET docs: https://learn.microsoft.com/en-us/dotnet/fsharp/
+- SkiaSharp (driven native rendering library): https://github.com/mono/SkiaSharp

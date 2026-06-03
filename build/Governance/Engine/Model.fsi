@@ -93,6 +93,8 @@ type BuildEffect =
     | EvidenceAuditCheck
     // Feature 048: additive per-package surface diff (re-derived in interpret, so no payload).
     | PerPackageSurfaceDiffCheck
+    // Feature 058: pure skill-quality rubric check (re-derived in interpret, so no payload).
+    | SkillQualityScan
 
 /// Repository root (discovered by walking up for .specify/feature.json).
 val repositoryRoot: string

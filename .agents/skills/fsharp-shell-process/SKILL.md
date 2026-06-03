@@ -14,6 +14,12 @@ Cookbook for replacing the Bash orchestration (`run-audit.sh`, parts of `common.
 process orchestration + the exit-code contract). Verdicts come from the capability report
 (`metadata.source`) §7.
 
+## When to use
+
+- Wrapping `git` from F# — base-ref resolve, `merge-base`, `diff --unified=0` (C15).
+- Running residual external processes (`dotnet`, smoke runners) with explicit exit-code capture (C17).
+- Deciding what to keep in-process versus shell out for (the in-process-first principle below).
+
 ## Principle: in-process-first
 
 The strategic win is **not** to re-wrap Bash in F# — it is to make most shelling *disappear*. Once the
@@ -79,6 +85,29 @@ let runDotnet (workingDir: string) (arguments: string) =
     result.ExitCode, result.Result.Output
 ```
 
+## Library API + runnable example
+
+Process and git wrapping now ship as the real `ShellProcess` module in the **`FS.Skia.UI.SkillSupport`**
+package — its `.fsi` surface lives at `src/SkillSupport/ShellProcess.fsi`. `FS.Skia.UI.Build` consumes
+the same code via ProjectReference, so the governance build shells through exactly these functions:
+
+- `ShellProcess.run: string -> string list -> string -> ProcResult` — `run exe args workingDir`,
+  capturing the full result; `ProcResult = { ExitCode: int; StdOut: string; StdErr: string }`.
+- `ShellProcess.git` — convenience wrapper that runs `git` with the given args in a repo dir.
+
+```fsharp
+open FS.Skia.UI.SkillSupport
+
+// Residual process with explicit exit-code capture (C17).
+let result = ShellProcess.run "dotnet" [ "--version" ] "."
+if result.ExitCode <> 0 then failwithf "dotnet failed: %s" result.StdErr
+printfn "sdk %s" (result.StdOut.Trim())
+
+// Git wrapping (C15): zero-context unified diff against a base ref.
+let diff = ShellProcess.git "." [ "diff"; "--unified=0"; "origin/main" ]
+printfn "%s" diff.StdOut
+```
+
 ## Cautions
 
 - **FAKE concurrency:** FAKE-backed commands share `.fake` state and are **not** safe to run
@@ -92,6 +121,16 @@ let runDotnet (workingDir: string) (arguments: string) =
 
 Stage 4.5–4.6 (shrink/delete `run-audit.sh`; in-process git + diff), Stage 5 (compiled front-end
 running residual `dotnet`/smoke processes). See the plan in `metadata.source`.
+
+## Persistent problems
+
+When a problem outlasts reasonable in-repo attempts, extensive external research is
+**mandatory** — consult **official online docs first** (the F#/.NET docs and the driven
+library's own documentation/API reference), then community sources (forums, Reddit, Q&A
+sites, issue trackers and changelogs). Record the findings and resolving links in the
+feature's `specs/<feature>/feedback/` folder and, for durable lessons, in this skill's
+**Sources** line. Offline, the mandate degrades to recording "research blocked — <why>"
+rather than hard-failing the phase.
 
 ## Sources / links
 

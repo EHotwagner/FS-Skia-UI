@@ -113,6 +113,59 @@ let runSkillSyncGate (model: BuildModel) =
     if not (FS.Skia.UI.Build.SkillSync.isCurrent currency) then
         failwith (FS.Skia.UI.Build.SkillSync.renderFailureMessage currency)
 
+// Feature 058 — SkillQualityCheck (US1, FR-001/FR-003): enumerate every FS-authored
+// SKILL.md across the in-scope skill homes, check each against the section rubric, write
+// the per-skill report, and fail loud naming each skill + missing section. The vendored
+// `speckit-*` tree is excluded by `SkillQuality.isInScope` (FR-004).
+let runSkillQualityCheck (model: BuildModel) =
+    let root = model.RepositoryRoot
+
+    let subRoots =
+        [ ".agents/skills"
+          "src"
+          "template/product-skills"
+          "template/fragments"
+          "template/feedback"
+          "template/base/.agents/skills" ]
+
+    let files =
+        subRoots
+        |> List.collect (fun sub ->
+            let dir = path (root :: (sub.Split('/') |> List.ofArray))
+
+            if Directory.Exists dir then
+                Directory.EnumerateFiles(dir, "SKILL.md", SearchOption.AllDirectories)
+                |> List.ofSeq
+            else
+                [])
+        |> List.distinct
+
+    let parsed =
+        files
+        |> List.map (fun full ->
+            let rel = (Path.GetRelativePath(root, full)).Replace('\\', '/')
+            SkillQuality.parse rel (File.ReadAllText full))
+        |> List.filter (fun s -> s.InScope)
+        |> List.distinctBy (fun s -> s.RelPath)
+
+    let report = SkillQuality.renderReport parsed
+    let reportPath = path [ model.ReadinessDir; "skill-quality-check.md" ]
+    let logPath = path [ model.LogDir; "skill-quality-check.txt" ]
+    ensureParent reportPath
+    File.WriteAllText(reportPath, report)
+    ensureParent logPath
+    File.WriteAllText(logPath, report)
+
+    let findings = SkillQuality.checkCorpus parsed
+
+    if not (List.isEmpty findings) then
+        failwith (
+            sprintf
+                "SkillQualityCheck failed: %d missing rubric section(s) across in-scope skills.\n%s"
+                (List.length findings)
+                (Findings.renderDetail findings)
+        )
+
 // Feature 044 — RefreshSurfaceBaselines regeneration edge (US1). Plan the derived tree
 // from canonical, write each derived file's bytes + the provenance manifest, and remove
 // any orphan derived file with no canonical source so the mirror stays exact.

@@ -126,6 +126,16 @@ let propertyTests =
 Stage 5 (compiled build front-end + routing), Stage 4/5 (golden-parity exit gates), all stages
 (Expecto + FsCheck regression/property tests). See the plan in `metadata.source`.
 
+## Persistent problems
+
+When a problem outlasts reasonable in-repo attempts, extensive external research is
+**mandatory** — consult **official online docs first** (the F#/.NET docs and the driven
+library's own documentation/API reference), then community sources (forums, Reddit, Q&A
+sites, issue trackers and changelogs). Record the findings and resolving links in the
+feature's `specs/<feature>/feedback/` folder and, for durable lessons, in this skill's
+**Sources** line. Offline, the mandate degrades to recording "research blocked — <why>"
+rather than hard-failing the phase.
+
 ## Sources / links
 
 - Fake.Core.Target: <https://fake.build/reference/fake-core-target.html>

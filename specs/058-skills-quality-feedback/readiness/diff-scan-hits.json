@@ -1,0 +1,702 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "build/Governance/Front/Governance.fs",
+      "line": 129,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"template/base/.agents/skills\" ]"
+    },
+    {
+      "file": "build/Governance/Routing.fs",
+      "line": 229,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"template/base/.agents/skills/**\" ]"
+    },
+    {
+      "file": "build/Governance/SkillQuality.fs",
+      "line": 42,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "let baseAgentSkill = p.StartsWith \"template/base/.agents/skills/\""
+    },
+    {
+      "file": "readiness/skill-quality-check.md",
+      "line": 12,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "`template/base/.agents/skills/**`"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/contracts/skill-quality-rubric.md",
+      "line": 11,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "`template/base/.agents/skills/*/SKILL.md`"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/plan.md",
+      "line": 67,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **V. Synthetic evidence**: None planned. The skill-quality check runs against"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/plan.md",
+      "line": 104,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "`template/base/.agents/skills/**` (the vendored `speckit-*` tree excluded);"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/plan.md",
+      "line": 122,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "`template/base/.agents/skills/**` (mirrored to `.claude` via generation) so"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/plan.md",
+      "line": 159,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: **None planned.** All evidence is real (real skill"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/plan.md",
+      "line": 210,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/                         # CANONICAL skill tree (edits here; .claude generated)"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/plan.md",
+      "line": 215,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/                         # GENERATED via RefreshSurfaceBaselines (no hand-sync)"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/plan.md",
+      "line": 224,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "base/.agents/skills/fsharp-*/         # 5 library-backed fsharp-* skills shipped unconditionally (C1; .claude mirrored)"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/plan.md",
+      "line": 225,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "base/.agents/skills/fs-skia-project/  # repo-authored shipped skill raised to the bar (in scope)"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/plan.md",
+      "line": 226,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "base/.agents/skills/fs-skia-feedback-capture/  # shipped command skill (feedback branch)"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/quickstart.md",
+      "line": 51,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "ls /tmp/fb-on/.agents/skills/fs-skia-feedback-capture/                  # command skill present"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 11,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"template/base/.agents/skills\\\" ]\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 19,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"template/base/.agents/skills/**\\\" ]\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 27,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"let baseAgentSkill = p.StartsWith \\\"template/base/.agents/skills/\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 35,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"`template/base/.agents/skills/**`\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 43,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"`template/base/.agents/skills/*/SKILL.md`\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 59,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"`template/base/.agents/skills/**` (the vendored `speckit-*` tree excluded);\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 67,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"`template/base/.agents/skills/**` (mirrored to `.claude` via generation) so\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 99,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"base/.agents/skills/fsharp-*/         # 5 library-backed fsharp-* skills shipped unconditionally (C1; .claude "
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 107,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"base/.agents/skills/fs-skia-project/  # repo-authored shipped skill raised to the bar (in scope)\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 115,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"base/.agents/skills/fs-skia-feedback-capture/  # shipped command skill (feedback branch)\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 123,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"ls /tmp/fb-on/.agents/skills/fs-skia-feedback-capture/                  # command skill present\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 131,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"\\\\\\\"template/base/.agents/skills\\\\\\\" ]\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 139,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"\\\\\\\"template/base/.agents/skills/**\\\\\\\" ]\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 147,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"let baseAgentSkill = p.StartsWith \\\\\\\"template/base/.agents/skills/\\\\\\\"\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 155,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"`template/base/.agents/skills/**`\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 163,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"`template/base/.agents/skills/*/SKILL.md`\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 171,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"`template/base/.agents/skills/**` (the vendored `speckit-*` tree excluded);\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 179,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"`template/base/.agents/skills/**` (mirrored to `.claude` via generation) so\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 187,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"base/.agents/skills/fsharp-*/         # 5 library-backed fsharp-* skills shipped unconditionally "
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 195,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"base/.agents/skills/fs-skia-project/  # repo-authored shipped skill raised to the bar (in scope)\\"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 203,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"base/.agents/skills/fs-skia-feedback-capture/  # shipped command skill (feedback branch)\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 211,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"ls /tmp/fb-on/.agents/skills/fs-skia-feedback-capture/                  # command skill present\\\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 219,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"\\\\\\\"match\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"template/base/.agents/skills\\\\\\\\\\\\\\\" ]\\\\\\\"\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 227,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"\\\\\\\"match\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"template/base/.agents/skills/**\\\\\\\\\\\\\\\" ]\\\\\\\"\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 235,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"\\\\\\\"match\\\\\\\": \\\\\\\"`template/base/.agents/skills/*/SKILL.md`\\\\\\\"\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 243,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"\\\\\\\"match\\\\\\\": \\\\\\\"`template/base/.agents/skills/**` (the vendored `speckit-*` tree excluded);\\\\\\"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 251,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"\\\\\\\"match\\\\\\\": \\\\\\\"`template/base/.agents/skills/**` (mirrored to `.claude` via generation) so\\\\\\"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 259,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"\\\\\\\"match\\\\\\\": \\\\\\\"base/.agents/skills/fsharp-*/         # 5 library-backed fsharp-* skills shipp"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 267,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"\\\\\\\"match\\\\\\\": \\\\\\\"base/.agents/skills/fs-skia-project/  # repo-authored shipped skill raised to "
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 275,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"\\\\\\\"match\\\\\\\": \\\\\\\"base/.agents/skills/fs-skia-feedback-capture/  # shipped command skill (feedba"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 283,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"\\\\\\\"match\\\\\\\": \\\\\\\"ls /tmp/fb-on/.agents/skills/fs-skia-feedback-capture/                  # comm"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 291,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"\\\\\\\"match\\\\\\\": \\\\\\\"template-shipped `template/base/.agents/skills/fs-skia-project`; plus the new\\"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 299,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"\\\\\\\"match\\\\\\\": \\\\\\\"`template/base/.agents/skills/**`), and `fs-skia-feedback-capture`. Only the\\\\"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 307,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"\\\\\\\"match\\\\\\\": \\\\\\\"- \\\\\\\\\\\\\\\"template/base/.agents/skills/**\\\\\\\\\\\\\\\"\\\\\\\"\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 315,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"`template/fragments/*/skill`, and `template/base/.agents/skills/fs-skia-project` skills to\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 323,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"Only in bid-true/.agents/skills: fs-skia-feedback-capture\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 331,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"Only in bid-true/.claude/skills: fs-skia-feedback-capture\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 339,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"template-shipped `template/base/.agents/skills/fs-skia-project`; plus the new\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 347,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"`template/base/.agents/skills/**`), and `fs-skia-feedback-capture`. Only the\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 355,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"- \\\\\\\"template/base/.agents/skills/**\\\\\\\"\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 363,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"`template/fragments/*/skill`, and `template/base/.agents/skills/fs-skia-project` skills to\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 499,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"Only in bid-true/.agents/skills: fs-skia-feedback-capture\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 507,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"Only in bid-true/.claude/skills: fs-skia-feedback-capture\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 515,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"template-shipped `template/base/.agents/skills/fs-skia-project`; plus the new\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 523,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"`template/base/.agents/skills/**`), and `fs-skia-feedback-capture`. Only the\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/diff-scan-hits.json",
+      "line": 563,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"- \\\"template/base/.agents/skills/**\\\"\""
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/skill-quality-evidence.md",
+      "line": 29,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "`template/fragments/*/skill`, and `template/base/.agents/skills/fs-skia-project` skills to"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/skill-sync.md",
+      "line": 12,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-layout-evidence/SKILL.md"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/skill-sync.md",
+      "line": 13,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-template-update/SKILL.md"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/skill-sync.md",
+      "line": 14,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fsharp-build-orchestration/SKILL.md"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/skill-sync.md",
+      "line": 15,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fsharp-code-generation/SKILL.md"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/skill-sync.md",
+      "line": 16,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fsharp-graph-algorithms/SKILL.md"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/skill-sync.md",
+      "line": 17,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fsharp-io-globbing/SKILL.md"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/skill-sync.md",
+      "line": 18,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fsharp-parsing/SKILL.md"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/skill-sync.md",
+      "line": 19,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fsharp-shell-process/SKILL.md"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/target-metadata.md",
+      "line": 23,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence (Principle V)**: none planned. The skill-quality check runs"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/task-graph.json",
+      "line": 254,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"title\": \"Add the `SkillQualityCheck` variant to the `Targets.Target` union + metadata, add a `Routing.fs` rule matching"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/task-graph.json",
+      "line": 727,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"title\": \"Add the `FS.Skia.UI.SkillSupport` pin to `template/base/Directory.Packages.props` (and `template/capabilities."
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/task-graph.json",
+      "line": 1016,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"title\": \"Raise every repo/package-owned `fs-skia-*` skill to the rubric: `fs-skia-layout-evidence`, `fs-skia-template-u"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/task-graph.md",
+      "line": 179,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/task-graph.md",
+      "line": 193,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "T007 [X] Add the `SkillQualityCheck` variant to the `Targets.Target` union + metadata, add a `Routing.fs` rule matching "
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/task-graph.md",
+      "line": 203,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "T017 [X] Add the `FS.Skia.UI.SkillSupport` pin to `template/base/Directory.Packages.props` (and `template/capabilities.y"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/task-graph.md",
+      "line": 209,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "T023 [X] Raise every repo/package-owned `fs-skia-*` skill to the rubric: `fs-skia-layout-evidence`, `fs-skia-template-up"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/template-feedback-false.md",
+      "line": 33,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "Only in bid-true/.agents/skills: fs-skia-feedback-capture"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/readiness/template-feedback-false.md",
+      "line": 34,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "Only in bid-true/.claude/skills: fs-skia-feedback-capture"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/spec.md",
+      "line": 36,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "template-shipped `template/base/.agents/skills/fs-skia-project`; plus the new"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/spec.md",
+      "line": 219,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "`template/base/.agents/skills/**`), and `fs-skia-feedback-capture`. Only the"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/tasks.md",
+      "line": 99,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- [X] T007 [P] [skillist: fsharp-build-orchestration] Add the `SkillQualityCheck` variant to the `Targets.Target` union "
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/tasks.md",
+      "line": 121,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- [X] T017 [US2] [skillist: fs-skia-template-update] Add the `FS.Skia.UI.SkillSupport` pin to `template/base/Directory.P"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/tasks.md",
+      "line": 139,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- [X] T023 [P] [US1] [skillist: []] Raise every repo/package-owned `fs-skia-*` skill to the rubric: `fs-skia-layout-evid"
+    },
+    {
+      "file": "specs/058-skills-quality-feedback/tasks.md",
+      "line": 235,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    },
+    {
+      "file": "validation.contract.yml",
+      "line": 167,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- \"template/base/.agents/skills/**\""
+    }
+  ]
+}

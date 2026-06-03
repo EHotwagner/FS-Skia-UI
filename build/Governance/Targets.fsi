@@ -39,6 +39,7 @@ type Target =
     | DependencyReport
     | GeneratedGuidanceCheck
     | SkillSyncCheck
+    | SkillQualityCheck
     | TemplateDrift
     | EvidenceGraph
     | EvidenceAudit

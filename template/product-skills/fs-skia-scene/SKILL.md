@@ -56,3 +56,23 @@ wiring in `fs-skia-skiaviewer` and control authoring in `fs-skia-ui-widgets`.
 
 Scene is the base capability in every profile; build product geometry from these
 primitives and feed the resulting `SceneNode` to your `View`.
+
+## Persistent problems
+
+When a problem outlasts reasonable in-repo attempts, extensive external research is
+**mandatory** — consult **official online docs first** (the F#/.NET docs and the driven
+library's own documentation/API reference), then community sources (forums, Reddit, Q&A
+sites, issue trackers and changelogs). Record the findings and resolving links in the
+feature's `specs/<feature>/feedback/` folder and, for durable lessons, in this skill's
+**Sources** line. Offline, the mandate degrades to recording "research blocked — <why>"
+rather than hard-failing the phase.
+
+## Related
+
+- [[fs-skia-skiaviewer]] — render the `SceneNode` this skill builds at the host boundary.
+- [[fs-skia-ui-widgets]] — compose higher-level controls that ultimately emit scenes.
+
+## Sources / links
+
+- F#/.NET docs: https://learn.microsoft.com/en-us/dotnet/fsharp/
+- SkiaSharp (driven render library): https://github.com/mono/SkiaSharp

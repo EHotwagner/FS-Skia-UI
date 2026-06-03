@@ -23,6 +23,7 @@ let defaultTestProjects =
       "tests/Testing.Tests/Testing.Tests.fsproj"
       "tests/Parity.Tests/Parity.Tests.fsproj"
       "tests/Smoke.Tests/Smoke.Tests.fsproj"
+      "tests/SkillSupport.Tests/SkillSupport.Tests.fsproj"
       "tests/Governance.Tests/Governance.Tests.fsproj" ]
 
 let packProjects =
@@ -37,7 +38,9 @@ let packProjects =
       "src/Controls/Controls.fsproj", "FS.Skia.UI.Controls"
       // 043: the published governance engine; generated consumers reference it
       // in-process instead of copying the Python + run-audit.sh scripts.
-      "build/Governance/FS.Skia.UI.Build.fsproj", "FS.Skia.UI.Build" ]
+      "build/Governance/FS.Skia.UI.Build.fsproj", "FS.Skia.UI.Build"
+      // 058 (US2): the shipped skill-support library backing the fsharp-* skills.
+      "src/SkillSupport/SkillSupport.fsproj", "FS.Skia.UI.SkillSupport" ]
 
 let projectVersion repositoryRoot project =
     let content = File.ReadAllText(path [ repositoryRoot; project ])

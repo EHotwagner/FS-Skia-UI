@@ -34,3 +34,41 @@ Scene must not reference Elmish, Silk.NET, SkiaSharp, Yoga.Net, or YamlDotNet. K
 ## Generated Product
 
 Scene is included in every app, governed, headless scene, and sample-pack product as the base capability.
+
+## Runnable example
+
+Open the package namespace and build a small pure scene description:
+
+```fsharp
+open FS.Skia.UI.Scene
+
+let scene =
+    Scene.group
+        [ Scene.filledRectangle { X = 0.0; Y = 0.0; Width = 320.0; Height = 240.0 } (Colors.rgb 16uy 16uy 24uy)
+          Scene.circle { X = 160.0; Y = 120.0 } 48.0 (Colors.rgb 220uy 60uy 60uy)
+          Scene.textAt { X = 12.0; Y = 24.0 } "HUD" Colors.white ]
+
+let kinds = Scene.describe scene
+let evidence = Scene.renderReadbackEvidence { Width = 320; Height = 240 } scene
+printfn "%A %s" kinds evidence.DeterministicHash
+```
+
+## Persistent problems
+
+When a problem outlasts reasonable in-repo attempts, extensive external research is
+**mandatory** — consult **official online docs first** (the F#/.NET docs and the driven
+library's own documentation/API reference), then community sources (forums, Reddit, Q&A
+sites, issue trackers and changelogs). Record the findings and resolving links in the
+feature's `specs/<feature>/feedback/` folder and, for durable lessons, in this skill's
+**Sources** line. Offline, the mandate degrades to recording "research blocked — <why>"
+rather than hard-failing the phase.
+
+## Related
+
+- [[fs-skia-skiaviewer]] hosts and renders these scene descriptions.
+- [[fs-skia-ui-widgets]] builds higher-level controls that compile down to Scene.
+
+## Sources / links
+
+- F#/.NET docs: https://learn.microsoft.com/en-us/dotnet/fsharp/
+- SkiaSharp (driven rendering library): https://github.com/mono/SkiaSharp

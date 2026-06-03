@@ -11,7 +11,24 @@ Owns optional sample-pack template content under `template/fragments/samples/`.
 
 ## Public Contract
 
-Samples are non-runtime generated content and have `no-public-surface` in the capability catalog.
+Samples are non-runtime generated content with **no backing library**: they have
+`no-public-surface` in the capability catalog. A sample reuses the driven surfaces
+of the capabilities it demonstrates (Scene, SkiaViewer, Controls) rather than owning
+its own API.
+
+## Usage
+
+A sample-pack screen is ordinary product code reusing existing capability surfaces:
+
+```fsharp
+open FS.Skia.UI.Scene
+
+// A minimal sample scene copied into a sample-pack product. No sample-owned API.
+let sampleScene : Scene =
+    Scene.group
+        [ Scene.textAt { X = 12.0; Y = 24.0 } "sample-pack"
+            { Red = 255uy; Green = 255uy; Blue = 255uy; Alpha = 255uy } ]
+```
 
 ## Build Commands
 
@@ -33,3 +50,23 @@ Do not include samples in default consumer products.
 ## Generated Product
 
 Samples are copied only when the sample-pack profile or sample capability is selected.
+
+## Persistent problems
+
+When a problem outlasts reasonable in-repo attempts, extensive external research is
+**mandatory** — consult **official online docs first** (the F#/.NET docs and the driven
+library's own documentation/API reference), then community sources (forums, Reddit, Q&A
+sites, issue trackers and changelogs). Record the findings and resolving links in the
+feature's `specs/<feature>/feedback/` folder and, for durable lessons, in this skill's
+**Sources** line. Offline, the mandate degrades to recording "research blocked — <why>"
+rather than hard-failing the phase.
+
+## Related
+
+- [[fs-skia-scene]] — the primitive capability most samples demonstrate.
+- [[fs-skia-skiaviewer]] — host wiring a runnable sample launches through.
+
+## Sources / links
+
+- F#/.NET docs: https://learn.microsoft.com/en-us/dotnet/fsharp/
+- SkiaSharp (driven render library): https://github.com/mono/SkiaSharp

@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- FS.Skia.UI.SkillSupport — the shipped backing library for the fsharp-*
+       authoring skill families (Graph / Parsing / Globbing / CodeGen / ShellProcess).
+       Build/authoring scope (the same shipping pattern as FS.Skia.UI.Build): it ships
+       to the template unconditionally so generated projects carry the .fsi the
+       fsharp-* skills cite (SC-004), and FS.Skia.UI.Build consumes it by
+       ProjectReference so governance runs the same code (D3). Reuses already-pinned
+       YamlDotNet / DiffPlex / FSharp.SystemTextJson — no new third-party dependency. -->
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <IsPackable>true</IsPackable>
+    <PackageId>FS.Skia.UI.SkillSupport</PackageId>
+    <AssemblyName>FS.Skia.UI.SkillSupport</AssemblyName>
+    <Version>0.1.61-preview.1</Version>
+    <Title>FS.Skia.UI.SkillSupport</Title>
+    <Description>Shipped backing library for the FS.Skia.UI fsharp-* authoring skills: generic DAG graph algorithms, governance-input parsing, fnmatch-style globbing + currency diff, deterministic Markdown/Mermaid/ASCII code generation, and a captured external-process runner.</Description>
+    <PackageTags>fsharp;skills;authoring;graph;parsing;globbing;codegen</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Graph.fsi" />
+    <Compile Include="Graph.fs" />
+    <Compile Include="Parsing.fsi" />
+    <Compile Include="Parsing.fs" />
+    <Compile Include="Globbing.fsi" />
+    <Compile Include="Globbing.fs" />
+    <Compile Include="CodeGen.fsi" />
+    <Compile Include="CodeGen.fs" />
+    <Compile Include="ShellProcess.fsi" />
+    <Compile Include="ShellProcess.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="YamlDotNet" />
+    <PackageReference Include="DiffPlex" />
+    <PackageReference Include="FSharp.SystemTextJson" />
+  </ItemGroup>
+
+</Project>

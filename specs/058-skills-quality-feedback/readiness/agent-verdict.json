@@ -1,0 +1,17 @@
+{
+  "status": "degraded",
+  "authority": "focused-authoritative",
+  "changed_path_source": { "kind": "git-merge-base-diff", "paths": [] },
+  "selected_rule_ids": [],
+  "required_gates": ["EvidenceGraph", "EvidenceAudit"],
+  "completed_gates": ["EvidenceGraph"],
+  "missing_gates": ["EvidenceAudit"],
+  "skipped_gates": [],
+  "missing_artifacts": ["readiness/evidence-audit.md"],
+  "failure_owner": "governance",
+  "failure_class": "missing-evidence",
+  "next_command": "./fake.sh build -t Verify",
+  "artifacts": ["readiness/task-graph.json", "readiness/task-graph.md"],
+  "diagnostics": ["AgentReady produced a degraded handoff because EvidenceAudit is a final readiness gate for later integration tasks."],
+  "timestamp_utc": "2026-06-03T18:41:58.8182048+00:00"
+}

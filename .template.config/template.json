@@ -76,6 +76,12 @@
       "defaultValue": "false",
       "description": "Skip automatic Git repository initialization after template creation."
     },
+    "feedback": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Capture per-phase Spec Kit feedback into specs/<feature>/feedback/ (adds the after_* feedback hooks and the fs-skia-feedback-capture skill). Default false induces no diff."
+    },
     "projectSlug": {
       "type": "generated",
       "generator": "casing",
@@ -204,6 +210,21 @@
       "condition": "(profile == \"sample-pack\")",
       "source": "template/fragments/samples/skill/",
       "target": ".claude/skills/fs-skia-samples/"
+    },
+    {
+      "condition": "(feedback == true)",
+      "source": "template/feedback/skill/",
+      "target": ".agents/skills/fs-skia-feedback-capture/"
+    },
+    {
+      "condition": "(feedback == true)",
+      "source": "template/feedback/skill/",
+      "target": ".claude/skills/fs-skia-feedback-capture/"
+    },
+    {
+      "condition": "(feedback == true)",
+      "source": "template/feedback/extensions/",
+      "target": ".specify/extensions/feedback/"
     }
   ],
   "postActions": [

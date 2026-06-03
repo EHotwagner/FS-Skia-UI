@@ -16,6 +16,16 @@ Primary files:
 - `artifacts/templates/FS.Skia.UI.Template.<version>.nupkg`: packed template output.
 - `specs/*/readiness/template/template-pack.log` and `template-package-contents.md`: may be updated by `TemplatePack`.
 
+## Driven surface
+
+This skill drives the `dotnet new fs-skia-ui` template and the FAKE template
+targets in `FS.Skia.UI.Build`. The template-validation surface is the
+`FS.Skia.UI.Build` targets `TemplatePack` (packs `FS.Skia.UI.Template`) and
+`TemplateCheck` (validates generated projects against the current package pins).
+There is no hand-written `.fsi` contract for the template itself; the template's
+contract is the generated `Directory.Packages.props` pin set and the
+`FS.Skia.UI.Build` target metadata that enforces it.
+
 ## Workflow
 
 1. Confirm the working tree and current branch with `git status --short --branch`.
@@ -195,3 +205,23 @@ Primary files:
 - `dotnet new search fs-skia-ui` checks NuGet.org, not the locally installed template; no results there is not a failure for local updates.
 - `dotnet new uninstall` with no arguments lists installed local template packages and confirms the `FS.Skia.UI.Template` version.
 - Generated app restore should use `~/.local/share/nuget-local` when validating freshly packed local packages.
+
+## Related
+
+- [[fs-skia-project]]
+- [[fsharp-build-orchestration]]
+
+## Sources / links
+
+- Custom .NET templates (`dotnet new`): https://learn.microsoft.com/en-us/dotnet/core/tools/custom-templates
+- F# / .NET documentation: https://learn.microsoft.com/en-us/dotnet/fsharp/
+
+## Persistent problems
+
+When a problem outlasts reasonable in-repo attempts, extensive external research is
+**mandatory** — consult **official online docs first** (the F#/.NET docs and the driven
+library's own documentation/API reference), then community sources (forums, Reddit, Q&A
+sites, issue trackers and changelogs). Record the findings and resolving links in the
+feature's `specs/<feature>/feedback/` folder and, for durable lessons, in this skill's
+**Sources** line. Offline, the mandate degrades to recording "research blocked — <why>"
+rather than hard-failing the phase.

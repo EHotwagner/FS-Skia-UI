@@ -183,6 +183,8 @@ type BuildEffect =
     // Feature 048: additive per-package surface diff (pure diff + edge interpreter re-derived
     // in interpret over the real source tree + committed baselines, so no payload).
     | PerPackageSurfaceDiffCheck
+    // Feature 058 (US1): pure skill-quality rubric check; enumeration/IO at the interpret edge.
+    | SkillQualityScan
 
 let init root =
     let readiness = featureReadiness root

@@ -302,6 +302,37 @@ let parseTaskId (input: string) =
     | Error _ -> None
 ```
 
+## Library API + runnable example
+
+These parsers now ship as the real `Parsing` module in the **`FS.Skia.UI.SkillSupport`** package —
+its `.fsi` surface lives at `src/SkillSupport/Parsing.fsi`. `FS.Skia.UI.Build` consumes the same code
+via ProjectReference, so the governance build parses through exactly these functions:
+
+- `Parsing.readYaml<'T>` — deserialize YAML into a typed F# record/DU.
+- `Parsing.readJson<'T>` — deserialize JSON into a typed F# record/DU (F# union/record aware).
+- `Parsing.matchLines: string -> string seq -> (int * Match) seq` — apply a regex pattern across an
+  enumerable of lines, yielding the 1-based line index and the `System.Text.RegularExpressions.Match`.
+
+```fsharp
+open FS.Skia.UI.SkillSupport
+
+type FeatureFile = { feature_directory: string }
+
+// Typed JSON read (C4) through the shipped module.
+let feature = Parsing.readJson<FeatureFile> """{ "feature_directory": "specs/058" }"""
+
+// Typed YAML read (C1).
+type DepsRoot = { tasks: Map<string, string list> }
+let deps = Parsing.readYaml<DepsRoot> "tasks:\n  T001: [T000]\n"
+
+// Regex over lines (C2/C16): pull task ids with their line numbers.
+let hits =
+    [ "- [X] T001 do it"; "noise"; "- [ ] T002 next" ]
+    |> Parsing.matchLines @"T\d{3,4}"
+    |> Seq.map (fun (lineNo, m) -> lineNo, m.Value)
+    |> Seq.toList                               // [ (1, "T001"); (3, "T002") ]
+```
+
 ## Cautions
 
 - **Two `tasks.deps.yml` shapes** (object `{deps, skillist}` + legacy bare-list) — one of the two most
@@ -317,6 +348,16 @@ let parseTaskId (input: string) =
 Stage 3.3 (YAML→typed model migration), Stage 4 (Python parser port: task-graph + audit-status),
 Stage 5 (compiled build front-end reading `feature.json` / emitting `task-graph.json`). See the plan in
 `metadata.source`.
+
+## Persistent problems
+
+When a problem outlasts reasonable in-repo attempts, extensive external research is
+**mandatory** — consult **official online docs first** (the F#/.NET docs and the driven
+library's own documentation/API reference), then community sources (forums, Reddit, Q&A
+sites, issue trackers and changelogs). Record the findings and resolving links in the
+feature's `specs/<feature>/feedback/` folder and, for durable lessons, in this skill's
+**Sources** line. Offline, the mandate degrades to recording "research blocked — <why>"
+rather than hard-failing the phase.
 
 ## Sources / links
 

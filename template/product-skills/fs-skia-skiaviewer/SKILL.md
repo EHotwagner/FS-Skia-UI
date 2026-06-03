@@ -60,3 +60,23 @@ Your `update` and `View` stay pure; never perform host I/O inside them.
 The app profile wires `Viewer.runApp viewerOptions generatedHost` as the default
 launch path. Use `Viewer.runAppEvidence` with the same host for bounded evidence
 runs.
+
+## Persistent problems
+
+When a problem outlasts reasonable in-repo attempts, extensive external research is
+**mandatory** — consult **official online docs first** (the F#/.NET docs and the driven
+library's own documentation/API reference), then community sources (forums, Reddit, Q&A
+sites, issue trackers and changelogs). Record the findings and resolving links in the
+feature's `specs/<feature>/feedback/` folder and, for durable lessons, in this skill's
+**Sources** line. Offline, the mandate degrades to recording "research blocked — <why>"
+rather than hard-failing the phase.
+
+## Related
+
+- [[fs-skia-scene]] — build the pure `SceneNode` values this host renders.
+- [[fs-skia-keyboard-input]] — feed normalized `ViewerKey` events into `MapKey`.
+
+## Sources / links
+
+- F#/.NET docs: https://learn.microsoft.com/en-us/dotnet/fsharp/
+- SkiaSharp (driven render library): https://github.com/mono/SkiaSharp

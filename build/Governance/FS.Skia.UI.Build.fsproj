@@ -32,6 +32,9 @@
     <Compile Include="SkillSync.fs" />
     <Compile Include="Findings.fsi" />
     <Compile Include="Findings.fs" />
+    <!-- Feature 058 (US1): pure skill-quality rubric check; depends only on Findings. -->
+    <Compile Include="SkillQuality.fsi" />
+    <Compile Include="SkillQuality.fs" />
     <Compile Include="Targets.fsi" />
     <Compile Include="Targets.fs" />
     <Compile Include="TargetMetadata.fsi" />
@@ -110,6 +113,13 @@
          Centrally pinned in Directory.Packages.props (no new PackageVersion); reuses the
          repository's existing golden-diff facility (plan §Dependency impact). -->
     <PackageReference Include="DiffPlex" />
+  </ItemGroup>
+
+  <!-- Feature 058 (US2, D3): consume the shipped SkillSupport helpers by
+       ProjectReference (source, not the packed nupkg — no build-of-the-builder
+       version circularity). Governance runs the same code the fsharp-* skills cite. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SkillSupport\SkillSupport.fsproj" />
   </ItemGroup>
 
 </Project>

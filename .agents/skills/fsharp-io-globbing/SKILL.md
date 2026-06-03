@@ -91,6 +91,32 @@ let enumerateMarkdown (root: string) =
     |> Seq.toList
 ```
 
+## Library API + runnable example
+
+Discovery and glob matching now ship as the real `Globbing` module in the **`FS.Skia.UI.SkillSupport`**
+package — its `.fsi` surface lives at `src/SkillSupport/Globbing.fsi`. `FS.Skia.UI.Build` consumes the
+same code via ProjectReference, so the governance build matches through exactly these functions:
+
+- `Globbing.isMatch: string -> string -> bool` — `isMatch glob path`; fnmatch-parity `*`/`**` matching.
+- `Globbing.discover: string -> string list -> string list` — enumerate files under a root matching the
+  given include globs, returned as a stable sorted list (deterministic for golden diffs).
+- `Globbing.currencyDiff: string -> string -> string list` — per-line drift between the on-disk copy and
+  a fresh regeneration; empty list means current.
+
+```fsharp
+open FS.Skia.UI.SkillSupport
+
+// Whitelist-style glob check (C14).
+let ok = Globbing.isMatch "**/*.md" "docs/reports/report.md"   // true
+
+// Discover the skill sources under the repo root (C13), stably sorted.
+let skills = Globbing.discover "." [ ".agents/skills/*/SKILL.md"; "src/*/skill/SKILL.md" ]
+
+// Generation-currency drift: empty when the committed copy is up to date.
+let drift = Globbing.currencyDiff onDiskText regeneratedText
+if not (List.isEmpty drift) then failwithf "stale: %A" drift
+```
+
 ## Cautions
 
 - **.NET glob vs Python `fnmatch` drift** — the live risk (see Parity caution above): golden-test
@@ -104,6 +130,16 @@ let enumerateMarkdown (root: string) =
 
 Stage 4 (skill discovery + audit-patterns whitelist matching), Stage 2 (generation-currency checks
 over the discovered files). See the plan in `metadata.source`.
+
+## Persistent problems
+
+When a problem outlasts reasonable in-repo attempts, extensive external research is
+**mandatory** — consult **official online docs first** (the F#/.NET docs and the driven
+library's own documentation/API reference), then community sources (forums, Reddit, Q&A
+sites, issue trackers and changelogs). Record the findings and resolving links in the
+feature's `specs/<feature>/feedback/` folder and, for durable lessons, in this skill's
+**Sources** line. Offline, the mandate degrades to recording "research blocked — <why>"
+rather than hard-failing the phase.
 
 ## Sources / links
 

@@ -216,6 +216,23 @@ let rules =
           "focused"
           "product"
 
+      // Feature 058 (US1, FR-001/FR-005): every FS-authored skill home routes to the
+      // SkillQualityCheck rubric gate; canonical `.agents/skills/**` edits also route to
+      // SkillSyncCheck so the generated `.claude` mirror cannot drift. The vendored
+      // `speckit-*` tree is excluded inside the gate (FR-004), not by path here.
+      internalRule
+          "skill-quality"
+          [ ".agents/skills/**"
+            "src/**/skill/SKILL.md"
+            "template/product-skills/**"
+            "template/fragments/**/skill/SKILL.md"
+            "template/base/.agents/skills/**" ]
+          FocusedAuthority
+          [ Targets.SkillQualityCheck; Targets.SkillSyncCheck ]
+          [ "readiness/skill-quality-check.md" ]
+          "focused"
+          "governance"
+
       internalRule
           "build-target-contract"
           [ "build.fsx"; "scripts/build/**"; "validation.contract.yml" ]

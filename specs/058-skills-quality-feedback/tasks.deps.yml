@@ -1,0 +1,142 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Every Tnnn id that appears in tasks.md MUST appear as a key here. Each task
+# value MUST include:
+#   deps: ordered list of explicit non-phase dependencies
+#   skillist: ordered list of applicable capability skill identifiers
+# Use skillist: [] when no capability skill applies.
+#
+# Phase-checkpoint edges are auto-injected by the script (every task in
+# Phase N+1 implicitly depends on the last task of Phase N). Only non-phase
+# cross-edges are written here.
+
+tasks:
+  # Phase 1: Setup
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+
+  # Phase 2: Foundation
+  T005:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T006:
+    deps: []
+    skillist: []
+  T007:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T008:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T009:
+    deps: []
+    skillist: []
+
+  # Phase 3: US2 — support library extraction
+  T010:
+    deps: [T005]
+    skillist: ["fsharp-build-orchestration"]
+  T011:
+    deps: [T010]
+    skillist: ["fsharp-graph-algorithms"]
+  T012:
+    deps: [T010]
+    skillist: ["fsharp-parsing"]
+  T013:
+    deps: [T010]
+    skillist: ["fsharp-io-globbing"]
+  T014:
+    deps: [T010]
+    skillist: ["fsharp-code-generation"]
+  T015:
+    deps: [T010]
+    skillist: ["fsharp-shell-process"]
+  T016:
+    deps: [T011, T012, T013, T014, T015, T008]
+    skillist: ["fsharp-build-orchestration"]
+  T017:
+    deps: [T016]
+    skillist: ["fs-skia-template-update"]
+  T018:
+    deps: [T011, T012, T013, T014, T015]
+    skillist: ["fsharp-build-orchestration"]
+
+  # Phase 4: US1 — quality bar gate + skill rewrites
+  T019:
+    deps: [T006]
+    skillist: ["fsharp-build-orchestration"]
+  T020:
+    deps: [T019, T006]
+    skillist: ["fsharp-parsing", "fsharp-code-generation"]
+  T021:
+    deps: [T020, T007]
+    skillist: ["fsharp-build-orchestration"]
+  T022:
+    deps: []
+    skillist: []
+  T023:
+    deps: []
+    skillist: []
+  T024:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+  T025:
+    deps: [T022, T023, T024]
+    skillist: ["fsharp-code-generation"]
+  T026:
+    deps: [T020, T021, T025]
+    skillist: ["fsharp-build-orchestration"]
+
+  # Phase 5: US3 — feedback parameter + template
+  T027:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+  T028:
+    deps: [T027]
+    skillist: ["fs-skia-template-update"]
+  T029:
+    deps: [T027]
+    skillist: []
+  T030:
+    deps: [T027, T029]
+    skillist: ["fs-skia-template-update"]
+  T031:
+    deps: [T028, T030, T017]
+    skillist: ["fs-skia-template-update"]
+  T032:
+    deps: [T031]
+    skillist: ["fs-skia-template-update"]
+
+  # Phase 6: US4 — research mandate + worked example
+  T033:
+    deps: []
+    skillist: []
+  T034:
+    deps: [T033]
+    skillist: []
+
+  # Phase 7: Integration & Polish
+  T035:
+    deps: []
+    skillist: []
+  T036:
+    deps: [T035]
+    skillist: ["fsharp-build-orchestration"]
+  T037:
+    deps: [T036]
+    skillist: ["speckit-evidence-graph"]
+  T038:
+    deps: [T037]
+    skillist: ["speckit-evidence-audit"]

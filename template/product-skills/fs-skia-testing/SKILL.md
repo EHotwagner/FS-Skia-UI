@@ -59,3 +59,23 @@ and `Verify` target perform the actual file and process I/O.
 
 The governed profile selects Testing alongside Scene so product tests can assert
 their own generated structure and package pins.
+
+## Persistent problems
+
+When a problem outlasts reasonable in-repo attempts, extensive external research is
+**mandatory** — consult **official online docs first** (the F#/.NET docs and the driven
+library's own documentation/API reference), then community sources (forums, Reddit, Q&A
+sites, issue trackers and changelogs). Record the findings and resolving links in the
+feature's `specs/<feature>/feedback/` folder and, for durable lessons, in this skill's
+**Sources** line. Offline, the mandate degrades to recording "research blocked — <why>"
+rather than hard-failing the phase.
+
+## Related
+
+- [[fs-skia-scene]] — the capability whose generated output these tests assert.
+- [[fs-skia-project]] — product-level wiring of expectations and readiness gates.
+
+## Sources / links
+
+- Expecto (driven test runner): https://github.com/haf/expecto
+- F#/.NET docs: https://learn.microsoft.com/en-us/dotnet/fsharp/

@@ -112,3 +112,23 @@ Users moving from the legacy Charts package should replace chart declarations
 with Controls `LineChart`, `BarChart`, `PieChart`, `ScatterPlot`, `GraphView`,
 and `DataGrid` declarations. There is no compatibility shim; generated
 products should use `FS.Skia.UI.Controls` directly.
+
+## Persistent problems
+
+When a problem outlasts reasonable in-repo attempts, extensive external research is
+**mandatory** — consult **official online docs first** (the F#/.NET docs and the driven
+library's own documentation/API reference), then community sources (forums, Reddit, Q&A
+sites, issue trackers and changelogs). Record the findings and resolving links in the
+feature's `specs/<feature>/feedback/` folder and, for durable lessons, in this skill's
+**Sources** line. Offline, the mandate degrades to recording "research blocked — <why>"
+rather than hard-failing the phase.
+
+## Related
+
+- [[fs-skia-layout]] is the runtime layout engine these controls compose over.
+- [[fs-skia-scene]] is the primitive surface controls ultimately render into.
+
+## Sources / links
+
+- F#/.NET docs: https://learn.microsoft.com/en-us/dotnet/fsharp/
+- SkiaSharp (the driven Skia rendering library): https://github.com/mono/SkiaSharp

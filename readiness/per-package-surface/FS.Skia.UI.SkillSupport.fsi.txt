@@ -1,0 +1,57 @@
+namespace FS.Skia.UI.SkillSupport
+
+module CodeGen =
+
+    val mermaidGraph: nodes: string list -> edges: (string * string) list -> string
+
+    val markdownTable: headers: string list -> rows: string list list -> string
+
+    val asciiTree: roots: string list -> children: (string -> string list) -> string
+
+namespace FS.Skia.UI.SkillSupport
+
+module Globbing =
+
+    val isMatch: glob: string -> path: string -> bool
+
+    val discover: root: string -> globs: string list -> string list
+
+    val currencyDiff: expected: string -> actual: string -> string list
+
+namespace FS.Skia.UI.SkillSupport
+
+module Graph =
+
+    type NodeId = string
+
+    type Edge = NodeId * NodeId
+
+    val topoSort: nodes: NodeId list -> edges: Edge list -> Result<NodeId list, NodeId list>
+
+    val detectCycle: nodes: NodeId list -> edges: Edge list -> NodeId list option
+
+namespace FS.Skia.UI.SkillSupport
+
+module Parsing =
+
+    val readYaml<'T> : text: string -> Result<'T, string>
+
+    val readJson<'T> : text: string -> Result<'T, string>
+
+    val matchLines:
+        pattern: string ->
+        lines: string seq ->
+            (int * System.Text.RegularExpressions.Match) seq
+
+namespace FS.Skia.UI.SkillSupport
+
+module ShellProcess =
+
+    type ProcResult =
+        { ExitCode: int
+          StdOut: string
+          StdErr: string }
+
+    val run: exe: string -> args: string list -> workingDir: string -> ProcResult
+
+    val git: args: string list -> workingDir: string -> ProcResult

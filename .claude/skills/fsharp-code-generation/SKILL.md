@@ -143,6 +143,27 @@ time — they do **not** emit source or build artifacts, and would re-introduce 
 tax the foundations programme is removing (config ADR D6, no-FCS stance). Do not use them for the
 governance port; noted only to prevent the common conflation with source generation.
 
+## Library API + runnable example
+
+The document renderers now ship as the real `CodeGen` module in the **`FS.Skia.UI.SkillSupport`**
+package — its `.fsi` surface lives at `src/SkillSupport/CodeGen.fsi`. `FS.Skia.UI.Build` consumes the
+same code via ProjectReference, so the governance build renders through exactly these functions:
+
+- `CodeGen.mermaidGraph` — render `graph TD` Mermaid from edge pairs.
+- `CodeGen.markdownTable` — render a Markdown count/status table from header + rows.
+- `CodeGen.asciiTree` — render the `├── `/`└── ` ASCII dependency tree (stable connector glyphs).
+
+```fsharp
+open FS.Skia.UI.SkillSupport
+
+let edges = [ ("T001", "T002"); ("T002", "T003") ]
+let mermaid = CodeGen.mermaidGraph edges      // "graph TD\n  T001 --> T002\n  ..."
+
+let table = CodeGen.markdownTable [ "Status"; "Count" ] [ [ "done"; "3" ]; [ "pending"; "1" ] ]
+
+let tree = CodeGen.asciiTree "root" [ "T001"; "T002" ]   // root\n├── T001\n└── T002
+```
+
 ## Cautions
 
 - **Determinism.** Rendered artifacts reproducible byte-for-byte (no clock/env, stable ordering) so
@@ -156,6 +177,16 @@ governance port; noted only to prevent the common conflation with source generat
 Stage 2 (`GenerateAgentSkills` + skillist render + currency check), Stage 4 (`task-graph.md` /
 `task-graph.json` render), Stage 3.3/5.5 (the one-shot `Config.fs` generation). See the plan in
 `metadata.source`.
+
+## Persistent problems
+
+When a problem outlasts reasonable in-repo attempts, extensive external research is
+**mandatory** — consult **official online docs first** (the F#/.NET docs and the driven
+library's own documentation/API reference), then community sources (forums, Reddit, Q&A
+sites, issue trackers and changelogs). Record the findings and resolving links in the
+feature's `specs/<feature>/feedback/` folder and, for durable lessons, in this skill's
+**Sources** line. Offline, the mandate degrades to recording "research blocked — <why>"
+rather than hard-failing the phase.
 
 ## Sources / links
 

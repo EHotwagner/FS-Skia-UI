@@ -211,6 +211,34 @@ let runGraphProperties () =
     Check.QuickThrowOnFailure(Prop.forAll ints (fun n -> n + 0 = n))
 ```
 
+## Library API + runnable example
+
+These algorithms now ship as the real `Graph` module in the **`FS.Skia.UI.SkillSupport`**
+package — its `.fsi` surface lives at `src/SkillSupport/Graph.fsi`. The same code is consumed by
+`FS.Skia.UI.Build` via ProjectReference, so the governance build runs exactly these functions:
+
+- `Graph.topoSort: NodeId list -> Edge list -> Result<NodeId list, NodeId list>` — Kahn order, or
+  `Error` carrying the unresolved (cyclic) node ids.
+- `Graph.detectCycle: NodeId list -> Edge list -> NodeId list option` — `Some cycle` when a back-edge
+  to a GRAY node exists, else `None`.
+- `NodeId = string`; `Edge = NodeId * NodeId`.
+
+```fsharp
+open FS.Skia.UI.SkillSupport
+
+let nodes = [ "T001"; "T002"; "T003" ]
+let edges = [ ("T001", "T002"); ("T002", "T003") ]
+
+// Topological order respecting every edge (Ok in the acyclic case).
+let order =
+    match Graph.topoSort nodes edges with
+    | Ok sorted -> sorted              // [ "T001"; "T002"; "T003" ]
+    | Error unresolved -> failwithf "cycle through %A" unresolved
+
+// No cycle here, so detectCycle returns None.
+let cycle = Graph.detectCycle nodes edges   // None
+```
+
 ## Cautions
 
 - **Tie-break parity.** Kahn must emit ready nodes sorted (as the Python did) or `task-graph.md`
@@ -225,6 +253,16 @@ let runGraphProperties () =
 
 Stage 4 (graph compute port: cycle/topo/propagation), Stage 5 (the in-process gate that replaces the
 shell orchestration). See the plan in `metadata.source`.
+
+## Persistent problems
+
+When a problem outlasts reasonable in-repo attempts, extensive external research is
+**mandatory** — consult **official online docs first** (the F#/.NET docs and the driven
+library's own documentation/API reference), then community sources (forums, Reddit, Q&A
+sites, issue trackers and changelogs). Record the findings and resolving links in the
+feature's `specs/<feature>/feedback/` folder and, for durable lessons, in this skill's
+**Sources** line. Offline, the mandate degrades to recording "research blocked — <why>"
+rather than hard-failing the phase.
 
 ## Sources / links
 

@@ -37,6 +37,31 @@ Public guidance must use `Product.Program.view` for the app scene,
 `Product.Program.generatedHost` for the host value, and
 `Product.Program.update` for reducer examples.
 
+## Runnable example
+
+Capture and assert scene layout bounds against the layout-evidence contract. The
+driven surface is the Layout/Scene product packages plus the
+`fs-skia-layout-evidence` capability; an evidence check confirms the HUD region
+and gameplay entity bounds do not overlap:
+
+```fsharp
+open FS.Skia.UI.Scene
+open FS.Skia.UI.Testing
+
+// Render the app scene and capture readable-layout evidence.
+let scene = Product.Program.view Product.Program.initialModel
+let evidence = LayoutEvidence.capture scene
+
+// Assert reserved HUD region and gameplay entity bounds, then prove non-overlap.
+let hud = evidence |> LayoutEvidence.requireRegion "hud"
+let gameplay = evidence |> LayoutEvidence.requireRegion "gameplay"
+match LayoutEvidence.proofLevel evidence with
+| ReadableLayout when not (Bounds.intersects hud gameplay) ->
+    printfn "ReadableLayout proven: HUD %A clear of gameplay %A" hud gameplay
+| DeterministicRenderOnly -> failwith "render hash only; not readable-layout proof"
+| _ -> failwith "unsupported layout inspection: facts not actionable"
+```
+
 ## Build Commands
 
 Prefer repository targets over ad-hoc command sequences:
@@ -135,3 +160,23 @@ viewer launch, filesystem, package restore, process, font host, or
 window-system effects into pure validation helpers. When host warning
 classification or evidence collection needs I/O, model the request and result
 explicitly and keep execution at the interpreter or build-target edge.
+
+## Related
+
+- [[fs-skia-layout]]
+- [[fs-skia-scene]]
+
+## Sources / links
+
+- F# / .NET documentation: https://learn.microsoft.com/en-us/dotnet/fsharp/
+- Yoga layout reference (flexbox layout engine): https://www.yogalayout.dev/
+
+## Persistent problems
+
+When a problem outlasts reasonable in-repo attempts, extensive external research is
+**mandatory** — consult **official online docs first** (the F#/.NET docs and the driven
+library's own documentation/API reference), then community sources (forums, Reddit, Q&A
+sites, issue trackers and changelogs). Record the findings and resolving links in the
+feature's `specs/<feature>/feedback/` folder and, for durable lessons, in this skill's
+**Sources** line. Offline, the mandate degrades to recording "research blocked — <why>"
+rather than hard-failing the phase.

@@ -1,0 +1,12 @@
+
+## package/sample-pack instantiate
+$ dotnet new fs-skia-ui --name V3DotnetSamplePackPackage --output "/home/developer/projects/FS-Skia-UI/artifacts/template-check/058-skills-quality-feedback/package-sample-pack" --allow-scripts yes --profile sample-pack --rootNamespace V3DotnetSamplePackPackage --packagePrefix V3DotnetSamplePackPackage --authors TemplateValidation --repositoryUrl "https://example.invalid/package/sample-pack/V3DotnetSamplePackPackage" --targetFramework net10.0 --skipGitInit true
+The template "FS Skia UI Governed Project" was created successfully.
+
+Processing post-creation actions...
+Running command 'bash -c "find . -type f \( -name '*.sh' -o -name 'fake.sh' \) -exec chmod +x {} +"'...
+Command succeeded.
+
+
+
+exit-code=0
