@@ -9,11 +9,11 @@ metadata:
 
 # fsharp-code-generation
 
-Cookbook for the two *different* generation jobs in the port. Owns **C10** (document/text
-generation — `task-graph.md` Mermaid + ASCII tree + count tables), **C11** (document generation +
-currency check — `.claude/skills/**` from `.agents/skills/**`, skillist render), and **C12** (the
-one-shot F# *source* generation). Conflating C10/C11 with C12 is the main pitfall this skill
-prevents. Verdicts come from the capability report (`metadata.source`) §5.
+Cookbook for the two *different* generation jobs in the port — keeping C10/C11 (text) distinct from C12
+(F# source) is its main pitfall. Owns **C10** (document/text generation — `task-graph.md` Mermaid +
+ASCII tree + count tables), **C11** (document generation + currency check — `.claude/skills/**` from
+`.agents/skills/**`, skillist render), and **C12** (one-shot F# *source* generation). Verdicts from the
+capability report (`metadata.source`) §5.
 
 ## When to use
 
@@ -24,15 +24,14 @@ prevents. Verdicts come from the capability report (`metadata.source`) §5.
 
 ## Library verdicts
 
-- **Document/artifact generation (C10, C11) → NO library.** Plain typed rendering — `StringBuilder`
-  for Markdown/Mermaid/ASCII and `Utf8JsonWriter` for JSON — so output is **deterministic and
-  byte-comparable** to the Stage-0 golden fixtures (Invariant 6). Mermaid and the ASCII tree are a
-  few dozen lines each. **FSharp.Formatting / Markdig rejected** for *emitting* these constrained
-  artifacts.
-- **Currency check (C11) → DiffPlex 1.9.0.** Regenerate to a string, diff against disk, fail if
-  stale — a currency check strictly better than today's unguarded drift. See [[fsharp-io-globbing]].
+- **Document/artifact generation (C10, C11) → NO library.** Plain typed rendering — `StringBuilder` for
+  Markdown/Mermaid/ASCII, `Utf8JsonWriter` for JSON — so output is **deterministic and byte-comparable**
+  to the Stage-0 golden fixtures (Invariant 6). **FSharp.Formatting / Markdig rejected** for *emitting*
+  these constrained artifacts.
+- **Currency check (C11) → DiffPlex 1.9.0.** Regenerate to a string, diff against disk, fail if stale —
+  strictly better than today's unguarded drift. See [[fsharp-io-globbing]].
 - **F# source generation (C12) → Fabulous.AST + Fantomas (one-shot, preferred) or Myriad
-  (recurring).** This is the ONLY genuine F#-source job. **Code quotations rejected** (see below).
+  (recurring).** The ONLY genuine F#-source job. **Code quotations rejected** (see below).
 
 ## Exact rule to reproduce (parity-critical)
 
@@ -93,8 +92,8 @@ let renderCounts (rows: (string * int) list) =
 
 ### C11 — generation-currency check (DiffPlex)
 
-Regenerate the artifact into memory, diff it against what is committed, and fail when they differ.
-`InlineDiffBuilder` over a `Differ()` gives a line model whose `Type` flags the drift.
+Regenerate into memory, diff against the committed copy, fail when they differ. `InlineDiffBuilder`
+over a `Differ()` gives a line model whose `Type` flags the drift.
 
 ```fsharp
 open DiffPlex
@@ -119,45 +118,44 @@ let staleLines (current: string) (regenerated: string) =
 
 ### C5 link — JSON artifacts (`Utf8JsonWriter`)
 
-`task-graph.json` (schema 1.0) is emitted with `Utf8JsonWriter` for byte-stable layout — the same
-technique shown for C5 in [[fsharp-parsing]]. Keep one renderer so the JSON and the Markdown stay in
-lock-step with the golden fixtures.
+`task-graph.json` (schema 1.0) is emitted with `Utf8JsonWriter` for byte-stable layout — the C5
+technique from [[fsharp-parsing]]. Keep one renderer so JSON and Markdown stay lock-step with the
+golden fixtures.
 
 ### C12 — F# source generation (prose; NOT in the adopt-set examples project)
 
 The single genuine F#-*source* job is turning `capabilities.yml` into a typed `Config.fs` during the
 YAML→compiled-F# migration (config ADR D6).
 
-- **Fabulous.AST + Fantomas** — a DSL over Fantomas's Oak AST; you describe the F# as a node tree and
-  Fantomas pretty-prints style-correct source. Best for a **one-shot/occasional** generation, and
-  **preferred** because D6 points at hand-owned compiled values (no permanent build dependency).
-- **Myriad** (v0.85) — a **pre-build plugin** wired into the `.fsproj` (`<MyriadFile>`); regenerates
+- **Fabulous.AST + Fantomas** — a DSL over Fantomas's Oak AST; describe the F# as a node tree, Fantomas
+  pretty-prints style-correct source. Best for **one-shot/occasional** generation, **preferred** because
+  D6 points at hand-owned compiled values (no permanent build dependency).
+- **Myriad** (v0.85) — a **pre-build plugin** wired into the `.fsproj` (`<MyriadFile>`), regenerating
   every build. Choose only if the catalog must **stay as data** and be compiled each build.
 
-Neither package is referenced by the examples project (the adopt set is deliberately minimal), so C12
-guidance is prose — record the chosen path in the Stage-5 ADR before adding the dependency.
+Neither package is in the adopt set, so C12 stays prose — record the chosen path in the Stage-5 ADR
+before adding the dependency.
 
 ## Pitfall: code quotations are the WRONG tool — reject
 
-F# code quotations (`<@ … @>`) are **runtime metaprogramming** producing `Expr` trees evaluated at
-run time. They do **not** emit source or build artifacts, and using them would re-introduce the
-runtime-evaluation tax the foundations programme is removing (config ADR D6, no-FCS stance). Do not
-use quotations for the governance port; they are noted only to prevent the common conflation with
-source generation.
+F# code quotations (`<@ … @>`) are **runtime metaprogramming** producing `Expr` trees evaluated at run
+time — they do **not** emit source or build artifacts, and would re-introduce the runtime-evaluation
+tax the foundations programme is removing (config ADR D6, no-FCS stance). Do not use them for the
+governance port; noted only to prevent the common conflation with source generation.
 
 ## Cautions
 
-- **Determinism.** Rendered artifacts must be reproducible byte-for-byte (no clock/env, stable
-  ordering) so golden diffs are meaningful.
-- **Do not conflate C10/C11 (text) with C12 (F# source).** Most of the "generation" in the port is
-  text rendering with no library; only `Config.fs` is real source generation.
-- **Build-tooling scope only.** No FCS; nothing here ships in a generated product.
+- **Determinism.** Rendered artifacts reproducible byte-for-byte (no clock/env, stable ordering) so
+  golden diffs are meaningful.
+- **Do not conflate C10/C11 (text) with C12 (F# source).** Most "generation" in the port is text
+  rendering with no library; only `Config.fs` is real source generation.
+- **Build-tooling scope only.** No FCS; ships nowhere.
 
 ## Consuming stages
 
 Stage 2 (`GenerateAgentSkills` + skillist render + currency check), Stage 4 (`task-graph.md` /
-`task-graph.json` render), Stage 3.3/5.5 (the one-shot `Config.fs` generation). See the plan
-referenced from `metadata.source`.
+`task-graph.json` render), Stage 3.3/5.5 (the one-shot `Config.fs` generation). See the plan in
+`metadata.source`.
 
 ## Sources / links
 

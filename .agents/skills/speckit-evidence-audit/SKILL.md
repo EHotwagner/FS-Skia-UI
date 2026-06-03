@@ -27,9 +27,9 @@ signals:
 
 The merge-gate audit computes **in-process** in compiled F#
 (`FS.Skia.UI.Build.Evidence.Engine.runAudit`); there is no Python or shell audit
-runner. The gate reads `tasks.md` / `tasks.deps.yml` / `readiness/`
-and the unified `git diff` (resolved at the `build.fsx` edge) and writes the
-audit artifacts (`seh-audit-summary.json`, the scan hit files, `diff-scan-hits.json`).
+runner. The gate reads `tasks.md` / `tasks.deps.yml` / `readiness/` and the
+unified `git diff` (resolved at the `build.fsx` edge) and writes the audit
+artifacts (`seh-audit-summary.json`, the scan hit files, `diff-scan-hits.json`).
 The feature-base ref is auto-detected (`main` / `master`); the diff-scan reads
 the retained `audit-patterns.yml` data file. `--accept-synthetic` is logged but
 **never changes the verdict** (Principle V).
@@ -51,12 +51,11 @@ the retained `audit-patterns.yml` data file. `--accept-synthetic` is logged but
 ## Strictness model
 
 The audit is configured **block on both**: any remaining `[S]` or `[S*]`
-AND any block-severity diff-scan hit are hard gates. The
-`--accept-synthetic` flag is the only way past; it requires written
-justification and is logged. Advisory-severity diff-scan hits are
-informational only (the synthetic-banner pattern is intentionally
-advisory — seeing `SYNTHETIC:` comments is proof that Principle V
-disclosure is happening).
+AND any block-severity diff-scan hit are hard gates. The `--accept-synthetic`
+flag is the only way past; it requires written justification and is logged.
+Advisory-severity diff-scan hits are informational only (the synthetic-banner
+pattern is intentionally advisory — seeing `SYNTHETIC:` comments is proof that
+Principle V disclosure is happening).
 
 ## When you see NEEDS-EVIDENCE
 
@@ -73,8 +72,8 @@ Walk the report top to bottom:
    positive, extend the whitelist in `audit-patterns.yml` with a targeted
    `file_glob` or `line_regex`.
 4. If merging now is unavoidable (staged rollout, upstream dependency not
-   ready), use `--accept-synthetic "written reason"`. This is the
-   documented escape hatch, not a bypass. The justification lives in
+   ready), use `--accept-synthetic "written reason"` — the documented escape
+   hatch, not a bypass. The justification lives in
    `readiness/synthetic-evidence.json` and SHOULD be mirrored into the PR
    description.
 
@@ -115,8 +114,8 @@ violating values (`exact-package-match` not in {true,yes},
 
 FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`) share
 repository `.fake` state and are not safe to run concurrently. Non-FAKE audit
-file reads may run in parallel when they do not invoke FAKE or depend on
-`.fake`, but graph and audit targets must run sequentially:
+file reads may run in parallel when they do not depend on `.fake`, but graph
+and audit targets must run sequentially:
 
 1. `./fake.sh build -t EvidenceGraph`
 2. `./fake.sh build -t EvidenceAudit`

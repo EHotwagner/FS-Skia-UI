@@ -30,9 +30,8 @@ requires TWO files, both in `specs/[FEATURE_ID]/`:
    of applicable capability skill identifiers, or `[]` when no capability
    skill applies.
 
-Use the preset's `tasks-template.md` and `tasks.deps-template.yml` as
-starting points; replace the example task bodies with real work items
-derived from the spec and plan.
+Start from the preset's `tasks-template.md` and `tasks.deps-template.yml`,
+replacing the example task bodies with real work items from the spec and plan.
 
 ## Discipline
 
@@ -57,16 +56,15 @@ derived from the spec and plan.
   title trigger phrases and dependency formatting mistakes. Avoid wording such
   as "persistent GUI runtime" on a guidance-only task or "window visibility
   validation fixture" on a non-viewer task when those phrases would imply
-  unrelated capability requirements. `tasks.deps.yml` MUST use one object-shaped
-  entry per task id with indented `deps` and `skillist` fields; inline maps such
-  as `T001: { deps: [], skillist: [] }`, duplicate keys, bare task lists,
-  malformed indentation, dangling dependency ids, and mismatched visible
-  `skillist` mirrors are invalid. The exact phrase
+  unrelated capability requirements. The exact phrase
   "window visibility validation fixture" is a known title trigger phrase
-  pitfall. Record window visibility validation fixture examples only when the
-  task really owns viewer window evidence. The dependency file uses one key per
-  task id. Preserve one key per task id in `tasks.deps.yml`; the required
-  object shape uses indented `deps` and `skillist` fields.
+  pitfall; record window visibility validation fixture examples only when the
+  task really owns viewer window evidence. `tasks.deps.yml` MUST use
+  one key per task id; the required object shape is one entry per task id with
+  indented `deps` and `skillist` fields;
+  inline maps such as `T001: { deps: [], skillist: [] }`, duplicate keys, bare
+  task lists, malformed indentation, dangling dependency ids, and mismatched
+  visible `skillist` mirrors are invalid.
 - **Blocking trigger groups and readiness prefix.** `EvidenceGraph` enforces
   these Spec Kit title-trigger groups: graph validation (`task graph`,
   `evidence graph`, `readiness validation`, `tasks.deps.yml`,
@@ -141,8 +139,7 @@ derived from the spec and plan.
   fs-skia-layout-evidence, persistent viewer launch -> fs-skia-skiaviewer,
   deterministic evidence mode -> fs-skia-layout-evidence,
   generated-package validation -> fs-skia-template-update, graph validation ->
-  speckit-evidence-graph, audit validation -> speckit-evidence-audit.
-  Preserve
+  speckit-evidence-graph, audit validation -> speckit-evidence-audit. Preserve
   implementation-before-evidence, graph-before-audit, and
   debug-before-broad-rerun ordering; the visible mirror
   `[skillist: speckit-tasks, fs-skia-layout-evidence]` illustrates exact
@@ -153,19 +150,17 @@ derived from the spec and plan.
   `readiness/aggregate-hang-diagnostics.md`,
   `readiness/runtime-limitations.md`,
   `readiness/generated-guidance-validation.md`, and
-  `readiness/real-image-evidence.md` before audit. Each readiness file names
-  the authoritative command, artifact path, failure class, and next action.
-  Exact readiness phrases for scans: authoritative command.
+  `readiness/real-image-evidence.md` before audit. Each readiness file names the
+  authoritative command, artifact path, failure class, and next action.
 
 ## Validation
 
-Immediately after writing both files, run:
+Immediately after writing both files, run (or invoke `/speckit.evidence.graph`
+if the extension is installed):
 
 ```bash
 .specify/extensions/evidence/scripts/bash/run-audit.sh specs/<FEATURE_ID> --graph-only
 ```
-
-(or invoke `/speckit.evidence.graph` if the extension is installed).
 
 This validates:
 - Every Tnnn in `tasks.md` has a matching key in `tasks.deps.yml`.

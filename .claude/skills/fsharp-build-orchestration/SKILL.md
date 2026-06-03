@@ -15,8 +15,8 @@ testing). Verdicts come from the capability report (`metadata.source`) §8.
 
 ## When to use
 
-- Registering and dispatching FAKE targets from the compiled `build/Build.fsproj` exe (no FSX
-  runner, no FCS).
+- Registering and dispatching FAKE targets from the compiled `build/Build.fsproj` exe (no FSX runner,
+  no FCS).
 - The Stage-4/5 golden-parity gate: prove ported output is byte-identical to the Stage-0 fixtures.
 - Unit- and property-testing the ported parsers/algorithms in `tests/Governance.Tests`.
 
@@ -25,21 +25,20 @@ testing). Verdicts come from the capability report (`metadata.source`) §8.
 - **Orchestration / CLI (C18) → `Fake.Core.Target` 6.1.4** (present). The D2 spike proved it drives
   targets from the compiled exe with **no FSX runner** and **no `FSharp.Compiler.*`** transitive
   (FR-008). Dispatch via `Target.runOrDefaultWithArguments`; delegate each target body to a library
-  function. **Argu** (typed CLI) and **Spectre.Console** (tables/colour) are **optional** — adopt
-  only if the `Route` CLI grows.
+  function. **Argu** (typed CLI) and **Spectre.Console** (tables/colour) are **optional** — adopt only
+  if the `Route` CLI grows.
 - **Golden diff (C19) → DiffPlex 1.9.0.** Readable unified/side-by-side diffs for the parity gate and
   the Stage-2 generation-currency check. **Adopt DiffPlex.**
 - **Testing (C20) → Expecto 10.2.2** (in-tree) **+ FsCheck 3.3.3.** Re-point moved-logic tests at the
   real library functions (assert typed errors, not strings). `Expecto.FsCheck` adds the ergonomic
-  `testProperty`; until it is referenced, call FsCheck's `Check` directly inside an Expecto `test`.
+  `testProperty`; until referenced, call FsCheck's `Check` directly inside an Expecto `test`.
 
 ## API walkthrough + runnable examples
 
 ### C18 — targets and dependency edges (`Fake.Core.Target`)
 
-`Target.create name body` registers a target; the `==>` operator (from `Fake.Core.TargetOperators`)
-declares a dependency edge. Keep each body delegating to a library function so a mistyped target name
-or routing predicate fails to **compile**, not at run time.
+`Target.create name body` registers a target; `==>` (from `Fake.Core.TargetOperators`) declares a
+dependency edge. Bodies delegate to library functions so a mistyped target/predicate fails to **compile**.
 
 ```fsharp
 open Fake.Core
@@ -56,8 +55,8 @@ let defineTargets () =
 ### C19 — golden-output parity gate (DiffPlex)
 
 Every ported parser/algorithm/renderer must produce **byte-identical** output to the Stage-0 golden
-fixtures before the Python/Bash is deleted (Invariant 6). Return both the verdict and the readable
-drift for the failure report.
+fixtures before the Python/Bash is deleted (Invariant 6). Return both the verdict and readable drift
+for the failure report.
 
 ```fsharp
 open DiffPlex
@@ -95,8 +94,8 @@ let parserTests =
 ### C20 — property tests (FsCheck inside Expecto)
 
 Without `Expecto.FsCheck` referenced, call FsCheck's `Check.QuickThrowOnFailure` inside a normal
-Expecto `test` — it throws (failing the test) on a counterexample, which is exactly the gate
-behaviour. With `Expecto.FsCheck` added, prefer `testProperty "name" prop`.
+Expecto `test` — it throws on a counterexample (failing the test), exactly the gate behaviour. With
+`Expecto.FsCheck`, prefer `testProperty "name" prop`.
 
 ```fsharp
 open Expecto
@@ -114,18 +113,18 @@ let propertyTests =
 
 - **FAKE concurrency:** never run FAKE-backed targets concurrently (shared `.fake` state); use the
   deterministic serialized order from `CLAUDE.md`/`AGENTS.md`.
-- **`Expecto.FsCheck` is a separate package.** `testProperty` is not available from `Expecto` +
-  `FsCheck` alone; either reference `Expecto.FsCheck` or call `Check` directly (as above).
+- **`Expecto.FsCheck` is a separate package** — `testProperty` needs it; otherwise call `Check`
+  directly (as above).
 - **Build-tooling scope.** All packages are referenced by `build/**` or `tests/Governance.Tests`,
-  **never shipped** in a generated product; versions go in `Directory.Packages.props` (Central
-  Package Management). No FCS.
+  **never shipped** in a generated product; versions go in `Directory.Packages.props` (Central Package
+  Management). No FCS.
 - Record warm/cold build wall-clock vs the Stage-0 baseline; the compiled library should beat the
   207 KB script recompilation.
 
 ## Consuming stages
 
 Stage 5 (compiled build front-end + routing), Stage 4/5 (golden-parity exit gates), all stages
-(Expecto + FsCheck regression/property tests). See the plan referenced from `metadata.source`.
+(Expecto + FsCheck regression/property tests). See the plan in `metadata.source`.
 
 ## Sources / links
 

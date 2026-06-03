@@ -18,10 +18,10 @@ Execute the feature's tasks against the plan. Update `tasks.md` as you go.
 Use the status legend from the template exactly:
 
 - `[ ]` — not started.
-- `[X]` — **done with real evidence.** The code paths that will run in
-  production were exercised. Tests used real dependencies (real DB, real
-  filesystem, real network) or a previously-approved synthetic fixture
-  that is itself listed in the Synthetic-Evidence Inventory as acceptable.
+- `[X]` — **done with real evidence.** The production code paths were
+  exercised against real dependencies (real DB, filesystem, network) or a
+  previously-approved synthetic fixture already listed as acceptable in the
+  Synthetic-Evidence Inventory.
 - `[S]` — **done with synthetic evidence only.** Use this whenever the
   task's "pass" depends on ANY of:
   - a mock, stub, fake, or in-memory substitute
@@ -38,14 +38,14 @@ Use the status legend from the template exactly:
   or in the Synthetic-Evidence Inventory / Deferral Notes section.
 
 **Never mark a task `[X]` if any of the `[S]` conditions apply.** The
-evidence audit will catch many such cases via diff-scan, but the agent is
-expected to be honest about direct declarations. Dishonesty undermines the
-whole synthetic-evidence regime (Principle V).
+evidence audit catches many such cases via diff-scan, but be honest about
+direct declarations — dishonesty undermines the whole synthetic-evidence
+regime (Principle V).
 
 ## Vertical-slice rule (US phases)
 
-A task tagged `[US*]` may only be marked `[X]` when the user-facing
-surface was actually exercised end-to-end. "Exercised" means one of:
+A `[US*]` task may only be marked `[X]` when the user-facing surface was
+actually exercised end-to-end. "Exercised" means one of:
 
 - An FSI transcript captured under `readiness/` that drives the new
   behavior through its public entry point — not through internal helpers.
@@ -58,14 +58,14 @@ surface was actually exercised end-to-end. "Exercised" means one of:
 
 A diff that touches only `Domain/`, `Core/`, `Models/`, or equivalent
 internal layers is **never** sufficient evidence for `[X]` on a `[US*]`
-task. The story isn't done when the model compiles; it's done when the
-user can reach it. If wire-up to the UI / CLI / API surface is missing,
-the honest status is `[ ]` (continue working) or `[S]` (disclose the
-gap and create a tracking issue for the real wire-up).
+task. The story is done when the user can reach it, not when the model
+compiles. If wire-up to the UI / CLI / API surface is missing, the honest
+status is `[ ]` (continue working) or `[S]` (disclose the gap and create a
+tracking issue for the real wire-up).
 
-This rule is in addition to the synthetic-evidence checks above. A task
-can fail the vertical-slice rule without involving any mocks at all —
-domain code that nothing calls is its own failure mode.
+This rule is in addition to the synthetic-evidence checks above: a task
+can fail the vertical-slice rule without any mocks — domain code that
+nothing calls is its own failure mode.
 
 ## Elmish/MVU discipline (Principle IV)
 
@@ -94,14 +94,14 @@ Before marking an MVU-bearing `[US*]` task `[X]`, verify all of the following:
   around it.
 
 Simple pure functions do not need an MVU shell. If a task does not involve
-stateful workflow or I/O, note that Principle IV is not applicable and use
-the ordinary spec → FSI → semantic tests → implementation path.
+stateful workflow or I/O, note that Principle IV is not applicable and use the
+ordinary spec → FSI → semantic tests → implementation path.
 
 ## Synthetic-evidence disclosures (Principle V)
 
 `[SEH]` is a **design/task-generation** classification, never an
-**implementation-time relabeling** step. The `EvidenceAudit` gate enforces this
-(it rejects late `[SEH]` classification), so do not add `[SEH]` or
+**implementation-time relabeling** step. The `EvidenceAudit` gate rejects late
+`[SEH]` classification, so do not add `[SEH]` or
 `synthetic-error-handling-approved` during readiness cleanup or after an audit
 failure — send any newly-discovered synthetic error-handling need back to the
 design phase. `[SEH]` tasks still complete as `[S]`, and the inventory row keeps
@@ -153,15 +153,15 @@ When you emit an `[S]` task, you MUST also:
    implementation batch records must preserve the red-green evidence log,
    graph before/after paths before and after every status change, and the
    skill-loading evidence used for the batch.
-4. Confirm all deps are `[X]`
-   or `[S]`. If any dep is `[ ]`, `[F]`, or `[-]`, stop and raise it.
+4. Confirm all deps are `[X]` or `[S]`. If any dep is `[ ]`, `[F]`, or
+   `[-]`, stop and raise it.
 5. Implement the task per the plan, applying the loaded capability skill
    guidance before generic guidance whenever both match.
 6. Run the verification appropriate for the phase (tests, baseline check,
-   FSI exercise, …). For tasks tagged `[US*]`, the verification MUST
-   include a user-reachable exercise — see the Vertical-slice rule
-   above. For MVU-bearing tasks, include transition/effect assertions and
-   interpreter evidence. A green unit test on the domain layer is not enough.
+   FSI exercise, …). `[US*]` tasks MUST include a user-reachable exercise
+   (see the Vertical-slice rule); MVU-bearing tasks MUST include
+   transition/effect assertions and interpreter evidence. A green unit test
+   on the domain layer is not enough.
 7. Update the status in `tasks.md`. Before writing `[X]` on a `[US*]`
    task, confirm the vertical-slice rule is satisfied; if not, the
    honest status is `[ ]` or `[S]`. If `[S]`, add the code-level,
@@ -182,9 +182,8 @@ When you emit an `[S]` task, you MUST also:
 
 Before reaching for a "clever" F# feature (custom operators, SRTP,
 reflection, non-trivial computation expressions, type providers, non-
-obvious active patterns), confirm the feature is justified in the spec or
-plan. If it isn't, either simplify or stop and raise the justification
-gap.
+obvious active patterns), confirm it is justified in the spec or plan.
+If not, either simplify or stop and raise the justification gap.
 
 ## Stop conditions
 

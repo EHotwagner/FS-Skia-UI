@@ -24,8 +24,8 @@ come from the capability report (`metadata.source`) §6.
 ## Library verdicts
 
 - **Skill discovery (C13) → `Fake.IO.Globbing` 6.1.4** (FAKE family, already in-tree via the build
-  front-end), or `System.IO.Directory.EnumerateFiles`. **Prefer Fake.IO.Globbing** to keep one IO
-  idiom across the build.
+  front-end), or `System.IO.Directory.EnumerateFiles`. **Prefer Fake.IO.Globbing** for one IO idiom
+  across the build.
 - **Whitelist glob matching (C14) → `Microsoft.Extensions.FileSystemGlobbing.Matcher` 10.0.8**
   (first-party). Native `*` / `**` include/exclude semantics.
 - **Generation-currency diff → DiffPlex** (regenerate to temp/string, diff, fail if stale). See
@@ -34,18 +34,16 @@ come from the capability report (`metadata.source`) §6.
 ## Parity caution (the live risk)
 
 .NET glob semantics differ from Python `fnmatch` at the edges — a single `*` crossing directory
-separators, a leading `**/`, and trailing-slash behaviour. **Golden-test every `audit-patterns.yml`
-whitelist entry against the Python before cutover.** This is one of the two most likely silent
-divergences in the whole port (the other is the two `tasks.deps.yml` YAML shapes, see
-[[fsharp-parsing]]).
+separators, a leading `**/`, trailing-slash behaviour. **Golden-test every `audit-patterns.yml`
+whitelist entry against the Python before cutover.** One of the two most likely silent divergences in
+the port (the other is the two `tasks.deps.yml` YAML shapes, see [[fsharp-parsing]]).
 
 ## API walkthrough + runnable examples
 
 ### C13 — skill discovery (`Fake.IO.Globbing`)
 
-`!!` builds an include pattern; `++` adds more includes; `--` excludes. The result is an
-`IGlobbingPattern` that enumerates as a `seq<string>`. Sort before rendering so discovery order is
-reproducible for golden diffs.
+`!!` builds an include pattern; `++` adds includes; `--` excludes. The result is an
+`IGlobbingPattern` enumerating as a `seq<string>`; sort before rendering for reproducible golden diffs.
 
 ```fsharp
 open Fake.IO.Globbing.Operators
@@ -64,7 +62,7 @@ let discoverSkills () =
 
 `Matcher().AddInclude(glob)` accumulates `*`/`**` include patterns; `.Match(files)` returns a
 `PatternMatchingResult` whose `HasMatches` and `Files` (each with a `.Path`) drive the whitelist
-decision. Use `AddExclude` for negative patterns.
+decision. `AddExclude` for negative patterns.
 
 ```fsharp
 open Microsoft.Extensions.FileSystemGlobbing
@@ -95,19 +93,17 @@ let enumerateMarkdown (root: string) =
 
 ## Cautions
 
-- **.NET glob vs Python `fnmatch` drift** — the live risk. Golden-test every whitelist entry against
-  the Python before cutover; mind a lone `*` crossing separators, leading `**/`, and trailing
-  slashes.
-- **Determinism.** Enumerate with a **stable sort** before rendering so discovery order is
-  reproducible for golden diffs.
-- **Keep true OS-glue in Bash** — `fake.sh`/`fake.cmd` launchers and container entrypoints; there is
-  no payoff to F#-ifying a three-line launcher.
+- **.NET glob vs Python `fnmatch` drift** — the live risk (see Parity caution above): golden-test
+  every whitelist entry against the Python before cutover.
+- **Determinism.** Enumerate with a **stable sort** before rendering, for reproducible golden diffs.
+- **Keep true OS-glue in Bash** — `fake.sh`/`fake.cmd` launchers and container entrypoints; no payoff
+  to F#-ifying a three-line launcher.
 - **Build-tooling scope only.** Lives under `build/Governance`; ships nowhere; no FCS.
 
 ## Consuming stages
 
 Stage 4 (skill discovery + audit-patterns whitelist matching), Stage 2 (generation-currency checks
-over the discovered files). See the plan referenced from `metadata.source`.
+over the discovered files). See the plan in `metadata.source`.
 
 ## Sources / links
 

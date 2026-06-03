@@ -7,7 +7,7 @@ description: Update and verify this repository's `dotnet new fs-skia-ui` templat
 
 ## Scope
 
-Update the repo-owned `dotnet new fs-skia-ui` template and verify that generated projects consume the current local FS.Skia.UI package versions.
+Update the repo-owned `dotnet new fs-skia-ui` template and verify generated projects consume the current local FS.Skia.UI package versions.
 
 Primary files:
 
@@ -18,25 +18,22 @@ Primary files:
 
 ## Workflow
 
-1. Confirm the working tree and current branch.
-   - Use `git status --short --branch`.
-   - If the user asked to push, expect to be on `main` unless they said otherwise.
+1. Confirm the working tree and current branch with `git status --short --branch`.
+   If the user asked to push, expect to be on `main` unless they said otherwise.
 
 2. Detect current packable package versions.
-   - Inspect `*.fsproj` files with `<IsPackable>true</IsPackable>` or `<PackageId>`.
-     Scan both `src/` and `build/` — `FS.Skia.UI.Build` lives in
+   - Inspect `*.fsproj` files with `<IsPackable>true</IsPackable>` or `<PackageId>`,
+     scanning both `src/` and `build/`. `FS.Skia.UI.Build` lives in
      `build/Governance/FS.Skia.UI.Build.fsproj`, not under `src/`, and is
-     pinned by the template like the other repo packages.
-   - Use the latest versions already committed or freshly packed, for example:
+     pinned by the template like the other repo packages:
      - `rg -n "<PackageId>|<Version>|<IsPackable>" -g "*.fsproj" src build`
    - All repo packages share a single version, so one value drives every pin.
-   - Do not invent versions. The template pins should match the current package versions for the repo packages.
+   - Do not invent versions; pins must match the current repo package versions.
 
 3. Update generated product pins.
-   - Edit `template/base/Directory.Packages.props`.
-   - Because every repo package shares one version, the fastest and least
-     error-prone bump is a single replacement of the old version with the new
-     one — this structurally cannot miss a package:
+   - Edit `template/base/Directory.Packages.props`. Because every repo package
+     shares one version, a single old-to-new replacement is the least
+     error-prone bump and structurally cannot miss a package:
      ```bash
      sed -i 's/Version="<old-version>"/Version="<new-version>"/g' template/base/Directory.Packages.props
      ```
@@ -65,26 +62,25 @@ Primary files:
      - `FS.Skia.UI.Testing`
    - Leave non-repo packages such as `Expecto`, `Microsoft.NET.Test.Sdk`, and `YoloDev.Expecto.TestSdk` unchanged unless the user explicitly asks.
 
-4. Bump the template package version.
-   - Edit `.template.package/FS.Skia.UI.Template.fsproj`.
-   - Increment the patch segment of `<Version>` by one, preserving the preview suffix.
-   - Example: `0.1.12-preview.1` -> `0.1.13-preview.1`.
+4. Bump the template package version in `.template.package/FS.Skia.UI.Template.fsproj`:
+   increment the patch segment of `<Version>` by one, preserving the preview
+   suffix. Example: `0.1.12-preview.1` -> `0.1.13-preview.1`.
 
 5. Pack the template.
    - Preferred command:
      ```bash
      ./fake.sh build -t TemplatePack
      ```
-   - If FAKE fails after NuGet caches were cleared with a stale `.fake` cache,
-     invalid assembly cache, or missing package folder, remove only `.fake` and rerun once:
+   - If FAKE fails after NuGet caches were cleared (stale `.fake` cache,
+     invalid assembly cache, or missing package folder), remove only `.fake` and rerun once:
      ```bash
      rm -rf .fake
      ./fake.sh build -t TemplatePack
      ```
    - Do not delete source files or reset the repo to fix FAKE cache problems.
-   - After package version bumps, also verify that every current repo package
-     exists in the local feed before validating generated projects. Loop over
-     the exact package IDs and the version detected in step 2:
+   - After bumping, verify every current repo package exists in the local feed
+     before validating generated projects. Loop over the exact package IDs and
+     the version detected in step 2:
      ```bash
      v=<version>
      for p in Build Scene SkiaViewer Elmish KeyboardInput Layout Controls Controls.Elmish Testing; do
@@ -94,24 +90,22 @@ Primary files:
      test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.$v.nupkg" && echo "OK  (Lib)" || echo "MISS (Lib)"
      ```
    - If solution-level `dotnet pack` or a prior merge pack missed a packable
-     repo package, pack that project explicitly before running generated
+     repo package, pack that project explicitly before generated
      restore/test validation. This has happened for
      `FS.Skia.UI.Controls.Elmish`, so prefer:
      ```bash
      dotnet pack src/Controls.Elmish/Controls.Elmish.fsproj -c Release -o ~/.local/share/nuget-local
      ```
 
-6. Install the new template package.
-   - Use the package created under `artifacts/templates/`.
-   - Prefer uninstalling any currently installed `FS.Skia.UI.Template` before
-     installing the freshly packed package. This keeps local validation
-     deterministic and also handles duplicate template identities:
+6. Install the new template package from `artifacts/templates/`.
+   - Uninstall any currently installed `FS.Skia.UI.Template` first; this keeps
+     local validation deterministic and handles duplicate template identities:
      ```bash
      dotnet new uninstall FS.Skia.UI.Template
      dotnet new install artifacts/templates/FS.Skia.UI.Template.<version>.nupkg
      ```
-   - If no existing template is installed, `dotnet new uninstall` may report
-     that there is nothing to uninstall; continue with the install.
+   - If no template is installed, `dotnet new uninstall` may report nothing to
+     uninstall; continue with the install.
 
 7. Verify `dotnet new fs-skia-ui`.
    - Instantiate the default `app` profile into `/tmp` with git init disabled:
@@ -124,8 +118,7 @@ Primary files:
        --skipGitInit true
      ```
    - Inspect `/tmp/fs-skia-ui-template-update-check/Directory.Packages.props`
-     and confirm the default `app` profile pins match the current package
-     versions:
+     and confirm the default `app` profile pins match current versions:
      - `FS.Skia.UI.Build`
      - `FS.Skia.UI.Scene`
      - `FS.Skia.UI.SkiaViewer`
@@ -136,8 +129,8 @@ Primary files:
      - `FS.Skia.UI.Controls.Elmish`
    - The template does not necessarily create a `.sln`; restore and test
      project files directly. The test project has its own restore graph, so
-     restore the test project explicitly before using `--no-restore`, or allow
-     `dotnet test` to restore with the local feed sources:
+     restore it explicitly before using `--no-restore`, or let `dotnet test`
+     restore with the local feed sources:
      ```bash
      dotnet restore /tmp/fs-skia-ui-template-update-check/src/TemplateUpdateCheck/TemplateUpdateCheck.fsproj \
        --source "$HOME/.local/share/nuget-local" \
@@ -149,8 +142,8 @@ Primary files:
        --no-restore \
        --logger "console;verbosity=minimal"
      ```
-   - Instantiate the `governed` profile as a required second check because it
-     is the profile that carries `FS.Skia.UI.Testing`:
+   - Instantiate the `governed` profile as a required second check — it is the
+     profile that carries `FS.Skia.UI.Testing`:
      ```bash
      rm -rf /tmp/fs-skia-ui-template-update-governed-check
      dotnet new fs-skia-ui \
@@ -162,7 +155,7 @@ Primary files:
      ```
    - Inspect
      `/tmp/fs-skia-ui-template-update-governed-check/Directory.Packages.props`
-     and confirm the governed profile pins match the current package versions:
+     and confirm the governed profile pins match current versions:
      - `FS.Skia.UI.Build`
      - `FS.Skia.UI.Scene`
      - `FS.Skia.UI.Testing`
@@ -185,8 +178,7 @@ Primary files:
      dotnet new fs-skia-ui --name TemplateSamplePackCheck --profile sample-pack --output /tmp/fs-skia-ui-template-update-sample-pack-check --allow-scripts yes --skipGitInit true
      ```
 
-8. Commit and push.
-   - Always commit and push after a successful template update validation.
+8. Commit and push after successful template-update validation.
    - Commit at least:
      - `.template.package/FS.Skia.UI.Template.fsproj`
      - `template/base/Directory.Packages.props`
@@ -200,6 +192,6 @@ Primary files:
 
 ## Validation Notes
 
-- `dotnet new search fs-skia-ui` checks NuGet.org, not the local installed template. It may return no results and is not a failure for local template updates.
-- Use `dotnet new uninstall` with no arguments to list installed local template packages and confirm `FS.Skia.UI.Template` version.
+- `dotnet new search fs-skia-ui` checks NuGet.org, not the locally installed template; no results there is not a failure for local updates.
+- `dotnet new uninstall` with no arguments lists installed local template packages and confirms the `FS.Skia.UI.Template` version.
 - Generated app restore should use `~/.local/share/nuget-local` when validating freshly packed local packages.

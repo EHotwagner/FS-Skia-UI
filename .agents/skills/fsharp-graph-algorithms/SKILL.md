@@ -11,22 +11,20 @@ metadata:
 
 Cookbook for the evidence-graph algorithms ported from `compute-task-graph.py`. Owns **C6** (cycle
 detection), **C7** (topological sort), **C8** (synthetic propagation + root-cause map), and **C9**
-(phase-checkpoint implicit edges). Verdicts come from the capability report (`metadata.source`) §4
-and are not re-opened.
+(phase-checkpoint implicit edges). Verdicts from the capability report (`metadata.source`) §4, not
+re-opened.
 
 ## When to use
 
-Computing the task DAG: cycle detection, topological ordering, synthetic-evidence propagation,
-root-cause mapping, and phase-checkpoint implicit-edge injection — over the typed model produced by
-[[fsharp-parsing]].
+Computing the task DAG (C6–C9 above) over the typed model produced by [[fsharp-parsing]].
 
 ## Verdict: hand-roll as pure functions; do NOT pull a graph library
 
 The three algorithms are small, standard, and central. Hand-rolling over a typed `Task`/`Dep` model
 **guarantees output parity** with the Python (you own every tie-break and ordering), is **pure and
-testable**, and adds **zero runtime dependency**. **QuikGraph rejected** — it would add a C#
-dependency for ~40 lines of standard code, and the bespoke propagation rule sits outside it anyway.
-**FsCheck 3.3.3** (via the in-tree Expecto) is **adopted** for property tests only.
+testable**, and adds **zero runtime dependency**. **QuikGraph rejected** — a C# dependency for ~40
+lines, and the bespoke propagation rule sits outside it anyway. **FsCheck 3.3.3** (via in-tree Expecto)
+**adopted** for property tests only.
 
 ## Exact rules to reproduce (parity-critical)
 
@@ -80,8 +78,8 @@ let hasCycle (nodes: string list) (edges: Map<string, string list>) =
 
 ### C7 — Kahn topological sort with the Python tie-break
 
-Ready nodes are emitted in **sorted** order so the rendered graph is reproducible. `None` means a
-cycle was present (Kahn could not consume every node) — which is exactly the C6 condition.
+Ready nodes are emitted in **sorted** order so the rendered graph is reproducible. `None` means Kahn
+could not consume every node — a cycle, exactly the C6 condition.
 
 ```fsharp
 let topoSort (nodes: string list) (edges: Map<string, string list>) : string list option =
@@ -119,9 +117,8 @@ let topoSort (nodes: string list) (edges: Map<string, string list>) : string lis
 
 ### C8 — synthetic propagation + root-cause map
 
-`effective` is computed in topological order so every dependency is already resolved. Accepted
-`[SEH]` tasks are synthetic themselves but are the **explicit exception** that does NOT propagate
-auto-synthetic to their dependents.
+`effective` is computed in topological order so every dependency is already resolved. Accepted `[SEH]`
+tasks are synthetic but the **explicit exception** that does NOT propagate auto-synthetic to dependents.
 
 ```fsharp
 type Declared =
@@ -199,8 +196,7 @@ let phaseCheckpointEdges (phases: string list list) : (string * string) list =
 
 Encode the invariants and let FsCheck shrink counterexamples. FsCheck 3's F# surface lives in
 `FsCheck.FSharp` (`Prop.forAll`, `ArbMap`); `Check.QuickThrowOnFailure` fails the test on a
-counterexample, which is what a property test in a build gate wants. See
-[[fsharp-build-orchestration]] for wiring these into Expecto.
+counterexample. See [[fsharp-build-orchestration]] for wiring these into Expecto.
 
 ```fsharp
 open FsCheck
@@ -217,19 +213,18 @@ let runGraphProperties () =
 
 ## Cautions
 
-- **Tie-break parity.** Kahn must emit ready nodes in the same order the Python did (sorted) or the
-  rendered `task-graph.md` drifts byte-for-byte. Golden-gate (Invariant 6) before deleting the
-  Python.
-- **Accepted-`[SEH]` is an explicit exception** in the propagation rule — synthetic itself, but it
-  does NOT make its dependents auto-synthetic. Do not drop it.
+- **Tie-break parity.** Kahn must emit ready nodes sorted (as the Python did) or `task-graph.md`
+  drifts byte-for-byte.
+- **Accepted-`[SEH]` is an explicit exception** — synthetic itself, but does NOT make dependents
+  auto-synthetic. Do not drop it.
 - **Propagation runs in topological order** — compute C7 first, then C8 over that order.
-- **Determinism / build-tooling scope.** Pure functions, no I/O, no clock; lives under
-  `build/Governance`, ships nowhere.
+- **Determinism / build-tooling scope.** Pure functions, no I/O, no clock; under `build/Governance`,
+  ships nowhere.
 
 ## Consuming stages
 
 Stage 4 (graph compute port: cycle/topo/propagation), Stage 5 (the in-process gate that replaces the
-shell orchestration). See the plan referenced from `metadata.source`.
+shell orchestration). See the plan in `metadata.source`.
 
 ## Sources / links
 

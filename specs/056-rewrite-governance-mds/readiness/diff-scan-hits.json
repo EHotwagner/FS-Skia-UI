@@ -1,0 +1,22 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": ".agents/skills/speckit-evidence-audit/SKILL.md",
+      "line": 57,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "pattern is intentionally advisory \u2014 seeing `SYNTHETIC:` comments is proof that"
+    },
+    {
+      "file": ".claude/skills/speckit-evidence-audit/SKILL.md",
+      "line": 57,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "pattern is intentionally advisory \u2014 seeing `SYNTHETIC:` comments is proof that"
+    }
+  ]
+}

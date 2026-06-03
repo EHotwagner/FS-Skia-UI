@@ -22,8 +22,8 @@ files), validate task `skillist` metadata and mirrors, and render
 
 The graph computes **in-process** in compiled F#
 (`FS.Skia.UI.Build.Evidence.Engine.runGraph`); there is no Python or shell audit
-runner. The gate reads `tasks.md` / `tasks.deps.yml` / `readiness/` at
-the `build.fsx` interpreter edge and writes `readiness/task-graph.json` +
+runner. The gate reads `tasks.md` / `tasks.deps.yml` / `readiness/` at the
+`build.fsx` interpreter edge and writes `readiness/task-graph.json` +
 `readiness/task-graph.md`.
 
 ## When to run
@@ -61,16 +61,14 @@ effective(T) =
 ```
 
 Phase-checkpoint edges are auto-injected (every task in Phase N+1 gets an
-implicit edge to the last foundation task of Phase N). These do not appear
-in `tasks.deps.yml` and do not need to be written by hand.
+implicit edge to the last foundation task of Phase N). These do not appear in
+`tasks.deps.yml` and need not be written by hand.
 
 ## On failure
 
 The script exits non-zero and writes the errors into `task-graph.md`'s
-verdict block. Do not proceed with `/speckit.implement` until the graph
-is clean.
-
-Common failure modes and their fixes:
+verdict block. Do not proceed with `/speckit.implement` until the graph is
+clean. Common failure modes and their fixes:
 
 - **Dangling ref** — `tasks.deps.yml` references `Tnnn` that isn't in
   `tasks.md`. Add the task line or remove the ref.
@@ -121,8 +119,8 @@ violating values (`exact-package-match` not in {true,yes},
 
 FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`) share
 repository `.fake` state and are not safe to run concurrently. Non-FAKE graph
-file reads may run in parallel when they do not invoke FAKE or depend on
-`.fake`, but multiple FAKE-backed targets must run sequentially:
+file reads may run in parallel when they do not depend on `.fake`, but
+multiple FAKE-backed targets must run sequentially:
 
 1. `./fake.sh build -t EvidenceGraph`
 2. `./fake.sh build -t EvidenceAudit`

@@ -12,10 +12,9 @@ gameplay-region bounds, public scene layout evidence, generated layout
 validation, public scene/host/update naming guidance, or readiness host warning
 classification.
 
-Tasks that touch those areas must declare `fs-skia-layout-evidence` in
-`tasks.deps.yml` and mirror it on the matching `tasks.md` line. Resolve this
-skill before implementation starts and record the resolved path in the active
-feature's readiness evidence.
+Such tasks must declare `fs-skia-layout-evidence` in `tasks.deps.yml` and mirror
+it on the matching `tasks.md` line. Resolve this skill before implementation
+starts and record the resolved path in the active feature's readiness evidence.
 
 ## Public Contract
 
@@ -67,8 +66,8 @@ and constrained sizes, and fail when HUD/HUD or HUD/gameplay overlap is
 detected. Unsupported host or font/layout facts must be explicit and must not be
 reported as readable layout proof.
 
-Movement, wrapping, spawning, clamping, collisions, and active entity bounds
-must use gameplay-region coordinates once a HUD region is reserved.
+Once a HUD region is reserved, movement, wrapping, spawning, clamping,
+collisions, and active entity bounds must use gameplay-region coordinates.
 
 ## Guidance
 
@@ -115,22 +114,20 @@ Visual evidence honesty requires screenshot proof, rasterized scene proof,
 layout readability proof, fallback classification, and unsupported proof to be
 separate. Accepted visual proof names a decodable image, image dimensions,
 non-trivial content, renderer mode, fallback classification, and unsupported
-reason. Metadata-only reports do not satisfy visual proof, 1x1 fallback images
-do not satisfy visual proof, and layout-only bounds claims do not satisfy visual
-proof.
+reason.
 Exact visual proof rejection phrases for scans: metadata-only reports do not satisfy visual proof; 1x1 fallback images do not satisfy visual proof; layout-only bounds claims do not satisfy visual proof.
 
-Asteroids feedback findings must be classified by owner: framework runtime,
-generated template workflow, documentation discoverability, or consumer
-authoring. Host feedback must distinguish persistent-window blocking,
-display/session availability, auto-close smoke needs, benign warning, blocking
-warning, deferred warning, and name-collision guidance.
+Asteroids feedback findings must be classified by owner (framework runtime,
+generated template workflow, documentation discoverability, consumer authoring),
+and host feedback must distinguish persistent-window blocking, display/session
+availability, auto-close smoke needs, benign warning, blocking warning, deferred
+warning, and name-collision guidance.
 Exact owner phrases for scans: framework runtime; generated template workflow; documentation discoverability; consumer authoring; persistent-window blocking; display/session availability; auto-close smoke; benign warning; blocking warning; deferred warning; name-collision guidance.
 
 ## Package Boundary
 
-Keep pure layout-evidence classifiers in Scene or Testing contracts as planned.
-Do not move viewer launch, filesystem, package restore, process, font host, or
+Keep pure layout-evidence classifiers in Scene or Testing contracts. Do not move
+viewer launch, filesystem, package restore, process, font host, or
 window-system effects into pure validation helpers. When host warning
 classification or evidence collection needs I/O, model the request and result
 explicitly and keep execution at the interpreter or build-target edge.

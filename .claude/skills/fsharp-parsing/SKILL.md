@@ -9,11 +9,11 @@ metadata:
 
 # fsharp-parsing
 
-Cookbook for porting the Bash/Python parsers into typed, compiled F# in the governance library.
-Owns **C1** (YAML), **C2** (`tasks.md` line grammar), **C3** (`audit-status` regions), **C4** (JSON
-read), **C5** (JSON write), **C16** (regex over a diff), and **C21** (general regex). It replaces the
-two hand-rolled YAML parsers (Python + `build.fsx`) and the regex scanners. Verdicts come from the
-capability report (`metadata.source`) §3 and are not re-opened here.
+Cookbook for porting the Bash/Python parsers into typed, compiled F# in the governance library,
+replacing the two hand-rolled YAML parsers (Python + `build.fsx`) and the regex scanners. Owns **C1**
+(YAML), **C2** (`tasks.md` line grammar), **C3** (`audit-status` regions), **C4** (JSON read), **C5**
+(JSON write), **C16** (regex over a diff), **C21** (general regex). Verdicts from the capability report
+(`metadata.source`) §3, not re-opened here.
 
 ## When to use
 
@@ -31,19 +31,17 @@ capability report (`metadata.source`) §3 and are not re-opened here.
   the API; retire both bespoke parsers. **Legivel rejected** — YamlDotNet is present and the inputs
   don't need YAML-1.2 conformance.
 - **JSON read/write (C4, C5) → System.Text.Json + FSharp.SystemTextJson 1.4.36** for DU/record
-  round-trip. **Thoth.Json / Newtonsoft rejected** — STJ is in the BCL and FSharp.SystemTextJson adds
-  the F# union/record support.
+  round-trip. **Thoth.Json / Newtonsoft rejected** — STJ is in the BCL; FSharp.SystemTextJson adds the
+  F# union/record support.
 - **Line/region/diff grammar (C2, C3, C16) → regex port FIRST, then XParsec 1.0.0.** A faithful
-  `System.Text.RegularExpressions` port clears the byte-parity gate against the Stage-0 golden
-  fixtures; migrate the grammar to **XParsec** (pure F#, MIT, Fable-capable) once parity is signed
-  off. **Full Markdown AST (FSharp.Formatting/Markdig) rejected** — the inputs are a constrained line
-  grammar, not arbitrary Markdown.
+  `System.Text.RegularExpressions` port clears the byte-parity gate against the Stage-0 golden fixtures;
+  migrate to **XParsec** (pure F#, MIT, Fable-capable) once parity is signed off. **Full Markdown AST
+  (FSharp.Formatting/Markdig) rejected** — these are a constrained line grammar, not arbitrary Markdown.
 - **General regex (C21) → `System.Text.RegularExpressions`** (BCL). No library.
 
 ## Exact grammars to reproduce (parity-critical)
 
-Reproduce these exactly; gate on the Stage-0 golden fixtures (Invariant 6) **before** deleting any
-Python/Bash.
+Reproduce exactly; gate on the Stage-0 golden fixtures (Invariant 6) **before** deleting any Python/Bash.
 
 Task line (`compute-task-graph.py`):
 `^\s*-\s*\[(?<box>[ X\-FS*])\]\s+(?<id>T\d{3,4})\b(?<rest>.*)$`
@@ -63,9 +61,8 @@ last-wins) · key normalize `.lower().Trim()`.
 ### C1 — YAML into a typed model (YamlDotNet)
 
 `DeserializerBuilder().Build()` gives an `IDeserializer`. Deserialize to the loose node model
-(`Dictionary<string,obj>`; nested mappings are `Dictionary<obj,obj>`, sequences are `List<obj>`),
-then project into immutable F# values so the rest of the library never sees a mutable bag. This is
-where you absorb the two `tasks.deps.yml` shapes.
+(`Dictionary<string,obj>`; nested mappings `Dictionary<obj,obj>`, sequences `List<obj>`), then project
+into immutable F# values — where you absorb the two `tasks.deps.yml` shapes.
 
 ```fsharp
 open System.Collections.Generic
@@ -101,8 +98,8 @@ let parseDepsRoot (yaml: string) =
 
 ### C2 — task-line grammar (regex port first)
 
-Port the Python regex verbatim into a compiled `Regex` with named groups, then project the match
-into a typed row. This is the parity-first path.
+The parity-first path: port the Python regex verbatim into a compiled `Regex` with named groups, then
+project the match into a typed row.
 
 ```fsharp
 open System.Text.RegularExpressions
@@ -164,8 +161,8 @@ let userStoryOf (rest: string) =
 
 ### C3 — `audit-status` fenced region (hand parser, dup-key = error)
 
-First region wins; `#` comments and blanks ignored; `key=value`; a **duplicate key is a hard error**
-(never last-wins); keys normalise to lower+trim.
+First region wins; `#` comments and blanks ignored; `key=value`; keys normalise to lower+trim; a
+**duplicate key is a hard error** (never last-wins).
 
 ```fsharp
 open System
@@ -211,9 +208,8 @@ let parseAuditStatus (text: string) : AuditRegion option =
 
 ### C4 / C5 — JSON read & write (FSharp.SystemTextJson)
 
-`JsonFSharpOptions.Default().ToJsonSerializerOptions()` produces options that round-trip F# records
-and unions. Reuse one options value; it is the difference between STJ choking on an F# record and
-handling it cleanly.
+`JsonFSharpOptions.Default().ToJsonSerializerOptions()` produces options that round-trip F# records and
+unions; reuse one value (the difference between STJ choking on an F# record and handling it cleanly).
 
 ```fsharp
 open System.Text.Json
@@ -262,7 +258,7 @@ let renderTaskGraphJson (tasks: (string * string) list) : string =
 ### C16 / C21 — regex over a diff and general rewrites
 
 C16 applies the `audit-patterns.yml` regexes to added/removed diff lines; C21 covers the misc
-package-version rewrite and fence detection. Both are plain BCL regex.
+package-version rewrite and fence detection. Both plain BCL regex.
 
 ```fsharp
 open System.Text.RegularExpressions
@@ -283,8 +279,7 @@ let bumpPackageVersion (packageId: string) (newVersion: string) (props: string) 
 ### C2 / C3 — the XParsec migration target (post-parity)
 
 Once the regex port has cleared the golden gate, the grammar's long-term home is **XParsec**:
-combinators over a `Reader`, with `Ok`/`Error` results. The parsed value comes straight out of the
-`Ok` case.
+combinators over a `Reader` returning `Ok`/`Error`, the parsed value straight out of the `Ok` case.
 
 ```fsharp
 open XParsec
@@ -309,21 +304,19 @@ let parseTaskId (input: string) =
 
 ## Cautions
 
-- **Two `tasks.deps.yml` shapes.** Object `{deps, skillist}` and legacy bare-list — accept both and
-  fixture-test both before deleting the Python. This is one of the two most likely silent
-  divergences in the whole port (the other is .NET-glob vs `fnmatch`, see [[fsharp-io-globbing]]).
+- **Two `tasks.deps.yml` shapes** (object `{deps, skillist}` + legacy bare-list) — one of the two most
+  likely silent divergences in the port (the other is .NET-glob vs `fnmatch`, see [[fsharp-io-globbing]]).
 - **Parity over elegance.** Match the Python's exact tie-breaks/ordering; golden-gate (Invariant 6)
   before deleting any script.
 - **`audit-status` duplicate key is a hard error**, never last-wins — keep it.
 - **Determinism.** Parsers must be pure over their input — no env/clock reads at parse time.
-- **Build-tooling scope only.** These parsers live under `build/Governance`; nothing here ships in a
-  generated product, and no `FSharp.Compiler.*` is used.
+- **Build-tooling scope only.** Lives under `build/Governance`; ships nowhere; no `FSharp.Compiler.*`.
 
 ## Consuming stages
 
 Stage 3.3 (YAML→typed model migration), Stage 4 (Python parser port: task-graph + audit-status),
-Stage 5 (compiled build front-end reading `feature.json` / emitting `task-graph.json`). See the plan
-referenced from `metadata.source`.
+Stage 5 (compiled build front-end reading `feature.json` / emitting `task-graph.json`). See the plan in
+`metadata.source`.
 
 ## Sources / links
 

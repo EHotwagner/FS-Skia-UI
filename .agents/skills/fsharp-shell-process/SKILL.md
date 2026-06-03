@@ -16,10 +16,10 @@ process orchestration + the exit-code contract). Verdicts come from the capabili
 
 ## Principle: in-process-first
 
-The strategic win is **not** to re-wrap Bash in F# — it is to make most shelling *disappear*. Once
-the graph/audit/diff-scan live in the governance library, the build calls F# functions directly
-instead of `build.fsx → run-audit.sh → python → JSON → re-parse`. `run-audit.sh` shrinks to a shim
-or is deleted (plan 4.5–4.6). Only genuine external work (git, `dotnet`) remains.
+The strategic win is **not** to re-wrap Bash in F# — it is to make most shelling *disappear*. Once the
+graph/audit/diff-scan live in the governance library, the build calls F# directly instead of `build.fsx
+→ run-audit.sh → python → JSON → re-parse`; `run-audit.sh` shrinks to a shim or is deleted (plan
+4.5–4.6). Only genuine external work (git, `dotnet`) remains.
 
 ## Library verdicts
 
@@ -27,17 +27,17 @@ or is deleted (plan 4.5–4.6). Only genuine external work (git, `dotnet`) remai
   **Adopt Fake.Tools.Git.**
 - **Residual processes (`dotnet`, smoke runners) (C17) → `Fake.Core.Process`** — already transitively
   present via `Fake.Core.Target`; keeps the dependency family consistent. **Adopt.**
-- **CliWrap / Fli rejected** unless rich piping/async is needed — they add a dependency where
+- **CliWrap / Fli rejected** unless rich piping/async is needed — a dependency where
   `Fake.Core.Process` suffices.
-- **Keep OS-glue in Bash** — `fake.sh`/`fake.cmd` launchers and container entrypoints stay shell;
-  F#-ifying a three-line launcher has no payoff.
+- **Keep OS-glue in Bash** — `fake.sh`/`fake.cmd` launchers and container entrypoints stay shell; no
+  payoff to F#-ifying a three-line launcher.
 
 ## API walkthrough + runnable examples
 
 ### C15 — git wrapping (`Fake.Tools.Git`)
 
-`directRunGitCommand repoDir args` runs `git` and returns a success `bool` (use it to *probe* a ref);
-`runSimpleGitCommand repoDir args` runs `git` and returns its stdout as a string (use it to *capture*
+`directRunGitCommand repoDir args` runs `git` and returns a success `bool` (to *probe* a ref);
+`runSimpleGitCommand repoDir args` runs `git` and returns stdout as a string (to *capture*
 `merge-base` / `diff`). Resolve the base ref the same way `run-audit.sh` does — `main` → `master` →
 `HEAD~1` — for diff-scan parity.
 
@@ -62,8 +62,8 @@ let unifiedDiff (repoDir: string) (baseRef: string) =
 ### C17 — residual process with explicit exit-code capture (`Fake.Core.Process`)
 
 `CreateProcess.fromRawCommandLine` + `Proc.run` gives an explicit `ExitCode` and captured output.
-Preserve the Bash/Python exit-code contract when a gate is rewired (e.g. `0` PASS, `2`
-needs-evidence, `3` graph-compute-failed) so callers and CI keep working.
+Preserve the Bash/Python exit-code contract when rewiring a gate (e.g. `0` PASS, `2` needs-evidence,
+`3` graph-compute-failed) so callers and CI keep working.
 
 ```fsharp
 open Fake.Core
@@ -83,16 +83,15 @@ let runDotnet (workingDir: string) (arguments: string) =
 
 - **FAKE concurrency:** FAKE-backed commands share `.fake` state and are **not** safe to run
   concurrently — run them sequentially in the deterministic order from `CLAUDE.md`/`AGENTS.md`.
-- **Exit-code contract.** Capture stdout/exit codes explicitly and preserve the Python/Bash exit-code
-  contract when rewiring a gate, so callers and CI keep working.
-- **Base-ref parity.** Resolve the base ref the way `run-audit.sh` does (`main` → `master` →
-  `HEAD~1`) for diff-scan parity. Pair with the C16 diff scanner in [[fsharp-parsing]].
+- **Exit-code contract.** Preserve the Python/Bash exit codes when rewiring a gate (see C17 above).
+- **Base-ref parity.** Resolve as `run-audit.sh` does (`main` → `master` → `HEAD~1`); pair with the
+  C16 diff scanner in [[fsharp-parsing]].
 - **Build-tooling scope only.** Lives under `build/Governance`; ships nowhere; no FCS.
 
 ## Consuming stages
 
 Stage 4.5–4.6 (shrink/delete `run-audit.sh`; in-process git + diff), Stage 5 (compiled front-end
-running residual `dotnet`/smoke processes). See the plan referenced from `metadata.source`.
+running residual `dotnet`/smoke processes). See the plan in `metadata.source`.
 
 ## Sources / links
 

@@ -49,13 +49,11 @@ and let the user accept or override:
 ## Output
 
 - Write the filled constitution to `.specify/memory/constitution.md`.
-- Remove the HTML comment markers from the final output (they're authoring
-  aids, not reader content).
-- Do NOT remove the LOCKED-section text itself. Only the `<!-- LOCKED -->`
+- Remove the HTML comment markers (they're authoring aids, not reader content).
+- Do NOT remove the LOCKED-section text itself — only the `<!-- LOCKED -->`
   marker lines go.
-- Produce a short summary for the user naming (a) what placeholders were
-  filled, (b) what TAILORABLE choices were made, and (c) confirming no
-  LOCKED sections were modified.
+- Produce a short summary naming (a) what placeholders were filled, (b) what
+  TAILORABLE choices were made, and (c) confirming no LOCKED sections changed.
 
 ## If the constitution file already exists
 

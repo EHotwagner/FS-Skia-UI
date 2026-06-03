@@ -11,8 +11,7 @@ Consolidate feature branches onto the trunk (`main` or `master`) via
 squash-merge, push to origin, and — after a successful merge — bump the
 patch version of every packable project and produce a local NuGet
 package. The bump-and-pack step is **mandatory** whenever any packable
-project is present; it is only skipped when the repo contains no
-packable projects at all.
+project is present; skip it only when the repo has no packable projects at all.
 
 ## When to use
 
@@ -23,11 +22,11 @@ packable projects at all.
 
 ## Preconditions — check before doing anything destructive
 
-1. Working tree is clean (`git status --porcelain` is empty). Refuse if
-   not; ask the user to commit or stash.
+1. Working tree is clean (`git status --porcelain` is empty). Refuse and
+   ask the user to commit or stash if not.
 2. On a git repo. Refuse if not.
 3. The evidence audit, if applicable, has PASSED for each feature branch
-   being merged. If `readiness/synthetic-evidence.json` exists and has an
+   being merged. If `readiness/synthetic-evidence.json` exists with an
    unlogged override, surface that to the user before proceeding.
 
 ## Steps
@@ -85,8 +84,8 @@ git push origin "$TRUNK"
 
 ### 6. NuGet pack — MANDATORY after a successful merge
 
-After step 5 succeeds, this step is **required**, not optional. Skip it
-only when the repo contains zero packable projects. Detect them with:
+After step 5 succeeds, this step is **required**. Skip it only when the
+repo contains zero packable projects. Detect them with:
 
 ```bash
 PACKABLE=$(grep -lE '<IsPackable>\s*true|<PackageId>' $(find . -name '*.fsproj'))
@@ -99,13 +98,12 @@ you MUST:
    it per-project, e.g. `0.1.37-preview.1`). If absent, insert
    `<Version>0.1.0</Version>` into the first `<PropertyGroup>`.
 2. Increment the **patch** segment by 1 (always — never reuse or
-   decrement), preserving any preview suffix. The version number must
-   strictly increase on every merge so downstream FSI consumers see a
-   fresh package.
+   decrement), preserving any preview suffix. The version must strictly
+   increase on every merge so downstream FSI consumers see a fresh package.
 3. Update the `<Version>` element in place.
-4. Produce the local packages. In this repo the canonical mechanism is the
-   FAKE target, which packs **all** packable projects to
-   `~/.local/share/nuget-local` in Release:
+4. Produce the local packages. The canonical mechanism is the FAKE target,
+   which packs **all** packable projects to `~/.local/share/nuget-local`
+   in Release:
 
    ```bash
    ./fake.sh build -t PackLocal
@@ -117,8 +115,8 @@ you MUST:
 5. Commit the version bumps: `Bump packable project versions`.
 6. Push the bump commit.
 
-Do not consider the merge "done" until every packable project has been
-bumped, packed, committed, and pushed.
+The merge is not "done" until every packable project has been bumped,
+packed, committed, and pushed.
 
 > FAKE note: `./fake.sh` / `dotnet fake` share repository `.fake` state and are
 > not safe to run concurrently. Run FAKE-backed pack/validation commands one at
@@ -126,8 +124,8 @@ bumped, packed, committed, and pushed.
 
 ### 7. Clear NuGet caches (F# libraries only)
 
-FSI caches resolved packages aggressively. If we just produced a new
-version that downstream FSI scripts will consume, clear both caches:
+FSI caches resolved packages aggressively. If a new version was just
+produced for downstream FSI scripts, clear both caches:
 
 ```bash
 dotnet nuget locals http-cache --clear

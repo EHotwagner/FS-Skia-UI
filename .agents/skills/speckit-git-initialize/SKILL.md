@@ -25,7 +25,7 @@ If the extension scripts are not found, fall back to:
 The script handles all checks internally:
 - Skips if Git is not available
 - Skips if already inside a Git repository
-- Runs `git init`, `git add .`, and `git commit` with an initial commit message
+- Otherwise runs `git init`, `git add .`, and `git commit` with an initial commit message
 
 ## Customization
 

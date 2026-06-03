@@ -10,7 +10,7 @@ metadata:
 
 ## Checklist Purpose: "Unit Tests for English"
 
-**CRITICAL CONCEPT**: Checklists are **UNIT TESTS FOR REQUIREMENTS WRITING** - they validate the quality, clarity, and completeness of requirements in a given domain.
+**CRITICAL CONCEPT**: Checklists are **UNIT TESTS FOR REQUIREMENTS WRITING** — they validate the quality, clarity, and completeness of requirements in a given domain. If your spec is code written in English, the checklist is its unit test suite: you test whether the requirements are well-written, complete, unambiguous, and ready for implementation — NOT whether the implementation works.
 
 **NOT for verification/testing**:
 
@@ -27,8 +27,6 @@ metadata:
 - ✅ "Are accessibility requirements defined for keyboard navigation?" (coverage)
 - ✅ "Does the spec define what happens when logo image fails to load?" (edge cases)
 
-**Metaphor**: If your spec is code written in English, the checklist is its unit test suite. You're testing whether the requirements are well-written, complete, unambiguous, and ready for implementation - NOT whether the implementation works.
-
 ## User Input
 
 ```text
@@ -40,11 +38,9 @@ You **MUST** consider the user input before proceeding (if not empty).
 ## Pre-Execution Checks
 
 **Check for extension hooks (before checklist generation)**:
-- Check if `.specify/extensions.yml` exists in the project root.
-- If it exists, read it and look for entries under the `hooks.before_checklist` key
-- If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
+- Read `.specify/extensions.yml` from the project root; look for entries under the `hooks.before_checklist` key. If the file is absent, no hooks are registered, or the YAML cannot be parsed/is invalid, skip silently and continue.
 - Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
-- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
+- Do **not** interpret or evaluate hook `condition` expressions:
   - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
   - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
 - For each executable hook, output the following based on its `optional` flag:
@@ -69,7 +65,6 @@ You **MUST** consider the user input before proceeding (if not empty).
 
     Wait for the result of the hook command before proceeding to the Execution Steps.
     ```
-- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
 
 ## Execution Steps
 
@@ -81,7 +76,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Be generated from the user's phrasing + extracted signals from spec/plan/tasks
    - Only ask about information that materially changes checklist content
    - Be skipped individually if already unambiguous in `$ARGUMENTS`
-   - Prefer precision over breadth
+   - Prefer precision over breadth (do not ask the user to restate what they already said)
 
    Generation algorithm:
    1. Extract signals: feature domain keywords (e.g., auth, latency, UX, API), risk indicators ("critical", "must", "compliance"), stakeholder hints ("QA", "review", "security team"), and explicit deliverables ("a11y", "rollback", "contracts").
@@ -99,7 +94,6 @@ You **MUST** consider the user input before proceeding (if not empty).
    Question formatting rules:
    - If presenting options, generate a compact table with columns: Option | Candidate | Why It Matters
    - Limit to A–E options maximum; omit table if a free-form answer is clearer
-   - Never ask the user to restate what they already said
    - Avoid speculative categories (no hallucination). If uncertain, ask explicitly: "Confirm whether X belongs in scope."
 
    Defaults when interaction impossible:
@@ -128,13 +122,8 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 5. **Generate checklist** - Create "Unit Tests for Requirements":
    - Create `FEATURE_DIR/checklists/` directory if it doesn't exist
-   - Generate unique checklist filename:
-     - Use short, descriptive name based on domain (e.g., `ux.md`, `api.md`, `security.md`)
-     - Format: `[domain].md`
-   - File handling behavior:
-     - If file does NOT exist: Create new file and number items starting from CHK001
-     - If file exists: Append new items to existing file, continuing from the last CHK ID (e.g., if last item is CHK015, start new items at CHK016)
-   - Never delete or replace existing checklist content - always preserve and append
+   - Generate a unique filename `[domain].md` using a short, descriptive domain name (e.g., `ux.md`, `api.md`, `security.md`)
+   - File handling: If the file does NOT exist, create it and number items from CHK001. If it exists, append new items continuing from the last CHK ID (e.g., last item CHK015 → start at CHK016). Never delete or replace existing checklist content — always preserve and append.
 
    **CORE PRINCIPLE - Test the Requirements, Not the Implementation**:
    Every checklist item MUST evaluate the REQUIREMENTS THEMSELVES for:
@@ -171,9 +160,8 @@ You **MUST** consider the user input before proceeding (if not empty).
    - "Are loading states defined for asynchronous episode data?" [Completeness]
    - "Does the spec define visual hierarchy for competing UI elements?" [Clarity]
 
-   **ITEM STRUCTURE**:
-   Each item should follow this pattern:
-   - Question format asking about requirement quality
+   **ITEM STRUCTURE** — each item should:
+   - Use question format asking about requirement quality
    - Focus on what's WRITTEN (or not written) in the spec/plan
    - Include quality dimension in brackets [Completeness/Clarity/Consistency/etc.]
    - Reference spec section `[Spec §X.Y]` when checking existing requirements
@@ -211,8 +199,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Include resilience/rollback when state mutation occurs: "Are rollback requirements defined for migration failures? [Gap]"
 
    **Traceability Requirements**:
-   - MINIMUM: ≥80% of items MUST include at least one traceability reference
-   - Each item should reference: spec section `[Spec §X.Y]`, or use markers: `[Gap]`, `[Ambiguity]`, `[Conflict]`, `[Assumption]`
+   - MINIMUM: ≥80% of items MUST include at least one traceability reference — a spec section `[Spec §X.Y]`, or a marker: `[Gap]`, `[Ambiguity]`, `[Conflict]`, `[Assumption]`
    - If no ID system exists: "Is a requirement & acceptance criteria ID scheme established? [Traceability]"
 
    **Surface & Resolve Issues** (Requirements Quality Problems):
@@ -228,7 +215,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Merge near-duplicates checking the same requirement aspect
    - If >5 low-impact edge cases, create one item: "Are edge cases X, Y, Z addressed in requirements? [Coverage]"
 
-   **🚫 ABSOLUTELY PROHIBITED** - These make it an implementation test, not a requirements test:
+   **🚫 ABSOLUTELY PROHIBITED** (these make it an implementation test, not a requirements test):
    - ❌ Any item starting with "Verify", "Test", "Confirm", "Check" + implementation behavior
    - ❌ References to code execution, user actions, system behavior
    - ❌ "Displays correctly", "works properly", "functions as expected"
@@ -236,7 +223,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - ❌ Test cases, test plans, QA procedures
    - ❌ Implementation details (frameworks, APIs, algorithms)
 
-   **✅ REQUIRED PATTERNS** - These test requirements quality:
+   **✅ REQUIRED PATTERNS** (these test requirements quality):
    - ✅ "Are [requirement type] defined/specified/documented for [scenario]?"
    - ✅ "Is [vague term] quantified/clarified with specific criteria?"
    - ✅ "Are requirements consistent between [section A] and [section B]?"
@@ -246,19 +233,9 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 6. **Structure Reference**: Generate the checklist following the canonical template in `.specify/templates/checklist-template.md` for title, meta section, category headings, and ID formatting. If template is unavailable, use: H1 title, purpose/created meta lines, `##` category sections containing `- [ ] CHK### <requirement item>` lines with globally incrementing IDs starting at CHK001.
 
-7. **Report**: Output full path to checklist file, item count, and summarize whether the run created a new file or appended to an existing one. Summarize:
-   - Focus areas selected
-   - Depth level
-   - Actor/timing
-   - Any explicit user-specified must-have items incorporated
+7. **Report**: Output the full checklist path, item count, whether the run created or appended, and a summary of: focus areas selected, depth level, actor/timing, and any explicit user-specified must-have items incorporated.
 
-**Important**: Each `/speckit-checklist` command invocation uses a short, descriptive checklist filename and either creates a new file or appends to an existing one. This allows:
-
-- Multiple checklists of different types (e.g., `ux.md`, `test.md`, `security.md`)
-- Simple, memorable filenames that indicate checklist purpose
-- Easy identification and navigation in the `checklists/` folder
-
-To avoid clutter, use descriptive types and clean up obsolete checklists when done.
+**Important**: Each `/speckit-checklist` invocation uses a short, descriptive filename and either creates a new file or appends to an existing one. This allows multiple typed checklists (e.g., `ux.md`, `test.md`, `security.md`) with memorable, purpose-indicating names that are easy to navigate in the `checklists/` folder. To avoid clutter, use descriptive types and clean up obsolete checklists when done.
 
 ## Example Checklist Types & Sample Items
 
@@ -327,21 +304,16 @@ Sample items:
 
 **Key Differences:**
 
-- Wrong: Tests if the system works correctly
-- Correct: Tests if the requirements are written correctly
-- Wrong: Verification of behavior
-- Correct: Validation of requirement quality
-- Wrong: "Does it do X?"
-- Correct: "Is X clearly specified?"
+- Wrong tests if the system works correctly; Correct tests if the requirements are written correctly
+- Wrong verifies behavior; Correct validates requirement quality
+- Wrong asks "Does it do X?"; Correct asks "Is X clearly specified?"
 
 ## Post-Execution Checks
 
 **Check for extension hooks (after checklist generation)**:
-Check if `.specify/extensions.yml` exists in the project root.
-- If it exists, read it and look for entries under the `hooks.after_checklist` key
-- If the YAML cannot be parsed or is invalid, skip hook checking silently and continue normally
+- Read `.specify/extensions.yml` from the project root; look for entries under the `hooks.after_checklist` key. If the file is absent, no hooks are registered, or the YAML cannot be parsed/is invalid, skip silently and continue.
 - Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.
-- For each remaining hook, do **not** attempt to interpret or evaluate hook `condition` expressions:
+- Do **not** interpret or evaluate hook `condition` expressions:
   - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
   - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
 - For each executable hook, output the following based on its `optional` flag:
@@ -364,4 +336,3 @@ Check if `.specify/extensions.yml` exists in the project root.
     Executing: `/{command}`
     EXECUTE_COMMAND: {command}
     ```
-- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently

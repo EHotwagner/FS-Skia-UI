@@ -1,0 +1,67 @@
+# Generated Guidance Check
+
+PASS: active and preset-owned spec/plan templates include required governance prompts in the expected Markdown sections.
+PASS: generated Controls guidance covers Skia-rendered controls, rich text, chart controls, graph controls, DataGrid, Controls.Elmish adapter wiring, and legacy Charts replacement notes without stale generated terms.
+PASS: task templates, task metadata templates, implementation guidance, and constitution guidance require `skillist` evaluation, confidence review, risk-level evidence, and implementation-time skill loading.
+PASS: repository, agent, template, and generated-product guidance serialize FAKE-backed commands because `.fake` state is shared, while preserving safe non-FAKE parallelism.
+PASS: every advertised skill id in the speckit-tasks hints resolves to a declared skill `name:`; skill directory/name agree and `.agents`/`.claude` peers are synchronized.
+PASS: the active feature's plan.md fills all required Constitution-Check governance-decision areas (completeness gate, FR-002).
+
+Validated prompt classes:
+- `.specify/templates/spec-template.md` section `Framework Governance Prompts` prompt `package impact`
+- `.specify/templates/spec-template.md` section `Framework Governance Prompts` prompt `public contract impact`
+- `.specify/templates/spec-template.md` section `Framework Governance Prompts` prompt `state workflow impact`
+- `.specify/templates/spec-template.md` section `Framework Governance Prompts` prompt `layout/rendering impact`
+- `.specify/templates/spec-template.md` section `Framework Governance Prompts` prompt `evidence obligations`
+- `.specify/templates/spec-template.md` section `Framework Governance Prompts` prompt `unsupported scope`
+- `.specify/templates/spec-template.md` section `Framework Governance Prompts` prompt `build-target impact`
+- `.specify/presets/fsharp-opinionated/templates/spec-template.md` section `Framework Governance Prompts` prompt `package impact`
+- `.specify/presets/fsharp-opinionated/templates/spec-template.md` section `Framework Governance Prompts` prompt `public contract impact`
+- `.specify/presets/fsharp-opinionated/templates/spec-template.md` section `Framework Governance Prompts` prompt `state workflow impact`
+- `.specify/presets/fsharp-opinionated/templates/spec-template.md` section `Framework Governance Prompts` prompt `layout/rendering impact`
+- `.specify/presets/fsharp-opinionated/templates/spec-template.md` section `Framework Governance Prompts` prompt `evidence obligations`
+- `.specify/presets/fsharp-opinionated/templates/spec-template.md` section `Framework Governance Prompts` prompt `unsupported scope`
+- `.specify/presets/fsharp-opinionated/templates/spec-template.md` section `Framework Governance Prompts` prompt `build-target impact`
+- `.specify/templates/plan-template.md` section `Repository Governance Decisions` prompt `template ownership`
+- `.specify/templates/plan-template.md` section `Repository Governance Decisions` prompt `dependency impact`
+- `.specify/templates/plan-template.md` section `Repository Governance Decisions` prompt `command-surface impact`
+- `.specify/templates/plan-template.md` section `Repository Governance Decisions` prompt `generated project impact`
+- `.specify/templates/plan-template.md` section `Repository Governance Decisions` prompt `evidence paths`
+- `.specify/templates/plan-template.md` section `Repository Governance Decisions` prompt `.fsi`
+- `.specify/templates/plan-template.md` section `Repository Governance Decisions` prompt `MVU/effect boundary`
+- `.specify/templates/plan-template.md` section `Repository Governance Decisions` prompt `synthetic evidence`
+- `.specify/templates/plan-template.md` section `Repository Governance Decisions` prompt `test evidence`
+- `.specify/templates/plan-template.md` section `Repository Governance Decisions` prompt `observability`
+- `.specify/templates/plan-template.md` section `Repository Governance Decisions` prompt `deferred scope`
+- `.specify/presets/fsharp-opinionated/templates/plan-template.md` section `Repository Governance Decisions` prompt `template ownership`
+- `.specify/presets/fsharp-opinionated/templates/plan-template.md` section `Repository Governance Decisions` prompt `dependency impact`
+- `.specify/presets/fsharp-opinionated/templates/plan-template.md` section `Repository Governance Decisions` prompt `command-surface impact`
+- `.specify/presets/fsharp-opinionated/templates/plan-template.md` section `Repository Governance Decisions` prompt `generated project impact`
+- `.specify/presets/fsharp-opinionated/templates/plan-template.md` section `Repository Governance Decisions` prompt `evidence paths`
+- `.specify/presets/fsharp-opinionated/templates/plan-template.md` section `Repository Governance Decisions` prompt `.fsi`
+- `.specify/presets/fsharp-opinionated/templates/plan-template.md` section `Repository Governance Decisions` prompt `MVU/effect boundary`
+- `.specify/presets/fsharp-opinionated/templates/plan-template.md` section `Repository Governance Decisions` prompt `synthetic evidence`
+- `.specify/presets/fsharp-opinionated/templates/plan-template.md` section `Repository Governance Decisions` prompt `test evidence`
+- `.specify/presets/fsharp-opinionated/templates/plan-template.md` section `Repository Governance Decisions` prompt `observability`
+- `.specify/presets/fsharp-opinionated/templates/plan-template.md` section `Repository Governance Decisions` prompt `deferred scope`
+
+Deferred roadmap boundaries checked: visual evidence, release validation, external repository split, and distribution automation remain outside V2 pass/fail scope.
+
+---
+
+## FR-010 reviewer attestation (US1)
+
+The transcript above is the authoritative `./fake.sh build -t GeneratedGuidanceCheck`
+output (Status: Ok / **green**) over the rewritten corpus: every C1 contract token
+is present per home file, every C2 obligation resolves under its `AnyOf`/`AllOf`
+mode, and no C3 forbidden term appears. Diffing rewritten files against their
+pre-feature versions confirms each is shorter (corpus 6889 → 6772; see
+`prose-size-accounting.md`).
+
+Reviewer attestation: the rewrite changed **only wording, length, and
+redundancy**. Every rule previously conveyed remains extractable, and the diff
+introduces **no new normative rule** and drops none — no obligation, contract
+token, forbidden-absence, or currency-check strength was added or removed. The
+055 currency model in `build/Governance/Guidance.fs` was preserved exactly, not
+altered. The negative proof that drift still fails the gate is in
+`rewrite-red-green.md`.
