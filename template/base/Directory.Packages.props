@@ -6,25 +6,25 @@
     <!-- 043 (FR-013): the published governance engine consumed in-process by the
          generated build.fsx (#r "nuget: FS.Skia.UI.Build"); pinned for every
          profile and bumped with the other FS.Skia.UI.* packages. -->
-    <PackageVersion Include="FS.Skia.UI.Build" Version="0.1.62-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.Build" Version="0.1.63-preview.1" />
     <!-- 058 (US2, FR-008): the shipped skill-support library backing the fsharp-*
          authoring skills, pinned unconditionally (every profile) like FS.Skia.UI.Build,
          so the fsharp-* skills' FS.Skia.UI.SkillSupport .fsi references resolve in any
          generated project (SC-004). -->
-    <PackageVersion Include="FS.Skia.UI.SkillSupport" Version="0.1.62-preview.1" />
-    <PackageVersion Include="FS.Skia.UI.Scene" Version="0.1.62-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.SkillSupport" Version="0.1.63-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.Scene" Version="0.1.63-preview.1" />
     <!--#if (profile == "app" || profile == "sample-pack") -->
-    <PackageVersion Include="FS.Skia.UI.SkiaViewer" Version="0.1.62-preview.1" />
-    <PackageVersion Include="FS.Skia.UI.Elmish" Version="0.1.62-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.SkiaViewer" Version="0.1.63-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.Elmish" Version="0.1.63-preview.1" />
     <!--#endif -->
     <!--#if (profile == "app") -->
-    <PackageVersion Include="FS.Skia.UI.KeyboardInput" Version="0.1.62-preview.1" />
-    <PackageVersion Include="FS.Skia.UI.Layout" Version="0.1.62-preview.1" />
-    <PackageVersion Include="FS.Skia.UI.Controls" Version="0.1.62-preview.1" />
-    <PackageVersion Include="FS.Skia.UI.Controls.Elmish" Version="0.1.62-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.KeyboardInput" Version="0.1.63-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.Layout" Version="0.1.63-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.Controls" Version="0.1.63-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.Controls.Elmish" Version="0.1.63-preview.1" />
     <!--#endif -->
     <!--#if (profile == "governed") -->
-    <PackageVersion Include="FS.Skia.UI.Testing" Version="0.1.62-preview.1" />
+    <PackageVersion Include="FS.Skia.UI.Testing" Version="0.1.63-preview.1" />
     <!--#endif -->
     <PackageVersion Include="Expecto" Version="10.2.2" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
