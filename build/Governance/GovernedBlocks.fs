@@ -155,7 +155,7 @@ let visualProofPhrases =
       CanonicalText =
         "Exact visual proof rejection phrases for scans: metadata-only reports do not satisfy visual proof; 1x1 fallback images do not satisfy visual proof; layout-only bounds claims do not satisfy visual proof."
       Targets =
-        [ ".agents/skills/fs-skia-layout-evidence/SKILL.md", Verbatim
+        [ ".agents/skills/fs-skia-evidence-mode/SKILL.md", Verbatim
           "template/base/docs/product.md", Verbatim ]
       Tokens = []
       Obligations = [ "visual-proof-echo" ] }
@@ -167,7 +167,7 @@ let ownerPhrases =
       CanonicalText =
         "Exact owner phrases for scans: framework runtime; generated template workflow; documentation discoverability; consumer authoring; persistent-window blocking; display/session availability; auto-close smoke; benign warning; blocking warning; deferred warning; name-collision guidance."
       Targets =
-        [ ".agents/skills/fs-skia-layout-evidence/SKILL.md", Verbatim
+        [ ".agents/skills/fs-skia-evidence-mode/SKILL.md", Verbatim
           "template/base/docs/product.md", Verbatim ]
       Tokens = []
       Obligations = [ "owner-phrases-echo" ] }
@@ -310,9 +310,12 @@ let constitutionConcreteReplacements : (string * string) list =
             "- `fs-skia-samples` — work on optional generated product sample-pack content"
             "  for the non-runtime Samples capability"
             "  (`template/fragments/samples/skill/SKILL.md`)."
-            "- `fs-skia-layout-evidence` — work on generated game HUD readability, scene"
-            "  layout evidence, public scene/host/update guidance, and benign host warning"
-            "  classification (`.agents/skills/fs-skia-layout-evidence/SKILL.md`)." ]
+            "- `fs-skia-layout-readability` — work on generated game HUD readability,"
+            "  gameplay-region bounds, and public scene/host/update naming guidance"
+            "  (`.agents/skills/fs-skia-layout-readability/SKILL.md`)."
+            "- `fs-skia-evidence-mode` — work on deterministic render-only evidence,"
+            "  visual-proof honesty, and benign host warning classification"
+            "  (`.agents/skills/fs-skia-evidence-mode/SKILL.md`)." ]
 
       // R12 — strip the LOCKED banner before Workflow & Quality Gates.
       joinLines [ ""; "<!-- LOCKED -->"; "## Workflow & Quality Gates" ],

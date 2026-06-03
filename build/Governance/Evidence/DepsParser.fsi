@@ -9,9 +9,13 @@ namespace FS.Skia.UI.Build.Evidence
 
 /// One task's dependency metadata. `Deps`/`Skillist` are `None` when the field
 /// is absent (the Python `TaskMetadata` `None` sentinel that later errors).
+/// `Owns` (feature 059, FR-010) is the optional gated-evidence ownership list;
+/// `None` when the key is absent (most tasks own nothing). Its closed vocabulary
+/// and implied-skill coupling are validated by `Audit.validateAndMerge`.
 type DepsEntry =
     { Deps: string list option
       Skillist: string list option
+      Owns: string list option
       LegacyBareList: bool }
 
 /// Parsed tasks.deps.yml: ordered task ids, id-keyed entries, parse errors.

@@ -126,35 +126,27 @@ broad validation is required, and how non-authoritative aggregate results are
 recorded.
 
 Task graph validator pitfall guidance must be visible before authors run
-`EvidenceGraph`. Avoid title trigger phrases that accidentally imply unrelated
-capabilities, for example "persistent GUI runtime" on a guidance-only task or
-"window visibility validation fixture" on a non-viewer task. Keep
-`tasks.deps.yml` in object shape with exactly one key per task id:
-`T001: { deps: [], skillist: [] }` is invalid YAML style for this repo; use
-indented object fields instead. Every task id in `tasks.md` must appear once in
-`tasks.deps.yml`, dependency lists must use exact `Tnnn` ids, and the visible
-`[skillist: ...]` mirror in `tasks.md` must match the structured `skillist`
-list exactly and in order.
+`EvidenceGraph`. Task titles are free-form — they are never scanned for
+capability phrases. Keep `tasks.deps.yml` in object shape with exactly
+one key per task id under the top-level `tasks:` wrapper: `T001: { deps: [], skillist: [] }`
+is invalid YAML style for this repo, and bare `Tnnn:` keys with no `tasks:`
+wrapper are rejected with one directive error. Use indented object fields
+instead. Every task id in `tasks.md` must appear once in `tasks.deps.yml`,
+dependency lists must use exact `Tnnn` ids, and the visible `[skillist: ...]`
+mirror in `tasks.md` must match the structured `skillist` list exactly and in
+order.
 
-Blocking Spec Kit title-trigger groups enforced by `EvidenceGraph` are:
-graph validation (`task graph`, `evidence graph`, `readiness validation`,
-`tasks.deps.yml`, `structured task metadata`, `mirror mismatch`,
-`skillist field`, `skillist, list typing`, `obvious capability`,
-`multi-skill dependency order`, `migration blocker`, `validator diagnostics`,
-`EvidenceGraph`); evidence audit (`evidence audit`, `diff-scan`,
-`synthetic propagation`, `readiness-blocking`, `EvidenceAudit`); task
-generation (`/speckit.tasks`, `speckit.tasks`, `task-generation`,
-`task templates`, `tasks-template`, `tasks template`,
-`generated task guidance`, `post-generation skill evaluation`);
-implementation loading (`/speckit.implement`, `speckit.implement`,
-`implementation-loading`, `implementation skill`, `implementation command`,
-`load each`, `skill-load`, `before implementation`); and constitution
-(`constitution`, `constitutional`). Titles beginning with
-`Complete readiness notes` suppress these capability expectation checks for
-setup/readiness aggregation tasks. Safe setup wording examples:
-`Complete readiness notes for skill-loading evidence workflow placeholder`,
-`Record required readiness filenames for later verification`, and
-`Create placeholder evidence files listed by the plan`.
+Evidence ownership is structured, not inferred from titles. A task declares the
+gated evidence it owns through an optional `owns:` field in `tasks.deps.yml`,
+drawn from the closed vocabulary `graph-validation` (implies
+`speckit-evidence-graph`), `evidence-audit` (implies `speckit-evidence-audit`),
+`task-generation` (implies `speckit-tasks`), `implementation-loading` (implies
+`speckit-implement`), and `constitution` (implies `speckit-constitution`). Each
+declared `owns:` value requires its implied skill in that task's `skillist`;
+an unknown value is a directive error. Most tasks own nothing — omit `owns:` or
+use `[]`. Earlier task files that relied on the removed title-trigger matcher
+should re-express ownership via `owns:` and drop any title rewording (or the
+`Complete readiness notes` prefix) that only existed to satisfy or dodge it.
 
 The authoritative skill registry for `skillist` ids is built from readable
 `SKILL.md` files under `.agents/skills/*/SKILL.md`,
@@ -164,13 +156,14 @@ The authoritative skill registry for `skillist` ids is built from readable
 Advisory FS.Skia.UI capability hints are non-blocking: rendering or scene tasks
 usually need `fs-skia-scene`; viewer or window-host tasks usually need
 `fs-skia-skiaviewer`; Elmish workflow tasks usually need `fs-skia-elmish`;
-keyboard or input tasks usually need `fs-skia-keyboard-input`; layout tasks
-usually need `fs-skia-layout`; controls, forms, charts, graphs, or DataGrid
-tasks usually need `fs-skia-ui-widgets`; generated game HUD readability,
-public-scene host update, host-warning classification, or evidence tasks
-usually need `fs-skia-layout-evidence`. These hints do not create hard
-validation failures unless a task also matches a blocking Spec Kit trigger
-group above.
+keyboard or input tasks usually need `fs-skia-keyboard-input`; layout
+readability tasks usually need `fs-skia-layout-readability`; controls, forms,
+charts, graphs, or DataGrid tasks usually need `fs-skia-ui-widgets`; generated
+game HUD readability and public-scene host update tasks usually need
+`fs-skia-layout-readability`; deterministic evidence mode and host-warning
+classification tasks usually need `fs-skia-evidence-mode`. These hints do not
+create hard validation failures; every id resolves to a consumer-registerable
+skill.
 
 Generated task lists must make audit-enforced readiness files discoverable
 before implementation starts. Setup or foundation work should create placeholders
@@ -205,14 +198,13 @@ exit without a persistent launch attempt.
 
 Visual demo task guidance must assign implementation skills before work starts:
 scene rendering -> fs-skia-scene; screenshot capture -> fs-skia-skiaviewer;
-layout readability -> fs-skia-layout-evidence; persistent viewer launch ->
-fs-skia-skiaviewer; deterministic evidence mode -> fs-skia-layout-evidence;
+layout readability -> fs-skia-layout-readability; persistent viewer launch ->
+fs-skia-skiaviewer; deterministic evidence mode -> fs-skia-evidence-mode;
 generated-package validation -> fs-skia-template-update; graph validation ->
-speckit-evidence-graph; audit validation -> speckit-evidence-audit; debug-loop
-skills -> speckit-debug-loop. Multi-skill ordering must preserve
-implementation-before-evidence, graph-before-audit, and
-debug-before-broad-rerun. Visible mirrors such as
-`[skillist: speckit-tasks, fs-skia-layout-evidence]` must match structured
+speckit-evidence-graph; audit validation -> speckit-evidence-audit.
+Multi-skill ordering must preserve implementation-before-evidence,
+graph-before-audit, and debug-before-broad-rerun. Visible mirrors such as
+`[skillist: speckit-tasks, fs-skia-layout-readability]` must match structured
 metadata exactly.
 
 Visual demo readiness scaffolds must be named before final audit discovery:

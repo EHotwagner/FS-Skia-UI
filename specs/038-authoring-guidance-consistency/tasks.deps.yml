@@ -78,10 +78,10 @@ tasks:
     skillist: ["fs-skia-skiaviewer"]
   T022:
     deps: []
-    skillist: ["fs-skia-template-update", "fs-skia-layout-evidence"]
+    skillist: ["fs-skia-template-update", "fs-skia-layout-readability"]
   T023:
     deps: [T022]
-    skillist: ["fs-skia-template-update", "fs-skia-layout-evidence"]
+    skillist: ["fs-skia-template-update", "fs-skia-layout-readability"]
   T024:
     deps: [T022]
     skillist: ["fs-skia-template-update", "fs-skia-scene"]

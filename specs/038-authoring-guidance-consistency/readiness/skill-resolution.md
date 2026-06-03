@@ -32,7 +32,7 @@ resolves to a declared skill name:; skill directory/name agree and
 .agents/.claude peers are synchronized.`
 
 The six advertised ids — `fs-skia-scene`, `fs-skia-skiaviewer`,
-`fs-skia-layout-evidence`, `fs-skia-template-update`, `speckit-evidence-graph`,
+`fs-skia-layout-readability`, `fs-skia-template-update`, `speckit-evidence-graph`,
 `speckit-evidence-audit` — all resolve.
 
 ## FAIL on a dangling id (failing-first, authoritative guard)

@@ -764,16 +764,16 @@
       "parallel": false,
       "title": "Update `docs/generated-apps.md`, `docs/template-profile.md`, `template/base/README.md`, and `template/base/docs/product.md` with archive/current-evidence guidance",
       "skillist": [
-        "fs-skia-layout-evidence"
+        "fs-skia-layout-readability"
       ],
       "skillist_mirror": [
-        "fs-skia-layout-evidence"
+        "fs-skia-layout-readability"
       ],
       "skill_match_assessments": [
         {
           "task_id": "T019",
           "declared_skillist": [
-            "fs-skia-layout-evidence"
+            "fs-skia-layout-readability"
           ],
           "candidate_skill_id": null,
           "matched_signals": [],

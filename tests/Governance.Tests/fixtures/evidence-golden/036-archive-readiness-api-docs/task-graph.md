@@ -6,39 +6,39 @@
 
 | Task | Candidate | Confidence | Signals | Reviewer disposition | Diagnostic |
 |------|-----------|------------|---------|----------------------|------------|
-| T001 | (none) | none |  | accepted-empty | T001: no high-confidence capability signal detected |
-| T002 | (none) | none |  | accepted-empty | T002: no high-confidence capability signal detected |
-| T003 | speckit-tasks | high | post-generation skill evaluation | accepted | T003: task text matches speckit-tasks; trigger_group=task generation; matched_trigger=post-generation skill evaluation |
-| T004 | (none) | none |  | accepted-empty | T004: no high-confidence capability signal detected |
-| T005 | (none) | none |  | accepted-empty | T005: no high-confidence capability signal detected |
-| T006 | (none) | none |  | accepted-empty | T006: no high-confidence capability signal detected |
-| T007 | (none) | none |  | accepted-empty | T007: no high-confidence capability signal detected |
-| T008 | (none) | none |  | accepted-empty | T008: no high-confidence capability signal detected |
-| T009 | (none) | none |  | accepted-empty | T009: no high-confidence capability signal detected |
-| T010 | (none) | none |  | accepted-empty | T010: no high-confidence capability signal detected |
-| T011 | (none) | none |  | accepted-empty | T011: no high-confidence capability signal detected |
-| T012 | (none) | none |  | accepted-empty | T012: no high-confidence capability signal detected |
-| T013 | (none) | none |  | accepted-empty | T013: no high-confidence capability signal detected |
-| T014 | (none) | none |  | accepted-empty | T014: no high-confidence capability signal detected |
-| T015 | (none) | none |  | accepted-empty | T015: no high-confidence capability signal detected |
-| T016 | (none) | none |  | accepted-empty | T016: no high-confidence capability signal detected |
-| T017 | (none) | none |  | accepted-empty | T017: no high-confidence capability signal detected |
-| T018 | (none) | none |  | accepted-empty | T018: no high-confidence capability signal detected |
-| T019 | (none) | none |  | declared | T019: no high-confidence capability signal detected |
-| T020 | (none) | none |  | accepted-empty | T020: no high-confidence capability signal detected |
-| T021 | (none) | none |  | accepted-empty | T021: no high-confidence capability signal detected |
-| T022 | (none) | none |  | accepted-empty | T022: no high-confidence capability signal detected |
-| T023 | (none) | none |  | accepted-empty | T023: no high-confidence capability signal detected |
-| T024 | (none) | none |  | accepted-empty | T024: no high-confidence capability signal detected |
-| T025 | (none) | none |  | accepted-empty | T025: no high-confidence capability signal detected |
-| T026 | (none) | none |  | accepted-empty | T026: no high-confidence capability signal detected |
-| T027 | (none) | none |  | accepted-empty | T027: no high-confidence capability signal detected |
-| T028 | (none) | none |  | accepted-empty | T028: no high-confidence capability signal detected |
-| T029 | (none) | none |  | accepted-empty | T029: no high-confidence capability signal detected |
-| T030 | (none) | none |  | accepted-empty | T030: no high-confidence capability signal detected |
-| T031 | speckit-evidence-graph | high | EvidenceGraph | accepted | T031: task text matches speckit-evidence-graph; trigger_group=graph validation; matched_trigger=EvidenceGraph |
-| T032 | speckit-evidence-audit | high | EvidenceAudit | accepted | T032: task text matches speckit-evidence-audit; trigger_group=evidence audit; matched_trigger=EvidenceAudit |
-| T033 | (none) | none |  | accepted-empty | T033: no high-confidence capability signal detected |
+| T001 | (none) | none |  | accepted-empty | T001: skillist trusted as declared; no owns-based capability requirement |
+| T002 | (none) | none |  | accepted-empty | T002: skillist trusted as declared; no owns-based capability requirement |
+| T003 | (none) | none |  | declared | T003: skillist trusted as declared; no owns-based capability requirement |
+| T004 | (none) | none |  | accepted-empty | T004: skillist trusted as declared; no owns-based capability requirement |
+| T005 | (none) | none |  | accepted-empty | T005: skillist trusted as declared; no owns-based capability requirement |
+| T006 | (none) | none |  | accepted-empty | T006: skillist trusted as declared; no owns-based capability requirement |
+| T007 | (none) | none |  | accepted-empty | T007: skillist trusted as declared; no owns-based capability requirement |
+| T008 | (none) | none |  | accepted-empty | T008: skillist trusted as declared; no owns-based capability requirement |
+| T009 | (none) | none |  | accepted-empty | T009: skillist trusted as declared; no owns-based capability requirement |
+| T010 | (none) | none |  | accepted-empty | T010: skillist trusted as declared; no owns-based capability requirement |
+| T011 | (none) | none |  | accepted-empty | T011: skillist trusted as declared; no owns-based capability requirement |
+| T012 | (none) | none |  | accepted-empty | T012: skillist trusted as declared; no owns-based capability requirement |
+| T013 | (none) | none |  | accepted-empty | T013: skillist trusted as declared; no owns-based capability requirement |
+| T014 | (none) | none |  | accepted-empty | T014: skillist trusted as declared; no owns-based capability requirement |
+| T015 | (none) | none |  | accepted-empty | T015: skillist trusted as declared; no owns-based capability requirement |
+| T016 | (none) | none |  | accepted-empty | T016: skillist trusted as declared; no owns-based capability requirement |
+| T017 | (none) | none |  | accepted-empty | T017: skillist trusted as declared; no owns-based capability requirement |
+| T018 | (none) | none |  | accepted-empty | T018: skillist trusted as declared; no owns-based capability requirement |
+| T019 | (none) | none |  | declared | T019: skillist trusted as declared; no owns-based capability requirement |
+| T020 | (none) | none |  | accepted-empty | T020: skillist trusted as declared; no owns-based capability requirement |
+| T021 | (none) | none |  | accepted-empty | T021: skillist trusted as declared; no owns-based capability requirement |
+| T022 | (none) | none |  | accepted-empty | T022: skillist trusted as declared; no owns-based capability requirement |
+| T023 | (none) | none |  | accepted-empty | T023: skillist trusted as declared; no owns-based capability requirement |
+| T024 | (none) | none |  | accepted-empty | T024: skillist trusted as declared; no owns-based capability requirement |
+| T025 | (none) | none |  | accepted-empty | T025: skillist trusted as declared; no owns-based capability requirement |
+| T026 | (none) | none |  | accepted-empty | T026: skillist trusted as declared; no owns-based capability requirement |
+| T027 | (none) | none |  | accepted-empty | T027: skillist trusted as declared; no owns-based capability requirement |
+| T028 | (none) | none |  | accepted-empty | T028: skillist trusted as declared; no owns-based capability requirement |
+| T029 | (none) | none |  | accepted-empty | T029: skillist trusted as declared; no owns-based capability requirement |
+| T030 | (none) | none |  | accepted-empty | T030: skillist trusted as declared; no owns-based capability requirement |
+| T031 | (none) | none |  | declared | T031: skillist trusted as declared; no owns-based capability requirement |
+| T032 | (none) | none |  | declared | T032: skillist trusted as declared; no owns-based capability requirement |
+| T033 | (none) | none |  | accepted-empty | T033: skillist trusted as declared; no owns-based capability requirement |
 
 ## Status counts (effective)
 

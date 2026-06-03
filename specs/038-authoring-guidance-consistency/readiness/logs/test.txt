@@ -424,7 +424,7 @@ derived from the spec and plan.
   keyboard/input -> `fs-skia-keyboard-input`; layout -> `fs-skia-layout`;
   controls/forms/charts/graphs/DataGrid -> `fs-skia-ui-widgets`;
   generated game HUD readability, public-scene host update, host-warning
-  classification, or evidence tasks -> `fs-skia-layout-evidence`.
+  classification, or evidence tasks -> `fs-skia-layout-readability`.
 - **Phase-checkpoint edges are implicit.** The graph compute script
   auto-injects an edge from every task in Phase N+1 to the last foundation
   task of Phase N. You do NOT repeat those edges in the yml — write only
@@ -464,15 +464,15 @@ derived from the spec and plan.
   recorded.
 - **Visual demo skill assignment.** Assign scene rendering -> fs-skia-scene,
   screenshot capture -> fs-skia-skiaviewer, layout readability ->
-  fs-skia-layout-evidence, persistent viewer launch -> fs-skia-skiaviewer,
-  deterministic evidence mode -> fs-skia-layout-evidence,
+  fs-skia-layout-readability, persistent viewer launch -> fs-skia-skiaviewer,
+  deterministic evidence mode -> fs-skia-layout-readability,
   generated-package validation -> fs-skia-template-update, graph validation ->
   speckit-evidence-graph, audit validation -> speckit-evidence-audit.
   Preserve
   implementation-before-evidence, graph-before-audit, and
   debug-before-broad-rerun ordering; the visible mirror
-  `[skillist: speckit-tasks, fs-skia-layout-evidence]` illustrates exact
-  structured order. Exact skill phrases for scans: scene rendering -> fs-skia-scene; screenshot capture -> fs-skia-skiaviewer; layout readability -> fs-skia-layout-evidence; persistent viewer launch -> fs-skia-skiaviewer; deterministic evidence mode -> fs-skia-layout-evidence; generated-package validation -> fs-skia-template-update; graph validation -> speckit-evidence-graph; audit validation -> speckit-evidence-audit.
+  `[skillist: speckit-tasks, fs-skia-layout-readability]` illustrates exact
+  structured order. Exact skill phrases for scans: scene rendering -> fs-skia-scene; screenshot capture -> fs-skia-skiaviewer; layout readability -> fs-skia-layout-readability; persistent viewer launch -> fs-skia-skiaviewer; deterministic evidence mode -> fs-skia-layout-readability; generated-package validation -> fs-skia-template-update; graph validation -> speckit-evidence-graph; audit validation -> speckit-evidence-audit.
 - **Visual demo readiness scaffolds.** Enumerate
   `readiness/visual-evidence-honesty.md`, `readiness/window-visibility.md`,
   `readiness/governance-risk-levels.md`,

@@ -2,11 +2,20 @@ schema_version: "1.0"
 
 # Dependency topology and task skill metadata for tasks.md.
 #
-# Every Tnnn id that appears in tasks.md MUST appear as a key here. Each task
-# value MUST include:
-#   deps: ordered list of explicit non-phase dependencies
+# This file MUST begin with a `schema_version` scalar and a top-level `tasks:`
+# mapping (the wrapper). Bare top-level `Tnnn:` keys without the wrapper are
+# rejected with a single directive error.
+#
+# Every Tnnn id that appears in tasks.md MUST appear as a key under `tasks:`.
+# Each task value MUST include:
+#   deps:     ordered list of explicit non-phase dependencies
 #   skillist: ordered list of applicable capability skill identifiers
-# Use skillist: [] when no capability skill applies.
+# and MAY include:
+#   owns:     OPTIONAL gated-evidence ownership (closed vocabulary:
+#             graph-validation, evidence-audit, task-generation,
+#             implementation-loading, constitution). Each owns value requires its
+#             implied skill in the skillist. Most tasks own nothing — omit owns
+#             or use []. Use skillist: [] when no capability skill applies.
 #
 # Phase-checkpoint edges are auto-injected by the script (every task in
 # Phase N+1 implicitly depends on the last foundation task of Phase N).
@@ -15,7 +24,12 @@ schema_version: "1.0"
 # Example:
 #   T015:
 #     deps: [T011, T013]
-#     skillist: ["fs-skia-layout"]
+#     skillist: ["fs-skia-layout-readability"]
+#     owns: []
+#   T033:
+#     deps: [T032]
+#     skillist: ["speckit-evidence-audit"]
+#     owns: ["evidence-audit"]
 
 tasks:
   T001:

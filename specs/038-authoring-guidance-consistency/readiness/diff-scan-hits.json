@@ -168,7 +168,7 @@
       "pattern": "agent-readiness-artifacts",
       "severity": "advisory",
       "reason": "Agent-facing readiness artifact touched",
-      "match": "\"match\": \"\\\"match\\\": \\\"| T022 | fs-skia-layout-evidence | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-la"
+      "match": "\"match\": \"\\\"match\\\": \\\"| T022 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-la"
     },
     {
       "file": "specs/038-authoring-guidance-consistency/readiness/diff-scan-hits.json",
@@ -184,7 +184,7 @@
       "pattern": "agent-readiness-artifacts",
       "severity": "advisory",
       "reason": "Agent-facing readiness artifact touched",
-      "match": "\"match\": \"\\\"match\\\": \\\"| T023 | fs-skia-layout-evidence | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-la"
+      "match": "\"match\": \"\\\"match\\\": \\\"| T023 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-la"
     },
     {
       "file": "specs/038-authoring-guidance-consistency/readiness/diff-scan-hits.json",
@@ -368,7 +368,7 @@
       "pattern": "agent-readiness-artifacts",
       "severity": "advisory",
       "reason": "Agent-facing readiness artifact touched",
-      "match": "\"match\": \"| T022 | fs-skia-layout-evidence | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-evidence"
+      "match": "\"match\": \"| T022 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability"
     },
     {
       "file": "specs/038-authoring-guidance-consistency/readiness/diff-scan-hits.json",
@@ -384,7 +384,7 @@
       "pattern": "agent-readiness-artifacts",
       "severity": "advisory",
       "reason": "Agent-facing readiness artifact touched",
-      "match": "\"match\": \"| T023 | fs-skia-layout-evidence | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-evidence"
+      "match": "\"match\": \"| T023 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability"
     },
     {
       "file": "specs/038-authoring-guidance-consistency/readiness/diff-scan-hits.json",
@@ -568,7 +568,7 @@
       "pattern": "agent-readiness-artifacts",
       "severity": "advisory",
       "reason": "Agent-facing readiness artifact touched",
-      "match": "\"match\": \"| T022 | fs-skia-layout-evidence | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-evidence"
+      "match": "\"match\": \"| T022 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability"
     },
     {
       "file": "specs/038-authoring-guidance-consistency/readiness/diff-scan-hits.json",
@@ -584,7 +584,7 @@
       "pattern": "agent-readiness-artifacts",
       "severity": "advisory",
       "reason": "Agent-facing readiness artifact touched",
-      "match": "\"match\": \"| T023 | fs-skia-layout-evidence | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-evidence"
+      "match": "\"match\": \"| T023 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability"
     },
     {
       "file": "specs/038-authoring-guidance-consistency/readiness/diff-scan-hits.json",
@@ -4448,7 +4448,7 @@
       "pattern": "agent-readiness-artifacts",
       "severity": "advisory",
       "reason": "Agent-facing readiness artifact touched",
-      "match": "| T022 | fs-skia-layout-evidence | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-evidence/SKILL.md`"
+      "match": "| T022 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability/SKILL.md`"
     },
     {
       "file": "specs/038-authoring-guidance-consistency/readiness/skill-loading-evidence.md",
@@ -4464,7 +4464,7 @@
       "pattern": "agent-readiness-artifacts",
       "severity": "advisory",
       "reason": "Agent-facing readiness artifact touched",
-      "match": "| T023 | fs-skia-layout-evidence | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-evidence/SKILL.md`"
+      "match": "| T023 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability/SKILL.md`"
     },
     {
       "file": "specs/038-authoring-guidance-consistency/readiness/skill-loading-evidence.md",
@@ -4648,7 +4648,7 @@
       "pattern": "agent-readiness-artifacts",
       "severity": "advisory",
       "reason": "Agent-facing readiness artifact touched",
-      "match": "| T022 | fs-skia-layout-evidence | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-evidence/SKILL.md`"
+      "match": "| T022 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability/SKILL.md`"
     },
     {
       "file": "specs/038-authoring-guidance-consistency/readiness/skill-loading-evidence.template.md",
@@ -4664,7 +4664,7 @@
       "pattern": "agent-readiness-artifacts",
       "severity": "advisory",
       "reason": "Agent-facing readiness artifact touched",
-      "match": "| T023 | fs-skia-layout-evidence | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-evidence/SKILL.md`"
+      "match": "| T023 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability/SKILL.md`"
     },
     {
       "file": "specs/038-authoring-guidance-consistency/readiness/skill-loading-evidence.template.md",

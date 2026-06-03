@@ -510,17 +510,19 @@ let generatedGuidanceTests =
                       "supported-host persistent launch evidence" ])
         }
 
-        test "task generation guidance names graph validator pitfalls and dependency shape" {
+        test "task generation guidance names free-form titles, owns ownership, and dependency shape" {
+            // Feature 059 (FR-009/FR-010): the title-trigger pitfall prose is replaced by
+            // free-form-title + structured `owns:` ownership guidance.
             [ ".specify/templates/tasks-template.md"
               ".specify/presets/fsharp-opinionated/templates/tasks-template.md"
               ".agents/skills/speckit-tasks/SKILL.md" ]
             |> List.iter (fun path ->
                 expectFileContains
                     path
-                    [ "title trigger phrases"
-                      "persistent GUI runtime"
-                      "window visibility validation fixture"
+                    [ "free-form"
+                      "owns"
                       "one key per task id"
+                      "wrapper"
                       "tasks.deps.yml"
                       "object shape"
                       "indented"

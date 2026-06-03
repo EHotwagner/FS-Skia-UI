@@ -59,7 +59,7 @@ not assigned.
 - [X] T016 [P] [US2] [skillist: []] Implement stale-reference scan over active docs, templates, generated guidance, build reports, and the active feature with historical specs reported informationally
 - [X] T017 [P] [US2] [skillist: []] Update or add stale-reference scanner report output with source path, referenced path, scan area, severity, reason, replacement path, line, and next action
 - [X] T018 [US2] [skillist: []] Write `specs/036-archive-readiness-api-docs/readiness/stale-reference-scan.md` and optional JSON findings from real active-surface inspection
-- [X] T019 [US2] [skillist: fs-skia-layout-evidence] Update `docs/generated-apps.md`, `docs/template-profile.md`, `template/base/README.md`, and `template/base/docs/product.md` with archive/current-evidence guidance
+- [X] T019 [US2] [skillist: fs-skia-layout-readability] Update `docs/generated-apps.md`, `docs/template-profile.md`, `template/base/README.md`, and `template/base/docs/product.md` with archive/current-evidence guidance
 - [X] T020 [US2] [skillist: []] Write `specs/036-archive-readiness-api-docs/readiness/generated-guidance-check.md` with generated guidance validation results and replacement instructions for stale references
 - [X] T021 [US2] [skillist: []] Verify US2 with focused governance tests and `./fake.sh build -t GeneratedGuidanceCheck` run sequentially, recording logs under readiness
 

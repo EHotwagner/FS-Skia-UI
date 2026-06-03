@@ -15,7 +15,7 @@
    contain zero demo-specific (game-title) identifiers. Forbidden-identifier scan
    list (case-insensitive): `tetris`, `score`, `level`, `next piece`, `board`,
    `piece`. The generic game-starter shape (HUD region, gameplay region,
-   primary-interaction counter) is retained so `fs-skia-layout-evidence` stays
+   primary-interaction counter) is retained so `fs-skia-layout-readability` stays
    meaningful.
 
 ## Targets touched

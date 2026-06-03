@@ -31,7 +31,7 @@ Each row records a declared capability skill loaded from its authoritative
 | T024 | fs-skia-template-update | `.agents/skills/fs-skia-template-update/SKILL.md` | loaded | 2026-05-30T17:44:53Z | 2026-05-30T17:45:30Z | `readiness/skill-loading-evidence.md` | none |
 | T025 | fs-skia-template-update | `.agents/skills/fs-skia-template-update/SKILL.md` | loaded | 2026-05-30T17:44:53Z | 2026-05-30T17:45:30Z | `readiness/skill-loading-evidence.md` | none |
 | T026 | fs-skia-template-update | `.agents/skills/fs-skia-template-update/SKILL.md` | loaded | 2026-05-30T17:44:53Z | 2026-05-30T17:45:30Z | `readiness/skill-loading-evidence.md` | none |
-| T026 | fs-skia-layout-evidence | `.agents/skills/fs-skia-layout-evidence/SKILL.md` | loaded | 2026-05-30T17:44:53Z | 2026-05-30T17:45:30Z | `readiness/skill-loading-evidence.md` | none |
+| T026 | fs-skia-layout-readability | `.agents/skills/fs-skia-layout-readability/SKILL.md` | loaded | 2026-05-30T17:44:53Z | 2026-05-30T17:45:30Z | `readiness/skill-loading-evidence.md` | none |
 | T027 | fs-skia-template-update | `.agents/skills/fs-skia-template-update/SKILL.md` | loaded | 2026-05-30T17:44:53Z | 2026-05-30T17:45:30Z | `readiness/skill-loading-evidence.md` | none |
 | T029 | speckit-evidence-graph | `.agents/skills/speckit-evidence-graph/SKILL.md` | loaded | 2026-05-30T16:56:38Z | 2026-05-30T18:00:00Z | `readiness/skill-loading-evidence.md` | none |
 | T030 | speckit-evidence-audit | `.agents/skills/speckit-evidence-audit/SKILL.md` | loaded | 2026-05-30T16:56:38Z | 2026-05-30T18:00:00Z | `readiness/skill-loading-evidence.md` | none |

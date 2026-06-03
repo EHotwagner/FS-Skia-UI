@@ -967,9 +967,11 @@ let scanV3GeneratedRow model row =
         [ "framework implementation projects", "src/Charts"
           "framework implementation projects", "tests/Charts.Tests"
           "framework sample content", "samples/"
-          // The generated product legitimately ships a starter `specs/generated-evidence-workflow`
-          // (the speckit demo feature), so the historical-specs guard pins the framework's numbered
-          // feature directories (`specs/00N-…`), which a generated product must never copy.
+          // Feature 059 (FR-014) removed the runtime `specs/generated-evidence-workflow`
+          // sample synthesiser from the template build.fsx, so a generated product ships
+          // no starter feature at all. The historical-specs guard pins the framework's
+          // numbered feature directories (`specs/00N-…`), which a generated product must
+          // never copy.
           "historical framework specs", "specs/00"
           "framework readiness evidence", "readiness/"
           "framework documentation set", "docs/reports/"

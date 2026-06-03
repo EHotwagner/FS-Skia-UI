@@ -25,7 +25,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T001: no high-confidence capability signal detected"
+          "diagnostic": "T001: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [],
@@ -63,7 +63,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T002: no high-confidence capability signal detected"
+          "diagnostic": "T002: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [],
@@ -102,14 +102,12 @@
           "declared_skillist": [
             "speckit-tasks"
           ],
-          "candidate_skill_id": "speckit-tasks",
-          "matched_signals": [
-            "post-generation skill evaluation"
-          ],
-          "confidence": "high",
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
           "ambiguity": null,
-          "reviewer_disposition": "accepted",
-          "diagnostic": "T003: task text matches speckit-tasks; trigger_group=task generation; matched_trigger=post-generation skill evaluation"
+          "reviewer_disposition": "declared",
+          "diagnostic": "T003: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [],
@@ -147,7 +145,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T004: no high-confidence capability signal detected"
+          "diagnostic": "T004: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [],
@@ -187,7 +185,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T005: no high-confidence capability signal detected"
+          "diagnostic": "T005: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [],
@@ -227,7 +225,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T006: no high-confidence capability signal detected"
+          "diagnostic": "T006: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [],
@@ -267,7 +265,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T007: no high-confidence capability signal detected"
+          "diagnostic": "T007: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [],
@@ -307,7 +305,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T008: no high-confidence capability signal detected"
+          "diagnostic": "T008: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [],
@@ -347,7 +345,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T009: no high-confidence capability signal detected"
+          "diagnostic": "T009: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [],
@@ -387,7 +385,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T010: no high-confidence capability signal detected"
+          "diagnostic": "T010: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -430,7 +428,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T011: no high-confidence capability signal detected"
+          "diagnostic": "T011: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -473,7 +471,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T012: no high-confidence capability signal detected"
+          "diagnostic": "T012: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -515,7 +513,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T013: no high-confidence capability signal detected"
+          "diagnostic": "T013: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -558,7 +556,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T014: no high-confidence capability signal detected"
+          "diagnostic": "T014: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -600,7 +598,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T015: no high-confidence capability signal detected"
+          "diagnostic": "T015: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -644,7 +642,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T016: no high-confidence capability signal detected"
+          "diagnostic": "T016: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -690,7 +688,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T017: no high-confidence capability signal detected"
+          "diagnostic": "T017: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -732,7 +730,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T018: no high-confidence capability signal detected"
+          "diagnostic": "T018: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -764,23 +762,23 @@
       "parallel": false,
       "title": "Update `docs/generated-apps.md`, `docs/template-profile.md`, `template/base/README.md`, and `template/base/docs/product.md` with archive/current-evidence guidance",
       "skillist": [
-        "fs-skia-layout-evidence"
+        "fs-skia-layout-readability"
       ],
       "skillist_mirror": [
-        "fs-skia-layout-evidence"
+        "fs-skia-layout-readability"
       ],
       "skill_match_assessments": [
         {
           "task_id": "T019",
           "declared_skillist": [
-            "fs-skia-layout-evidence"
+            "fs-skia-layout-readability"
           ],
           "candidate_skill_id": null,
           "matched_signals": [],
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "declared",
-          "diagnostic": "T019: no high-confidence capability signal detected"
+          "diagnostic": "T019: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -824,7 +822,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T020: no high-confidence capability signal detected"
+          "diagnostic": "T020: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -866,7 +864,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T021: no high-confidence capability signal detected"
+          "diagnostic": "T021: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -910,7 +908,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T022: no high-confidence capability signal detected"
+          "diagnostic": "T022: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -952,7 +950,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T023: no high-confidence capability signal detected"
+          "diagnostic": "T023: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -994,7 +992,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T024: no high-confidence capability signal detected"
+          "diagnostic": "T024: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -1036,7 +1034,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T025: no high-confidence capability signal detected"
+          "diagnostic": "T025: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -1079,7 +1077,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T026: no high-confidence capability signal detected"
+          "diagnostic": "T026: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -1122,7 +1120,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T027: no high-confidence capability signal detected"
+          "diagnostic": "T027: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -1165,7 +1163,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T028: no high-confidence capability signal detected"
+          "diagnostic": "T028: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -1209,7 +1207,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T029: no high-confidence capability signal detected"
+          "diagnostic": "T029: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -1251,7 +1249,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T030: no high-confidence capability signal detected"
+          "diagnostic": "T030: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -1294,14 +1292,12 @@
           "declared_skillist": [
             "speckit-evidence-graph"
           ],
-          "candidate_skill_id": "speckit-evidence-graph",
-          "matched_signals": [
-            "EvidenceGraph"
-          ],
-          "confidence": "high",
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
           "ambiguity": null,
-          "reviewer_disposition": "accepted",
-          "diagnostic": "T031: task text matches speckit-evidence-graph; trigger_group=graph validation; matched_trigger=EvidenceGraph"
+          "reviewer_disposition": "declared",
+          "diagnostic": "T031: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -1344,14 +1340,12 @@
           "declared_skillist": [
             "speckit-evidence-audit"
           ],
-          "candidate_skill_id": "speckit-evidence-audit",
-          "matched_signals": [
-            "EvidenceAudit"
-          ],
-          "confidence": "high",
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
           "ambiguity": null,
-          "reviewer_disposition": "accepted",
-          "diagnostic": "T032: task text matches speckit-evidence-audit; trigger_group=evidence audit; matched_trigger=EvidenceAudit"
+          "reviewer_disposition": "declared",
+          "diagnostic": "T032: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [
@@ -1393,7 +1387,7 @@
           "confidence": "none",
           "ambiguity": null,
           "reviewer_disposition": "accepted-empty",
-          "diagnostic": "T033: no high-confidence capability signal detected"
+          "diagnostic": "T033: skillist trusted as declared; no owns-based capability requirement"
         }
       ],
       "explicit_deps": [

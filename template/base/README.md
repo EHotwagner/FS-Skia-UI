@@ -77,14 +77,13 @@ The product owns its application code, tests, documentation, readiness evidence,
 and selected local skills.
 
 Visual demo task lists assign scene rendering -> fs-skia-scene, screenshot
-capture -> fs-skia-skiaviewer, layout readability -> fs-skia-layout-evidence,
+capture -> fs-skia-skiaviewer, layout readability -> fs-skia-layout-readability,
 persistent viewer launch -> fs-skia-skiaviewer, deterministic evidence mode ->
-fs-skia-layout-evidence, generated-package validation ->
-fs-skia-template-update, graph validation -> speckit-evidence-graph, audit
-validation -> speckit-evidence-audit, and debug-loop skills ->
-speckit-debug-loop. Ordered multi-skill examples preserve
+fs-skia-evidence-mode, generated-package validation ->
+fs-skia-template-update, graph validation -> speckit-evidence-graph, and audit
+validation -> speckit-evidence-audit. Ordered multi-skill examples preserve
 implementation-before-evidence, graph-before-audit, debug-before-broad-rerun,
-and visible mirrors such as `[skillist: speckit-tasks, fs-skia-layout-evidence]`.
+and visible mirrors such as `[skillist: speckit-tasks, fs-skia-layout-readability]`.
 
 Generated readiness scaffolds include `readiness/visual-evidence-honesty.md`,
 `readiness/window-visibility.md`, `readiness/governance-risk-levels.md`,

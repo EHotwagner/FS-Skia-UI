@@ -63,6 +63,8 @@
     <Compile Include="PerPackageSurfaceTests.fs" />
     <!-- Feature 049 (US1/US2/US3): deterministic graphics-env normalization + spawn-edge contract. -->
     <Compile Include="GraphicsEnvironmentTests.fs" />
+    <!-- Feature 059: owns-driven ownership, FR-007 directives, hint resolution. -->
+    <Compile Include="OwnsValidationTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

@@ -28,7 +28,7 @@
 | T024 | fs-skia-template-update | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-template-update/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
 | T025 | fs-skia-template-update | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-template-update/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
 | T026 | fs-skia-template-update | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-template-update/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
-| T026 | fs-skia-layout-evidence | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-evidence/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T026 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
 | T027 | fs-skia-template-update | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-template-update/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
 | T029 | speckit-evidence-graph | `/home/developer/projects/FS-Skia-UI/.agents/skills/speckit-evidence-graph/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
 | T030 | speckit-evidence-audit | `/home/developer/projects/FS-Skia-UI/.agents/skills/speckit-evidence-audit/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |

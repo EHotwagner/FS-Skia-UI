@@ -57,7 +57,7 @@ tasks:
     skillist: []
   T019:
     deps: [T007, T013, T018]
-    skillist: ["fs-skia-layout-evidence"]
+    skillist: ["fs-skia-layout-readability"]
   T020:
     deps: [T019]
     skillist: []

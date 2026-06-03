@@ -1,0 +1,166 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "specs/036-archive-readiness-api-docs/readiness/skill-loading-evidence.md",
+      "line": 6,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T019 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability/SKI"
+    },
+    {
+      "file": "specs/036-archive-readiness-api-docs/readiness/skill-loading-evidence.template.md",
+      "line": 6,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T019 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability/SKI"
+    },
+    {
+      "file": "specs/037-authoring-audit-robustness/readiness/skill-loading-evidence.template.md",
+      "line": 31,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T026 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability/SKI"
+    },
+    {
+      "file": "specs/038-authoring-guidance-consistency/readiness/diff-scan-hits.json",
+      "line": 171,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"\\\\\\\"match\\\\\\\": \\\\\\\"| T022 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.ag"
+    },
+    {
+      "file": "specs/038-authoring-guidance-consistency/readiness/diff-scan-hits.json",
+      "line": 187,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"\\\\\\\"match\\\\\\\": \\\\\\\"| T023 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.ag"
+    },
+    {
+      "file": "specs/038-authoring-guidance-consistency/readiness/diff-scan-hits.json",
+      "line": 371,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"| T022 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia"
+    },
+    {
+      "file": "specs/038-authoring-guidance-consistency/readiness/diff-scan-hits.json",
+      "line": 387,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"| T023 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia"
+    },
+    {
+      "file": "specs/038-authoring-guidance-consistency/readiness/diff-scan-hits.json",
+      "line": 571,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"| T022 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia"
+    },
+    {
+      "file": "specs/038-authoring-guidance-consistency/readiness/diff-scan-hits.json",
+      "line": 587,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"\\\"match\\\": \\\"| T023 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia"
+    },
+    {
+      "file": "specs/038-authoring-guidance-consistency/readiness/diff-scan-hits.json",
+      "line": 4451,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"| T022 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-reada"
+    },
+    {
+      "file": "specs/038-authoring-guidance-consistency/readiness/diff-scan-hits.json",
+      "line": 4467,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"| T023 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-reada"
+    },
+    {
+      "file": "specs/038-authoring-guidance-consistency/readiness/diff-scan-hits.json",
+      "line": 4651,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"| T022 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-reada"
+    },
+    {
+      "file": "specs/038-authoring-guidance-consistency/readiness/diff-scan-hits.json",
+      "line": 4667,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "\"match\": \"| T023 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-reada"
+    },
+    {
+      "file": "specs/038-authoring-guidance-consistency/readiness/skill-loading-evidence.md",
+      "line": 22,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T022 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability/SKI"
+    },
+    {
+      "file": "specs/038-authoring-guidance-consistency/readiness/skill-loading-evidence.md",
+      "line": 24,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T023 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability/SKI"
+    },
+    {
+      "file": "specs/038-authoring-guidance-consistency/readiness/skill-loading-evidence.template.md",
+      "line": 22,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T022 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability/SKI"
+    },
+    {
+      "file": "specs/038-authoring-guidance-consistency/readiness/skill-loading-evidence.template.md",
+      "line": 24,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "| T023 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability/SKI"
+    },
+    {
+      "file": "specs/059-speckit-tasks-validation-feedback/plan.md",
+      "line": 154,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: None planned. Real evidence is the corrected guidance"
+    },
+    {
+      "file": "specs/059-speckit-tasks-validation-feedback/readiness/task-graph.md",
+      "line": 173,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/059-speckit-tasks-validation-feedback/tasks.md",
+      "line": 185,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    }
+  ]
+}

@@ -58,91 +58,67 @@ let envOption name =
     | value when String.IsNullOrWhiteSpace value -> None
     | value -> Some value
 
-let writeGeneratedEvidencePackageFile featureDir relativePath lines =
-    writeLines (path [ featureDir; relativePath ]) lines
+// Feature 059 (FR-002/FR-003/FR-004/FR-014): resolve the feature to validate the
+// way the framework engine does (build/Governance/Engine/Model.fs activeFeatureId) —
+// from .specify/feature.json's "feature_directory", with an optional
+// SPECKIT_FEATURE_DIR override and NO fallback to any bundled sample. The former
+// runtime sample-feature synthesiser and its sample-era directory selector are
+// removed so a validation run can never silently target a sample.
 
-let ensureGeneratedEvidencePackage () =
-    let selected =
-        [ "SPECKIT_FEATURE_DIR"; "GENERATED_EVIDENCE_FEATURE_DIR" ]
-        |> List.tryPick envOption
-        |> Option.map Path.GetFullPath
-        |> Option.filter Directory.Exists
+let private featureDirectoryFromJson (jsonPath: string) : string option =
+    if not (File.Exists jsonPath) then
+        None
+    else
+        let content = File.ReadAllText jsonPath
+        let marker = "\"feature_directory\""
+        let markerIndex = content.IndexOf(marker, StringComparison.Ordinal)
+        if markerIndex < 0 then
+            None
+        else
+            let afterMarker = content.Substring(markerIndex + marker.Length)
+            let colonIndex = afterMarker.IndexOf(':')
+            if colonIndex < 0 then
+                None
+            else
+                let afterColon = afterMarker.Substring(colonIndex + 1)
+                let firstQuote = afterColon.IndexOf('"')
+                if firstQuote < 0 then
+                    None
+                else
+                    let afterFirstQuote = afterColon.Substring(firstQuote + 1)
+                    let secondQuote = afterFirstQuote.IndexOf('"')
+                    if secondQuote < 0 then
+                        None
+                    else
+                        let value = afterFirstQuote.Substring(0, secondQuote)
+                        if String.IsNullOrWhiteSpace value then None else Some value
 
-    match selected with
-    | Some featureDir -> featureDir
+let resolveFeatureDir () : string =
+    let repoRoot = Directory.GetCurrentDirectory()
+    let absolutize (p: string) = if Path.IsPathRooted p then p else path [ repoRoot; p ]
+    let featureJson = path [ repoRoot; ".specify"; "feature.json" ]
+
+    match envOption "SPECKIT_FEATURE_DIR" |> Option.map absolutize with
+    | Some dir when Directory.Exists dir ->
+        printfn "feature-source=SPECKIT_FEATURE_DIR override"
+        dir
+    | Some dir ->
+        failwithf
+            "Cannot resolve the feature to validate: SPECKIT_FEATURE_DIR=%s does not exist. Point it at an existing feature directory, or unset it to resolve from .specify/feature.json."
+            dir
     | None ->
-        let specsDir = Path.GetFullPath "specs"
-        let featureDir = path [ specsDir; "generated-evidence-workflow" ]
-        let readinessDir = path [ featureDir; "readiness" ]
-        Directory.CreateDirectory readinessDir |> ignore
-
-        writeGeneratedEvidencePackageFile
-            featureDir
-            "spec.md"
-            [ "# Generated Evidence Workflow"
-              ""
-              "Generated project package for in-process evidence command validation." ]
-
-        writeGeneratedEvidencePackageFile
-            featureDir
-            "plan.md"
-            [ "# Generated Evidence Workflow Plan"
-              ""
-              "Run the in-process FS.Skia.UI.Build evidence graph and audit engine over this generated package." ]
-
-        writeGeneratedEvidencePackageFile
-            featureDir
-            "tasks.md"
-            [ "# Tasks: Generated Evidence Workflow"
-              ""
-              "## Status Legend"
-              ""
-              "- `[ ]` - pending"
-              "- `[X]` - done with real evidence"
-              "- `[S]` - done with synthetic evidence only"
-              "- `[F]` - failed"
-              "- `[-]` - skipped"
-              ""
-              "## Phase 1: Generated Evidence"
-              ""
-              "- [X] T001 [skillist: []] Validate generated evidence command package with the in-process engine"
-              ""
-              "## Synthetic-Evidence Inventory"
-              ""
-              "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error behavior | Acceptance status |"
-              "|------|--------|--------------------|----------------|-------|---------------|-----------------------|-------------------------|-------------------|" ]
-
-        writeGeneratedEvidencePackageFile
-            featureDir
-            "tasks.deps.yml"
-            [ "schema_version: \"1.0\""
-              "tasks:"
-              "  T001:"
-              "    deps: []"
-              "    skillist: []" ]
-
-        writeGeneratedEvidencePackageFile
-            featureDir
-            "readiness/governance-risk-levels.md"
-            [ "# Governance Risk Levels"
-              ""
-              "small medium broad required evidence broad validation" ]
-
-        writeGeneratedEvidencePackageFile
-            featureDir
-            "readiness/aggregate-hang-diagnostics.md"
-            [ "# Aggregate Hang Diagnostics"
-              ""
-              "verdict stage elapsed duration last observed command focused rerun non-authoritative aggregate" ]
-
-        writeGeneratedEvidencePackageFile
-            featureDir
-            "readiness/runtime-limitations.md"
-            [ "# Runtime Limitations"
-              ""
-              ".NET 10 desktop Vulkan SkiaSharp preview unsupported macOS/mobile/browser no software-renderer fallback" ]
-
-        featureDir
+        match featureDirectoryFromJson featureJson |> Option.map absolutize with
+        | Some dir when Directory.Exists dir ->
+            printfn "feature-source=.specify/feature.json"
+            dir
+        | Some dir ->
+            failwithf
+                "Cannot resolve the feature to validate: .specify/feature.json names \"feature_directory\"=%s, which does not exist. Run /speckit.specify to record a feature, or set SPECKIT_FEATURE_DIR to override. Validation never falls back to a bundled sample."
+                dir
+        | None ->
+            failwithf
+                "Cannot resolve the feature to validate: no SPECKIT_FEATURE_DIR override is set and %s has no usable \"feature_directory\" entry. Run /speckit.specify to record a feature, or set SPECKIT_FEATURE_DIR to the feature directory to validate. Validation never falls back to a bundled sample."
+                featureJson
 
 // ----- in-process evidence engine (FS.Skia.UI.Build.Evidence) -----
 
@@ -242,9 +218,11 @@ let private writeArtifacts featureDir (arts: AuditArtifacts) =
     evidenceWrite (path [ r; "diff-scan-hits.json" ]) arts.DiffScanHits
 
 let runGeneratedEvidenceGraph () =
-    let featureDir = ensureGeneratedEvidencePackage ()
+    let featureDir = resolveFeatureDir ()
     let inputs = buildEvidenceInputs featureDir
     let gr, graphArts = Engine.runGraph inputs
+    printfn "feature-directory=%s" featureDir
+    printfn "tasks=%d" (List.length gr.Tasks)
     evidenceWrite (path [ featureDir; "readiness"; "task-graph.json" ]) graphArts.TaskGraphJson
     evidenceWrite (path [ featureDir; "readiness"; "task-graph.md" ]) graphArts.TaskGraphMd
     let exitCode =
@@ -266,9 +244,11 @@ let private auditValidationArea (res: AuditResult) =
     else "evidence-audit"
 
 let runGeneratedEvidenceAudit () =
-    let featureDir = ensureGeneratedEvidencePackage ()
+    let featureDir = resolveFeatureDir ()
     let inputs = buildEvidenceInputs featureDir
     let gr, graphArts = Engine.runGraph inputs
+    printfn "feature-directory=%s" featureDir
+    printfn "tasks=%d" (List.length gr.Tasks)
     evidenceWrite (path [ featureDir; "readiness"; "task-graph.json" ]) graphArts.TaskGraphJson
     evidenceWrite (path [ featureDir; "readiness"; "task-graph.md" ]) graphArts.TaskGraphMd
 

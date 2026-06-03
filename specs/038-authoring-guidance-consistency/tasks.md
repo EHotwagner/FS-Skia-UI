@@ -183,11 +183,11 @@ sequentially before product debugging.
 
 ### Tests First
 
-- [X] T022 [P] [US4] [skillist: fs-skia-template-update, fs-skia-layout-evidence] Add a failing-first generated-project scan asserting zero demo-specific identifiers (`tetris`, `score`, `level`, `next piece`, `board`, `piece`) in the starter app + tests, ≥1 consumer-runnable usage snippet in each generated skill, and zero generated references to framework-only paths/targets (`CapabilityCheck`, `PackLocal`, `src/.../X.fsi`) (FR-005, FR-006, FR-007, SC-004)
+- [X] T022 [P] [US4] [skillist: fs-skia-template-update, fs-skia-layout-readability] Add a failing-first generated-project scan asserting zero demo-specific identifiers (`tetris`, `score`, `level`, `next piece`, `board`, `piece`) in the starter app + tests, ≥1 consumer-runnable usage snippet in each generated skill, and zero generated references to framework-only paths/targets (`CapabilityCheck`, `PackLocal`, `src/.../X.fsi`) (FR-005, FR-006, FR-007, SC-004)
 
 ### Implementation
 
-- [X] T023 [US4] [skillist: fs-skia-template-update, fs-skia-layout-evidence] Neutralize the demo-specific identifiers in `template/base/src/Product/Model.fs`, `View.fs`, `EvidenceCommands.fs`, `LayoutEvidence.fs`, and `template/base/tests/Product.Tests/Tests.fs`, replacing them with domain-agnostic equivalents while preserving the generic game-starter shape (HUD region, gameplay region, primary-interaction counter) so `fs-skia-layout-evidence` stays meaningful (FR-007, SC-004)
+- [X] T023 [US4] [skillist: fs-skia-template-update, fs-skia-layout-readability] Neutralize the demo-specific identifiers in `template/base/src/Product/Model.fs`, `View.fs`, `EvidenceCommands.fs`, `LayoutEvidence.fs`, and `template/base/tests/Product.Tests/Tests.fs`, replacing them with domain-agnostic equivalents while preserving the generic game-starter shape (HUD region, gameplay region, primary-interaction counter) so `fs-skia-layout-readability` stays meaningful (FR-007, SC-004)
 - [X] T024 [US4] [skillist: fs-skia-template-update, fs-skia-scene] Add at least one consumer-runnable usage snippet (scene construction, host wiring, or evidence production) to each generated skill under `template/fragments/*/skill/SKILL.md` (and matching `README.md`), and remove every reference to framework-only paths/build targets absent from a generated consumer project (FR-005, FR-006)
 - [X] T025 [US4] [skillist: fs-skia-template-update] Generate a project, run `./fake.sh build -t GeneratedGuidanceCheck` then `./fake.sh build -t GeneratedProductCheck` (sequential), and record zero demo ids, zero framework-only paths, and ≥1 runnable snippet in `readiness/generated-guidance.md` (SC-004)
 

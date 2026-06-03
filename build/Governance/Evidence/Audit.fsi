@@ -1,6 +1,7 @@
-// Audit.fsi — cross-file validate-and-merge, capability-trigger skill matching,
-// skill-loading-evidence validation, SEH summary, and merge-gate verdict
-// (feature 043, FR-006/FR-008; Principle II/V). Pure over supplied data.
+// Audit.fsi — cross-file validate-and-merge, owns-driven skill-ownership
+// validation, skill-loading-evidence validation, SEH summary, and merge-gate
+// verdict (feature 043, FR-006/FR-008; feature 059 FR-010; Principle II/V).
+// Pure over supplied data.
 namespace FS.Skia.UI.Build.Evidence
 
 /// Result of merging tasks.md + tasks.deps.yml + the skill registry: the updated
@@ -38,11 +39,10 @@ type AuditResult =
 
 module Audit =
 
-    /// Capability-trigger matches for a task title: (skillId, triggerGroup,
-    /// matchedTrigger). Faithfully ports expected_capability_matches.
-    val expectedCapabilityMatches: title: string -> (string * string * string) list
-
     /// Cross-file consistency + skill merge + assessments (FR-006). Pure.
+    /// Feature 059 (FR-010): the title-trigger capability matcher is removed;
+    /// evidence ownership is read from each task's `owns:` field (closed
+    /// vocabulary, implied-skill coupling validated here). Titles are free-form.
     val validateAndMerge: registry: SkillRegistry -> tasks: TaskRecord list -> deps: DepsModel -> MergeResult
 
     /// Validate readiness/skill-loading-evidence.md against the declared skillist

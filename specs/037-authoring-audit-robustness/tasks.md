@@ -159,7 +159,7 @@ before product debugging.
 
 - [X] T024 [US4] [skillist: fs-skia-template-update] Emit the generated `.fsx` load script from `template/base/` via `GenerateV3Products` in `build.fsx`, derived from the pinned `Directory.Packages.props` set and the generated `Product` output assembly so it stays in sync without being a hand-maintained reference list (FR-009)
 - [X] T025 [US4] [skillist: fs-skia-template-update] Register the new `.fsx` in `.template.config/template.json` generated content and add the FSI-load entry-point guidance to `template/base/README.md` and `template/base/docs/product.md`
-- [X] T026 [US4] [skillist: fs-skia-template-update, fs-skia-layout-evidence] Preserve benign host-warning classification on the load path per the spec 021 host-warning contract — benign headless/host warnings stay classified benign while real failures stay fatal
+- [X] T026 [US4] [skillist: fs-skia-template-update, fs-skia-layout-readability] Preserve benign host-warning classification on the load path per the spec 021 host-warning contract — benign headless/host warnings stay classified benign while real failures stay fatal
 - [X] T027 [US4] [skillist: fs-skia-template-update] Generate products, run `GeneratedGuidanceCheck` → `TemplateCheck` → `GeneratedProductCheck` (sequential), run the emitted `.fsx` in FSI for a generated app, and record the transcript in `readiness/fsi-load-script.md` showing zero manual reference edits (SC-005)
 
 **Checkpoint**: US4 is independently testable — one documented step loads a generated app into FSI.

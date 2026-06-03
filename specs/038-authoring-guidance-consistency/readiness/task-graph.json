@@ -958,18 +958,18 @@
       "title": "Add a failing-first generated-project scan asserting zero demo-specific identifiers (`tetris`, `score`, `level`, `next piece`, `board`, `piece`) in the starter app + tests, \u22651 consumer-runnable usage snippet in each generated skill, and zero generated references to framework-only paths/targets (`CapabilityCheck`, `PackLocal`, `src/.../X.fsi`) (FR-005, FR-006, FR-007, SC-004)",
       "skillist": [
         "fs-skia-template-update",
-        "fs-skia-layout-evidence"
+        "fs-skia-layout-readability"
       ],
       "skillist_mirror": [
         "fs-skia-template-update",
-        "fs-skia-layout-evidence"
+        "fs-skia-layout-readability"
       ],
       "skill_match_assessments": [
         {
           "task_id": "T022",
           "declared_skillist": [
             "fs-skia-template-update",
-            "fs-skia-layout-evidence"
+            "fs-skia-layout-readability"
           ],
           "candidate_skill_id": null,
           "matched_signals": [],
@@ -1004,21 +1004,21 @@
       "story": "US4",
       "tier": null,
       "parallel": false,
-      "title": "Neutralize the demo-specific identifiers in `template/base/src/Product/Model.fs`, `View.fs`, `EvidenceCommands.fs`, `LayoutEvidence.fs`, and `template/base/tests/Product.Tests/Tests.fs`, replacing them with domain-agnostic equivalents while preserving the generic game-starter shape (HUD region, gameplay region, primary-interaction counter) so `fs-skia-layout-evidence` stays meaningful (FR-007, SC-004)",
+      "title": "Neutralize the demo-specific identifiers in `template/base/src/Product/Model.fs`, `View.fs`, `EvidenceCommands.fs`, `LayoutEvidence.fs`, and `template/base/tests/Product.Tests/Tests.fs`, replacing them with domain-agnostic equivalents while preserving the generic game-starter shape (HUD region, gameplay region, primary-interaction counter) so `fs-skia-layout-readability` stays meaningful (FR-007, SC-004)",
       "skillist": [
         "fs-skia-template-update",
-        "fs-skia-layout-evidence"
+        "fs-skia-layout-readability"
       ],
       "skillist_mirror": [
         "fs-skia-template-update",
-        "fs-skia-layout-evidence"
+        "fs-skia-layout-readability"
       ],
       "skill_match_assessments": [
         {
           "task_id": "T023",
           "declared_skillist": [
             "fs-skia-template-update",
-            "fs-skia-layout-evidence"
+            "fs-skia-layout-readability"
           ],
           "candidate_skill_id": null,
           "matched_signals": [],

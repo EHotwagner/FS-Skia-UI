@@ -8,7 +8,7 @@ gate output — note its US1 PASS line. This file is the US4 narrative.)
 The generated starter app and tests carry zero demo-specific (game-title)
 identifiers. The generic game-starter shape is retained: a HUD/summary region, a
 gameplay/playfield region, and a primary-interaction counter
-(`PrimaryInteractions`), so `fs-skia-layout-evidence` stays meaningful.
+(`PrimaryInteractions`), so `fs-skia-layout-readability` stays meaningful.
 
 Neutralization (`template/base/src/Product/{Model,View,LayoutEvidence,EvidenceCommands}.fs`,
 `template/base/tests/Product.Tests/Tests.fs`):

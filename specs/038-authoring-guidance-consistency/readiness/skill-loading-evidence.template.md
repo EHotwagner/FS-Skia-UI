@@ -19,9 +19,9 @@
 | T020 | fs-skia-template-update | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-template-update/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
 | T021 | fs-skia-skiaviewer | `/home/developer/projects/FS-Skia-UI/src/SkiaViewer/skill/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
 | T022 | fs-skia-template-update | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-template-update/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
-| T022 | fs-skia-layout-evidence | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-evidence/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T022 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
 | T023 | fs-skia-template-update | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-template-update/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
-| T023 | fs-skia-layout-evidence | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-evidence/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
+| T023 | fs-skia-layout-readability | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-layout-readability/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
 | T024 | fs-skia-template-update | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-template-update/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
 | T024 | fs-skia-scene | `/home/developer/projects/FS-Skia-UI/src/Scene/skill/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |
 | T025 | fs-skia-template-update | `/home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-template-update/SKILL.md` | loaded | <loaded_at> | <work_started_at> | `readiness/skill-loading-evidence.md` | none |

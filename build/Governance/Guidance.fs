@@ -583,9 +583,12 @@ let taskSkillistGuidanceCheck =
             Concepts = [ "minimal ordered"; "declared order" ]
             Mode = AnyOf
             Files = tasksTemplates @ implementFiles }
-          { Id = "skillist-confidence-fields"
+          { Id = "skillist-ownership-honesty"
+            // Feature 059 (FR-009/FR-010): the title-trigger confidence review is gone.
+            // The guidance must instead describe free-form titles and structured `owns:`
+            // ownership honestly (trusted-as-declared otherwise).
             SourceOfTruth = "speckit-tasks:skill evaluation"
-            Concepts = [ "confidence"; "matched signals"; "reviewer disposition" ]
+            Concepts = [ "free-form"; "owns" ]
             Mode = AllOf
             Files = confidenceFiles }
           { Id = "skill-breadth"

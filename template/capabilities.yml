@@ -1,13 +1,18 @@
 schemaVersion: "1.0"
 catalogVersion: "2026-05-16"
 # validation paths are listed through tests, docs, evidence, and surfaceBaseline fields per capability.
-# implementationSkills inventory:
-# skillId: fs-skia-layout-evidence
-# displayName: Layout Evidence
-# skill: .agents/skills/fs-skia-layout-evidence/SKILL.md
+# implementationSkills inventory (feature 059 split the former
+# fs-skia-layout-evidence catch-all into two registered skills):
+# skillId: fs-skia-layout-readability
+# displayName: Layout Readability
+# skill: .agents/skills/fs-skia-layout-readability/SKILL.md
 # appliesTo: generated-game-hud-readability, gameplay-region-bounds,
-# scene-layout-evidence, generated-validation,
-# public-scene-host-update-guidance, host-warning-classification
+# public-scene-host-update-guidance, generated-validation
+# skillId: fs-skia-evidence-mode
+# displayName: Evidence Mode
+# skill: .agents/skills/fs-skia-evidence-mode/SKILL.md
+# appliesTo: deterministic-render-only-evidence, visual-proof-honesty,
+# host-warning-classification
 # evidence: specs/<feature>/readiness/skill-loading-evidence.md
 defaultApp:
   - scene

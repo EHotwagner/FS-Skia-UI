@@ -143,7 +143,7 @@ identifiers (`Tetris`, `board`, `piece`, `score`, `level`) across the generated
 starter app (`Model.fs`, `View.fs`, `EvidenceCommands.fs`, `LayoutEvidence.fs`)
 and tests (`Tests.fs`) with domain-agnostic equivalents, **preserving the generic
 game-starter shape** — a HUD region, a gameplay region, and a primary-interaction
-counter — so `fs-skia-layout-evidence` (HUD/gameplay-region readiness) stays
+counter — so `fs-skia-layout-readability` (HUD/gameplay-region readiness) stays
 meaningful and the starter still demonstrates real layout evidence.
 
 Define a forbidden-identifier scan list (`tetris`, `score`, `level`, `next piece`,

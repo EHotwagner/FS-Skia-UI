@@ -90,7 +90,7 @@ tasks:
     skillist: ["fs-skia-template-update"]
   T026:
     deps: [T024]
-    skillist: ["fs-skia-template-update", "fs-skia-layout-evidence"]
+    skillist: ["fs-skia-template-update", "fs-skia-layout-readability"]
   T027:
     deps: [T025, T026]
     skillist: ["fs-skia-template-update"]

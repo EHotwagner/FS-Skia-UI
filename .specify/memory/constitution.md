@@ -278,9 +278,12 @@ Current FS.Skia.UI capability skills:
 - `fs-skia-samples` — work on optional generated product sample-pack content
   for the non-runtime Samples capability
   (`template/fragments/samples/skill/SKILL.md`).
-- `fs-skia-layout-evidence` — work on generated game HUD readability, scene
-  layout evidence, public scene/host/update guidance, and benign host warning
-  classification (`.agents/skills/fs-skia-layout-evidence/SKILL.md`).
+- `fs-skia-layout-readability` — work on generated game HUD readability,
+  gameplay-region bounds, and public scene/host/update naming guidance
+  (`.agents/skills/fs-skia-layout-readability/SKILL.md`).
+- `fs-skia-evidence-mode` — work on deterministic render-only evidence,
+  visual-proof honesty, and benign host warning classification
+  (`.agents/skills/fs-skia-evidence-mode/SKILL.md`).
 
 ## Workflow & Quality Gates
 

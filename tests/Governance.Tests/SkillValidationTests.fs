@@ -77,12 +77,16 @@ let skillValidationTests =
                   "unrelated capability skills" ]
         }
 
-        test "layout evidence implementation skill is discoverable in the capability inventory" {
+        test "split layout/evidence implementation skills are discoverable in the capability inventory" {
+            // Feature 059 (FR-012): the former fs-skia-layout-evidence catch-all is split
+            // into fs-skia-layout-readability and fs-skia-evidence-mode.
             expectFileContains
                 "template/capabilities.yml"
-                [ "implementationSkills inventory:"
-                  "skillId: fs-skia-layout-evidence"
-                  ".agents/skills/fs-skia-layout-evidence/SKILL.md"
+                [ "implementationSkills inventory"
+                  "skillId: fs-skia-layout-readability"
+                  ".agents/skills/fs-skia-layout-readability/SKILL.md"
+                  "skillId: fs-skia-evidence-mode"
+                  ".agents/skills/fs-skia-evidence-mode/SKILL.md"
                   "generated-game-hud-readability"
                   "public-scene-host-update-guidance"
                   "host-warning-classification" ]

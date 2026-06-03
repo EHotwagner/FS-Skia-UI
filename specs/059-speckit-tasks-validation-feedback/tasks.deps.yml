@@ -1,0 +1,166 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Every Tnnn id in tasks.md appears here exactly once with:
+#   deps:     ordered list of explicit non-phase dependencies
+#   skillist: ordered list of applicable capability skill identifiers ([] = none)
+#   owns:     OPTIONAL gated-evidence ownership (this feature dogfoods FR-010;
+#             the current engine ignores it, the post-implementation engine reads it)
+#
+# Phase-checkpoint edges are auto-injected (every task in Phase N+1 implicitly
+# depends on the last task of Phase N); only non-phase cross-edges are written.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+    owns: []
+  T002:
+    deps: []
+    skillist: []
+    owns: []
+  T003:
+    deps: []
+    skillist: []
+    owns: []
+  T004:
+    deps: [T001]
+    skillist: []
+    owns: []
+  T005:
+    deps: []
+    skillist: ["fsharp-parsing"]
+    owns: []
+  T006:
+    deps: []
+    skillist: []
+    owns: []
+  T007:
+    deps: []
+    skillist: []
+    owns: []
+  T008:
+    deps: []
+    skillist: []
+    owns: []
+  T009:
+    deps: [T005, T006]
+    skillist: []
+    owns: []
+  T010:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+    owns: []
+  T011:
+    deps: []
+    skillist: []
+    owns: []
+  T012:
+    deps: [T010]
+    skillist: ["fsharp-build-orchestration"]
+    owns: []
+  T013:
+    deps: [T012]
+    skillist: ["fsharp-build-orchestration"]
+    owns: []
+  T014:
+    deps: [T011]
+    skillist: []
+    owns: []
+  T015:
+    deps: [T012, T013, T014]
+    skillist: ["fs-skia-template-update"]
+    owns: []
+  T016:
+    deps: []
+    skillist: ["speckit-evidence-graph"]
+    owns: []
+  T017:
+    deps: [T016]
+    skillist: ["speckit-evidence-graph"]
+    owns: []
+  T018:
+    deps: [T017]
+    skillist: ["speckit-evidence-graph"]
+    owns: []
+  T019:
+    deps: []
+    skillist: ["fsharp-parsing"]
+    owns: []
+  T020:
+    deps: [T005, T019]
+    skillist: ["fsharp-parsing"]
+    owns: []
+  T021:
+    deps: []
+    skillist: []
+    owns: []
+  T022:
+    deps: [T020]
+    skillist: ["speckit-tasks"]
+    owns: ["task-generation"]
+  T023:
+    deps: [T020, T021, T022]
+    skillist: ["speckit-evidence-graph"]
+    owns: []
+  T024:
+    deps: []
+    skillist: ["fsharp-graph-algorithms"]
+    owns: []
+  T025:
+    deps: [T006, T024]
+    skillist: ["fsharp-graph-algorithms"]
+    owns: []
+  T026:
+    deps: [T005, T025]
+    skillist: ["fsharp-graph-algorithms"]
+    owns: []
+  T027:
+    deps: []
+    skillist: []
+    owns: []
+  T028:
+    deps: [T027]
+    skillist: ["fs-skia-template-update"]
+    owns: []
+  T029:
+    deps: [T025, T026]
+    skillist: ["speckit-tasks"]
+    owns: []
+  T030:
+    deps: [T025, T026, T029]
+    skillist: []
+    owns: []
+  T038:
+    deps: [T027, T028]
+    skillist: ["fsharp-code-generation"]
+    owns: []
+  T031:
+    deps: []
+    skillist: ["fsharp-io-globbing"]
+    owns: []
+  T032:
+    deps: [T028, T031]
+    skillist: []
+    owns: []
+  T033:
+    deps: [T032]
+    skillist: ["fsharp-io-globbing"]
+    owns: []
+  T034:
+    deps: [T038]
+    skillist: ["fsharp-code-generation"]
+    owns: []
+  T035:
+    deps: [T034]
+    skillist: []
+    owns: []
+  T036:
+    deps: [T035]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T037:
+    deps: [T036]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

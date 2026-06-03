@@ -7,6 +7,7 @@ open YamlDotNet.RepresentationModel
 type DepsEntry =
     { Deps: string list option
       Skillist: string list option
+      Owns: string list option
       LegacyBareList: bool }
 
 type DepsModel =
@@ -74,6 +75,7 @@ module DepsParser =
                                             // legacy bare-list form: value IS the deps list
                                             { Deps = seqItems kv.Value
                                               Skillist = None
+                                              Owns = None
                                               LegacyBareList = true }
                                         | :? YamlMappingNode as objNode ->
                                             let field name =
@@ -90,16 +92,37 @@ module DepsParser =
                                                 match field "skillist" with
                                                 | Some v -> seqItems v
                                                 | None -> None
+                                            let ownsField =
+                                                match field "owns" with
+                                                | Some v -> seqItems v
+                                                | None -> None
                                             { Deps = depsField
                                               Skillist = skillField
+                                              Owns = ownsField
                                               LegacyBareList = false }
                                         | _ ->
-                                            // empty / scalar value -> awaiting fields, both None
-                                            { Deps = None; Skillist = None; LegacyBareList = false }
+                                            // empty / scalar value -> awaiting fields, all None
+                                            { Deps = None; Skillist = None; Owns = None; LegacyBareList = false }
                                     map.[key] <- entry
                                     order.Add key
                             | _ -> ()
-                    | _ -> errors.Add "tasks.deps.yml: missing or malformed 'tasks' mapping"
+                    | _ ->
+                        // Feature 059 (FR-007): when the author forgot the top-level `tasks:`
+                        // wrapper and wrote bare `Tnnn:` keys directly, emit ONE directive
+                        // error pointing at the missing wrapper. Audit.validateAndMerge then
+                        // suppresses the downstream per-id "no key" flood (empty Order), so the
+                        // actionable message is standalone, not buried (SC-003).
+                        let hasBareTaskKeys =
+                            root.Children
+                            |> Seq.exists (fun kv ->
+                                match scalarValue kv.Key with
+                                | Some k -> idRe.IsMatch k
+                                | None -> false)
+                        if hasBareTaskKeys then
+                            errors.Add
+                                "tasks.deps.yml: missing or malformed 'tasks' mapping (found bare task keys; nest them under a top-level 'tasks:' mapping with schema_version)"
+                        else
+                            errors.Add "tasks.deps.yml: missing or malformed 'tasks' mapping"
                 | _ -> errors.Add "tasks.deps.yml: root is not a mapping"
 
         { Order = List.ofSeq order

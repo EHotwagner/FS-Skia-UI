@@ -1189,18 +1189,18 @@
       "title": "Preserve benign host-warning classification on the load path per the spec 021 host-warning contract \u2014 benign headless/host warnings stay classified benign while real failures stay fatal",
       "skillist": [
         "fs-skia-template-update",
-        "fs-skia-layout-evidence"
+        "fs-skia-layout-readability"
       ],
       "skillist_mirror": [
         "fs-skia-template-update",
-        "fs-skia-layout-evidence"
+        "fs-skia-layout-readability"
       ],
       "skill_match_assessments": [
         {
           "task_id": "T026",
           "declared_skillist": [
             "fs-skia-template-update",
-            "fs-skia-layout-evidence"
+            "fs-skia-layout-readability"
           ],
           "candidate_skill_id": null,
           "matched_signals": [],

@@ -25,12 +25,35 @@ requires TWO files, both in `specs/[FEATURE_ID]/`:
      evidence.
 
 2. **`tasks.deps.yml`** — the dependency topology and task skill metadata.
-   Sibling to `tasks.md`. Every Tnnn id in `tasks.md` MUST appear as a key
-   here with both `deps` and `skillist` fields. `skillist` is an ordered list
-   of applicable capability skill identifiers, or `[]` when no capability
-   skill applies.
+   Sibling to `tasks.md`. It MUST begin with a `schema_version` scalar and a
+   top-level `tasks:` mapping (the wrapper). Every Tnnn id in `tasks.md` MUST
+   appear as a key under `tasks:` with `deps` and `skillist` fields, and MAY
+   carry an optional `owns:` field. `skillist` is an ordered list of applicable
+   capability skill identifiers, or `[]` when no capability skill applies.
 
-Start from the preset's `tasks-template.md` and `tasks.deps-template.yml`,
+   ```yaml
+   schema_version: "1.0"
+   tasks:
+     T001:
+       deps: []
+       skillist: []
+       owns: []                       # owns nothing — most tasks
+     T002:
+       deps: [T001]
+       skillist: ["fs-skia-layout-readability"]
+       owns: []
+     T033:
+       deps: [T032]
+       skillist: ["speckit-evidence-audit"]
+       owns: ["evidence-audit"]        # this task owns the audit evidence
+   ```
+
+   The single structural fact that gates validation is the `tasks:` wrapper.
+   If you write bare `Tnnn:` keys at the top level (no wrapper), validation
+   stops with one directive error naming the missing `tasks:` mapping — fix
+   that first.
+
+Start from the preset's `tasks-template.md` and `tasks-deps-template.yml`,
 replacing the example task bodies with real work items from the spec and plan.
 
 ## Discipline
@@ -44,59 +67,63 @@ replacing the example task bodies with real work items from the spec and plan.
   `src/*/skill/SKILL.md`, template capability skill paths, and active
   generated product skill destinations when applicable. Choose the minimal
   ordered set that would materially help implementation. Capability skills
-  are preferred over generic guidance when both match. Treat matching as a
-  confidence review, not regex certainty: note matched signals, confidence,
-  ambiguity, and reviewer disposition for medium, low, indirect, false-positive,
-  or valid-empty cases.
+  are preferred over generic guidance when both match.
+- **What the assessment actually checks (be honest).** The validator does
+  **not** re-derive skills from your task titles. It trusts each declared
+  `skillist` as-written, and only adds a structured requirement where a task
+  declares gated evidence via its `owns:` field: each `owns:` value implies a
+  required skill that MUST appear in that task's `skillist`. Everything else is
+  reported as trusted-as-declared. Task titles are fully free-form and are never
+  scanned for capability phrases.
 - **Visible skill mirror.** Every task line in `tasks.md` MUST mirror the
   structured `skillist` value as `[skillist: ...]`. Use `[skillist: []]` for
   an empty list. Non-empty mirrors preserve the exact structured order, for
   example `[skillist: speckit-tasks, speckit-evidence-graph]`.
-- **Task graph pitfall guidance.** Warn authors before graph validation about
-  title trigger phrases and dependency formatting mistakes. Avoid wording such
-  as "persistent GUI runtime" on a guidance-only task or "window visibility
-  validation fixture" on a non-viewer task when those phrases would imply
-  unrelated capability requirements. The exact phrase
-  "window visibility validation fixture" is a known title trigger phrase
-  pitfall; record window visibility validation fixture examples only when the
-  task really owns viewer window evidence. `tasks.deps.yml` MUST use
-  one key per task id; the required object shape is one entry per task id with
-  indented `deps` and `skillist` fields;
-  inline maps such as `T001: { deps: [], skillist: [] }`, duplicate keys, bare
-  task lists, malformed indentation, dangling dependency ids, and mismatched
-  visible `skillist` mirrors are invalid.
-- **Blocking trigger groups and readiness prefix.** `EvidenceGraph` enforces
-  these Spec Kit title-trigger groups: graph validation (`task graph`,
-  `evidence graph`, `readiness validation`, `tasks.deps.yml`,
-  `structured task metadata`, `mirror mismatch`, `skillist field`,
-  `skillist, list typing`, `obvious capability`,
-  `multi-skill dependency order`, `migration blocker`,
-  `validator diagnostics`, `EvidenceGraph`); evidence audit (`evidence audit`,
-  `diff-scan`, `synthetic propagation`, `readiness-blocking`,
-  `EvidenceAudit`); task generation (`/speckit.tasks`, `speckit.tasks`,
-  `task-generation`, `task templates`, `tasks-template`, `tasks template`,
-  `generated task guidance`, `post-generation skill evaluation`);
-  implementation loading (`/speckit.implement`, `speckit.implement`,
-  `implementation-loading`, `implementation skill`, `implementation command`,
-  `load each`, `skill-load`, `before implementation`); and constitution
-  (`constitution`, `constitutional`). Use the exact prefix
-  `Complete readiness notes` for setup/readiness aggregation tasks that cite
-  required filenames without requesting one of those workflows.
-  Safe setup wording examples: `Complete readiness notes for skill-loading evidence
-  workflow placeholder`, `Record required readiness filenames for later
-  verification`, and `Create placeholder evidence files listed by the plan`.
+- **Task graph pitfall guidance.** Task titles are free-form — write them in
+  plain language. `tasks.deps.yml` MUST use one key per task id under the
+  top-level `tasks:` wrapper; the required object shape is one entry per task id
+  with indented `deps`, `skillist`, and optional `owns` fields. Inline maps such
+  as `T001: { deps: [], skillist: [] }`, duplicate keys, bare task lists (no
+  `tasks:` wrapper), malformed indentation, dangling dependency ids, and
+  mismatched visible `skillist` mirrors are invalid.
+- **Structured evidence ownership (`owns:`).** Whether a task owns gated
+  graph/audit (or other) evidence is declared **only** by its `owns:` field,
+  never inferred from the title. The closed vocabulary and the skill each value
+  implies:
+
+  | `owns:` value            | Task owns…                            | Required skill in `skillist` |
+  |--------------------------|---------------------------------------|------------------------------|
+  | `graph-validation`       | task-graph / readiness validation     | `speckit-evidence-graph`     |
+  | `evidence-audit`         | synthetic-propagation / diff-scan     | `speckit-evidence-audit`     |
+  | `task-generation`        | `/speckit.tasks` task-generation      | `speckit-tasks`              |
+  | `implementation-loading` | `/speckit.implement` skill-loading    | `speckit-implement`          |
+  | `constitution`           | constitution authoring                | `speckit-constitution`       |
+
+  Most tasks own nothing — omit `owns:` or use `owns: []`. When a task declares
+  an `owns:` value, its `skillist` MUST include the implied skill or validation
+  fails with a directive error; an unknown `owns:` value is also a directive
+  error naming the allowed set.
+- **Migration (from the removed title-trigger matcher).** Earlier task files
+  relied on a title-trigger matcher that scanned titles for capability phrases;
+  that matcher is removed. Re-express any ownership by adding `owns: [<value>]`
+  to the owning task, and drop any awkward title rewording (or the
+  `Complete readiness notes` prefix) that only existed to satisfy or dodge the
+  old matcher. No `tasks.md` title change is required for correctness anymore.
 - **Declared skill ids resolve from skill names.** The authoritative registry
   is `.agents/skills/*/SKILL.md`, `src/*/skill/SKILL.md`, and
   `template/fragments/*/skill/SKILL.md`. Declare each skill file's `name:`
   value in `skillist`; do not assume the directory name is accepted when it
   differs.
-- **Advisory FS.Skia.UI capability hints.** These hints are non-blocking:
+- **Advisory FS.Skia.UI capability hints.** These hints are non-blocking, and
+  every id resolves to a skill a generated consumer registers:
   rendering/scene -> `fs-skia-scene`; viewer/window host ->
   `fs-skia-skiaviewer`; Elmish workflow -> `fs-skia-elmish`;
-  keyboard/input -> `fs-skia-keyboard-input`; layout -> `fs-skia-layout`;
+  keyboard/input -> `fs-skia-keyboard-input`; layout readability ->
+  `fs-skia-layout-readability`;
   controls/forms/charts/graphs/DataGrid -> `fs-skia-ui-widgets`;
-  generated game HUD readability, public-scene host update, host-warning
-  classification, or evidence tasks -> `fs-skia-layout-evidence`.
+  generated game HUD readability and public-scene host update ->
+  `fs-skia-layout-readability`; deterministic evidence mode and host-warning
+  classification -> `fs-skia-evidence-mode`.
 - **Phase-checkpoint edges are implicit.** The graph compute script
   auto-injects an edge from every task in Phase N+1 to the last foundation
   task of Phase N. You do NOT repeat those edges in the yml — write only
@@ -136,13 +163,13 @@ replacing the example task bodies with real work items from the spec and plan.
   recorded.
 - **Visual demo skill assignment.** Assign scene rendering -> fs-skia-scene,
   screenshot capture -> fs-skia-skiaviewer, layout readability ->
-  fs-skia-layout-evidence, persistent viewer launch -> fs-skia-skiaviewer,
-  deterministic evidence mode -> fs-skia-layout-evidence,
+  fs-skia-layout-readability, persistent viewer launch -> fs-skia-skiaviewer,
+  deterministic evidence mode -> fs-skia-evidence-mode,
   generated-package validation -> fs-skia-template-update, graph validation ->
   speckit-evidence-graph, audit validation -> speckit-evidence-audit. Preserve
   implementation-before-evidence, graph-before-audit, and
   debug-before-broad-rerun ordering; the visible mirror
-  `[skillist: speckit-tasks, fs-skia-layout-evidence]` illustrates exact
+  `[skillist: speckit-tasks, fs-skia-layout-readability]` illustrates exact
   structured order.
 - **Visual demo readiness scaffolds.** Enumerate
   `readiness/visual-evidence-honesty.md`, `readiness/window-visibility.md`,
@@ -155,30 +182,37 @@ replacing the example task bodies with real work items from the spec and plan.
 
 ## Validation
 
-Immediately after writing both files, run (or invoke `/speckit.evidence.graph`
-if the extension is installed):
+Immediately after writing both files, validate the task graph with the canonical
+in-process target (this is the same entry point the `speckit-evidence-graph`
+skill documents — the two skills do not contradict each other, and there is
+**no** `run-audit.sh` or other shell/python runner):
 
 ```bash
-.specify/extensions/evidence/scripts/bash/run-audit.sh specs/<FEATURE_ID> --graph-only
+./fake.sh build -t EvidenceGraph
 ```
 
+The target resolves the feature to validate from `.specify/feature.json`. To
+validate a different feature, override with the `SPECKIT_FEATURE_DIR`
+environment variable:
+
+```bash
+SPECKIT_FEATURE_DIR="specs/<FEATURE_ID>" ./fake.sh build -t EvidenceGraph
+```
+
+Confirm the echoed `feature-directory=…` and `tasks=<n>` match **your** feature
+before trusting the verdict. If neither `.specify/feature.json` nor an override
+resolves a feature, the target fails loudly — it never falls back to a sample.
+
 This validates:
-- Every Tnnn in `tasks.md` has a matching key in `tasks.deps.yml`.
-- Every dep reference resolves to a known Tnnn.
-- The graph is acyclic.
+- Every Tnnn in `tasks.md` has a matching key in `tasks.deps.yml`, and vice
+  versa.
+- Every dep reference resolves to a known Tnnn; the graph is acyclic.
 - Every task has structured `skillist` metadata and a matching `tasks.md`
   mirror.
 - Declared skill ids resolve to exactly one readable skill file.
-- High-confidence capability skill omissions, confidence, matched signals,
-  reviewer disposition, non-minimal invalid skill sets, and invalid multi-skill
-  prerequisite ordering are reported before implementation.
+- Each declared `owns:` value is in the closed vocabulary and carries its
+  implied skill in the `skillist`.
 
 Report any failures to the user immediately; refuse to declare the tasks
-phase complete until the DAG is clean.
-
-## If the evidence extension is not installed
-
-Fall back to emitting both files without running the validator. Warn the
-user: *"The evidence extension is not installed, so the DAG cannot be
-validated. Run `specify extension add evidence` to enable
-`speckit.evidence.graph` and `speckit.evidence.audit`."*
+phase complete until the DAG is clean. For the full merge-gate audit
+(synthetic-propagation + diff-scan), run `./fake.sh build -t EvidenceAudit`.

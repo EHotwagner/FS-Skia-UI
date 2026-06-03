@@ -1,0 +1,6 @@
+
+## package/headless-scene generated Dev
+$ bash ./fake.sh build -t Dev
+Dev completed for generated v3dotnetheadlessscenepackage
+
+exit-code=0

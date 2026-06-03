@@ -258,7 +258,7 @@ See [research.md](./research.md). Decisions resolved:
   identifiers (`Tetris`, `board`, `piece`, `score`, `level`) in the generated
   starter app + tests with domain-agnostic equivalents, preserving the generic
   game-starter shape (HUD region, gameplay region, primary-interaction counter)
-  so `fs-skia-layout-evidence` stays meaningful. Define the forbidden-identifier
+  so `fs-skia-layout-readability` stays meaningful. Define the forbidden-identifier
   scan list.
 - **R6 — canonical effects page + FR-011 guard.** Promote the scattered effects
   content (`docs/reports/generated-apps.md`, `runtime-design.md`) into one

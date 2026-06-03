@@ -33,68 +33,27 @@ type AuditResult =
 
 module Audit =
 
-    // --- capability trigger groups (ported from compute-task-graph.py) ------
+    // --- gated-evidence ownership vocabulary (feature 059, FR-010) ----------
+    //
+    // Replaces the title-trigger capability matcher (`capabilityTriggerGroups` /
+    // `expectedCapabilityMatches`, removed in 059). Task titles are now fully
+    // free-form and are NEVER scanned. A task declares the gated evidence it owns
+    // through the explicit `owns:` field in tasks.deps.yml; each owns value implies
+    // a required skill that MUST appear in that task's declared skillist. The
+    // vocabulary is a closed set — unknown values are a directive error.
 
-    let private capabilityTriggerGroups : (string * string * string list) list =
-        [ "speckit-evidence-graph",
-          "graph validation",
-          [ "task graph"; "evidence graph"; "readiness validation"; "tasks.deps.yml"; "structured task metadata"
-            "mirror mismatch"; "skillist field"; "skillist, list typing"; "obvious capability"
-            "multi-skill dependency order"; "migration blocker"; "validator diagnostics"; "EvidenceGraph" ]
-          "speckit-evidence-audit",
-          "evidence audit",
-          [ "evidence audit"; "diff-scan"; "synthetic propagation"; "readiness-blocking"; "EvidenceAudit" ]
-          "speckit-tasks",
-          "task generation",
-          [ "/speckit.tasks"; "speckit.tasks"; "task-generation"; "task templates"; "tasks-template"
-            "tasks template"; "generated task guidance"; "post-generation skill evaluation" ]
-          "speckit-implement",
-          "implementation loading",
-          [ "/speckit.implement"; "speckit.implement"; "implementation-loading"; "implementation skill"
-            "implementation command"; "load each"; "skill-load"; "before implementation" ]
-          "speckit-constitution", "constitution", [ "constitution"; "constitutional" ] ]
+    let private ownsVocabulary : (string * string) list =
+        [ "graph-validation", "speckit-evidence-graph"
+          "evidence-audit", "speckit-evidence-audit"
+          "task-generation", "speckit-tasks"
+          "implementation-loading", "speckit-implement"
+          "constitution", "speckit-constitution" ]
+
+    let private ownsAllowed = ownsVocabulary |> List.map fst |> String.concat ", "
 
     let private skillPrerequisites : (string * string list) list =
         [ "speckit-evidence-audit", [ "speckit-evidence-graph" ]
           "speckit-implement", [ "speckit-tasks" ] ]
-
-    let private wordChar (c: char) =
-        (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c = '.' || c = '_' || c = '/' || c = '-'
-
-    let private tokenContext (text: string) (start: int) (endIdx: int) : string =
-        let mutable left = start
-        while left > 0 && wordChar text.[left - 1] do
-            left <- left - 1
-        let mutable right = endIdx
-        while right < text.Length && wordChar text.[right] do
-            right <- right + 1
-        text.Substring(left, right - left)
-
-    let private filenameRe = Regex(@"\.[A-Za-z0-9]{1,8}$", RegexOptions.Compiled)
-    let private isFilenameContext (token: string) = filenameRe.IsMatch token
-
-    let private triggerMatchesTitle (title: string) (trigger: string) : (string * string) option =
-        let pattern = @"(?<![A-Za-z0-9])" + Regex.Escape(trigger) + @"(?![A-Za-z0-9])"
-        let mutable found : (string * string) option = None
-        for m in Regex.Matches(title, pattern, RegexOptions.IgnoreCase) do
-            if found.IsNone then
-                let token = tokenContext title m.Index (m.Index + m.Length)
-                if not (isFilenameContext token) then found <- Some(trigger, token)
-        found
-
-    let expectedCapabilityMatches (title: string) : (string * string * string) list =
-        [ for (skillId, group, triggers) in capabilityTriggerGroups do
-              let firstMatch =
-                  triggers
-                  |> List.tryPick (fun trigger ->
-                      match triggerMatchesTitle title trigger with
-                      | Some(t, _) -> Some t
-                      | None -> None)
-              match firstMatch with
-              | Some t -> yield (skillId, group, t)
-              | None -> () ]
-
-    let private completeReadinessRe = Regex(@"^Complete readiness notes", RegexOptions.Compiled ||| RegexOptions.IgnoreCase)
 
     // --- validate and merge -------------------------------------------------
 
@@ -106,8 +65,14 @@ module Audit =
 
         let onlyMd = Set.difference mdIds ymlIds |> Set.toList |> List.sort
         let onlyYml = Set.difference ymlIds mdIds |> Set.toList |> List.sort
-        for tid in onlyMd do
-            errors.Add(sprintf "tasks.md declares %s but tasks.deps.yml has no key for it" tid)
+        // Feature 059 (FR-007): when tasks.deps.yml failed to parse a single task
+        // (empty Order) but tasks.md has tasks, the root cause is structural — the
+        // missing `tasks:` wrapper, already reported standalone by DepsParser. Do not
+        // bury that directive under one "no key" error per task line (SC-003).
+        let depsStructurallyEmpty = List.isEmpty deps.Order && not (List.isEmpty tasks)
+        if not depsStructurallyEmpty then
+            for tid in onlyMd do
+                errors.Add(sprintf "tasks.md declares %s but tasks.deps.yml has no key for it" tid)
         for tid in onlyYml do
             errors.Add(sprintf "tasks.deps.yml declares %s but tasks.md has no task line" tid)
 
@@ -189,29 +154,35 @@ module Audit =
                     elif List.length matches > 1 then
                         errors.Add(sprintf "%s: declared skill %s is ambiguous: %s" tid skillId (String.concat ", " matches))
 
-                let expected =
-                    if completeReadinessRe.IsMatch task.Title then []
-                    else expectedCapabilityMatches task.Title
+                // Feature 059 (FR-009/FR-010): evidence ownership is structured, not
+                // inferred from the title. Each declared `owns:` value must be in the
+                // closed vocabulary and must carry its implied skill in the skillist.
+                let declaredOwns = defaultArg meta.Owns []
+                let mutable ownsAssessmentCount = 0
+                for ownsValue in declaredOwns do
+                    match ownsVocabulary |> List.tryFind (fun (v, _) -> v = ownsValue) with
+                    | None ->
+                        errors.Add(sprintf "%s: unknown owns value '%s'; allowed: %s" tid ownsValue ownsAllowed)
+                    | Some(_, impliedSkill) ->
+                        ownsAssessmentCount <- ownsAssessmentCount + 1
+                        let present = List.contains impliedSkill declaredSkillist
+                        if not present then
+                            errors.Add(
+                                sprintf
+                                    "%s: owns %s requires skill %s in skillist; declared_skillist=[%s]"
+                                    tid ownsValue impliedSkill (String.concat ", " declaredSkillist))
+                        assessmentsOf.[tid].Add
+                            { TaskId = tid
+                              DeclaredSkillist = declaredSkillist
+                              CandidateSkillId = Some impliedSkill
+                              MatchedSignals = [ sprintf "owns:%s" ownsValue ]
+                              Confidence = "high"
+                              Ambiguity = None
+                              ReviewerDisposition = (if present then Some "accepted" else None)
+                              Diagnostic =
+                                sprintf "%s: owns %s requires skill %s; trigger_group=owns; matched_trigger=owns:%s" tid ownsValue impliedSkill ownsValue }
 
-                for (skillId, triggerGroup, matchedTrigger) in expected do
-                    let disposition = if List.contains skillId declaredSkillist then Some "accepted" else None
-                    assessmentsOf.[tid].Add
-                        { TaskId = tid
-                          DeclaredSkillist = declaredSkillist
-                          CandidateSkillId = Some skillId
-                          MatchedSignals = [ matchedTrigger ]
-                          Confidence = "high"
-                          Ambiguity = None
-                          ReviewerDisposition = disposition
-                          Diagnostic =
-                            sprintf "%s: task text matches %s; trigger_group=%s; matched_trigger=%s" tid skillId triggerGroup matchedTrigger }
-                    if not (List.contains skillId declaredSkillist) then
-                        errors.Add(
-                            sprintf
-                                "%s: high-confidence skill match omitted declared skill %s; trigger_group=%s; matched_trigger=%s; declared_skillist=[%s]"
-                                tid skillId triggerGroup matchedTrigger (String.concat ", " declaredSkillist))
-
-                if List.isEmpty expected then
+                if ownsAssessmentCount = 0 then
                     assessmentsOf.[tid].Add
                         { TaskId = tid
                           DeclaredSkillist = declaredSkillist
@@ -220,7 +191,7 @@ module Audit =
                           Confidence = "none"
                           Ambiguity = None
                           ReviewerDisposition = (if List.isEmpty declaredSkillist then Some "accepted-empty" else Some "declared")
-                          Diagnostic = sprintf "%s: no high-confidence capability signal detected" tid }
+                          Diagnostic = sprintf "%s: skillist trusted as declared; no owns-based capability requirement" tid }
 
                 let listed = declaredSkillist
                 let positions = listed |> List.mapi (fun i s -> s, i) |> Map.ofList

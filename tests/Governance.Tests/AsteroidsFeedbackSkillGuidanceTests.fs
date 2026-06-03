@@ -21,7 +21,7 @@ let generatedProductGuidancePaths =
       "template/base/tests/Product.Tests/Tests.fs" ]
 
 let layoutEvidenceGuidancePaths =
-    [ ".agents/skills/fs-skia-layout-evidence/SKILL.md"
+    [ ".agents/skills/fs-skia-evidence-mode/SKILL.md"
       "template/base/docs/product.md"
       "template/base/tests/Product.Tests/Tests.fs" ]
 
@@ -72,16 +72,16 @@ let asteroidsFeedbackSkillGuidanceTests =
                     path
                     [ "scene rendering -> fs-skia-scene"
                       "screenshot capture -> fs-skia-skiaviewer"
-                      "layout readability -> fs-skia-layout-evidence"
+                      "layout readability -> fs-skia-layout-readability"
                       "persistent viewer launch -> fs-skia-skiaviewer"
-                      "deterministic evidence mode -> fs-skia-layout-evidence"
+                      "deterministic evidence mode -> fs-skia-evidence-mode"
                       "generated-package validation -> fs-skia-template-update"
                       "graph validation -> speckit-evidence-graph"
                       "audit validation -> speckit-evidence-audit"
                       "implementation-before-evidence"
                       "graph-before-audit"
                       "debug-before-broad-rerun"
-                      "[skillist: speckit-tasks, fs-skia-layout-evidence]" ])
+                      "[skillist: speckit-tasks, fs-skia-layout-readability]" ])
         }
 
         // Feature 038 (FR-001, US1): the `speckit-debug-loop` advertised id was
