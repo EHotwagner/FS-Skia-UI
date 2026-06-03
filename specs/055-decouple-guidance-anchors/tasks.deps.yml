@@ -1,0 +1,72 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Every Tnnn id that appears in tasks.md MUST appear as a key here. Each task
+# value MUST include:
+#   deps: ordered list of explicit non-phase dependencies
+#   skillist: ordered list of applicable capability skill identifiers
+# Use skillist: [] when no capability skill applies.
+#
+# Phase-checkpoint edges are auto-injected by the script (every task in
+# Phase N+1 implicitly depends on the last task of Phase N). Only non-phase
+# cross-edges are written here.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: ["fsharp-parsing"]
+  T006:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T007:
+    deps: [T006]
+    skillist: ["fsharp-parsing"]
+  T008:
+    deps: [T007]
+    skillist: []
+  T009:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T010:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T011:
+    deps: [T009, T010]
+    skillist: ["fsharp-parsing"]
+  T012:
+    deps: [T009, T010]
+    skillist: ["fsharp-parsing"]
+  T013:
+    deps: [T011, T012]
+    skillist: ["fsharp-build-orchestration"]
+  T014:
+    deps: []
+    skillist: ["fsharp-build-orchestration", "fsharp-io-globbing"]
+  T015:
+    deps: [T014]
+    skillist: []
+  T016:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T017:
+    deps: [T016]
+    skillist: ["fsharp-build-orchestration"]
+  T018:
+    deps: [T017]
+    skillist: ["speckit-evidence-graph"]
+  T019:
+    deps: [T018]
+    skillist: ["speckit-evidence-audit"]

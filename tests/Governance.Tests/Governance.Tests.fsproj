@@ -53,6 +53,7 @@
     <Compile Include="BuildEngineUpdateTests.fs" />
     <Compile Include="PreflightValidatorTests.fs" />
     <Compile Include="GuidanceValidatorTests.fs" />
+    <Compile Include="ProseSizeAccountingTests.fs" />
     <Compile Include="GeneratedProductValidatorTests.fs" />
     <!-- Feature 046 (US1/US2): Constitution-Check completeness + versioned contract. -->
     <Compile Include="ConstitutionCheckTests.fs" />

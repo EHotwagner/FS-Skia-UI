@@ -108,7 +108,7 @@ sequential rerun order before product-regression claims.
 
 After task generation, evaluate every task against available local capability
 skills (`.agents/skills/*/SKILL.md`, `src/*/skill/SKILL.md`, and template
-capability skills). Write the minimal ordered skill set to structured
+capability skills). Write the minimal ordered skills to structured
 `skillist` metadata and mirror it in `tasks.md`. Capability skills are
 preferred over generic guidance for matching tasks. Treat skill detection as a
 confidence review rather than regex certainty: record confidence, matched signals,

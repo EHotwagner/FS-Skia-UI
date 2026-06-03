@@ -78,11 +78,173 @@ let generatedGuidanceRequirements =
 let containsText (needle: string) (haystack: string) =
     haystack.IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0
 
-let serializedRunnerRequiredTerms =
-    [ "FAKE-backed"
-      ".fake"
-      "sequential"
-      "not safe to run concurrently" ]
+// Feature 055 (US1/US2, FR-001..006): decouple author-guidance prose from
+// generation-currency anchors. A mixed-purpose literal-substring table conflated
+// two concerns — proving derived guidance stays current with its source of truth,
+// and freezing the exact prose a human reads — so prose could not shrink without
+// tripping a `missing` finding. The model below splits each check into:
+//   * machine-contract tokens  — literal strings tooling/parsers consume; matched
+//     verbatim (case-insensitive substring), exactly as the pre-055 table did.
+//   * semantic obligations     — a rule a source of truth imposes that some derived
+//     guidance file must reflect, satisfied by presence-of-concept over short
+//     alternative anchors, so rewording/shortening still passes while deleting the
+//     concept (genuine drift) still fails.
+// The evaluator is pure (over an in-memory path -> content lookup); the existing
+// thin IO wrapper supplies the real-repository lookup and runGeneratedGuidanceScan
+// aggregates exactly as before.
+
+/// A literal string consumed by tooling/parsers. Matched verbatim
+/// (case-insensitive substring), exactly as the pre-055 table did.
+type ContractToken =
+    { Token: string
+      Files: string list }
+
+/// How an obligation's concept anchors are evaluated.
+type MatchMode =
+    | AnyOf // satisfied when ANY concept anchor is present (the US1 unlock)
+    | AllOf // satisfied only when ALL concept anchors are present (conjunctive rules)
+
+/// A rule a source of truth imposes that some derived guidance file must reflect.
+/// Checked by presence-of-concept, not exact wording, so prose may be reworded.
+type GuidanceObligation =
+    { Id: string
+      SourceOfTruth: string
+      Concepts: string list
+      Mode: MatchMode
+      Files: string list }
+
+/// What a check enforces, after decoupling.
+type GuidanceCheck =
+    { Tag: string
+      Tokens: ContractToken list
+      Obligations: GuidanceObligation list
+      Forbidden: ContractToken list }
+
+/// Pure: given a lookup from relative path to file content (None = missing file),
+/// produce the findings for one check. No IO. Findings reuse the existing
+/// `path: message [tag]` convention.
+///   * token present  — every file in `Files` must contain the token (per file).
+///   * obligation      — every file in `Files` must satisfy `Mode` over `Concepts`.
+///   * forbidden       — no `Forbidden` token may appear in the COMBINED content of
+///                       the union of forbidden files (stale-term behavior preserved).
+let evaluateGuidanceCheck (lookup: string -> string option) (check: GuidanceCheck) : string list =
+    let tag = check.Tag
+
+    let tokenFindings =
+        check.Tokens
+        |> List.collect (fun token ->
+            token.Files
+            |> List.collect (fun file ->
+                match lookup file with
+                | None -> [ $"{file}: missing file [{tag}]" ]
+                | Some content ->
+                    if containsText token.Token content then
+                        []
+                    else
+                        [ $"{file}: missing `{token.Token}` [{tag}]" ]))
+
+    let obligationFindings =
+        check.Obligations
+        |> List.collect (fun obligation ->
+            obligation.Files
+            |> List.collect (fun file ->
+                match lookup file with
+                | None -> [ $"{file}: missing file [{tag}]" ]
+                | Some content ->
+                    let present concept = containsText concept content
+
+                    let satisfied =
+                        match obligation.Mode with
+                        | AnyOf -> obligation.Concepts |> List.exists present
+                        | AllOf -> obligation.Concepts |> List.forall present
+
+                    if satisfied then
+                        []
+                    else
+                        [ $"{file}: obligation '{obligation.Id}' ({obligation.SourceOfTruth}) not reflected [{tag}]" ]))
+
+    let forbiddenFindings =
+        if List.isEmpty check.Forbidden then
+            []
+        else
+            let combined =
+                check.Forbidden
+                |> List.collect (fun token -> token.Files)
+                |> List.distinct
+                |> List.choose lookup
+                |> String.concat Environment.NewLine
+
+            check.Forbidden
+            |> List.choose (fun token ->
+                if containsText token.Token combined then
+                    Some $"generated controls guidance contains stale term `{token.Token}` [{tag}]"
+                else
+                    None)
+
+    tokenFindings @ obligationFindings @ forbiddenFindings
+
+/// Thin IO wrapper: read a governed file once, returning None when absent so the
+/// evaluator emits the preserved `missing file` finding.
+let realLookup model (relativePath: string) : string option =
+    let filePath = path [ model.RepositoryRoot; relativePath ]
+
+    if File.Exists filePath then
+        Some(File.ReadAllText filePath)
+    else
+        None
+
+/// FR-007/SC-005: honest prose-size accounting. The corrected ≈6,882-line baseline
+/// (feature 046), the measured `.agents/skills/**/*.md` and `.specify/**/*.md` line
+/// counts, the summed current count, the signed delta, and the restated target.
+type ProseSizeAccounting =
+    { Baseline: int
+      AgentsSkillsLines: int
+      SpecifyLines: int
+      Current: int
+      Delta: int
+      RestatedTarget: string }
+
+/// Pure render of the prose-size accounting report. The IO enumeration that
+/// gathers the line counts lives in the front-end; this function is byte-
+/// deterministic over a record so it can be unit-tested without touching disk.
+let renderProseSizeAccounting (accounting: ProseSizeAccounting) : string =
+    let sign = if accounting.Delta >= 0 then "+" else ""
+
+    [ "# Prose-Size Accounting"
+      ""
+      "Honest guidance-prose accounting against the corrected baseline (FR-007,"
+      "FR-008, SC-005). The discredited original over-estimate / \"low hundreds\""
+      "figure is no longer the live target; tracking is against the baseline below."
+      ""
+      $"- Corrected baseline (feature 046): {accounting.Baseline} lines"
+      $"- `.agents/skills/**/*.md`: {accounting.AgentsSkillsLines} lines"
+      $"- `.specify/**/*.md`: {accounting.SpecifyLines} lines"
+      $"- Current measured guidance-prose count: {accounting.Current} lines"
+      $"- Delta vs baseline: {sign}{accounting.Delta} lines"
+      $"- Restated target: {accounting.RestatedTarget}"
+      ""
+      "## Reproduction"
+      ""
+      "```bash"
+      "find .agents/skills -name '*.md' | xargs wc -l | tail -1"
+      "find .specify       -name '*.md' | xargs wc -l | tail -1"
+      "```" ]
+    |> String.concat Environment.NewLine
+
+// Feature 055 (US2, T012): the four pre-055 required substrings become a single
+// `fake-sequential` semantic obligation (AllOf over the four facets) sourced from
+// the CLAUDE.md FAKE concurrency rule. The structural regex assertions below stay
+// unchanged machine logic.
+let serializedRunnerObligation =
+    { Id = "fake-sequential"
+      SourceOfTruth = "CLAUDE.md:FAKE concurrency rule"
+      Concepts =
+        [ "FAKE-backed"
+          ".fake"
+          "sequential"
+          "not safe to run concurrently" ]
+      Mode = AllOf
+      Files = [] }
 
 let buildRunnerCommandRegex =
     Regex(@"(\./fake\.sh|fake\.cmd|dotnet fake)\b", RegexOptions.IgnoreCase)
@@ -102,12 +264,12 @@ let validateSerializedRunnerGuidancePath model relativePath =
             []
         else
             [ yield!
-                  serializedRunnerRequiredTerms
-                  |> List.choose (fun term ->
-                      if containsText term content then
-                          None
-                      else
-                          Some $"{relativePath}: missing `{term}` [sequential-fake-guidance]")
+                  evaluateGuidanceCheck
+                      (fun p -> if p = relativePath then Some content else None)
+                      { Tag = "sequential-fake-guidance"
+                        Tokens = []
+                        Obligations = [ { serializedRunnerObligation with Files = [ relativePath ] } ]
+                        Forbidden = [] }
 
               if buildRunnerCommandRegex.Matches(content).Count > 1
                  && numberedBuildRunnerCommandRegex.Matches(content).Count < 2 then
@@ -278,38 +440,80 @@ let validateGuidanceParity validationRows =
               |> List.map (fun prompt -> $"{active.Path}: parity mismatch for `{prompt}` against {preset.Path} [active-preset-parity]") ]
         | _ -> [ $"{artifact}: expected active and preset templates for parity comparison [active-preset-parity]" ])
 
-let validateControlsBoundaryGuidance model =
-    let guidancePaths =
-        [ "template/fragments/controls/README.md"
-          "template/fragments/controls/skill/SKILL.md"
-          "template/fragments/elmish/README.md"
-          "template/base/README.md"
-          "template/base/docs/product.md"
-          "src/Controls/skill/SKILL.md"
-          ".specify/templates/spec-template.md"
-          ".specify/templates/plan-template.md"
-          ".specify/presets/fsharp-opinionated/templates/spec-template.md"
-          ".specify/presets/fsharp-opinionated/templates/plan-template.md" ]
+// Feature 055 (US2, T011): the controls boundary check, decoupled. Machine-contract
+// tokens (package/type identifiers) stay matched verbatim per home file; the
+// "Skia-rendered" and "legacy Charts replaced, no shim" rules become semantic
+// obligations; every forbidden/stale term is preserved verbatim over the combined
+// governed content so removed-Charts language cannot re-enter (FR-006). Forbidden
+// tokens are assembled from fragments so this source file does not itself carry the
+// literal stale terms (the same discipline the pre-055 code used).
+let controlsBoundaryGuidancePaths =
+    [ "template/fragments/controls/README.md"
+      "template/fragments/controls/skill/SKILL.md"
+      "template/fragments/elmish/README.md"
+      "template/base/README.md"
+      "template/base/docs/product.md"
+      "src/Controls/skill/SKILL.md"
+      ".specify/templates/spec-template.md"
+      ".specify/templates/plan-template.md"
+      ".specify/presets/fsharp-opinionated/templates/spec-template.md"
+      ".specify/presets/fsharp-opinionated/templates/plan-template.md" ]
 
-    let combined =
-        guidancePaths
-        |> List.map (fun relative -> File.ReadAllText(path [ model.RepositoryRoot; relative ]))
-        |> String.concat Environment.NewLine
-
+let controlsBoundaryGuidanceCheck =
     let removedChartsPackage = "FS.Skia.UI." + "Charts"
     let removedChartsSkill = "fs-skia-" + "charts"
 
-    let required =
-        [ "FS.Skia.UI.Controls"
-          "Skia-rendered"
-          "Control<'msg>"
-          "DataGrid"
-          "FS.Skia.UI.Controls.Elmish"
-          "ControlsElmish.program"
-          "legacy Charts package"
-          "no compatibility shim" ]
-
-    let forbidden =
+    { Tag = "controls-boundary-guidance"
+      Tokens =
+        [ { Token = "FS.Skia.UI.Controls"
+            Files =
+              [ "template/fragments/controls/README.md"
+                "template/fragments/controls/skill/SKILL.md"
+                "template/fragments/elmish/README.md"
+                "template/base/README.md"
+                "template/base/docs/product.md"
+                "src/Controls/skill/SKILL.md" ] }
+          { Token = "Control<'msg>"
+            Files =
+              [ "template/fragments/controls/README.md"
+                "template/fragments/controls/skill/SKILL.md"
+                "template/fragments/elmish/README.md"
+                "src/Controls/skill/SKILL.md" ] }
+          { Token = "DataGrid"
+            Files =
+              [ "template/fragments/controls/README.md"
+                "template/fragments/controls/skill/SKILL.md"
+                "template/base/README.md"
+                "template/base/docs/product.md"
+                "src/Controls/skill/SKILL.md"
+                ".specify/templates/spec-template.md"
+                ".specify/presets/fsharp-opinionated/templates/spec-template.md" ] }
+          { Token = "FS.Skia.UI.Controls.Elmish"
+            Files =
+              [ "template/fragments/controls/skill/SKILL.md"
+                "template/fragments/elmish/README.md"
+                "template/base/README.md"
+                "template/base/docs/product.md"
+                "src/Controls/skill/SKILL.md" ] }
+          { Token = "ControlsElmish.program"
+            Files = [ "template/fragments/elmish/README.md" ] } ]
+      Obligations =
+        [ { Id = "controls-skia-rendered"
+            SourceOfTruth = "controls-boundary:Skia-rendered controls"
+            Concepts = [ "Skia-rendered" ]
+            Mode = AnyOf
+            Files =
+              [ "template/fragments/controls/README.md"
+                "template/fragments/controls/skill/SKILL.md"
+                "src/Controls/skill/SKILL.md" ] }
+          { Id = "controls-no-charts-shim"
+            SourceOfTruth = "controls-boundary:Charts replacement"
+            Concepts = [ "legacy Charts package"; "no compatibility shim" ]
+            Mode = AllOf
+            Files =
+              [ "template/fragments/controls/skill/SKILL.md"
+                "src/Controls/skill/SKILL.md" ] } ]
+      Forbidden =
         [ removedChartsPackage
           removedChartsSkill
           ("chart-" + "only")
@@ -319,158 +523,136 @@ let validateControlsBoundaryGuidance model =
           ("renderer " + "neutral")
           ("host-" + "loop ownership")
           ("host loop " + "ownership") ]
+        |> List.map (fun token -> { Token = token; Files = controlsBoundaryGuidancePaths }) }
 
-    [ yield!
-          required
-          |> List.choose (fun term ->
-              if combined.IndexOf(term, StringComparison.OrdinalIgnoreCase) < 0 then
-                  Some $"generated controls guidance missing `{term}` [controls-boundary-guidance]"
-              else
-                  None)
-      yield!
-          forbidden
-          |> List.choose (fun term ->
-              if combined.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0 then
-                  Some $"generated controls guidance contains stale term `{term}` [controls-boundary-guidance]"
-              else
-                  None) ]
+let validateControlsBoundaryGuidance model =
+    evaluateGuidanceCheck (realLookup model) controlsBoundaryGuidanceCheck
+
+// Feature 055 (US1/US2, T007): the task-skillist guidance check, decoupled. The
+// pre-055 ≈120-entry literal table mixed machine-contract tokens (bracketed tags,
+// YAML keys, exact field names) with author prose. Tokens stay verbatim per file;
+// every distinct semantic concept the old table encoded maps to exactly one
+// obligation whose anchor set covers that concept (so removing the concept still
+// fails — FR-003) while rewording prose around it now passes (SC-001). Every twin
+// (template + fsharp-opinionated preset copy + command copy + memory copy) appears
+// in `Files`, so drift in one twin is still caught.
+let taskSkillistGuidanceCheck =
+    let tasksTemplates =
+        [ ".specify/templates/tasks-template.md"
+          ".specify/presets/fsharp-opinionated/templates/tasks-template.md" ]
+
+    let depsTemplate = [ ".specify/presets/fsharp-opinionated/templates/tasks-deps-template.yml" ]
+
+    let tasksSkillFiles =
+        [ ".agents/skills/speckit-tasks/SKILL.md"
+          ".specify/presets/fsharp-opinionated/commands/speckit.tasks.md" ]
+
+    let implementFiles =
+        [ ".agents/skills/speckit-implement/SKILL.md"
+          ".specify/presets/fsharp-opinionated/commands/speckit.implement.md" ]
+
+    let constitutionFiles =
+        [ ".specify/memory/constitution.md"
+          ".specify/templates/constitution-template.md"
+          ".specify/presets/fsharp-opinionated/templates/constitution-template.md" ]
+
+    // Files that carried the [SEH] / synthetic-error-handling-approved tokens.
+    let sehTokenFiles = tasksTemplates @ tasksSkillFiles @ implementFiles @ constitutionFiles
+    // Files whose prose encodes the Principle-V synthetic-error discipline concept.
+    let sehProseFiles = tasksTemplates @ tasksSkillFiles @ implementFiles
+    let confidenceFiles = tasksTemplates @ tasksSkillFiles
+
+    { Tag = "task-skillist-guidance"
+      Tokens =
+        [ { Token = "[skillist: []]"; Files = tasksTemplates }
+          { Token = "skillist:"; Files = depsTemplate }
+          { Token = "deps:"; Files = depsTemplate }
+          { Token = "[SEH]"; Files = sehTokenFiles }
+          { Token = "synthetic-error-handling-approved"; Files = sehTokenFiles }
+          { Token = "loaded_at"; Files = implementFiles }
+          { Token = "work_started_at"; Files = implementFiles }
+          { Token = "readiness/skill-loading-evidence.md"; Files = implementFiles } ]
+      Obligations =
+        [ { Id = "skillist-structured"
+            SourceOfTruth = "constitution:Local Agent Skills"
+            Concepts = [ "structured skillist"; "structured `skillist`" ]
+            Mode = AnyOf
+            Files = tasksTemplates @ implementFiles }
+          { Id = "skillist-minimal-ordered"
+            SourceOfTruth = "constitution:Local Agent Skills"
+            Concepts = [ "minimal ordered"; "declared order" ]
+            Mode = AnyOf
+            Files = tasksTemplates @ implementFiles }
+          { Id = "skillist-confidence-fields"
+            SourceOfTruth = "speckit-tasks:skill evaluation"
+            Concepts = [ "confidence"; "matched signals"; "reviewer disposition" ]
+            Mode = AllOf
+            Files = confidenceFiles }
+          { Id = "skill-breadth"
+            SourceOfTruth = "speckit-tasks:risk levels"
+            Concepts = [ "small, medium, and broad" ]
+            Mode = AnyOf
+            Files = confidenceFiles }
+          { Id = "aggregate-non-authoritative"
+            SourceOfTruth = "CLAUDE.md:aggregate FAKE results"
+            Concepts = [ "non-authoritative aggregate" ]
+            Mode = AnyOf
+            Files = confidenceFiles }
+          { Id = "graph-before-after"
+            SourceOfTruth = "speckit-implement:evidence graph"
+            Concepts = [ "before and after every status change"; "graph before/after" ]
+            Mode = AnyOf
+            Files = tasksTemplates @ implementFiles }
+          { Id = "persistent-launch"
+            SourceOfTruth = "constitution:persistent launch rules"
+            Concepts =
+              [ "persistent launch rules"
+                "persistent graphical launch task"
+                "MUST reject viewer-backed default executable paths" ]
+            Mode = AnyOf
+            Files = tasksTemplates }
+          { Id = "seh-discipline"
+            SourceOfTruth = "constitution:Principle V"
+            Concepts = [ "malformed parser input"; "convenience mocks"; "implementation-time relabeling" ]
+            Mode = AnyOf
+            Files = sehProseFiles }
+          { Id = "tasks-skill-gate"
+            SourceOfTruth = "constitution:post-generation skill gate"
+            Concepts = [ "Compulsory skill evaluation"; "Visible skill mirror"; "Declared skill ids resolve" ]
+            Mode = AllOf
+            Files = tasksSkillFiles }
+          { Id = "implement-skill-loading"
+            SourceOfTruth = "constitution:pre-task skill loading gate"
+            Concepts =
+              [ "Resolve every declared skill id"
+                "loaded paths"
+                "reviewer exception"
+                "implementation batch records"
+                "red-green evidence log" ]
+            Mode = AllOf
+            Files = implementFiles }
+          { Id = "constitution-skill-gates"
+            SourceOfTruth = "constitution:Local Agent Skills"
+            Concepts =
+              [ "mandatory post-generation skill evaluation gate"
+                "mandatory pre-task skill loading gate"
+                "`skillist` field" ]
+            Mode = AllOf
+            Files = constitutionFiles }
+          { Id = "tasks-post-gen-timing"
+            SourceOfTruth = "speckit-tasks:after task generation"
+            Concepts = [ "After task generation" ]
+            Mode = AnyOf
+            Files = tasksTemplates }
+          { Id = "deps-skillist-doc"
+            SourceOfTruth = "speckit-tasks:tasks.deps.yml schema"
+            Concepts = [ "ordered list of applicable capability skill identifiers" ]
+            Mode = AnyOf
+            Files = depsTemplate } ]
+      Forbidden = [] }
 
 let validateTaskSkillistGuidance model =
-    let requiredTerms =
-        [ ".specify/templates/tasks-template.md",
-          [ "[skillist: []]"
-            "structured"
-            "skillist"
-            "After task generation"
-            "minimal ordered skill set"
-            "confidence"
-            "matched signals"
-            "reviewer disposition"
-            "small, medium, and broad"
-            "non-authoritative aggregate"
-            "before and after every status change"
-            "persistent launch rules"
-            "non-authoritative aggregate reporting"
-            "persistent graphical launch task"
-            "MUST reject viewer-backed default executable paths"
-            "[SEH]"
-            "synthetic-error-handling-approved"
-            "malformed parser input"
-            "convenience mocks" ]
-          ".specify/presets/fsharp-opinionated/templates/tasks-template.md",
-          [ "[skillist: []]"
-            "structured"
-            "skillist"
-            "After task generation"
-            "minimal ordered skill set"
-            "confidence"
-            "matched signals"
-            "reviewer disposition"
-            "small, medium, and broad"
-            "non-authoritative aggregate"
-            "before and after every status change"
-            "persistent launch rules"
-            "non-authoritative aggregate reporting"
-            "persistent graphical launch task"
-            "MUST reject viewer-backed default executable paths"
-            "[SEH]"
-            "synthetic-error-handling-approved"
-            "malformed parser input"
-            "convenience mocks" ]
-          ".specify/presets/fsharp-opinionated/templates/tasks-deps-template.yml",
-          [ "deps:"
-            "skillist:"
-            "ordered list of applicable capability skill identifiers" ]
-          ".agents/skills/speckit-tasks/SKILL.md",
-          [ "Compulsory skill evaluation"
-            "Visible skill mirror"
-            "Declared skill ids resolve"
-            "confidence"
-            "matched signals"
-            "reviewer disposition"
-            "small, medium, and broad"
-            "non-authoritative aggregate"
-            "[SEH]"
-            "synthetic-error-handling-approved"
-            "implementation-time relabeling" ]
-          ".specify/presets/fsharp-opinionated/commands/speckit.tasks.md",
-          [ "Compulsory skill evaluation"
-            "Visible skill mirror"
-            "Declared skill ids resolve"
-            "confidence"
-            "matched signals"
-            "reviewer disposition"
-            "small, medium, and broad"
-            "non-authoritative aggregate"
-            "[SEH]"
-            "synthetic-error-handling-approved"
-            "implementation-time relabeling" ]
-          ".agents/skills/speckit-implement/SKILL.md",
-          [ "structured `skillist`"
-            "Resolve every declared skill id"
-            "skills in declared order"
-            "loaded paths"
-            "readiness/skill-loading-evidence.md"
-            "loaded_at"
-            "work_started_at"
-            "reviewer exception"
-            "implementation batch records"
-            "graph before/after"
-            "before and after every status change"
-            "red-green evidence log"
-            "[SEH]"
-            "synthetic-error-handling-approved"
-            "implementation-time relabeling" ]
-          ".specify/presets/fsharp-opinionated/commands/speckit.implement.md",
-          [ "structured `skillist`"
-            "Resolve every declared skill id"
-            "skills in declared order"
-            "loaded paths"
-            "readiness/skill-loading-evidence.md"
-            "loaded_at"
-            "work_started_at"
-            "reviewer exception"
-            "implementation batch records"
-            "graph before/after"
-            "before and after every status change"
-            "red-green evidence log"
-            "[SEH]"
-            "synthetic-error-handling-approved"
-            "implementation-time relabeling" ]
-          ".specify/memory/constitution.md",
-          [ "mandatory post-generation skill evaluation gate"
-            "`skillist` field"
-            "mandatory pre-task skill loading gate"
-            "[SEH]"
-            "synthetic-error-handling-approved" ]
-          ".specify/templates/constitution-template.md",
-          [ "mandatory post-generation skill evaluation gate"
-            "`skillist` field"
-            "mandatory pre-task skill loading gate"
-            "[SEH]"
-            "synthetic-error-handling-approved" ]
-          ".specify/presets/fsharp-opinionated/templates/constitution-template.md",
-          [ "mandatory post-generation skill evaluation gate"
-            "`skillist` field"
-            "mandatory pre-task skill loading gate"
-            "[SEH]"
-            "synthetic-error-handling-approved" ] ]
-
-    requiredTerms
-    |> List.collect (fun (relative, terms) ->
-        let filePath = path [ model.RepositoryRoot; relative ]
-
-        if not (File.Exists filePath) then
-            [ $"{relative}: missing file [task-skillist-guidance]" ]
-        else
-            let content = File.ReadAllText filePath
-
-            terms
-            |> List.choose (fun term ->
-                if content.IndexOf(term, StringComparison.OrdinalIgnoreCase) < 0 then
-                    Some $"{relative}: missing `{term}` [task-skillist-guidance]"
-                else
-                    None))
+    evaluateGuidanceCheck (realLookup model) taskSkillistGuidanceCheck
 
 // US1 (FR-001/002/003, SC-007): skill-id resolution guard.
 // Build the advertised-id set from the single-line `-> <id>` mappings in the

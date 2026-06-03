@@ -24,9 +24,15 @@ Rules:
   `readiness/after-baseline-repro.md`.
 - **FR-005:** a dimension whose after-value does not reach the plan's literal target carries a
   **written rationale**, never a padded or omitted number. Known rationale rows:
-  - **Governance Markdown (rules)** — the plan's ~23,000-line / 21:1 figure was an over-estimate;
-    feature 046 established the corrected rule/guidance baseline at **≈6,882 lines**. The row states
-    the correction explicitly and measures the after-delta against the corrected figure.
+  - **Governance Markdown (rules)** — the plan's original over-estimate (~23,000-line / 21:1) was
+    just that; feature 046 established the corrected rule/guidance baseline at **≈6,882 lines**. The
+    row states the correction explicitly and measures the after-delta against the corrected figure.
+    **Feature 055 restatement (FR-008):** the literal "low hundreds" target is **retired as the live
+    target** — it was anchored to the discredited over-estimate. Feature 055 decoupled author-guidance
+    prose from the generation-currency anchors (the literal-substring table no longer freezes prose),
+    so the corpus *can* now shrink; tracking is against the corrected **≈6,882** baseline and the
+    actual large-scale prose reduction is a **bounded follow-up**, not a number chased against a figure
+    everyone agrees was wrong.
   - **Framework-author process** — the ~12–14 h/feature figure is an author **estimate** (no timing
     harness; same Stage-0 exemption). The target-met judgement rests on the *mechanism* (the
     `inner-loop` light tier is now the `Route` default), with the hour delta cross-referenced to
