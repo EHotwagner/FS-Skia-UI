@@ -66,20 +66,22 @@ module Scans =
         let lo = lower featureText
         markers |> List.exists (fun m -> lo.Contains m)
 
+    // Feature 062 (FR-005): the window-visibility evidence-format schema text
+    // (required key=value keys per file + the `diagnostic-class` value set),
+    // single-sourced from EvidenceFormatSchema so the printed diagnostic cannot
+    // drift from the keys/classes this scan enforces. Printed on a failing
+    // window-visibility class so the shape is recoverable without decompiling.
+    let windowVisibilitySchemaText () : string =
+        EvidenceFormatSchema.renderClass WindowVisibility
+
     // --- readiness-contract -------------------------------------------------
 
     let readinessContract (input: ScanInput) : ScanResult =
         let files = fileMap input
-        let checks =
-            [ "governance-risk-levels.md",
-              [ "small"; "medium"; "broad"; "required evidence"; "broad validation" ],
-              "governance risk level evidence is incomplete"
-              "aggregate-hang-diagnostics.md",
-              [ "verdict"; "stage"; "elapsed duration"; "last observed command"; "focused rerun"; "non-authoritative aggregate" ],
-              "aggregate timeout verdict evidence is incomplete"
-              "runtime-limitations.md",
-              [ ".NET 10 desktop"; "Vulkan"; "SkiaSharp preview"; "unsupported macOS/mobile/browser"; "no software-renderer fallback" ],
-              "runtime limitation evidence is incomplete" ]
+        // Feature 062 (FR-005, D5): the enforced (file, tokens, reason) list is
+        // single-sourced in EvidenceFormatSchema so the printed diagnostic and the
+        // generated evidence-formats.md reference cannot drift from this scan.
+        let checks = EvidenceFormatSchema.readinessContractChecks
         let hits =
             [ for (fileName, terms, reason) in checks do
                   if not (exists files fileName) then
@@ -290,9 +292,9 @@ module Scans =
 
             let interactiveValues = parseKeyValues (readText files "interactive-visible-window.md")
             if exists files "interactive-visible-window.md" then
+                // Feature 062 (FR-005, D5): single-sourced in EvidenceFormatSchema.
                 let missing =
-                    missingKeys interactiveValues
-                        [ "status"; "mode"; "window-visible"; "accessible-window"; "first-frame-presented"; "self-closed-for-evidence" ]
+                    missingKeys interactiveValues EvidenceFormatSchema.interactiveVisibleWindowKeys
                 if not (List.isEmpty missing) then
                     hits.Add { ScanHit.basic (pathOf input "interactive-visible-window.md") "missing visible-window readiness fields" with Missing = Some missing }
                 let statusOk = [ "ok"; "pass"; "success" ] |> List.contains (lower (getv interactiveValues "status"))
@@ -317,7 +319,8 @@ module Scans =
             let diagnosticsLower = lower diagnosticsText
             let diagnosticsValues = parseKeyValues diagnosticsText
             if exists files "window-state-diagnostics.md" then
-                let requiredClasses = [ "environment-session"; "window-visibility"; "app-lifecycle"; "product-defect" ]
+                // Feature 062 (FR-005, D5): single-sourced in EvidenceFormatSchema.
+                let requiredClasses = EvidenceFormatSchema.windowDiagnosticClasses
                 let missingClasses =
                     requiredClasses
                     |> List.filter (fun cls ->

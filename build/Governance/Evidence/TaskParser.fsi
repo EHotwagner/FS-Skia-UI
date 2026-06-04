@@ -82,6 +82,12 @@ module TaskParser =
     /// (the propagation/audit exclusion). Mirrors `is_accepted_seh`.
     val isAcceptedSeh: TaskRecord -> bool
 
+    /// FR-005 (062): the SEH-acceptance evidence-format schema text, single-sourced
+    /// from EvidenceFormatSchema (tokens `accepted-seh`,
+    /// `synthetic-error-handling-approved`, no backticks). Printed on a failing SEH
+    /// class so the shape is recoverable without decompiling.
+    val sehAcceptanceSchemaText: unit -> string
+
     /// Parse tasks.md text into records + errors (pure). Phase-checkpoint edges
     /// are injected into each record's `PhaseDeps`; Synthetic-Evidence Inventory
     /// rows and SEH diagnostics are merged. FR-001.

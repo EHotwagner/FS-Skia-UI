@@ -56,10 +56,33 @@ printfn "user model = %d" next.UserModel
 
 Every arcade demo (Asteroids, Breakout, …) re-derives the same deterministic
 `update`-side primitives. Capture them as canonical MVU conventions here rather
-than re-implementing them per game. These are **documented conventions, not
-shipped `FS.Skia.UI` API** (feature 061 D8 / the arcade-helper triage); each is a
-pure function of the model, so it lives inside `update`, never in the
-interpreter. The documented convention is the spec if a later feature ships them.
+than re-implementing them per game. Each is a pure function of the model, so it
+lives inside `update`, never in the interpreter.
+
+**Shipped helper: deterministic seeded RNG (`FS.Skia.UI.SkillSupport.Random`).**
+As of feature 062 (FR-010), the thrice-re-implemented seeded RNG is **shipped real
+API** — use it instead of ambient `System.Random` so your `update` stays pure and
+replayable. Thread the opaque `RngState` through your `Model`:
+
+```fsharp
+open FS.Skia.UI.SkillSupport
+
+// in init: seed once (same seed ⇒ identical replayable stream on any platform)
+let model0 = { model with Rng = Random.seedRng 42UL }
+
+// in update: thread the state — no ambient System.Random, no wall-clock
+let spawnColumn, rng' = Random.nextBelow boardColumns model.Rng
+{ model with Rng = rng' (* … place the entity at spawnColumn … *) }
+```
+
+`seedRng`/`nextRng`/`nextBelow` are pure `state -> (value, nextState)`; carrying
+`RngState` in the model keeps the whole simulation deterministic and replayable
+(a prerequisite for deterministic-replay evidence).
+
+The three loop primitives below remain **documented conventions, not shipped
+`FS.Skia.UI` API** (feature 062 D10/D11 defer them with rationale — not yet at the
+3-demo recurrence bar); each documented convention is the spec if a later feature
+ships it.
 
 1. **Fixed-step accumulator (deterministic `step` driver).** Decouple simulation
    from frame cadence: accumulate real elapsed time and advance the simulation in

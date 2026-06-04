@@ -65,6 +65,8 @@
          generalizing the ConstitutionFragments splice to arbitrary keyed blocks. No .fsi
          (build front-end convention for new internal modules; plan §`.fsi` impact). -->
     <Compile Include="GovernedBlocks.fs" />
+    <Compile Include="Evidence/EvidenceFormatSchema.fsi" />
+    <Compile Include="Evidence/EvidenceFormatSchema.fs" />
     <Compile Include="Evidence/TaskParser.fsi" />
     <Compile Include="Evidence/TaskParser.fs" />
     <Compile Include="Evidence/DepsParser.fsi" />
@@ -85,6 +87,14 @@
     <Compile Include="Evidence/Render.fs" />
     <Compile Include="Evidence/Engine.fsi" />
     <Compile Include="Evidence/Engine.fs" />
+    <!-- Feature 062 (FR-006): single-source generator for docs/skillist-reference.md
+         from the live SkillRegistry + Audit.ownsVocabulary (currency in TargetMetadataDrift). -->
+    <Compile Include="SkillistReference.fsi" />
+    <Compile Include="SkillistReference.fs" />
+    <!-- Feature 062 (FR-008): mechanical cross-artifact symbol set-difference helper
+         (diagnostics/guidance for speckit-analyze pass G, not a hard gate). -->
+    <Compile Include="SymbolCrossCheck.fsi" />
+    <Compile Include="SymbolCrossCheck.fs" />
     <!-- Feature 045: the build front-end relocated out of build.fsx into the compiled
          library. Helper modules first (BCL/regex only), then the value types, the MEL
          engine (Model/Update/Interpret), and the relocated heavy validators. -->

@@ -189,6 +189,9 @@ type BuildEffect =
     // RefreshSurfaceBaselines refresh, plus the two anti-drift scans (FR-004 / FR-009).
     // Catalog/skill/packable-set reads + emitted-tree writes live at the interpret edge.
     | RegenerateApiSurface
+    // Feature 062 (FR-006): regenerate docs/skillist-reference.md from the live
+    // SkillRegistry + Audit.ownsVocabulary (registry build + write at the edge).
+    | RegenerateSkillistReference
     | SkillContractPathScan
     | TemplateUpdatePackageScan
 

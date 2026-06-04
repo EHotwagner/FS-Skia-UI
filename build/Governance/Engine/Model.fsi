@@ -98,6 +98,8 @@ type BuildEffect =
     // Feature 060: api-surface regeneration (FR-003) + anti-drift scans (FR-004 / FR-009);
     // re-derived in interpret, so no payload.
     | RegenerateApiSurface
+    // Feature 062 (FR-006): regenerate docs/skillist-reference.md.
+    | RegenerateSkillistReference
     | SkillContractPathScan
     | TemplateUpdatePackageScan
 

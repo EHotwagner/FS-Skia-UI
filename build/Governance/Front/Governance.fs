@@ -197,6 +197,17 @@ let regenerateApiSurface (model: BuildModel) =
             if Directory.Exists dir && Seq.isEmpty (Directory.EnumerateFileSystemEntries dir) then
                 Directory.Delete dir
 
+// Feature 062 (FR-006) — regenerate docs/skillist-reference.md from the live
+// SkillRegistry + the closed owns vocabulary. The registry build + file write are
+// the I/O edge; the render is pure (currency in TargetMetadataDrift).
+let regenerateSkillistReference (model: BuildModel) =
+    let registry = FS.Skia.UI.Build.Evidence.SkillRegistry.build model.RepositoryRoot
+    let doc =
+        FS.Skia.UI.Build.SkillistReference.render registry FS.Skia.UI.Build.Evidence.Audit.ownsVocabulary
+    let full = repoRelPath model.RepositoryRoot FS.Skia.UI.Build.SkillistReference.referenceDocPath
+    ensureParent full
+    File.WriteAllText(full, doc)
+
 // Feature 060 (FR-004) — SkillContractPathCheck. Every capability/product skill that names
 // a `docs/api-surface/...fsi` contract source must name a path the emitted tree actually
 // provides; a "no DLL reflection needed" claim against an absent path is a hard failure.
@@ -661,6 +672,26 @@ let runEvidenceAuditCheck root (model: BuildModel) =
         let log =
             if readinessDiagnostics = "" then log
             else log + "\n--- readiness-contract required shapes (FR-004) ---\n" + readinessDiagnostics
+        // FR-005 (062): for each OTHER failing evidence-format class, append the
+        // complete required shape (single-sourced from EvidenceFormatSchema) so the
+        // contract is recoverable from the audit's own output — no decompiling, no
+        // sibling copy. window-visibility prints when it blocks; SEH prints when an
+        // unaccepted-synthetic or invalid-SEH diagnostic is present.
+        let log =
+            if res.WindowVisibility > 0 then
+                log
+                + "\n--- window-visibility required shapes (FR-005) ---\n"
+                + FS.Skia.UI.Build.Evidence.Scans.windowVisibilitySchemaText ()
+            else
+                log
+        let log =
+            if not (List.isEmpty res.SehSummary.UnacceptedSyntheticTasks)
+               || not (List.isEmpty res.SehSummary.Diagnostics) then
+                log
+                + "\n--- seh-acceptance required shapes (FR-005) ---\n"
+                + FS.Skia.UI.Build.Evidence.TaskParser.sehAcceptanceSchemaText ()
+            else
+                log
         evidenceWrite (path [ model.LogDir; "evidence-audit.txt" ]) log
         match res.Verdict with
         | FS.Skia.UI.Build.Evidence.AuditVerdict.Fail ->

@@ -97,77 +97,77 @@ graph TD
   T036["T036 Run the full sequential FAKE validation order (`De"]:::done
   T037["T037 Run `speckit.evidence.graph` — confirm no cycles, "]:::done
   T038["T038 Run `speckit.evidence.audit` — confirm verdict PAS"]:::done
-  T002 --> T003
-  T002 --> T004
-  T002 --> T005
-  T002 --> T006
-  T002 --> T007
-  T007 --> T008
+  T002 -. injected .-> T003
+  T002 -. injected .-> T004
+  T002 -. injected .-> T005
+  T002 -. injected .-> T006
+  T002 -. injected .-> T007
+  T007 -. injected .-> T008
   T008 --> T009
-  T007 --> T009
+  T007 -. injected .-> T009
   T009 --> T010
-  T007 --> T010
-  T007 --> T011
+  T007 -. injected .-> T010
+  T007 -. injected .-> T011
   T009 --> T012
   T010 --> T012
   T011 --> T012
-  T007 --> T012
-  T012 --> T013
+  T007 -. injected .-> T012
+  T012 -. injected .-> T013
   T013 --> T014
-  T012 --> T014
+  T012 -. injected .-> T014
   T014 --> T015
-  T012 --> T015
+  T012 -. injected .-> T015
   T014 --> T016
   T015 --> T016
-  T012 --> T016
-  T016 --> T017
+  T012 -. injected .-> T016
+  T016 -. injected .-> T017
   T017 --> T018
-  T016 --> T018
+  T016 -. injected .-> T018
   T018 --> T019
-  T016 --> T019
+  T016 -. injected .-> T019
   T018 --> T020
-  T016 --> T020
+  T016 -. injected .-> T020
   T018 --> T021
   T019 --> T021
   T020 --> T021
-  T016 --> T021
-  T021 --> T022
+  T016 -. injected .-> T021
+  T021 -. injected .-> T022
   T022 --> T023
-  T021 --> T023
+  T021 -. injected .-> T023
   T022 --> T024
-  T021 --> T024
+  T021 -. injected .-> T024
   T023 --> T025
   T024 --> T025
-  T021 --> T025
-  T025 --> T026
+  T021 -. injected .-> T025
+  T025 -. injected .-> T026
   T026 --> T027
-  T025 --> T027
+  T025 -. injected .-> T027
   T027 --> T028
-  T025 --> T028
-  T028 --> T029
+  T025 -. injected .-> T028
+  T028 -. injected .-> T029
   T029 --> T030
-  T028 --> T030
+  T028 -. injected .-> T030
   T030 --> T031
-  T028 --> T031
+  T028 -. injected .-> T031
   T030 --> T032
   T031 --> T032
-  T028 --> T032
-  T032 --> T033
+  T028 -. injected .-> T032
+  T032 -. injected .-> T033
   T033 --> T034
-  T032 --> T034
+  T032 -. injected .-> T034
   T034 --> T035
-  T032 --> T035
+  T032 -. injected .-> T035
   T012 --> T036
   T016 --> T036
   T021 --> T036
   T025 --> T036
   T028 --> T036
   T032 --> T036
-  T035 --> T036
+  T035 -. injected .-> T036
   T036 --> T037
-  T035 --> T037
+  T035 -. injected .-> T037
   T037 --> T038
-  T035 --> T038
+  T035 -. injected .-> T038
   classDef pending fill:#eeeeee,stroke:#999
   classDef done fill:#c8e6c9,stroke:#2e7d32
   classDef synthetic fill:#ffe0b2,stroke:#e65100,stroke-width:2px
@@ -218,4 +218,47 @@ T036 [X] Run the full sequential FAKE validation order (`Dev` → `GeneratedGuid
 T037 [X] Run `speckit.evidence.graph` — confirm no cycles, no dangling refs, no `[S*]` surprises, and that the resolved feature id and real task count are echoed
 T038 [X] Run `speckit.evidence.audit` — confirm verdict PASS or document every `--accept-synthetic` override
 ```
+
+## Injected checkpoint edges (Phase N+1 → Phase N) — FR-007
+
+- T002 → T003  (auto-injected Phase-checkpoint edge)
+- T002 → T004  (auto-injected Phase-checkpoint edge)
+- T002 → T005  (auto-injected Phase-checkpoint edge)
+- T002 → T006  (auto-injected Phase-checkpoint edge)
+- T002 → T007  (auto-injected Phase-checkpoint edge)
+- T007 → T008  (auto-injected Phase-checkpoint edge)
+- T007 → T009  (auto-injected Phase-checkpoint edge)
+- T007 → T010  (auto-injected Phase-checkpoint edge)
+- T007 → T011  (auto-injected Phase-checkpoint edge)
+- T007 → T012  (auto-injected Phase-checkpoint edge)
+- T012 → T013  (auto-injected Phase-checkpoint edge)
+- T012 → T014  (auto-injected Phase-checkpoint edge)
+- T012 → T015  (auto-injected Phase-checkpoint edge)
+- T012 → T016  (auto-injected Phase-checkpoint edge)
+- T016 → T017  (auto-injected Phase-checkpoint edge)
+- T016 → T018  (auto-injected Phase-checkpoint edge)
+- T016 → T019  (auto-injected Phase-checkpoint edge)
+- T016 → T020  (auto-injected Phase-checkpoint edge)
+- T016 → T021  (auto-injected Phase-checkpoint edge)
+- T021 → T022  (auto-injected Phase-checkpoint edge)
+- T021 → T023  (auto-injected Phase-checkpoint edge)
+- T021 → T024  (auto-injected Phase-checkpoint edge)
+- T021 → T025  (auto-injected Phase-checkpoint edge)
+- T025 → T026  (auto-injected Phase-checkpoint edge)
+- T025 → T027  (auto-injected Phase-checkpoint edge)
+- T025 → T028  (auto-injected Phase-checkpoint edge)
+- T028 → T029  (auto-injected Phase-checkpoint edge)
+- T028 → T030  (auto-injected Phase-checkpoint edge)
+- T028 → T031  (auto-injected Phase-checkpoint edge)
+- T028 → T032  (auto-injected Phase-checkpoint edge)
+- T032 → T033  (auto-injected Phase-checkpoint edge)
+- T032 → T034  (auto-injected Phase-checkpoint edge)
+- T032 → T035  (auto-injected Phase-checkpoint edge)
+- T035 → T036  (auto-injected Phase-checkpoint edge)
+- T035 → T037  (auto-injected Phase-checkpoint edge)
+- T035 → T038  (auto-injected Phase-checkpoint edge)
+
+## Resolved skillist ids — FR-007
+
+Resolved skillist-id set (8): fs-skia-elmish, fs-skia-keyboard-input, fs-skia-layout-readability, fs-skia-scene, fs-skia-skiaviewer, fs-skia-template-update, speckit-evidence-audit, speckit-evidence-graph
 

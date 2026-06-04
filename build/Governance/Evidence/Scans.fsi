@@ -29,3 +29,8 @@ module Scans =
 
     /// window-visibility readiness scan — gated by its feature markers.
     val windowVisibility: ScanInput -> ScanResult
+
+    /// FR-005 (062): the window-visibility evidence-format schema text
+    /// (per-file required keys + the `diagnostic-class` value set), single-sourced
+    /// from EvidenceFormatSchema. Printed on a failing window-visibility class.
+    val windowVisibilitySchemaText: unit -> string

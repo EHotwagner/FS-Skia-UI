@@ -81,60 +81,60 @@ graph TD
   T028["T028 Run the full sequential FAKE validation order (`De"]:::done
   T029["T029 Run `speckit.evidence.graph` — confirm no cycles, "]:::done
   T030["T030 Run `speckit.evidence.audit` — confirm verdict PAS"]:::done
-  T002 --> T003
-  T002 --> T004
-  T002 --> T005
-  T002 --> T006
-  T006 --> T007
+  T002 -. injected .-> T003
+  T002 -. injected .-> T004
+  T002 -. injected .-> T005
+  T002 -. injected .-> T006
+  T006 -. injected .-> T007
   T007 --> T008
-  T006 --> T008
+  T006 -. injected .-> T008
   T008 --> T009
-  T006 --> T009
-  T006 --> T010
+  T006 -. injected .-> T009
+  T006 -. injected .-> T010
   T008 --> T011
   T009 --> T011
   T010 --> T011
-  T006 --> T011
-  T011 --> T012
+  T006 -. injected .-> T011
+  T011 -. injected .-> T012
   T012 --> T013
   T014 --> T013
-  T011 --> T013
+  T011 -. injected .-> T013
   T012 --> T014
-  T011 --> T014
+  T011 -. injected .-> T014
   T014 --> T015
-  T011 --> T015
+  T011 -. injected .-> T015
   T013 --> T016
   T014 --> T016
-  T011 --> T016
-  T016 --> T017
+  T011 -. injected .-> T016
+  T016 -. injected .-> T017
   T017 --> T018
-  T016 --> T018
-  T016 --> T019
+  T016 -. injected .-> T018
+  T016 -. injected .-> T019
   T018 --> T020
-  T016 --> T020
+  T016 -. injected .-> T020
   T018 --> T021
-  T016 --> T021
+  T016 -. injected .-> T021
   T018 --> T022
   T020 --> T022
-  T016 --> T022
-  T022 --> T023
+  T016 -. injected .-> T022
+  T022 -. injected .-> T023
   T023 --> T024
-  T022 --> T024
+  T022 -. injected .-> T024
   T024 --> T025
-  T022 --> T025
+  T022 -. injected .-> T025
   T024 --> T026
-  T022 --> T026
+  T022 -. injected .-> T026
   T025 --> T027
   T026 --> T027
-  T022 --> T027
+  T022 -. injected .-> T027
   T011 --> T028
   T016 --> T028
   T022 --> T028
   T027 --> T028
   T028 --> T029
-  T027 --> T029
+  T027 -. injected .-> T029
   T029 --> T030
-  T027 --> T030
+  T027 -. injected .-> T030
   classDef pending fill:#eeeeee,stroke:#999
   classDef done fill:#c8e6c9,stroke:#2e7d32
   classDef synthetic fill:#ffe0b2,stroke:#e65100,stroke-width:2px
@@ -177,4 +177,38 @@ T028 [X] Run the full sequential FAKE validation order (`Dev` → `GeneratedGuid
 T029 [X] Run `speckit.evidence.graph` — confirm no cycles, no dangling refs, no `[S*]` surprises, and that the resolved feature id and real task count are echoed
 T030 [X] Run `speckit.evidence.audit` — confirm verdict PASS (no false blocks on the prose fixture; the genuine-violation fixture still blocks) or document every `--accept-synthetic` override
 ```
+
+## Injected checkpoint edges (Phase N+1 → Phase N) — FR-007
+
+- T002 → T003  (auto-injected Phase-checkpoint edge)
+- T002 → T004  (auto-injected Phase-checkpoint edge)
+- T002 → T005  (auto-injected Phase-checkpoint edge)
+- T002 → T006  (auto-injected Phase-checkpoint edge)
+- T006 → T007  (auto-injected Phase-checkpoint edge)
+- T006 → T008  (auto-injected Phase-checkpoint edge)
+- T006 → T009  (auto-injected Phase-checkpoint edge)
+- T006 → T010  (auto-injected Phase-checkpoint edge)
+- T006 → T011  (auto-injected Phase-checkpoint edge)
+- T011 → T012  (auto-injected Phase-checkpoint edge)
+- T011 → T013  (auto-injected Phase-checkpoint edge)
+- T011 → T014  (auto-injected Phase-checkpoint edge)
+- T011 → T015  (auto-injected Phase-checkpoint edge)
+- T011 → T016  (auto-injected Phase-checkpoint edge)
+- T016 → T017  (auto-injected Phase-checkpoint edge)
+- T016 → T018  (auto-injected Phase-checkpoint edge)
+- T016 → T019  (auto-injected Phase-checkpoint edge)
+- T016 → T020  (auto-injected Phase-checkpoint edge)
+- T016 → T021  (auto-injected Phase-checkpoint edge)
+- T016 → T022  (auto-injected Phase-checkpoint edge)
+- T022 → T023  (auto-injected Phase-checkpoint edge)
+- T022 → T024  (auto-injected Phase-checkpoint edge)
+- T022 → T025  (auto-injected Phase-checkpoint edge)
+- T022 → T026  (auto-injected Phase-checkpoint edge)
+- T022 → T027  (auto-injected Phase-checkpoint edge)
+- T027 → T029  (auto-injected Phase-checkpoint edge)
+- T027 → T030  (auto-injected Phase-checkpoint edge)
+
+## Resolved skillist ids — FR-007
+
+Resolved skillist-id set (6): fs-skia-layout-readability, fs-skia-scene, fs-skia-template-update, fs-skia-ui-widgets, speckit-evidence-audit, speckit-evidence-graph
 

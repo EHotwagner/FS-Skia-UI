@@ -1,0 +1,94 @@
+# FSI session (T006) — exercising the drafted FR-010 .fsi shapes before the .fs bodies
+# Command: dotnet fsi /tmp/si062-fsi-sketch.fsx (sketch inlines the algorithm; real .fs = T040/T041)
+# Date: 2026-06-04
+
+=== script ===
+// FSI sketch of the FR-010 SkillSupport.Random / .Hud .fsi shapes (T006).
+// Sketches the algorithm inline to exercise the drafted .fsi contract BEFORE the
+// real .fs bodies are implemented (Principle I). The shipped .fs (T040/T041) is
+// implemented after the failing-first tests (T038/T039).
+
+// --- Random (splitmix64 seed -> xorshift64 stream), pure threading ---
+type RngState = { State: uint64 }
+
+let seedRng (seed: uint64) : RngState =
+    // splitmix64 step to expand the seed; force non-zero (xorshift64 fixed point).
+    let mutable z = seed + 0x9E3779B97F4A7C15UL
+    z <- (z ^^^ (z >>> 30)) * 0xBF58476D1CE4E5B9UL
+    z <- (z ^^^ (z >>> 27)) * 0x94D049BB133111EBUL
+    z <- z ^^^ (z >>> 31)
+    { State = if z = 0UL then 0x9E3779B97F4A7C15UL else z }
+
+let nextRng (s: RngState) : uint64 * RngState =
+    let mutable x = s.State
+    x <- x ^^^ (x <<< 13)
+    x <- x ^^^ (x >>> 7)
+    x <- x ^^^ (x <<< 17)
+    x, { State = x }
+
+let nextBelow (n: int) (s: RngState) : int * RngState =
+    if n <= 0 then invalidArg "n" "n must be > 0"
+    let v, s' = nextRng s
+    int (v % uint64 n), s'
+
+// --- Hud.reserveHudBand (plain floats) ---
+type BandEdge = Top | Bottom
+type Band = { Offset: float; Size: float }
+type HudLayout = { HudBand: Band; Gameplay: Band }
+
+let reserveHudBand (surface: float) (bandSize: float) (edge: BandEdge) : HudLayout =
+    let hud = max 0.0 (min bandSize surface)
+    let gameplay = surface - hud
+    match edge with
+    | Top ->
+        { HudBand = { Offset = 0.0; Size = hud }
+          Gameplay = { Offset = hud; Size = gameplay } }
+    | Bottom ->
+        { HudBand = { Offset = gameplay; Size = hud }
+          Gameplay = { Offset = 0.0; Size = gameplay } }
+
+// --- Exercise: determinism / replay equality ---
+let s0 = seedRng 42UL
+let v1, s1 = nextRng s0
+let v2, _ = nextRng s1
+let v1', s1' = nextRng (seedRng 42UL)
+printfn "replay-equality v1=v1': %b (%d = %d)" (v1 = v1') v1 v1'
+printfn "stream advances: v1<>v2: %b (%d, %d)" (v1 <> v2) v1 v2
+
+// nextBelow bounds in [0, n)
+let mutable st = seedRng 7UL
+let mutable allInRange = true
+for _ in 1..1000 do
+    let r, st' = nextBelow 6 st
+    if r < 0 || r >= 6 then allInRange <- false
+    st <- st'
+printfn "nextBelow 6 always in [0,6): %b" allInRange
+
+// seed 0 yields a non-zero, usable stream (splitmix64 expansion)
+let z0, _ = nextRng (seedRng 0UL)
+printfn "seed 0 non-degenerate: %b (%d)" (z0 <> 0UL) z0
+
+// --- Exercise: reserveHudBand clamp/partition ---
+let layout = reserveHudBand 600.0 48.0 Top
+printfn "Top: HudBand.Size=%.1f Gameplay.Size=%.1f Gameplay.Offset=%.1f"
+    layout.HudBand.Size layout.Gameplay.Size layout.Gameplay.Offset
+printfn "partition sums to surface: %b" (layout.HudBand.Size + layout.Gameplay.Size = 600.0)
+
+let bottom = reserveHudBand 600.0 48.0 Bottom
+printfn "Bottom: HudBand.Offset=%.1f HudBand.Size=%.1f Gameplay.Offset=%.1f Gameplay.Size=%.1f"
+    bottom.HudBand.Offset bottom.HudBand.Size bottom.Gameplay.Offset bottom.Gameplay.Size
+
+// clamp: bandSize > surface
+let clamped = reserveHudBand 40.0 100.0 Top
+printfn "clamp HudBand.Size=min(100,40)=%.1f, Gameplay.Size=%.1f>=0: %b"
+    clamped.HudBand.Size clamped.Gameplay.Size (clamped.Gameplay.Size >= 0.0)
+
+=== output ===
+replay-equality v1=v1': true (18108192690585582856 = 18108192690585582856)
+stream advances: v1<>v2: true (18108192690585582856, 6830302529404445810)
+nextBelow 6 always in [0,6): true
+seed 0 non-degenerate: true (7377219508542733812)
+Top: HudBand.Size=48.0 Gameplay.Size=552.0 Gameplay.Offset=48.0
+partition sums to surface: true
+Bottom: HudBand.Offset=552.0 HudBand.Size=48.0 Gameplay.Offset=0.0 Gameplay.Size=552.0
+clamp HudBand.Size=min(100,40)=40.0, Gameplay.Size=0.0>=0: true

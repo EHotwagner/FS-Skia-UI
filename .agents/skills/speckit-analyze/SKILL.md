@@ -153,6 +153,28 @@ Focus on high-signal findings. Limit to 50 findings total; aggregate remainder i
 - Task ordering contradictions (e.g., integration tasks before foundational setup tasks without dependency note)
 - Conflicting requirements (e.g., one requires Next.js while other specifies Vue)
 
+#### G. Cross-Artifact Symbol Consistency (mechanical, FR-008)
+
+Run the **compiled, deterministic** symbol set-difference (the `SymbolCrossCheck`
+helper in `FS.Skia.UI.Build`) over `plan.md`, `data-model.md`, and `tasks.md`, and
+fold its findings into this report — do **not** eyeball it. The helper extracts
+named symbols by kind — `Msg` cases, union/`Screen` variants, entity record names
+(backtick-quoted PascalCase tokens on lines naming the kind), and `FR-`/`SC-` IDs —
+and reports each symbol whose presence set is a **proper subset** of the three
+artifacts (present in some, missing from others). It renders as:
+
+```
+## Symbol consistency (analyze pass G)
+- msg-case ViewerKeyEventReceived — in {data-model, tasks}, missing from {plan}
+- sc-id SC-009 — in {plan}, missing from {data-model, tasks}
+```
+
+Treatment: report set-differences as findings at the appropriate severity for
+human judgment. A symbol present **only in design** (e.g. a start-state in
+`data-model.md` with no matching spec FR) is flagged `[design-only? human
+judgment]` and is **never hard-failed** — design-ahead-of-spec is a legitimate
+edge case (the cross-check is guidance, not a gate).
+
 ### 5. Severity Assignment
 
 Use this heuristic to prioritize findings:
@@ -210,6 +232,15 @@ After reporting, discover hooks across **all** extension files (multi-file disco
 - Read `.specify/extensions.yml` from the project root (if present) and collect entries under the `hooks.after_analyze` key.
 - Then enumerate every `.specify/extensions/*/*.yml` file in sorted order, parse each, and collect its `hooks.after_analyze` entries too — so a hook registered only in a per-extension file (e.g. the `feedback` extension at `.specify/extensions/feedback/feedback.yml`) is still discovered and runs on phase completion.
 - Merge all collected entries and dedupe by `(extension, command)` (first occurrence wins, so a hook declared in both files runs once).
+- **Hook execution precedence** (D1): when `settings.auto_execute_hooks: true` in `.specify/extensions.yml`, a **mandatory** hook (`optional: false`) **auto-runs** with no confirmation; an **optional** hook (`optional: true`) is **always surfaced** ("To execute: `/{command}`") and is **never force-run** by `auto_execute_hooks`; a hook with a non-empty `condition` is **never** evaluated by this skill — evaluation is left to the executor and the notice reports the resolved decision. When `auto_execute_hooks: false`, even mandatory hooks are surfaced for confirmation.
+- **Effective-hooks notice** (D2): after the merge + dedup by `(extension, command)`, emit **one** consolidated notice for the phase so the operator never hand-reconciles files — the promoted feedback hook (`optional: false`) appears as `auto-run`, never as a surfaced optional:
+  ```
+  ## Effective hooks for analyze
+  - {extension}:{command} — auto-run        (mandatory; auto_execute_hooks=true)
+  - {extension}:{command} — surfaced        (optional)
+  - {extension}:{command} — skipped         (enabled: false)
+  - {extension}:{command} — condition-deferred
+  ```
 - If a file is absent, no hooks are registered, or its YAML cannot be parsed/is invalid, skip that file silently and continue.
 - For every `optional: true` hook that is discovered but not executed this phase, emit one line so the skip is a visible decision: `Note: optional hook {extension}:{command} is registered but was not run (skipped).`
 - Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled by default.

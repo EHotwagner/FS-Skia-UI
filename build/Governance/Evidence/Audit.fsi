@@ -39,6 +39,11 @@ type AuditResult =
 
 module Audit =
 
+    /// FR-006 (062): the closed `owns:` vocabulary — each value paired with the
+    /// skill it implies. Exposed so the generated docs/skillist-reference.md
+    /// single-sources the same table this module enforces.
+    val ownsVocabulary: (string * string) list
+
     /// Cross-file consistency + skill merge + assessments (FR-006). Pure.
     /// Feature 059 (FR-010): the title-trigger capability matcher is removed;
     /// evidence ownership is read from each task's `owns:` field (closed
@@ -55,6 +60,12 @@ module Audit =
         resolvedExists: (string -> bool) ->
         canonicalize: (string -> string) ->
             string list
+
+    /// FR-005 (062): the skill-loading-evidence evidence-format schema text (the
+    /// 8-column row, the `loaded_at < work_started_at` ordering rule, and the
+    /// resolved `.agents/skills/<id>/SKILL.md` path), single-sourced from
+    /// EvidenceFormatSchema. Printed when a skill-loading-evidence error is present.
+    val skillLoadingEvidenceSchemaText: unit -> string
 
     /// SEH classification summary over the resolved tasks (FR-008).
     val sehSummary: ResolvedTask list -> SehSummary

@@ -42,7 +42,10 @@ module Audit =
     // a required skill that MUST appear in that task's declared skillist. The
     // vocabulary is a closed set — unknown values are a directive error.
 
-    let private ownsVocabulary : (string * string) list =
+    // Feature 062 (FR-006): exposed (was private) so the generated
+    // docs/skillist-reference.md single-sources the closed owns:→implied-skill
+    // table from this same enforcing list (it cannot drift).
+    let ownsVocabulary : (string * string) list =
         [ "graph-validation", "speckit-evidence-graph"
           "evidence-audit", "speckit-evidence-audit"
           "task-generation", "speckit-tasks"
@@ -341,6 +344,16 @@ module Audit =
             | None -> ()
 
         List.ofSeq errors
+
+    // Feature 062 (FR-005): the skill-loading-evidence evidence-format schema text
+    // (the 8-column row, the `loaded_at < work_started_at` ordering rule, and the
+    // resolved `.agents/skills/<id>/SKILL.md` path), single-sourced from
+    // EvidenceFormatSchema so the printed diagnostic cannot drift from the row
+    // shape `validateSkillLoadingEvidence` enforces above. Printed when a
+    // skill-loading-evidence error is present so the shape is recoverable without
+    // decompiling FS.Skia.UI.Build.dll or copying a sibling project.
+    let skillLoadingEvidenceSchemaText () : string =
+        EvidenceFormatSchema.renderClass SkillLoadingEvidence
 
     // --- SEH summary + verdict ---------------------------------------------
 

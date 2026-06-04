@@ -53,6 +53,20 @@ match Viewer.runUntilFirstFrame options scene with
 | Error failure -> printfn "blocked: %A" failure.BlockedStage
 ```
 
+## Common pitfalls
+
+- **`Result.Ok`/`Result.Error` shadowed by `ViewerDiagnosticLevel`.** `open
+  FS.Skia.UI.SkiaViewer` brings `ViewerDiagnosticLevel.Error` (and its peers
+  `Warning`/`Info`/`Debug`/`Trace`) into scope, so a **bare** `Ok`/`Error` in a
+  match or constructor can bind to the union case instead of the `Result` case —
+  e.g. `Error msg` resolves ambiguously and a bare `| Error -> …` arm silently
+  matches the diagnostic level, not a failed `Result`. **Remedy:** qualify as
+  `Result.Ok` / `Result.Error` when you mean the result type. This is the same
+  co-opened-DU collision documented for `Unknown` in the
+  [[fs-skia-keyboard-input]] "Common pitfalls" (where `ViewerKey.Unknown` and
+  `ViewerRunBlockedStage.Unknown` collide) — qualify the case when two opened
+  modules export the same name.
+
 ## Persistent problems
 
 When a problem outlasts reasonable in-repo attempts, extensive external research is

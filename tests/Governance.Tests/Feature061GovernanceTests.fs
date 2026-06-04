@@ -103,10 +103,18 @@ let feature061GovernanceTests =
         }
 
         // --- FR-005 (DC-1/DC-2): single defect-class spelling ---------------
+        // Feature 062 (FR-005, D5) single-sourced the window-visibility diagnostic
+        // classes into EvidenceFormatSchema.windowDiagnosticClasses, which Scans.fs now
+        // references; the canonical `product-defect` spelling lives there. Re-pointed to
+        // the new single source — the assertion (one spelling, no project-prefixed
+        // variant) is unchanged.
         test "FR-005 the readiness scan requires one defect-class spelling: product-defect" {
+            let schema = read "build/Governance/Evidence/EvidenceFormatSchema.fs"
+            Expect.stringContains schema "product-defect" "audit requires product-defect"
+            Expect.isFalse (schema.Contains "-defect\"" && schema.Contains "breakoutdemo") "no project-prefixed <project>-defect literal"
+            // Scans.fs single-sources the class set from the schema (no divergent literal).
             let scans = read "build/Governance/Evidence/Scans.fs"
-            Expect.stringContains scans "product-defect" "audit requires product-defect"
-            Expect.isFalse (scans.Contains "-defect\"" && scans.Contains "breakoutdemo") "no project-prefixed <project>-defect literal"
+            Expect.stringContains scans "EvidenceFormatSchema.windowDiagnosticClasses" "Scans single-sources the diagnostic-class set"
         }
 
         // --- FR-006 (BD-3): Dev vs Test/Verify quickstart guidance ----------

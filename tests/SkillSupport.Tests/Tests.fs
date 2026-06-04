@@ -140,3 +140,80 @@ let shellProcessTests =
             Expect.isGreaterThan result.StdOut.Length 0 "the version is written to stdout"
         }
     ]
+
+// Feature 062 (FR-010, US6, SC-006): the two shipped arcade primitives. Exercised
+// through their public .fsi only (Principle I/VI). Designed failing-first: the FSI
+// sketch in readiness/fsi-session.txt exercised these shapes before the .fs bodies.
+
+[<Tests>]
+let randomTests =
+    testList "Random (FR-010 deterministic seeded RNG)" [
+        test "replay equality — same seed + same sequence ⇒ identical stream" {
+            let stream seed =
+                let mutable s = Random.seedRng seed
+                [ for _ in 1..8 ->
+                    let v, s' = Random.nextRng s
+                    s <- s'
+                    v ]
+            Expect.equal (stream 42UL) (stream 42UL) "same seed replays the identical value stream"
+        }
+
+        test "the stream advances (consecutive draws differ)" {
+            let s0 = Random.seedRng 1UL
+            let v1, s1 = Random.nextRng s0
+            let v2, _ = Random.nextRng s1
+            Expect.notEqual v1 v2 "consecutive xorshift64 words differ"
+        }
+
+        test "seed 0 is non-degenerate (splitmix64 avoids the all-zero fixed point)" {
+            let v, _ = Random.nextRng (Random.seedRng 0UL)
+            Expect.notEqual v 0UL "seed 0 still produces a non-zero stream word"
+        }
+
+        test "nextBelow n returns a value in [0, n) for n > 0 (many seeds, many draws)" {
+            let mutable allInRange = true
+            for seed in [ 0UL; 1UL; 42UL; 7UL; 9999UL; 0xDEADBEEFUL ] do
+                for n in [ 1; 2; 3; 6; 10; 52; 1000 ] do
+                    let mutable s = Random.seedRng seed
+                    for _ in 1..200 do
+                        let r, s' = Random.nextBelow n s
+                        if r < 0 || r >= n then allInRange <- false
+                        s <- s'
+            Expect.isTrue allInRange "every nextBelow n draw is in [0, n)"
+        }
+
+        test "nextBelow requires n > 0" {
+            Expect.throws (fun () -> Random.nextBelow 0 (Random.seedRng 1UL) |> ignore) "n = 0 is rejected"
+        }
+    ]
+
+[<Tests>]
+let hudTests =
+    testList "Hud (FR-010 reserveHudBand clamp/partition)" [
+        test "HudBand.Size = min bandSize surface; Gameplay.Size = surface - HudBand.Size >= 0" {
+            let l = Hud.reserveHudBand 600.0 48.0 Hud.Top
+            Expect.equal l.HudBand.Size 48.0 "band clamps to bandSize when it fits"
+            Expect.equal l.Gameplay.Size 552.0 "gameplay is the remainder"
+            Expect.isGreaterThanOrEqual l.Gameplay.Size 0.0 "gameplay is never negative"
+        }
+
+        test "a band larger than the surface clamps; gameplay is zero, never negative" {
+            let l = Hud.reserveHudBand 40.0 100.0 Hud.Top
+            Expect.equal l.HudBand.Size 40.0 "band clamps to the surface"
+            Expect.equal l.Gameplay.Size 0.0 "gameplay clamps to zero"
+        }
+
+        test "Top: bands are non-overlapping and partition the surface" {
+            let l = Hud.reserveHudBand 600.0 48.0 Hud.Top
+            Expect.equal l.HudBand.Offset 0.0 "Top band sits at offset 0"
+            Expect.equal l.Gameplay.Offset l.HudBand.Size "gameplay starts where the band ends"
+            Expect.equal (l.HudBand.Size + l.Gameplay.Size) 600.0 "the two bands partition the surface"
+        }
+
+        test "Bottom: bands are non-overlapping and partition the surface" {
+            let l = Hud.reserveHudBand 600.0 48.0 Hud.Bottom
+            Expect.equal l.Gameplay.Offset 0.0 "Bottom gameplay sits at offset 0"
+            Expect.equal l.HudBand.Offset l.Gameplay.Size "band starts where gameplay ends"
+            Expect.equal (l.HudBand.Size + l.Gameplay.Size) 600.0 "the two bands partition the surface"
+        }
+    ]

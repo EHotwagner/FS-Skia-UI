@@ -982,6 +982,34 @@ let validateConstitutionCheck model =
         |> constitutionCheckFindings relative
         |> List.map (fun f -> $"{f.Path}: {f.Message} [constitution-check:{f.Rule}]")
 
+// Feature 062 (FR-001, D12): low-cost regression guard that the per-phase feedback
+// capture hook stays mandatory. Every entry in
+// `template/feedback/extensions/feedback.yml` must register `optional: false` so
+// the hook auto-fires on phase completion with no manual trigger (SC-001). Pure
+// over the yaml text; one finding per surviving `optional: true` line.
+let feedbackHookOptionalFindings (relativePath: string) (yamlText: string) : string list =
+    yamlText.Replace("\r\n", "\n").Split('\n')
+    |> Array.mapi (fun i line -> i + 1, line)
+    |> Array.choose (fun (n, line) ->
+        if System.Text.RegularExpressions.Regex.IsMatch(line, @"^\s*optional:\s*true\b") then
+            Some(
+                sprintf
+                    "%s:%d: feedback hook must register optional: false (FR-001); the per-phase feedback capture must auto-fire without a manual trigger [feedback-hook-policy]"
+                    relativePath n)
+        else
+            None)
+    |> Array.toList
+
+let validateFeedbackHookPolicy model =
+    let feedbackYml =
+        path [ model.RepositoryRoot; "template"; "feedback"; "extensions"; "feedback.yml" ]
+
+    if not (File.Exists feedbackYml) then
+        []
+    else
+        let relative = Path.GetRelativePath(model.RepositoryRoot, feedbackYml).Replace('\\', '/')
+        feedbackHookOptionalFindings relative (File.ReadAllText feedbackYml)
+
 let runGeneratedGuidanceScan model outputPath =
     let validationRows =
         generatedGuidanceRequirements
@@ -998,6 +1026,7 @@ let runGeneratedGuidanceScan model outputPath =
         @ validateSerializedRunnerGuidance model
         @ validateSkillIdResolution model
         @ validateConstitutionCheck model
+        @ validateFeedbackHookPolicy model
 
     if not (List.isEmpty findings) then
         failwithf "Generated guidance check failed:%s%s" Environment.NewLine (String.Join(Environment.NewLine, findings))

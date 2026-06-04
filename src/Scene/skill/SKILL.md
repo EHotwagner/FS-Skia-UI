@@ -53,6 +53,19 @@ let evidence = Scene.renderReadbackEvidence { Width = 320; Height = 240 } scene
 printfn "%A %s" kinds evidence.DeterministicHash
 ```
 
+## Common pitfalls
+
+- **Record-label collision (decide BEFORE you design your records).** Scene point
+  and rect literals use the field labels `X`/`Y`/`Width`/`Height`. F# resolves a
+  record literal `{ X = …; Y = … }` to the **most-recently-declared** record type
+  carrying those labels, so if your own game model declares a record with the same
+  labels (a common `{ X: float; Y: float }` position type), a bare literal can
+  silently infer to the wrong type — or fail with a confusing inference error.
+  **Remedy:** annotate the literal (`({ X = 0.0; Y = 0.0 }: Position)`), give your
+  own positional record distinct labels, or qualify the field. Plan your record
+  label names against the Scene labels before you start designing the model — see
+  `docs/scaffold-map.md` for the durable-vs-replaceable map this feeds into.
+
 ## Persistent problems
 
 When a problem outlasts reasonable in-repo attempts, extensive external research is

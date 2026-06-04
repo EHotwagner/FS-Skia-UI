@@ -69,6 +69,8 @@
     <Compile Include="Feature060GovernanceTests.fs" />
     <!-- Feature 061: self-describing readiness/graph output + four-prompt feedback + content edits. -->
     <Compile Include="Feature061GovernanceTests.fs" />
+    <!-- Feature 062: always-on feedback hook + evidence-format schema/diagnostics + symbol diff + arcade helpers. -->
+    <Compile Include="Feature062GovernanceTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

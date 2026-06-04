@@ -77,7 +77,15 @@ let update msg model =
                       )) ]
     | StartTarget Targets.Dev ->
         model,
-        [ WriteFile(path [ model.LogDir; "dev-verdict.txt" ], "Dev target completed: Restore, Build, and default non-visual Test targets passed.\n")
+        // Feature 062 (FR-004, D4): Dev's own emitted verdict states that Dev writes
+        // logs/markers and does NOT compile, and that Test/Verify (dotnet test) is the
+        // authoritative compile/test path — so the SI-3 footgun is surfaced from the
+        // target's own output, not just the docs.
+        [ WriteFile(
+              path [ model.LogDir; "dev-verdict.txt" ],
+              "Dev target completed: Restore, Build, and default non-visual Test targets passed.\n"
+              + "NOTE: Dev writes logs/markers and does not compile the product on its own; "
+              + "Test/Verify (dotnet test) is the authoritative compile/test path.\n")
           WriteStructuredReport("aggregate hang diagnostics", path [ model.ReadinessDir; "aggregate-hang-diagnostics.md" ], aggregateHangDiagnosticsReport) ]
     | StartTarget Targets.PackLocal ->
         model,
@@ -107,6 +115,15 @@ let update msg model =
           // capability catalog `contracts:` so the surface a consumer reads in a generated
           // project stays byte-identical to the framework `.fsi` (currency in TargetMetadataDrift).
           RegenerateApiSurface
+          // Feature 062 (FR-005, D5): regenerate the single-source evidence-format reference
+          // from EvidenceFormatSchema so docs/evidence-formats.md stays byte-identical to the
+          // constants the validators enforce (currency in TargetMetadataDrift).
+          WriteFile(
+              path [ model.RepositoryRoot; "template"; "base"; "docs"; "evidence-formats.md" ],
+              FS.Skia.UI.Build.Evidence.EvidenceFormatSchema.renderReferenceDoc ())
+          // Feature 062 (FR-006): regenerate docs/skillist-reference.md from the live
+          // SkillRegistry + the closed owns vocabulary (currency in TargetMetadataDrift).
+          RegenerateSkillistReference
           RequireFiles(
               "stable package surface baselines",
               [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.Layout.txt" ]
@@ -487,6 +504,41 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
 
                 ApiSurfaceGen.currency entries readBytes existing
 
+        // Feature 062 (FR-005, D12): currency for the single-source generated
+        // docs/evidence-formats.md reference. Regenerate the string from
+        // EvidenceFormatSchema and compare to the committed file; drift fails the
+        // gate with a "regenerate via RefreshSurfaceBaselines" diagnostic.
+        let evidenceFormatsDocDiagnostics =
+            let rel = FS.Skia.UI.Build.Evidence.EvidenceFormatSchema.referenceDocPath
+            let full = repoRelPath model.RepositoryRoot rel
+            let expected =
+                (FS.Skia.UI.Build.Evidence.EvidenceFormatSchema.renderReferenceDoc ()).Replace("\r\n", "\n")
+
+            if not (File.Exists full) then
+                [ sprintf "%s is missing — generate it from EvidenceFormatSchema (./fake.sh build -t RefreshSurfaceBaselines)" rel ]
+            elif File.ReadAllText(full).Replace("\r\n", "\n") <> expected then
+                [ sprintf "%s is stale — regenerate from EvidenceFormatSchema (./fake.sh build -t RefreshSurfaceBaselines)" rel ]
+            else
+                []
+
+        // Feature 062 (FR-006, D12): currency for the single-source generated
+        // docs/skillist-reference.md. Regenerate from the live registry + the closed
+        // owns vocabulary and compare to the committed file; drift fails the gate.
+        let skillistReferenceDocDiagnostics =
+            let rel = FS.Skia.UI.Build.SkillistReference.referenceDocPath
+            let full = repoRelPath model.RepositoryRoot rel
+            let registry = FS.Skia.UI.Build.Evidence.SkillRegistry.build model.RepositoryRoot
+            let expected =
+                (FS.Skia.UI.Build.SkillistReference.render registry FS.Skia.UI.Build.Evidence.Audit.ownsVocabulary)
+                    .Replace("\r\n", "\n")
+
+            if not (File.Exists full) then
+                [ sprintf "%s is missing — generate from the live SkillRegistry (./fake.sh build -t RefreshSurfaceBaselines)" rel ]
+            elif File.ReadAllText(full).Replace("\r\n", "\n") <> expected then
+                [ sprintf "%s is stale — regenerate from the live SkillRegistry (./fake.sh build -t RefreshSurfaceBaselines)" rel ]
+            else
+                []
+
         let diagnostics =
             structuralDiagnostics
             @ currencyDiagnostics
@@ -494,6 +546,8 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
             @ governedBlockDiagnostics
             @ constitutionRenderDiagnostics
             @ apiSurfaceDiagnostics
+            @ evidenceFormatsDocDiagnostics
+            @ skillistReferenceDocDiagnostics
 
         let report = TargetMetadata.driftMarkdown diagnostics
 

@@ -29,6 +29,12 @@
     <Compile Include="CodeGen.fs" />
     <Compile Include="ShellProcess.fsi" />
     <Compile Include="ShellProcess.fs" />
+    <!-- Feature 062 (FR-010): the two thrice-re-implemented arcade primitives,
+         shipped as real public API (deterministic seeded RNG + HUD-band reserve). -->
+    <Compile Include="Random.fsi" />
+    <Compile Include="Random.fs" />
+    <Compile Include="Hud.fsi" />
+    <Compile Include="Hud.fs" />
   </ItemGroup>
 
   <ItemGroup>

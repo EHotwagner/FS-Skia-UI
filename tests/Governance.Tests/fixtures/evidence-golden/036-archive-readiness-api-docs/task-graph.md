@@ -93,75 +93,75 @@ graph TD
   T031["T031 Run `.specify/extensions/evidence/scripts/bash/run"]:::done
   T032["T032 Run `./fake.sh build -t EvidenceAudit` sequentiall"]:::done
   T033["T033 Review all readiness reports for small, medium, an"]:::done
-  T003 --> T004
-  T003 --> T005
-  T003 --> T006
-  T003 --> T007
-  T003 --> T008
-  T003 --> T009
+  T003 -. injected .-> T004
+  T003 -. injected .-> T005
+  T003 -. injected .-> T006
+  T003 -. injected .-> T007
+  T003 -. injected .-> T008
+  T003 -. injected .-> T009
   T004 --> T010
   T009 --> T010
   T004 --> T011
   T009 --> T011
   T010 --> T012
-  T009 --> T012
+  T009 -. injected .-> T012
   T011 --> T013
   T012 --> T013
-  T009 --> T013
+  T009 -. injected .-> T013
   T013 --> T014
-  T009 --> T014
+  T009 -. injected .-> T014
   T012 --> T015
   T013 --> T015
   T014 --> T015
-  T009 --> T015
+  T009 -. injected .-> T015
   T005 --> T016
   T006 --> T016
   T012 --> T016
   T013 --> T016
   T009 --> T016
-  T015 --> T016
+  T015 -. injected .-> T016
   T016 --> T017
-  T015 --> T017
+  T015 -. injected .-> T017
   T017 --> T018
-  T015 --> T018
+  T015 -. injected .-> T018
   T007 --> T019
   T013 --> T019
   T018 --> T019
-  T015 --> T019
+  T015 -. injected .-> T019
   T019 --> T020
-  T015 --> T020
+  T015 -. injected .-> T020
   T018 --> T021
   T019 --> T021
   T020 --> T021
-  T015 --> T021
+  T015 -. injected .-> T021
   T008 --> T022
-  T021 --> T022
+  T021 -. injected .-> T022
   T008 --> T023
-  T021 --> T023
+  T021 -. injected .-> T023
   T023 --> T024
-  T021 --> T024
+  T021 -. injected .-> T024
   T022 --> T025
   T024 --> T025
-  T021 --> T025
+  T021 -. injected .-> T025
   T008 --> T026
   T025 --> T026
-  T021 --> T026
+  T021 -. injected .-> T026
   T025 --> T027
   T026 --> T027
-  T021 --> T027
+  T021 -. injected .-> T027
   T015 --> T028
   T021 --> T028
   T027 --> T028
   T028 --> T029
-  T027 --> T029
+  T027 -. injected .-> T029
   T029 --> T030
-  T027 --> T030
+  T027 -. injected .-> T030
   T030 --> T031
-  T027 --> T031
+  T027 -. injected .-> T031
   T031 --> T032
-  T027 --> T032
+  T027 -. injected .-> T032
   T032 --> T033
-  T027 --> T033
+  T027 -. injected .-> T033
   classDef pending fill:#eeeeee,stroke:#999
   classDef done fill:#c8e6c9,stroke:#2e7d32
   classDef synthetic fill:#ffe0b2,stroke:#e65100,stroke-width:2px
@@ -207,4 +207,38 @@ T031 [X] Run `.specify/extensions/evidence/scripts/bash/run-audit.sh specs/036-a
 T032 [X] Run `./fake.sh build -t EvidenceAudit` sequentially after graph validation and write `readiness/evidence-audit.md`
 T033 [X] Review all readiness reports for small, medium, and broad risk-level classification, focused validation evidence, broad-validation triggers, and non-authoritative aggregate result notes
 ```
+
+## Injected checkpoint edges (Phase N+1 → Phase N) — FR-007
+
+- T003 → T004  (auto-injected Phase-checkpoint edge)
+- T003 → T005  (auto-injected Phase-checkpoint edge)
+- T003 → T006  (auto-injected Phase-checkpoint edge)
+- T003 → T007  (auto-injected Phase-checkpoint edge)
+- T003 → T008  (auto-injected Phase-checkpoint edge)
+- T003 → T009  (auto-injected Phase-checkpoint edge)
+- T009 → T012  (auto-injected Phase-checkpoint edge)
+- T009 → T013  (auto-injected Phase-checkpoint edge)
+- T009 → T014  (auto-injected Phase-checkpoint edge)
+- T009 → T015  (auto-injected Phase-checkpoint edge)
+- T015 → T016  (auto-injected Phase-checkpoint edge)
+- T015 → T017  (auto-injected Phase-checkpoint edge)
+- T015 → T018  (auto-injected Phase-checkpoint edge)
+- T015 → T019  (auto-injected Phase-checkpoint edge)
+- T015 → T020  (auto-injected Phase-checkpoint edge)
+- T015 → T021  (auto-injected Phase-checkpoint edge)
+- T021 → T022  (auto-injected Phase-checkpoint edge)
+- T021 → T023  (auto-injected Phase-checkpoint edge)
+- T021 → T024  (auto-injected Phase-checkpoint edge)
+- T021 → T025  (auto-injected Phase-checkpoint edge)
+- T021 → T026  (auto-injected Phase-checkpoint edge)
+- T021 → T027  (auto-injected Phase-checkpoint edge)
+- T027 → T029  (auto-injected Phase-checkpoint edge)
+- T027 → T030  (auto-injected Phase-checkpoint edge)
+- T027 → T031  (auto-injected Phase-checkpoint edge)
+- T027 → T032  (auto-injected Phase-checkpoint edge)
+- T027 → T033  (auto-injected Phase-checkpoint edge)
+
+## Resolved skillist ids — FR-007
+
+Resolved skillist-id set (4): fs-skia-layout-readability, speckit-evidence-audit, speckit-evidence-graph, speckit-tasks
 

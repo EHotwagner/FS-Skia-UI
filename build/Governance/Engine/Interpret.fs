@@ -63,6 +63,7 @@ let interpret root effect =
     | PerPackageSurfaceDiffCheck -> runPerPackageSurfaceDiff model
     | SkillQualityScan -> runSkillQualityCheck model
     | RegenerateApiSurface -> regenerateApiSurface model
+    | RegenerateSkillistReference -> regenerateSkillistReference model
     | SkillContractPathScan -> runSkillContractPathCheck model
     | TemplateUpdatePackageScan -> runTemplateUpdatePackageCheck model
 

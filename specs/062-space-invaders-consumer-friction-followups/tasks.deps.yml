@@ -1,0 +1,175 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (feature 062).
+#
+# Phase-checkpoint edges are auto-injected by the graph compute (every task in
+# Phase N+1 implicitly depends on the last foundation task of Phase N). Only
+# non-phase cross-edges and within-phase deps are written here.
+
+tasks:
+  # Phase 1 — Setup
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+
+  # Phase 2 — Foundation
+  T005:
+    deps: []
+    skillist: []
+  T006:
+    deps: [T005]
+    skillist: []
+  T007:
+    deps: [T005]
+    skillist: []
+  T008:
+    deps: []
+    skillist: ["fsharp-code-generation"]
+  T009:
+    deps: []
+    skillist: []
+
+  # Phase 3 — US1: hook policy (FR-001/002)
+  T010:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+  T011:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+  T012:
+    deps: [T010]
+    skillist: []
+  T013:
+    deps: []
+    skillist: []
+  T014:
+    deps: [T013]
+    skillist: ["fs-skia-template-update"]
+  T015:
+    deps: [T012]
+    skillist: []
+  T016:
+    deps: [T012, T013]
+    skillist: []
+
+  # Phase 4 — US2: evidence-format recoverability (FR-005)
+  T017:
+    deps: []
+    skillist: ["speckit-evidence-audit"]
+  T018:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+  T019:
+    deps: [T008]
+    skillist: ["fsharp-parsing"]
+  T020:
+    deps: [T008]
+    skillist: ["fsharp-parsing"]
+  T021:
+    deps: [T008]
+    skillist: ["fsharp-parsing"]
+  T022:
+    deps: [T008]
+    skillist: ["fsharp-code-generation"]
+  T023:
+    deps: [T022]
+    skillist: []
+
+  # Phase 5 — US3: Dev self-describing + effective DAG + skillist reference (FR-004/006/007)
+  T024:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T025:
+    deps: []
+    skillist: ["fsharp-graph-algorithms"]
+  T026:
+    deps: []
+    skillist: ["fsharp-code-generation"]
+  T027:
+    deps: [T026]
+    skillist: []
+  T028:
+    deps: [T024, T025, T026]
+    skillist: ["fsharp-build-orchestration"]
+
+  # Phase 6 — US4: symbol cross-check (FR-008)
+  T029:
+    deps: []
+    skillist: ["fsharp-parsing"]
+  T030:
+    deps: [T029]
+    skillist: ["fsharp-parsing"]
+  T031:
+    deps: [T029]
+    skillist: ["speckit-analyze"]
+  T032:
+    deps: [T030, T031]
+    skillist: ["speckit-analyze"]
+
+  # Phase 7 — US5: pitfalls + source map (FR-009/003)
+  T033:
+    deps: []
+    skillist: ["fs-skia-skiaviewer"]
+  T034:
+    deps: []
+    skillist: ["fs-skia-layout-readability"]
+  T035:
+    deps: [T034]
+    skillist: []
+  T036:
+    deps: [T033, T034]
+    skillist: ["fs-skia-template-update"]
+  T037:
+    deps: [T033, T035]
+    skillist: []
+
+  # Phase 8 — US6: shipped helpers (FR-010/012, Tier 1)
+  T038:
+    deps: []
+    skillist: ["fs-skia-elmish"]
+  T039:
+    deps: []
+    skillist: ["fs-skia-layout-readability"]
+  T040:
+    deps: [T005, T038]
+    skillist: ["fs-skia-elmish"]
+  T041:
+    deps: [T005, T039]
+    skillist: ["fs-skia-layout-readability"]
+  T042:
+    deps: [T040, T041]
+    skillist: []
+  T043:
+    deps: [T042]
+    skillist: ["fs-skia-template-update"]
+  T044:
+    deps: [T042]
+    skillist: ["fs-skia-elmish"]
+  T045:
+    deps: [T042]
+    skillist: []
+
+  # Phase 9 — Integration & Polish
+  T046:
+    deps: [T043]
+    skillist: []
+  T047:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+  T048:
+    deps: []
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T049:
+    deps: [T048]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

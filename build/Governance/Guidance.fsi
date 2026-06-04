@@ -96,6 +96,15 @@ val classifyConstitutionCheck: planContent: string -> ConstitutionCheckResult
 /// one for the unrecognized-template-revision case). Empty list => pass.
 val constitutionCheckFindings: planPath: string -> ConstitutionCheckResult -> ValidationFinding list
 
+// Feature 062 (FR-001, D12): low-cost feedback-hook regression guard, folded into
+// the GeneratedGuidanceCheck gate. Build-tooling scope. The pure core is exported
+// so the failing-first unit test can exercise it directly.
+
+/// Pure: given the relative path and the yaml text of
+/// `template/feedback/extensions/feedback.yml`, return one finding per surviving
+/// `optional: true` line (FR-001 requires every feedback hook to be mandatory).
+val feedbackHookOptionalFindings: relativePath: string -> yamlText: string -> string list
+
 /// Validate generated spec/plan/task/constitution guidance + skill-id resolution; writes a
 /// byte-identical report to outputPath and fails (failwithf) with the collected findings.
 val runGeneratedGuidanceScan: model: BuildModel -> outputPath: string -> unit

@@ -82,13 +82,27 @@ region are distinct named rectangles by construction, and the clamp keeps
 `NoLayoutOverlap` true at both default and constrained sizes. A layout that proves
 readable only after nudging specific pixel offsets has skipped step 1 or step 2.
 
-### Canonical convention: `reserveHudBand`
+### Shipped helper: `FS.Skia.UI.SkillSupport.Hud.reserveHudBand`
 
-Every arcade demo re-implements step 1 the same way, so capture it as a named
-convention rather than re-deriving it per game (this is a documented convention,
-**not** a shipped `FS.Skia.UI` helper — see feature 061 D8 / the arcade-helper
-triage). `reserveHudBand` splits a surface into a reserved HUD band and the
-remaining gameplay region in one place:
+Every arcade demo re-implemented step 1 the same way, so as of feature 062 (FR-010)
+it is **shipped real API** in `FS.Skia.UI.SkillSupport.Hud` — no longer a
+re-derived per-game convention. Reach for it before hand-rolling the band math:
+
+```fsharp
+open FS.Skia.UI.SkillSupport
+
+// surface = full extent along the axis (e.g. window height); bandSize = HUD thickness.
+let layout = Hud.reserveHudBand 600.0 48.0 Hud.Top
+// layout.HudBand  = { Offset = 0.0;  Size = 48.0  }
+// layout.Gameplay = { Offset = 48.0; Size = 552.0 }   // clamp all gameplay to this
+```
+
+It returns plain `float` bands (no `Scene.Rect` dependency — convert to your own
+geometry at the call site), clamps `HudBand.Size = min bandSize surface`, and
+guarantees `Gameplay.Size = surface − HudBand.Size ≥ 0` with the two bands
+partitioning the surface. Clamp every gameplay coordinate to `layout.Gameplay`
+(step 2) and overdraw the HUD last (step 3). The reference implementation below
+shows the same split if you need a `Scene.Rect`-typed variant in your own code:
 
 ```fsharp
 // gameplayRegion = surface − reserved band; the band is anchored to one edge.
@@ -104,8 +118,9 @@ let reserveHudBand (edge: Edge) (bandHeight: float) (surface: Rect) : Rect * Rec
 
 Derive the band height from the surface size (not from where text lands), clamp
 every gameplay coordinate to the returned `gameplay` rectangle (step 2), and
-overdraw the `hud` rectangle last (step 3). The convention is the spec if a later
-feature decides to ship it as real API.
+overdraw the `hud` rectangle last (step 3). Prefer the shipped
+`Hud.reserveHudBand` above for the band math; this `Rect`-typed form is only the
+reference for a consumer that wants the result already in `Scene.Rect` geometry.
 
 ## Build Commands
 
@@ -128,6 +143,12 @@ reported as readable layout proof.
 
 Once a HUD region is reserved, movement, wrapping, spawning, clamping,
 collisions, and active entity bounds must use gameplay-region coordinates.
+
+Before you swap the scaffold game model, read `docs/scaffold-map.md` — it names
+which generated `src/Product/**` files are durable vs replaceable, the
+`GovernanceTests`-durable / `BehaviorTests`-replaceable split, the must-survive
+source-scan strings, and the pre-design `fs-skia-scene` record-label-collision
+pointer.
 
 ## Package Boundary
 

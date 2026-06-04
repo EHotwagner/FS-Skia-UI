@@ -139,6 +139,13 @@ module TaskParser =
         && t.Seh.AcceptanceStatus = "accepted-seh"
         && List.isEmpty t.Seh.Diagnostics
 
+    // Feature 062 (FR-005): the SEH-acceptance evidence-format schema text
+    // (acceptance status + approval label tokens, no backticks), single-sourced
+    // from EvidenceFormatSchema so the printed diagnostic cannot drift from the
+    // `accepted-seh` / `synthetic-error-handling-approved` rule this module enforces.
+    let sehAcceptanceSchemaText () : string =
+        EvidenceFormatSchema.renderClass SehAcceptance
+
     let private boxToStatus (box: string) : Choice<DeclaredStatus, unit> =
         match box with
         | " " -> Choice1Of2 Pending

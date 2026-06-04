@@ -140,10 +140,17 @@ module Render =
             let title = r.Task.Title.Replace("\"", "'")
             let label = if title.Length > 50 then title.Substring(0, 50) else title
             lines.Add(sprintf "  %s[\"%s %s\"]:::%s" r.Task.Id r.Task.Id label (mermaidClass (Graph.effectiveString r.Effective)))
+        // FR-007 (062): render the EFFECTIVE DAG with the auto-injected Phase N+1 →
+        // Phase N checkpoint edges (from PhaseDeps) DISTINCTLY labeled — explicit
+        // deps are solid `-->`, injected checkpoint edges are dashed `-. injected .->`
+        // — so the author sees the effective graph before a full run.
         for r in tasks do
-            for d in Graph.allDeps r.Task do
+            for d in r.Task.ExplicitDeps do
                 if nodes.ContainsKey d then
                     lines.Add(sprintf "  %s --> %s" d r.Task.Id)
+            for d in r.Task.PhaseDeps do
+                if nodes.ContainsKey d && not (List.contains d r.Task.ExplicitDeps) then
+                    lines.Add(sprintf "  %s -. injected .-> %s" d r.Task.Id)
         lines.AddRange
             [ "  classDef pending fill:#eeeeee,stroke:#999"
               "  classDef done fill:#c8e6c9,stroke:#2e7d32"
@@ -197,6 +204,21 @@ module Render =
                 out.Add "### Errors"
                 for e in g.Errors do
                     out.Add(sprintf "- %s" e)
+                // FR-005 (062): when a skill-loading-evidence error blocks the graph,
+                // print the complete required row shape (8 columns, ordering rule,
+                // resolved-path pattern) single-sourced from EvidenceFormatSchema, so
+                // an author recovers the contract from the graph's own output without
+                // decompiling FS.Skia.UI.Build.dll or copying a sibling project.
+                let skillLoadingError (e: string) =
+                    e.Contains "load evidence" || e.Contains "loaded_at"
+                    || e.Contains "skill-loading evidence" || e.Contains "evidence path"
+                if g.Errors |> List.exists skillLoadingError then
+                    out.Add ""
+                    out.Add "### skill-loading-evidence required shape (FR-005)"
+                    out.Add ""
+                    out.Add "```"
+                    out.Add((Audit.skillLoadingEvidenceSchemaText ()).TrimEnd('\n'))
+                    out.Add "```"
             out.Add ""
         else
             out.Add "## ✓ Graph is acyclic and consistent"
@@ -273,6 +295,38 @@ module Render =
         out.Add "```"
         out.Add(renderAscii tasks nodes g.RootCause)
         out.Add "```"
+        out.Add ""
+
+        // FR-007 (062): the effective DAG also lists the auto-injected Phase N+1 →
+        // Phase N checkpoint edges as a distinct subsection (the edges that are
+        // invisible in tasks.deps.yml until a full run), and the resolved skillist-id
+        // set, alongside the existing graphVerdictLine — so the author reviews the
+        // effective graph before trusting it.
+        let injectedEdges =
+            [ for r in tasks do
+                  for d in r.Task.PhaseDeps do
+                      if nodes.ContainsKey d && not (List.contains d r.Task.ExplicitDeps) then
+                          yield (d, r.Task.Id) ]
+        out.Add "## Injected checkpoint edges (Phase N+1 → Phase N) — FR-007"
+        out.Add ""
+        if List.isEmpty injectedEdges then
+            out.Add "_(none — no cross-phase checkpoint edges injected)_"
+        else
+            for (dep, tid) in injectedEdges do
+                out.Add(sprintf "- %s → %s  (auto-injected Phase-checkpoint edge)" dep tid)
+        out.Add ""
+
+        let resolvedSkillIds =
+            tasks
+            |> List.collect (fun r -> r.Task.Skillist)
+            |> List.distinct
+            |> List.sort
+        out.Add "## Resolved skillist ids — FR-007"
+        out.Add ""
+        if List.isEmpty resolvedSkillIds then
+            out.Add "_(none declared)_"
+        else
+            out.Add(sprintf "Resolved skillist-id set (%d): %s" (List.length resolvedSkillIds) (String.concat ", " resolvedSkillIds))
         out.Add ""
 
         if not (Map.isEmpty g.RootCause) then

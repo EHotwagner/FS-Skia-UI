@@ -14,7 +14,7 @@ hooks:
   - extension: feedback
     command: speckit.feedback.capture
     enabled: true
-    optional: true
+    optional: false
     prompt: Capture fs-skia-ui feedback for the specify phase?
     description: Per-phase fs-skia-ui / Spec Kit feedback capture
     condition: null
@@ -22,7 +22,7 @@ hooks:
   - extension: feedback
     command: speckit.feedback.capture
     enabled: true
-    optional: true
+    optional: false
     prompt: Capture fs-skia-ui feedback for the clarify phase?
     description: Per-phase fs-skia-ui / Spec Kit feedback capture
     condition: null
@@ -30,7 +30,7 @@ hooks:
   - extension: feedback
     command: speckit.feedback.capture
     enabled: true
-    optional: true
+    optional: false
     prompt: Capture fs-skia-ui feedback for the plan phase?
     description: Per-phase fs-skia-ui / Spec Kit feedback capture
     condition: null
@@ -38,7 +38,7 @@ hooks:
   - extension: feedback
     command: speckit.feedback.capture
     enabled: true
-    optional: true
+    optional: false
     prompt: Capture fs-skia-ui feedback for the tasks phase?
     description: Per-phase fs-skia-ui / Spec Kit feedback capture
     condition: null
@@ -46,7 +46,7 @@ hooks:
   - extension: feedback
     command: speckit.feedback.capture
     enabled: true
-    optional: true
+    optional: false
     prompt: Capture fs-skia-ui feedback for the analyze phase?
     description: Per-phase fs-skia-ui / Spec Kit feedback capture
     condition: null
@@ -54,7 +54,7 @@ hooks:
   - extension: feedback
     command: speckit.feedback.capture
     enabled: true
-    optional: true
+    optional: false
     prompt: Capture fs-skia-ui feedback for the implement phase?
     description: Per-phase fs-skia-ui / Spec Kit feedback capture
     condition: null

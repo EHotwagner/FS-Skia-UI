@@ -1,0 +1,120 @@
+
+## source template install uninstall
+$ dotnet new uninstall "/home/developer/projects/FS-Skia-UI"
+The template package '/home/developer/projects/FS-Skia-UI' is not found.
+To list installed template packages use:
+   dotnet new uninstall
+
+
+For details on the exit code, refer to https://aka.ms/templating-exit-codes#103
+
+exit-code=103
+
+## source template install uninstall
+$ dotnet new uninstall "FS.Skia.UI.Template"
+Success: FS.Skia.UI.Template@0.1.84-preview.1 was uninstalled.
+
+exit-code=0
+
+## source template install
+$ dotnet new install "/home/developer/projects/FS-Skia-UI"
+The following template packages will be installed:
+   /home/developer/projects/FS-Skia-UI
+
+Success: /home/developer/projects/FS-Skia-UI installed the following templates:
+Template Name                Short Name  Language  Tags                   
+---------------------------  ----------  --------  -----------------------
+FS Skia UI Governed Project  fs-skia-ui            F#/Skia/Elmish/Template
+
+
+exit-code=0
+
+## source template install uninstall
+$ dotnet new uninstall "/home/developer/projects/FS-Skia-UI"
+The template package '/home/developer/projects/FS-Skia-UI' is not found.
+To list installed template packages use:
+   dotnet new uninstall
+
+
+For details on the exit code, refer to https://aka.ms/templating-exit-codes#103
+
+exit-code=103
+
+## source template install uninstall
+$ dotnet new uninstall "FS.Skia.UI.Template"
+Success: FS.Skia.UI.Template@0.1.84-preview.1 was uninstalled.
+
+exit-code=0
+
+## source template install
+$ dotnet new install "/home/developer/projects/FS-Skia-UI"
+The following template packages will be installed:
+   /home/developer/projects/FS-Skia-UI
+
+Success: /home/developer/projects/FS-Skia-UI installed the following templates:
+Template Name                Short Name  Language  Tags                   
+---------------------------  ----------  --------  -----------------------
+FS Skia UI Governed Project  fs-skia-ui            F#/Skia/Elmish/Template
+
+
+exit-code=0
+
+## source template install uninstall
+$ dotnet new uninstall "/home/developer/projects/FS-Skia-UI"
+The template package '/home/developer/projects/FS-Skia-UI' is not found.
+To list installed template packages use:
+   dotnet new uninstall
+
+
+For details on the exit code, refer to https://aka.ms/templating-exit-codes#103
+
+exit-code=103
+
+## source template install uninstall
+$ dotnet new uninstall "FS.Skia.UI.Template"
+Success: FS.Skia.UI.Template@0.1.84-preview.1 was uninstalled.
+
+exit-code=0
+
+## source template install
+$ dotnet new install "/home/developer/projects/FS-Skia-UI"
+The following template packages will be installed:
+   /home/developer/projects/FS-Skia-UI
+
+Success: /home/developer/projects/FS-Skia-UI installed the following templates:
+Template Name                Short Name  Language  Tags                   
+---------------------------  ----------  --------  -----------------------
+FS Skia UI Governed Project  fs-skia-ui            F#/Skia/Elmish/Template
+
+
+exit-code=0
+
+## source template install uninstall
+$ dotnet new uninstall "/home/developer/projects/FS-Skia-UI"
+The template package '/home/developer/projects/FS-Skia-UI' is not found.
+To list installed template packages use:
+   dotnet new uninstall
+
+
+For details on the exit code, refer to https://aka.ms/templating-exit-codes#103
+
+exit-code=103
+
+## source template install uninstall
+$ dotnet new uninstall "FS.Skia.UI.Template"
+Success: FS.Skia.UI.Template@0.1.84-preview.1 was uninstalled.
+
+exit-code=0
+
+## source template install
+$ dotnet new install "/home/developer/projects/FS-Skia-UI"
+The following template packages will be installed:
+   /home/developer/projects/FS-Skia-UI
+
+Success: /home/developer/projects/FS-Skia-UI installed the following templates:
+Template Name                Short Name  Language  Tags                   
+---------------------------  ----------  --------  -----------------------
+FS Skia UI Governed Project  fs-skia-ui            F#/Skia/Elmish/Template
+
+
+exit-code=0
