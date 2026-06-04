@@ -1,4 +1,4 @@
-#r "nuget: FS.Skia.UI.Build, 0.1.64-preview.1"
+#r "nuget: FS.Skia.UI.Build, 0.1.65-preview.1"
 
 open System
 open System.Diagnostics
