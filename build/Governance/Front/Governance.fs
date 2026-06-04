@@ -593,13 +593,12 @@ let runEvidenceGraphCheck (model: BuildModel) =
     let gr, arts = FS.Skia.UI.Build.Evidence.Engine.runGraph inputs
     evidenceWrite (path [ model.ReadinessDir; "task-graph.json" ]) arts.TaskGraphJson
     evidenceWrite (path [ model.ReadinessDir; "task-graph.md" ]) arts.TaskGraphMd
-    let status =
-        match gr.Verdict with
-        | FS.Skia.UI.Build.Evidence.GraphVerdict.Ok -> "ok"
-        | _ -> "error"
+    // FR-007 (061): emit an explicit, greppable terminal verdict line so a clean
+    // pass is self-evident without inspecting the exit code.
+    let verdictLine = FS.Skia.UI.Build.Evidence.Render.graphVerdictLine gr
     evidenceWrite
         (path [ model.LogDir; "evidence-graph.txt" ])
-        (sprintf "=== speckit.evidence.graph (in-process) ===\nfeature: %s\ntasks: %d\nverdict: %s\n" inputs.FeatureName (List.length gr.Tasks) status)
+        (sprintf "=== speckit.evidence.graph (in-process) ===\nfeature: %s\ntasks: %d\n%s\n" inputs.FeatureName (List.length gr.Tasks) verdictLine)
     match gr.Verdict with
     | FS.Skia.UI.Build.Evidence.GraphVerdict.Error ->
         failwithf "Evidence graph validation failed (%d errors); see %s" (List.length gr.Errors) (path [ model.ReadinessDir; "task-graph.md" ])
@@ -652,6 +651,16 @@ let runEvidenceAuditCheck root (model: BuildModel) =
                 (List.length res.SehSummary.UnacceptedSyntheticTasks) (List.length res.SehSummary.AutoSyntheticTasks)
                 (List.length res.SehSummary.LateSehTasks) res.DiffBlocking res.ReadinessContract res.PersistentLaunch
                 res.PersistentGuiRuntime res.WindowVisibility res.AuditStatus res.TotalBlockers
+        // FR-004 (061): when the readiness-contract scan blocks, print the full
+        // required shape per failing file so the contract is recoverable from
+        // the audit's own output (no decompiling, no sibling copy). Sourced from
+        // the same enforced token list, so it cannot drift (RC-1/RC-2).
+        let readinessDiagnostics =
+            FS.Skia.UI.Build.Evidence.Render.readinessContractDiagnostics
+                (FS.Skia.UI.Build.Evidence.Scans.readinessContract inputs.Scan)
+        let log =
+            if readinessDiagnostics = "" then log
+            else log + "\n--- readiness-contract required shapes (FR-004) ---\n" + readinessDiagnostics
         evidenceWrite (path [ model.LogDir; "evidence-audit.txt" ]) log
         match res.Verdict with
         | FS.Skia.UI.Build.Evidence.AuditVerdict.Fail ->

@@ -1,0 +1,62 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "specs/061-breakout-consumer-friction-followups/plan.md",
+      "line": 135,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: **None planned \u2014 all evidence is real.** Rationale: the"
+    },
+    {
+      "file": "specs/061-breakout-consumer-friction-followups/plan.md",
+      "line": 175,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-{specify,clarify,plan,tasks,analyze,checklist,implement}/SKILL.md"
+    },
+    {
+      "file": "specs/061-breakout-consumer-friction-followups/plan.md",
+      "line": 176,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-*/SKILL.md            # regenerated via RefreshSurfaceBaselines"
+    },
+    {
+      "file": "specs/061-breakout-consumer-friction-followups/plan.md",
+      "line": 194,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-tasks/SKILL.md         # name exact preset paths (FR-009)"
+    },
+    {
+      "file": "specs/061-breakout-consumer-friction-followups/plan.md",
+      "line": 201,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-layout-readability/SKILL.md         # reserveHudBand"
+    },
+    {
+      "file": "specs/061-breakout-consumer-friction-followups/readiness/task-graph.md",
+      "line": 158,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/061-breakout-consumer-friction-followups/tasks.md",
+      "line": 187,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    }
+  ]
+}

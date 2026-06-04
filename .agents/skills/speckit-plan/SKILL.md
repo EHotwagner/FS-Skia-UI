@@ -19,9 +19,12 @@ You **MUST** consider the user input before proceeding (if not empty).
 ## Pre-Execution Checks
 
 **Check for extension hooks (before planning)**:
-- Check if `.specify/extensions.yml` exists in the project root.
-- If it exists, read it and look for entries under the `hooks.before_plan` key
-- If the YAML cannot be parsed or is invalid, skip hook checking silently and continue
+- Discover hooks across **all** extension files (multi-file discovery), not just the central file:
+  - Read `.specify/extensions.yml` from the project root (if present) and collect entries under the `hooks.before_plan` key.
+  - Then enumerate every `.specify/extensions/*/*.yml` file in sorted order, parse each, and collect its `hooks.before_plan` entries too — so a hook registered only in a per-extension file (e.g. the `feedback` extension at `.specify/extensions/feedback/feedback.yml`) is still discovered and runs.
+  - Merge all collected entries and dedupe by `(extension, command)` (first occurrence wins, so a hook declared in both files runs once).
+  - If a file is absent or its YAML cannot be parsed/is invalid, skip that file silently and continue.
+- For every `optional: true` hook that is discovered but not executed this phase, emit one line so the skip is a visible decision: `Note: optional hook {extension}:{command} is registered but was not run (skipped).`
 - Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled.
 - For each remaining hook, do **not** interpret or evaluate hook `condition` expressions:
   - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
@@ -67,9 +70,12 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 4. **Stop and report**: Command ends after Phase 2 planning. Report branch, IMPL_PLAN path, and generated artifacts.
 
-5. **Check for extension hooks**: After reporting, check if `.specify/extensions.yml` exists in the project root.
-   - If it exists, read it and look for entries under the `hooks.after_plan` key
-   - If the YAML cannot be parsed or is invalid, skip hook checking silently and continue
+5. **Check for extension hooks**: After reporting, discover hooks across **all** extension files (multi-file discovery), not just the central file:
+   - Read `.specify/extensions.yml` from the project root (if present) and collect entries under the `hooks.after_plan` key.
+   - Then enumerate every `.specify/extensions/*/*.yml` file in sorted order, parse each, and collect its `hooks.after_plan` entries too — so a hook registered only in a per-extension file (e.g. the `feedback` extension at `.specify/extensions/feedback/feedback.yml`) is still discovered and runs on phase completion.
+   - Merge all collected entries and dedupe by `(extension, command)` (first occurrence wins, so a hook declared in both files runs once).
+   - If a file is absent or its YAML cannot be parsed/is invalid, skip that file silently and continue.
+   - For every `optional: true` hook that is discovered but not executed this phase, emit one line so the skip is a visible decision: `Note: optional hook {extension}:{command} is registered but was not run (skipped).`
    - Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled.
    - For each remaining hook, do **not** interpret or evaluate hook `condition` expressions:
      - If the hook has no `condition` field, or it is null/empty, treat the hook as executable

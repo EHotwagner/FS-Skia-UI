@@ -140,6 +140,14 @@ domain vector, convert it explicitly with a helper such as `toScenePoint` before
 passing it to `Scene.Point`; the conversion from domain vector to scene point
 must be visible in the generated source or evidence notes as an explicit conversion.
 
+**Build vs. test targets.** `./fake.sh build -t Dev` is a completion-marker /
+log-writer target — it records progress to `readiness/logs/Dev.txt` and does
+**not** surface real compiler or test feedback. The authoritative compile/test
+path is `./fake.sh build -t Test` / `./fake.sh build -t Verify` (which run
+`dotnet test`), or `dotnet build` / `dotnet test` directly; use those when you
+need actual compiler errors and test results. A green `Dev` is not evidence that
+the product compiles.
+
 Evidence graph and audit checks are exposed as generated FAKE targets:
 
 Generated FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`)

@@ -38,14 +38,19 @@ For each of `after_specify`, `after_clarify`, `after_plan`, `after_tasks`,
 These fire only on phase **completion** (after_* semantics), so an aborted/failed
 phase writes nothing (FR-016).
 
-## The three prompts (FR-013 — exact wording, `{phase}` substituted)
+## The four prompts (FR-013 — exact wording, `{phase}` substituted)
 
 1. "During the *{phase}* phase, did anything go wrong or cause friction in the
    fs-skia-ui / Spec Kit process — and what would have helped you?"
 2. "Did you write any F# code on a skill topic this phase that could be
    generalized into the support library? If yes, name the skill family/topic and
    the candidate helper (and link any external docs/research used)."
-3. "How blocking was the friction — none / minor / major / blocker?"
+3. "What additional or new skills would have been helpful during the *{phase}*
+   phase? Name the topic and what the missing skill should have covered, or 'none'."
+4. "How blocking was the friction — none / minor / major / blocker?"
+
+> The skill-gaps prompt (3) was added by feature
+> `061-breakout-consumer-friction-followups`.
 
 ## Record schema (FR-014/FR-015) — `specs/<feature>/feedback/<phase>-<date>.md`
 
@@ -61,6 +66,10 @@ severity: minor            # none | minor | major | blocker
 
 ## Generalizable code
 <answer to prompt 2 — skill family/topic + candidate helper, or "none">
+
+## Skill gaps
+<answer to prompt 3 — additional/new skills that would have helped this phase
+ (topic + what the missing skill should cover), or "none">
 
 ## Research links
 <official-docs-first then community links, when created after a hard problem;
@@ -78,6 +87,6 @@ severity: minor            # none | minor | major | blocker
 ## Command skill `fs-skia-feedback-capture`
 
 A new FS-authored authoring command skill (canonical `.agents/skills/`, shipped in
-the template's feedback branch). It instructs the agent to surface the three
+the template's feedback branch). It instructs the agent to surface the four
 prompts with `{phase}` substituted and write the record above. It is itself
 in-scope for the quality bar.

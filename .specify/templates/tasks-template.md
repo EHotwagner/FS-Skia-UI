@@ -1,3 +1,8 @@
+<!-- Authoritative copy: for a `fsharp-opinionated` project the preset copy at
+     `.specify/presets/fsharp-opinionated/templates/tasks-template.md` (with its
+     `tasks-deps-template.yml` peer) is authoritative — edit there. This generic
+     copy is the non-preset Spec Kit fallback only. -->
+
 # Tasks: [FEATURE_NAME]
 
 **Feature branch**: `[FEATURE_BRANCH]`

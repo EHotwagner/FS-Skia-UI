@@ -4,7 +4,7 @@ Under `dotnet new fs-skia-ui --feedback true`, three conditional sources fire (t
 
 - `template/feedback/skill/` → `.agents/skills/fs-skia-feedback-capture/SKILL.md` and
   `.claude/skills/fs-skia-feedback-capture/SKILL.md` — the `fs-skia-feedback-capture`
-  command skill, carrying the **three exact prompts** (with `{phase}` substitution) and the
+  command skill, carrying the **four exact prompts (4th = skill-gaps, added by 061)** (with `{phase}` substitution) and the
   feedback **record schema** (`specs/<feature>/feedback/<phase>-<date>.md`, severity
   mandatory, generalizable-code candidate captured for `FS.Skia.UI.SkillSupport` triage).
 - `template/feedback/extensions/` → `.specify/extensions/feedback/feedback.yml` — the six
@@ -23,7 +23,7 @@ confirmed all three conditional sources fired:
 
 - `.agents/skills/fs-skia-feedback-capture/SKILL.md` and
   `.claude/skills/fs-skia-feedback-capture/SKILL.md` — present; the skill carries the
-  **three exact prompts** under the heading `## The three prompts (exact wording, {phase}
+  **four exact prompts (4th = skill-gaps, added by 061)** under the heading `## The four prompts (exact wording, {phase}
   substituted)`.
 - `.specify/extensions/feedback/feedback.yml` — present, carrying all **six** `after_*` hook
   entries (`after_specify`, `after_clarify`, `after_plan`, `after_tasks`, `after_analyze`,

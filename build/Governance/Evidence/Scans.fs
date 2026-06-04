@@ -90,7 +90,13 @@ module Scans =
                             Missing = None
                             MissingTerms = Some terms
                             MissingSections = Some []
-                            Required = None
+                            // FR-004 (061): carry the FULL enforced token list so the audit
+                            // front-end can print the complete required shape per failing
+                            // file. Single source = the same `terms` that enforce the rule,
+                            // so the printed schema can never drift (RC-2). Not serialized
+                            // into readiness-contract-hits.json, so existing goldens are
+                            // unchanged.
+                            Required = Some terms
                             Blocking = Some true
                             ValidationArea = Some "readiness-contract" }
                   else
@@ -104,7 +110,8 @@ module Scans =
                                 Missing = Some missing
                                 MissingTerms = Some missing
                                 MissingSections = Some []
-                                Required = None
+                                // FR-004 (061): full enforced token list (see above).
+                                Required = Some terms
                                 Blocking = Some true
                                 ValidationArea = Some "readiness-contract" } ]
         result "readiness-contract" hits

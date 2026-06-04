@@ -138,7 +138,7 @@ updates, surface-area baselines, test evidence, doc/skill updates.
     (and `readiness/surface-baselines/FS.Skia.UI.SkillSupport.txt` if catalog-registered).
   - `template-feedback-false.md` / `template-feedback-true.md` — generation
     evidence for both parameter values (default byte-identity; `true` produces the
-    three prompts wiring + `feedback/` folder).
+    four prompts (4th = skill-gaps, added by 061) wiring + `feedback/` folder).
   - `support-library-tests.md` — `SkillSupport` semantic/property test transcript.
   - `feedback-record-example.md` — one worked feedback entry routing a
     generalizable-code candidate toward `SkillSupport` (SC-007).

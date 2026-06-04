@@ -10,7 +10,7 @@ metadata:
 # fs-skia-feedback-capture
 
 An authoring **command** skill invoked by the generated project's `after_*` Spec Kit
-hooks (only present under `--feedback true`). On phase completion it surfaces three exact
+hooks (only present under `--feedback true`). On phase completion it surfaces four exact
 prompts and writes one dated, phase-identified feedback record.
 
 ## When to use
@@ -25,14 +25,16 @@ prompts and writes one dated, phase-identified feedback record.
 This is a process/authoring command skill — **no backing library**. It produces a
 Markdown record; it calls no shipped `.fsi` surface.
 
-## The three prompts (exact wording, `{phase}` substituted)
+## The four prompts (exact wording, `{phase}` substituted)
 
 1. "During the *{phase}* phase, did anything go wrong or cause friction in the
    fs-skia-ui / Spec Kit process — and what would have helped you?"
 2. "Did you write any F# code on a skill topic this phase that could be generalized into
    the support library? If yes, name the skill family/topic and the candidate helper (and
    link any external docs/research used)."
-3. "How blocking was the friction — none / minor / major / blocker?"
+3. "What additional or new skills would have been helpful during the *{phase}* phase? Name
+   the topic and what the missing skill should have covered, or 'none'."
+4. "How blocking was the friction — none / minor / major / blocker?"
 
 ## Runnable example — the record written to `specs/<feature>/feedback/<phase>-<date>.md`
 
@@ -48,6 +50,10 @@ severity: minor            # none | minor | major | blocker
 
 ## Generalizable code
 <answer to prompt 2 — skill family/topic + candidate helper, or "none">
+
+## Skill gaps
+<answer to prompt 3 — additional/new skills that would have helped this phase
+ (topic + what the missing skill should cover), or "none">
 
 ## Research links
 <official-docs-first then community links, when created after a hard problem;

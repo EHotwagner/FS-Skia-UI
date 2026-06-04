@@ -377,3 +377,51 @@ module Render =
                   "late_seh_tasks", jStrList s.LateSehTasks
                   "diagnostics", JArr(s.Diagnostics |> List.map diag) ]
         ser payload 0 + "\n"
+
+    // --- terminal verdict / self-describing diagnostics (feature 061) --------
+
+    /// FR-007 (061): the explicit, greppable terminal verdict line for an
+    /// `EvidenceGraph` run, in the same `verdict=…` token style as
+    /// `EvidenceAudit` (GV-1/GV-2/GV-3). A clean graph reads at a glance; a
+    /// failing graph names the reason inline. Additive to exit-code semantics.
+    let graphVerdictLine (gr: GraphResult) : string =
+        match gr.Verdict with
+        | GraphVerdict.Ok -> "verdict=ok (no cycles, no dangling refs, no [S*])"
+        | GraphVerdict.Error ->
+            let reason =
+                match gr.Errors with
+                | [] -> "graph invalid"
+                | es -> es |> List.truncate 3 |> String.concat "; "
+            sprintf "verdict=error (%s)" reason
+
+    /// FR-004 (061): the self-describing readiness-contract failure diagnostic.
+    /// For every failing readiness file the audit prints the COMPLETE expected
+    /// shape — file name, status, the full enforced `required-tokens` list, and
+    /// the subset actually `missing` — so a consumer can recover the contract
+    /// from the audit's own output without decompiling `FS.Skia.UI.Build.dll`
+    /// or copying a sibling project (RC-1/RC-2/RC-3). The token list is sourced
+    /// from the same `Required`/`MissingTerms` data the scan enforces, so the
+    /// printout cannot drift from the rule.
+    let readinessContractDiagnostics (rc: ScanResult) : string =
+        if List.isEmpty rc.Hits then
+            ""
+        else
+            let sb = StringBuilder()
+            for h in rc.Hits do
+                let fileName = System.IO.Path.GetFileName h.Path
+                let status =
+                    match h.Status with
+                    | Some "incomplete" -> "partial"
+                    | Some s -> s
+                    | None -> "partial"
+                sb.Append(sprintf "readiness-contract: %s\n" fileName) |> ignore
+                sb.Append(sprintf "  status: %s\n" status) |> ignore
+                (match h.Required with
+                 | Some terms when not (List.isEmpty terms) ->
+                     sb.Append(sprintf "  required-tokens: %s\n" (String.concat ", " terms)) |> ignore
+                 | _ -> ())
+                (match h.MissingTerms with
+                 | Some missing when not (List.isEmpty missing) ->
+                     sb.Append(sprintf "  missing: %s\n" (String.concat ", " missing)) |> ignore
+                 | _ -> ())
+            sb.ToString()

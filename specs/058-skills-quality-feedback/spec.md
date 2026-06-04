@@ -260,7 +260,7 @@ are recorded.
   skills) are present in **both** `--feedback` branches and are not
   feedback-induced changes.
 - **FR-013**: With `feedback=true`, after each Spec Kit phase (specify, clarify,
-  plan, tasks, analyze, implement) the agent MUST be prompted with three prompts,
+  plan, tasks, analyze, implement) the agent MUST be prompted with four prompts (4th = skill-gaps, added by 061),
   with the phase name substituted into the first: (a) "During the *{phase}* phase,
   did anything go wrong or cause friction in the fs-skia-ui / Spec Kit process —
   and what would have helped you?"; (b) "Did you write any F# code on a skill topic
@@ -340,7 +340,7 @@ are recorded.
   present in the generated project and the generated skills' API references
   resolve against it.
 - **SC-005**: `dotnet new fs-skia-ui --feedback true` produces a project that, on
-  completion of each of the Spec Kit phases, prompts the three feedback prompts
+  completion of each of the Spec Kit phases, prompts the four feedback prompts (4th = skill-gaps, added by 061)
   (process-friction, generalizable-code, severity) and writes a dated,
   phase-identified record under `specs/<feature>/feedback/`.
 - **SC-006**: `dotnet new fs-skia-ui` with the default `--feedback false`

@@ -3,8 +3,8 @@
 # Shipped ONLY when the project was generated with `dotnet new fs-skia-ui --feedback true`.
 # These entries augment the project's Spec Kit `after_*` hooks: on completion of each
 # phase the agent runs `speckit.feedback.capture` (the `fs-skia-feedback-capture` command
-# skill), which surfaces the three prompts and writes one record to
-# `specs/<feature>/feedback/<phase>-<date>.md`.
+# skill), which surfaces the four prompts (the fourth — skill gaps — added by feature
+# 061) and writes one record to `specs/<feature>/feedback/<phase>-<date>.md`.
 #
 # after_* semantics ⇒ these fire only on phase COMPLETION; an aborted/failed phase writes
 # nothing (FR-016).

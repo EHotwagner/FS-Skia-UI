@@ -20,6 +20,13 @@
 
 ### Repository Governance Decisions
 
+<!-- GeneratedGuidanceCheck pass criteria (machine-enforced): EVERY decision area
+     below MUST be filled in. The build FAILS if any area is left empty, kept as a
+     boilerplate placeholder, or carries a `NEEDS CLARIFICATION` / `TODO` marker.
+     A genuine "N/A" is allowed ONLY with a one-line rationale (e.g.
+     "N/A — no dependency change"); a bare "N/A" still fails. Replace each bullet's
+     guidance text with the actual decision before committing. -->
+
 - **Template ownership**: Decide whether source, docs, samples, tests, Spec Kit
   assets, package policy, or command-surface changes must update
   `.template.config/template.json` or a deferral.

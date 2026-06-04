@@ -55,6 +55,19 @@ seed it as the consumer path.
   | ViewerKey.Unknown raw -> handleUnknownKey raw   // not a bare `Unknown _`
   | _ -> ...
   ```
+  The same trap fires across **your own** co-opened modules — it is not limited to
+  framework-vs-framework collisions. A consumer that declares both
+  `type GameMode = | Launch | Playing | …` and `type Msg = | Launch | Tick | …`
+  and `open`s both has two `Launch` cases in scope; a bare `Launch` binds to the
+  **last-declared** type (`Msg`), so a `GameMode`-typed match arm or constructor
+  yields ten misleading "expected GameMode but has type Msg" errors far from the
+  real site. Qualify the case — `GameMode.Launch` / `Msg.Launch` — at every use:
+  ```fsharp
+  let next = GameMode.Launch          // not a bare `Launch`
+  match mode with
+  | GameMode.Launch -> startGame ()
+  | _ -> ...
+  ```
 
 ## Build Commands
 

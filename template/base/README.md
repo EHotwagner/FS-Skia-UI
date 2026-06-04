@@ -24,6 +24,14 @@ invoke FAKE or depend on `.fake`.
 2. `./fake.sh build -t Test`
 3. `./fake.sh build -t Verify`
 
+> **`Dev` is a completion-marker / log-writer target, not a compiler.** It only
+> records progress to `readiness/logs/Dev.txt` — it does **not** give you real
+> compiler or test feedback. The authoritative compile/test path is
+> `./fake.sh build -t Test` / `./fake.sh build -t Verify` (which run
+> `dotnet test`); use those (or `dotnet build` / `dotnet test` directly) when you
+> need actual compiler errors and test results. Do not infer "it compiles" from a
+> green `Dev`.
+
 Run Spec Kit evidence checks through the generated FAKE targets:
 
 1. `./fake.sh build -t EvidenceGraph`

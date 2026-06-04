@@ -82,6 +82,31 @@ region are distinct named rectangles by construction, and the clamp keeps
 `NoLayoutOverlap` true at both default and constrained sizes. A layout that proves
 readable only after nudging specific pixel offsets has skipped step 1 or step 2.
 
+### Canonical convention: `reserveHudBand`
+
+Every arcade demo re-implements step 1 the same way, so capture it as a named
+convention rather than re-deriving it per game (this is a documented convention,
+**not** a shipped `FS.Skia.UI` helper — see feature 061 D8 / the arcade-helper
+triage). `reserveHudBand` splits a surface into a reserved HUD band and the
+remaining gameplay region in one place:
+
+```fsharp
+// gameplayRegion = surface − reserved band; the band is anchored to one edge.
+let reserveHudBand (edge: Edge) (bandHeight: float) (surface: Rect) : Rect * Rect =
+    let band, gameplay =
+        match edge with
+        | Edge.Top    -> { surface with Height = bandHeight },
+                         { surface with Y = surface.Y + bandHeight; Height = surface.Height - bandHeight }
+        | Edge.Bottom -> { surface with Y = surface.Bottom - bandHeight; Height = bandHeight },
+                         { surface with Height = surface.Height - bandHeight }
+    band, gameplay   // name them `hud` / `gameplay`; clamp all gameplay to `gameplay`; overdraw `hud` last
+```
+
+Derive the band height from the surface size (not from where text lands), clamp
+every gameplay coordinate to the returned `gameplay` rectangle (step 2), and
+overdraw the `hud` rectangle last (step 3). The convention is the spec if a later
+feature decides to ship it as real API.
+
 ## Build Commands
 
 Prefer repository targets over ad-hoc command sequences:

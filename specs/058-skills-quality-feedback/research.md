@@ -91,7 +91,7 @@ seed scope). This file records the design resolutions those answers imply.
   generated project's `.specify/extensions.yml`. A new authoring command skill
   `fs-skia-feedback-capture` is invoked by `after_specify`, `after_clarify`,
   `after_plan`, `after_tasks`, `after_analyze`, `after_implement` entries. The
-  command instructs the agent to surface the three prompts (FR-013) with the phase
+  command instructs the agent to surface the four prompts (4th = skill-gaps, added by 061) (FR-013) with the phase
   name substituted, and to write one dated, phase-identified record under
   `specs/<feature>/feedback/`.
 - **Gating**: The hook entries + the shipped command skill live entirely in the

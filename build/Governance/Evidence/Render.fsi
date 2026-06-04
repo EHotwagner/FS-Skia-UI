@@ -38,3 +38,14 @@ module Render =
 
     /// Serialize seh-audit-summary.json.
     val sehAuditSummaryJson: SehSummary -> string
+
+    /// FR-007 (061): the explicit terminal `verdict=…` line for an EvidenceGraph
+    /// run (clean: `verdict=ok (no cycles, no dangling refs, no [S*])`; failing:
+    /// `verdict=error (<reason>)`). Additive to exit-code semantics.
+    val graphVerdictLine: GraphResult -> string
+
+    /// FR-004 (061): the self-describing readiness-contract failure diagnostic —
+    /// per failing file, its name, status, full enforced `required-tokens`, and
+    /// the `missing` subset, derived from the same data that enforces the rule.
+    /// Empty string when the scan has no hits.
+    val readinessContractDiagnostics: ScanResult -> string

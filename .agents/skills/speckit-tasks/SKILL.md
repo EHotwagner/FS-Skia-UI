@@ -53,8 +53,13 @@ requires TWO files, both in `specs/[FEATURE_ID]/`:
    stops with one directive error naming the missing `tasks:` mapping — fix
    that first.
 
-Start from the preset's `tasks-template.md` and `tasks-deps-template.yml`,
+Start from the preset's templates at the **exact** paths
+`.specify/presets/fsharp-opinionated/templates/tasks-template.md` and
+`.specify/presets/fsharp-opinionated/templates/tasks-deps-template.yml`,
 replacing the example task bodies with real work items from the spec and plan.
+Do **not** start from the generic `.specify/templates/tasks-template.md` — that
+copy is the non-preset Spec Kit fallback and points back here; for a
+`fsharp-opinionated` project the preset copy above is authoritative.
 
 ## Discipline
 

@@ -67,6 +67,8 @@
     <Compile Include="OwnsValidationTests.fs" />
     <!-- Feature 060: api-surface generator + SkillContractPathCheck + TemplateUpdateSkillPackageCheck. -->
     <Compile Include="Feature060GovernanceTests.fs" />
+    <!-- Feature 061: self-describing readiness/graph output + four-prompt feedback + content edits. -->
+    <Compile Include="Feature061GovernanceTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

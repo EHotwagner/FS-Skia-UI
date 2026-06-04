@@ -1199,7 +1199,7 @@
       "story": "US3",
       "tier": null,
       "parallel": true,
-      "title": "Add failing-first template-generation tests: `--feedback false` byte-identity vs current output, `--feedback true` presence of the three prompts + `feedback/` wiring, and an aborted phase writing nothing \u2014 **SKIPPED (rationale)**: `--feedback false` byte-identity is guaranteed by construction (all feedback content lives in `feedback == true` conditional `sources`; the symbol itself emits no output), and the empirical generation-diff is covered by the `TemplateCheck`/`GeneratedProductCheck` run (T031), not yet executed in this session. A dedicated failing-first generation test is deferred with the T031 pipeline run. **Update",
+      "title": "Add failing-first template-generation tests: `--feedback false` byte-identity vs current output, `--feedback true` presence of the four prompts (4th = skill-gaps, added by 061) + `feedback/` wiring, and an aborted phase writing nothing \u2014 **SKIPPED (rationale)**: `--feedback false` byte-identity is guaranteed by construction (all feedback content lives in `feedback == true` conditional `sources`; the symbol itself emits no output), and the empirical generation-diff is covered by the `TemplateCheck`/`GeneratedProductCheck` run (T031), not yet executed in this session. A dedicated failing-first generation test is deferred with the T031 pipeline run. **Update",
       "skillist": [
         "fs-skia-template-update"
       ],
@@ -1293,7 +1293,7 @@
       "story": "US3",
       "tier": null,
       "parallel": false,
-      "title": "Author the new `fs-skia-feedback-capture` command skill (the three exact prompts with `{phase}` substitution + the record schema) in `.agents/skills/`, raised to the rubric, shipped in the template feedback branch \u2014 authored at `template/feedback/skill/SKILL.md` (NOT repo `.agents/skills/`, which ships unconditionally and would break SC-006 byte-identity); shipped via the `feedback == true` source; passes `SkillQualityCheck` (now in-scope)",
+      "title": "Author the new `fs-skia-feedback-capture` command skill (the four exact prompts (4th = skill-gaps, added by 061) with `{phase}` substitution + the record schema) in `.agents/skills/`, raised to the rubric, shipped in the template feedback branch \u2014 authored at `template/feedback/skill/SKILL.md` (NOT repo `.agents/skills/`, which ships unconditionally and would break SC-006 byte-identity); shipped via the `feedback == true` source; passes `SkillQualityCheck` (now in-scope)",
       "skillist": [],
       "skillist_mirror": [],
       "skill_match_assessments": [
@@ -1434,7 +1434,7 @@
       "story": "US3",
       "tier": null,
       "parallel": false,
-      "title": "Capture `readiness/template-feedback-false.md` (default byte-identity, SC-006) and `readiness/template-feedback-true.md` (three prompts wiring + `feedback/` folder, SC-005) \u2014 **empirically verified** (2026-06-03): `diff -rq --exclude=.git` of two identically-named generations (`--feedback false` vs `true`) shows exactly the three conditional feedback sources added and **zero other diff** (SC-006); the `true` project carries all six `after_*` hooks + the three `{phase}` prompts (SC-005).",
+      "title": "Capture `readiness/template-feedback-false.md` (default byte-identity, SC-006) and `readiness/template-feedback-true.md` (four prompts (4th = skill-gaps, added by 061) wiring + `feedback/` folder, SC-005) \u2014 **empirically verified** (2026-06-03): `diff -rq --exclude=.git` of two identically-named generations (`--feedback false` vs `true`) shows exactly the three conditional feedback sources added and **zero other diff** (SC-006); the `true` project carries all six `after_*` hooks + the four `{phase}` prompts (SC-005).",
       "skillist": [
         "fs-skia-template-update"
       ],
