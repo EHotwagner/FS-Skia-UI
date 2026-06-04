@@ -1,0 +1,16 @@
+
+## app/source generated Verify
+$ bash ./fake.sh build -t Verify
+Dev completed for generated product
+GeneratedGuidanceCheck completed for generated product
+TemplateDrift completed for generated product
+System.Exception: Cannot resolve the feature to validate: no SPECKIT_FEATURE_DIR override is set and /home/developer/projects/FS-Skia-UI/artifacts/generated-products/063-lunar-lander-consumer-friction-followups/app-source/.specify/feature.json has no usable "feature_directory" entry. Run /speckit.specify to record a feature, or set SPECKIT_FEATURE_DIR to the feature directory to validate. Validation never falls back to a bundled sample.
+   at Microsoft.FSharp.Core.PrintfModule.PrintFormatToStringThenFail@1447.Invoke(String message)
+   at FSI_0002.runGeneratedEvidenceGraph() in /home/developer/projects/FS-Skia-UI/artifacts/generated-products/063-lunar-lander-consumer-friction-followups/app-source/build.fsx:line 221
+   at FSI_0002.run(String target) in /home/developer/projects/FS-Skia-UI/artifacts/generated-products/063-lunar-lander-consumer-friction-followups/app-source/build.fsx:line 340
+   at <StartupCode$FSI_0002>.$FSI_0002.main@() in /home/developer/projects/FS-Skia-UI/artifacts/generated-products/063-lunar-lander-consumer-friction-followups/app-source/build.fsx:line 352
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+Stopped due to error
+
+exit-code=1

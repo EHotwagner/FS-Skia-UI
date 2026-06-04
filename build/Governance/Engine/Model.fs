@@ -194,6 +194,10 @@ type BuildEffect =
     | RegenerateSkillistReference
     | SkillContractPathScan
     | TemplateUpdatePackageScan
+    // Feature 063 (FR-003): run the existing SymbolCrossCheck analyzer over the active
+    // feature's plan/data-model/tasks (paths derived from the feature dir in interpret,
+    // so no payload), print the markdown, and write readiness/symbol-cross-check.md.
+    | SymbolCrossCheckAnalyze
 
 let init root =
     let readiness = featureReadiness root

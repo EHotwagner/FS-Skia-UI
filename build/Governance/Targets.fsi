@@ -37,6 +37,7 @@ type Target =
     | ControlsInteractionCheck
     | ControlsRenderingCheck
     | DependencyReport
+    | SymbolCrossCheck
     | GeneratedGuidanceCheck
     | SkillSyncCheck
     | SkillQualityCheck

@@ -271,6 +271,31 @@ let runSkillContractPathCheck (model: BuildModel) =
                 (String.concat Environment.NewLine diagnostics)
         )
 
+// Feature 063 (FR-003) — SymbolCrossCheck. Run the existing analyzer
+// (build/Governance/SymbolCrossCheck.fs) over the active feature's plan/data-model/tasks
+// (paths derived from the feature dir — the DependencyReport pattern), print the
+// `## Symbol consistency (analyze pass G)` markdown, and write it to
+// readiness/symbol-cross-check.md. A command/diagnostic, not a hard merge gate:
+// design-only symbols are reported for human judgment, never a false-fail.
+let runSymbolCrossCheck (model: BuildModel) =
+    let readArtifact name =
+        let p = path [ model.FeatureDir; name ]
+        if File.Exists p then File.ReadAllText p else ""
+
+    let findings =
+        SymbolCrossCheck.diff (readArtifact "plan.md") (readArtifact "data-model.md") (readArtifact "tasks.md")
+
+    let markdown = SymbolCrossCheck.render findings
+
+    printfn "%s" markdown
+
+    let reportPath = path [ model.ReadinessDir; "symbol-cross-check.md" ]
+    let logPath = path [ model.LogDir; "symbol-cross-check.txt" ]
+    ensureParent reportPath
+    File.WriteAllText(reportPath, markdown)
+    ensureParent logPath
+    File.WriteAllText(logPath, markdown)
+
 // Feature 060 (FR-009) — TemplateUpdateSkillPackageCheck. The `fs-skia-template-update`
 // skill's enumerated package set must equal the packable `.fsproj` set so it cannot drift
 // (no phantom bare-Lib, no missing SkillSupport/Input). The packable-set discovery stays

@@ -89,6 +89,34 @@ warning, and name-collision guidance.
 Exact owner phrases for scans: framework runtime; generated template workflow; documentation discoverability; consumer authoring; persistent-window blocking; display/session availability; auto-close smoke; benign warning; blocking warning; deferred warning; name-collision guidance.
 <!-- END GENERATED: gov/owner-phrases -->
 
+## `--evidence-run` deterministic-summary discipline (documented, not a shipped helper)
+
+Generated games expose an `--evidence-run` command that drives the **pure** model
+through a fixed, per-frame **held-input script** and prints a deterministic summary.
+The reusable value is the **discipline**, not a shared function — follow it whenever you
+add or change an `--evidence-run` summary:
+
+- Drive only the **pure** model/update with a fixed seed and a deterministic per-frame
+  held-input script (no wall-clock, no RNG outside the seeded generator, no host I/O).
+- Format every float with `InvariantCulture` and a fixed precision (e.g. `F3`) so the
+  summary is byte-identical across machines and locales.
+- Emit a `determinism=byte-identical` marker plus the stable core fields
+  `status` / `command` / `seed` / `frame-count` / `score`, then the game-specific fields.
+
+Canonical examples: `LunarLander1` `EvidenceCommands.fs:603-672` emits physics state
+(`final-position` / `final-velocity` / `final-rotation` / `final-fuel`, `F3`);
+`AsteroidsDemo3` `EvidenceCommands.fs:670-685` emits entity counts
+(`wave` / `lives` / `asteroid-count` / `bullet-count`) and availability probes.
+
+**Why this is documented, not shipped (FR-009 deferral).** A four-game comparison
+(LunarLander, Asteroids, Breakout, SpaceInvaders) shows the **field set varies
+materially per game**; the only stable core is
+`status`/`command`/`seed`/`frame-count`/`score`/`determinism` — too thin to justify a
+shipped record that every consumer then appends 5–10 game-specific fields to. The
+*discipline* recurs; the *summary shape* does not. **Next-recurrence bar:** ship a
+reusable summary type only if a stable cross-game field set (beyond that thin core)
+emerges; until then, write the summary inline and follow the discipline above.
+
 ## Package Boundary
 
 Keep pure evidence classifiers in Scene or Testing contracts. Do not move viewer

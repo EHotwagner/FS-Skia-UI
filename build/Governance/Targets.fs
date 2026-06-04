@@ -25,6 +25,7 @@ type Target =
     | ControlsInteractionCheck
     | ControlsRenderingCheck
     | DependencyReport
+    | SymbolCrossCheck
     | GeneratedGuidanceCheck
     | SkillSyncCheck
     | SkillQualityCheck
@@ -55,8 +56,8 @@ type TargetSpec =
       FailureOwner: string }
 
 // Registry order (replaces requiredTargets). PackageSmoke/BuildWorkflowCheck are
-// dispatched but excluded here so the metadata registry stays at 37 rows
-// (feature 044 retired SkillExamplesCheck).
+// dispatched but excluded here so the metadata registry stays at 38 rows
+// (feature 044 retired SkillExamplesCheck; feature 063 added SymbolCrossCheck).
 let allTargets =
     [ Clean
       Restore
@@ -82,6 +83,7 @@ let allTargets =
       ControlsInteractionCheck
       ControlsRenderingCheck
       DependencyReport
+      SymbolCrossCheck
       GeneratedGuidanceCheck
       SkillSyncCheck
       SkillQualityCheck
@@ -129,6 +131,7 @@ let name target =
     | ControlsInteractionCheck -> "ControlsInteractionCheck"
     | ControlsRenderingCheck -> "ControlsRenderingCheck"
     | DependencyReport -> "DependencyReport"
+    | SymbolCrossCheck -> "SymbolCrossCheck"
     | GeneratedGuidanceCheck -> "GeneratedGuidanceCheck"
     | SkillSyncCheck -> "SkillSyncCheck"
     | SkillQualityCheck -> "SkillQualityCheck"
@@ -176,6 +179,7 @@ let directPrerequisites target =
     | ControlsInteractionCheck -> []
     | ControlsRenderingCheck -> []
     | DependencyReport -> []
+    | SymbolCrossCheck -> []
     | GeneratedGuidanceCheck -> []
     | SkillSyncCheck -> []
     | SkillQualityCheck -> []

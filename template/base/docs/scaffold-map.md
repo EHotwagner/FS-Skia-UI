@@ -52,6 +52,17 @@ when you re-point the durable files:
   satisfy visual proof"; benign/blocking/deferred warning; name-collision
   guidance) carried in `GovernanceTests.visualEvidenceGuidance`.
 
+## API surface authority: the shipped `.fsi` / `docs/api-surface/` is ground truth
+
+When you need to know a framework API's real shape, the **authoritative** reference
+is the shipped `.fsi` signature files and the generated `docs/api-surface/` tree —
+they are the curated public contract the packages actually expose. An
+**agent-generated API summary** (e.g. an Explore/grep digest, or a hand-written
+"here's what the API looks like" note) is **supporting reference only, never ground
+truth**: it can silently mix confirmed signatures with inferred or stale shapes.
+Always reconcile any agent-produced API summary against the `.fsi` / `docs/api-surface/`
+before you design against it; when they disagree, the `.fsi` wins.
+
 ## Pre-design pointer: record-label collision (fs-skia-scene)
 
 **Before** you design your model's records, read the `fs-skia-scene` skill's

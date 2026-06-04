@@ -14,6 +14,7 @@
   <ItemGroup>
     <Compile Include="Host/Diagnostics.fsi" />
     <Compile Include="Host/Diagnostics.fs" />
+    <Compile Include="SceneRenderer.fs" />
     <Compile Include="Host/Vulkan.fsi" />
     <Compile Include="Host/Vulkan.fs" />
     <Compile Include="Host/Viewer.fsi" />

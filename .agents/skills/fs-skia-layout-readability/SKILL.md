@@ -122,6 +122,39 @@ overdraw the `hud` rectangle last (step 3). Prefer the shipped
 `Hud.reserveHudBand` above for the band math; this `Rect`-typed form is only the
 reference for a consumer that wants the result already in `Scene.Rect` geometry.
 
+### Shipped helper: `FS.Skia.UI.SkillSupport.Wrap.wrapDeltaX`
+
+Toroidal (wrap-around) worlds — Asteroids, Space Invaders, Lunar Lander — kept
+re-deriving the same shortest-wrap-aware delta, so as of feature 063 (FR-010) it is
+**shipped real API** in `FS.Skia.UI.SkillSupport.Wrap`. Reach for it instead of
+hand-rolling the seam arithmetic in your `update`:
+
+```fsharp
+open FS.Skia.UI.SkillSupport
+
+// Shortest signed delta from fromX to toX on a toroidal axis of width worldWidth.
+Wrap.wrapDeltaX 100.0 90.0 10.0   //  20.0   (wraps forward across the seam, not -80)
+Wrap.wrapDeltaX 100.0 10.0 90.0   // -20.0   (wraps backward, not +80)
+Wrap.wrapDeltaX 100.0 42.0 42.0   //   0.0   (identity)
+```
+
+It is pure scalar arithmetic (no state, no I/O, **no `Scene`/`Layout` dependency**, so
+SkillSupport stays dependency-light), deterministic, and returns the signed distance of
+least magnitude in `(-worldWidth/2, worldWidth/2]`. Thread it through your pure Elmish
+`update` (e.g. camera-relative or AI targeting on a wrap-around world).
+
+### Deferred (documented, not shipped): camera-centered projection
+
+A **camera-centered projection** (world → screen with the camera following the player,
+e.g. `LunarLander1/src/LunarLander1/View.fs:60-61`) recurred too, but it is **documented
+here and deliberately NOT shipped**. Rationale: it is a *closure* over per-game state
+(player position, view scale, screen center), it returns a `Scene.Point` (a soft `Scene`
+dependency SkillSupport deliberately avoids), and its shape varies per game
+(zoom-centered here, parallax or fixed elsewhere) — it is a `View` concern, not a
+shippable dependency-light scalar helper. **Next-recurrence bar:** ship a camera helper
+only if a *stable, game-agnostic* projection signature (one that does not pull `Scene`
+into SkillSupport) recurs across ≥3 demos; until then, write it inline in your `View`.
+
 ## Build Commands
 
 Prefer repository targets over ad-hoc command sequences:

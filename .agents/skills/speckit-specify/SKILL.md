@@ -100,6 +100,17 @@ Given that feature description, do this:
      Write the actual resolved directory path value (for example, `specs/003-user-auth`), not the literal string `SPECIFY_FEATURE_DIRECTORY`.
      This allows downstream commands (`/speckit-plan`, `/speckit-tasks`, etc.) to locate the feature directory without relying on git branch name conventions.
 
+   **Snapshot an external-URL source spec into the feature directory**:
+   - If the feature input is an **external URL** (the source spec lives at a remote
+     location, e.g. a GitHub URL), then after fetching the source, write a snapshot to
+     `SPECIFY_FEATURE_DIRECTORY/source-spec.md` with a header recording the source URL
+     and the fetch context, and have `spec.md` reference the in-repo
+     `source-spec.md` snapshot rather than the live URL. This captures provenance
+     in-repo so the specify phase is reproducible offline and does not silently
+     depend on a remote that may move or change.
+   - If the feature input is a **local file or inline text**, this snapshot step is an
+     explicit **no-op** — do not fabricate a redundant `source-spec.md` copy.
+
    **IMPORTANT**:
    - Create only one feature per `/speckit-specify` invocation
    - The spec directory name and the git branch name are independent — they may match, but that is the user's choice

@@ -102,6 +102,8 @@ type BuildEffect =
     | RegenerateSkillistReference
     | SkillContractPathScan
     | TemplateUpdatePackageScan
+    // Feature 063 (FR-003): SymbolCrossCheck over the active feature's plan/data-model/tasks.
+    | SymbolCrossCheckAnalyze
 
 /// Repository root (discovered by walking up for .specify/feature.json).
 val repositoryRoot: string

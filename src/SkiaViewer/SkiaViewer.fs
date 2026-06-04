@@ -1769,43 +1769,12 @@ module Viewer =
             false
 
     let private drawScreenshotScene (canvas: SKCanvas) scene =
-        let skColor (color: FS.Skia.UI.Scene.Color) =
-            SKColor(byte color.Red, byte color.Green, byte color.Blue, byte color.Alpha)
-
-        let rec drawNode node =
-            match node with
-            | Empty -> ()
-            | Group scenes -> scenes |> List.iter (fun scene -> scene.Nodes |> List.iter drawNode)
-            | Rectangle((x, y, width, height), color) ->
-                use paint = new SKPaint(Color = skColor color, IsAntialias = true, Style = SKPaintStyle.Fill)
-                canvas.DrawRect(SKRect(float32 x, float32 y, float32(x + width), float32(y + height)), paint)
-            | PaintedRectangle(bounds, paint) ->
-                let color =
-                    paint.Fill
-                    |> Option.map skColor
-                    |> Option.defaultValue (SKColor(82uy, 184uy, 136uy, 255uy))
-
-                use skPaint = new SKPaint(Color = color, IsAntialias = paint.Antialias, Style = SKPaintStyle.Fill)
-                canvas.DrawRect(SKRect(float32 bounds.X, float32 bounds.Y, float32(bounds.X + bounds.Width), float32(bounds.Y + bounds.Height)), skPaint)
-            | Circle(center, radius, fill) ->
-                use paint = new SKPaint(Color = skColor fill, IsAntialias = true, Style = SKPaintStyle.Fill)
-                canvas.DrawCircle(float32 center.X, float32 center.Y, float32 radius, paint)
-            | FilledEllipse(bounds, fill) ->
-                use paint = new SKPaint(Color = skColor fill, IsAntialias = true, Style = SKPaintStyle.Fill)
-                canvas.DrawOval(SKRect(float32 bounds.X, float32 bounds.Y, float32(bounds.X + bounds.Width), float32(bounds.Y + bounds.Height)), paint)
-            | Text((x, y), text, color) ->
-                use paint = new SKPaint(Color = skColor color, IsAntialias = true, Style = SKPaintStyle.Fill)
-                let width = max 8f (float32 text.Length * 10f)
-                canvas.DrawRect(SKRect(float32 x, float32(y - 18.0), float32 x + width, float32 y + 4f), paint)
-            | ClipNode(_, clippedScene)
-            | ColorSpaceNode(_, clippedScene)
-            | PerspectiveNode(_, clippedScene) -> clippedScene.Nodes |> List.iter drawNode
-            | PictureNode picture -> picture.Scene.Nodes |> List.iter drawNode
-            | _ ->
-                use paint = new SKPaint(Color = SKColor(82uy, 184uy, 136uy, 255uy), IsAntialias = true, Style = SKPaintStyle.Fill)
-                canvas.DrawRect(SKRect(8f, 8f, 48f, 48f), paint)
-
-        scene |> drawNode
+        // Feature 063 (FR-001/002): the image-evidence path delegates to the single
+        // shared exhaustive `SceneRenderer.paintNode` — the SAME painter the interactive
+        // host uses. Every primitive (Line/Path/Arc/real-glyph Text/…) renders to real
+        // pixels; the prior placeholder-rect wildcard that masqueraded as "scene visible"
+        // is deleted.
+        SceneRenderer.paintNode canvas scene
 
     let private pngDimensionsAndNonBlank (path: string) : (int * int) option * ScreenshotPixelContentValidation =
         try

@@ -50,9 +50,10 @@ let feature061GovernanceTests =
             // (not a bare count, not just the first missing token).
             Expect.stringContains diag "readiness-contract: governance-risk-levels.md" "names the failing file"
             Expect.stringContains diag "status: missing" "reports the status"
-            Expect.stringContains diag "required-tokens:" "prints the required-tokens line"
+            // Feature 063 (FR-004) relabelled this line full-required-set:/absent-from-file:.
+            Expect.stringContains diag "full-required-set:" "prints the full-required-set line"
             for token in [ "small"; "medium"; "broad"; "required evidence"; "broad validation" ] do
-                Expect.stringContains diag token (sprintf "required-tokens includes %s" token)
+                Expect.stringContains diag token (sprintf "full-required-set includes %s" token)
             Expect.stringContains diag "readiness-contract: aggregate-hang-diagnostics.md" "covers every failing file"
             Expect.stringContains diag "readiness-contract: runtime-limitations.md" "covers every failing file"
         }
@@ -70,8 +71,8 @@ let feature061GovernanceTests =
             Expect.stringContains diag "status: partial" "partial status mapped from incomplete"
             // The full enforced list — including tokens already present — is printed,
             // so the consumer recovers the whole shape, not just the gap (RC-1/RC-2).
-            Expect.stringContains diag "required-tokens: small, medium, broad, required evidence, broad validation" "full enforced list"
-            Expect.stringContains diag "missing: broad validation" "missing subset is the actual gap"
+            Expect.stringContains diag "full-required-set: small, medium, broad, required evidence, broad validation" "full enforced list"
+            Expect.stringContains diag "absent-from-file: broad validation" "absent subset is the actual gap"
         }
 
         test "FR-004 a satisfied scan prints no readiness diagnostic" {

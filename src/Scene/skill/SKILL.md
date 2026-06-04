@@ -53,6 +53,29 @@ let evidence = Scene.renderReadbackEvidence { Width = 320; Height = 240 } scene
 printfn "%A %s" kinds evidence.DeterministicHash
 ```
 
+## One shared painter: node count is structural, the image is the visual proof
+
+The interactive host renderer and the image-evidence (screenshot) renderer are the
+**same** shared painter (`SceneRenderer.paintNode` inside `FS.Skia.UI.SkiaViewer`,
+feature 063). Its `match` over `SceneNode` is **exhaustive — there is no wildcard
+fallback** — so every modeled primitive (`Line`, `Path`, `Arc`, `Points`, `Vertices`,
+`Ellipse`/`FilledEllipse`, `Image`, `RegionNode`, `Chart`, and real-glyph
+`Text`/`TextRun`) renders to actual pixels through both paths, and a new `SceneNode`
+case is a compile error until both paths handle it. There is no longer an
+evidence-mode placeholder rectangle that any primitive collapses onto.
+
+Because of that, treat the two kinds of check as **distinct**:
+
+- `Scene.describe` and node-count assertions are **structural** — they prove a node of
+  a given kind is *present in the description*, not that it *painted visible pixels*.
+- The decoded image (screenshot / render-readback pixels) is the **visual** proof.
+
+Do not let a structural check stand in for visual proof: a scene that `describe`
+reports as a `Line` is only *visibly* rendered when the image shows pixels along that
+line. (Before feature 063 a `Line`-only scene drew a single placeholder block, so a
+node-count "scene is visible" check passed on an effectively invisible image — that
+false-positive is gone now that there is no placeholder.)
+
 ## Common pitfalls
 
 - **Record-label collision (decide BEFORE you design your records).** Scene point

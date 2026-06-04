@@ -217,3 +217,42 @@ let hudTests =
             Expect.equal (l.HudBand.Size + l.Gameplay.Size) 600.0 "the two bands partition the surface"
         }
     ]
+
+[<Tests>]
+let wrapTests =
+    // Feature 063 (FR-010, SC-006): Wrap.wrapDeltaX — shortest wrap-aware delta on a
+    // toroidal axis. Pure scalar arithmetic; exercised through the public .fsi.
+    testList "Wrap (FR-010 shortest wrap-aware delta)" [
+        test "shortest-path: 90 -> 10 on width 100 is +20 (not -80)" {
+            Expect.equal (Wrap.wrapDeltaX 100.0 90.0 10.0) 20.0 "wraps forward across the seam"
+        }
+
+        test "shortest-path: 10 -> 90 on width 100 is -20 (not +80)" {
+            Expect.equal (Wrap.wrapDeltaX 100.0 10.0 90.0) -20.0 "wraps backward across the seam"
+        }
+
+        test "identity: a -> a is 0" {
+            Expect.equal (Wrap.wrapDeltaX 100.0 42.0 42.0) 0.0 "no movement"
+        }
+
+        test "range: result is in (-w/2, w/2] for w > 0" {
+            let w = 100.0
+            for a in 0.0 .. 7.0 .. 99.0 do
+                for b in 0.0 .. 11.0 .. 99.0 do
+                    let d = Wrap.wrapDeltaX w a b
+                    Expect.isTrue (d > -w / 2.0 && d <= w / 2.0) (sprintf "wrapDeltaX %g %g %g = %g out of (-50, 50]" w a b d)
+        }
+
+        test "symmetry: wrapDeltaX w a b = -(wrapDeltaX w b a) except at the +w/2 boundary" {
+            let w = 100.0
+            for a in 0.0 .. 13.0 .. 99.0 do
+                for b in 0.0 .. 17.0 .. 99.0 do
+                    let fwd = Wrap.wrapDeltaX w a b
+                    let bwd = Wrap.wrapDeltaX w b a
+                    Expect.isTrue (abs fwd = w / 2.0 || fwd = -bwd) (sprintf "asymmetry at a=%g b=%g (fwd=%g bwd=%g)" a b fwd bwd)
+        }
+
+        test "determinism: same inputs give the same output" {
+            Expect.equal (Wrap.wrapDeltaX 256.0 30.0 200.0) (Wrap.wrapDeltaX 256.0 30.0 200.0) "pure function"
+        }
+    ]

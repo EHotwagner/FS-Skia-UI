@@ -239,6 +239,14 @@ let focusedGateContract model target =
           ReadinessPath = Some model.DependencyReportPath
           StaleAssumptions = []
           VerdictCategory = VerificationSuccess }
+    | "SymbolCrossCheck" ->
+        { TargetName = target
+          DirectPrerequisites = []
+          Command = "./fake.sh build -t SymbolCrossCheck"
+          LogPath = log "symbol-cross-check.txt"
+          ReadinessPath = readiness "symbol-cross-check.md"
+          StaleAssumptions = []
+          VerdictCategory = VerificationSuccess }
     | "TemplateCheck" ->
         { TargetName = target
           DirectPrerequisites = [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage"; "TemplateInstantiate"; "TemplateSmoke" ]

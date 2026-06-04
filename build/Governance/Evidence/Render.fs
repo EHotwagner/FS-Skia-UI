@@ -470,12 +470,14 @@ module Render =
                     | None -> "partial"
                 sb.Append(sprintf "readiness-contract: %s\n" fileName) |> ignore
                 sb.Append(sprintf "  status: %s\n" status) |> ignore
+                // Feature 063 (FR-004): label the full required set and the absent
+                // subset distinctly, so one absent token does not read as "all missing".
                 (match h.Required with
                  | Some terms when not (List.isEmpty terms) ->
-                     sb.Append(sprintf "  required-tokens: %s\n" (String.concat ", " terms)) |> ignore
+                     sb.Append(sprintf "  full-required-set: %s\n" (String.concat ", " terms)) |> ignore
                  | _ -> ())
                 (match h.MissingTerms with
                  | Some missing when not (List.isEmpty missing) ->
-                     sb.Append(sprintf "  missing: %s\n" (String.concat ", " missing)) |> ignore
+                     sb.Append(sprintf "  absent-from-file: %s\n" (String.concat ", " missing)) |> ignore
                  | _ -> ())
             sb.ToString()

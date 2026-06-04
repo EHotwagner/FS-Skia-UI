@@ -134,6 +134,12 @@ When you emit an `[S]` task, you MUST also:
 
 ## Workflow, per task
 
+**Before you author any readiness/evidence file**, read the generated
+`docs/evidence-formats.md` (it ships into every generated project). It is the
+single source for the exact shape each readiness/evidence artifact must take —
+read it first so you author against the contract instead of reverse-engineering
+the format from a gate failure.
+
 1. Mark the task `in_progress` in your own head (not in `tasks.md` — the
    file uses the five-state legend only).
 2. Read the task's deps and structured `skillist` from `tasks.deps.yml`.
@@ -143,13 +149,19 @@ When you emit an `[S]` task, you MUST also:
    `.agents/skills/*/SKILL.md`, `src/*/skill/SKILL.md`, template capability
    skill paths, or active generated product skill destinations. Load those
    skills in declared order before code changes for the task begin. Record
-   the loaded paths in `readiness/skill-loading-evidence.md` or in a
-   task-specific verification log before marking the task complete. Each
-   record must include task id, skill id, resolved path, load result,
-   `loaded_at`, `work_started_at`, evidence path, and reviewer exception
-   fields. If a declared skill is missing, unreadable, ambiguous, late-loaded,
-   or missing evidence, block the task and report the task id plus unresolved
-   skill id.
+   the loaded paths in `skill-loading-evidence.md` — read and written from the
+   **feature** readiness dir `specs/<feature>/readiness/skill-loading-evidence.md`
+   (NOT a repo-root `readiness/`) — or in a task-specific verification log before
+   marking the task complete. Write **one row per (task, declared-skill)** pair;
+   each record must include task id, skill id, resolved path (the
+   `.agents/skills/<id>/SKILL.md` or `src/*/skill/SKILL.md` home), load result,
+   `loaded_at`, `work_started_at` (with `loaded_at` strictly **before**
+   `work_started_at`), evidence path, and reviewer exception fields. The
+   skill-loading contract is **enforced only once a task flips to `[X]`**, so it
+   surfaces late — author the rows as you load skills, not retroactively at audit
+   time. If a declared skill is missing, unreadable,
+   ambiguous, late-loaded, or missing evidence, block the task and report the task
+   id plus unresolved skill id.
    implementation batch records must preserve the red-green evidence log,
    graph before/after paths before and after every status change, and the
    skill-loading evidence used for the batch.

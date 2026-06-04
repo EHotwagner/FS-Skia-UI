@@ -1,0 +1,11 @@
+# FSI session — Wrap.wrapDeltaX contract exercise (T006)
+#
+# Source: /tmp/wrap-fsi-probe.fsx (prototype body validating the drafted Wrap.fsi).
+# Range (-w/2, w/2], shortest-path examples, identity, and symmetry-except-+w/2
+# all confirmed before the .fs body lands (T031).
+#
+wrapDeltaX 100 90 10 = 20 (expect 20)
+wrapDeltaX 100 10 90 = -20 (expect -20)
+wrapDeltaX 100 42 42 = 0 (expect 0)
+range ok (all in (-50,50]): true
+symmetry ok (except +w/2): true

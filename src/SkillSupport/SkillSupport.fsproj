@@ -35,6 +35,10 @@
     <Compile Include="Random.fs" />
     <Compile Include="Hud.fsi" />
     <Compile Include="Hud.fs" />
+    <!-- Feature 063 (FR-010): shortest wrap-aware delta on a toroidal axis — the
+         arcade-helper family's third member, past the 3-demo recurrence bar. -->
+    <Compile Include="Wrap.fsi" />
+    <Compile Include="Wrap.fs" />
   </ItemGroup>
 
   <ItemGroup>

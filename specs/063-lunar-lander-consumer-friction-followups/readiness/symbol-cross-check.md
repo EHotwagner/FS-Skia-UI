@@ -1,0 +1,31 @@
+## Symbol consistency (analyze pass G)
+- entity-record GeneratedProductCheck — in {tasks}, missing from {plan, data-model}
+- entity-record Scene — in {plan}, missing from {data-model, tasks}
+- entity-record SymbolCrossCheck — in {plan}, missing from {data-model, tasks}
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- entity-record Wrap — in {tasks}, missing from {plan, data-model}
+- fr-id FR-001 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-002 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-003 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-004 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-005 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-006 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-007 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-008 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-009 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-010 — in {plan, tasks}, missing from {data-model}
+- msg-case Effect — in {plan, tasks}, missing from {data-model}
+- msg-case Model — in {plan, tasks}, missing from {data-model}
+- msg-case Msg — in {plan, tasks}, missing from {data-model}
+- sc-id SC-001 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-002 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-003 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-004 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-005 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-006 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-007 — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant Compile — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant F3 — in {data-model, tasks}, missing from {plan}
+- union-or-screen-variant InvariantCulture — in {data-model, tasks}, missing from {plan}
+- union-or-screen-variant SceneNode — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant ScreenshotPixelContentValidation — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]

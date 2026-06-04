@@ -374,6 +374,7 @@ module ValidationContract =
           "SkillContractPathCheck"
           "SkillQualityCheck"
           "SkillSyncCheck"
+          "SymbolCrossCheck"
           "TargetMetadataDrift"
           "TemplateUpdateSkillPackageCheck"
           "TemplateCheck"

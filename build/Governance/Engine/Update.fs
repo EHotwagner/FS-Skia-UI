@@ -285,6 +285,12 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
           processEffect "dependency report" "dotnet" ("fsi scripts/dependency-report.fsx " + quote (path [ model.ReadinessDir; "dependencies.md" ])) model.RepositoryRoot (path [ model.LogDir; "dependency-report.txt" ])
           RequireFiles("dependency report output", [ model.DependencyReportPath ])
           focusedGateSummary model "DependencyReport" ]
+    | StartTarget Targets.SymbolCrossCheck ->
+        model,
+        [ focusedGateAssumptionCheck model "SymbolCrossCheck"
+          SymbolCrossCheckAnalyze
+          RequireFiles("symbol cross-check output", [ path [ model.ReadinessDir; "symbol-cross-check.md" ] ])
+          focusedGateSummary model "SymbolCrossCheck" ]
     | StartTarget Targets.GeneratedGuidanceCheck ->
         model,
         [ focusedGateAssumptionCheck model "GeneratedGuidanceCheck"

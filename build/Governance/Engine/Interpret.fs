@@ -66,6 +66,7 @@ let interpret root effect =
     | RegenerateSkillistReference -> regenerateSkillistReference model
     | SkillContractPathScan -> runSkillContractPathCheck model
     | TemplateUpdatePackageScan -> runTemplateUpdatePackageCheck model
+    | SymbolCrossCheckAnalyze -> runSymbolCrossCheck model
 
 let runTarget (target: Targets.Target) =
     let model, initEffects = init repositoryRoot

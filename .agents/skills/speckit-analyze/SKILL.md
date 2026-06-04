@@ -155,13 +155,22 @@ Focus on high-signal findings. Limit to 50 findings total; aggregate remainder i
 
 #### G. Cross-Artifact Symbol Consistency (mechanical, FR-008)
 
-Run the **compiled, deterministic** symbol set-difference (the `SymbolCrossCheck`
-helper in `FS.Skia.UI.Build`) over `plan.md`, `data-model.md`, and `tasks.md`, and
-fold its findings into this report — do **not** eyeball it. The helper extracts
-named symbols by kind — `Msg` cases, union/`Screen` variants, entity record names
-(backtick-quoted PascalCase tokens on lines naming the kind), and `FR-`/`SC-` IDs —
-and reports each symbol whose presence set is a **proper subset** of the three
-artifacts (present in some, missing from others). It renders as:
+Run the **compiled, deterministic** symbol set-difference as a real command — do
+**not** eyeball it and do **not** hand-derive the set-difference:
+
+```bash
+./fake.sh build -t SymbolCrossCheck
+```
+
+The target takes **no file arguments**: it resolves the active feature directory
+(the `DependencyReport` pattern), reads `plan.md`, `data-model.md`, and `tasks.md`
+from it, runs the `SymbolCrossCheck` analyzer in `FS.Skia.UI.Build`, **prints** the
+markdown, and **writes** it to `readiness/symbol-cross-check.md`. Consume that output
+and fold its findings into this report. The analyzer extracts named symbols by kind —
+`Msg` cases, union/`Screen` variants, entity record names (backtick-quoted PascalCase
+tokens on lines naming the kind), and `FR-`/`SC-` IDs — and reports each symbol whose
+presence set is a **proper subset** of the three artifacts (present in some, missing
+from others). It renders as:
 
 ```
 ## Symbol consistency (analyze pass G)
