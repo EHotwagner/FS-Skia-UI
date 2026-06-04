@@ -95,7 +95,7 @@ let controlsBoundaryCompositionTests =
         }
 
         test "generated product tests cover product-owned form chart and DataGrid usage" {
-            expectProductOwnedControlsTests "template/base/tests/Product.Tests/Tests.fs"
+            expectProductOwnedControlsTests "template/base/tests/Product.Tests/BehaviorTests.fs"
             expectNoCopiedFrameworkAssets "template/base"
         }
     ]

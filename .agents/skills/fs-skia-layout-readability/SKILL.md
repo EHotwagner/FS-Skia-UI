@@ -59,6 +59,29 @@ match LayoutEvidence.proofLevel evidence with
 | _ -> failwith "not readable-layout proof; classify with fs-skia-evidence-mode"
 ```
 
+## HUD / gameplay-region layout pattern
+
+Reach the readable-layout proof **by design**, not by gate-driven trial and error.
+The intended pattern has three parts, applied in order:
+
+1. **Reserve a HUD band.** Carve a fixed-height status/HUD band off one edge of the
+   surface (top or bottom) before placing any gameplay content. The HUD region is a
+   named rectangle (`hud`) whose bounds are derived from the surface size, not from
+   where text happens to land.
+2. **Confine and clamp gameplay to the gameplay region.** The remaining surface after
+   the HUD band is the named `gameplay` region. Every gameplay coordinate —
+   spawning, movement, wrapping, clamping, collision, and active-entity bounds —
+   must be expressed in and clamped to the gameplay region, so entities can never
+   stray under the HUD band. Clamp at the policy boundary, not after rendering.
+3. **Overdraw the HUD last.** Render gameplay first, then draw the HUD band on top, so
+   that even if a transient gameplay frame reaches the band edge the HUD remains
+   legible. Overdraw is the safety net; the clamp in step 2 is the guarantee.
+
+This pattern makes `ReadableLayout` the natural outcome: the HUD region and gameplay
+region are distinct named rectangles by construction, and the clamp keeps
+`NoLayoutOverlap` true at both default and constrained sizes. A layout that proves
+readable only after nudging specific pixel offsets has skipped step 1 or step 2.
+
 ## Build Commands
 
 Prefer repository targets over ad-hoc command sequences:

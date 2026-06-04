@@ -101,6 +101,10 @@
         "obj/**",
         "**/bin/**",
         "**/obj/**"
+      ],
+      "comment": "Feature 060 (FR-003): the emitted docs/api-surface/**/*.fsi tree is the authoritative framework contract surface; copy it verbatim so the sourceName ('Product') substitution does not rewrite framework signatures (e.g. ProductDefect) in the generated reference.",
+      "copyOnly": [
+        "docs/api-surface/**"
       ]
     },
     {

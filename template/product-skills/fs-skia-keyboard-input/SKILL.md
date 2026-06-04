@@ -7,35 +7,54 @@ description: Map keyboard input to product commands in a generated FS.Skia.UI pr
 
 ## Scope
 
-Use this skill for product keyboard handling: declaring bindings, normalizing raw
-host keys to `ViewerKey`, and reducing key events to product commands through a
-pure `Keyboard.update`.
+Use this skill for product keyboard handling in the `app` profile: mapping a
+normalized `ViewerKey` (plus its down/up flag) to a product `Msg` at the host's
+`MapKey` boundary. This is the boundary the generated host actually threads — there
+is no separate keyboard reducer to seed.
 
 ## Public Contract
 
 The signatures you consume are bundled with this product at
-`docs/api-surface/KeyboardInput/KeyboardInput.fsi`. `Keyboard.init`/`update` are
-pure and return `KeyboardEffect` values; `ViewerKeyboard.normalize` turns a raw
-host key string into a typed `ViewerKey`.
+`docs/api-surface/KeyboardInput/KeyboardInput.fsi` (the `ViewerKey` cases the host
+delivers) and `docs/api-surface/SkiaViewer/SkiaViewer.fsi` (the `MapKey: ViewerKey
+-> bool -> 'msg option` field on the generated host). The host normalizes raw key
+strings to `ViewerKey` for you and calls `MapKey`; your only job is the pure
+`ViewerKey -> bool -> Msg option` mapping.
 
 ## Usage
 
 ```fsharp
 open FS.Skia.UI.KeyboardInput
 
-// Declare product bindings and seed the pure keyboard model.
-let bindings = [ { Key = "ArrowLeft"; Command = "move-left" }
-                 { Key = "Space"; Command = "primary-action" } ]
-
-let model, startupEffects = Keyboard.init bindings
-
-// Turn a raw host key into a product Msg at your MapKey boundary.
+// The host calls this at its MapKey boundary: a normalized ViewerKey + down flag
+// in, an optional product Msg out. This is the entire consumer keyboard contract.
 let mapKey (key: ViewerKey) (isDown: bool) : Msg option =
     match key, isDown with
     | ArrowLeft, true -> Some MoveLeft
     | Space, true -> Some PrimaryAction
     | _ -> None
+
+// Wire it into the generated host (app profile):
+//   let generatedHost = { ... ; MapKey = mapKey ; ... }
 ```
+
+The `Keyboard.init`/`Keyboard.update`/`KeyboardEffect` reducer in
+`KeyboardInput.fsi` is an optional advanced surface for products that maintain
+their own keyboard state machine; the `app` host does **not** use it, so do not
+seed it as the consumer path.
+
+## Common pitfalls
+
+- **Duplicate DU case names across co-opened modules.** `ViewerKey.Unknown of raw:
+  string` (from `FS.Skia.UI.KeyboardInput`) and `ViewerRunBlockedStage.Unknown`
+  (from `FS.Skia.UI.SkiaViewer`) are both in scope once you `open` both modules. A
+  bare `Unknown` then binds to whichever module was opened **last**, producing a
+  misleading type error far from the real site. Qualify the case at the use site:
+  ```fsharp
+  match key with
+  | ViewerKey.Unknown raw -> handleUnknownKey raw   // not a bare `Unknown _`
+  | _ -> ...
+  ```
 
 ## Build Commands
 

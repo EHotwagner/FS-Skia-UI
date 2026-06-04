@@ -28,6 +28,8 @@ type Target =
     | GeneratedGuidanceCheck
     | SkillSyncCheck
     | SkillQualityCheck
+    | SkillContractPathCheck
+    | TemplateUpdateSkillPackageCheck
     | TemplateDrift
     | EvidenceGraph
     | EvidenceAudit
@@ -83,6 +85,8 @@ let allTargets =
       GeneratedGuidanceCheck
       SkillSyncCheck
       SkillQualityCheck
+      SkillContractPathCheck
+      TemplateUpdateSkillPackageCheck
       TemplateDrift
       EvidenceGraph
       EvidenceAudit
@@ -128,6 +132,8 @@ let name target =
     | GeneratedGuidanceCheck -> "GeneratedGuidanceCheck"
     | SkillSyncCheck -> "SkillSyncCheck"
     | SkillQualityCheck -> "SkillQualityCheck"
+    | SkillContractPathCheck -> "SkillContractPathCheck"
+    | TemplateUpdateSkillPackageCheck -> "TemplateUpdateSkillPackageCheck"
     | TemplateDrift -> "TemplateDrift"
     | EvidenceGraph -> "EvidenceGraph"
     | EvidenceAudit -> "EvidenceAudit"
@@ -173,6 +179,8 @@ let directPrerequisites target =
     | GeneratedGuidanceCheck -> []
     | SkillSyncCheck -> []
     | SkillQualityCheck -> []
+    | SkillContractPathCheck -> []
+    | TemplateUpdateSkillPackageCheck -> []
     | TemplateDrift -> []
     | EvidenceGraph -> []
     | EvidenceAudit -> [ EvidenceGraph ]
@@ -199,6 +207,8 @@ let directPrerequisites target =
           ControlsRenderingCheck
           DependencyReport
           GeneratedGuidanceCheck
+          SkillContractPathCheck
+          TemplateUpdateSkillPackageCheck
           TemplateDrift
           EvidenceAudit
           TargetMetadataDrift ]

@@ -1,0 +1,22 @@
+# FR-001 / SC-001 — generated-project feature resolution (template 0.1.82-preview.1)
+Date: 2026-06-04
+
+## Active multi-task feature resolves and echoes feature-directory= / tasks=
+$ SPECKIT_FEATURE_DIR=/home/developer/projects/FS-Skia-UI/specs/060-asteroids-consumer-friction-followups ./fake.sh build -t EvidenceGraph
+feature-source=SPECKIT_FEATURE_DIR override
+feature-directory=/home/developer/projects/FS-Skia-UI/specs/060-asteroids-consumer-friction-followups
+tasks=32
+Stopped due to error
+
+## Loud failure when the resolved feature directory does not exist
+$ SPECKIT_FEATURE_DIR=/no/such/dir ./fake.sh build -t EvidenceGraph
+System.Exception: Cannot resolve the feature to validate: SPECKIT_FEATURE_DIR=/no/such/dir does not exist. Point it at an existing feature directory, or unset it to resolve from .specify/feature.json.
+   at Microsoft.FSharp.Core.PrintfModule.PrintFormatToStringThenFail@1447.Invoke(String message)
+
+## Interpretation
+- Resolution + echo PROVEN: the override resolves the active feature and prints
+  `feature-directory=` and `tasks=32` (N>1). ("Stopped due to error" afterward is the
+  graph validation auditing the 32-task feature from the generated-project working dir,
+  where readiness paths resolve elsewhere — not part of the FR-001 resolution claim.)
+- Loud failure PROVEN: a non-existent SPECKIT_FEATURE_DIR fails loudly naming the path,
+  with NO fallback to a bundled sample.

@@ -1,7 +1,7 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
 <!-- SPECKIT START -->
-specs/059-speckit-tasks-validation-feedback/plan.md
+specs/060-asteroids-consumer-friction-followups/plan.md
 <!-- SPECKIT END -->
 
 ## Run `Route` first; run only the gates it prints

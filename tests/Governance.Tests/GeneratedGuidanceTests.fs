@@ -256,7 +256,7 @@ let generatedGuidanceTests =
                   "let update" ]
 
             expectFileContains
-                "template/base/tests/Product.Tests/Tests.fs"
+                "template/base/tests/Product.Tests/BehaviorTests.fs"
                 [ "Product.Program.view"
                   "Product.Program.generatedHost"
                   "Product.Program.update" ]
@@ -442,7 +442,11 @@ let generatedGuidanceTests =
                     Expect.isFalse (content.Contains(alternate)) $"{path} does not drift to alternate persistent launch contract {alternate}"))
 
             let source = read "template/base/src/Product/Program.fs"
-            let tests = read "template/base/tests/Product.Tests/Tests.fs"
+            // Feature 060 (FR-005): the generated test suite is split into GovernanceTests.fs
+            // (the persistent-launch source scan) + BehaviorTests.fs; assert across both.
+            let tests =
+                read "template/base/tests/Product.Tests/GovernanceTests.fs"
+                + read "template/base/tests/Product.Tests/BehaviorTests.fs"
 
             Expect.stringContains source unqualifiedSelectedPersistentLaunchContract "generated source calls the selected persistent launch contract"
             Expect.stringContains tests unqualifiedSelectedPersistentLaunchContract "generated tests assert the selected persistent launch contract"

@@ -148,7 +148,10 @@ let rules =
           "generated-template"
           [ "template/base/**"; "template/fragments/**"; "template/**" ]
           FocusedAuthority
-          [ Targets.TemplateCheck; Targets.GeneratedProductCheck ]
+          // Feature 060 (FR-003/FR-004): a `template/**` change (incl. the emitted
+          // `template/base/docs/api-surface/**` tree and `template/capabilities.yml`) routes
+          // the skill-claimed-contract-path gate alongside the template/generated checks.
+          [ Targets.TemplateCheck; Targets.GeneratedProductCheck; Targets.SkillContractPathCheck ]
           [ "readiness/evidence-policy-separation.md" ]
           "focused"
           "template"
@@ -228,7 +231,14 @@ let rules =
             "template/fragments/**/skill/SKILL.md"
             "template/base/.agents/skills/**" ]
           FocusedAuthority
-          [ Targets.SkillQualityCheck; Targets.SkillSyncCheck ]
+          // Feature 060 (FR-004/FR-009): an FS-authored skill edit also routes the
+          // skill-claimed-contract-path gate (a product/capability skill may name an
+          // api-surface path) and the template-update package-set gate (the
+          // `fs-skia-template-update` skill lives under `.agents/skills/**`).
+          [ Targets.SkillQualityCheck
+            Targets.SkillSyncCheck
+            Targets.SkillContractPathCheck
+            Targets.TemplateUpdateSkillPackageCheck ]
           [ "readiness/skill-quality-check.md" ]
           "focused"
           "governance"

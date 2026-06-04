@@ -7,7 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Tests.fs" />
+    <!-- Feature 060 (FR-005): durable model-agnostic governance scans compile first and
+         survive a scaffold-model swap; replaceable scaffold-behavior tests compile after. -->
+    <Compile Include="GovernanceTests.fs" />
+    <Compile Include="BehaviorTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

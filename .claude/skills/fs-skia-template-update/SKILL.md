@@ -60,8 +60,9 @@ contract is the generated `Directory.Packages.props` pin set and the
      sed -i 's|\(#r "nuget: FS\.Skia\.UI\.Build, \)[^"]*"|\1<new-version>"|' template/base/build.fsx
      ```
    - The props `sed` must update every `FS.Skia.UI*` `<PackageVersion ... Version="...">`
-     entry to the current package version (nine repo packages):
+     entry to the current package version (ten template-pinned packages):
      - `FS.Skia.UI.Build`
+     - `FS.Skia.UI.SkillSupport`
      - `FS.Skia.UI.Scene`
      - `FS.Skia.UI.SkiaViewer`
      - `FS.Skia.UI.Elmish`
@@ -70,6 +71,10 @@ contract is the generated `Directory.Packages.props` pin set and the
      - `FS.Skia.UI.Controls`
      - `FS.Skia.UI.Controls.Elmish`
      - `FS.Skia.UI.Testing`
+   - `FS.Skia.UI.Input` is **packable but not template-pinned** — it ships to the local
+     feed (so it appears in the step-5 feed loop below) but the generated
+     `Directory.Packages.props` does not reference it, so it is **not** in the props-pin
+     list above.
    - Leave non-repo packages such as `Expecto`, `Microsoft.NET.Test.Sdk`, and `YoloDev.Expecto.TestSdk` unchanged unless the user explicitly asks.
 
 4. Bump the template package version in `.template.package/FS.Skia.UI.Template.fsproj`:
@@ -89,16 +94,19 @@ contract is the generated `Directory.Packages.props` pin set and the
      ```
    - Do not delete source files or reset the repo to fix FAKE cache problems.
    - After bumping, verify every current repo package exists in the local feed
-     before validating generated projects. Loop over the exact package IDs and
-     the version detected in step 2:
+     before validating generated projects. The loop enumerates the **full packable
+     set** (eleven projects: the props-pinned ten plus the packable-but-unpinned
+     `Input`); it is the authoritative package list and is checked against the
+     packable `.fsproj` set by `TemplateUpdateSkillPackageCheck`, so it cannot drift.
+     Loop over the exact package leaves and the version detected in step 2:
      ```bash
      v=<version>
-     for p in Build Scene SkiaViewer Elmish KeyboardInput Layout Controls Controls.Elmish Testing; do
-       test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.$p.$v.nupkg" && echo "OK  $p" || echo "MISS $p"
+     for pkg in Build Scene SkiaViewer Elmish KeyboardInput Input Layout Controls Controls.Elmish Testing SkillSupport; do
+       test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.$pkg.$v.nupkg" && echo "OK  $pkg" || echo "MISS $pkg"
      done
-     # FS.Skia.UI (the Lib package) has no suffix:
-     test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.$v.nupkg" && echo "OK  (Lib)" || echo "MISS (Lib)"
      ```
+   - Do **not** add a suffix-less bare-Lib feed probe: feature 053 deleted `src/Lib`
+     and unpublished the leaf-less `FS.Skia.UI` package, so no such `.nupkg` is produced.
    - If solution-level `dotnet pack` or a prior merge pack missed a packable
      repo package, pack that project explicitly before generated
      restore/test validation. This has happened for

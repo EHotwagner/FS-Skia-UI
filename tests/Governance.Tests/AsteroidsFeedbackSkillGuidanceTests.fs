@@ -18,12 +18,14 @@ let tasksGuidancePaths =
 let generatedProductGuidancePaths =
     [ "template/base/README.md"
       "template/base/docs/product.md"
-      "template/base/tests/Product.Tests/Tests.fs" ]
+      "template/base/tests/Product.Tests/BehaviorTests.fs" ]
 
+// Feature 060 (FR-005): the visual-evidence-honesty vocabulary moved to the durable
+// GovernanceTests.fs half of the split generated test suite.
 let layoutEvidenceGuidancePaths =
     [ ".agents/skills/fs-skia-evidence-mode/SKILL.md"
       "template/base/docs/product.md"
-      "template/base/tests/Product.Tests/Tests.fs" ]
+      "template/base/tests/Product.Tests/GovernanceTests.fs" ]
 
 let packableProjectPaths =
     [ "src/Scene/Scene.fsproj", "FS.Skia.UI.Scene", [ "src/Scene/Scene.fsi" ]

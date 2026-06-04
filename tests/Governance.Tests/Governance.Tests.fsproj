@@ -65,6 +65,8 @@
     <Compile Include="GraphicsEnvironmentTests.fs" />
     <!-- Feature 059: owns-driven ownership, FR-007 directives, hint resolution. -->
     <Compile Include="OwnsValidationTests.fs" />
+    <!-- Feature 060: api-surface generator + SkillContractPathCheck + TemplateUpdateSkillPackageCheck. -->
+    <Compile Include="Feature060GovernanceTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

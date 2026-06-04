@@ -1,0 +1,31 @@
+# FR-002 / T009 — template pack + install (TemplatePack)
+
+Date: 2026-06-04
+- Template package version bumped: 0.1.81-preview.1 -> 0.1.82-preview.1
+  (.template.package/FS.Skia.UI.Template.fsproj), required because template/base/**
+  content changed (api-surface tree, split tests, copyOnly fix, corrected skills).
+- ./fake.sh build -t TemplatePack -> Status: Ok (twice; second run after the
+  docs/api-surface copyOnly fix in template.json).
+- Packed artifact: artifacts/templates/FS.Skia.UI.Template.0.1.82-preview.1.nupkg
+- dotnet new uninstall FS.Skia.UI.Template; dotnet new install <artifact> -> installed.
+- The 11 packable FS.Skia.UI.* libraries are already at 0.1.63-preview.1 in the local
+  feed ($HOME/.local/share/nuget-local), so generated projects carry 059's merged
+  resolveFeatureDir (FR-002 ship confirmed end-to-end — see generated-project/feature-resolution.log).
+
+## template package
+$ dotnet pack .template.package/FS.Skia.UI.Template.fsproj -c Release -o "/home/developer/projects/FS-Skia-UI/artifacts/templates"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  FS.Skia.UI.Template -> /home/developer/projects/FS-Skia-UI/.template.package/bin/Release/net10.0/FS.Skia.UI.Template.dll
+  The package FS.Skia.UI.Template.0.1.82-preview.1 is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.82-preview.1.nupkg'.
+
+exit-code=0
+
+## template package
+$ dotnet pack .template.package/FS.Skia.UI.Template.fsproj -c Release -o "/home/developer/projects/FS-Skia-UI/artifacts/templates"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  FS.Skia.UI.Template -> /home/developer/projects/FS-Skia-UI/.template.package/bin/Release/net10.0/FS.Skia.UI.Template.dll
+
+exit-code=0

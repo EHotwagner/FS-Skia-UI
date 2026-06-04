@@ -17,6 +17,12 @@
 
 - **FR-001**: System MUST [specific capability]
 
+> Interacting / conflicting requirements: when two requirements pull in opposite
+> directions, state the resolution explicitly rather than leaving it to implementer
+> judgment. For example, an entity-count bound vs. per-wave difficulty escalation —
+> "count may cap; difficulty continues via speed" — so different implementers resolve
+> it consistently.
+
 ### Framework Governance Prompts *(mandatory)*
 
 - **Package impact**: State whether package identities, package contents,

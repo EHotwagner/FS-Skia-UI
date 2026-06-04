@@ -53,6 +53,18 @@ the effect interpreter was run against real dependencies where safe.
 This rule does not apply to Setup, Foundation, Integration, or Polish
 phase tasks; those are evaluated against their own phase verification.
 
+## Success-criterion → assertion mapping
+
+Where a success criterion is mechanically testable (first-frame content, no-overlap,
+determinism, a structural invariant), pair it with a concrete enforcing assertion so a
+headline SC cannot be silently violated while every gate stays green. Note the mapping on
+the task line or in the test name, e.g. `(SC-003)`. The worked example for this feature is
+the split generated test suite: SC-003 ("governance scans survive a model swap") is enforced
+by `GovernanceTests.fs` being model-agnostic (it reads source text, never the product model
+API) compiled before the replaceable `BehaviorTests.fs` — so the durable governance unit
+keeps compiling and passing when the model is swapped, and the SC has a real assertion behind
+it rather than only prose.
+
 ## Task Annotations
 
 - **[P]** — parallel-safe (no deps inside the current phase)

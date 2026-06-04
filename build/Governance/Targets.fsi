@@ -40,6 +40,8 @@ type Target =
     | GeneratedGuidanceCheck
     | SkillSyncCheck
     | SkillQualityCheck
+    | SkillContractPathCheck
+    | TemplateUpdateSkillPackageCheck
     | TemplateDrift
     | EvidenceGraph
     | EvidenceAudit

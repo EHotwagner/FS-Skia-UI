@@ -1,0 +1,40 @@
+# FR-005 / SC-003 — generated tests separate durable governance from replaceable behavior
+
+Generated: dotnet new fs-skia-ui --name FrictionCheck (template 0.1.82-preview.1, app profile)
+Date: 2026-06-04
+
+## The split shipped into the generated project
+
+The single `Tests.fs` is replaced by two compilation units in `tests/FrictionCheck.Tests`
+(the `sourceName` "Product" -> "FrictionCheck" rename applies to the test project dir/fsproj):
+
+    tests/FrictionCheck.Tests/GovernanceTests.fs   (module ProductGovernanceTests)
+    tests/FrictionCheck.Tests/BehaviorTests.fs     (module ProductBehaviorTests)
+    tests/FrictionCheck.Tests/FrictionCheck.Tests.fsproj
+
+Compile order (GovernanceTests before BehaviorTests):
+
+    <Compile Include="GovernanceTests.fs" />
+    <Compile Include="BehaviorTests.fs" />
+    <Compile Include="Program.fs" />
+
+## GovernanceTests.fs is model-agnostic; BehaviorTests.fs carries the model behavior
+
+References to the product model API (`Product.Program.view/update/generatedHost`,
+`controlsExampleView`, `adapterProgram`, `dispatchViewerKey`, `Product.Model`):
+
+    GovernanceTests.fs : 0   (reads SOURCE TEXT only — productSource/productSources, build.fsx scans)
+    BehaviorTests.fs   : 13  (calls the scaffold view/update/host/scene-text directly)
+
+## Conclusion (SC-003)
+
+Swapping the scaffold model (`src/FrictionCheck/Model.fs` etc.) changes only the model API
+that `BehaviorTests.fs` calls, so only `BehaviorTests.fs` needs rewriting. `GovernanceTests.fs`
+exercises no model API — it asserts source/structure/evidence-discoverability invariants over
+file text — so it keeps compiling and passing across the model swap. The compile order
+guarantees the durable governance unit is independent of the replaceable behavior unit.
+
+The model-agnosticism is enforced at the repo level by the durable/replaceable separation in
+`template/base/tests/Product.Tests/{GovernanceTests,BehaviorTests}.fs` and by
+`Governance.Tests` (ControlsBoundaryCompositionTests -> BehaviorTests.fs;
+GeneratedGuidanceTests/AsteroidsFeedbackSkillGuidanceTests repointed to the correct half).

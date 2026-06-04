@@ -712,20 +712,34 @@ let main args =
         0
 """
 
-    let tests =
-        """module ProductTests
+    // Feature 060 (FR-005): the generated test suite is split into a durable, model-agnostic
+    // GovernanceTests.fs and a replaceable BehaviorTests.fs (the copied template
+    // `Product.Tests.fsproj` compiles both in that order). The scaffold emits minimal
+    // versions matching the minimal scaffold Program.fs.
+    let governanceTests =
+        """module ProductGovernanceTests
+
+open Expecto
+
+[<Tests>]
+let governanceTests =
+    testList "product-governance" [
+        test "generated product test suite is wired" {
+            Expect.equal 1 1 "product tests run"
+        }
+    ]
+"""
+
+    let behaviorTests =
+        """module ProductBehaviorTests
 
 open Expecto
 open Product.Program
 open FS.Skia.UI.Scene
 
 [<Tests>]
-let tests =
-    testList "product" [
-        test "generated product test suite is wired" {
-            Expect.equal 1 1 "product tests run"
-        }
-
+let behaviorTests =
+    testList "product-behavior" [
         test "headless scene profile builds a scene-only product" {
             Expect.isGreaterThan (sceneElementCount()) 1 "scene-only product renders multiple scene nodes"
             Expect.exists productScene.Nodes (function Rectangle _ -> true | _ -> false) "scene includes a rectangle"
@@ -735,7 +749,8 @@ let tests =
 """
 
     File.WriteAllText(path [ row.Root; "src"; "Product"; "Program.fs" ], program)
-    File.WriteAllText(path [ row.Root; "tests"; "Product.Tests"; "Tests.fs" ], tests)
+    File.WriteAllText(path [ row.Root; "tests"; "Product.Tests"; "GovernanceTests.fs" ], governanceTests)
+    File.WriteAllText(path [ row.Root; "tests"; "Product.Tests"; "BehaviorTests.fs" ], behaviorTests)
 
 let copySelectedSkills model row capabilities =
     let skillRoot = path [ row.Root; ".agents"; "skills" ]
@@ -1213,7 +1228,11 @@ let scanV3GeneratedRow model row =
     let productProgram = File.ReadAllText(path [ row.Root; "src"; "Product"; "Program.fs" ])
     let productEvidenceCommands = File.ReadAllText(path [ row.Root; "src"; "Product"; "EvidenceCommands.fs" ])
     let productLaunchSource = productProgram + Environment.NewLine + productEvidenceCommands
-    let productTests = File.ReadAllText(path [ row.Root; "tests"; "Product.Tests"; "Tests.fs" ])
+    let productTests =
+        // Feature 060 (FR-005): the generated test suite is two files now.
+        [ "GovernanceTests.fs"; "BehaviorTests.fs" ]
+        |> List.map (fun f -> File.ReadAllText(path [ row.Root; "tests"; "Product.Tests"; f ]))
+        |> String.concat Environment.NewLine
     let removedChartsPackage = "FS.Skia.UI." + "Charts"
 
     if productProject.IndexOf($"PackageReference Include=\"{removedChartsPackage}\"", StringComparison.Ordinal) >= 0 then
@@ -1595,7 +1614,8 @@ let runGeneratedConsumerValidation model =
 
     let generatedTestsExist =
         File.Exists(path [ row.Root; "tests"; "Product.Tests"; "Product.Tests.fsproj" ])
-        && File.Exists(path [ row.Root; "tests"; "Product.Tests"; "Tests.fs" ])
+        && File.Exists(path [ row.Root; "tests"; "Product.Tests"; "GovernanceTests.fs" ])
+        && File.Exists(path [ row.Root; "tests"; "Product.Tests"; "BehaviorTests.fs" ])
 
     let semanticPassed =
         packageResolutionPassed

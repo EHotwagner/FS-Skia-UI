@@ -62,6 +62,9 @@ let interpret root effect =
     | EvidenceAuditCheck -> runEvidenceAuditCheck root model
     | PerPackageSurfaceDiffCheck -> runPerPackageSurfaceDiff model
     | SkillQualityScan -> runSkillQualityCheck model
+    | RegenerateApiSurface -> regenerateApiSurface model
+    | SkillContractPathScan -> runSkillContractPathCheck model
+    | TemplateUpdatePackageScan -> runTemplateUpdatePackageCheck model
 
 let runTarget (target: Targets.Target) =
     let model, initEffects = init repositoryRoot

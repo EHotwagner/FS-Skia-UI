@@ -34,6 +34,22 @@ let hud : Scene =
           Scene.textAt { X = 12.0; Y = 30.0 } "tally: 0" ink ]
 ```
 
+## Common pitfalls
+
+- **Consumer geometry records colliding with framework `Point`/`Rect`.** Scene exposes
+  `Point = { X: float; Y: float }` and `Rect = { X: float; Y: float; Width: float;
+  Height: float }`. If your product also defines a geometry record with the same field
+  names (a common `type Vec2 = { X: float; Y: float }`), F# label resolution binds a
+  bare `{ X = ...; Y = ... }` to whichever record type is in scope **last**, which
+  produces a misleading error cascade at unrelated call sites. Disambiguate explicitly
+  at the boundary — annotate the type or qualify the fields — and convert your record
+  into the framework type when you call Scene:
+  ```fsharp
+  type Vec2 = { X: float; Y: float }                     // product geometry
+  let toPoint (v: Vec2) : Point = { X = v.X; Y = v.Y }   // explicit conversion
+  let p : Point = { Point.X = 0.0; Point.Y = 0.0 }       // or qualify fields inline
+  ```
+
 ## Build Commands
 
 Run `./fake.sh build -t Dev` then `./fake.sh build -t Verify` in this product.

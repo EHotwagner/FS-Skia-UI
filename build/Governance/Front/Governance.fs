@@ -166,6 +166,169 @@ let runSkillQualityCheck (model: BuildModel) =
                 (Findings.renderDetail findings)
         )
 
+// Feature 060 (FR-003) — api-surface regeneration edge. Plan the emitted tree from the
+// capability catalog `contracts:`, write each emitted `.fsi` byte-identical to its source,
+// and prune any orphan emitted file/dir with no capability source so the surface a consumer
+// reads in a generated project never drifts from the framework signatures.
+let regenerateApiSurface (model: BuildModel) =
+    let root = model.RepositoryRoot
+    let toFull (rel: string) = repoRelPath root rel
+    let entries = ApiSurfaceGen.plan (Capabilities.readCatalog model.CapabilityCatalogPath)
+
+    let expected =
+        entries |> List.map (fun e -> (toFull e.EmittedRelPath).Replace('\\', '/')) |> Set.ofList
+
+    for entry in entries do
+        let sourceFull = toFull entry.SourceFsi
+
+        if File.Exists sourceFull then
+            let emittedFull = toFull entry.EmittedRelPath
+            ensureParent emittedFull
+            File.WriteAllBytes(emittedFull, File.ReadAllBytes sourceFull)
+
+    let emittedRootFull = toFull ApiSurfaceGen.emittedRoot
+
+    if Directory.Exists emittedRootFull then
+        for existing in Directory.EnumerateFiles(emittedRootFull, "*", SearchOption.AllDirectories) do
+            if not (expected.Contains(existing.Replace('\\', '/'))) then
+                File.Delete existing
+
+        for dir in Directory.EnumerateDirectories(emittedRootFull, "*", SearchOption.AllDirectories) |> Seq.sortDescending do
+            if Directory.Exists dir && Seq.isEmpty (Directory.EnumerateFileSystemEntries dir) then
+                Directory.Delete dir
+
+// Feature 060 (FR-004) — SkillContractPathCheck. Every capability/product skill that names
+// a `docs/api-surface/...fsi` contract source must name a path the emitted tree actually
+// provides; a "no DLL reflection needed" claim against an absent path is a hard failure.
+let runSkillContractPathCheck (model: BuildModel) =
+    let root = model.RepositoryRoot
+    let entries = ApiSurfaceGen.plan (Capabilities.readCatalog model.CapabilityCatalogPath)
+
+    let skillFiles =
+        [ "template/product-skills"; "src"; ".agents/skills" ]
+        |> List.collect (fun sub ->
+            let dir = path (root :: (sub.Split('/') |> List.ofArray))
+
+            if Directory.Exists dir then
+                Directory.EnumerateFiles(dir, "SKILL.md", SearchOption.AllDirectories) |> List.ofSeq
+            else
+                [])
+        |> List.filter (fun f ->
+            let n = f.Replace('\\', '/')
+            not (n.Contains "/obj/" || n.Contains "/bin/"))
+        |> List.distinct
+
+    let claims =
+        skillFiles
+        |> List.collect (fun full ->
+            let rel = (Path.GetRelativePath(root, full)).Replace('\\', '/')
+            SkillContractPath.parseClaims rel (File.ReadAllText full))
+
+    let diagnostics = SkillContractPath.check entries claims
+    let orphans = SkillContractPath.orphans entries claims
+
+    let report =
+        [ "# SkillContractPathCheck"
+          ""
+          if List.isEmpty diagnostics then
+              sprintf
+                  "PASS: every `docs/api-surface/...fsi` path claimed across %d skill file(s) resolves to the emitted api-surface tree (%d entries)."
+                  (List.length skillFiles)
+                  (List.length entries)
+          else
+              "FAIL: a skill names a contract source the generated project does not emit."
+              ""
+              yield! diagnostics |> List.map (fun d -> sprintf "- %s" d)
+          if not (List.isEmpty orphans) then
+              ""
+              "Advisory (emitted but unclaimed):"
+              yield! orphans |> List.map (fun o -> sprintf "- %s" o) ]
+        |> String.concat Environment.NewLine
+
+    let reportPath = path [ model.ReadinessDir; "skill-contract-path-check.md" ]
+    let logPath = path [ model.LogDir; "skill-contract-path-check.txt" ]
+    ensureParent reportPath
+    File.WriteAllText(reportPath, report)
+    ensureParent logPath
+    File.WriteAllText(logPath, report)
+
+    if not (List.isEmpty diagnostics) then
+        failwith (
+            sprintf
+                "SkillContractPathCheck failed: %d skill-claimed api-surface path(s) are not emitted.\n%s"
+                (List.length diagnostics)
+                (String.concat Environment.NewLine diagnostics)
+        )
+
+// Feature 060 (FR-009) — TemplateUpdateSkillPackageCheck. The `fs-skia-template-update`
+// skill's enumerated package set must equal the packable `.fsproj` set so it cannot drift
+// (no phantom bare-Lib, no missing SkillSupport/Input). The packable-set discovery stays
+// here; TemplateUpdatePackage.check is pure.
+let runTemplateUpdatePackageCheck (model: BuildModel) =
+    let root = model.RepositoryRoot
+
+    let packableProjects =
+        [ "src"; "build" ]
+        |> List.collect (fun sub ->
+            let dir = path [ root; sub ]
+
+            if Directory.Exists dir then
+                Directory.EnumerateFiles(dir, "*.fsproj", SearchOption.AllDirectories) |> List.ofSeq
+            else
+                [])
+        |> List.filter (fun f ->
+            let n = f.Replace('\\', '/')
+
+            if n.Contains "/obj/" || n.Contains "/bin/" then
+                false
+            else
+                let text = File.ReadAllText f
+                text.Contains "<IsPackable>true</IsPackable>" || text.Contains "<PackageId>")
+        |> List.distinct
+
+    let packableLeaves =
+        packableProjects
+        |> List.map (fun f -> TemplateUpdatePackage.leafOfProject ((Path.GetRelativePath(root, f)).Replace('\\', '/')))
+        |> List.distinct
+
+    let skillRel = ".agents/skills/fs-skia-template-update/SKILL.md"
+    let skillFull = repoRelPath root skillRel
+    let skillText = if File.Exists skillFull then File.ReadAllText skillFull else ""
+
+    let diagnostics = TemplateUpdatePackage.check packableLeaves skillRel skillText
+
+    let report =
+        [ "# TemplateUpdateSkillPackageCheck"
+          ""
+          sprintf "Packable set (%d): %s" (List.length packableLeaves) (packableLeaves |> List.sort |> String.concat ", ")
+          sprintf
+              "Skill step-5 feed loop (%d): %s"
+              (TemplateUpdatePackage.feedLoopLeaves skillText |> List.length)
+              (TemplateUpdatePackage.feedLoopLeaves skillText |> List.sort |> String.concat ", ")
+          ""
+          if List.isEmpty diagnostics then
+              "PASS: the fs-skia-template-update skill's package enumeration equals the packable set (zero phantom, zero missing)."
+          else
+              "FAIL: the fs-skia-template-update skill's package enumeration has drifted from the packable set."
+              ""
+              yield! diagnostics |> List.map (fun d -> sprintf "- %s" d) ]
+        |> String.concat Environment.NewLine
+
+    let reportPath = path [ model.ReadinessDir; "template-update-package-check.md" ]
+    let logPath = path [ model.LogDir; "template-update-package-check.txt" ]
+    ensureParent reportPath
+    File.WriteAllText(reportPath, report)
+    ensureParent logPath
+    File.WriteAllText(logPath, report)
+
+    if not (List.isEmpty diagnostics) then
+        failwith (
+            sprintf
+                "TemplateUpdateSkillPackageCheck failed: %d package-enumeration drift(s).\n%s"
+                (List.length diagnostics)
+                (String.concat Environment.NewLine diagnostics)
+        )
+
 // Feature 044 — RefreshSurfaceBaselines regeneration edge (US1). Plan the derived tree
 // from canonical, write each derived file's bytes + the provenance manifest, and remove
 // any orphan derived file with no canonical source so the mirror stays exact.

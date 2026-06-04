@@ -1,0 +1,41 @@
+# FR-003 / SC-002 — api-surface present and byte-identical in a freshly generated project
+
+Generated: dotnet new fs-skia-ui --name FrictionCheck (template 0.1.82-preview.1, app profile)
+Date: 2026-06-04
+
+## Emitted tree (docs/api-surface/)
+docs/api-surface/Controls/Accessibility.fsi
+docs/api-surface/Controls/Attributes.fsi
+docs/api-surface/Controls/Catalog.fsi
+docs/api-surface/Controls/Charts.fsi
+docs/api-surface/Controls/Collections.fsi
+docs/api-surface/Controls/Control.fsi
+docs/api-surface/Controls/ControlRuntime.fsi
+docs/api-surface/Controls/CustomControl.fsi
+docs/api-surface/Controls/DataGrid.fsi
+docs/api-surface/Controls/Diagnostics.fsi
+docs/api-surface/Controls/RichText.fsi
+docs/api-surface/Controls/TextInput.fsi
+docs/api-surface/Controls/Theme.fsi
+docs/api-surface/Controls/Types.fsi
+docs/api-surface/Elmish/Elmish.fsi
+docs/api-surface/KeyboardInput/KeyboardInput.fsi
+docs/api-surface/Layout/Graph.fsi
+docs/api-surface/Layout/GraphValidation.fsi
+docs/api-surface/Layout/Layout.fsi
+docs/api-surface/Layout/Types.fsi
+docs/api-surface/Scene/Scene.fsi
+docs/api-surface/SkiaViewer/SkiaViewer.fsi
+docs/api-surface/Testing/Testing.fsi
+
+## Byte-identity of every skill-claimed contract path vs framework source .fsi
+MATCH docs/api-surface/Scene/Scene.fsi  ==  src/Scene/Scene.fsi
+MATCH docs/api-surface/SkiaViewer/SkiaViewer.fsi  ==  src/SkiaViewer/SkiaViewer.fsi
+MATCH docs/api-surface/Elmish/Elmish.fsi  ==  src/Elmish/Elmish.fsi
+MATCH docs/api-surface/KeyboardInput/KeyboardInput.fsi  ==  src/KeyboardInput/KeyboardInput.fsi
+MATCH docs/api-surface/Testing/Testing.fsi  ==  src/Testing/Testing.fsi
+
+## SkillContractPathCheck PASS (readiness/skill-contract-path-check.md)
+Every product/capability skill's docs/api-surface/<Pkg>/<file>.fsi claim exists in the emitted tree.
+template.json marks docs/api-surface/** copyOnly so the sourceName ('Product') substitution does
+not rewrite framework signatures (e.g. ProductDefect) in the generated reference.

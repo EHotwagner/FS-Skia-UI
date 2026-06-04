@@ -365,6 +365,29 @@ let generatedProjectValidationTests =
                 Expect.stringContains build required $"generated evidence diagnostics include {required}")
         }
 
+        test "generated evidence resolves the active feature, echoes feature-directory/tasks, and fails loudly (FR-001)" {
+            // Feature 060 (FR-001/SC-001): confirm 059's resolveFeatureDir end-to-end in the
+            // shipped generated build.fsx — it resolves via SPECKIT_FEATURE_DIR then
+            // .specify/feature.json, echoes the audited feature-directory= and tasks=, and
+            // fails loudly (never falls back to a bundled sample) when unresolved.
+            expectFileContains
+                "template/base/build.fsx"
+                [ "let resolveFeatureDir"
+                  "SPECKIT_FEATURE_DIR"
+                  "\"feature_directory\""
+                  ".specify"
+                  "/speckit.specify"
+                  "never falls back to a bundled sample"
+                  "printfn \"feature-directory=%s\" featureDir"
+                  "printfn \"tasks=%d\" (List.length gr.Tasks)" ]
+
+            let build = read "template/base/build.fsx"
+            // The override and the feature.json branch both fail loudly when the resolved
+            // directory does not exist — there is no silent placeholder pass.
+            Expect.stringContains build "SPECKIT_FEATURE_DIR=%s does not exist" "missing override fails loudly naming the path"
+            Expect.stringContains build "has no usable" "empty feature.json fails loudly directing to /speckit.specify"
+        }
+
         test "generated guidance documents reliable evidence workflows" {
             expectFileContains
                 "template/base/README.md"

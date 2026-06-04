@@ -95,6 +95,11 @@ type BuildEffect =
     | PerPackageSurfaceDiffCheck
     // Feature 058: pure skill-quality rubric check (re-derived in interpret, so no payload).
     | SkillQualityScan
+    // Feature 060: api-surface regeneration (FR-003) + anti-drift scans (FR-004 / FR-009);
+    // re-derived in interpret, so no payload.
+    | RegenerateApiSurface
+    | SkillContractPathScan
+    | TemplateUpdatePackageScan
 
 /// Repository root (discovered by walking up for .specify/feature.json).
 val repositoryRoot: string

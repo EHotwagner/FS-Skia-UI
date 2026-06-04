@@ -103,6 +103,10 @@ let update msg model =
           RegenerateGovernedBlocks
           RegenerateSkillTree
           RegenerateConstitutionFragments
+          // Feature 060 (FR-003): regenerate the emitted `docs/api-surface/` tree from the
+          // capability catalog `contracts:` so the surface a consumer reads in a generated
+          // project stays byte-identical to the framework `.fsi` (currency in TargetMetadataDrift).
+          RegenerateApiSurface
           RequireFiles(
               "stable package surface baselines",
               [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.Layout.txt" ]
@@ -282,6 +286,18 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
           SkillQualityScan
           RequireFiles("skill quality report", [ path [ model.ReadinessDir; "skill-quality-check.md" ]; path [ model.LogDir; "skill-quality-check.txt" ] ])
           focusedGateSummary model "SkillQualityCheck" ]
+    | StartTarget Targets.SkillContractPathCheck ->
+        model,
+        [ focusedGateAssumptionCheck model "SkillContractPathCheck"
+          SkillContractPathScan
+          RequireFiles("skill contract path report", [ path [ model.ReadinessDir; "skill-contract-path-check.md" ] ])
+          focusedGateSummary model "SkillContractPathCheck" ]
+    | StartTarget Targets.TemplateUpdateSkillPackageCheck ->
+        model,
+        [ focusedGateAssumptionCheck model "TemplateUpdateSkillPackageCheck"
+          TemplateUpdatePackageScan
+          RequireFiles("template update package report", [ path [ model.ReadinessDir; "template-update-package-check.md" ] ])
+          focusedGateSummary model "TemplateUpdateSkillPackageCheck" ]
     | StartTarget Targets.TemplateDrift ->
         model,
         [ focusedGateAssumptionCheck model "TemplateDrift"
@@ -441,12 +457,43 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
                 checkTarget GovernedBlocks.constitutionConcreteRel GovernedBlocks.Concrete
                 @ checkTarget GovernedBlocks.constitutionTwinRel GovernedBlocks.Twin
 
+        // Feature 060 (FR-003): the emitted `docs/api-surface/<Pkg>/<file>.fsi` tree is a
+        // single-source generated artifact (from `template/capabilities.yml` `contracts:`),
+        // so its currency folds here next to the contract.yml / constitution / governed-block
+        // checks. The catalog + .fsi + emitted-tree reads stay at this interpreter edge;
+        // ApiSurfaceGen.plan/currency are pure (Principle IV).
+        let apiSurfaceDiagnostics =
+            let catalogPath = model.CapabilityCatalogPath
+
+            if not (File.Exists catalogPath) then
+                [ "template/capabilities.yml is missing — cannot check api-surface currency" ]
+            else
+                let entries = ApiSurfaceGen.plan (Capabilities.readCatalog catalogPath)
+                let toFull (rel: string) = repoRelPath model.RepositoryRoot rel
+
+                let readBytes (rel: string) =
+                    let full = toFull rel
+                    if File.Exists full then Some(File.ReadAllBytes full) else None
+
+                let emittedRootFull = toFull ApiSurfaceGen.emittedRoot
+
+                let existing =
+                    if Directory.Exists emittedRootFull then
+                        Directory.EnumerateFiles(emittedRootFull, "*", SearchOption.AllDirectories)
+                        |> Seq.map (fun f -> (Path.GetRelativePath(model.RepositoryRoot, f)).Replace('\\', '/'))
+                        |> Seq.toList
+                    else
+                        []
+
+                ApiSurfaceGen.currency entries readBytes existing
+
         let diagnostics =
             structuralDiagnostics
             @ currencyDiagnostics
             @ constitutionDiagnostics
             @ governedBlockDiagnostics
             @ constitutionRenderDiagnostics
+            @ apiSurfaceDiagnostics
 
         let report = TargetMetadata.driftMarkdown diagnostics
 

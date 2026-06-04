@@ -47,6 +47,16 @@
     <Compile Include="PerPackageSurface.fs" />
     <Compile Include="Capabilities.fsi" />
     <Compile Include="Capabilities.fs" />
+    <!-- Feature 060: api-surface generator (FR-003) + the two anti-drift checks
+         (SkillContractPathCheck FR-004, TemplateUpdateSkillPackageCheck FR-009). Pure
+         modules over the capability catalog / packable set; reads + writes stay at the
+         build interpreter edge (Front/Governance.fs). -->
+    <Compile Include="ApiSurfaceGen.fsi" />
+    <Compile Include="ApiSurfaceGen.fs" />
+    <Compile Include="SkillContractPath.fsi" />
+    <Compile Include="SkillContractPath.fs" />
+    <Compile Include="TemplateUpdatePackage.fsi" />
+    <Compile Include="TemplateUpdatePackage.fs" />
     <Compile Include="SkillistView.fsi" />
     <Compile Include="SkillistView.fs" />
     <Compile Include="ConstitutionFragments.fsi" />

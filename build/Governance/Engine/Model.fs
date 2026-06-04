@@ -185,6 +185,12 @@ type BuildEffect =
     | PerPackageSurfaceDiffCheck
     // Feature 058 (US1): pure skill-quality rubric check; enumeration/IO at the interpret edge.
     | SkillQualityScan
+    // Feature 060: api-surface single-source regeneration (FR-003) folded into the
+    // RefreshSurfaceBaselines refresh, plus the two anti-drift scans (FR-004 / FR-009).
+    // Catalog/skill/packable-set reads + emitted-tree writes live at the interpret edge.
+    | RegenerateApiSurface
+    | SkillContractPathScan
+    | TemplateUpdatePackageScan
 
 let init root =
     let readiness = featureReadiness root

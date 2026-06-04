@@ -1,0 +1,134 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "specs/060-asteroids-consumer-friction-followups/plan.md",
+      "line": 106,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: **None planned.** All FR-001/FR-003/FR-005 evidence is real"
+    },
+    {
+      "file": "specs/060-asteroids-consumer-friction-followups/plan.md",
+      "line": 149,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-layout-readability/SKILL.md       # FR-008 (canonical)"
+    },
+    {
+      "file": "specs/060-asteroids-consumer-friction-followups/plan.md",
+      "line": 150,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-template-update/SKILL.md          # FR-009 (canonical)"
+    },
+    {
+      "file": "specs/060-asteroids-consumer-friction-followups/plan.md",
+      "line": 154,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/**                                        # regenerated from .agents"
+    },
+    {
+      "file": "specs/060-asteroids-consumer-friction-followups/readiness/target-metadata.md",
+      "line": 26,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence (Principle V)**: **none**. FR-001/FR-003/FR-005 evidence is real"
+    },
+    {
+      "file": "specs/060-asteroids-consumer-friction-followups/readiness/task-graph.md",
+      "line": 144,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/060-asteroids-consumer-friction-followups/readiness/template/template-package-contents.md",
+      "line": 15,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/template/base/CLAUDE.md`"
+    },
+    {
+      "file": "specs/060-asteroids-consumer-friction-followups/readiness/template/template-package-contents.md",
+      "line": 16,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/template/base/.claude/settings.json`"
+    },
+    {
+      "file": "specs/060-asteroids-consumer-friction-followups/readiness/template/template-package-contents.md",
+      "line": 17,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/template/base/.claude/skills/fs-skia-project/SKILL.md`"
+    },
+    {
+      "file": "specs/060-asteroids-consumer-friction-followups/readiness/template/template-package-contents.md",
+      "line": 26,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/.agents/skills/speckit-specify/SKILL.md`"
+    },
+    {
+      "file": "specs/060-asteroids-consumer-friction-followups/readiness/template/template-package-contents.md",
+      "line": 27,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/.claude/skills/speckit-specify/SKILL.md`"
+    },
+    {
+      "file": "specs/060-asteroids-consumer-friction-followups/readiness/template/template-package-contents.md",
+      "line": 28,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/.template.config/generated/CLAUDE.md`"
+    },
+    {
+      "file": "specs/060-asteroids-consumer-friction-followups/readiness/template/template-package-contents.md",
+      "line": 29,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/.template.config/generated/.claude/settings.json`"
+    },
+    {
+      "file": "specs/060-asteroids-consumer-friction-followups/tasks.md",
+      "line": 19,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "FR-005 evidence is real generated-project output (plan \u00a7Synthetic evidence: none)."
+    },
+    {
+      "file": "specs/060-asteroids-consumer-friction-followups/tasks.md",
+      "line": 167,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "all evidence is real generated-project output (plan \u00a7Synthetic evidence: none)."
+    },
+    {
+      "file": "specs/060-asteroids-consumer-friction-followups/tasks.md",
+      "line": 169,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    }
+  ]
+}
