@@ -5,11 +5,11 @@
 [![Downloads](https://img.shields.io/nuget/dt/FS.Skia.UI.Scene?logo=nuget&label=downloads)](https://www.nuget.org/packages/FS.Skia.UI.Scene)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A **Spec Kit-first** F# desktop UI framework. You describe the app you want as
-specifications and drive a governed, agent-run workflow — it produces an
+A Spec Kit-first F# desktop UI framework. You describe the app as specifications and drive a
+governed, agent-run workflow that produces an
 [Elmish](https://elmish.github.io/elmish/) (Model-View-Update) application rendered with
-[SkiaSharp](https://github.com/mono/SkiaSharp) on [Vulkan](https://www.vulkan.org/), backed by
-evidence at every step.
+[SkiaSharp](https://github.com/mono/SkiaSharp) on [Vulkan](https://www.vulkan.org/), with
+evidence recorded at each step.
 
 You don't hand-write the window plumbing, the render loop, or the MVU wiring. You author
 specifications, drive the [Spec Kit](https://github.com/github/spec-kit) workflow with a coding
@@ -17,24 +17,23 @@ agent, and review the evidence it produces. The framework owns the host edge (wi
 Vulkan/Skia setup, frame rendering, screenshots, diagnostics, shutdown); the workflow produces
 the model, messages, `update`, and `view` that returns immutable `Scene` values.
 
-## Why it holds up
+## How the process is governed
 
-The point is that an **agent can build your app and you can trust the result**, because the
-process is engineered for robustness:
+The workflow is structured so an agent's output is reviewable and verifiable at each step:
 
 - **Spec-driven.** Every feature goes spec → plan → dependency-ordered tasks → implementation.
   Intent is written and reviewable before any code exists.
 - **Contract-first: task → `.fsi` → tests → implementation.** Public surface is sketched as an
-  `.fsi` signature and exercised in FSI *before* the `.fs` body exists; semantic tests run
-  through that same surface and surface baselines are validated, so the contract can't drift.
-- **Elmish that is actually testable.** Stateful / I/O work goes through an MVU boundary with a
-  pure `update`, tested on both sides — pure transitions *and* interpreter tests against real
-  I/O — so logic is verified without a window.
+  `.fsi` signature and exercised in FSI before the `.fs` body exists; semantic tests run
+  through that same surface and surface baselines are validated, so the contract does not drift.
+- **Testable Elmish boundary.** Stateful / I/O work goes through an MVU boundary with a pure
+  `update`, tested on both sides — pure transitions and interpreter tests against real I/O — so
+  logic is verified without a window.
 - **Per-task skills.** Each generated task is tagged with the skills needed to implement it; the
   agent loads them before touching that task's code.
-- **Evidence that can't be faked.** Work can't claim "done" without proof. `EvidenceGraph`
-  tracks unproven (synthetic) tasks; `EvidenceAudit` is a merge gate that **hard-blocks** on
-  unjustified synthetic tasks or block-severity findings.
+- **Evidence gates.** A task cannot be marked done without supporting evidence. `EvidenceGraph`
+  tracks unproven (synthetic) tasks; `EvidenceAudit` is a merge gate that blocks on unjustified
+  synthetic tasks or block-severity findings.
 - **One compiled rulebook, one entry point.** All governance lives in the compiled
   `FS.Skia.UI.Build` library (a [FAKE](https://fake.build/) front-end run via `./fake.sh`), so a
   mistyped gate is a compile error and generated artifacts are single-sourced, not hand-synced.
@@ -183,7 +182,7 @@ Scene  ─────────────────  pure scene primitive
 ```
 
 Package boundaries are enforced: e.g. `Controls` may not reference Silk.NET/SkiaSharp/Elmish
-directly, keeping the layers honest. (`FS.Skia.UI.SkillSupport` and `FS.Skia.UI.Build` are
+directly, keeping the layers separated. (`FS.Skia.UI.SkillSupport` and `FS.Skia.UI.Build` are
 authoring/build-time libraries, outside this runtime graph.)
 
 ## Releases & distribution
