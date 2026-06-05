@@ -23,8 +23,8 @@ path — so a fresh checkout restores on any machine.
 
 - **Public feed**: `https://api.nuget.org/v3/index.json`.
 - **Channel is explicit in the version value**: `-preview.N` (or `-rc.N`) ⇒ preview;
-  a bare `MAJOR.MINOR.PATCH` ⇒ stable. The first public release is on the **preview** channel
-  (libraries `0.1.67-preview.1`, template `0.1.86-preview.1`).
+  a bare `MAJOR.MINOR.PATCH` ⇒ stable. The packages are published on the **preview** channel
+  (libraries `0.1.68-preview.1`, template `0.1.87-preview.1`).
 - A **private** or **staging** feed is a configuration change only — add it to `NuGet.config`,
   or for the publish target set `FSSKIA_PUBLISH_FEED`. No code change.
 
@@ -36,6 +36,29 @@ to a single `<FsSkiaUiVersion>` in `Directory.Packages.props`. Change that one v
 project at `docs/UPGRADING.md`.
 
 ## Maintainer release + publish flow
+
+### Recommended: CI publish via GitHub Actions trusted publishing
+
+The production push runs in CI with **no stored API key**, using NuGet
+[Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing)
+(GitHub OIDC). `.github/workflows/publish.yml` exchanges the job's signed OIDC token for a
+short-lived (~1 h, single-use) nuget.org key via `NuGet/login@v1`, exposed as `NUGET_API_KEY`
+— the exact env var the `Publish` target already reads, so there is **zero** publish-specific
+code and nothing to leak or rotate.
+
+1. **Bump** the version (`<FsSkiaUiVersion>` for the libs; the template version independently)
+   and merge to `main`.
+2. **Actions → "Publish to nuget.org" → Run workflow** (manual `workflow_dispatch` only).
+3. The job pauses at the protected **`release`** environment for **maintainer approval**, then
+   runs the full pre-publish gate (`PrePublishCheck` → `PackLocal`/`TemplatePack`) and pushes
+   all 12 packages with `--skip-duplicate`.
+
+One-time setup: a nuget.org Trusted Publishing policy (owner / repo / workflow `publish.yml` /
+env `release`), the `release` environment with required reviewers, and `user: <nuget profile>`
+in the workflow. The CI runner provisions a headless graphics stack (Xvfb + Mesa lavapipe +
+GLFW libs) so the Silk.NET/Vulkan pre-publish GUI suite runs without a display or GPU.
+
+### Manual / local fallback
 
 ```bash
 # 1. bump the version (libs share one version; the template is versioned independently)
