@@ -24,6 +24,8 @@
     <Compile Include="Attributes.fs" />
     <Compile Include="Control.fsi" />
     <Compile Include="Control.fs" />
+    <Compile Include="Widget.fsi" />
+    <Compile Include="Widget.fs" />
     <Compile Include="Catalog.fsi" />
     <Compile Include="Catalog.fs" />
     <Compile Include="TextInput.fsi" />
@@ -40,6 +42,12 @@
     <Compile Include="DataGrid.fs" />
     <Compile Include="CustomControl.fsi" />
     <Compile Include="CustomControl.fs" />
+    <Compile Include="Widgets/Primitives.fsi" />
+    <Compile Include="Widgets/Primitives.fs" />
+    <Compile Include="Widgets/TextBoxWidget.fsi" />
+    <Compile Include="Widgets/TextBoxWidget.fs" />
+    <Compile Include="Widgets/DataGridWidget.fsi" />
+    <Compile Include="Widgets/DataGridWidget.fs" />
   </ItemGroup>
 
   <ItemGroup>

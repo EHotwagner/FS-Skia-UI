@@ -51,4 +51,46 @@ let renderingTests =
             Expect.exists measurement.Diagnostics (fun item -> item.Code = UnsupportedEnvironment && item.Message.Contains "drop-shadow") "unsupported effect is diagnosed"
             Expect.isNonEmpty evidence.DeterministicHash "rich text render produces readback evidence"
         }
+
+        test "typed views render byte-for-byte identical to legacy IR at multiple viewports" {
+            let typedScreen =
+                FS.Skia.UI.Controls.Typed.Stack.view
+                    { FS.Skia.UI.Controls.Typed.Stack.defaults with
+                        Children =
+                            [ FS.Skia.UI.Controls.Typed.TextBlock.view
+                                  { FS.Skia.UI.Controls.Typed.TextBlock.defaults with Text = "Catalog" }
+                              FS.Skia.UI.Controls.Typed.Button.view
+                                  { FS.Skia.UI.Controls.Typed.Button.defaults with
+                                      Text = "Save"
+                                      OnClick = Some() } ] }
+                |> Widget.toControl
+
+            let legacyScreen =
+                Stack.create
+                    [ Attr.create "orientation" Layout (TextValue "vertical")
+                      Attr.create "spacing" Layout (FloatValue 0.0)
+                      Stack.children
+                          [ TextBlock.create [ TextBlock.text "Catalog" ]
+                            Button.create
+                                [ Button.text "Save"
+                                  Button.enabled true
+                                  Attr.style "primary"
+                                  Button.onClick () ] ] ]
+
+            Expect.equal typedScreen.Accessibility legacyScreen.Accessibility "root accessibility metadata matches legacy"
+
+            for width, height in [ 320, 240; 1024, 768 ] do
+                let theme = Theme.light
+                let typedRender = Control.render theme typedScreen
+                let legacyRender = Control.render theme legacyScreen
+                let typedEvidence = Scene.renderReadbackEvidence { Width = width; Height = height } typedRender.Scene
+                let legacyEvidence = Scene.renderReadbackEvidence { Width = width; Height = height } legacyRender.Scene
+
+                Expect.isEmpty typedRender.Diagnostics $"typed view has no diagnostics at {width}x{height}"
+                Expect.equal typedRender.NodeCount legacyRender.NodeCount $"node count matches legacy at {width}x{height}"
+                Expect.equal
+                    typedEvidence.DeterministicHash
+                    legacyEvidence.DeterministicHash
+                    $"typed render hash equals legacy at {width}x{height}"
+        }
     ]

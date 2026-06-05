@@ -1,0 +1,131 @@
+namespace FS.Skia.UI.Controls.Typed
+
+open FS.Skia.UI.Controls
+
+type ButtonIntent =
+    | Primary
+    | Secondary
+    | Danger
+    | Ghost
+
+type StackOrientation =
+    | Vertical
+    | Horizontal
+
+type TextBlockProps<'msg> =
+    { Id: ControlId option
+      Text: string }
+
+type ButtonProps<'msg> =
+    { Id: ControlId option
+      Text: string
+      Enabled: bool
+      Intent: ButtonIntent
+      OnClick: 'msg option }
+
+type CheckBoxProps<'msg> =
+    { Id: ControlId option
+      Text: string
+      Checked: bool
+      OnChanged: (bool -> 'msg) option }
+
+type StackProps<'msg> =
+    { Id: ControlId option
+      Orientation: StackOrientation
+      Spacing: float
+      Children: Widget<'msg> list }
+
+// File-private helpers for lowering. The typed `view` calls the exact same
+// legacy string-keyed builders, so the lowered IR is structurally equal to the
+// legacy authoring call by construction (FR-004, SC-002). Hidden from the public
+// surface by absence from Primitives.fsi (Principle II).
+module private LegacyControls =
+    let withKeyOpt id control =
+        match id with
+        | Some key -> FS.Skia.UI.Controls.Control.withKey key control
+        | None -> control
+
+    let intentStyle intent =
+        match intent with
+        | Primary -> "primary"
+        | Secondary -> "secondary"
+        | Danger -> "danger"
+        | Ghost -> "ghost"
+
+    let orientationName orientation =
+        match orientation with
+        | Vertical -> "vertical"
+        | Horizontal -> "horizontal"
+
+    let spacingAttr (spacing: float) : Attr<'msg> =
+        Attr.create "spacing" Layout (FloatValue spacing)
+
+    let orientationAttr orientation : Attr<'msg> =
+        Attr.create "orientation" Layout (TextValue(orientationName orientation))
+
+module TextBlock =
+    let defaults: TextBlockProps<'msg> = { Id = None; Text = "" }
+
+    let view (props: TextBlockProps<'msg>) : Widget<'msg> =
+        FS.Skia.UI.Controls.TextBlock.create [ FS.Skia.UI.Controls.TextBlock.text props.Text ]
+        |> LegacyControls.withKeyOpt props.Id
+        |> Widget.ofControl
+
+module Button =
+    let defaults: ButtonProps<'msg> =
+        { Id = None
+          Text = ""
+          Enabled = true
+          Intent = Primary
+          OnClick = None }
+
+    let view (props: ButtonProps<'msg>) : Widget<'msg> =
+        let attrs =
+            [ yield FS.Skia.UI.Controls.Button.text props.Text
+              yield FS.Skia.UI.Controls.Button.enabled props.Enabled
+              yield Attr.style (LegacyControls.intentStyle props.Intent)
+              match props.OnClick with
+              | Some msg -> yield FS.Skia.UI.Controls.Button.onClick msg
+              | None -> () ]
+
+        FS.Skia.UI.Controls.Button.create attrs
+        |> LegacyControls.withKeyOpt props.Id
+        |> Widget.ofControl
+
+module CheckBox =
+    let defaults: CheckBoxProps<'msg> =
+        { Id = None
+          Text = ""
+          Checked = false
+          OnChanged = None }
+
+    let view (props: CheckBoxProps<'msg>) : Widget<'msg> =
+        let attrs =
+            [ yield FS.Skia.UI.Controls.CheckBox.text props.Text
+              yield FS.Skia.UI.Controls.CheckBox.checked' props.Checked
+              match props.OnChanged with
+              | Some map -> yield FS.Skia.UI.Controls.CheckBox.onChanged map
+              | None -> () ]
+
+        FS.Skia.UI.Controls.CheckBox.create attrs
+        |> LegacyControls.withKeyOpt props.Id
+        |> Widget.ofControl
+
+module Stack =
+    let defaults: StackProps<'msg> =
+        { Id = None
+          Orientation = Vertical
+          Spacing = 0.0
+          Children = [] }
+
+    let view (props: StackProps<'msg>) : Widget<'msg> =
+        let children = props.Children |> List.map Widget.toControl
+
+        let attrs =
+            [ LegacyControls.orientationAttr props.Orientation
+              LegacyControls.spacingAttr props.Spacing
+              FS.Skia.UI.Controls.Stack.children children ]
+
+        FS.Skia.UI.Controls.Stack.create attrs
+        |> LegacyControls.withKeyOpt props.Id
+        |> Widget.ofControl

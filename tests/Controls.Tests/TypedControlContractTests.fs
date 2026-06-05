@@ -209,3 +209,62 @@ let typedControlContractTests =
             Expect.exists custom (fun diagnostic -> diagnostic.Severity = Info && diagnostic.Message.Contains "Custom extension") "custom controls are visibly classified"
         }
     ]
+
+[<Tests>]
+let typedControlsFrontDoorContractTests =
+    testList "Typed controls front door (065) contract" [
+        test "Widget seam exists and round-trips a Control" {
+            let control = TextBlock.create [ TextBlock.text "hi" ]
+            let widget = Widget.ofControl control
+            Expect.equal (sprintf "%A" (Widget.toControl widget)) (sprintf "%A" control) "Widget.toControl (ofControl c) = c"
+        }
+
+        test "six typed modules under FS.Skia.UI.Controls.Typed lower to Control" {
+            // Existence of the typed modules is proven by these calls compiling;
+            // each view must lower through the Widget seam to a legacy Control kind.
+            let lowered =
+                [ Widget.toControl (FS.Skia.UI.Controls.Typed.TextBlock.view FS.Skia.UI.Controls.Typed.TextBlock.defaults)
+                  Widget.toControl (FS.Skia.UI.Controls.Typed.Button.view FS.Skia.UI.Controls.Typed.Button.defaults)
+                  Widget.toControl (FS.Skia.UI.Controls.Typed.CheckBox.view FS.Skia.UI.Controls.Typed.CheckBox.defaults)
+                  Widget.toControl (FS.Skia.UI.Controls.Typed.Stack.view FS.Skia.UI.Controls.Typed.Stack.defaults) ]
+                |> List.map (fun control -> control.Kind)
+
+            Expect.equal lowered [ "text-block"; "button"; "check-box"; "stack" ] "primitive typed views lower to legacy kinds"
+
+            let textBoxProps = FS.Skia.UI.Controls.Typed.TextBox.defaults "id"
+            let textBoxModel, _ = FS.Skia.UI.Controls.Typed.TextBox.init textBoxProps
+            let textBox = Widget.toControl (FS.Skia.UI.Controls.Typed.TextBox.view textBoxProps textBoxModel)
+            Expect.equal textBox.Kind "text-box" "typed TextBox lowers to legacy text-box"
+
+            let gridProps = FS.Skia.UI.Controls.Typed.DataGrid.defaults "grid"
+            let gridModel, _ = FS.Skia.UI.Controls.Typed.DataGrid.init gridProps
+            let grid = Widget.toControl (FS.Skia.UI.Controls.Typed.DataGrid.view gridProps gridModel)
+            Expect.equal grid.Kind "data-grid" "typed DataGrid lowers to legacy data-grid"
+        }
+
+        test "typed .fsi surface declares no obj field and no string-named event (FR-005)" {
+            let signatures =
+                [ "src/Controls/Widget.fsi"
+                  "src/Controls/Widgets/Primitives.fsi"
+                  "src/Controls/Widgets/TextBoxWidget.fsi"
+                  "src/Controls/Widgets/DataGridWidget.fsi" ]
+                |> List.map (fun path -> path, read path)
+
+            for path, text in signatures do
+                Expect.isFalse (text.Contains ": obj") $"{path} has no obj-typed field"
+                Expect.isFalse (text.Contains "UntypedValue") $"{path} exposes no untyped payload"
+
+            let primitives = signatures |> List.find (fun (path, _) -> path.EndsWith "Primitives.fsi") |> snd
+            Expect.stringContains primitives "OnClick: 'msg option" "Button event is a typed message option"
+            Expect.stringContains primitives "OnChanged: (bool -> 'msg) option" "CheckBox event is a typed function option"
+        }
+
+        test "Widget and typed signature files exist on disk" {
+            [ "src/Controls/Widget.fsi"
+              "src/Controls/Widgets/Primitives.fsi"
+              "src/Controls/Widgets/TextBoxWidget.fsi"
+              "src/Controls/Widgets/DataGridWidget.fsi" ]
+            |> List.iter (fun path ->
+                Expect.isTrue (File.Exists(Path.Combine(repositoryRoot, path.Replace("/", string Path.DirectorySeparatorChar)))) $"{path} exists")
+        }
+    ]

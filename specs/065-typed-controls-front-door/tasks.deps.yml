@@ -1,0 +1,82 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+# Phase-checkpoint edges are auto-injected by the graph compute script (every
+# task in Phase N+1 implicitly depends on the last task of Phase N); only
+# non-phase cross-edges are written below.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+  T004:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+  T005:
+    deps: [T004]
+    skillist: ["fs-skia-ui-widgets"]
+  T006:
+    deps: [T005]
+    skillist: ["fs-skia-ui-widgets"]
+  T007:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+  T008:
+    deps: [T007]
+    skillist: ["fs-skia-ui-widgets"]
+  T009:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+  T010:
+    deps: [T009]
+    skillist: ["fs-skia-ui-widgets"]
+  T011:
+    deps: []
+    skillist: ["fs-skia-ui-widgets", "fs-skia-elmish"]
+  T012:
+    deps: [T011]
+    skillist: ["fs-skia-ui-widgets"]
+  T013:
+    deps: [T011]
+    skillist: ["fs-skia-ui-widgets"]
+  T014:
+    deps: []
+    skillist: []
+  T015:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+  T016:
+    deps: [T008, T010, T012, T013]
+    skillist: ["fs-skia-ui-widgets"]
+  T017:
+    deps: [T008, T010, T012, T013]
+    skillist: ["fs-skia-scene", "fs-skia-layout-readability"]
+  T018:
+    deps: [T008, T010]
+    skillist: ["fs-skia-elmish"]
+  T019:
+    deps: [T008, T010, T012, T013]
+    skillist: ["fs-skia-ui-widgets"]
+  T020:
+    deps: [T016]
+    skillist: []
+  T021:
+    deps: [T020]
+    skillist: []
+  T022:
+    deps: [T021]
+    skillist: []
+  T023:
+    deps: [T022]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T024:
+    deps: [T023]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

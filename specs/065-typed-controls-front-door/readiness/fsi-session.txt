@@ -1,0 +1,24 @@
+# FSI transcript — typed controls front door (065)
+# command: dotnet fsi scripts/typed-controls-prelude.fsx
+# captured-utc: 2026-06-05
+# Exercises the public FS.Skia.UI.Controls.Typed front door from FSI: authors a
+# representative widget tree (TextBlock/Button/CheckBox/Stack), finishes with
+# Widget.toControl, renders via Widget.render, and delegates a stateful TextBox
+# init/update to the existing pure TextInput model. FsiTranscripts gate evidence.
+#
+open FS.Skia.UI.Controls
+open FS.Skia.UI.Controls.Typed
+let view : Widget<Msg> = Stack.view { Stack.defaults with Children = [ TextBlock.view ...; Button.view ...; CheckBox.view ... ] }
+let control = Widget.toControl view
+let textBoxModel', _ = TextBox.update (InsertText "a@b") (fst (TextBox.init textBoxProps))
+
+--- output ---
+typed-root-kind=stack
+typed-children-kinds=["text-block"; "button"; "check-box"]
+typed-node-count=4
+typed-diagnostics=[]
+typed-button-dispatch=[Save]
+typed-textbox-init-effects=[]
+typed-textbox-draft=a@b
+typed-textbox-kind=text-box
+typed-ofcontrol-roundtrip-kind=stack

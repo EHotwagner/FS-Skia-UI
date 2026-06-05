@@ -61,3 +61,56 @@ let interactionTests =
             Expect.equal (Control.dispatch key button) [ Save 7 ] "keyboard activation dispatches through current event binding"
         }
     ]
+
+[<Tests>]
+let typedInteractionTests =
+    testList "Typed controls interaction dispatch" [
+        test "typed Button OnClick dispatches the same message as legacy onClick" {
+            let typed =
+                FS.Skia.UI.Controls.Typed.Button.view
+                    { FS.Skia.UI.Controls.Typed.Button.defaults with
+                        Id = Some "save-button"
+                        Text = "Save"
+                        OnClick = Some(Save 1) }
+                |> Widget.toControl
+
+            Expect.equal (Control.dispatch (click "save-button") typed) [ Save 1 ] "typed Button binds identically to Button.onClick"
+        }
+
+        test "typed Button with disabled state suppresses dispatch" {
+            let disabled =
+                FS.Skia.UI.Controls.Typed.Button.view
+                    { FS.Skia.UI.Controls.Typed.Button.defaults with
+                        Id = Some "save-button"
+                        Enabled = false
+                        OnClick = Some(Save 1) }
+                |> Widget.toControl
+
+            Expect.equal (Control.dispatch (click "save-button") disabled) [] "typed disabled button suppresses click"
+        }
+
+        test "typed Button without OnClick dispatches nothing" {
+            let noHandler =
+                FS.Skia.UI.Controls.Typed.Button.view
+                    { FS.Skia.UI.Controls.Typed.Button.defaults with
+                        Id = Some "save-button"
+                        Text = "Save" }
+                |> Widget.toControl
+
+            Expect.equal (Control.dispatch (click "save-button") noHandler) [] "unset OnClick yields no dispatch"
+        }
+
+        test "typed CheckBox OnChanged maps payload identically to legacy onChanged" {
+            let typed =
+                FS.Skia.UI.Controls.Typed.CheckBox.view
+                    { FS.Skia.UI.Controls.Typed.CheckBox.defaults with
+                        Id = Some "agree"
+                        OnChanged = Some(fun isChecked -> Changed(if isChecked then "on" else "off")) }
+                |> Widget.toControl
+
+            let changed =
+                { Kind = "changed"; ControlId = Some "agree"; Origin = ControlEventOrigin.Text; Payload = Some "true" }
+
+            Expect.equal (Control.dispatch changed typed) [ Changed "on" ] "typed CheckBox maps the boolean payload identically"
+        }
+    ]

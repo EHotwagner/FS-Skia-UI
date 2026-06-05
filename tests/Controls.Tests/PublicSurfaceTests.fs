@@ -20,4 +20,11 @@ let publicSurfaceTests =
                 let path = Path.Combine(repositoryRoot, "src", "Controls", file)
                 Expect.isTrue (File.Exists path) $"{file} exists")
         }
+
+        test "additive typed front-door signature files exist" {
+            [ "Widget.fsi"; "Widgets/Primitives.fsi"; "Widgets/TextBoxWidget.fsi"; "Widgets/DataGridWidget.fsi" ]
+            |> List.iter (fun file ->
+                let path = Path.Combine(repositoryRoot, "src", "Controls", file.Replace("/", string Path.DirectorySeparatorChar))
+                Expect.isTrue (File.Exists path) $"{file} exists")
+        }
     ]

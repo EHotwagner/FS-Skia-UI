@@ -139,12 +139,40 @@ let customDefinition =
       Accessibility = Some(Accessibility.defaultFor "graph-view" "Custom sparkline")
       Diagnostics = [] }
 
+// Typed-authoring panel (feature 065): authored entirely through the
+// compiler-checked `FS.Skia.UI.Controls.Typed` front door and lowered with
+// `Widget.toControl` so it composes into the same legacy gallery tree. Render
+// proof for this feature is headless (RenderingTests); this panel demonstrates
+// the authoring surface from the sample's default executable path.
+let typedAuthoringPanel: Control<Msg> =
+    FS.Skia.UI.Controls.Typed.Stack.view
+        { FS.Skia.UI.Controls.Typed.Stack.defaults with
+            Orientation = FS.Skia.UI.Controls.Typed.Vertical
+            Spacing = 4.0
+            Children =
+                [ FS.Skia.UI.Controls.Typed.TextBlock.view
+                      { FS.Skia.UI.Controls.Typed.TextBlock.defaults with Text = "Typed authoring (065)" }
+                  FS.Skia.UI.Controls.Typed.Button.view
+                      { FS.Skia.UI.Controls.Typed.Button.defaults with
+                          Id = Some "typed-save"
+                          Text = "Typed Save"
+                          Intent = FS.Skia.UI.Controls.Typed.Primary
+                          OnClick = Some SaveRequested }
+                  FS.Skia.UI.Controls.Typed.CheckBox.view
+                      { FS.Skia.UI.Controls.Typed.CheckBox.defaults with
+                          Id = Some "typed-can-save"
+                          Text = "Typed can save"
+                          Checked = true
+                          OnChanged = Some(fun _ -> ToggleSave) } ] }
+    |> Widget.toControl
+
 let controlView model =
     let focusedControl = model.ControlRuntime.FocusedControl |> Option.defaultValue "none"
 
     Stack.create [
         Stack.children [
             TextBlock.create [ TextBlock.text "Controls Gallery" ]
+            typedAuthoringPanel
             RichText.create model.RichContent []
             Tabs.create [
                 Tabs.items [ "Form"; "Dashboard"; "Data" ]

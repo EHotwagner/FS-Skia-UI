@@ -1036,3 +1036,16 @@ type ControlRenderResult<'msg> =
       Diagnostics: ControlDiagnostic list
       EventBindings: ControlEventBinding<'msg> list
       NodeCount: int }
+
+namespace FS.Skia.UI.Controls
+
+[<Sealed>]
+type Widget<'msg>
+
+module Widget =
+
+    val ofControl: control: Control<'msg> -> Widget<'msg>
+
+    val toControl: widget: Widget<'msg> -> Control<'msg>
+
+    val render: theme: Theme -> widget: Widget<'msg> -> ControlRenderResult<'msg>
