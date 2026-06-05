@@ -22,8 +22,8 @@ staging-validated gate is green (it is).
 
 ## Intended first release (current `-preview` versions, unchanged)
 
-- 11 libraries: `0.1.67-preview.1`
-- `FS.Skia.UI.Template`: `0.1.86-preview.1`
+- 11 libraries: `0.1.68-preview.1`
+- `FS.Skia.UI.Template`: `0.1.87-preview.1`
 - Channel: **preview** (the `-preview.N` suffix is explicit).
 
 ## Maintainer runbook
@@ -41,7 +41,7 @@ staging-validated gate is green (it is).
 NUGET_API_KEY=<nuget.org-key> ./fake.sh build -t Publish
 
 # 3b. (optional) also archive the 12 .nupkg on a GitHub Release (uses ambient `gh auth`):
-NUGET_API_KEY=<nuget.org-key> FSSKIA_PUBLISH_GH_RELEASE_TAG=v0.1.67-preview.1 \
+NUGET_API_KEY=<nuget.org-key> FSSKIA_PUBLISH_GH_RELEASE_TAG=v0.1.68-preview.1 \
   ./fake.sh build -t Publish
 #    GitHub Releases is archival only — consumers still install from nuget.org.
 ```
