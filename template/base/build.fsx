@@ -1,15 +1,23 @@
-#r "nuget: FS.Skia.UI.Build, 0.1.67-preview.1"
-
 open System
 open System.Diagnostics
 open System.IO
-open FS.Skia.UI.Build.Evidence
+open System.Reflection
+open System.Text.RegularExpressions
 
-// Feature 043 (FR-013): generated projects run the EvidenceGraph / EvidenceAudit
-// gates IN-PROCESS through the published FS.Skia.UI.Build engine. No Python or
-// shell audit scripts are copied into or executed by generated products; the only
-// retained external process is `dotnet test`. The `#r "nuget:"` version above is
-// kept in sync with the FS.Skia.UI.Build pin in Directory.Packages.props.
+// Feature 043 (FR-013): generated projects run the EvidenceGraph / EvidenceAudit gates
+// IN-PROCESS through the published FS.Skia.UI.Build engine. No Python or shell audit scripts
+// are copied into or executed by generated products; the only retained external process is
+// `dotnet test`.
+//
+// Feature 064 (FR-004 / research R1): there is NO versioned engine reference directive here.
+// F# script reference arguments must be string literals, so the engine version cannot be
+// interpolated. Instead this script reads the SINGLE source of version truth —
+// `<FsSkiaUiVersion>` in Directory.Packages.props — at runtime, loads the matching, already
+// `dotnet restore`-d engine assembly from the NuGet global-packages folder, and invokes the
+// generated-evidence façade by reflection (so no typed `open` pins a version). The result:
+// exactly ONE literal FS.Skia.UI version value in the whole generated project, and a consumer
+// upgrade is a single edit to <FsSkiaUiVersion> + `dotnet restore` — libraries AND the build
+// engine move together. See docs/UPGRADING.md.
 
 let path parts = Path.Combine(Array.ofList parts)
 
@@ -29,17 +37,6 @@ let writeLog target =
     File.WriteAllText(Path.Combine("readiness", "logs", target + ".txt"), $"{target} completed for generated product.{Environment.NewLine}")
     printfn "%s completed for generated product" target
 
-let generatedTargetDependencies =
-    [ ("EvidenceAudit", [ "EvidenceGraph" ]) ]
-
-let writeLines (filePath: string) lines =
-    let directory = Path.GetDirectoryName filePath
-
-    if not (String.IsNullOrWhiteSpace directory) then
-        Directory.CreateDirectory directory |> ignore
-
-    File.WriteAllLines(filePath, Array.ofList lines)
-
 let tryWriteTextLog (filePath: string) (content: string) =
     try
         let directory = Path.GetDirectoryName filePath
@@ -52,227 +49,117 @@ let tryWriteTextLog (filePath: string) (content: string) =
     with ex ->
         Some $"unreadable readiness log: {filePath}; diagnostics={ex.Message}"
 
-let envOption name =
-    match Environment.GetEnvironmentVariable name with
-    | null -> None
-    | value when String.IsNullOrWhiteSpace value -> None
-    | value -> Some value
+// ----- engine binding: resolve <FsSkiaUiVersion> at runtime (FR-004, R1) -----
 
-// Feature 059 (FR-002/FR-003/FR-004/FR-014): resolve the feature to validate the
-// way the framework engine does (build/Governance/Engine/Model.fs activeFeatureId) —
-// from .specify/feature.json's "feature_directory", with an optional
-// SPECKIT_FEATURE_DIR override and NO fallback to any bundled sample. The former
-// runtime sample-feature synthesiser and its sample-era directory selector are
-// removed so a validation run can never silently target a sample.
+let private fsSkiaUiVersion () =
+    let propsPath = path [ Directory.GetCurrentDirectory(); "Directory.Packages.props" ]
 
-let private featureDirectoryFromJson (jsonPath: string) : string option =
-    if not (File.Exists jsonPath) then
+    if not (File.Exists propsPath) then
+        failwithf "Cannot resolve the FS.Skia.UI engine version: %s is missing." propsPath
+
+    let m = Regex.Match(File.ReadAllText propsPath, "<FsSkiaUiVersion>([^<]+)</FsSkiaUiVersion>")
+
+    if m.Success then
+        m.Groups.[1].Value.Trim()
+    else
+        failwithf "Cannot resolve <FsSkiaUiVersion> from %s; it is the single source of FS.Skia.UI version truth." propsPath
+
+let private nugetPackagesRoot () =
+    match Environment.GetEnvironmentVariable "NUGET_PACKAGES" with
+    | null -> path [ Environment.GetFolderPath Environment.SpecialFolder.UserProfile; ".nuget"; "packages" ]
+    | "" -> path [ Environment.GetFolderPath Environment.SpecialFolder.UserProfile; ".nuget"; "packages" ]
+    | dir -> dir
+
+// Probe the NuGet global-packages cache for an assembly by simple name, preferring net10.0.
+// The engine's transitive dependency closure (Fake.Core, YamlDotNet, FSharp.SystemTextJson,
+// DiffPlex, FS.Skia.UI.SkillSupport, …) is restored into this cache; Assembly.LoadFrom of the
+// engine alone does not bring them, so we resolve each on demand at invoke time.
+let private probeCachedAssembly (nugetPackages: string) (simpleName: string) : string option =
+    let packageDir = path [ nugetPackages; simpleName.ToLowerInvariant() ]
+
+    if not (Directory.Exists packageDir) then
         None
     else
-        let content = File.ReadAllText jsonPath
-        let marker = "\"feature_directory\""
-        let markerIndex = content.IndexOf(marker, StringComparison.Ordinal)
-        if markerIndex < 0 then
-            None
-        else
-            let afterMarker = content.Substring(markerIndex + marker.Length)
-            let colonIndex = afterMarker.IndexOf(':')
-            if colonIndex < 0 then
-                None
-            else
-                let afterColon = afterMarker.Substring(colonIndex + 1)
-                let firstQuote = afterColon.IndexOf('"')
-                if firstQuote < 0 then
-                    None
-                else
-                    let afterFirstQuote = afterColon.Substring(firstQuote + 1)
-                    let secondQuote = afterFirstQuote.IndexOf('"')
-                    if secondQuote < 0 then
-                        None
-                    else
-                        let value = afterFirstQuote.Substring(0, secondQuote)
-                        if String.IsNullOrWhiteSpace value then None else Some value
+        Directory.GetDirectories packageDir
+        |> Array.collect (fun versionDir ->
+            Directory.GetFiles(versionDir, simpleName + ".dll", SearchOption.AllDirectories)
+            |> Array.filter (fun f -> f.Replace('\\', '/').Contains "/lib/"))
+        |> Array.sortByDescending (fun f -> if f.Replace('\\', '/').Contains "/net10.0/" then 1 else 0)
+        |> Array.tryHead
 
-let resolveFeatureDir () : string =
-    let repoRoot = Directory.GetCurrentDirectory()
-    let absolutize (p: string) = if Path.IsPathRooted p then p else path [ repoRoot; p ]
-    let featureJson = path [ repoRoot; ".specify"; "feature.json" ]
+// Restore the pinned engine (+ its dependency closure) into the global cache when absent, using
+// a throwaway project under TEMP so default/user NuGet config resolution applies — that has the
+// local feed for in-repo framework development and nuget.org for a published consumer. The exact
+// <FsSkiaUiVersion> is restored (not "latest"), so the engine and libraries stay in lock-step.
+let private restoreEngine (version: string) =
+    let tmp = path [ Path.GetTempPath(); "fsskia-engine-restore-" + version ]
+    Directory.CreateDirectory tmp |> ignore
+    let proj = path [ tmp; "engine-restore.fsproj" ]
 
-    match envOption "SPECKIT_FEATURE_DIR" |> Option.map absolutize with
-    | Some dir when Directory.Exists dir ->
-        printfn "feature-source=SPECKIT_FEATURE_DIR override"
-        dir
-    | Some dir ->
-        failwithf
-            "Cannot resolve the feature to validate: SPECKIT_FEATURE_DIR=%s does not exist. Point it at an existing feature directory, or unset it to resolve from .specify/feature.json."
-            dir
-    | None ->
-        match featureDirectoryFromJson featureJson |> Option.map absolutize with
-        | Some dir when Directory.Exists dir ->
-            printfn "feature-source=.specify/feature.json"
-            dir
-        | Some dir ->
-            failwithf
-                "Cannot resolve the feature to validate: .specify/feature.json names \"feature_directory\"=%s, which does not exist. Run /speckit.specify to record a feature, or set SPECKIT_FEATURE_DIR to override. Validation never falls back to a bundled sample."
-                dir
-        | None ->
-            failwithf
-                "Cannot resolve the feature to validate: no SPECKIT_FEATURE_DIR override is set and %s has no usable \"feature_directory\" entry. Run /speckit.specify to record a feature, or set SPECKIT_FEATURE_DIR to the feature directory to validate. Validation never falls back to a bundled sample."
-                featureJson
+    File.WriteAllText(
+        proj,
+        "<Project Sdk=\"Microsoft.NET.Sdk\">\n"
+        + "  <PropertyGroup>\n    <TargetFramework>net10.0</TargetFramework>\n    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>\n  </PropertyGroup>\n"
+        + sprintf "  <ItemGroup>\n    <PackageReference Include=\"FS.Skia.UI.Build\" Version=\"%s\" />\n  </ItemGroup>\n" version
+        + "</Project>\n")
 
-// ----- in-process evidence engine (FS.Skia.UI.Build.Evidence) -----
+    let psi = ProcessStartInfo("dotnet", sprintf "restore \"%s\"" proj)
+    psi.RedirectStandardOutput <- true
+    psi.RedirectStandardError <- true
+    psi.UseShellExecute <- false
+    psi.WorkingDirectory <- tmp
 
-let private evidenceReadAll p = if File.Exists p then File.ReadAllText p else ""
+    match (try Process.Start psi |> Option.ofObj with _ -> None) with
+    | None -> ()
+    | Some p ->
+        let outTask = p.StandardOutput.ReadToEndAsync()
+        let errTask = p.StandardError.ReadToEndAsync()
+        p.WaitForExit()
+        outTask.Result |> ignore
+        errTask.Result |> ignore
 
-let buildEvidenceInputs (featureDir: string) : EvidenceInputs =
-    let repoRoot = Directory.GetCurrentDirectory()
-    let readinessDir = path [ featureDir; "readiness" ]
-    let featureName =
-        Path.GetFileName(featureDir.TrimEnd('/', '\\')) |> Option.ofObj |> Option.defaultValue "generated"
-    let readinessFiles =
-        if Directory.Exists readinessDir then
-            Directory.GetFiles(readinessDir, "*", SearchOption.AllDirectories)
-            |> Array.map (fun p -> p.Substring(readinessDir.Length + 1).Replace('\\', '/'), File.ReadAllText p)
-            |> List.ofArray
-        else
-            []
-    let featureText =
-        [ "spec.md"; "plan.md"; "tasks.md" ]
-        |> List.map (fun n -> evidenceReadAll (path [ featureDir; n ]))
-        |> String.concat "\n"
-    let auditStatusFiles =
-        readinessFiles
-        |> List.filter (fun (rel, c) ->
-            rel.EndsWith ".md"
-            && c.Contains "```audit-status"
-            && not (rel.ToLowerInvariant().StartsWith "audit-fixtures/")
-            && not (rel.ToLowerInvariant().StartsWith "audit-rejections/"))
-    let slePath = path [ readinessDir; "skill-loading-evidence.md" ]
-    { FeatureName = featureName
-      TasksMd = evidenceReadAll (path [ featureDir; "tasks.md" ])
-      DepsYml = evidenceReadAll (path [ featureDir; "tasks.deps.yml" ])
-      Registry = SkillRegistry.build repoRoot
-      SkillLoadingEvidence = (if File.Exists slePath then Some(File.ReadAllText slePath) else None)
-      ResolvedExists = (fun p -> File.Exists(if Path.IsPathRooted p then p else path [ repoRoot; p ]))
-      Canonicalize = (fun p -> Path.GetFullPath(if Path.IsPathRooted p then p else path [ repoRoot; p ]))
-      RecordedFeature = Some featureName
-      Scan = { ReadinessDir = readinessDir; FeatureText = featureText; ReadinessFiles = readinessFiles }
-      AuditStatusFiles = auditStatusFiles
-      PatternsYml = evidenceReadAll (path [ ".specify"; "extensions"; "evidence"; "audit-patterns.yml" ])
-      UnifiedDiff = "" }
+let private engineAssembly =
+    lazy
+        (let version = fsSkiaUiVersion ()
+         let nugetPackages = nugetPackagesRoot ()
+         // NuGet lowercases package-id folders in the global-packages cache.
+         let dll = path [ nugetPackages; "fs.skia.ui.build"; version; "lib"; "net10.0"; "FS.Skia.UI.Build.dll" ]
 
-let evidenceWrite (p: string) (content: string) =
-    let dir = Path.GetDirectoryName p
-    if not (String.IsNullOrWhiteSpace dir) then
-        Directory.CreateDirectory dir |> ignore
-    File.WriteAllText(p, content)
+         if not (File.Exists dll) then
+             restoreEngine version
 
-let writeGeneratedEvidenceReport (target: string) (featureDir: string) (exitCode: int) (validationArea: string) (diagnostics: string list) =
-    let reportPath =
-        match target with
-        | "EvidenceGraph" -> path [ "readiness"; "evidence-graph.md" ]
-        | "EvidenceAudit" -> path [ "readiness"; "evidence-audit.md" ]
-        | _ -> path [ "readiness"; target + ".md" ]
+         if not (File.Exists dll) then
+             failwithf
+                 "FS.Skia.UI.Build %s could not be restored to %s. Ensure the version exists on a configured feed (`dotnet restore`)."
+                 version
+                 dll
 
-    let status = if exitCode = 0 then "ok" else "failed"
-    let message = if exitCode = 0 then "in-process validation passed" else "in-process validation failed"
+         // R1: idiomatic simplicity yields to the #r-literal constraint here — bind the
+         // property-resolved engine assembly at runtime so the engine moves with the single
+         // version value, and resolve its dependency closure from the same global cache.
+         AppDomain.CurrentDomain.add_AssemblyResolve (
+             ResolveEventHandler(fun _ args ->
+                 let simple = System.Reflection.AssemblyName(args.Name).Name
 
-    let graphOnlyNotes =
-        if target = "EvidenceGraph" then
-            [ "mode=graph-validation-only"
-              "next-action=Run EvidenceAudit for full merge-gate validation, including diff-scan and synthetic-evidence blocking checks." ]
-        else
-            []
+                 match probeCachedAssembly nugetPackages simple with
+                 | Some path -> Assembly.LoadFrom path
+                 | None -> null))
 
-    let lines =
-        [ "# Generated Evidence Command Report"
-          ""
-          $"command=./fake.sh build -t {target}"
-          $"target={target}"
-          $"generated-project-identity={Directory.GetCurrentDirectory()}"
-          $"feature-directory={featureDir}"
-          "authority=in-process-engine"
-          "engine=FS.Skia.UI.Build.Evidence"
-          $"status={status}"
-          $"exit-code={exitCode}"
-          $"validation-area={validationArea}"
-          $"report-path={reportPath}"
-          $"message={message}" ]
-        @ graphOnlyNotes
-        @ [ "diagnostics=" ]
-        @ (if List.isEmpty diagnostics then [ "- none" ] else diagnostics |> List.map (fun line -> "- " + line.Trim()))
+         Assembly.LoadFrom dll)
 
-    writeLines reportPath lines
-    exitCode
+let private runGeneratedEvidence (target: string) : int =
+    let assembly = engineAssembly.Value
+    let runnerType = assembly.GetType("FS.Skia.UI.Build.Evidence.GeneratedRunner")
 
-let private writeArtifacts featureDir (arts: AuditArtifacts) =
-    let r = path [ featureDir; "readiness" ]
-    evidenceWrite (path [ r; "task-graph.json" ]) arts.TaskGraphJson
-    evidenceWrite (path [ r; "task-graph.md" ]) arts.TaskGraphMd
-    evidenceWrite (path [ r; "seh-audit-summary.json" ]) arts.SehAuditSummary
-    evidenceWrite (path [ r; "readiness-contract-hits.json" ]) arts.ReadinessContractHits
-    evidenceWrite (path [ r; "persistent-launch-hits.json" ]) arts.PersistentLaunchHits
-    evidenceWrite (path [ r; "persistent-gui-runtime-hits.json" ]) arts.PersistentGuiRuntimeHits
-    evidenceWrite (path [ r; "window-visibility-hits.json" ]) arts.WindowVisibilityHits
-    evidenceWrite (path [ r; "audit-status-hits.json" ]) arts.AuditStatusHits
-    evidenceWrite (path [ r; "diff-scan-hits.json" ]) arts.DiffScanHits
+    if isNull runnerType then
+        failwith "FS.Skia.UI.Build.Evidence.GeneratedRunner not found in the resolved engine assembly."
 
-let runGeneratedEvidenceGraph () =
-    let featureDir = resolveFeatureDir ()
-    let inputs = buildEvidenceInputs featureDir
-    let gr, graphArts = Engine.runGraph inputs
-    printfn "feature-directory=%s" featureDir
-    printfn "tasks=%d" (List.length gr.Tasks)
-    evidenceWrite (path [ featureDir; "readiness"; "task-graph.json" ]) graphArts.TaskGraphJson
-    evidenceWrite (path [ featureDir; "readiness"; "task-graph.md" ]) graphArts.TaskGraphMd
-    let exitCode =
-        match gr.Verdict with
-        | GraphVerdict.Ok -> 0
-        | GraphVerdict.Error -> 2
-    let verdictStr = if exitCode = 0 then "ok" else "error"
-    let diagnostics =
-        [ $"verdict={verdictStr}"
-          $"tasks={List.length gr.Tasks}" ]
-        @ (gr.Errors |> List.truncate 12)
-    writeGeneratedEvidenceReport "EvidenceGraph" featureDir exitCode "graph-validation-only" diagnostics
+    let runMethod = runnerType.GetMethod("run")
 
-let private auditValidationArea (res: AuditResult) =
-    if res.ReadinessContract > 0 then "readiness-contract"
-    elif res.DiffBlocking > 0 then "diff-scan"
-    elif not (List.isEmpty res.SehSummary.UnacceptedSyntheticTasks) || not (List.isEmpty res.SehSummary.Diagnostics) then "synthetic-evidence"
-    elif res.PersistentLaunch > 0 || res.PersistentGuiRuntime > 0 || res.WindowVisibility > 0 then "unsupported-host-classification"
-    else "evidence-audit"
+    if isNull runMethod then
+        failwith "FS.Skia.UI.Build.Evidence.GeneratedRunner.run not found in the resolved engine assembly."
 
-let runGeneratedEvidenceAudit () =
-    let featureDir = resolveFeatureDir ()
-    let inputs = buildEvidenceInputs featureDir
-    let gr, graphArts = Engine.runGraph inputs
-    printfn "feature-directory=%s" featureDir
-    printfn "tasks=%d" (List.length gr.Tasks)
-    evidenceWrite (path [ featureDir; "readiness"; "task-graph.json" ]) graphArts.TaskGraphJson
-    evidenceWrite (path [ featureDir; "readiness"; "task-graph.md" ]) graphArts.TaskGraphMd
-
-    match gr.Verdict with
-    | GraphVerdict.Error ->
-        let diagnostics = [ "verdict=error" ] @ (gr.Errors |> List.truncate 12)
-        writeGeneratedEvidenceReport "EvidenceGraph" featureDir 2 "graph-validation-only" diagnostics |> ignore
-        writeGeneratedEvidenceReport "EvidenceAudit" featureDir 2 "graph-validation-only" diagnostics
-    | GraphVerdict.Ok ->
-        writeGeneratedEvidenceReport "EvidenceGraph" featureDir 0 "graph-validation-only" [ "verdict=ok"; $"tasks={List.length gr.Tasks}" ] |> ignore
-        let res, arts = Engine.runAudit inputs
-        writeArtifacts featureDir arts
-        let exitCode =
-            match res.Verdict with
-            | AuditVerdict.Pass -> 0
-            | AuditVerdict.Fail -> 2
-        let verdictStr = if exitCode = 0 then "PASS" else "FAIL"
-        let diagnostics =
-            [ $"verdict={verdictStr}"
-              $"real-tasks={res.RealTasks}"
-              $"unaccepted-synthetic-tasks={List.length res.SehSummary.UnacceptedSyntheticTasks}"
-              $"late-seh-tasks={List.length res.SehSummary.LateSehTasks}"
-              $"total-blockers={res.TotalBlockers}" ]
-        writeGeneratedEvidenceReport "EvidenceAudit" featureDir exitCode (auditValidationArea res) diagnostics
+    runMethod.Invoke(null, [| box target; box (Directory.GetCurrentDirectory()) |]) :?> int
 
 let runProcess (target: string) (fileName: string) (arguments: string) =
     Directory.CreateDirectory("readiness/logs") |> ignore
@@ -326,21 +213,21 @@ let run target =
     | "GeneratedGuidanceCheck"
     | "TemplateDrift" -> writeLog target
     | "EvidenceGraph" ->
-        let exitCode = runGeneratedEvidenceGraph ()
+        let exitCode = runGeneratedEvidence "EvidenceGraph"
         if exitCode <> 0 then
             failwithf "EvidenceGraph failed with exit code %d; see readiness/evidence-graph.md" exitCode
     | "EvidenceAudit" ->
-        let exitCode = runGeneratedEvidenceAudit ()
+        let exitCode = runGeneratedEvidence "EvidenceAudit"
         if exitCode <> 0 then
             failwithf "EvidenceAudit failed with exit code %d; see readiness/evidence-audit.md" exitCode
     | "Test" -> runGeneratedTests ()
     | "Verify" ->
         [ "Dev"; "GeneratedGuidanceCheck"; "TemplateDrift" ]
         |> List.iter writeLog
-        let graphExitCode = runGeneratedEvidenceGraph ()
+        let graphExitCode = runGeneratedEvidence "EvidenceGraph"
         if graphExitCode <> 0 then
             failwithf "EvidenceGraph failed with exit code %d; see readiness/evidence-graph.md" graphExitCode
-        let auditExitCode = runGeneratedEvidenceAudit ()
+        let auditExitCode = runGeneratedEvidence "EvidenceAudit"
         if auditExitCode <> 0 then
             failwithf "EvidenceAudit failed with exit code %d; see readiness/evidence-audit.md" auditExitCode
         runGeneratedTests ()

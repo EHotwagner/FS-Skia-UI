@@ -371,6 +371,8 @@ module ValidationContract =
           "GeneratedProductCheck"
           "PackageSurfaceCheck"
           "PerPackageSurfaceDiff"
+          "PrePublishCheck"
+          "Publish"
           "SkillContractPathCheck"
           "SkillQualityCheck"
           "SkillSyncCheck"

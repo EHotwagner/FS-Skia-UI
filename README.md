@@ -96,22 +96,26 @@ developed and tested against **Claude Opus 4.8** and **Codex 5.5**.
 
 ### 1. Generate a Spec Kit-enabled project
 
-From a clone of this repository, pack the preview packages to a local feed and
-install the project template:
+Install the project template from **public nuget.org** — no repository clone, no
+local feed — then generate a governed product:
 
 ```bash
-dotnet tool restore
-./fake.sh build -t PackLocal          # writes packages to ~/.local/share/nuget-local
-dotnet new install .                  # installs the `fs-skia-ui` template
-```
-
-Add `~/.local/share/nuget-local` as a NuGet source (e.g. via `nuget.config` or
-`dotnet nuget add source`), then generate a governed product:
-
-```bash
+dotnet new install FS.Skia.UI.Template      # from nuget.org
 dotnet new fs-skia-ui --name MyApp --profile governed --allow-scripts yes
 cd MyApp
+dotnet restore                              # resolves FS.Skia.UI.* from nuget.org only
 ```
+
+The generated `NuGet.config` references the public feed only, and a single
+`<FsSkiaUiVersion>` pins every `FS.Skia.UI.*` package plus the build engine — so a
+consumer upgrade is one edit (see the generated `docs/UPGRADING.md`). The full
+consumer install/upgrade flow and the maintainer release/publish sequence live in
+[`docs/distribution.md`](docs/distribution.md).
+
+**Framework developers** working from a clone instead validate against the local feed:
+`dotnet tool restore && ./fake.sh build -t PackLocal` writes the packages to
+`~/.local/share/nuget-local` (registered as a user-level NuGet source), and
+`dotnet new install .` installs the template from source.
 
 The generated repository already contains the Spec Kit install, the project-local
 `speckit-*` skills, an initial Git commit, and a working FS.Skia.UI app to build

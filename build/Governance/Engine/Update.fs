@@ -568,6 +568,17 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
         // union-diff read, the --enforce File.Exists probe, and printing are interpreter I/O
         // (Principle IV); the Routing selector itself is pure. See `runRouteSelection`.
         model, [ RouteSelect ]
+    | StartTarget Targets.PrePublishCheck ->
+        // Feature 064 (FR-006): the pure update only emits the validate effect. The
+        // interpreter reads the files, assembles PrePublishInputs, runs the four pure rules,
+        // writes the report, and aborts (FailWith) naming the offender on any finding.
+        model, [ PrePublishValidate ]
+    | StartTarget Targets.Publish ->
+        // Feature 064 (FR-001/FR-002): the pure update only emits the publish effect. The
+        // interpreter reads the PublishConfig from env, builds the 12-row plan via an
+        // anonymous feed read, writes the plan, and (non-dry-run) runs
+        // `dotnet nuget push --skip-duplicate`; a non-dry-run with no API key aborts fast.
+        model, [ PublishPackages ]
     | StartTarget Targets.VerifyPreflight ->
         model,
         [ CollectProcessHealth("Verify", model.ProcessHealthPath, model.VerificationVerdictsPath)

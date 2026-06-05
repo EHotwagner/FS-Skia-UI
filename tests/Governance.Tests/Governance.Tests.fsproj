@@ -73,6 +73,8 @@
     <Compile Include="Feature062GovernanceTests.fs" />
     <!-- Feature 063: SymbolCrossCheck target wiring + readiness-contract diagnostic relabel. -->
     <Compile Include="Feature063GovernanceTests.fs" />
+    <!-- Feature 064: publish/pre-publish targets + public-feed config + single-source pin. -->
+    <Compile Include="Feature064PublishTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

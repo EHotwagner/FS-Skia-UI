@@ -256,6 +256,34 @@ let rules =
           [ "readiness/target-metadata.md"
             "readiness/agent-ready-verdict.md" ]
           "broad"
+          "governance"
+
+      // Feature 064 (FR-007): the distribution change-set — the publish/pre-publish
+      // validator sources and the consumer single-source version files
+      // (`template/base/build.fsx` + `Directory.Packages.props`) — escalates to the
+      // maintainer-verify path. The consumer `NuGet.config`, single-source pin, and package
+      // metadata are the *distribution* contract; a malformed release must never reach the
+      // push edge, so the pre-publish gate, the template/generated checks, and the metadata
+      // currency checks are all required before merge.
+      internalRule
+          "distribution"
+          [ "build/Governance/Publish.fs"
+            "build/Governance/Publish.fsi"
+            "build/Governance/PrePublish.fs"
+            "build/Governance/PrePublish.fsi"
+            "template/base/build.fsx"
+            "template/base/Directory.Packages.props"
+            "template/base/docs/UPGRADING.md" ]
+          MaintainerVerify
+          [ Targets.PrePublishCheck
+            Targets.TemplateCheck
+            Targets.GeneratedProductCheck
+            Targets.TargetMetadataDrift
+            Targets.EvidenceGraph
+            Targets.EvidenceAudit ]
+          [ "readiness/target-metadata.md"
+            "readiness/agent-ready-verdict.md" ]
+          "broad"
           "governance" ]
 
 let innerLoopGates = [ Targets.Dev ]

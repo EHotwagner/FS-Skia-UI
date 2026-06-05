@@ -8,9 +8,15 @@ open BuildPaths
 let private quote (value: string) =
     "\"" + value.Replace("\"", "\\\"") + "\""
 
-let runProcessWithAllowedExitCodes (label: string) (fileName: string) (arguments: string) (workingDirectory: string) (outputPath: string) (environment: Map<string, string>) (allowedExitCodes: Set<int>) =
+// Feature 064 (FR-001): redact each non-empty secret from text before it is written to a log,
+// so a credential (e.g. an `-k <api-key>`) can never leak into readiness/CI logs (FAKE #2526).
+let private redactSecrets (secrets: string list) (text: string) =
+    secrets
+    |> List.fold (fun (acc: string) secret -> if String.IsNullOrEmpty secret then acc else acc.Replace(secret, "***")) text
+
+let private runProcessCore (label: string) (fileName: string) (arguments: string) (workingDirectory: string) (outputPath: string) (environment: Map<string, string>) (allowedExitCodes: Set<int>) (secrets: string list) =
     ensureParent outputPath
-    File.AppendAllText(outputPath, $"\n## {label}\n$ {fileName} {arguments}\n")
+    File.AppendAllText(outputPath, redactSecrets secrets $"\n## {label}\n$ {fileName} {arguments}\n")
 
     let startInfo = ProcessStartInfo(fileName, arguments)
     startInfo.WorkingDirectory <- workingDirectory
@@ -39,7 +45,7 @@ let runProcessWithAllowedExitCodes (label: string) (fileName: string) (arguments
     use proc =
         match Process.Start startInfo |> Option.ofObj with
         | Some proc -> proc
-        | None -> failwithf "Could not start %s %s" fileName arguments
+        | None -> failwithf "Could not start %s %s" fileName (redactSecrets secrets arguments)
 
     let stdoutTask = proc.StandardOutput.ReadToEndAsync()
     let stderrTask = proc.StandardError.ReadToEndAsync()
@@ -47,8 +53,8 @@ let runProcessWithAllowedExitCodes (label: string) (fileName: string) (arguments
     if proc.WaitForExit(30 * 60 * 1000) then
         let stdout = stdoutTask.Result
         let stderr = stderrTask.Result
-        File.AppendAllText(outputPath, stdout)
-        File.AppendAllText(outputPath, stderr)
+        File.AppendAllText(outputPath, redactSecrets secrets stdout)
+        File.AppendAllText(outputPath, redactSecrets secrets stderr)
         File.AppendAllText(outputPath, $"\nexit-code={proc.ExitCode}\n")
 
         if allowedExitCodes |> Set.contains proc.ExitCode |> not then
@@ -62,8 +68,16 @@ let runProcessWithAllowedExitCodes (label: string) (fileName: string) (arguments
         File.AppendAllText(outputPath, "\n" + diagnostic + "\n")
         failwith diagnostic
 
+let runProcessWithAllowedExitCodes (label: string) (fileName: string) (arguments: string) (workingDirectory: string) (outputPath: string) (environment: Map<string, string>) (allowedExitCodes: Set<int>) =
+    runProcessCore label fileName arguments workingDirectory outputPath environment allowedExitCodes []
+
 let runProcess label fileName arguments workingDirectory outputPath environment =
-    runProcessWithAllowedExitCodes label fileName arguments workingDirectory outputPath environment (Set.singleton 0)
+    runProcessCore label fileName arguments workingDirectory outputPath environment (Set.singleton 0) []
+
+// Feature 064 (FR-001): like `runProcess`, but masks each secret from the logged command and the
+// captured output — used for `dotnet nuget push -k <api-key>` so the credential never reaches a log.
+let runProcessRedacted (label: string) (fileName: string) (arguments: string) (workingDirectory: string) (outputPath: string) (environment: Map<string, string>) (secrets: string list) =
+    runProcessCore label fileName arguments workingDirectory outputPath environment (Set.singleton 0) secrets
 
 let existingProjects root projects =
     projects

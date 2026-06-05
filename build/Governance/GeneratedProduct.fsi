@@ -6,6 +6,11 @@ module FS.Skia.UI.Build.GeneratedProduct
 open FS.Skia.UI.Build.Engine.Model
 open FS.Skia.UI.Build.Front.Support
 
+/// Feature 064 (FR-003): the exact consumer-emitted `NuGet.config` content. Single source
+/// for both `writeLocalNuGetConfig` (what ships) and the pre-publish `NoMachineLocalPath`
+/// check (what is validated), so the two cannot drift.
+val consumerNuGetConfigContent: model: BuildModel -> string
+
 val validateTemplatePackage: model: BuildModel -> outputPath: string -> unit
 val runTemplateInstall: model: BuildModel -> label: string -> source: TemplateInstallSource -> outputPath: string -> unit
 val runTemplateInstantiation: model: BuildModel -> outputPath: string -> unit

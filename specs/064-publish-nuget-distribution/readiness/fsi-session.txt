@@ -1,0 +1,16 @@
+=== feature 064 type exercise ===
+config: feed=https://api.nuget.org/v3/index.json isLocal=false dryRun=true apiKey=false
+readUrl=https://api.nuget.org/v3-flatcontainer
+validate(dry-run, no key) = None
+validate(real push, no key) = Some
+  "FSSKIA_PUBLISH_API_KEY is not set: a real push requires a credential and nothing was pushed. Set FSSKIA_PUBLISH_DRYRUN=1 for a credential-free dry-run, or supply FSSKIA_PUBLISH_API_KEY for a real push."
+plan: FS.Skia.UI.Scene 0.1.67-preview.1 -> Push (feedHas=false)
+plan: FS.Skia.UI.Build 0.1.67-preview.1 -> Skip (feedHas=true)
+plan: FS.Skia.UI.Template 0.1.86-preview.1 -> Push (feedHas=false)
+flat-container versions parsed = ["0.1.66-preview.1"; "0.1.67-preview.1"]
+=== PrePublish exercise ===
+findings (3):
+  NoMachineLocalPath template/NuGet.config:local: the consumer-emitted NuGet.config carries a machine-local feed source (key="local" / nuget-local / an absolute path); a fresh consumer has no such directory and restore would fail (FR-003)
+  RequiredMetadata FS.Skia.UI.Scene/repository URL: FS.Skia.UI.Scene carries no repository URL; a public nuget.org listing requires it (FR-010)
+  RequiredMetadata FS.Skia.UI.Scene/README: FS.Skia.UI.Scene carries no README; a public nuget.org listing requires it (FR-010)
+=== done ===

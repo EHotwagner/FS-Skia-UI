@@ -62,3 +62,34 @@ generated consumer products. The repo already ships eight runtime packages from
 The project exists at the decided path and builds clean
 (`dotnet build build/Governance/FS.Skia.UI.Build.fsproj -warnaserror` →
 `0 warnings, 0 errors`); it is **not** packed or published.
+
+## Addendum (feature 064, 2026-06-04) — distribution is now implemented
+
+The Stage-4/5 deferral of pack-and-publish recorded above is **superseded**.
+Feature `064-publish-nuget-distribution` realizes the D1 end-state: a published
+NuGet.org distribution of all 11 `FS.Skia.UI.*` libraries **and** the
+`FS.Skia.UI.Template` package, consumable by an external developer who never
+cloned this repo.
+
+What changed:
+
+- **`Publish` target** (`build/Governance/`): feed-agnostic
+  (`FSSKIA_PUBLISH_FEED`, default nuget.org), idempotent (`dotnet nuget push
+  --skip-duplicate`), and dry-runnable (credential-free anonymous feed read →
+  12-row push/skip plan).
+- **`PrePublishCheck` target** + `PrePublish.fs(i)`: aborts a malformed release
+  naming the offending package/field (pin parity, engine-pin match, no
+  machine-local path in the emitted config, required metadata).
+- **Fresh-consumer config**: the generated `NuGet.config` is **public-feed only**
+  (no machine-local path); the in-repo dev loop keeps `~/.local/share/nuget-local`
+  via a separate validation overlay.
+- **Single-source pin**: one `<FsSkiaUiVersion>` in the template
+  `Directory.Packages.props` drives every library pin **and** the `build.fsx`
+  engine reference (resolved at runtime), so a consumer upgrade is one edit.
+- **Package metadata** (FR-010): `RepositoryUrl` + per-package READMEs on every
+  packable project and the template package.
+
+`FS.Skia.UI.Build` is therefore now a **published** package (still under `build/`,
+still curated `.fsi`), not merely an in-solution project reference. See
+`docs/distribution.md` for the consumer install/upgrade flow and the maintainer
+release sequence.

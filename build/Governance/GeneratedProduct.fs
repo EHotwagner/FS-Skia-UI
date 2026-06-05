@@ -1369,9 +1369,30 @@ let runScanV3GeneratedProducts model =
 
     File.WriteAllText(path [ model.GeneratedFileListsDir; "summary.md" ], summary + Environment.NewLine)
 
-let writeLocalNuGetConfig model root =
-    let content =
-        $"""<?xml version="1.0" encoding="utf-8"?>
+// Feature 064 (FR-003): the exact consumer-emitted NuGet.config content lives here as a
+// single source so the pre-publish NoMachineLocalPath check validates what actually ships.
+// Public-feed ONLY — no machine-local path — so a fresh consumer with no repo checkout and
+// no `~/.local/share/nuget-local` directory restores successfully once the packages are on
+// nuget.org. The in-repo dev loop keeps the local feed via a separate validation overlay
+// (`validationFeedNuGetConfigContent`), never emitted into a consumer project.
+let consumerNuGetConfigContent (model: BuildModel) =
+    ignore model
+    """<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <clear />
+    <add key="nuget" value="https://api.nuget.org/v3/index.json" />
+  </packageSources>
+</configuration>
+"""
+
+// Feature 064 (FR-003 conflict resolution): the in-repo validation overlay. NEVER emitted
+// into a generated consumer project — only used by `runGeneratedConsumerValidation` so the
+// generated app restores `FS.Skia.UI.*` from the local feed BEFORE the packages are on
+// nuget.org. The two configs are independent: the consumer config is public-feed only; this
+// overlay adds the machine-local feed for in-repo release validation.
+let validationFeedNuGetConfigContent model =
+    $"""<?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <packageSources>
     <clear />
@@ -1381,7 +1402,8 @@ let writeLocalNuGetConfig model root =
 </configuration>
 """
 
-    File.WriteAllText(path [ root; "NuGet.config" ], content)
+let writeLocalNuGetConfig model root =
+    File.WriteAllText(path [ root; "NuGet.config" ], consumerNuGetConfigContent model)
 
 let ensureGeneratedPackageVersions model root =
     let propsPath = path [ root; "Directory.Packages.props" ]
@@ -1529,8 +1551,13 @@ let runGeneratedConsumerValidation model =
         v3GeneratedRows model
         |> List.find (fun row -> row.Profile = "app" && row.Artifact = "source")
 
+    // FR-003: the generated project ships a PUBLIC-FEED-ONLY NuGet.config (the consumer
+    // contract). The in-repo validation restores via a SEPARATE staging-feed overlay that
+    // adds the local feed, so a generated app resolves FS.Skia.UI.* before the packages are
+    // on nuget.org — without that local path ever leaking into the consumer config.
     writeLocalNuGetConfig model row.Root
     ensureGeneratedPackageVersions model row.Root
+    File.WriteAllText(path [ row.Root; "nuget.validation.config" ], validationFeedNuGetConfigContent model)
 
     let validationDir = path [ model.ReadinessDir; "generated-consumer-validation" ]
     let generatedPackageCache = path [ validationDir; "nuget-packages" ]
@@ -1584,7 +1611,9 @@ let runGeneratedConsumerValidation model =
             "generated consumer restore from local packages"
             "RestoreFailure"
             "dotnet"
-            "restore tests/Product.Tests/Product.Tests.fsproj --configfile NuGet.config --no-cache"
+            // FR-003 staging overlay: validate the in-repo restore against the local feed via
+            // the validation-only config; the shipped consumer NuGet.config stays public-only.
+            "restore tests/Product.Tests/Product.Tests.fsproj --configfile nuget.validation.config --no-cache"
             row.Root
             restoreLog
 

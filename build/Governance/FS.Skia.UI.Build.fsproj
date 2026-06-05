@@ -87,6 +87,10 @@
     <Compile Include="Evidence/Render.fs" />
     <Compile Include="Evidence/Engine.fsi" />
     <Compile Include="Evidence/Engine.fs" />
+    <!-- Feature 064 (FR-004 / R1): the generated-product evidence façade the generated
+         build.fsx reflection-invokes after resolving the engine from <FsSkiaUiVersion>. -->
+    <Compile Include="Evidence/GeneratedRunner.fsi" />
+    <Compile Include="Evidence/GeneratedRunner.fs" />
     <!-- Feature 062 (FR-006): single-source generator for docs/skillist-reference.md
          from the live SkillRegistry + Audit.ownsVocabulary (currency in TargetMetadataDrift). -->
     <Compile Include="SkillistReference.fsi" />
@@ -113,6 +117,10 @@
     <Compile Include="Preflight.fs" />
     <Compile Include="Engine/Model.fsi" />
     <Compile Include="Engine/Model.fs" />
+    <Compile Include="Publish.fsi" />
+    <Compile Include="Publish.fs" />
+    <Compile Include="PrePublish.fsi" />
+    <Compile Include="PrePublish.fs" />
     <Compile Include="Front/Helpers.fs" />
     <Compile Include="Engine/Update.fsi" />
     <Compile Include="Engine/Update.fs" />

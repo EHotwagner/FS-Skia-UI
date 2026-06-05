@@ -1,0 +1,12 @@
+
+## source/governed instantiate
+$ dotnet new fs-skia-ui --name V3DotnetGovernedSource --output "/home/developer/projects/FS-Skia-UI/artifacts/template-check/064-publish-nuget-distribution/source-governed" --allow-scripts yes --profile governed --rootNamespace V3DotnetGovernedSource --packagePrefix V3DotnetGovernedSource --authors TemplateValidation --repositoryUrl "https://example.invalid/source/governed/V3DotnetGovernedSource" --targetFramework net10.0 --skipGitInit true
+The template "FS Skia UI Governed Project" was created successfully.
+
+Processing post-creation actions...
+Running command 'bash -c "find . -type f \( -name '*.sh' -o -name 'fake.sh' \) -exec chmod +x {} +"'...
+Command succeeded.
+
+
+
+exit-code=0

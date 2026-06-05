@@ -69,10 +69,13 @@ Spec Kit is installed in this repo through `.specify/` and the project-local
 `speckit-*` skills under `.agents/skills/`. Use `$speckit-specify`,
 `$speckit-plan`, and `$speckit-tasks` to start governed feature work.
 
-The product references FS.Skia.UI preview packages from the configured NuGet
-sources. For local framework development, pack the source repository with
-`./fake.sh build -t PackLocal` and add `~/.local/share/nuget-local` as a NuGet
-source before restoring or running this generated project.
+The product references FS.Skia.UI packages from **public nuget.org** — the generated
+`NuGet.config` references that feed only, with no machine-local path, so `dotnet restore`
+works on any machine. All `FS.Skia.UI.*` packages and the build engine are pinned by a single
+`<FsSkiaUiVersion>` in `Directory.Packages.props`; upgrading is one edit + `dotnet restore`
+(see `docs/UPGRADING.md`). _Framework developers_ working from a clone of the FS.Skia.UI
+repository instead pack the source with `./fake.sh build -t PackLocal` and add
+`~/.local/share/nuget-local` as a NuGet source before restoring.
 Use the generated source-shaped package API reference. Do not use assembly reflection or
 repository source inspection as an authoring substitute. When Scene and Controls are used in
 the same file, qualify collision-prone names such as

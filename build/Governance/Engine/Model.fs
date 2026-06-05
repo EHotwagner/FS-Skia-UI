@@ -93,6 +93,28 @@ let localPackageDir () =
 
     path [ home; ".local"; "share"; "nuget-local" ]
 
+// Feature 064 (FR-001/FR-002): release inputs, read from the environment at the interpreter
+// edge (never committed). The pure `update` only emits the publish effect; the interpreter
+// builds the PublishConfig and the per-package plan, then performs the read/push.
+type PublishConfig =
+    { FeedUrl: string
+      ReadUrl: string
+      ApiKeyPresent: bool
+      DryRun: bool
+      IsLocalFeed: bool }
+
+type PublishDecision =
+    | Push
+    | Skip
+
+// One row per package (12 rows: 11 packProjects libs + FS.Skia.UI.Template). Computed by the
+// interpreter's anonymous feed read; rendered by dry-run and used to decide the push.
+type PublishPlanRow =
+    { PackageId: string
+      Version: string
+      FeedHasVersion: bool
+      Decision: PublishDecision }
+
 type BuildModel =
     { RepositoryRoot: string
       FeatureId: string
@@ -198,6 +220,15 @@ type BuildEffect =
     // feature's plan/data-model/tasks (paths derived from the feature dir in interpret,
     // so no payload), print the markdown, and write readiness/symbol-cross-check.md.
     | SymbolCrossCheckAnalyze
+    // Feature 064 (FR-001/FR-002): push all 12 packages to the configured feed. The
+    // PublishConfig (feed URL, api-key presence, dry-run) is read from env in interpret; the
+    // anonymous feed read, the per-package skip/push decision, and `dotnet nuget push
+    // --skip-duplicate` all live at the edge, so no payload (Principle IV).
+    | PublishPackages
+    // Feature 064 (FR-006): the pre-publish consistency gate (pin parity, engine-pin match,
+    // no machine-local path in the emitted config, required metadata). All file reads happen
+    // in interpret; the PrePublish checks themselves are pure, so no payload.
+    | PrePublishValidate
 
 let init root =
     let readiness = featureReadiness root

@@ -5,6 +5,24 @@ open FS.Skia.UI.Build
 open FS.Skia.UI.Build.Preflight
 open FS.Skia.UI.Build.Front.Support
 
+// Feature 064 (FR-001/FR-002): release inputs read from the environment at the interpret edge.
+type PublishConfig =
+    { FeedUrl: string
+      ReadUrl: string
+      ApiKeyPresent: bool
+      DryRun: bool
+      IsLocalFeed: bool }
+
+type PublishDecision =
+    | Push
+    | Skip
+
+type PublishPlanRow =
+    { PackageId: string
+      Version: string
+      FeedHasVersion: bool
+      Decision: PublishDecision }
+
 type BuildModel =
     { RepositoryRoot: string
       FeatureId: string
@@ -104,6 +122,10 @@ type BuildEffect =
     | TemplateUpdatePackageScan
     // Feature 063 (FR-003): SymbolCrossCheck over the active feature's plan/data-model/tasks.
     | SymbolCrossCheckAnalyze
+    // Feature 064 (FR-001/FR-002): push all 12 packages (config read + read/push at the edge).
+    | PublishPackages
+    // Feature 064 (FR-006): pre-publish consistency gate (file reads at the edge, checks pure).
+    | PrePublishValidate
 
 /// Repository root (discovered by walking up for .specify/feature.json).
 val repositoryRoot: string

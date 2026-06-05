@@ -67,6 +67,8 @@ let interpret root effect =
     | SkillContractPathScan -> runSkillContractPathCheck model
     | TemplateUpdatePackageScan -> runTemplateUpdatePackageCheck model
     | SymbolCrossCheckAnalyze -> runSymbolCrossCheck model
+    | PublishPackages -> runPublishPackages model
+    | PrePublishValidate -> runPrePublishCheck model
 
 let runTarget (target: Targets.Target) =
     let model, initEffects = init repositoryRoot

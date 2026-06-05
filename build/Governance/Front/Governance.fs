@@ -2,6 +2,8 @@ module FS.Skia.UI.Build.Front.Governance
 
 open System
 open System.IO
+open System.Net.Http
+open System.Text.RegularExpressions
 open BuildPaths
 open BuildProcess
 open FS.Skia.UI.Build
@@ -722,3 +724,256 @@ let runEvidenceAuditCheck root (model: BuildModel) =
         | FS.Skia.UI.Build.Evidence.AuditVerdict.Fail ->
             failwithf "Evidence audit FAIL (%d blockers); see %s" res.TotalBlockers (path [ model.LogDir; "evidence-audit.txt" ])
         | _ -> ()
+
+// ---------------------------------------------------------------------------
+// Feature 064 (FR-001/FR-002/FR-006): the publish + pre-publish interpret edge.
+// The pure plan/rules live in Publish.fs / PrePublish.fs; everything here is I/O
+// (env reads, the anonymous feed read, `dotnet nuget push`, file reads/writes).
+// ---------------------------------------------------------------------------
+
+let private templatePackageProject = ".template.package/FS.Skia.UI.Template.fsproj"
+
+/// The full shipped (packageId, version) set: 11 packProjects libs + the template package.
+let private shippedPackages root =
+    (packProjects |> List.map (fun (project, packageId) -> packageId, projectVersion root project))
+    @ [ "FS.Skia.UI.Template", projectVersion root templatePackageProject ]
+
+let private nupkgPathFor (model: BuildModel) (packageId: string) (version: string) =
+    let fileName = sprintf "%s.%s.nupkg" packageId version
+
+    if packageId = "FS.Skia.UI.Template" then
+        path [ model.TemplateArtifactDir; fileName ]
+    else
+        path [ model.LocalPackageDir; fileName ]
+
+let private httpGetString (url: string) =
+    try
+        use client = new HttpClient()
+        let response = client.GetAsync(url).GetAwaiter().GetResult()
+
+        if response.IsSuccessStatusCode then
+            Some(response.Content.ReadAsStringAsync().GetAwaiter().GetResult())
+        else
+            None
+    with _ ->
+        None
+
+/// An anonymous-read predicate: does the target feed already have <id>@<version>? Local feed ⇒
+/// directory listing; nuget.org/http ⇒ flat-container index.json (404 ⇒ not published).
+let private feedHasVersionProbe (config: PublishConfig) : string -> string -> bool =
+    if config.IsLocalFeed then
+        fun packageId version ->
+            [ sprintf "%s.%s.nupkg" packageId version
+              sprintf "%s.%s.nupkg" (packageId.ToLowerInvariant()) version ]
+            |> List.exists (fun fileName -> File.Exists(path [ config.ReadUrl; fileName ]))
+    else
+        fun packageId version ->
+            let url =
+                sprintf "%s/%s/index.json" (config.ReadUrl.TrimEnd('/')) (packageId.ToLowerInvariant())
+
+            match httpGetString url with
+            | Some json -> (Publish.parseFlatContainerVersions json).Contains(version.ToLowerInvariant())
+            | None -> false
+
+// Feature 064: optional GitHub Release artifact upload — an ARCHIVAL supplement to the nuget.org
+// push (nuget.org remains the consumer feed; GitHub Releases is not a NuGet feed). gh authenticates
+// via the ambient `gh auth` token, so no credential appears on the command line. Best-effort: a gh
+// failure is surfaced but never fails the (already-completed, irreversible) nuget push.
+let private uploadGitHubReleaseAssets (model: BuildModel) (tag: string) (assets: string list) =
+    let log = path [ model.LogDir; "publish-gh-release.txt" ]
+
+    if List.isEmpty assets then
+        printfn "publish: gh release skipped — no .nupkg assets present"
+    else
+        let quoted = assets |> List.map quote |> String.concat " "
+
+        try
+            // `gh release create` creates the release with all assets; if the tag already has a
+            // release it errors, and we fall back to `gh release upload --clobber`.
+            let created =
+                try
+                    runProcess
+                        "gh release create"
+                        "gh"
+                        (sprintf
+                            "release create %s %s --title %s --notes %s"
+                            (quote tag)
+                            quoted
+                            (quote (sprintf "FS.Skia.UI %s" tag))
+                            (quote "FS.Skia.UI package artifacts. The consumer feed is nuget.org; these .nupkg are an archival supplement."))
+                        model.RepositoryRoot
+                        log
+                        Map.empty
+
+                    true
+                with _ ->
+                    false
+
+            if not created then
+                runProcessWithAllowedExitCodes
+                    "gh release upload"
+                    "gh"
+                    (sprintf "release upload %s %s --clobber" (quote tag) quoted)
+                    model.RepositoryRoot
+                    log
+                    Map.empty
+                    (Set.singleton 0)
+
+            printfn "publish: gh release %s updated with %d asset(s)" tag (List.length assets)
+        with ex ->
+            printfn
+                "publish: WARNING gh release upload to tag %s failed (%s); the nuget.org push is unaffected. See %s"
+                tag
+                ex.Message
+                log
+
+let runPublishPackages (model: BuildModel) =
+    let lookup name =
+        Environment.GetEnvironmentVariable name |> Option.ofObj
+
+    let config = Publish.configFromEnv lookup
+
+    // Validation (FR-002 edge): a real push with no credential aborts fast, pushing nothing.
+    match Publish.validateConfig config with
+    | Some err -> failwith err
+    | None -> ()
+
+    let packages = shippedPackages model.RepositoryRoot
+    let rows = Publish.buildPlan packages (feedHasVersionProbe config)
+    let planReport = Publish.renderPlan config rows
+
+    ensureParent (path [ model.LogDir; "publish-plan.md" ])
+    File.WriteAllText(path [ model.LogDir; "publish-plan.md" ], planReport)
+    printfn "%s" planReport
+
+    if List.length rows <> 12 then
+        failwithf "Publish plan must cover exactly 12 packages (11 libs + template); got %d" (List.length rows)
+
+    if config.DryRun then
+        printfn "publish: dry-run — no network push performed (credential not required)."
+    else
+        let nonBlank = Option.filter (fun (s: string) -> not (String.IsNullOrWhiteSpace s))
+
+        let apiKey =
+            match (lookup "FSSKIA_PUBLISH_API_KEY" |> nonBlank) |> Option.orElse (lookup "NUGET_API_KEY" |> nonBlank) with
+            | Some key -> key
+            | None -> failwith "No publish credential set (NUGET_API_KEY or FSSKIA_PUBLISH_API_KEY); nothing was pushed."
+
+        // Feature 064 (FR-001): pass the credential to `dotnet nuget push` via the NUGET_API_KEY
+        // environment variable (NuGet 7.6+ / SDK 10.0.300) — the same ambient-credential model
+        // `gh` uses with GH_TOKEN. The key is therefore NEVER on the command line, so it cannot
+        // appear in any log; redaction of captured output stays as belt-and-braces.
+        let pushEnv = Map.ofList [ "NUGET_API_KEY", apiKey ]
+
+        for row in rows do
+            match row.Decision with
+            | Skip -> printfn "publish: skip %s@%s (already on the feed)" row.PackageId row.Version
+            | Push ->
+                let nupkg = nupkgPathFor model row.PackageId row.Version
+
+                if not (File.Exists nupkg) then
+                    failwithf "publish: package artifact %s is missing; run PackLocal/TemplatePack first" nupkg
+
+                let args =
+                    sprintf "nuget push %s -s %s --skip-duplicate" (quote nupkg) (quote config.FeedUrl)
+
+                runProcessRedacted (sprintf "push %s" row.PackageId) "dotnet" args model.RepositoryRoot (path [ model.LogDir; "publish.txt" ]) pushEnv [ apiKey ]
+
+        // Optional archival upload of the .nupkg to a GitHub Release (opt-in via
+        // FSSKIA_PUBLISH_GH_RELEASE_TAG). Supplement only — nuget.org is the consumer feed.
+        match lookup "FSSKIA_PUBLISH_GH_RELEASE_TAG" with
+        | Some tag when not (String.IsNullOrWhiteSpace tag) ->
+            rows
+            |> List.map (fun r -> nupkgPathFor model r.PackageId r.Version)
+            |> List.filter File.Exists
+            |> uploadGitHubReleaseAssets model tag
+        | _ -> ()
+
+let private xmlTagValue (xml: string) (tag: string) =
+    let m =
+        Regex.Match(xml, sprintf "<%s>([^<]*)</%s>" tag tag, RegexOptions.CultureInvariant)
+
+    if m.Success && not (String.IsNullOrWhiteSpace m.Groups.[1].Value) then
+        Some(m.Groups.[1].Value.Trim())
+    else
+        None
+
+let private resolvePackageMetadata root (packageId: string) (project: string) : PrePublish.PackageMetadata =
+    let fsproj =
+        let p = path [ root; project ]
+        if File.Exists p then File.ReadAllText p else ""
+
+    let directoryBuildProps =
+        let p = path [ root; "Directory.Build.props" ]
+        if File.Exists p then File.ReadAllText p else ""
+
+    // fsproj wins; Directory.Build.props is the shared fallback for license/authors/repo-url.
+    let pick tag =
+        xmlTagValue fsproj tag |> Option.orElse (xmlTagValue directoryBuildProps tag)
+
+    // FR-010: the README must physically exist next to the packable project (a configured
+    // PackageReadmeFile with no file fails `dotnet pack`), so check the file, not just the tag.
+    let projectDir =
+        Path.GetDirectoryName(path [ root; project ]) |> Option.ofObj |> Option.defaultValue root
+
+    let readmeFile =
+        if File.Exists(path [ projectDir; "README.md" ]) then Some "README.md" else None
+
+    { PackageId = packageId
+      LicenseExpression = pick "PackageLicenseExpression"
+      RepositoryUrl = pick "RepositoryUrl"
+      Authors = pick "Authors"
+      Description = pick "Description"
+      ReadmeFile = readmeFile }
+
+let runPrePublishCheck (model: BuildModel) =
+    let root = model.RepositoryRoot
+    let templateProps = path [ root; "template"; "base"; "Directory.Packages.props" ]
+    let templatePropsContent = if File.Exists templateProps then File.ReadAllText templateProps else ""
+
+    // The version build.fsx resolves at runtime: a literal `#r "nuget: FS.Skia.UI.Build, X"`
+    // when present (pre-T024), otherwise the <FsSkiaUiVersion> property build.fsx reads (post-T024).
+    let buildFsx = path [ root; "template"; "base"; "build.fsx" ]
+    let buildFsxContent = if File.Exists buildFsx then File.ReadAllText buildFsx else ""
+
+    let engineVersionFromBuildFsx =
+        let literal =
+            Regex.Match(
+                buildFsxContent,
+                "#r\\s+\"nuget:\\s*FS\\.Skia\\.UI\\.Build\\s*,\\s*([^\"]+)\"",
+                RegexOptions.CultureInvariant)
+
+        if literal.Success then
+            Some(literal.Groups.[1].Value.Trim())
+        else
+            let prop =
+                Regex.Match(templatePropsContent, "<FsSkiaUiVersion>([^<]+)</FsSkiaUiVersion>", RegexOptions.CultureInvariant)
+
+            if prop.Success then Some(prop.Groups.[1].Value.Trim()) else None
+
+    let metadataProjects =
+        (packProjects |> List.map (fun (project, packageId) -> packageId, project))
+        @ [ "FS.Skia.UI.Template", templatePackageProject ]
+
+    let inputs: PrePublish.PrePublishInputs =
+        { ShippedVersions = shippedPackages root
+          EngineShippedVersion = projectVersion root "build/Governance/FS.Skia.UI.Build.fsproj"
+          TemplateProps = templatePropsContent
+          EngineVersionFromBuildFsx = engineVersionFromBuildFsx
+          ConsumerNuGetConfig = GeneratedProduct.consumerNuGetConfigContent model
+          Metadata = metadataProjects |> List.map (fun (packageId, project) -> resolvePackageMetadata root packageId project) }
+
+    let findings = PrePublish.check inputs
+    let report = PrePublish.render findings
+
+    ensureParent (path [ model.LogDir; "prepublish-check.txt" ])
+    File.WriteAllText(path [ model.LogDir; "prepublish-check.txt" ], report)
+    printfn "%s" report
+
+    if not (List.isEmpty findings) then
+        let summary =
+            findings
+            |> List.map (fun f -> sprintf "%s: %s/%s — %s" (PrePublish.ruleName f.Rule) f.Package f.Field f.Detail)
+            |> String.concat Environment.NewLine
+
+        failwithf "PrePublishCheck FAIL (%d finding(s)); the publish is aborted:%s%s" (List.length findings) Environment.NewLine summary

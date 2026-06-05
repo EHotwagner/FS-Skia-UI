@@ -44,6 +44,9 @@ type Target =
     | Verify
     | Ci
     | Route
+    // Feature 064 (FR-001/FR-006/FR-007): the distribution targets.
+    | PrePublishCheck
+    | Publish
     | PackageSmoke
     | BuildWorkflowCheck
 
@@ -56,8 +59,9 @@ type TargetSpec =
       FailureOwner: string }
 
 // Registry order (replaces requiredTargets). PackageSmoke/BuildWorkflowCheck are
-// dispatched but excluded here so the metadata registry stays at 38 rows
-// (feature 044 retired SkillExamplesCheck; feature 063 added SymbolCrossCheck).
+// dispatched but excluded here so the metadata registry stays at 40 rows
+// (feature 044 retired SkillExamplesCheck; feature 063 added SymbolCrossCheck;
+// feature 064 added PrePublishCheck + Publish, 38 -> 40).
 let allTargets =
     [ Clean
       Restore
@@ -101,7 +105,9 @@ let allTargets =
       FinalReadiness
       Verify
       Ci
-      Route ]
+      Route
+      PrePublishCheck
+      Publish ]
 
 let dispatchTargets = allTargets @ [ PackageSmoke; BuildWorkflowCheck ]
 
@@ -150,6 +156,8 @@ let name target =
     | Verify -> "Verify"
     | Ci -> "Ci"
     | Route -> "Route"
+    | PrePublishCheck -> "PrePublishCheck"
+    | Publish -> "Publish"
     | PackageSmoke -> "PackageSmoke"
     | BuildWorkflowCheck -> "BuildWorkflowCheck"
 
@@ -218,6 +226,11 @@ let directPrerequisites target =
           TargetMetadataDrift ]
     | Ci -> [ CiPreflight; Verify ]
     | Route -> []
+    // Feature 064: PrePublishCheck composes with TemplateCheck (pin parity + metadata over
+    // the packed/template set); Publish gates on the pre-publish check and the two pack
+    // targets so the 12 .nupkg artifacts exist before the push.
+    | PrePublishCheck -> [ TemplateCheck ]
+    | Publish -> [ PrePublishCheck; PackLocal; TemplatePack ]
     | PackageSmoke -> [ PackageSurfaceCheck ]
     | BuildWorkflowCheck -> []
 

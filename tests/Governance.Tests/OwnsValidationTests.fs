@@ -161,33 +161,52 @@ let ownsValidationTests =
                           (sprintf "%s references hint id '%s', which must resolve to a consumer-registerable skill" src id)
           } ]
 
-// US1 / FR-002/FR-003/FR-004/FR-014: the template build.fsx resolves the feature
-// from .specify/feature.json (with the SPECKIT_FEATURE_DIR override), fails loud,
-// and never synthesises a bundled sample.
+// US1 / FR-002/FR-003/FR-004/FR-014: the generated-product feature resolver reads
+// .specify/feature.json (with the SPECKIT_FEATURE_DIR override), fails loud, and never
+// synthesises a bundled sample.
+//
+// Feature 064 (FR-004 / R1) relocated this orchestration out of the generated `build.fsx`
+// into the engine façade `build/Governance/Evidence/GeneratedRunner.fs`, which the generated
+// `build.fsx` invokes by reflection after resolving the engine from <FsSkiaUiVersion> at
+// runtime — so there is no literal engine version in the script. The resolver assertions now
+// read GeneratedRunner.fs; the script-level assertions confirm build.fsx delegates without a
+// version literal and synthesises no sample.
 [<Tests>]
 let templateFeatureResolverTests =
     let buildFsx = read "template/base/build.fsx"
+    let generatedRunner = read "build/Governance/Evidence/GeneratedRunner.fs"
 
     testList
         "Feature 059 template build.fsx feature resolver"
         [ test "resolver reads .specify/feature.json and honors the SPECKIT_FEATURE_DIR override (FR-002)" {
-              Expect.stringContains buildFsx ".specify/feature.json" "build.fsx reads feature.json"
-              Expect.stringContains buildFsx "feature_directory" "build.fsx reads the feature_directory key"
-              Expect.stringContains buildFsx "SPECKIT_FEATURE_DIR" "build.fsx honors the override variable"
+              Expect.stringContains generatedRunner ".specify/feature.json" "the runner reads feature.json"
+              Expect.stringContains generatedRunner "feature_directory" "the runner reads the feature_directory key"
+              Expect.stringContains generatedRunner "SPECKIT_FEATURE_DIR" "the runner honors the override variable"
           }
 
           test "resolver fails loud naming the source and override, with no sample fallback (FR-003)" {
-              Expect.stringContains buildFsx "Cannot resolve the feature to validate" "build.fsx fails with an actionable message"
-              Expect.stringContains buildFsx "never falls back to a bundled sample" "build.fsx documents no sample fallback"
+              Expect.stringContains generatedRunner "Cannot resolve the feature to validate" "the runner fails with an actionable message"
+              Expect.stringContains generatedRunner "never falls back to a bundled sample" "the runner documents no sample fallback"
           }
 
           test "resolver echoes the resolved feature directory and task count (FR-004)" {
-              Expect.stringContains buildFsx "feature-directory=" "build.fsx echoes the resolved feature directory"
-              Expect.stringContains buildFsx "tasks=" "build.fsx echoes the task count"
+              Expect.stringContains generatedRunner "feature-directory=" "the runner echoes the resolved feature directory"
+              Expect.stringContains generatedRunner "tasks=" "the runner echoes the task count"
           }
 
           test "the runtime sample synthesiser and its selector are removed (FR-014)" {
-              Expect.isFalse (buildFsx.Contains "ensureGeneratedEvidencePackage") "the sample synthesiser is gone"
-              Expect.isFalse (buildFsx.Contains "generated-evidence-workflow") "the runtime sample feature is gone"
-              Expect.isFalse (buildFsx.Contains "GENERATED_EVIDENCE_FEATURE_DIR") "the sample-era selector is gone"
+              for source in [ buildFsx; generatedRunner ] do
+                  Expect.isFalse (source.Contains "ensureGeneratedEvidencePackage") "the sample synthesiser is gone"
+                  Expect.isFalse (source.Contains "generated-evidence-workflow") "the runtime sample feature is gone"
+                  Expect.isFalse (source.Contains "GENERATED_EVIDENCE_FEATURE_DIR") "the sample-era selector is gone"
+          }
+
+          // Feature 064 (FR-004 / R1): build.fsx binds the engine from <FsSkiaUiVersion> at
+          // runtime (no version literal) and delegates evidence to the engine by reflection.
+          test "build.fsx resolves the engine from <FsSkiaUiVersion> at runtime, no version literal (064)" {
+              Expect.stringContains buildFsx "FsSkiaUiVersion" "build.fsx reads the single-source version property"
+              Expect.stringContains buildFsx "GeneratedRunner" "build.fsx delegates evidence to the engine runner by reflection"
+              Expect.isFalse
+                  (System.Text.RegularExpressions.Regex.IsMatch(buildFsx, "#r\\s+\"nuget:\\s*FS\\.Skia\\.UI\\.Build\\s*,"))
+                  "build.fsx carries no literal engine #r version"
           } ]

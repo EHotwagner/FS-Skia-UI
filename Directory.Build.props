@@ -19,13 +19,24 @@
     <Company>FS-Skia-UI Contributors</Company>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/FS-Skia-UI/FS-Skia-UI</PackageProjectUrl>
+    <!-- 064 (FR-010): a public nuget.org listing requires a RepositoryUrl distinct from
+         PackageProjectUrl; shared here so every packable project carries it. -->
+    <RepositoryUrl>https://github.com/FS-Skia-UI/FS-Skia-UI.git</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- 064 (FR-010): pack each project's own README.md as the package listing readme when it
+         exists. Conditional so non-packable / readme-less projects are unaffected; the
+         pre-publish check (RequiredMetadata) enforces that every packable project has one. -->
+    <PackageReadmeFile Condition="Exists('$(MSBuildProjectDirectory)/README.md')">README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="FSharp.Core" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('$(MSBuildProjectDirectory)/README.md')">
+    <None Include="$(MSBuildProjectDirectory)/README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

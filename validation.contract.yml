@@ -197,6 +197,30 @@ routing_rules:
       - readiness/agent-ready-verdict.md
     timeout_class: broad
     failure_owner: governance
+  - id: distribution
+    tier: maintainer-verify
+    paths:
+      - "build/Governance/Publish.fs"
+      - "build/Governance/Publish.fsi"
+      - "build/Governance/PrePublish.fs"
+      - "build/Governance/PrePublish.fsi"
+      - "template/base/build.fsx"
+      - "template/base/Directory.Packages.props"
+      - "template/base/docs/UPGRADING.md"
+    feature_concerns:
+      - distribution
+    required_gates:
+      - PrePublishCheck
+      - TemplateCheck
+      - GeneratedProductCheck
+      - TargetMetadataDrift
+      - EvidenceGraph
+      - EvidenceAudit
+    expected_artifacts:
+      - readiness/target-metadata.md
+      - readiness/agent-ready-verdict.md
+    timeout_class: broad
+    failure_owner: governance
 
 dogfood_feature_ids:
   - "042"

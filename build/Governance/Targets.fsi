@@ -56,6 +56,9 @@ type Target =
     | Verify
     | Ci
     | Route
+    // Feature 064 (FR-001/FR-006/FR-007): the distribution targets.
+    | PrePublishCheck
+    | Publish
     | PackageSmoke
     | BuildWorkflowCheck
 

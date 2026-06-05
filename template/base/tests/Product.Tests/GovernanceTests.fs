@@ -259,26 +259,26 @@ let governanceTests =
         test "generated evidence graph command runs the in-process engine" {
             let build = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "build.fsx"))
 
-            // Feature 043 (FR-013): generated evidence runs in-process through the
-            // packaged FS.Skia.UI.Build engine — no copied Python / run-audit.sh.
-            Expect.stringContains build "let runGeneratedEvidenceGraph" "generated build exposes graph command runner"
-            Expect.stringContains build "#r \"nuget: FS.Skia.UI.Build" "build references the published engine package"
-            Expect.stringContains build "open FS.Skia.UI.Build.Evidence" "build opens the evidence engine namespace"
-            Expect.stringContains build "Engine.runGraph inputs" "graph command runs the in-process engine"
-            Expect.stringContains build "authority=in-process-engine" "graph report records in-process authority"
-            Expect.stringContains build "status={status}" "graph report has an explicit status path"
-            Expect.stringContains build "in-process validation failed" "graph failure is reported before any pass claim"
-            Expect.stringContains build "let runGeneratedEvidenceAudit" "generated build exposes audit command runner"
-            Expect.stringContains build "Engine.runAudit inputs" "audit command runs the in-process merge-gate audit"
-            Expect.stringContains build "readiness-contract" "audit report distinguishes readiness contract failures"
-            Expect.stringContains build "synthetic-evidence" "audit report distinguishes synthetic evidence failures"
+            // Feature 043 (FR-013): generated evidence runs in-process through the packaged
+            // FS.Skia.UI.Build engine — no copied Python / run-audit.sh.
+            // Feature 064 (FR-004 / R1): the in-process orchestration lives in the engine's
+            // GeneratedRunner; build.fsx resolves the engine from <FsSkiaUiVersion> at runtime
+            // (no version literal) and delegates the two evidence targets to it by reflection.
+            Expect.stringContains build "runGeneratedEvidence \"EvidenceGraph\"" "build delegates the graph command to the engine runner"
+            Expect.stringContains build "runGeneratedEvidence \"EvidenceAudit\"" "build delegates the audit command to the engine runner"
+            Expect.stringContains build "GeneratedRunner" "build invokes the engine's generated-evidence runner by reflection"
+            Expect.stringContains build "Assembly.LoadFrom" "build binds the property-resolved engine assembly at runtime"
+            Expect.stringContains build "FsSkiaUiVersion" "build resolves the engine from the single-source version property"
+            // No engine version literal (single-source, FR-004).
+            Expect.isFalse
+                (Text.RegularExpressions.Regex.IsMatch(build, "#r\\s+\"nuget:\\s*FS\\.Skia\\.UI\\.Build\\s*,"))
+                "build carries no literal engine #r version"
             Expect.isFalse (build.Contains("| \"EvidenceGraph\"\n    | \"EvidenceAudit\" -> writeLog target")) "evidence commands are not completion-only logs"
         }
 
         test "generated evidence graph and audit do not shell the decommissioned scripts" {
             let build = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "build.fsx"))
 
-            Expect.stringContains build "SkillRegistry.build repoRoot" "audit resolves the skill registry in-process"
             [ "run-audit.sh"; "compute-task-graph.py"; "python3"; "ProcessStartInfo(\"bash\"" ]
             |> List.iter (fun forbidden ->
                 Expect.isFalse (build.Contains(forbidden, StringComparison.Ordinal)) $"generated evidence workflow excludes the decommissioned {forbidden}")

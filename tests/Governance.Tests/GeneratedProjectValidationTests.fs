@@ -248,6 +248,10 @@ let generatedProjectValidationTests =
         test "generated evidence targets reject placeholder-only completion logs and run the in-process engine" {
             let build = read "template/base/build.fsx"
             let evidenceCommands = read "template/base/src/Product/EvidenceCommands.fs"
+            // Feature 064 (FR-004 / R1): the in-process evidence orchestration was relocated from
+            // the generated build.fsx into the engine façade GeneratedRunner.fs, which build.fsx
+            // invokes by reflection after resolving the engine from <FsSkiaUiVersion>.
+            let runner = read "build/Governance/Evidence/GeneratedRunner.fs"
 
             Expect.isFalse (build.Contains("| \"EvidenceGraph\"\n    | \"EvidenceAudit\" -> writeLog target")) "generated evidence targets must not share the completion-only placeholder logger"
 
@@ -262,15 +266,19 @@ let generatedProjectValidationTests =
               "let res, arts = Engine.runAudit inputs"
               "readiness-contract"
               "synthetic-evidence"
-              "unsupported-host-classification"
-              "EvidenceAudit\", [ \"EvidenceGraph\" ]" ]
+              "unsupported-host-classification" ]
             |> List.iter (fun required ->
-                Expect.stringContains build required $"generated evidence target contract includes {required}")
+                Expect.stringContains runner required $"generated evidence target contract includes {required}")
 
-            // The decommissioned shell engine must not reappear in generated projects.
+            // build.fsx delegates the two evidence targets to the engine runner by reflection.
+            Expect.stringContains build "runGeneratedEvidence \"EvidenceGraph\"" "build.fsx delegates EvidenceGraph to the engine runner"
+            Expect.stringContains build "runGeneratedEvidence \"EvidenceAudit\"" "build.fsx delegates EvidenceAudit to the engine runner"
+
+            // The decommissioned shell engine must not reappear in generated projects or the runner.
             [ "run-audit.sh"; "compute-task-graph.py"; "python3"; "ProcessStartInfo(\"bash\"" ]
             |> List.iter (fun forbidden ->
-                Expect.isFalse (build.Contains(forbidden, System.StringComparison.Ordinal)) $"generated build.fsx excludes the decommissioned {forbidden}")
+                Expect.isFalse (build.Contains(forbidden, System.StringComparison.Ordinal)) $"generated build.fsx excludes the decommissioned {forbidden}"
+                Expect.isFalse (runner.Contains(forbidden, System.StringComparison.Ordinal)) $"GeneratedRunner excludes the decommissioned {forbidden}")
 
             [ "type GeneratedEvidenceCommandReport"
               "Command: string"
@@ -287,40 +295,51 @@ let generatedProjectValidationTests =
         }
 
         test "generated evidence graph and audit run the packaged engine in-process" {
-            let build = read "template/base/build.fsx"
+            let runner = read "build/Governance/Evidence/GeneratedRunner.fs"
 
-            [ "#r \"nuget: FS.Skia.UI.Build"
-              "open FS.Skia.UI.Build.Evidence"
-              "let buildEvidenceInputs"
+            [ "namespace FS.Skia.UI.Build.Evidence"
+              "let private buildEvidenceInputs"
               "Engine.runGraph inputs"
               "Engine.runAudit inputs"
               "SkillRegistry.build repoRoot" ]
             |> List.iter (fun required ->
-                Expect.stringContains build required $"generated in-process evidence invocation includes {required}")
+                Expect.stringContains runner required $"generated in-process evidence invocation includes {required}")
 
-            Expect.isFalse (build.Contains("bash", System.StringComparison.OrdinalIgnoreCase)) "generated evidence does not shell bash"
-            Expect.isFalse (build.Contains("chmod", System.StringComparison.OrdinalIgnoreCase)) "generated evidence workflow does not repair executable mode"
+            Expect.isFalse (runner.Contains("bash", System.StringComparison.OrdinalIgnoreCase)) "generated evidence does not shell bash"
+            Expect.isFalse (runner.Contains("chmod", System.StringComparison.OrdinalIgnoreCase)) "generated evidence workflow does not repair executable mode"
         }
 
-        test "template build.fsx engine pin equals Directory.Packages.props pin" {
-            // Feature 054 (FR-003, contract C1): the #r engine pin in template/base/build.fsx
-            // MUST byte-equal the FS.Skia.UI.Build PackageVersion in Directory.Packages.props.
-            // The prefix-only `stringContains "#r \"nuget: FS.Skia.UI.Build"` check cannot catch
-            // version drift; this asserts exact string equality (tolerates any -preview.N suffix).
+        test "template build.fsx is single-source: it resolves the engine from <FsSkiaUiVersion>, no literal pin (064)" {
+            // Feature 064 (FR-004 / R1) supersedes 054's #r-pin-equals-props-pin contract: there
+            // is now EXACTLY ONE literal FS.Skia.UI version value in a generated project — the
+            // <FsSkiaUiVersion> property in Directory.Packages.props. build.fsx carries no engine
+            // version literal; it reads the property at runtime and binds the matching engine
+            // assembly (so libraries and the engine always move together — a single-edit upgrade).
             let build = read "template/base/build.fsx"
             let props = read "template/base/Directory.Packages.props"
 
-            let extract context pattern (text: string) =
-                let m = System.Text.RegularExpressions.Regex.Match(text, pattern)
-                if m.Success then m.Groups[1].Value
-                else failtestf "could not extract %s" context
+            // build.fsx has no literal engine #r version.
+            Expect.isFalse
+                (System.Text.RegularExpressions.Regex.IsMatch(build, "#r\\s+\"nuget:\\s*FS\\.Skia\\.UI\\.Build\\s*,"))
+                "build.fsx must carry no literal engine #r version (single-source, FR-004)"
 
-            let scriptVer =
-                extract "build.fsx #r FS.Skia.UI.Build version" "#r \"nuget: FS\\.Skia\\.UI\\.Build, ([^\"]+)\"" build
-            let propsVer =
-                extract "Directory.Packages.props FS.Skia.UI.Build PackageVersion" "Include=\"FS\\.Skia\\.UI\\.Build\" Version=\"([^\"]+)\"" props
+            // build.fsx reads the single-source property and binds the resolved assembly.
+            Expect.stringContains build "FsSkiaUiVersion" "build.fsx reads the single-source <FsSkiaUiVersion> property"
+            Expect.stringContains build "Assembly.LoadFrom" "build.fsx binds the property-resolved engine assembly at runtime"
 
-            Expect.equal scriptVer propsVer (sprintf "template build.fsx #r pins FS.Skia.UI.Build %s but Directory.Packages.props pins %s — they must match exactly" scriptVer propsVer)
+            // The property exists and every FS.Skia.UI.* pin references it (no second literal).
+            Expect.isTrue
+                (System.Text.RegularExpressions.Regex.IsMatch(props, "<FsSkiaUiVersion>[^<]+</FsSkiaUiVersion>"))
+                "Directory.Packages.props defines the single-source <FsSkiaUiVersion>"
+
+            let literalPins =
+                System.Text.RegularExpressions.Regex.Matches(props, "<PackageVersion\\s+Include=\"FS\\.Skia\\.UI[^\"]*\"\\s+Version=\"([^\"]+)\"")
+                |> Seq.cast<System.Text.RegularExpressions.Match>
+                |> Seq.map (fun m -> m.Groups[1].Value)
+                |> Seq.filter (fun v -> not (v.Trim().Equals("$(FsSkiaUiVersion)", System.StringComparison.OrdinalIgnoreCase)))
+                |> Seq.toList
+
+            Expect.isEmpty literalPins "every FS.Skia.UI.* pin references $(FsSkiaUiVersion), not a second literal"
         }
 
         test "generated Verify writes redirected logs as text without binary padding paths" {
@@ -345,6 +364,9 @@ let generatedProjectValidationTests =
         }
 
         test "generated evidence reports preserve authority exit code paths and diagnostics" {
+            // Feature 064: the evidence report writer lives in the engine façade (GeneratedRunner);
+            // build.fsx keeps the text-log writer (tryWriteTextLog / "unreadable readiness log").
+            let runner = read "build/Governance/Evidence/GeneratedRunner.fs"
             let build = read "template/base/build.fsx"
 
             [ "command=./fake.sh build -t"
@@ -359,33 +381,36 @@ let generatedProjectValidationTests =
               "report-path="
               "message="
               "diagnostics="
-              "unreadable readiness log"
               "in-process validation failed" ]
             |> List.iter (fun required ->
-                Expect.stringContains build required $"generated evidence diagnostics include {required}")
+                Expect.stringContains runner required $"generated evidence diagnostics include {required}")
+
+            Expect.stringContains build "unreadable readiness log" "build.fsx keeps the text-log writer diagnostic"
         }
 
         test "generated evidence resolves the active feature, echoes feature-directory/tasks, and fails loudly (FR-001)" {
             // Feature 060 (FR-001/SC-001): confirm 059's resolveFeatureDir end-to-end in the
-            // shipped generated build.fsx — it resolves via SPECKIT_FEATURE_DIR then
+            // shipped generated evidence engine — it resolves via SPECKIT_FEATURE_DIR then
             // .specify/feature.json, echoes the audited feature-directory= and tasks=, and
             // fails loudly (never falls back to a bundled sample) when unresolved.
+            // Feature 064 (FR-004 / R1): the resolver was relocated from build.fsx into the
+            // engine façade GeneratedRunner.fs (build.fsx invokes it by reflection).
             expectFileContains
-                "template/base/build.fsx"
-                [ "let resolveFeatureDir"
+                "build/Governance/Evidence/GeneratedRunner.fs"
+                [ "let private resolveFeatureDir"
                   "SPECKIT_FEATURE_DIR"
-                  "\"feature_directory\""
+                  "feature_directory"
                   ".specify"
                   "/speckit.specify"
                   "never falls back to a bundled sample"
                   "printfn \"feature-directory=%s\" featureDir"
                   "printfn \"tasks=%d\" (List.length gr.Tasks)" ]
 
-            let build = read "template/base/build.fsx"
+            let runner = read "build/Governance/Evidence/GeneratedRunner.fs"
             // The override and the feature.json branch both fail loudly when the resolved
             // directory does not exist — there is no silent placeholder pass.
-            Expect.stringContains build "SPECKIT_FEATURE_DIR=%s does not exist" "missing override fails loudly naming the path"
-            Expect.stringContains build "has no usable" "empty feature.json fails loudly directing to /speckit.specify"
+            Expect.stringContains runner "SPECKIT_FEATURE_DIR=%s does not exist" "missing override fails loudly naming the path"
+            Expect.stringContains runner "has no usable" "empty feature.json fails loudly directing to /speckit.specify"
         }
 
         test "generated guidance documents reliable evidence workflows" {

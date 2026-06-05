@@ -108,6 +108,17 @@ let upgradeSkiaSpecKitTests =
             let templateVersions = packageVersions "template/base/Directory.Packages.props"
             let repoVersions = projectVersions ()
 
+            // Feature 064 (FR-004): the template pins now reference the single-source
+            // <FsSkiaUiVersion> property rather than a literal; resolve it before comparing.
+            let propsText = read "template/base/Directory.Packages.props"
+            let fsSkiaUiVersion =
+                let m = System.Text.RegularExpressions.Regex.Match(propsText, "<FsSkiaUiVersion>([^<]+)</FsSkiaUiVersion>")
+                if m.Success then m.Groups[1].Value.Trim()
+                else failtest "template Directory.Packages.props is missing the single-source <FsSkiaUiVersion> property"
+
+            let resolve (raw: string) =
+                if raw.Trim().Equals("$(FsSkiaUiVersion)", StringComparison.OrdinalIgnoreCase) then fsSkiaUiVersion else raw
+
             [ "FS.Skia.UI.Scene"
               "FS.Skia.UI.SkiaViewer"
               "FS.Skia.UI.Elmish"
@@ -117,7 +128,7 @@ let upgradeSkiaSpecKitTests =
               "FS.Skia.UI.Controls.Elmish"
               "FS.Skia.UI.Testing" ]
             |> List.iter (fun packageId ->
-                Expect.equal templateVersions[packageId] repoVersions[packageId] $"{packageId} generated pin matches repository package version")
+                Expect.equal (resolve templateVersions[packageId]) repoVersions[packageId] $"{packageId} generated pin (via $(FsSkiaUiVersion)) matches repository package version")
 
             expectFileContains
                 "specs/025-upgrade-skia-speckit/readiness/template-version-alignment.md"

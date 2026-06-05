@@ -1,0 +1,28 @@
+## Symbol consistency (analyze pass G)
+- entity-record Dev — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedGuidanceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedProductCheck — in {tasks}, missing from {plan, data-model}
+- entity-record PackageSurfaceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record PerPackageSurfaceDiff — in {tasks}, missing from {plan, data-model}
+- entity-record RefreshSurfaceBaselines — in {tasks}, missing from {plan, data-model}
+- entity-record SkillSyncCheck — in {tasks}, missing from {plan, data-model}
+- entity-record TargetMetadataDrift — in {tasks}, missing from {plan, data-model}
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- fr-id FR-002 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-005 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-007 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-008 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-009 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-011 — in {plan, tasks}, missing from {data-model}
+- msg-case Effect — in {plan, tasks}, missing from {data-model}
+- msg-case Model — in {tasks}, missing from {plan, data-model}
+- msg-case Msg — in {plan, tasks}, missing from {data-model}
+- msg-case PrePublishCheck — in {plan}, missing from {data-model, tasks}
+- msg-case Publish — in {plan}, missing from {data-model, tasks}
+- sc-id SC-001 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-002 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-004 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-005 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-007 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-008 — in {plan, tasks}, missing from {data-model}
