@@ -16,4 +16,4 @@ scene-kinds=[GroupElement; GroupElement; RectangleElement; ClipElement; TextRunE
  RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
  ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
  TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement]
-elapsed-ms=45
+elapsed-ms=51

@@ -40,27 +40,23 @@ contract is the generated `Directory.Packages.props` pin set and the
    - All repo packages share a single version, so one value drives every pin.
    - Do not invent versions; pins must match the current repo package versions.
 
-3. Update generated product pins.
-   - Edit `template/base/Directory.Packages.props`. Because every repo package
-     shares one version, a single old-to-new replacement is the least
-     error-prone bump and structurally cannot miss a package:
+3. Update the generated product pin — a single edit (Feature 064 / FR-004).
+   - The generated template has exactly **one** FS.Skia.UI version literal:
+     the `<FsSkiaUiVersion>` property in `template/base/Directory.Packages.props`.
+     Every `FS.Skia.UI.*` `<PackageVersion>` pins `Version="$(FsSkiaUiVersion)"`,
+     so bumping that one property moves all of them at once. Edit only that value:
      ```bash
-     sed -i 's/Version="<old-version>"/Version="<new-version>"/g' template/base/Directory.Packages.props
+     sed -i 's|<FsSkiaUiVersion>[^<]*</FsSkiaUiVersion>|<FsSkiaUiVersion><new-version></FsSkiaUiVersion>|' template/base/Directory.Packages.props
      ```
-   - Also rewrite the `FS.Skia.UI.Build` engine pin in `template/base/build.fsx`
-     in the **same** bump. The generated `build.fsx` loads the in-process
-     evidence engine via a `#r` literal whose version uses a different form
-     (`, <ver>`) than the props `Version="<ver>"` form, so the props `sed` above
-     does **not** touch it. Rewrite it explicitly so both pins move together and
-     never drift (Feature 054 / FR-002; the `GeneratedProjectValidationTests`
-     parity assertion fails the build if they diverge):
-     ```bash
-     # NOTE: use a `|` delimiter (not `#`) — the pattern contains `#r`, which would
-     # otherwise terminate a `s#...#...#` expression early.
-     sed -i 's|\(#r "nuget: FS\.Skia\.UI\.Build, \)[^"]*"|\1<new-version>"|' template/base/build.fsx
-     ```
-   - The props `sed` must update every `FS.Skia.UI*` `<PackageVersion ... Version="...">`
-     entry to the current package version (ten template-pinned packages):
+   - **Do not** edit `template/base/build.fsx`. Post-064 it carries no `#r`
+     version literal: it reads `<FsSkiaUiVersion>` from `Directory.Packages.props`
+     at runtime (regex near line 60) and constructs the engine `PackageReference`
+     dynamically, so the props property is the single source of truth and the two
+     cannot drift by construction. (This supersedes the old Feature 054 two-literal
+     parity check.) `GovernanceTests.fs` asserts `build.fsx` resolves the engine
+     from `FsSkiaUiVersion`, so reintroducing a literal would fail the build.
+   - The single property drives every template-pinned `FS.Skia.UI*`
+     `<PackageVersion ... Version="$(FsSkiaUiVersion)">` entry (ten packages):
      - `FS.Skia.UI.Build`
      - `FS.Skia.UI.SkillSupport`
      - `FS.Skia.UI.Scene`
@@ -73,8 +69,9 @@ contract is the generated `Directory.Packages.props` pin set and the
      - `FS.Skia.UI.Testing`
    - `FS.Skia.UI.Input` is **packable but not template-pinned** — it ships to the local
      feed (so it appears in the step-5 feed loop below) but the generated
-     `Directory.Packages.props` does not reference it, so it is **not** in the props-pin
-     list above.
+     `Directory.Packages.props` does not reference it, so it is **not** in the list above.
+   - After the edit, confirm no stray old-version literal survives elsewhere in
+     the template: `grep -rn '<old-version>' template/base` should return nothing.
    - Leave non-repo packages such as `Expecto`, `Microsoft.NET.Test.Sdk`, and `YoloDev.Expecto.TestSdk` unchanged unless the user explicitly asks.
 
 4. Bump the template package version in `.template.package/FS.Skia.UI.Template.fsproj`:
@@ -199,8 +196,7 @@ contract is the generated `Directory.Packages.props` pin set and the
 8. Commit and push after successful template-update validation.
    - Commit at least:
      - `.template.package/FS.Skia.UI.Template.fsproj`
-     - `template/base/Directory.Packages.props`
-     - `template/base/build.fsx` (the `#r` engine pin bumped in step 3)
+     - `template/base/Directory.Packages.props` (the single `<FsSkiaUiVersion>` bump)
      - any readiness files updated by `TemplatePack`
    - Suggested commit message:
      ```text
