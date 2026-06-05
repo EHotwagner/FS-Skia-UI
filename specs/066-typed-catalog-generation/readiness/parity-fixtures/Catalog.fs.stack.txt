@@ -1,0 +1,1 @@
+          definition "stack" "Stack" "layout" "Stack" "Ordered vertical or horizontal child composition." [ "children" ] common [] states "StaticText"

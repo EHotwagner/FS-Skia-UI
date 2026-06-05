@@ -1,0 +1,1 @@
+          definition "check-box" "Check Box" "selection" "CheckBox" "Boolean choice with checked state." [ "text" ] common [ "onChanged" ] states "CheckBox"

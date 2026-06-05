@@ -451,6 +451,23 @@ let regenerateGovernedBlocks (model: BuildModel) =
         let twinPath = repoRelPath model.RepositoryRoot GovernedBlocks.constitutionTwinRel
         File.WriteAllText(twinPath, GovernedBlocks.renderConstitution GovernedBlocks.Twin canonicalText)
 
+// Feature 066 — RefreshSurfaceBaselines regeneration edge (US1, FR-002). Splice the six
+// typed-catalog rows into both `src/Controls/catalog.yml` and `src/Controls/Catalog.fs`
+// from the single `CatalogGen.catalogFacts` source, in ONE operation, preserving every
+// byte outside the per-control `typed-catalog/<id>` markers (FR-003). A home file missing
+// its marker region is left untouched here; ControlsCatalogGenerationCheck reports it as
+// Missing (loud, not silent). Both files are written together so the two generated outputs
+// cannot diverge (partial-regeneration edge case cannot occur).
+let regenerateCatalog (model: BuildModel) =
+    let ymlPath = repoRelPath model.RepositoryRoot CatalogGen.catalogYmlRel
+    let fsPath = repoRelPath model.RepositoryRoot CatalogGen.catalogFsRel
+
+    if File.Exists ymlPath then
+        File.WriteAllText(ymlPath, CatalogGen.spliceYaml (File.ReadAllText ymlPath))
+
+    if File.Exists fsPath then
+        File.WriteAllText(fsPath, CatalogGen.spliceFSharp (File.ReadAllText fsPath))
+
 // Feature 042 (FR-002a, research R2): the git union-diff is read here at the `Route`
 // interpreter edge so the Routing selector stays pure and unit-testable without git.
 let routeGitCapture root (arguments: string) =

@@ -1,7 +1,7 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
 <!-- SPECKIT START -->
-specs/065-typed-controls-front-door/plan.md
+specs/066-typed-catalog-generation/plan.md
 <!-- SPECKIT END -->
 
 ## Run `Route` first; run only the gates it prints

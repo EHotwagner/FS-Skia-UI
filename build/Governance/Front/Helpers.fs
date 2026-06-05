@@ -215,6 +215,17 @@ let focusedGateContract model target =
           ReadinessPath = readiness "control-catalog.md"
           StaleAssumptions = noRestoreControls
           VerdictCategory = VerificationSuccess }
+    | "ControlsCatalogGenerationCheck" ->
+        // Feature 066: pure text-comparison currency gate over committed files — no project
+        // build prerequisite (so no requires-restored/built assumptions, unlike the sibling
+        // Controls test gates).
+        { TargetName = target
+          DirectPrerequisites = []
+          Command = "./fake.sh build -t ControlsCatalogGenerationCheck"
+          LogPath = log "controls-catalog-generation-check.txt"
+          ReadinessPath = readiness "control-catalog-generation.md"
+          StaleAssumptions = []
+          VerdictCategory = VerificationSuccess }
     | "ControlsInteractionCheck" ->
         { TargetName = target
           DirectPrerequisites = []

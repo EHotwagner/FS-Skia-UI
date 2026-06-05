@@ -69,19 +69,28 @@ module Catalog =
         { row with Evidence = row.Evidence @ chartDataGridEvidence }
 
     let supportedControls =
-        [ definition "text-block" "Text Block" "display" "TextBlock" "Static model-owned text display." [ "text" ] common [] states "StaticText"
+        [
+          // BEGIN GENERATED: typed-catalog/text-block
+          definition "text-block" "Text Block" "display" "TextBlock" "Static model-owned text display." [ "text" ] common [] states "StaticText"
+          // END GENERATED: typed-catalog/text-block
           definition "rich-text" "Rich Text" "display" "RichText" "Skia-specific rich text display with measurement, clipping, effects, diagnostics, and accessibility metadata." [ "runs" ] common [] states "StaticText"
           definition "label" "Label" "display" "Label" "Short form label text." [ "text" ] common [] states "StaticText"
           definition "image" "Image" "display" "Image" "Image placeholder or drawing-surface reference." [ "value" ] common [] states "Image"
           definition "icon" "Icon" "display" "Icon" "Named icon glyph or product symbol." [ "text" ] common [] states "Image"
           definition "separator" "Separator" "display" "Separator" "Visual divider between regions." [] common [] states "StaticText"
           definition "badge" "Badge" "display" "Badge" "Compact status label." [ "text" ] common [] states "StaticText"
+          // BEGIN GENERATED: typed-catalog/button
           definition "button" "Button" "input" "Button" "Pointer and keyboard activatable command." [ "text" ] common [ "onClick" ] states "Button"
+          // END GENERATED: typed-catalog/button
           definition "icon-button" "Icon Button" "input" "IconButton" "Icon-only activatable command." [ "text" ] common [ "onClick" ] states "Button"
+          // BEGIN GENERATED: typed-catalog/text-box
           definition "text-box" "Text Box" "input" "TextBox" "Plain single-line text entry." [ "value" ] common [ "onChanged" ] states "TextBox"
+          // END GENERATED: typed-catalog/text-box
           definition "text-area" "Text Area" "input" "TextArea" "Plain multi-line text entry." [ "value" ] common [ "onChanged" ] states "TextBox"
           definition "numeric-input" "Numeric Input" "input" "NumericInput" "Model-owned numeric value editor." [ "value" ] common [ "onChanged" ] states "TextBox"
+          // BEGIN GENERATED: typed-catalog/check-box
           definition "check-box" "Check Box" "selection" "CheckBox" "Boolean choice with checked state." [ "text" ] common [ "onChanged" ] states "CheckBox"
+          // END GENERATED: typed-catalog/check-box
           definition "radio-group" "Radio Group" "selection" "RadioGroup" "Single selection from a visible option set." [ "items" ] common [ "onChanged" ] states "RadioGroup"
           definition "switch" "Switch" "selection" "Switch" "Compact Boolean setting." [] common [ "onChanged" ] states "CheckBox"
           definition "slider" "Slider" "input" "Slider" "Continuous numeric value selection." [ "value" ] common [ "onChanged" ] states "Slider"
@@ -90,9 +99,13 @@ module Catalog =
           definition "multi-select-list" "Multi Select List" "selection" "Collections" "Multiple-selection list with model-owned selected keys." [ "items" ] common [ "onChanged" ] states "List"
           definition "combo-box" "Combo Box" "selection" "Collections" "Compact selection list." [ "items" ] common [ "onChanged" ] states "List"
           definition "tree-view" "Tree View" "data" "Collections" "Hierarchical item display." [ "items" ] common [ "onSelected" ] states "List"
+          // BEGIN GENERATED: typed-catalog/data-grid
           definition "data-grid" "Data Grid" "data" "DataGrid" "Table-like bounded visible-range data control with product-owned rows, selection, focus, sort, and filter metadata." [ "columns"; "rows" ] common [ "onSelected"; "onFocusChanged"; "onSortChanged" ] states "Grid"
           |> withChartDataGridEvidence
+          // END GENERATED: typed-catalog/data-grid
+          // BEGIN GENERATED: typed-catalog/stack
           definition "stack" "Stack" "layout" "Stack" "Ordered vertical or horizontal child composition." [ "children" ] common [] states "StaticText"
+          // END GENERATED: typed-catalog/stack
           definition "grid" "Grid" "layout" "Grid" "Structured child composition." [ "children" ] common [] states "StaticText"
           definition "dock" "Dock" "layout" "Dock" "Docked region composition." [ "children" ] common [] states "StaticText"
           definition "wrap" "Wrap" "layout" "Wrap" "Wrapping child layout." [ "children" ] common [] states "StaticText"

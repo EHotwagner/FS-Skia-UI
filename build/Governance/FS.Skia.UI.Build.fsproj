@@ -65,6 +65,12 @@
          generalizing the ConstitutionFragments splice to arbitrary keyed blocks. No .fsi
          (build front-end convention for new internal modules; plan §`.fsi` impact). -->
     <Compile Include="GovernedBlocks.fs" />
+    <!-- Feature 066 (US1): typed single-source generator for the six 065 control catalog
+         rows + the per-control marked-region splice/currency. Reuses the GovernedBlocks
+         marker/splice precedent (so it compiles after it); pure, with IO at the
+         Engine/Interpret.fs edge. Build-tooling .fsi (SkillTreeGen.fsi precedent). -->
+    <Compile Include="CatalogGen.fsi" />
+    <Compile Include="CatalogGen.fs" />
     <Compile Include="Evidence/EvidenceFormatSchema.fsi" />
     <Compile Include="Evidence/EvidenceFormatSchema.fs" />
     <Compile Include="Evidence/TaskParser.fsi" />

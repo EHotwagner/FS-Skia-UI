@@ -1,0 +1,1 @@
+          definition "text-box" "Text Box" "input" "TextBox" "Plain single-line text entry." [ "value" ] common [ "onChanged" ] states "TextBox"

@@ -1,0 +1,2 @@
+          definition "data-grid" "Data Grid" "data" "DataGrid" "Table-like bounded visible-range data control with product-owned rows, selection, focus, sort, and filter metadata." [ "columns"; "rows" ] common [ "onSelected"; "onFocusChanged"; "onSortChanged" ] states "Grid"
+          |> withChartDataGridEvidence

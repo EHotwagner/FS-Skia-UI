@@ -109,6 +109,10 @@ let update msg model =
           // BEFORE the skill-tree regen, so a gov-block spliced into a `.agents` SKILL.md
           // propagates into its `.claude` peer in the same refresh (SkillSyncCheck stays green).
           RegenerateGovernedBlocks
+          // Feature 066 (US1, FR-002): splice the six typed-catalog rows into catalog.yml
+          // and Catalog.fs from CatalogGen.catalogFacts in one operation so the
+          // ControlsCatalogGenerationCheck currency gate cannot trip on drift.
+          RegenerateCatalog
           RegenerateSkillTree
           RegenerateConstitutionFragments
           // Feature 060 (FR-003): regenerate the emitted `docs/api-surface/` tree from the
@@ -243,6 +247,57 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
           processEffect "controls catalog tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj -m:1 --no-build --no-restore --filter Catalog" model.RepositoryRoot (path [ model.LogDir; "controls-catalog-check.txt" ])
           WriteStructuredReport("controls catalog", path [ model.ReadinessDir; "control-catalog.md" ], report)
           focusedGateSummary model "ControlsCatalogCheck" ]
+    | StartTarget Targets.ControlsCatalogGenerationCheck ->
+        // Feature 066 (US1, FR-005): the standalone typed-catalog drift gate. Read both
+        // generated files at this interpreter edge (TargetMetadataDrift precedent), compute
+        // currency against CatalogGen.catalogFacts, write a PASS/FAIL readiness report, and
+        // FailWith the drift diagnostics naming the divergent control(s) when stale/missing.
+        // CatalogGen.currency/currencyDrift are pure (Principle IV).
+        let ymlPath = repoRelPath model.RepositoryRoot CatalogGen.catalogYmlRel
+        let fsPath = repoRelPath model.RepositoryRoot CatalogGen.catalogFsRel
+        let readOrEmpty p = if File.Exists p then File.ReadAllText p else ""
+
+        let currency =
+            CatalogGen.currency (readOrEmpty ymlPath) (readOrEmpty fsPath)
+
+        let drift = CatalogGen.currencyDrift currency
+
+        let report =
+            if List.isEmpty drift then
+                [ "# Controls Catalog Generation"
+                  ""
+                  sprintf
+                      "PASS: the six typed-catalog rows in %s and %s are a current, byte-identical regeneration of CatalogGen.catalogFacts."
+                      CatalogGen.catalogYmlRel
+                      CatalogGen.catalogFsRel
+                  ""
+                  "- generated-controls: 6 (text-block, button, text-box, check-box, data-grid, stack)"
+                  sprintf "- generated-files: %s, %s" CatalogGen.catalogYmlRel CatalogGen.catalogFsRel
+                  "- single-source: build/Governance/CatalogGen.fs (catalogFacts)"
+                  "- regenerate: ./fake.sh build -t RefreshSurfaceBaselines"
+                  "- failure-class: stale-generated-catalog" ]
+                |> String.concat Environment.NewLine
+            else
+                [ "# Controls Catalog Generation"
+                  ""
+                  "FAIL: a generated typed-catalog region is stale or missing relative to CatalogGen.catalogFacts."
+                  ""
+                  yield! drift |> List.map (fun d -> sprintf "- %s" d)
+                  ""
+                  "- regenerate: ./fake.sh build -t RefreshSurfaceBaselines"
+                  "- failure-class: stale-generated-catalog" ]
+                |> String.concat Environment.NewLine
+
+        model,
+        [ focusedGateAssumptionCheck model "ControlsCatalogGenerationCheck"
+          WriteStructuredReport(
+              "controls catalog generation",
+              path [ model.ReadinessDir; "control-catalog-generation.md" ],
+              report
+          )
+          if not (List.isEmpty drift) then
+              FailWith(String.Join(Environment.NewLine, drift))
+          focusedGateSummary model "ControlsCatalogGenerationCheck" ]
     | StartTarget Targets.ControlsInteractionCheck ->
         let report = """# Interaction Tests
 

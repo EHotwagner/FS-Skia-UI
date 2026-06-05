@@ -28,6 +28,7 @@ defaults:
     keyboardOperation: Tab navigation and Enter/Space activation where interactive
     contrastEvidence: readiness/layout-rendering.md
 controls:
+  # BEGIN GENERATED: typed-catalog/text-block
   - id: text-block
     displayName: Text Block
     category: display
@@ -43,6 +44,7 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/text-block
   - id: rich-text
     displayName: Rich Text
     category: display
@@ -133,6 +135,7 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # BEGIN GENERATED: typed-catalog/button
   - id: button
     displayName: Button
     category: input
@@ -148,6 +151,7 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/button
   - id: icon-button
     displayName: Icon Button
     category: input
@@ -163,6 +167,7 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # BEGIN GENERATED: typed-catalog/text-box
   - id: text-box
     displayName: Text Box
     category: input
@@ -178,6 +183,7 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/text-box
   - id: text-area
     displayName: Text Area
     category: input
@@ -208,6 +214,7 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # BEGIN GENERATED: typed-catalog/check-box
   - id: check-box
     displayName: Check Box
     category: selection
@@ -223,6 +230,7 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/check-box
   - id: radio-group
     displayName: Radio Group
     category: selection
@@ -343,6 +351,7 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # BEGIN GENERATED: typed-catalog/data-grid
   - id: data-grid
     displayName: Data Grid
     category: data
@@ -358,6 +367,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/data-grid
+  # BEGIN GENERATED: typed-catalog/stack
   - id: stack
     displayName: Stack
     category: layout
@@ -373,6 +384,7 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/stack
   - id: grid
     displayName: Grid
     category: layout

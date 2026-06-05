@@ -34,6 +34,8 @@ type Target =
     | SkillCheck
     | GeneratedProductCheck
     | ControlsCatalogCheck
+    // Feature 066 (US3, FR-006): the typed-catalog generation-currency (drift) gate.
+    | ControlsCatalogGenerationCheck
     | ControlsInteractionCheck
     | ControlsRenderingCheck
     | DependencyReport

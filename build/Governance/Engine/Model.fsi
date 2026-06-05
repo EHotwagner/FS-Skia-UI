@@ -105,6 +105,9 @@ type BuildEffect =
     | RegenerateConstitutionFragments
     // Feature 057: splice every canonical GovernedBlock into its home files.
     | RegenerateGovernedBlocks
+    // Feature 066 (US1, FR-002): splice the six typed-catalog rows into catalog.yml and
+    // Catalog.fs from CatalogGen.catalogFacts in one operation (interpreter edge).
+    | RegenerateCatalog
     | RouteSelect
     // Feature 043: in-process evidence gates (model is re-derived in interpret, so no payload).
     | EvidenceGraphCheck

@@ -198,6 +198,12 @@ type BuildEffect =
     // Feature 057: splice every canonical GovernedBlock into its home files (same edge,
     // same precedent as the skill-tree / constitution-fragment regeneration above).
     | RegenerateGovernedBlocks
+    // Feature 066 (US1, FR-002): splice the six typed-catalog rows into both
+    // `src/Controls/catalog.yml` and `src/Controls/Catalog.fs` from the single
+    // `CatalogGen.catalogFacts` source in one operation, so the two generated outputs
+    // cannot diverge (partial-regeneration edge case cannot occur). The file reads/writes
+    // live at the interpret edge; `CatalogGen.splice*` are pure (Principle IV).
+    | RegenerateCatalog
     | RouteSelect
     // Feature 043: in-process evidence gates (model is re-derived in interpret, so no payload).
     | EvidenceGraphCheck

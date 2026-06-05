@@ -361,6 +361,7 @@ module ValidationContract =
     let knownGates =
         [ "AgentReady"
           "ControlsCatalogCheck"
+          "ControlsCatalogGenerationCheck"
           "ControlsInteractionCheck"
           "ControlsRenderingCheck"
           "Dev"

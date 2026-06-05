@@ -22,6 +22,8 @@ type Target =
     | SkillCheck
     | GeneratedProductCheck
     | ControlsCatalogCheck
+    // Feature 066 (US3, FR-006): the typed-catalog generation-currency (drift) gate.
+    | ControlsCatalogGenerationCheck
     | ControlsInteractionCheck
     | ControlsRenderingCheck
     | DependencyReport
@@ -84,6 +86,7 @@ let allTargets =
       SkillCheck
       GeneratedProductCheck
       ControlsCatalogCheck
+      ControlsCatalogGenerationCheck
       ControlsInteractionCheck
       ControlsRenderingCheck
       DependencyReport
@@ -134,6 +137,7 @@ let name target =
     | SkillCheck -> "SkillCheck"
     | GeneratedProductCheck -> "GeneratedProductCheck"
     | ControlsCatalogCheck -> "ControlsCatalogCheck"
+    | ControlsCatalogGenerationCheck -> "ControlsCatalogGenerationCheck"
     | ControlsInteractionCheck -> "ControlsInteractionCheck"
     | ControlsRenderingCheck -> "ControlsRenderingCheck"
     | DependencyReport -> "DependencyReport"
@@ -184,6 +188,7 @@ let directPrerequisites target =
     | SkillCheck -> [ CapabilityCheck ]
     | GeneratedProductCheck -> [ CapabilityCheck; SkillCheck; Dev; TemplateCheck ]
     | ControlsCatalogCheck -> []
+    | ControlsCatalogGenerationCheck -> []
     | ControlsInteractionCheck -> []
     | ControlsRenderingCheck -> []
     | DependencyReport -> []
@@ -257,6 +262,7 @@ let private failureOwner target =
     | TemplateCheck
     | GeneratedProductCheck -> "template"
     | ControlsCatalogCheck
+    | ControlsCatalogGenerationCheck
     | ControlsInteractionCheck
     | ControlsRenderingCheck -> "product"
     | _ -> "governance"
