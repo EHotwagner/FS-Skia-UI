@@ -18,6 +18,47 @@ dotnet new install FS.Skia.UI.Template
 dotnet new fs-skia-ui -o MyApp
 ```
 
+## Usage
+
+```fsharp
+open FS.Skia.UI.KeyboardInput
+
+// Bind host keys to product commands.
+let bindings =
+    [ { Key = "ArrowUp"; Command = "move-up" }
+      { Key = "Enter"; Command = "confirm" } ]
+
+// Initialise the keyboard runtime model + startup effects.
+let model, _initEffects = Keyboard.init bindings
+
+// Normalise a raw host key event, then feed it to the reducer.
+let viewerKey, isDown = ViewerKeyboard.normalizeEvent { RawKey = "ArrowUp"; Direction = KeyDown }
+let keyId = ViewerKeyboard.toKeyId viewerKey
+let model, effects = Keyboard.update (KeyboardMsg.KeyDown keyId) model
+
+// React to resolved commands and surface diagnostics.
+for effect in effects do
+    match effect with
+    | CommandResolved cmd -> printfn "command resolved: %s" cmd
+    | ReportKeyboardDiagnostic d -> printfn "[%s] %s" d.Severity d.Message
+    | _ -> ()
+
+// Project a snapshot for HUD / state display rendering.
+let display = Keyboard.stateDisplay model
+printfn "pressed: %A active layout: %s" display.PressedKeys display.ActiveLayout
+```
+
+## API at a glance
+
+- `Keyboard.init` — builds the initial `KeyboardModel` from a `KeyboardBinding list` and returns startup `KeyboardEffect`s.
+- `Keyboard.update` — the Elmish reducer; applies a `KeyboardMsg` (key down/up, focus lost, layout/mode changes, sequence resolution) and returns the new model plus emitted effects.
+- `Keyboard.stateDisplay` — projects a `KeyboardStateDisplay` snapshot (pressed keys, active layout, mode stack, pending sequence, last command) for rendering.
+- `ViewerKeyboard.normalize` / `normalizeEvent` — turn a raw host key string or `ViewerKeyEvent` into a typed `ViewerKey` (plus direction flag).
+- `ViewerKeyboard.toKeyId` — converts a `ViewerKey` into the `KeyId` used by bindings and the reducer.
+- `KeyboardEffect` — the effects the runtime emits: `CommandResolved`, `KeyStateChanged`, `LayoutChanged`, `ModeChanged`, `StateDisplayChanged`, `ReportKeyboardDiagnostic`, `RequestHostKeyCapture`, and more.
+- `KeyboardModel` / `KeyboardMsg` — the runtime state record and the message set driving the reducer.
+- `KeyboardDiagnostic` — a structured diagnostic (`Code`, `Severity`, `Message`, optional `Key`) reported via effects.
+
 ## Versioning
 
 All `FS.Skia.UI.*` libraries share one version and move together. In a generated project a
