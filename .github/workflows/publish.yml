@@ -1,0 +1,57 @@
+# Publish the 11 libraries + template to nuget.org using NuGet Trusted Publishing
+# (GitHub OIDC -> short-lived nuget.org API key). No long-lived secret is stored:
+# `NuGet/login@v1` exchanges this job's signed OIDC token for a temporary key
+# (valid ~1h, single-use) and exposes it as `NUGET_API_KEY` -- exactly the env var
+# the compiled `Publish` target already reads (build/Governance/Front/Governance.fs).
+# `Publish` depends on PrePublishCheck + PackLocal + TemplatePack, so this one call
+# validates pins/metadata, packs all 12 artifacts, then pushes with --skip-duplicate.
+#
+# Manual-only and gated behind the protected `release` environment so a maintainer
+# approves each run. The version pushed is whatever <FsSkiaUiVersion> resolves to.
+#
+# One-time setup on nuget.org (Username -> Trusted Publishing -> Add policy):
+#   Repository Owner: <your GitHub org/user>
+#   Repository:       FS-Skia-UI
+#   Workflow File:    publish.yml      (filename only, no path)
+#   Environment:      release
+# And add one repo secret: NUGET_USER = your nuget.org profile name (NOT your email).
+
+name: Publish to nuget.org
+
+on:
+  workflow_dispatch:
+
+# FAKE shares repository .fake state and is not concurrency-safe; never overlap runs.
+concurrency:
+  group: publish-nuget
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write   # mint the GitHub OIDC token for the nuget.org exchange
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      # Exchange the OIDC token for a short-lived nuget.org API key, right before the
+      # push because the key expires in ~1 hour.
+      - name: NuGet login (OIDC -> temporary API key)
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Publish to nuget.org
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        run: ./fake.sh build -t Publish
