@@ -1,8 +1,8 @@
 # Typed Controls Front Door — Implementation Plan
 
-**Date:** 2026-06-05 18:02:02 +0200
-**Status:** Implementation plan. No product code changed by this document.
-**Feature (proposed):** `065-typed-controls-front-door`
+**Date:** 2026-06-05 18:02:02 +0200 · **Progress updated:** 2026-06-05
+**Status:** ✅ **Landed.** Feature `065-typed-controls-front-door` merged to `main` (squash `79ba420`); the follow-on `066-typed-catalog-generation` also merged (squash `7706ae1`). See the new **Implementation progress** section below. The original plan text is retained unedited for provenance.
+**Feature (proposed → shipped):** `065-typed-controls-front-door`
 **Scope:** Introduce an additive, compile-time-typed authoring surface (`Widget<'msg>` + per-control immutable `Props` records, plus per-control `Model`/`Msg`/`Effect`/`update` where the control owns ephemeral UI state) that lowers to the existing `Control<'msg>` IR. Prove it on a six-control reference slice without breaking the shipped `FS.Skia.UI.Controls` API.
 
 This plan is the merged, source-checked execution of the keystone feature identified in the two prior reports:
@@ -11,6 +11,45 @@ This plan is the merged, source-checked execution of the keystone feature identi
 - `docs/reports/2026-06-05-1429-controls-suite-penpot-speckit-plan.md` (execution scaffold: variable taxonomy, test plan, evidence artifacts, governance tables)
 
 It deliberately produces **only the typed front door for a representative slice**. Token/Penpot work, full 47-control migration, keyed reconciliation, and catalog regeneration are explicitly **out of scope** and sequenced as later features (see §13).
+
+---
+
+## Implementation progress (updated 2026-06-05)
+
+> This section records what actually shipped. Everything from §1 onward is the
+> original plan, preserved as written.
+
+### Status by roadmap feature
+
+| Feature | State | Evidence on `main` |
+| --- | --- | --- |
+| **065 — Typed controls front door** *(this plan)* | ✅ **Merged** (squash `79ba420`) | `src/Controls/Widget.fsi`/`.fs` (sealed `Widget<'msg>` + `ofControl`/`toControl`/`render`); `src/Controls/Widgets/{Primitives,TextBoxWidget,DataGridWidget}.fsi`/`.fs`; six typed modules under the **`FS.Skia.UI.Controls.Typed`** namespace (`TextBlock`, `Button`, `CheckBox`, `Stack`, `TextBox`, `DataGrid`). Merged through the escalated `controls-public-surface` gate set. |
+| **066 — Typed catalog generation** | ✅ **Merged** (squash `7706ae1`) | `build/Governance/CatalogGen.fsi`/`.fs` — a single-source `catalogFacts` table whose `Module`/required-attribute facts are cross-checked against the `FS.Skia.UI.Controls.Typed` surface; `catalog.yml` + `Catalog.fs` are now **generated** from it; `RegenerateCatalog` wired into `RefreshSurfaceBaselines`; new `ControlsCatalogGenerationCheck` currency/drift gate (`Routing.fs:138`, `Targets.fs`). Evidence audit verdict **PASS**. |
+| 067 — Internal keyed reconciliation | ⏳ Next | — |
+| 068 — `Controls.Elmish` command model | ⏳ Planned | — |
+| 069 — Design tokens + Penpot (DTCG → F#) | ⏳ Planned | — |
+| 070 — Migrate remaining 41 controls to typed Props/MVU | ⏳ Planned | — |
+| 071+ — Catalog expansion, overlays/virtualization, motion | ⏳ Planned | — |
+
+### Open decisions (§12) — resolved as shipped
+
+All five `speckit-clarify` defaults were adopted and are now reflected in source:
+**Q1** legacy `Attr`/`*.create` kept as a peer (no deprecation); **Q2** typed
+modules live under the `FS.Skia.UI.Controls.Typed` namespace (confirmed by the
+066 spec and the shipped modules); **Q3** `AdapterProgram.View` unchanged, bridge
+via `Widget.toControl` (068 deferred); **Q4** `Widget<'msg>` is a sealed wrapper
+with a private `Lowered` field; **Q5** `TextBox`/`DataGrid` reuse the existing
+`TextInput`/`DataGrid` models.
+
+### Process note
+
+`066` was the first feature to exercise the **single-source-generation** pattern
+on the *controls* surface (joining `validation.contract.yml`←`Routing.fs` and
+`.claude`←`.agents`): one `catalogFacts` declaration, both catalog artifacts
+generated, a drift gate that fails hand-edits. The bump/pack and template-pin
+flows that follow a merge are owned by the `speckit-merge` and
+`fs-skia-template-update` skills respectively — see the **Skills** section (§16)
+for the coverage this surfaced as missing.
 
 ---
 
@@ -398,9 +437,9 @@ These five map to ≤5 `speckit-clarify` questions; the spec should bake the ans
 This feature is **F-α / feature 1** of the merged roadmap. Downstream features
 (each its own `specs/NNN-*`), unchanged from the prior reports' sequencing:
 
-1. **065 — Typed controls front door** *(this plan)*
-2. 066 — Typed catalog generation (regenerate `catalog.yml`/`Catalog.fs` from the typed registry)
-3. 067 — Internal keyed reconciliation (VDOM diff over lowered IR; internal only)
+1. ✅ **065 — Typed controls front door** *(this plan)* — **merged** (`79ba420`)
+2. ✅ **066 — Typed catalog generation** (regenerate `catalog.yml`/`Catalog.fs` from the typed registry) — **merged** (`7706ae1`)
+3. ⏳ 067 — Internal keyed reconciliation (VDOM diff over lowered IR; internal only) — **next**
 4. 068 — `Controls.Elmish` command model (`Widget` view + `Cmd<'msg>` alignment)
 5. 069 — Design tokens + Penpot tokens-first (DTCG JSON → generated F#, `DesignTokenDrift`)
 6. 070 — Migrate remaining 41 controls to typed Props/MVU
@@ -437,7 +476,59 @@ migrate breadth last.
 
 ---
 
-## 16. Sources
+## 16. Skills: update and add coverage
+
+Landing `065`/`066` introduced two capabilities — a typed authoring front door
+and single-source catalog generation — that **no current skill covers**. The
+skill corpus (`.agents/skills/*`, the 9 capability skills `fs-skia-*` /
+`fsharp-*` plus the `speckit-*` workflow skills) has authoring help for
+build orchestration, code-generation of *governance* artifacts, parsing, graph
+algorithms, I/O globbing, shell, evidence mode, layout readability, the template,
+and generated projects — but nothing teaches a consumer or maintainer how to
+**author a typed control** or how to **extend the catalog fact table**. This
+section is the backlog for closing that gap as the roadmap advances.
+
+### 16.1 Mechanics for any skill change (do this, not hand-edit `.claude`)
+
+Skills are **generated from a single source**: author/edit the canonical
+`.agents/skills/<name>/SKILL.md`, then regenerate the `.claude` peer with
+`./fake.sh build -t RefreshSurfaceBaselines`. The registry
+(`build/Governance/Evidence/SkillRegistry.fs`) discovers skills dynamically from
+each SKILL.md's frontmatter `name:` — there is **no hardcoded skill list** to
+edit. A skill change routes (via `./fake.sh build -t Route`) to the
+`focused-authority` gate set: `Dev`, `SkillSyncCheck`, `SkillQualityCheck`,
+`SkillContractPathCheck`, `TemplateUpdateSkillPackageCheck`. Never edit the
+`.claude` copy directly — `SkillSyncCheck` will flag the drift.
+
+### 16.2 Skills to **update** (existing)
+
+| Skill | Update | Why now |
+| --- | --- | --- |
+| `fsharp-code-generation` | Add `066` as a worked example: a single-source `catalogFacts` table → generated `catalog.yml` + `Catalog.fs`, cross-checked against the `FS.Skia.UI.Controls.Typed` surface, with a `ControlsCatalogGenerationCheck` drift gate and `RegenerateCatalog` in `RefreshSurfaceBaselines`. The skill currently covers *governance* artifact emission only; catalog generation is the first **product-surface** generator and the template every later generator (tokens, catalog expansion) should copy. | Shipped in `066`; the pattern is now load-bearing and undocumented. |
+| `fs-skia-template-update` | Already corrected for Feature `064`'s single `<FsSkiaUiVersion>` property (one-edit pin, no `build.fsx` literal). Keep aligned as the typed/catalog surface grows the package set. | Done 2026-06-05; listed here for completeness. |
+| `fs-skia-project` | Mention the typed authoring path (`FS.Skia.UI.Controls.Typed.*` + `Widget.toControl`) as the **preferred** way to build a generated product's view, alongside the legacy `Attr` path. | `065` made typed the preferred front door. |
+
+### 16.3 Skills to **add** (new)
+
+| Proposed skill | Scope | Unblocks |
+| --- | --- | --- |
+| `fs-skia-typed-controls` | **The workhorse skill.** How to author with the typed front door and how to **add a new typed control**: pick fields from the variable taxonomy (§3.4), write the immutable `Props` record + `defaults`, write `view` that lowers to `Control<'msg>`, and — mandatory — add the **lowering-parity test** (typed `view ≡ legacy builder`, §10.3). For stateful controls, reuse the existing `TextInput`/`DataGrid` MVU models via a typed façade (§3.5), never fork them. Encodes the additive-surface + `PackageSurfaceCheck` baseline discipline (§6). | `070` (migrate 41 controls) is essentially "run this skill 41 times"; also any `071+` new control. |
+| `fs-skia-catalog-generation` *(or fold into `fsharp-code-generation`)* | How to extend the `catalogFacts` fact table and regenerate both catalog artifacts without tripping `ControlsCatalogGenerationCheck`; how the `Module`/required-attribute cross-check against the typed surface works. | `071+` catalog expansion; keeps `066`'s drift gate teachable. |
+| `fs-skia-design-tokens` | DTCG JSON → generated F# token modules, the `DesignTokenDrift` currency gate, and the tokens-first authoring flow. Reuses `fsharp-parsing` + `fsharp-code-generation` patterns. | `069` (design tokens + Penpot). |
+| `fs-skia-reconciliation` *(internal, optional)* | The keyed VDOM diff over the lowered `Control<'msg>` IR — invariants, key handling, and property tests (leans on `fsharp-graph-algorithms`). Internal-only; may stay a contributor note rather than a full skill. | `067` (keyed reconciliation). |
+
+### 16.4 Sequencing
+
+Author `fs-skia-typed-controls` **before** starting `070`, and
+`fs-skia-design-tokens` **before** `069` — each new skill should land in the same
+feature branch that first needs it, so its guidance is validated against real
+work rather than written speculatively. `fs-skia-catalog-generation` can land
+with `071` or be folded into `fsharp-code-generation` now, since `066` already
+provides a complete worked example to document.
+
+---
+
+## 17. Sources
 
 **Repository (read 2026-06-05, authoritative grounding):**
 - `src/Controls/Types.fsi` — `Control<'msg>`, `Attr<'msg>`, `AttrValue<'msg>`, `Standard*` types
