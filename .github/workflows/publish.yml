@@ -43,6 +43,22 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
+      # The pre-publish gate (Publish -> PrePublishCheck -> TemplateCheck -> TemplateSmoke
+      # -> Test) runs the Silk.NET.Windowing (GLFW) + Silk.NET.Vulkan GUI suite, so a hosted
+      # runner needs a virtual X display AND a software Vulkan device. Xvfb supplies the
+      # display (BuildEnvironment then classifies X11Only -> normalization no-ops); Mesa
+      # lavapipe (mesa-vulkan-drivers) supplies a CPU Vulkan device; the rest are GLFW/Skia
+      # native runtime deps.
+      - name: Install headless graphics stack
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            xvfb \
+            mesa-vulkan-drivers libvulkan1 vulkan-tools \
+            libgl1-mesa-dri libglu1-mesa \
+            libx11-6 libxrandr2 libxi6 libxcursor1 libxinerama1 libxext6 \
+            libfontconfig1
+
       # Exchange the OIDC token for a short-lived nuget.org API key, right before the
       # push because the key expires in ~1 hour.
       - name: NuGet login (OIDC -> temporary API key)
@@ -56,4 +72,8 @@ jobs:
       - name: Publish to nuget.org
         env:
           NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
-        run: ./fake.sh build -t Publish
+          # Force Mesa software rendering (no GPU on the runner). lavapipe is auto-discovered
+          # via its ICD; LIBGL_ALWAYS_SOFTWARE covers any GL fallback path.
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        # xvfb-run provisions DISPLAY for the GUI suite for the whole dependency chain.
+        run: xvfb-run -a --server-args="-screen 0 1280x1024x24" ./fake.sh build -t Publish
