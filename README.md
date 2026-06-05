@@ -1,5 +1,10 @@
 # FS.Skia.UI
 
+[![NuGet](https://img.shields.io/nuget/vpre/FS.Skia.UI.Scene?logo=nuget&label=nuget)](https://www.nuget.org/packages/FS.Skia.UI.Scene)
+[![Template](https://img.shields.io/nuget/vpre/FS.Skia.UI.Template?logo=nuget&label=template)](https://www.nuget.org/packages/FS.Skia.UI.Template)
+[![Downloads](https://img.shields.io/nuget/dt/FS.Skia.UI.Scene?logo=nuget&label=downloads)](https://www.nuget.org/packages/FS.Skia.UI.Scene)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A **Spec Kit-first** F# desktop UI framework. You describe the app you want as
 specifications and drive a governed, agent-run workflow — it produces an
 [Elmish](https://elmish.github.io/elmish/) (Model-View-Update) application rendered with
@@ -149,17 +154,17 @@ The workflow can compose any of these capability packages:
 
 | Package | Capability |
 |---------|-----------|
-| `FS.Skia.UI.Scene` | Dependency-light scene vocabulary — shapes, paths, text, images, paint. |
-| `FS.Skia.UI.SkiaViewer` | The Vulkan/Skia viewer host (`Viewer.run`, `Viewer.runApp`) + window/close-reason contracts. |
-| `FS.Skia.UI.Elmish` | The adapter that bridges the Elmish program to the viewer. |
-| `FS.Skia.UI.Layout` | Pure flex/grid and graph layout scene builders, hit testing. |
-| `FS.Skia.UI.KeyboardInput` | Package-owned keyboard runtime, reducer, effects, diagnostics, state display. |
-| `FS.Skia.UI.Input` | Host-coupled input runtime — YAML key bindings, modes, sequences, command intents. |
-| `FS.Skia.UI.Controls` | Declarative controls — buttons, text, charts, graph views, `DataGrid`, theming. |
-| `FS.Skia.UI.Controls.Elmish` | Wires Controls + keyboard runtime effects into the Elmish program. |
-| `FS.Skia.UI.Testing` | Generated-product and package validation helpers. |
-| `FS.Skia.UI.SkillSupport` | Backing library for the authoring skills — DAG algorithms, parsing, globbing, code generation. |
-| `FS.Skia.UI.Build` | The compiled governance engine (evidence graph + merge-gate audit). |
+| [`FS.Skia.UI.Scene`](https://www.nuget.org/packages/FS.Skia.UI.Scene) | Dependency-light scene vocabulary — shapes, paths, text, images, paint. |
+| [`FS.Skia.UI.SkiaViewer`](https://www.nuget.org/packages/FS.Skia.UI.SkiaViewer) | The Vulkan/Skia viewer host (`Viewer.run`, `Viewer.runApp`) + window/close-reason contracts. |
+| [`FS.Skia.UI.Elmish`](https://www.nuget.org/packages/FS.Skia.UI.Elmish) | The adapter that bridges the Elmish program to the viewer. |
+| [`FS.Skia.UI.Layout`](https://www.nuget.org/packages/FS.Skia.UI.Layout) | Pure flex/grid and graph layout scene builders, hit testing. |
+| [`FS.Skia.UI.KeyboardInput`](https://www.nuget.org/packages/FS.Skia.UI.KeyboardInput) | Package-owned keyboard runtime, reducer, effects, diagnostics, state display. |
+| [`FS.Skia.UI.Input`](https://www.nuget.org/packages/FS.Skia.UI.Input) | Host-coupled input runtime — YAML key bindings, modes, sequences, command intents. |
+| [`FS.Skia.UI.Controls`](https://www.nuget.org/packages/FS.Skia.UI.Controls) | Declarative controls — buttons, text, charts, graph views, `DataGrid`, theming. |
+| [`FS.Skia.UI.Controls.Elmish`](https://www.nuget.org/packages/FS.Skia.UI.Controls.Elmish) | Wires Controls + keyboard runtime effects into the Elmish program. |
+| [`FS.Skia.UI.Testing`](https://www.nuget.org/packages/FS.Skia.UI.Testing) | Generated-product and package validation helpers. |
+| [`FS.Skia.UI.SkillSupport`](https://www.nuget.org/packages/FS.Skia.UI.SkillSupport) | Backing library for the authoring skills — DAG algorithms, parsing, globbing, code generation. |
+| [`FS.Skia.UI.Build`](https://www.nuget.org/packages/FS.Skia.UI.Build) | The compiled governance engine (evidence graph + merge-gate audit). |
 
 ### How they fit together
 
@@ -204,10 +209,14 @@ packages push idempotently (`--skip-duplicate`). Channel is explicit in the vers
 Working on the framework — the dev container, the technology stack, and the maintainer
 validation flow — is covered in [`docs/development.md`](docs/development.md) and
 [`docs/reports/build.md`](docs/reports/build.md). In short: maintainers work through the same
-Spec Kit process, run `./fake.sh build -t Route` to get the minimal gate list, and run
-FAKE-backed gates **one at a time** (they share `.fake` state and aren't concurrency-safe).
-`./fake.sh build -t Dev` is the inner-loop gate (restore, build, test).
-`./fake.sh build -t Verify` and `./fake.sh build -t Ci` are the broad aggregate gates.
+Spec Kit process and run `./fake.sh build -t Route` first to get the minimal gate list. Because
+FAKE-backed gates share `.fake` state and are **not safe to run concurrently**, run them
+**sequentially**, one at a time — never in parallel (safe non-FAKE file reads and checks may
+still run in parallel):
+
+- `./fake.sh build -t Route` — prints the tier and minimal gate list for your change.
+- `./fake.sh build -t Dev` — the inner-loop gate (restore, build, test).
+- `./fake.sh build -t Verify` and `./fake.sh build -t Ci` — the broad aggregate gates.
 
 ## License
 
