@@ -1,6 +1,6 @@
 # Template Package Contents
 
-Package: `/home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.87-preview.1.nupkg`
+Package: `/home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.88-preview.1.nupkg`
 
 Required entries verified:
 - `content/.template.config/template.json`
