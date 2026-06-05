@@ -59,6 +59,10 @@ jobs:
             libx11-6 libxrandr2 libxi6 libxcursor1 libxinerama1 libxext6 \
             libfontconfig1
 
+      # Confirm a software Vulkan device (lavapipe) is actually visible before we rely on it.
+      - name: Verify Vulkan device
+        run: xvfb-run -a vulkaninfo --summary || true
+
       # Exchange the OIDC token for a short-lived nuget.org API key, right before the
       # push because the key expires in ~1 hour.
       - name: NuGet login (OIDC -> temporary API key)
@@ -77,3 +81,15 @@ jobs:
           LIBGL_ALWAYS_SOFTWARE: "1"
         # xvfb-run provisions DISPLAY for the GUI suite for the whole dependency chain.
         run: xvfb-run -a --server-args="-screen 0 1280x1024x24" ./fake.sh build -t Publish
+
+      # The native-GUI suites capture stdout/stderr to readiness/logs/*.txt; surface them
+      # inline when the gate fails so the real crash cause is visible without an artifact.
+      - name: Dump readiness logs on failure
+        if: failure()
+        run: |
+          for f in specs/064-publish-nuget-distribution/readiness/logs/test.txt \
+                   specs/064-publish-nuget-distribution/readiness/logs/smoke.txt; do
+            echo "::group::$f"
+            cat "$f" 2>/dev/null || echo "(missing)"
+            echo "::endgroup::"
+          done
