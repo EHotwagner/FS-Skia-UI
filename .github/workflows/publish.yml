@@ -49,7 +49,9 @@ jobs:
         id: login
         uses: NuGet/login@v1
         with:
-          user: ${{ secrets.NUGET_USER }}
+          # nuget.org profile name that owns the trusted-publishing policy + packages.
+          # Public (not sensitive), so it's inlined rather than read from a secret.
+          user: Paradigma11
 
       - name: Publish to nuget.org
         env:
