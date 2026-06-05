@@ -11,6 +11,14 @@
     <PackageTags>fsharp;skia;controls;widgets;charts;graph;datagrid</PackageTags>
   </PropertyGroup>
 
+  <!-- Feature 067: expose the assembly-internal `module Reconcile` to the test
+       assembly via the SDK-generated InternalsVisibleTo attribute (no
+       AssemblyInfo.fs source file, which would lack the .fsi pair the
+       surface-area gate requires). -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Controls.Tests" />
+  </ItemGroup>
+
   <ItemGroup>
     <Compile Include="Types.fsi" />
     <Compile Include="Types.fs" />
@@ -24,6 +32,8 @@
     <Compile Include="Attributes.fs" />
     <Compile Include="Control.fsi" />
     <Compile Include="Control.fs" />
+    <Compile Include="Reconcile.fsi" />
+    <Compile Include="Reconcile.fs" />
     <Compile Include="Widget.fsi" />
     <Compile Include="Widget.fs" />
     <Compile Include="Catalog.fsi" />

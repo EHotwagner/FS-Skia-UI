@@ -19,6 +19,7 @@
     <Compile Include="TextInputTests.fs" />
     <Compile Include="AccessibilityTests.fs" />
     <Compile Include="RenderingTests.fs" />
+    <Compile Include="ReconcileTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -29,6 +30,10 @@
          `FS.Skia.UI.Controls.Typed` surface, so this suite references the governance engine. -->
     <ProjectReference Include="..\..\build\Governance\FS.Skia.UI.Build.fsproj" />
     <PackageReference Include="Expecto" />
+    <!-- Feature 067: FsCheck (test-only, pinned 3.3.3 in Directory.Packages.props)
+         drives the round-trip and determinism properties for the internal
+         reconciler. Not a product dependency — DependencyReport is unaffected. -->
+    <PackageReference Include="FsCheck" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" />
   </ItemGroup>

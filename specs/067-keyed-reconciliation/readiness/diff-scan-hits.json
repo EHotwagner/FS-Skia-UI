@@ -1,0 +1,14 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "docs/reports/2026-06-05-2237-governance-system-comprehensive-analysis.md",
+      "line": 296,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "Synthetic evidence is not merely discouraged; it is modeled, disclosed, propagated, and audited. The narrow `[SEH]` exce"
+    }
+  ]
+}

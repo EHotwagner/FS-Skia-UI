@@ -1,0 +1,20 @@
+## Symbol consistency (analyze pass G)
+- entity-record AttrSet — in {tasks}, missing from {plan, data-model}
+- entity-record ContentChange — in {tasks}, missing from {plan, data-model}
+- fr-id FR-001 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-004 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-005 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-006 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-007 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-009 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-010 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-013 — in {plan}, missing from {data-model, tasks}
+- msg-case Control — in {plan}, missing from {data-model, tasks}
+- msg-case Effect — in {plan, tasks}, missing from {data-model}
+- msg-case Model — in {plan, tasks}, missing from {data-model}
+- msg-case Msg — in {plan, tasks}, missing from {data-model}
+- msg-case Widget — in {plan}, missing from {data-model, tasks}
+- sc-id SC-001 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-003 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-005 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}

@@ -1,0 +1,12 @@
+
+## source/sample-pack instantiate
+$ dotnet new fs-skia-ui --name V3DotnetSamplePackSource --output "/home/developer/projects/FS-Skia-UI/artifacts/template-check/067-keyed-reconciliation/source-sample-pack" --allow-scripts yes --profile sample-pack --rootNamespace V3DotnetSamplePackSource --packagePrefix V3DotnetSamplePackSource --authors TemplateValidation --repositoryUrl "https://example.invalid/source/sample-pack/V3DotnetSamplePackSource" --targetFramework net10.0 --skipGitInit true
+The template "FS Skia UI Governed Project" was created successfully.
+
+Processing post-creation actions...
+Running command 'bash -c "find . -type f \( -name '*.sh' -o -name 'fake.sh' \) -exec chmod +x {} +"'...
+Command succeeded.
+
+
+
+exit-code=0

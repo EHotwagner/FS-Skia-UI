@@ -1,0 +1,83 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Phase-checkpoint edges are auto-injected by the evidence-graph compute step
+# (every task in Phase N+1 implicitly depends on the last task of Phase N), so
+# only non-phase cross-edges are written below.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+  T006:
+    deps: [T005]
+    skillist: ["fs-skia-ui-widgets"]
+  T007:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T008:
+    deps: [T006, T007]
+    skillist: ["fsharp-build-orchestration"]
+  T009:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T010:
+    deps: [T009]
+    skillist: ["fsharp-graph-algorithms", "fs-skia-ui-widgets"]
+  T011:
+    deps: [T010]
+    skillist: []
+  T012:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T013:
+    deps: [T012]
+    skillist: ["fs-skia-ui-widgets"]
+  T014:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T015:
+    deps: [T014]
+    skillist: ["fsharp-graph-algorithms"]
+  T016:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T017:
+    deps: [T016]
+    skillist: ["fsharp-graph-algorithms"]
+  T018:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T019:
+    deps: [T018]
+    skillist: ["fs-skia-ui-widgets"]
+  T020:
+    deps: [T019]
+    skillist: ["fsharp-graph-algorithms"]
+  T021:
+    deps: [T020]
+    skillist: []
+  T022:
+    deps: [T021]
+    skillist: ["fsharp-build-orchestration"]
+  T023:
+    deps: [T022]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T024:
+    deps: [T023]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

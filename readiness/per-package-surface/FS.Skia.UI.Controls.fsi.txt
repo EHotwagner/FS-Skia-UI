@@ -663,6 +663,44 @@ module Diagnostics =
 
 namespace FS.Skia.UI.Controls
 
+module internal Reconcile =
+
+    type FieldChange<'a> =
+        | Unchanged
+        | ChangedTo of 'a
+
+    type AttrChange<'msg> =
+        | AttrSet of Attr<'msg>
+        | AttrRemoved of name: string
+
+    [<RequireQualifiedAccess>]
+    type NodePatch<'msg> =
+        | Keep
+        | Replace of Control<'msg>
+        | Update of UpdatePatch<'msg>
+
+    and UpdatePatch<'msg> =
+        { AttrChanges: AttrChange<'msg> list
+          ContentChange: FieldChange<string option>
+          AccessibilityChange: FieldChange<AccessibilityMetadata option>
+          Children: ChildOp<'msg> list }
+
+    and ChildOp<'msg> =
+        | ChildKeep of index: int * patch: NodePatch<'msg>
+        | ChildMove of fromIndex: int * toIndex: int * patch: NodePatch<'msg>
+        | ChildInsert of index: int * node: Control<'msg>
+        | ChildRemove of key: ControlId option * index: int
+
+    type ReconcileResult<'msg> =
+        { Patch: NodePatch<'msg>
+          Diagnostics: ControlDiagnostic list }
+
+    val diff: prev: Control<'msg> -> next: Control<'msg> -> ReconcileResult<'msg>
+
+    val apply: prev: Control<'msg> -> patch: NodePatch<'msg> -> Control<'msg>
+
+namespace FS.Skia.UI.Controls
+
 open FS.Skia.UI.Scene
 
 type RichTextWeight =
