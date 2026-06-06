@@ -71,4 +71,41 @@ let controlsElmishAdapterContractTests =
 
             Expect.exists command (function ReportAdapterDiagnostic diagnostic when diagnostic.Code.Contains "StaleTarget" && diagnostic.Message.Contains "missing-button" -> true | _ -> false) "stale target maps to adapter diagnostic"
         }
+
+        test "068 additive surface present; existing signatures unchanged (US3, FR-002/FR-009/SC-004)" {
+            let contract = readIfExists adapterContract
+
+            // Existing contract retained, byte-for-byte (the View field stays Control<'msg>).
+            [ "View: 'model -> Control<'msg>"
+              "val program:"
+              "val interpretKeyboardEffect:"
+              "val interpretControlEffect:"
+              "val subscriptions:"
+              "val diagnostic:"
+              "AdapterCommand<'msg> = AdapterEffect<'msg> list" ]
+            |> List.iter (fun required ->
+                Expect.stringContains contract required $"existing signature retained: {required}")
+
+            // New additive 068 surface declared in the .fsi.
+            [ "module AdapterCmd"
+              "val widgetView:"
+              "val programOfWidget:"
+              "val toCmd:"
+              "val productMessages:" ]
+            |> List.iter (fun added ->
+                Expect.stringContains contract added $"additive 068 surface declared: {added}")
+        }
+
+        test "base Controls package declares no Fable.Elmish reference — dependency split preserved (US3, FR-006/SC-005)" {
+            let controlsProject =
+                Path.Combine(repositoryRoot, "src", "Controls", "Controls.fsproj")
+            let text = readIfExists controlsProject
+
+            Expect.isTrue (File.Exists controlsProject) "src/Controls/Controls.fsproj exists"
+            Expect.isFalse (text.Contains "Fable.Elmish") "base Controls.fsproj does not reference Fable.Elmish"
+
+            // The adapter package, by contrast, owns the Fable.Elmish dependency that supplies Cmd<'msg>.
+            let adapter = readIfExists adapterProject
+            Expect.stringContains adapter "Fable.Elmish" "adapter package owns the Fable.Elmish dependency"
+        }
     ]

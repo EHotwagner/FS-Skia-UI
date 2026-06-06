@@ -7,7 +7,6 @@ hooks:
     command: speckit.git.initialize
     enabled: true
     optional: false
-    prompt: Execute speckit.git.initialize?
     description: Initialize Git repository before constitution setup
     condition: null
   before_specify:

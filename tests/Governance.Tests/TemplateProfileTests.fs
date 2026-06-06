@@ -1,5 +1,6 @@
 module TemplateProfileTests
 
+open System
 open Expecto
 open GovernanceTestSupport
 
@@ -55,6 +56,21 @@ let templateProfileTests =
                       "fs-skia-samples" ]
             else
                 Expect.isFalse (directoryExists "specs/007-v2-template-packaging") "generated projects exclude source-only history"
+        }
+
+        test "generated Spec Kit git initialization hook is mandatory without a confirmation prompt" {
+            let content = read ".specify/extensions.yml"
+            let startIndex = content.IndexOf("  before_constitution:", StringComparison.Ordinal)
+            let endIndex = content.IndexOf("  before_specify:", StringComparison.Ordinal)
+
+            Expect.isTrue (startIndex >= 0) ".specify/extensions.yml declares before_constitution"
+            Expect.isTrue (endIndex > startIndex) ".specify/extensions.yml orders before_specify after before_constitution"
+
+            let hookBlock = content.Substring(startIndex, endIndex - startIndex)
+
+            Expect.stringContains hookBlock "command: speckit.git.initialize" "before_constitution initializes git"
+            Expect.stringContains hookBlock "optional: false" "git initialization is mandatory"
+            Expect.isFalse (hookBlock.Contains("prompt:", StringComparison.Ordinal)) "mandatory git initialization does not ask for confirmation"
         }
 
         test "generated AGENTS guidance is not tied to source active feature" {

@@ -2,6 +2,7 @@ namespace FS.Skia.UI.Controls.Elmish
 
 open FS.Skia.UI.Controls
 open FS.Skia.UI.KeyboardInput
+open Elmish
 
 type AdapterDiagnostic =
     { Code: string
@@ -27,6 +28,16 @@ type AdapterProgram<'model, 'msg> =
       View: 'model -> Control<'msg>
       Subscriptions: 'model -> AdapterSubscription<'msg> list }
 
+module AdapterCmd =
+
+    val none: Cmd<'msg>
+
+    val ofMessage: msg: 'msg -> AdapterCommand<'msg>
+
+    val productMessages: command: AdapterCommand<'msg> -> 'msg list
+
+    val toCmd: route: (AdapterEffect<'msg> -> 'msg) -> command: AdapterCommand<'msg> -> Cmd<'msg>
+
 module ControlsElmish =
 
     val interpretKeyboardEffect: mapCommand: (CommandId -> 'msg) -> effect: KeyboardEffect -> AdapterCommand<'msg>
@@ -43,3 +54,12 @@ module ControlsElmish =
             AdapterProgram<'model, 'msg>
 
     val diagnostic: source: string -> code: string -> message: string -> AdapterDiagnostic
+
+    val widgetView: view: ('model -> Widget<'msg>) -> ('model -> Control<'msg>)
+
+    val programOfWidget:
+        init: (unit -> 'model * AdapterCommand<'msg>) ->
+        update: ('msg -> 'model -> 'model * AdapterCommand<'msg>) ->
+        view: ('model -> Widget<'msg>) ->
+        subscriptions: ('model -> AdapterSubscription<'msg> list) ->
+            AdapterProgram<'model, 'msg>

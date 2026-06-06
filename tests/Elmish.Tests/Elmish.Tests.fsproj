@@ -10,6 +10,7 @@
     <Compile Include="Tests.fs" />
     <Compile Include="ControlsElmishAdapterContractTests.fs" />
     <Compile Include="TypedControlsAdapterTests.fs" />
+    <Compile Include="AdapterCmdTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -17,6 +18,7 @@
     <ProjectReference Include="..\..\src\Elmish\Elmish.fsproj" />
     <ProjectReference Include="..\..\src\Controls.Elmish\Controls.Elmish.fsproj" />
     <PackageReference Include="Expecto" />
+    <PackageReference Include="FsCheck" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" />
   </ItemGroup>

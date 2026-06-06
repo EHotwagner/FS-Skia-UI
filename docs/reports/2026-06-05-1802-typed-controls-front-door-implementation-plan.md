@@ -1,7 +1,7 @@
 # Typed Controls Front Door — Implementation Plan
 
-**Date:** 2026-06-05 18:02:02 +0200 · **Progress updated:** 2026-06-05
-**Status:** ✅ **Landed.** Feature `065-typed-controls-front-door` merged to `main` (squash `79ba420`); the follow-on `066-typed-catalog-generation` also merged (squash `7706ae1`). See the new **Implementation progress** section below. The original plan text is retained unedited for provenance.
+**Date:** 2026-06-05 18:02:02 +0200 · **Progress updated:** 2026-06-06
+**Status:** ✅ **Landed + in progress.** Features `065-typed-controls-front-door` (squash `79ba420`), `066-typed-catalog-generation` (squash `7706ae1`), and `067-keyed-reconciliation` (squash `28a9674`) are merged to `main`. The next roadmap feature, `068-controls-elmish-command-model`, is now **fully implemented and validated locally** on branch `068-controls-elmish-command-model` (plan + tasks + impl + evidence; all 8 Route-printed gates green, `EvidenceAudit verdict=PASS`) — **awaiting merge**. See the **Implementation progress** section below. The original plan text from §1 onward is retained unedited for provenance.
 **Feature (proposed → shipped):** `065-typed-controls-front-door`
 **Scope:** Introduce an additive, compile-time-typed authoring surface (`Widget<'msg>` + per-control immutable `Props` records, plus per-control `Model`/`Msg`/`Effect`/`update` where the control owns ephemeral UI state) that lowers to the existing `Control<'msg>` IR. Prove it on a six-control reference slice without breaking the shipped `FS.Skia.UI.Controls` API.
 
@@ -14,7 +14,7 @@ It deliberately produces **only the typed front door for a representative slice*
 
 ---
 
-## Implementation progress (updated 2026-06-05)
+## Implementation progress (updated 2026-06-06)
 
 > This section records what actually shipped. Everything from §1 onward is the
 > original plan, preserved as written.
@@ -25,8 +25,8 @@ It deliberately produces **only the typed front door for a representative slice*
 | --- | --- | --- |
 | **065 — Typed controls front door** *(this plan)* | ✅ **Merged** (squash `79ba420`) | `src/Controls/Widget.fsi`/`.fs` (sealed `Widget<'msg>` + `ofControl`/`toControl`/`render`); `src/Controls/Widgets/{Primitives,TextBoxWidget,DataGridWidget}.fsi`/`.fs`; six typed modules under the **`FS.Skia.UI.Controls.Typed`** namespace (`TextBlock`, `Button`, `CheckBox`, `Stack`, `TextBox`, `DataGrid`). Merged through the escalated `controls-public-surface` gate set. |
 | **066 — Typed catalog generation** | ✅ **Merged** (squash `7706ae1`) | `build/Governance/CatalogGen.fsi`/`.fs` — a single-source `catalogFacts` table whose `Module`/required-attribute facts are cross-checked against the `FS.Skia.UI.Controls.Typed` surface; `catalog.yml` + `Catalog.fs` are now **generated** from it; `RegenerateCatalog` wired into `RefreshSurfaceBaselines`; new `ControlsCatalogGenerationCheck` currency/drift gate (`Routing.fs:138`, `Targets.fs`). Evidence audit verdict **PASS**. |
-| 067 — Internal keyed reconciliation | ⏳ Next | — |
-| 068 — `Controls.Elmish` command model | ⏳ Planned | — |
+| **067 — Internal keyed reconciliation** | ✅ **Merged** (squash `28a9674`) | `specs/067-keyed-reconciliation/**` (spec, plan, tasks, readiness); pure keyed VDOM diff over the lowered `Control<'msg>` IR — internal only, no public-surface delta, not wired into the live render path. Post-merge lib version bumps (`fd58c6e`) + template pins (`75bfe91`). |
+| **068 — `Controls.Elmish` command model** *(implemented, unmerged)* | 🟢 **Done locally — awaiting merge** | Branch `068-controls-elmish-command-model`: spec + plan + tasks (19/19 `[X]`, 0 synthetic) + impl + evidence. **Source** (`src/Controls.Elmish/ControlsElmish.fsi`/`.fs`, additive-only): `ControlsElmish.widgetView` (`view >> Widget.toControl`) and `programOfWidget` — typed `Widget<'msg>` view through the adapter with **no shim in product code**; new `module AdapterCmd` (`none`/`ofMessage`/`productMessages`/`toCmd`) — pure **total** `AdapterCommand`↔Elmish `Cmd<'msg>` bridge (resolves §12 Q3). Base `FS.Skia.UI.Controls` byte-unchanged, still `Fable.Elmish`-free. **Tests:** `tests/Elmish.Tests/` 17/17 pass (US1 lowering-parity, US2 AdapterCmd edges + 2 FsCheck ≥1000-case properties, US3 contract + dependency guards, US4 coexistence). **Surface:** both `FS.Skia.UI.Controls.Elmish` baselines regenerated, additive-only. Routed to **`package-surface`** (the `.fsi` is in `src/Controls.Elmish/`, not `src/Controls/`); all 8 Route-printed gates green, `EvidenceAudit verdict=PASS`. |
 | 069 — Design tokens + Penpot (DTCG → F#) | ⏳ Planned | — |
 | 070 — Migrate remaining 41 controls to typed Props/MVU | ⏳ Planned | — |
 | 071+ — Catalog expansion, overlays/virtualization, motion | ⏳ Planned | — |
@@ -36,8 +36,10 @@ It deliberately produces **only the typed front door for a representative slice*
 All five `speckit-clarify` defaults were adopted and are now reflected in source:
 **Q1** legacy `Attr`/`*.create` kept as a peer (no deprecation); **Q2** typed
 modules live under the `FS.Skia.UI.Controls.Typed` namespace (confirmed by the
-066 spec and the shipped modules); **Q3** `AdapterProgram.View` unchanged, bridge
-via `Widget.toControl` (068 deferred); **Q4** `Widget<'msg>` is a sealed wrapper
+066 spec and the shipped modules); **Q3** `AdapterProgram.View` stays
+`Control<'msg>` and the `Widget.toControl` bridge moves *into* the adapter — **now
+resolved in 068** via the additive `programOfWidget`/`widgetView` view path and the
+`AdapterCmd` `Cmd<'msg>` bridge (implemented locally, awaiting merge); **Q4** `Widget<'msg>` is a sealed wrapper
 with a private `Lowered` field; **Q5** `TextBox`/`DataGrid` reuse the existing
 `TextInput`/`DataGrid` models.
 
@@ -439,8 +441,8 @@ This feature is **F-α / feature 1** of the merged roadmap. Downstream features
 
 1. ✅ **065 — Typed controls front door** *(this plan)* — **merged** (`79ba420`)
 2. ✅ **066 — Typed catalog generation** (regenerate `catalog.yml`/`Catalog.fs` from the typed registry) — **merged** (`7706ae1`)
-3. ⏳ 067 — Internal keyed reconciliation (VDOM diff over lowered IR; internal only) — **next**
-4. 068 — `Controls.Elmish` command model (`Widget` view + `Cmd<'msg>` alignment)
+3. ✅ **067 — Internal keyed reconciliation** (VDOM diff over lowered IR; internal only) — **merged** (`28a9674`)
+4. 🟢 068 — `Controls.Elmish` command model (`Widget` view + `Cmd<'msg>` alignment) — **implemented & validated locally; awaiting merge** (`specs/068-controls-elmish-command-model/`; 19/19 tasks `[X]`, all gates green, `EvidenceAudit` PASS)
 5. 069 — Design tokens + Penpot tokens-first (DTCG JSON → generated F#, `DesignTokenDrift`)
 6. 070 — Migrate remaining 41 controls to typed Props/MVU
 7. 071+ — Catalog expansion (buttons/pickers/date-time), overlays/virtualization, motion

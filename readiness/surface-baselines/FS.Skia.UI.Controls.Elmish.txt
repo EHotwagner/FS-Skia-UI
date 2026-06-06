@@ -1,3 +1,4 @@
+FS.Skia.UI.Controls.Elmish.AdapterCmd
 FS.Skia.UI.Controls.Elmish.AdapterDiagnostic
 FS.Skia.UI.Controls.Elmish.AdapterEffect`1
 FS.Skia.UI.Controls.Elmish.AdapterEffect`1+DispatchControlRuntimeMessage
