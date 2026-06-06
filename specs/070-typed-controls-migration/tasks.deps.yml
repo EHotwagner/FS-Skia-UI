@@ -1,0 +1,194 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Phase-checkpoint edges are auto-injected by the graph script (every task in
+# Phase N+1 implicitly depends on the last task of Phase N). Only non-phase
+# cross-edges are written here.
+#
+# Skill note: the new fs-skia-typed-controls capability skill is authored in this
+# branch (T002) and does not exist at task-generation time, so it cannot appear in
+# any skillist (declared ids must resolve to a readable SKILL.md). Widget/typed work
+# declares the closest existing capability skill, fs-skia-ui-widgets.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+    owns: []
+  T002:
+    deps: []
+    skillist: []
+    owns: []
+  T003:
+    deps: []
+    skillist: []
+    owns: []
+  T004:
+    deps: []
+    skillist: []
+    owns: []
+  T005:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T006:
+    deps: [T005]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T007:
+    deps: []
+    skillist: ["fsharp-code-generation"]
+    owns: []
+  T008:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T009:
+    deps: [T005]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T010:
+    deps: [T005, T006]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T011:
+    deps: [T005, T006]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T012:
+    deps: [T005, T006]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T013:
+    deps: [T005, T006]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T014:
+    deps: [T005, T006]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T015:
+    deps: [T005, T006]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T016:
+    deps: [T005, T006]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T017:
+    deps: [T005, T006]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T018:
+    deps: [T005, T006]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T019:
+    deps: [T010, T011, T012, T013, T014, T015, T016, T017, T018]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T020:
+    deps: [T010]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T021:
+    deps: [T011]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T022:
+    deps: [T014]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T023:
+    deps: [T015]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T024:
+    deps: [T016]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T025:
+    deps: [T012, T013, T017]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T026:
+    deps: [T018]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T027:
+    deps: [T011, T013, T015, T016, T017]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T028:
+    deps: [T020, T021, T022, T023, T024, T025, T026, T027]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T029:
+    deps: [T012]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T030:
+    deps: [T013]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T031:
+    deps: [T017]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T032:
+    deps: [T029, T030, T031]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T033:
+    deps: [T019]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T034:
+    deps: [T033]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T035:
+    deps: [T034]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T045:
+    deps: [T005]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T036:
+    deps: [T007, T019]
+    skillist: ["fsharp-code-generation"]
+    owns: []
+  T037:
+    deps: [T019]
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+  T038:
+    deps: [T019]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T039:
+    deps: [T038]
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+  T040:
+    deps: [T028]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T041:
+    deps: [T002]
+    skillist: []
+    owns: []
+  T042:
+    deps: [T028, T032, T034, T036, T037, T045]
+    skillist: ["fsharp-build-orchestration"]
+    owns: []
+  T043:
+    deps: [T042]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T044:
+    deps: [T043]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

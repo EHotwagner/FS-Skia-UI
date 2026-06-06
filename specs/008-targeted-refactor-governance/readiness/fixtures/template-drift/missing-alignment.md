@@ -17,7 +17,7 @@ FAIL
 
 - Changed alignment classes: ``
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/069-design-tokens-penpot`
+- Active feature evidence: `specs/070-typed-controls-migration`
 
 ## Controls Boundary Guidance
 

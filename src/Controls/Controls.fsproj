@@ -64,6 +64,24 @@
     <Compile Include="Widgets/TextBoxWidget.fs" />
     <Compile Include="Widgets/DataGridWidget.fsi" />
     <Compile Include="Widgets/DataGridWidget.fs" />
+    <Compile Include="Widgets/Display.fsi" />
+    <Compile Include="Widgets/Display.fs" />
+    <Compile Include="Widgets/Input.fsi" />
+    <Compile Include="Widgets/Input.fs" />
+    <Compile Include="Widgets/TextAreaWidget.fsi" />
+    <Compile Include="Widgets/TextAreaWidget.fs" />
+    <Compile Include="Widgets/CollectionsWidgets.fsi" />
+    <Compile Include="Widgets/CollectionsWidgets.fs" />
+    <Compile Include="Widgets/Containers.fsi" />
+    <Compile Include="Widgets/Containers.fs" />
+    <Compile Include="Widgets/Navigation.fsi" />
+    <Compile Include="Widgets/Navigation.fs" />
+    <Compile Include="Widgets/Overlay.fsi" />
+    <Compile Include="Widgets/Overlay.fs" />
+    <Compile Include="Widgets/ChartsWidgets.fsi" />
+    <Compile Include="Widgets/ChartsWidgets.fs" />
+    <Compile Include="Widgets/CustomControlWidget.fsi" />
+    <Compile Include="Widgets/CustomControlWidget.fs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,59 @@
+## Symbol consistency (analyze pass G)
+- entity-record Dev — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedGuidanceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedProductCheck — in {tasks}, missing from {plan, data-model}
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- fr-id FR-002 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-004 — in {plan, data-model}, missing from {tasks}
+- fr-id FR-007 — in {plan, data-model}, missing from {tasks}
+- fr-id FR-011 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-012 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-013 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-014 — in {plan, tasks}, missing from {data-model}
+- msg-case Attr — in {plan}, missing from {data-model, tasks}
+- msg-case Border — in {data-model, tasks}, missing from {plan}
+- msg-case ButtonIntent — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Children — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case CollectionEffect — in {plan, data-model}, missing from {tasks}
+- msg-case CollectionModel — in {plan, data-model}, missing from {tasks}
+- msg-case CollectionMsg — in {plan, data-model}, missing from {tasks}
+- msg-case ComboBox — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case ContextMenu — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case DataGridModel — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Dialog — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Dock — in {data-model, tasks}, missing from {plan}
+- msg-case Effect — in {data-model, tasks}, missing from {plan}
+- msg-case GraphView — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Grid — in {data-model, tasks}, missing from {plan}
+- msg-case IconButton — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case LineChart — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case ListView — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Menu — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case MenuItem — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Model — in {tasks}, missing from {plan, data-model}
+- msg-case Msg — in {data-model, tasks}, missing from {plan}
+- msg-case MultiSelectList — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case NumericInput — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Overlay — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Panel — in {data-model, tasks}, missing from {plan}
+- msg-case Props — in {plan}, missing from {data-model, tasks}
+- msg-case RadioGroup — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case ScrollViewer — in {data-model, tasks}, missing from {plan}
+- msg-case Slider — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case SplitView — in {data-model, tasks}, missing from {plan}
+- msg-case Switch — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case TabItem — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Tabs — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case TextInputModel — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case TextInputMsg — in {tasks}, missing from {plan, data-model}
+- msg-case Theme — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Toolbar — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Tooltip — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case TreeView — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Wrap — in {data-model, tasks}, missing from {plan}
+- sc-id SC-006 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-008 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-009 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-010 — in {plan, tasks}, missing from {data-model}
+- union-or-screen-variant LineChart — in {plan}, missing from {data-model, tasks}
+- union-or-screen-variant ScrollViewer — in {plan}, missing from {data-model, tasks}

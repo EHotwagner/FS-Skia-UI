@@ -26,6 +26,7 @@ ids resolved from the live registry and the closed `owns:`→implied-skill table
 | `fs-skia-skiaviewer` | src/SkiaViewer/skill/SKILL.md |
 | `fs-skia-template-update` | .agents/skills/fs-skia-template-update/SKILL.md |
 | `fs-skia-testing` | src/Testing/skill/SKILL.md |
+| `fs-skia-typed-controls` | .agents/skills/fs-skia-typed-controls/SKILL.md |
 | `fs-skia-ui-widgets` | src/Controls/skill/SKILL.md |
 | `fsharp-build-orchestration` | .agents/skills/fsharp-build-orchestration/SKILL.md |
 | `fsharp-code-generation` | .agents/skills/fsharp-code-generation/SKILL.md |
@@ -34,6 +35,7 @@ ids resolved from the live registry and the closed `owns:`→implied-skill table
 | `fsharp-parsing` | .agents/skills/fsharp-parsing/SKILL.md |
 | `fsharp-shell-process` | .agents/skills/fsharp-shell-process/SKILL.md |
 | `speckit-analyze` | .agents/skills/speckit-analyze/SKILL.md |
+| `speckit-archive-readiness` | .agents/skills/speckit-archive-readiness/SKILL.md |
 | `speckit-checklist` | .agents/skills/speckit-checklist/SKILL.md |
 | `speckit-clarify` | .agents/skills/speckit-clarify/SKILL.md |
 | `speckit-constitution` | .agents/skills/speckit-constitution/SKILL.md |
