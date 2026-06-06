@@ -12,7 +12,7 @@
     <IsPackable>true</IsPackable>
     <PackageId>FS.Skia.UI.SkillSupport</PackageId>
     <AssemblyName>FS.Skia.UI.SkillSupport</AssemblyName>
-    <Version>0.1.75-preview.1</Version>
+    <Version>0.1.76-preview.1</Version>
     <Title>FS.Skia.UI.SkillSupport</Title>
     <Description>Shipped backing library for the FS.Skia.UI fsharp-* authoring skills: generic DAG graph algorithms, governance-input parsing, fnmatch-style globbing + currency diff, deterministic Markdown/Mermaid/ASCII code generation, and a captured external-process runner.</Description>
     <PackageTags>fsharp;skills;authoring;graph;parsing;globbing;codegen</PackageTags>
