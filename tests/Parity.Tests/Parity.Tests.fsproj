@@ -12,6 +12,8 @@
          is now the Scene-only deterministic scene-output oracle (the authoritative parity gate). -->
     <Compile Include="SceneOutput.fs" />
     <Compile Include="SceneOutputTests.fs" />
+    <Compile Include="AnimationOutput.fs" />
+    <Compile Include="AnimationOutputTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

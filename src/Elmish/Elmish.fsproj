@@ -14,6 +14,8 @@
   <ItemGroup>
     <Compile Include="Elmish.fsi" />
     <Compile Include="Elmish.fs" />
+    <Compile Include="AnimationTick.fsi" />
+    <Compile Include="AnimationTick.fs" />
   </ItemGroup>
 
   <ItemGroup>

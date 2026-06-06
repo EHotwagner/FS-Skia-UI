@@ -1,0 +1,27 @@
+== Easing endpoints + default ==
+Linear: f(0)=0.000 f(0.5)=0.500 f(1)=1.000
+EaseIn: f(0)=0.000 f(0.5)=0.125 f(1)=1.000
+EaseOut: f(0)=0.000 f(0.5)=0.875 f(1)=1.000
+EaseInOut: f(0)=0.000 f(0.5)=0.500 f(1)=1.000
+Easing.Default = EaseInOut
+
+== Tween.sample (opacity 0->1, ease-out, 300ms) ==
+t=0ms opacity=0.0000
+t=150ms opacity=0.8750
+t=300ms opacity=1.0000
+
+== Animation.applyAt (entrance) — identity-at-rest ==
+start node kind:   [PerspectiveElement; GroupElement; RectangleElement]
+settled node kind: [GroupElement; RectangleElement]
+settled == static node: true
+isSettled at 300ms: true
+
+== AnimationState retarget (no snap-back) ==
+displayed mid-flight = 50.00 (active=true)
+after retarget: Start=50.00 Current=50.00 Target=0.00 (no jump back to 0 start)
+
+== Elmish tick subscription shape ==
+active model -> 1 sub entrie(s)
+settled model -> 0 sub entrie(s)
+
+FSI animation surface exercise: OK

@@ -1,0 +1,135 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Phase-checkpoint edges are auto-injected by the graph compute script (every
+# task in Phase N+1 implicitly depends on the last task of Phase N), so only
+# non-phase cross-edges are written below.
+
+tasks:
+  # Phase 1: Setup
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: ["fs-skia-scene"]
+
+  # Phase 2: Foundation
+  T005:
+    deps: []
+    skillist: ["fs-skia-scene"]
+  T006:
+    deps: []
+    skillist: ["fs-skia-elmish"]
+  T007:
+    deps: [T005]
+    skillist: ["fs-skia-scene"]
+  T008:
+    deps: [T006]
+    skillist: ["fs-skia-elmish"]
+  T009:
+    deps: [T005]
+    skillist: []
+  T010:
+    deps: [T005]
+    skillist: ["fs-skia-scene"]
+  T011:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 3: US1 — fade + slide entrance (P1 keystone)
+  T012:
+    deps: []
+    skillist: ["fs-skia-scene"]
+  T013:
+    deps: []
+    skillist: ["fs-skia-scene"]
+  T014:
+    deps: []
+    skillist: ["fs-skia-scene"]
+  T015:
+    deps: [T012, T013]
+    skillist: ["fs-skia-scene"]
+  T016:
+    deps: [T014, T015]
+    skillist: ["fs-skia-scene"]
+  T017:
+    deps: [T016]
+    skillist: ["fs-skia-evidence-mode"]
+  T018:
+    deps: [T016]
+    skillist: []
+
+  # Phase 4: US2 — state-driven retargeting + tick subscription (P1)
+  T019:
+    deps: []
+    skillist: ["fs-skia-scene"]
+  T020:
+    deps: []
+    skillist: ["fs-skia-elmish"]
+  T021:
+    deps: [T019]
+    skillist: ["fs-skia-scene"]
+  T022:
+    deps: [T020]
+    skillist: ["fs-skia-elmish"]
+  T023:
+    deps: [T021, T022]
+    skillist: ["fs-skia-elmish"]
+  T024:
+    deps: [T023]
+    skillist: []
+
+  # Phase 5: US3 — deterministic evidence sampling (P2)
+  T025:
+    deps: [T016]
+    skillist: ["fs-skia-evidence-mode"]
+  T026:
+    deps: [T025]
+    skillist: ["fs-skia-evidence-mode"]
+  T027:
+    deps: [T026]
+    skillist: ["fs-skia-evidence-mode"]
+  T028:
+    deps: [T026]
+    skillist: []
+
+  # Phase 6: US4 — opt-in additive parity (P3)
+  T029:
+    deps: [T016]
+    skillist: ["fs-skia-evidence-mode"]
+  T030:
+    deps: [T029]
+    skillist: ["fs-skia-evidence-mode"]
+  T031:
+    deps: [T030]
+    skillist: []
+
+  # Phase 7: Integration & Polish
+  T032:
+    deps: []
+    skillist: ["fs-skia-scene"]
+  T033:
+    deps: [T032]
+    skillist: ["fsharp-build-orchestration"]
+  T034:
+    deps: [T033]
+    skillist: ["fsharp-build-orchestration"]
+  T035:
+    deps: []
+    skillist: []
+  T036:
+    deps: [T034]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T037:
+    deps: [T036]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

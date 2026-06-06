@@ -11,6 +11,7 @@
     <Compile Include="ControlsElmishAdapterContractTests.fs" />
     <Compile Include="TypedControlsAdapterTests.fs" />
     <Compile Include="AdapterCmdTests.fs" />
+    <Compile Include="AnimationTickTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

@@ -1,5 +1,90 @@
 namespace FS.Skia.UI.Scene
 
+open System
+
+type Easing =
+    | Linear
+    | EaseIn
+    | EaseOut
+    | EaseInOut
+
+type Transform =
+    { TranslateX: float
+      TranslateY: float
+      ScaleX: float
+      ScaleY: float
+      RotationDegrees: float }
+
+type Tween<'a> =
+    { Start: 'a
+      End: 'a
+      Duration: TimeSpan
+      Easing: Easing }
+
+type Animation =
+    { Opacity: Tween<float> option
+      Transform: Tween<Transform> option
+      Color: Tween<Color> option }
+
+type AnimationState<'a> =
+    { Current: 'a
+      Start: 'a
+      Target: 'a
+      Elapsed: TimeSpan
+      Duration: TimeSpan
+      Easing: Easing
+      Interp: 'a -> 'a -> float -> 'a }
+
+module Easing =
+
+    val apply: easing: Easing -> t: float -> float
+
+    val Default: Easing
+
+module Transform =
+
+    val identity: Transform
+
+    val isIdentity: transform: Transform -> bool
+
+    val lerp: a: Transform -> b: Transform -> t: float -> Transform
+
+    val toPerspectiveTransform: transform: Transform -> PerspectiveTransform
+
+module Tween =
+
+    val progress: elapsed: TimeSpan -> tween: Tween<'a> -> float
+
+    val sample: interp: ('a -> 'a -> float -> 'a) -> elapsed: TimeSpan -> tween: Tween<'a> -> 'a
+
+module Animation =
+
+    val lerpFloat: a: float -> b: float -> t: float -> float
+
+    val lerpColor: a: Color -> b: Color -> t: float -> Color
+
+    val empty: Animation
+
+    val applyAt: elapsed: TimeSpan -> animation: Animation -> target: Scene -> SceneNode
+
+    val sampleFrames: times: TimeSpan list -> animation: Animation -> target: Scene -> Scene list
+
+    val isSettled: elapsed: TimeSpan -> animation: Animation -> bool
+
+module AnimationState =
+
+    val create: interp: ('a -> 'a -> float -> 'a) -> initial: 'a -> duration: TimeSpan -> easing: Easing -> AnimationState<'a>
+
+    val advance: delta: TimeSpan -> state: AnimationState<'a> -> AnimationState<'a>
+
+    val retarget: newTarget: 'a -> state: AnimationState<'a> -> AnimationState<'a>
+
+    val value: state: AnimationState<'a> -> 'a
+
+    val isActive: state: AnimationState<'a> -> bool when 'a: equality
+
+namespace FS.Skia.UI.Scene
+
 type Size =
     { Width: int
       Height: int }

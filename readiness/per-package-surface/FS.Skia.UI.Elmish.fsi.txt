@@ -1,5 +1,21 @@
 namespace FS.Skia.UI.Elmish
 
+open System
+open Elmish
+
+type AnimationTick = AnimationTick of TimeSpan
+
+module Animation =
+
+    val tickSubscription:
+        isAnimating: ('model -> bool) ->
+        toMsg: (TimeSpan -> 'msg) ->
+        interval: TimeSpan ->
+        model: 'model ->
+            Sub<'msg>
+
+namespace FS.Skia.UI.Elmish
+
 open FS.Skia.UI.Scene
 open FS.Skia.UI.SkiaViewer
 
