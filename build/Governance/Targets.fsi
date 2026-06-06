@@ -36,6 +36,8 @@ type Target =
     | ControlsCatalogCheck
     // Feature 066 (US3, FR-006): the typed-catalog generation-currency (drift) gate.
     | ControlsCatalogGenerationCheck
+    // Feature 069 (US1, FR-006): the design-token generation-currency (drift) gate.
+    | DesignTokenDrift
     | ControlsInteractionCheck
     | ControlsRenderingCheck
     | DependencyReport

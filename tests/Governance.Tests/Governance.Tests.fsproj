@@ -75,6 +75,8 @@
     <Compile Include="Feature063GovernanceTests.fs" />
     <!-- Feature 064: publish/pre-publish targets + public-feed config + single-source pin. -->
     <Compile Include="Feature064PublishTests.fs" />
+    <!-- Feature 069: DTCG design-token generator (parse/render/splice/currency/drift + error paths). -->
+    <Compile Include="DesignTokenGenTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

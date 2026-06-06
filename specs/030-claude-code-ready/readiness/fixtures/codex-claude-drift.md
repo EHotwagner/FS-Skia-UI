@@ -14,7 +14,7 @@ FAIL
 
 - Changed alignment classes: ``
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/063-lunar-lander-consumer-friction-followups`
+- Active feature evidence: `specs/069-design-tokens-penpot`
 
 ## Controls Boundary Guidance
 

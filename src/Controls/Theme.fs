@@ -4,26 +4,35 @@ open FS.Skia.UI.Scene
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Theme =
+    // Feature 069: every migrated field is sourced from the generated DesignTokens module
+    // (single source: src/Controls/design-tokens.tokens.json) — value-identical to the
+    // pre-feature literals, zero inline color/size/density/radius/contrast literals. `Name`
+    // labels the variant and stays a code constant (it is not a design token).
     let light : Theme =
         { Name = "light"
-          Foreground = Colors.rgba 31uy 41uy 55uy 255uy
-          Background = Colors.rgba 248uy 250uy 252uy 255uy
-          Accent = Colors.rgba 37uy 99uy 235uy 255uy
-          Danger = Colors.rgba 185uy 28uy 28uy 255uy
-          Muted = Colors.rgba 100uy 116uy 139uy 255uy
-          FontFamily = None
-          FontSize = 14.0
-          Density = 1.0
-          CornerRadius = 4.0
-          ContrastRequiredRatio = 4.5 }
+          Foreground = DesignTokens.Light.foreground
+          Background = DesignTokens.Light.background
+          Accent = DesignTokens.Light.accent
+          Danger = DesignTokens.Light.danger
+          Muted = DesignTokens.Light.muted
+          FontFamily = DesignTokens.Light.fontFamily
+          FontSize = DesignTokens.Light.fontSize
+          Density = DesignTokens.Light.density
+          CornerRadius = DesignTokens.Light.cornerRadius
+          ContrastRequiredRatio = DesignTokens.Light.contrastRequiredRatio }
 
-    let dark =
-        { light with
-            Name = "dark"
-            Foreground = Colors.rgba 241uy 245uy 249uy 255uy
-            Background = Colors.rgba 17uy 24uy 39uy 255uy
-            Accent = Colors.rgba 96uy 165uy 250uy 255uy
-            Muted = Colors.rgba 148uy 163uy 184uy 255uy }
+    let dark : Theme =
+        { Name = "dark"
+          Foreground = DesignTokens.Dark.foreground
+          Background = DesignTokens.Dark.background
+          Accent = DesignTokens.Dark.accent
+          Danger = DesignTokens.Dark.danger
+          Muted = DesignTokens.Dark.muted
+          FontFamily = DesignTokens.Dark.fontFamily
+          FontSize = DesignTokens.Dark.fontSize
+          Density = DesignTokens.Dark.density
+          CornerRadius = DesignTokens.Dark.cornerRadius
+          ContrastRequiredRatio = DesignTokens.Dark.contrastRequiredRatio }
 
     let withDensity (density: float) (theme: Theme) =
         { theme with Density = max 0.5 density }

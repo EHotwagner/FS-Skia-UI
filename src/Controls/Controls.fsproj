@@ -22,6 +22,12 @@
   <ItemGroup>
     <Compile Include="Types.fsi" />
     <Compile Include="Types.fs" />
+    <!-- Feature 069: the generated design-token module (single source
+         design-tokens.tokens.json -> DesignTokens.fs via DesignTokenDrift /
+         RefreshSurfaceBaselines). Curated .fsi (Principle II); the .fs is generated.
+         Compiles before Theme, which re-expresses light/dark in terms of these tokens. -->
+    <Compile Include="DesignTokens.fsi" />
+    <Compile Include="DesignTokens.fs" />
     <Compile Include="Theme.fsi" />
     <Compile Include="Theme.fs" />
     <Compile Include="Diagnostics.fsi" />

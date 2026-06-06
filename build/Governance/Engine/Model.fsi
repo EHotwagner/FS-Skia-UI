@@ -108,6 +108,9 @@ type BuildEffect =
     // Feature 066 (US1, FR-002): splice the six typed-catalog rows into catalog.yml and
     // Catalog.fs from CatalogGen.catalogFacts in one operation (interpreter edge).
     | RegenerateCatalog
+    // Feature 069 (US1, FR-002): regenerate src/Controls/DesignTokens.fs (whole-file) from
+    // the DTCG source design-tokens.tokens.json in one operation (interpreter edge).
+    | RegenerateDesignTokens
     | RouteSelect
     // Feature 043: in-process evidence gates (model is re-derived in interpret, so no payload).
     | EvidenceGraphCheck

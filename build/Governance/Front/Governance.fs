@@ -468,6 +468,19 @@ let regenerateCatalog (model: BuildModel) =
     if File.Exists fsPath then
         File.WriteAllText(fsPath, CatalogGen.spliceFSharp (File.ReadAllText fsPath))
 
+// Feature 069 — RefreshSurfaceBaselines regeneration edge (US1, FR-002). Regenerate the
+// whole `src/Controls/DesignTokens.fs` module from the single DTCG source
+// `src/Controls/design-tokens.tokens.json`, so the DTCG document is the one edit point and
+// DesignTokenDrift cannot trip on drift. The read/write is the only filesystem effect, here
+// at the interpret edge; `DesignTokenGen.splice` is pure (Principle IV). A malformed/cyclic/
+// incomplete DTCG source raises a loud generation failure (no partial emit) before any write.
+let regenerateDesignTokens (model: BuildModel) =
+    let jsonPath = repoRelPath model.RepositoryRoot DesignTokenGen.tokensJsonRel
+    let fsPath = repoRelPath model.RepositoryRoot DesignTokenGen.designTokensFsRel
+
+    if File.Exists jsonPath then
+        File.WriteAllText(fsPath, DesignTokenGen.splice (File.ReadAllText jsonPath))
+
 // Feature 042 (FR-002a, research R2): the git union-diff is read here at the `Route`
 // interpreter edge so the Routing selector stays pure and unit-testable without git.
 let routeGitCapture root (arguments: string) =

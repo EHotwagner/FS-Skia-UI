@@ -1,0 +1,31 @@
+## Symbol consistency (analyze pass G)
+- entity-record CatalogTests — in {plan, tasks}, missing from {data-model}
+- entity-record Control — in {tasks}, missing from {plan, data-model}
+- entity-record DesignTokenDrift — in {tasks}, missing from {plan, data-model}
+- entity-record DesignTokens — in {tasks}, missing from {plan, data-model}
+- entity-record Dev — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedGuidanceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedProductCheck — in {tasks}, missing from {plan, data-model}
+- entity-record Missing — in {tasks}, missing from {plan, data-model}
+- entity-record RefreshSurfaceBaselines — in {tasks}, missing from {plan, data-model}
+- entity-record RegenerateDesignTokens — in {tasks}, missing from {plan, data-model}
+- entity-record Route — in {tasks}, missing from {plan, data-model}
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- entity-record Theme — in {tasks}, missing from {plan, data-model}
+- fr-id FR-004 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-006 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-010 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-011 — in {plan}, missing from {data-model, tasks}
+- msg-case Model — in {plan, tasks}, missing from {data-model}
+- msg-case Msg — in {plan, tasks}, missing from {data-model}
+- msg-case RegenerateCatalog — in {tasks}, missing from {plan, data-model}
+- sc-id SC-002 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-003 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-005 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-007 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-008 — in {plan, tasks}, missing from {data-model}
+- union-or-screen-variant Name — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant PackageSurfaceCheck — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant PerPackageSurfaceDiff — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant Theme — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]

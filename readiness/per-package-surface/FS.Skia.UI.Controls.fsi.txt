@@ -621,6 +621,36 @@ module DataGrid =
 
 namespace FS.Skia.UI.Controls
 
+open FS.Skia.UI.Scene
+
+module DesignTokens =
+
+    module Light =
+        val foreground : Color
+        val background : Color
+        val accent : Color
+        val danger : Color
+        val muted : Color
+        val fontFamily : string option
+        val fontSize : float
+        val density : float
+        val cornerRadius : float
+        val contrastRequiredRatio : float
+
+    module Dark =
+        val foreground : Color
+        val background : Color
+        val accent : Color
+        val danger : Color
+        val muted : Color
+        val fontFamily : string option
+        val fontSize : float
+        val density : float
+        val cornerRadius : float
+        val contrastRequiredRatio : float
+
+namespace FS.Skia.UI.Controls
+
 module Diagnostics =
 
     val create:

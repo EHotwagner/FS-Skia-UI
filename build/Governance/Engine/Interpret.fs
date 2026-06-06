@@ -58,6 +58,7 @@ let interpret root effect =
     | RegenerateConstitutionFragments -> regenerateConstitutionFragments model
     | RegenerateGovernedBlocks -> regenerateGovernedBlocks model
     | RegenerateCatalog -> regenerateCatalog model
+    | RegenerateDesignTokens -> regenerateDesignTokens model
     | RouteSelect -> runRouteSelection root
     | EvidenceGraphCheck -> runEvidenceGraphCheck model
     | EvidenceAuditCheck -> runEvidenceAuditCheck root model

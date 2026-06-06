@@ -117,6 +117,9 @@ FS.Skia.UI.Controls.DataGridRow
 FS.Skia.UI.Controls.DataGridSort
 FS.Skia.UI.Controls.DataGridSortDirection
 FS.Skia.UI.Controls.DataGridSortDirection+Tags
+FS.Skia.UI.Controls.DesignTokens
+FS.Skia.UI.Controls.DesignTokens+Dark
+FS.Skia.UI.Controls.DesignTokens+Light
 FS.Skia.UI.Controls.Diagnostics
 FS.Skia.UI.Controls.Dialog
 FS.Skia.UI.Controls.Dock

@@ -71,6 +71,11 @@
          Engine/Interpret.fs edge. Build-tooling .fsi (SkillTreeGen.fsi precedent). -->
     <Compile Include="CatalogGen.fsi" />
     <Compile Include="CatalogGen.fs" />
+    <!-- Feature 069: the DTCG token parser/generator (single source ->
+         src/Controls/DesignTokens.fs), mirroring CatalogGen. Pure; the only IO is at the
+         Engine/Interpret.fs edge. Build-tooling .fsi (CatalogGen.fsi precedent). -->
+    <Compile Include="DesignTokenGen.fsi" />
+    <Compile Include="DesignTokenGen.fs" />
     <Compile Include="Evidence/EvidenceFormatSchema.fsi" />
     <Compile Include="Evidence/EvidenceFormatSchema.fs" />
     <Compile Include="Evidence/TaskParser.fsi" />

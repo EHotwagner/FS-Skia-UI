@@ -113,6 +113,10 @@ let update msg model =
           // and Catalog.fs from CatalogGen.catalogFacts in one operation so the
           // ControlsCatalogGenerationCheck currency gate cannot trip on drift.
           RegenerateCatalog
+          // Feature 069 (US1, FR-002): regenerate src/Controls/DesignTokens.fs (whole-file)
+          // from the DTCG source design-tokens.tokens.json in the same refresh, so the
+          // DesignTokenDrift currency gate cannot trip on drift.
+          RegenerateDesignTokens
           RegenerateSkillTree
           RegenerateConstitutionFragments
           // Feature 060 (FR-003): regenerate the emitted `docs/api-surface/` tree from the
@@ -298,6 +302,59 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
           if not (List.isEmpty drift) then
               FailWith(String.Join(Environment.NewLine, drift))
           focusedGateSummary model "ControlsCatalogGenerationCheck" ]
+    | StartTarget Targets.DesignTokenDrift ->
+        // Feature 069 (US1, FR-006): the design-token generation-currency (drift) gate. Read
+        // the generated module at this interpreter edge (ControlsCatalogGenerationCheck
+        // precedent), compute per-token currency against the DTCG source, write a PASS/FAIL
+        // readiness report, and FailWith the drift diagnostics naming the divergent token(s)
+        // when stale/missing. DesignTokenGen.currency/currencyDrift are pure (Principle IV).
+        let jsonPath = repoRelPath model.RepositoryRoot DesignTokenGen.tokensJsonRel
+        let fsPath = repoRelPath model.RepositoryRoot DesignTokenGen.designTokensFsRel
+        let readOrEmpty p = if File.Exists p then File.ReadAllText p else ""
+
+        let currency =
+            DesignTokenGen.currency (readOrEmpty jsonPath) (readOrEmpty fsPath)
+
+        let drift = DesignTokenGen.currencyDrift currency
+
+        let report =
+            if List.isEmpty drift then
+                [ "# Design Token Generation"
+                  ""
+                  sprintf
+                      "PASS: the 20 generated tokens in %s are a current, byte-identical regeneration of the DTCG source %s."
+                      DesignTokenGen.designTokensFsRel
+                      DesignTokenGen.tokensJsonRel
+                  ""
+                  "- generated-tokens: 20 (10 primitives x light/dark)"
+                  sprintf "- generated-file: %s" DesignTokenGen.designTokensFsRel
+                  sprintf "- single-source: %s" DesignTokenGen.tokensJsonRel
+                  "- regenerate: ./fake.sh build -t RefreshSurfaceBaselines"
+                  "- failure-class: stale-generated-design-tokens" ]
+                |> String.concat Environment.NewLine
+            else
+                [ "# Design Token Generation"
+                  ""
+                  sprintf
+                      "FAIL: a generated token is stale or missing relative to the DTCG source %s."
+                      DesignTokenGen.tokensJsonRel
+                  ""
+                  yield! drift |> List.map (fun d -> sprintf "- %s" d)
+                  ""
+                  "- regenerate: ./fake.sh build -t RefreshSurfaceBaselines"
+                  "- failure-class: stale-generated-design-tokens" ]
+                |> String.concat Environment.NewLine
+
+        model,
+        [ focusedGateAssumptionCheck model "DesignTokenDrift"
+          WriteStructuredReport(
+              "design token generation",
+              path [ model.ReadinessDir; "design-token-generation.md" ],
+              report
+          )
+          if not (List.isEmpty drift) then
+              FailWith(String.Join(Environment.NewLine, drift))
+          focusedGateSummary model "DesignTokenDrift" ]
     | StartTarget Targets.ControlsInteractionCheck ->
         let report = """# Interaction Tests
 

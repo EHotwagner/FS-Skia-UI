@@ -1,0 +1,20 @@
+=== FSI transcript: DesignTokens public surface (feature 069) ===
+command: dotnet fsi (referencing the compiled FS.Skia.UI.Controls package surface)
+
+DesignTokens.Light.foreground = { Red = 31uy
+  Green = 41uy
+  Blue = 55uy
+  Alpha = 255uy }
+Theme.light.Foreground       = { Red = 31uy
+  Green = 41uy
+  Blue = 55uy
+  Alpha = 255uy }
+Light.foreground = Theme.light.Foreground : true
+DesignTokens.Dark.danger     = { Red = 185uy
+  Green = 28uy
+  Blue = 28uy
+  Alpha = 255uy }
+Dark.danger = Theme.dark.Danger : true
+DesignTokens.Light.fontFamily = None
+DesignTokens.Light.fontSize   = 14.0
+DesignTokens.Light.contrastRequiredRatio = 4.5

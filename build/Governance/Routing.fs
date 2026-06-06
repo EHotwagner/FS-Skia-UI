@@ -134,8 +134,12 @@ let rules =
           // Feature 066 (US3, FR-006): the typed-catalog generation-currency gate routes
           // with the controls-surface checks so `Route` lists it for `src/Controls/**` and
           // `Route --enforce` blocks a stale generated catalog.
+          // Feature 069 (US1, FR-006): the design-token generation-currency gate routes with
+          // the controls-surface checks so `Route` lists it for `src/Controls/**` and
+          // `Route --enforce` blocks a stale generated DesignTokens.fs.
           [ Targets.ControlsCatalogCheck
             Targets.ControlsCatalogGenerationCheck
+            Targets.DesignTokenDrift
             Targets.ControlsInteractionCheck
             Targets.ControlsRenderingCheck
             Targets.PackageSurfaceCheck

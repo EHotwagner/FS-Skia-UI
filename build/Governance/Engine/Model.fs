@@ -204,6 +204,10 @@ type BuildEffect =
     // cannot diverge (partial-regeneration edge case cannot occur). The file reads/writes
     // live at the interpret edge; `CatalogGen.splice*` are pure (Principle IV).
     | RegenerateCatalog
+    // Feature 069 (US1, FR-002): regenerate src/Controls/DesignTokens.fs (whole-file) from
+    // the DTCG source `src/Controls/design-tokens.tokens.json` in one operation. The file
+    // read/write lives at the interpret edge; `DesignTokenGen.splice` is pure (Principle IV).
+    | RegenerateDesignTokens
     | RouteSelect
     // Feature 043: in-process evidence gates (model is re-derived in interpret, so no payload).
     | EvidenceGraphCheck

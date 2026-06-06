@@ -14,6 +14,7 @@ ids resolved from the live registry and the closed `owns:`→implied-skill table
 
 | skillist id (`name:`) | resolved SKILL.md path |
 |---|---|
+| `fs-skia-design-tokens` | .agents/skills/fs-skia-design-tokens/SKILL.md |
 | `fs-skia-elmish` | src/Elmish/skill/SKILL.md |
 | `fs-skia-evidence-mode` | .agents/skills/fs-skia-evidence-mode/SKILL.md |
 | `fs-skia-generated-controls-guidance` | template/fragments/controls/skill/SKILL.md |
