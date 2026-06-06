@@ -1,0 +1,1 @@
+          definition "dock" "Dock" "layout" "Dock" "Docked region composition." [ "children" ] common [] states "StaticText"

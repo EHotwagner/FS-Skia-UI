@@ -1,0 +1,1 @@
+          definition "numeric-input" "Numeric Input" "input" "NumericInput" "Model-owned numeric value editor." [ "value" ] common [ "onChanged" ] states "TextBox"

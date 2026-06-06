@@ -1,0 +1,1 @@
+          definition "slider" "Slider" "input" "Slider" "Continuous numeric value selection." [ "value" ] common [ "onChanged" ] states "Slider"

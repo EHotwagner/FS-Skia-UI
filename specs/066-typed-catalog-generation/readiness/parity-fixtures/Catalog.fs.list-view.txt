@@ -1,0 +1,1 @@
+          definition "list-view" "List View" "data" "Collections" "Bounded visible-range list display." [ "items" ] common [ "onSelected" ] states "List"

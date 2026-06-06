@@ -1,0 +1,2 @@
+          definition "scatter-plot" "Scatter Plot" "chart" "ScatterPlot" "Controls-owned point cloud visualization." [ "series" ] common [ "onSelected" ] states "Chart"
+          |> withChartDataGridEvidence

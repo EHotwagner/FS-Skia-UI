@@ -1,0 +1,1 @@
+          definition "rich-text" "Rich Text" "display" "RichText" "Skia-specific rich text display with measurement, clipping, effects, diagnostics, and accessibility metadata." [ "runs" ] common [] states "StaticText"

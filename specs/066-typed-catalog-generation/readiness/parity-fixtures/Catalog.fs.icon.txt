@@ -1,0 +1,1 @@
+          definition "icon" "Icon" "display" "Icon" "Named icon glyph or product symbol." [ "text" ] common [] states "Image"

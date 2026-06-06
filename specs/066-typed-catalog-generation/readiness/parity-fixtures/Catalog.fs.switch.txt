@@ -1,0 +1,1 @@
+          definition "switch" "Switch" "selection" "Switch" "Compact Boolean setting." [] common [ "onChanged" ] states "CheckBox"

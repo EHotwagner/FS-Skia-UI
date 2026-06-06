@@ -1,0 +1,1 @@
+          definition "radio-group" "Radio Group" "selection" "RadioGroup" "Single selection from a visible option set." [ "items" ] common [ "onChanged" ] states "RadioGroup"

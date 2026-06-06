@@ -1,0 +1,1 @@
+          definition "list-box" "List Box" "selection" "Collections" "Single-selection list box." [ "items" ] common [ "onSelected" ] states "List"

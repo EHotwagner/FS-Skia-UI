@@ -1,0 +1,1 @@
+          definition "spinner" "Spinner" "feedback" "Spinner" "Indeterminate progress indicator." [] common [] states "Progress"

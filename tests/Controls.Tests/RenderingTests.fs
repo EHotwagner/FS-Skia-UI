@@ -5,6 +5,34 @@ open FS.Skia.UI.Scene
 open FS.Skia.UI.Controls
 
 [<Tests>]
+let typedGalleryRenderingTests =
+    testList "Feature 071 typed gallery rendering (US2)" [
+        // SC-004 / SC-005 / contract G5: the typed-authored gallery panel renders through
+        // the existing IR path at >=2 viewports with no diagnostics, and covers >=1 control
+        // from every required mechanic group (resolved via the catalog `Category` crosswalk).
+        test "typed gallery panel renders at two viewports and covers every mechanic group (SC-004, SC-005, G5)" {
+            let panel = ControlsTypedGalleryPanel.panel
+
+            for width, height in [ 320, 240; 1024, 768 ] do
+                let rendered = Control.render Theme.light panel
+                let evidence = Scene.renderReadbackEvidence { Width = width; Height = height } rendered.Scene
+                Expect.isEmpty rendered.Diagnostics $"typed gallery panel has no diagnostics at {width}x{height}"
+                Expect.isNonEmpty evidence.DeterministicHash $"typed gallery panel render evidence has a deterministic hash at {width}x{height}"
+
+            // The 8 gallery mechanic groups resolve onto these catalog categories
+            // (contract crosswalk): display, input, layout, navigation, overlay, selection,
+            // chart, graph. `data`/`feedback`/`custom` are not required groups.
+            let required =
+                Set.ofList [ "display"; "input"; "layout"; "navigation"; "overlay"; "selection"; "chart"; "graph" ]
+            let covered = ControlsTypedGalleryPanel.coveredCategories panel
+
+            Expect.isTrue
+                (Set.isSubset required covered)
+                $"typed gallery panel covers every required mechanic group; missing: {Set.difference required covered}"
+        }
+    ]
+
+[<Tests>]
 let renderingTests =
     testList "Controls rendering and collections" [
         test "large data visible range stays bounded for ten thousand items" {

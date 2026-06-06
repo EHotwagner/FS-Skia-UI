@@ -45,6 +45,7 @@ controls:
     supportStatus: supported
     owner: controls
   # END GENERATED: typed-catalog/text-block
+  # BEGIN GENERATED: typed-catalog/rich-text
   - id: rich-text
     displayName: Rich Text
     category: display
@@ -57,9 +58,11 @@ controls:
     accessibility: { role: StaticText, nameSource: text/value/accessibility attribute, stateMetadata: [enabled, visible, selected, validation, loading], focusBehavior: catalog focus order, keyboardOperation: Tab navigation and Enter/Space activation where interactive, contrastEvidence: readiness/layout-rendering.md }
     examples: [samples/ControlsGallery/Program.fs]
     tests: [tests/Controls.Tests/CatalogTests.fs, tests/Controls.Tests/SemanticTests.fs, tests/Controls.Tests/InteractionTests.fs, tests/Controls.Tests/AccessibilityTests.fs, tests/Controls.Tests/RenderingTests.fs]
-    evidence: [specs/011-controls-boundary-refactor/readiness/rich-rendering.md, specs/011-controls-boundary-refactor/readiness/control-catalog.md]
+    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/rich-text
+  # BEGIN GENERATED: typed-catalog/label
   - id: label
     displayName: Label
     category: display
@@ -75,6 +78,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/label
+  # BEGIN GENERATED: typed-catalog/image
   - id: image
     displayName: Image
     category: display
@@ -90,6 +95,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/image
+  # BEGIN GENERATED: typed-catalog/icon
   - id: icon
     displayName: Icon
     category: display
@@ -105,6 +112,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/icon
+  # BEGIN GENERATED: typed-catalog/separator
   - id: separator
     displayName: Separator
     category: display
@@ -120,6 +129,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/separator
+  # BEGIN GENERATED: typed-catalog/badge
   - id: badge
     displayName: Badge
     category: display
@@ -135,6 +146,7 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/badge
   # BEGIN GENERATED: typed-catalog/button
   - id: button
     displayName: Button
@@ -152,6 +164,7 @@ controls:
     supportStatus: supported
     owner: controls
   # END GENERATED: typed-catalog/button
+  # BEGIN GENERATED: typed-catalog/icon-button
   - id: icon-button
     displayName: Icon Button
     category: input
@@ -167,6 +180,7 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/icon-button
   # BEGIN GENERATED: typed-catalog/text-box
   - id: text-box
     displayName: Text Box
@@ -184,6 +198,7 @@ controls:
     supportStatus: supported
     owner: controls
   # END GENERATED: typed-catalog/text-box
+  # BEGIN GENERATED: typed-catalog/text-area
   - id: text-area
     displayName: Text Area
     category: input
@@ -199,6 +214,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/text-area
+  # BEGIN GENERATED: typed-catalog/numeric-input
   - id: numeric-input
     displayName: Numeric Input
     category: input
@@ -214,6 +231,7 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/numeric-input
   # BEGIN GENERATED: typed-catalog/check-box
   - id: check-box
     displayName: Check Box
@@ -231,6 +249,7 @@ controls:
     supportStatus: supported
     owner: controls
   # END GENERATED: typed-catalog/check-box
+  # BEGIN GENERATED: typed-catalog/radio-group
   - id: radio-group
     displayName: Radio Group
     category: selection
@@ -246,6 +265,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/radio-group
+  # BEGIN GENERATED: typed-catalog/switch
   - id: switch
     displayName: Switch
     category: selection
@@ -261,6 +282,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/switch
+  # BEGIN GENERATED: typed-catalog/slider
   - id: slider
     displayName: Slider
     category: input
@@ -276,6 +299,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/slider
+  # BEGIN GENERATED: typed-catalog/list-view
   - id: list-view
     displayName: List View
     category: data
@@ -291,6 +316,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/list-view
+  # BEGIN GENERATED: typed-catalog/list-box
   - id: list-box
     displayName: List Box
     category: selection
@@ -306,6 +333,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/list-box
+  # BEGIN GENERATED: typed-catalog/multi-select-list
   - id: multi-select-list
     displayName: Multi Select List
     category: selection
@@ -321,6 +350,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/multi-select-list
+  # BEGIN GENERATED: typed-catalog/combo-box
   - id: combo-box
     displayName: Combo Box
     category: selection
@@ -336,6 +367,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/combo-box
+  # BEGIN GENERATED: typed-catalog/tree-view
   - id: tree-view
     displayName: Tree View
     category: data
@@ -351,6 +384,7 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/tree-view
   # BEGIN GENERATED: typed-catalog/data-grid
   - id: data-grid
     displayName: Data Grid
@@ -385,6 +419,7 @@ controls:
     supportStatus: supported
     owner: controls
   # END GENERATED: typed-catalog/stack
+  # BEGIN GENERATED: typed-catalog/grid
   - id: grid
     displayName: Grid
     category: layout
@@ -400,6 +435,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/grid
+  # BEGIN GENERATED: typed-catalog/dock
   - id: dock
     displayName: Dock
     category: layout
@@ -415,6 +452,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/dock
+  # BEGIN GENERATED: typed-catalog/wrap
   - id: wrap
     displayName: Wrap
     category: layout
@@ -430,6 +469,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/wrap
+  # BEGIN GENERATED: typed-catalog/border
   - id: border
     displayName: Border
     category: layout
@@ -445,6 +486,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/border
+  # BEGIN GENERATED: typed-catalog/panel
   - id: panel
     displayName: Panel
     category: layout
@@ -460,6 +503,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/panel
+  # BEGIN GENERATED: typed-catalog/scroll-viewer
   - id: scroll-viewer
     displayName: Scroll Viewer
     category: layout
@@ -475,6 +520,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/scroll-viewer
+  # BEGIN GENERATED: typed-catalog/split-view
   - id: split-view
     displayName: Split View
     category: layout
@@ -490,6 +537,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/split-view
+  # BEGIN GENERATED: typed-catalog/tabs
   - id: tabs
     displayName: Tabs
     category: navigation
@@ -505,6 +554,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/tabs
+  # BEGIN GENERATED: typed-catalog/menu
   - id: menu
     displayName: Menu
     category: navigation
@@ -520,6 +571,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/menu
+  # BEGIN GENERATED: typed-catalog/context-menu
   - id: context-menu
     displayName: Context Menu
     category: navigation
@@ -535,6 +588,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/context-menu
+  # BEGIN GENERATED: typed-catalog/toolbar
   - id: toolbar
     displayName: Toolbar
     category: navigation
@@ -550,6 +605,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/toolbar
+  # BEGIN GENERATED: typed-catalog/tooltip
   - id: tooltip
     displayName: Tooltip
     category: overlay
@@ -565,6 +622,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/tooltip
+  # BEGIN GENERATED: typed-catalog/dialog
   - id: dialog
     displayName: Dialog
     category: overlay
@@ -580,6 +639,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/dialog
+  # BEGIN GENERATED: typed-catalog/toast
   - id: toast
     displayName: Toast
     category: feedback
@@ -595,6 +656,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/toast
+  # BEGIN GENERATED: typed-catalog/overlay
   - id: overlay
     displayName: Overlay
     category: overlay
@@ -610,6 +673,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/overlay
+  # BEGIN GENERATED: typed-catalog/progress-bar
   - id: progress-bar
     displayName: Progress Bar
     category: feedback
@@ -625,6 +690,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/progress-bar
+  # BEGIN GENERATED: typed-catalog/spinner
   - id: spinner
     displayName: Spinner
     category: feedback
@@ -640,6 +707,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/spinner
+  # BEGIN GENERATED: typed-catalog/validation-message
   - id: validation-message
     displayName: Validation Message
     category: feedback
@@ -655,6 +724,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/validation-message
+  # BEGIN GENERATED: typed-catalog/line-chart
   - id: line-chart
     displayName: Line Chart
     category: chart
@@ -670,6 +741,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/line-chart
+  # BEGIN GENERATED: typed-catalog/bar-chart
   - id: bar-chart
     displayName: Bar Chart
     category: chart
@@ -685,6 +758,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/bar-chart
+  # BEGIN GENERATED: typed-catalog/pie-chart
   - id: pie-chart
     displayName: Pie Chart
     category: chart
@@ -700,6 +775,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/pie-chart
+  # BEGIN GENERATED: typed-catalog/scatter-plot
   - id: scatter-plot
     displayName: Scatter Plot
     category: chart
@@ -715,6 +792,8 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/scatter-plot
+  # BEGIN GENERATED: typed-catalog/graph-view
   - id: graph-view
     displayName: Graph View
     category: graph
@@ -730,12 +809,14 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md, specs/011-controls-boundary-refactor/readiness/chart-datagrid-controls.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/graph-view
+  # BEGIN GENERATED: typed-catalog/custom-control
   - id: custom-control
     displayName: Custom Control
     category: custom
     module: CustomControl
     purpose: Product-owned wrapper for custom Skia content.
-    requiredAttributes: [id, render, layout, hitTest, accessibility]
+    requiredAttributes: []
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]
     events: [onCustom]
     visualStates: [normal, disabled, hover, pressed, focused, selected, validation, loading]
@@ -745,3 +826,4 @@ controls:
     evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
     supportStatus: supported
     owner: controls
+  # END GENERATED: typed-catalog/custom-control

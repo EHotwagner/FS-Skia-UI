@@ -1,0 +1,2 @@
+          definition "pie-chart" "Pie Chart" "chart" "PieChart" "Controls-owned part-to-whole visualization." [ "values" ] common [ "onSelected" ] states "Chart"
+          |> withChartDataGridEvidence

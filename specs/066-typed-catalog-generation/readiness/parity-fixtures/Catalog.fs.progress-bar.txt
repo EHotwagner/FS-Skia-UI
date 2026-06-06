@@ -1,0 +1,1 @@
+          definition "progress-bar" "Progress Bar" "feedback" "ProgressBar" "Determinate progress indicator." [ "value" ] common [] states "Progress"

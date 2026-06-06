@@ -1,0 +1,2 @@
+          definition "graph-view" "Graph View" "graph" "GraphView" "Controls-owned node and edge visualization." [ "nodes" ] common [ "onSelected" ] states "Graph"
+          |> withChartDataGridEvidence

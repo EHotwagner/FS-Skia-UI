@@ -1,7 +1,39 @@
 module ControlsAccessibilityTests
 
 open Expecto
+open FS.Skia.UI.Scene
 open FS.Skia.UI.Controls
+
+[<Tests>]
+let typedGalleryAccessibilityTests =
+    testList "Feature 071 typed gallery accessibility (US2)" [
+        // SC-005 / contract G6: the typed-authored gallery panel renders through the
+        // existing path at >=2 viewports and exposes the expected accessibility roles
+        // for its mechanic-group representatives.
+        test "typed gallery panel exposes expected accessibility roles at two viewports (SC-005, G6)" {
+            let panel = ControlsTypedGalleryPanel.panel
+
+            for width, height in [ 320, 240; 1024, 768 ] do
+                let rendered = Control.render Theme.light panel
+                let evidence = Scene.renderReadbackEvidence { Width = width; Height = height } rendered.Scene
+                Expect.isEmpty rendered.Diagnostics $"typed gallery panel has no diagnostics at {width}x{height}"
+                Expect.isNonEmpty evidence.DeterministicHash $"typed gallery panel render evidence has a deterministic hash at {width}x{height}"
+
+            let kinds = ControlsTypedGalleryPanel.kindsPresent panel
+            let roleOf kind = (Accessibility.defaultFor kind "typed").Role
+
+            [ "button", AccessibilityRole.Button
+              "text-area", AccessibilityRole.TextBox
+              "check-box", AccessibilityRole.CheckBox
+              "list-box", AccessibilityRole.List
+              "tabs", AccessibilityRole.Tab
+              "line-chart", AccessibilityRole.Chart
+              "graph-view", AccessibilityRole.Graph ]
+            |> List.iter (fun (kind, role) ->
+                Expect.isTrue (Set.contains kind kinds) $"typed gallery panel includes a typed {kind}"
+                Expect.equal (roleOf kind) role $"{kind} exposes the {role} accessibility role")
+        }
+    ]
 
 [<Tests>]
 let accessibilityTests =

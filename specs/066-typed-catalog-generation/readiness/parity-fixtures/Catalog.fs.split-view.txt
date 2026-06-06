@@ -1,0 +1,1 @@
+          definition "split-view" "Split View" "layout" "Collections" "Resizable two-region layout." [ "children" ] common [ "onChanged" ] states "StaticText"

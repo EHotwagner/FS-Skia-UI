@@ -1,0 +1,2 @@
+          definition "line-chart" "Line Chart" "chart" "LineChart" "Controls-owned line data visualization." [ "series" ] common [ "onSelected" ] states "Chart"
+          |> withChartDataGridEvidence

@@ -139,11 +139,26 @@ let customDefinition =
       Accessibility = Some(Accessibility.defaultFor "graph-view" "Custom sparkline")
       Diagnostics = [] }
 
-// Typed-authoring panel (feature 065): authored entirely through the
-// compiler-checked `FS.Skia.UI.Controls.Typed` front door and lowered with
-// `Widget.toControl` so it composes into the same legacy gallery tree. Render
-// proof for this feature is headless (RenderingTests); this panel demonstrates
-// the authoring surface from the sample's default executable path.
+// Typed-authoring panel (features 065 + 071): authored entirely through the
+// compiler-checked `FS.Skia.UI.Controls.Typed` front door — no `Attr`, no `*.create` —
+// covering >=1 control per mechanic group (display, input, stateful input, layout
+// container, navigation/composite, overlay, selection collection, charts/graph), then
+// lowered with `Widget.toControl` so it composes into the same legacy gallery tree.
+// Stateful façades (TextArea, ListBox) reuse the shipped 070 MVU models via `init` — no
+// new Model/Msg. Render proof is headless (RenderingTests/AccessibilityTests); this panel
+// demonstrates the authoring surface from the sample's default executable path (AS2).
+let private typedNoteProps: FS.Skia.UI.Controls.Typed.TextAreaProps<Msg> =
+    { FS.Skia.UI.Controls.Typed.TextArea.defaults "typed-note" with Value = "Ada" }
+
+let private typedNoteModel = fst (FS.Skia.UI.Controls.Typed.TextArea.init typedNoteProps)
+
+let private typedListProps: FS.Skia.UI.Controls.Typed.ListBoxProps<Msg> =
+    { FS.Skia.UI.Controls.Typed.ListBox.defaults "typed-list" with
+        Items = [ "Orders"; "Invoices"; "Customers" ]
+        OnSelected = Some SelectItem }
+
+let private typedListModel = fst (FS.Skia.UI.Controls.Typed.ListBox.init typedListProps)
+
 let typedAuthoringPanel: Control<Msg> =
     FS.Skia.UI.Controls.Typed.Stack.view
         { FS.Skia.UI.Controls.Typed.Stack.defaults with
@@ -151,19 +166,33 @@ let typedAuthoringPanel: Control<Msg> =
             Spacing = 4.0
             Children =
                 [ FS.Skia.UI.Controls.Typed.TextBlock.view
-                      { FS.Skia.UI.Controls.Typed.TextBlock.defaults with Text = "Typed authoring (065)" }
+                      { FS.Skia.UI.Controls.Typed.TextBlock.defaults with Text = "Typed authoring (065 + 071)" }
                   FS.Skia.UI.Controls.Typed.Button.view
                       { FS.Skia.UI.Controls.Typed.Button.defaults with
                           Id = Some "typed-save"
                           Text = "Typed Save"
                           Intent = FS.Skia.UI.Controls.Typed.Primary
                           OnClick = Some SaveRequested }
+                  FS.Skia.UI.Controls.Typed.TextArea.view typedNoteProps typedNoteModel
                   FS.Skia.UI.Controls.Typed.CheckBox.view
                       { FS.Skia.UI.Controls.Typed.CheckBox.defaults with
                           Id = Some "typed-can-save"
                           Text = "Typed can save"
                           Checked = true
-                          OnChanged = Some(fun _ -> ToggleSave) } ] }
+                          OnChanged = Some(fun _ -> ToggleSave) }
+                  FS.Skia.UI.Controls.Typed.ListBox.view typedListProps typedListModel
+                  FS.Skia.UI.Controls.Typed.Tabs.view
+                      { FS.Skia.UI.Controls.Typed.Tabs.defaults with
+                          Items = [ "Form"; "Data" ]
+                          SelectedKey = Some "Form"
+                          OnChanged = Some TabChanged }
+                  FS.Skia.UI.Controls.Typed.Tooltip.view
+                      { FS.Skia.UI.Controls.Typed.Tooltip.defaults with Text = "Typed tooltip" }
+                  FS.Skia.UI.Controls.Typed.LineChart.view
+                      { FS.Skia.UI.Controls.Typed.LineChart.defaults with
+                          Series = [ { Name = "typed"; Points = [ { X = 0.0; Y = 1.0; Label = None } ] } ] }
+                  FS.Skia.UI.Controls.Typed.GraphView.view
+                      { FS.Skia.UI.Controls.Typed.GraphView.defaults with Nodes = [ "form"; "data" ] } ] }
     |> Widget.toControl
 
 let controlView model =

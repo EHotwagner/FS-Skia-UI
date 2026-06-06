@@ -1,0 +1,1 @@
+          definition "multi-select-list" "Multi Select List" "selection" "Collections" "Multiple-selection list with model-owned selected keys." [ "items" ] common [ "onChanged" ] states "List"

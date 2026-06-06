@@ -1,0 +1,1 @@
+          definition "badge" "Badge" "display" "Badge" "Compact status label." [ "text" ] common [] states "StaticText"

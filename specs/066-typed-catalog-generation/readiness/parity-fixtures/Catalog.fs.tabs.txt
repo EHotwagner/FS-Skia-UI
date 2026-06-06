@@ -1,0 +1,1 @@
+          definition "tabs" "Tabs" "navigation" "Tabs" "Model-owned active page selection." [ "items" ] common [ "onChanged" ] states "Tab"

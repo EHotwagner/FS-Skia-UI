@@ -1,0 +1,27 @@
+## Symbol consistency (analyze pass G)
+- entity-record Dev — in {tasks}, missing from {plan, data-model}
+- entity-record EvidenceAudit — in {tasks}, missing from {plan, data-model}
+- entity-record EvidenceGraph — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedGuidanceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedProductCheck — in {tasks}, missing from {plan, data-model}
+- entity-record Props — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- fr-id FR-001 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-002 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-004 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-005 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-007 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-008 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-009 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-010 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-011 — in {plan, tasks}, missing from {data-model}
+- msg-case Control — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Effect — in {tasks}, missing from {plan, data-model}
+- msg-case Model — in {data-model, tasks}, missing from {plan}
+- msg-case Msg — in {data-model, tasks}, missing from {plan}
+- sc-id SC-001 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-003 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-004 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-005 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-007 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-008 — in {plan, tasks}, missing from {data-model}

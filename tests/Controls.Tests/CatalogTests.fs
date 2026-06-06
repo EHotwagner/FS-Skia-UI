@@ -101,13 +101,58 @@ let catalogGenerationTests =
     let factsById =
         CatalogGen.catalogFacts |> List.map (fun f -> f.Id, f) |> Map.ofList
 
-    let typedPropsById =
-        [ "text-block", typeof<TextBlockProps<int>>
-          "button", typeof<ButtonProps<int>>
-          "text-box", typeof<TextBoxProps<int>>
-          "check-box", typeof<CheckBoxProps<int>>
-          "data-grid", typeof<DataGridProps<int>>
-          "stack", typeof<StackProps<int>> ]
+    // 071 (T006): the lockstep map grows from the 6 reference ids to all 47 catalog
+    // ids so the cross-check iterates the complete catalog. Each id maps to its typed
+    // Props record, except `custom-control`, which is bridge-typed (Widget.ofControl)
+    // and has no Props schema -> None (excluded from the Props-field assertion, C10).
+    let typedPropsById : Map<string, System.Type option> =
+        [ "text-block", Some typeof<TextBlockProps<int>>
+          "rich-text", Some typeof<RichTextProps<int>>
+          "label", Some typeof<LabelProps<int>>
+          "image", Some typeof<ImageProps<int>>
+          "icon", Some typeof<IconProps<int>>
+          "separator", Some typeof<SeparatorProps<int>>
+          "badge", Some typeof<BadgeProps<int>>
+          "button", Some typeof<ButtonProps<int>>
+          "icon-button", Some typeof<IconButtonProps<int>>
+          "text-box", Some typeof<TextBoxProps<int>>
+          "text-area", Some typeof<TextAreaProps<int>>
+          "numeric-input", Some typeof<NumericInputProps<int>>
+          "check-box", Some typeof<CheckBoxProps<int>>
+          "radio-group", Some typeof<RadioGroupProps<int>>
+          "switch", Some typeof<SwitchProps<int>>
+          "slider", Some typeof<SliderProps<int>>
+          "list-view", Some typeof<ListViewProps<int>>
+          "list-box", Some typeof<ListBoxProps<int>>
+          "multi-select-list", Some typeof<MultiSelectListProps<int>>
+          "combo-box", Some typeof<ComboBoxProps<int>>
+          "tree-view", Some typeof<TreeViewProps<int>>
+          "data-grid", Some typeof<DataGridProps<int>>
+          "stack", Some typeof<StackProps<int>>
+          "grid", Some typeof<GridProps<int>>
+          "dock", Some typeof<DockProps<int>>
+          "wrap", Some typeof<WrapProps<int>>
+          "border", Some typeof<BorderProps<int>>
+          "panel", Some typeof<PanelProps<int>>
+          "scroll-viewer", Some typeof<ScrollViewerProps<int>>
+          "split-view", Some typeof<SplitViewProps<int>>
+          "tabs", Some typeof<TabsProps<int>>
+          "menu", Some typeof<MenuProps<int>>
+          "context-menu", Some typeof<ContextMenuProps<int>>
+          "toolbar", Some typeof<ToolbarProps<int>>
+          "tooltip", Some typeof<TooltipProps<int>>
+          "dialog", Some typeof<DialogProps<int>>
+          "toast", Some typeof<ToastProps<int>>
+          "overlay", Some typeof<OverlayProps<int>>
+          "progress-bar", Some typeof<ProgressBarProps<int>>
+          "spinner", Some typeof<SpinnerProps<int>>
+          "validation-message", Some typeof<ValidationMessageProps<int>>
+          "line-chart", Some typeof<LineChartProps<int>>
+          "bar-chart", Some typeof<BarChartProps<int>>
+          "pie-chart", Some typeof<PieChartProps<int>>
+          "scatter-plot", Some typeof<ScatterPlotProps<int>>
+          "graph-view", Some typeof<GraphViewProps<int>>
+          "custom-control", None ]
         |> Map.ofList
 
     let recordFields (t: System.Type) =
@@ -199,25 +244,34 @@ let catalogGenerationTests =
             Expect.isNonEmpty drift "the missing region fails loudly with a diagnostic"
         }
 
-        test "catalogFacts corresponds to exactly the six typed registry modules (FR-001, R5)" {
+        test "catalogFacts corresponds to exactly the 47 catalog typed ids (FR-001, R5, SC-003)" {
             Expect.equal
                 (factsById |> Map.toList |> List.map fst |> List.sort)
                 (typedPropsById |> Map.toList |> List.map fst |> List.sort)
-                "the fact table covers exactly the six 065 typed controls"
+                "the fact table covers exactly the 47 catalog typed ids"
 
+            // The 47 facts span the full 11-value catalog taxonomy (data-model E1),
+            // including `overlay` (tooltip/dialog/overlay) which the 6-fact-era set omitted.
             let categories =
-                [ "display"; "input"; "selection"; "navigation"; "layout"; "feedback"; "data"; "chart"; "graph"; "custom" ]
+                [ "display"; "input"; "selection"; "navigation"; "layout"; "feedback"; "data"; "overlay"; "chart"; "graph"; "custom" ]
                 |> Set.ofList
 
             for fact in CatalogGen.catalogFacts do
                 Expect.isTrue (categories.Contains fact.Category) $"{fact.Id} uses an existing catalog category"
 
-                let fields = recordFields typedPropsById.[fact.Id]
+                // custom-control is bridge-typed (None) -> excluded from the Props-field
+                // assertion (contract C10); every other id maps each required attribute
+                // (PascalCased) to a field on its typed Props record.
+                match typedPropsById.[fact.Id] with
+                | Some propsType ->
+                    let fields = recordFields propsType
 
-                for required in fact.RequiredAttributes do
-                    Expect.isTrue
-                        (fields.Contains(pascalCase required))
-                        $"{fact.Id} required attribute '{required}' maps to a typed Props field"
+                    for required in fact.RequiredAttributes do
+                        Expect.isTrue
+                            (fields.Contains(pascalCase required))
+                            $"{fact.Id} required attribute '{required}' maps to a typed Props field"
+                | None ->
+                    Expect.equal fact.RequiredAttributes [] $"{fact.Id} is bridge-typed and declares no required attribute"
 
             Expect.equal factsById.["data-grid"].Category "data" "data-grid keeps Category = data"
             Expect.equal factsById.["data-grid"].Module "DataGrid" "data-grid keeps Module = DataGrid"

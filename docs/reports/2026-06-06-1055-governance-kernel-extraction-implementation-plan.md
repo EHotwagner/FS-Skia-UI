@@ -51,6 +51,13 @@ later decisions. The first successful milestone is boring: `Route`, generated va
 contract rendering, evidence graph/audit outputs, and generated-product evidence behavior
 remain byte-compatible while the pure logic compiles and tests in a smaller project.
 
+After that boundary is stable, the kernel should grow into a small typed fixed-point
+governance engine: supplied facts in, derived conclusions out, and every conclusion
+explained by rule provenance. This is the useful expert-system shape for agent
+collaboration: the agent can ask which actions are allowed, which gates or artifacts are
+required, why something is blocked, and what next action is justified without the kernel
+running FAKE, git, filesystem scans, or product validation itself.
+
 ## Problem Statement
 
 `FS.Skia.UI.Build` currently carries several responsibilities in one packable project:
@@ -129,11 +136,19 @@ Keep effectful work in `FS.Skia.UI.Build`:
 - publish/pre-publish process interactions;
 - concurrency locks.
 
-### 2. Prefer Typed F# Rules Over a Generic Rule Engine
+### 2. Prefer Typed Fixed-Point F# Rules Over an External Rule Engine
 
 The kernel should use ordinary F# modules, records, discriminated unions, active patterns,
-and pure functions. It should not start as a generalized Datalog, Prolog, OPA/Rego, or
-custom rules DSL.
+and pure functions. It should not start as a generalized Datalog, Prolog, OPA/Rego, CLIPS,
+NRules, or custom untyped rules DSL.
+
+The useful rule-engine shape is still worth adopting, but as typed F#:
+
+- collect supplied facts from the build edge;
+- derive new facts and conclusions to a deterministic fixed point;
+- keep monotonic derivations for route, artifact, evidence, and agent-planning decisions;
+- attach provenance to every derived fact and conclusion;
+- expose explainable outputs rather than only pass/fail booleans.
 
 Good:
 
@@ -149,6 +164,7 @@ type GovernanceConclusion =
     | SelectedGate of target: Target * reason: string
     | MissingArtifact of artifactId: string * reason: string
     | StaleArtifact of artifactId: string * reason: string
+    | BlocksAction of action: string * reason: string
     | NextAction of command: string * reason: string
 ```
 
@@ -163,6 +179,11 @@ type Rule =
 
 The second version hides too much behind untyped plumbing and makes the system harder to
 debug than the current direct code.
+
+An eventual dependency on an external engine is only justified if the typed F# kernel first
+proves a clear semantic boundary and then hits a real scalability or authoring problem.
+Until then, direct F# is easier to review, easier to test, and safer for generated-product
+compatibility.
 
 ### 3. Use Active Patterns Where They Clarify Classification
 
@@ -457,12 +478,18 @@ should not leak into Core.
 - Preserve evidence graph/audit artifact parity for representative fixtures.
 - Prove the generated-product evidence runner still loads and runs from the packed
   `FS.Skia.UI.Build` package.
+- Add a typed fact/conclusion/provenance model after route and evidence parity are stable.
+- Add pure agent-facing queries for action authorization, required evidence, blockers, and
+  justified next actions.
 
 ### Out Of Scope For The First Implementation
 
 - Moving governance into a separate Git repository.
 - Replacing FAKE.
 - Replacing direct F# validators with a generic rule engine.
+- Integrating NRules, CLIPS, OPA, Cedar, Souffle, Prolog, or Datalog as the first
+  implementation of the kernel.
+- Authoring governance rules as untyped `obj` predicates or stringly runtime rules.
 - Renaming every public namespace to `FS.Skia.UI.Governance`.
 - Changing generated-product `template/base/build.fsx` reflection entry points.
 - Changing the route-selected gate policy except where explicit governance path coverage
@@ -690,11 +717,22 @@ type GovernanceSnapshot =
       Artifacts: ArtifactFacts list
       ConcurrentRuns: ConcurrentRunFacts list }
 
+type GovernanceFact =
+    | SnapshotFact of GovernanceSnapshot
+    | ChangedPathFact of string
+    | MatchedRouteRule of ruleId: string * paths: string list
+    | RequiredGateFact of target: Target * reason: string
+    | RequiredArtifactFact of artifactId: string * reason: string
+    | EvidenceStatusFact of artifactId: string * status: string
+    | AgentIntentFact of action: string * scope: RouteScope
+    | BlockerFact of blockerId: string * reason: string
+
 type GovernanceQuery =
     | ExplainRoute of RouteScope
     | ExplainArtifacts of RouteScope
     | ExplainSkills of string option
     | ExplainNextActions of RouteScope
+    | AuthorizeAgentAction of action: string * scope: RouteScope
 
 type Explanation =
     { Summary: string
@@ -706,22 +744,91 @@ Tasks:
 
 1. Add typed fact models for targets, route rules, skills, artifacts, capabilities, and
    changed paths.
-2. Add pure query functions over `GovernanceSnapshot`.
-3. Add JSON-friendly DTO renderers in Core or a small rendering submodule.
-4. Add Markdown rendering for human route explanations.
-5. Wire only read-only build commands to gather snapshots at the edge.
-6. Keep current `Route` output stable by default.
-7. Add tests for explanation provenance:
+2. Add a minimal fixed-point evaluator over typed facts:
+   - deterministic rule order;
+   - stable de-duplication;
+   - iteration limit with a diagnostic if a rule set does not converge;
+   - no filesystem, git, process, FAKE, or package execution.
+3. Encode route, artifact, and evidence conclusions as typed derivation rules.
+4. Add pure query functions over `GovernanceSnapshot` and derived facts.
+5. Add JSON-friendly DTO renderers in Core or a small rendering submodule.
+6. Add Markdown rendering for human route explanations.
+7. Wire only read-only build commands to gather snapshots at the edge.
+8. Keep current `Route` output stable by default.
+9. Add tests for explanation provenance:
    - every selected gate names a rule or default-deny reason;
    - every missing artifact names its expected producer or requiring rule;
    - every path-scoped decision lists the scoped paths used.
+10. Add tests for fixed-point behavior:
+    - repeated evaluation is idempotent;
+    - rule order is deterministic;
+    - selected tier and required gates are monotonic as facts are added;
+    - every derived blocker carries at least one source fact and rule id.
 
 Acceptance:
 
 - Snapshot evaluation is pure and testable.
+- Fixed-point derivation is deterministic, idempotent, and provenance-rich.
 - Existing route behavior remains the default.
 - New explanation APIs can support future `Route --json` and `Route --explain`.
 - No gate starts expensive product validation merely to answer explain-only questions.
+- Agent-facing authorization queries can deny unsafe actions before the build edge executes
+  them.
+
+### Phase 5A: Add Agent Governance Queries
+
+Purpose: make the extracted kernel useful to an agent as an enforcement and planning layer,
+without letting the kernel execute tools or commands.
+
+New core concepts:
+
+```fsharp
+type AgentAction =
+    | RunTarget of Target
+    | EditPath of string
+    | WriteArtifact of string
+    | CommitChanges
+    | PushBranch
+    | RequestHumanInput of reason: string
+
+type AgentDecision =
+    | Allowed of reason: string
+    | Denied of reason: string
+    | NeedsEvidence of artifactId: string * reason: string
+    | NeedsHuman of reason: string
+
+type AgentPlan =
+    { Decisions: (AgentAction * AgentDecision) list
+      RequiredEvidence: string list
+      RequiredGates: Target list
+      Blockers: string list
+      NextActions: GovernanceConclusion list
+      Provenance: ExplanationProvenance list }
+```
+
+Tasks:
+
+1. Add pure authorization queries that evaluate proposed agent actions against a supplied
+   `GovernanceSnapshot`.
+2. Distinguish read-only actions from effectful actions in the model.
+3. Treat FAKE-backed targets as effectful actions that can only be recommended, never run,
+   by Core.
+4. Return denied decisions for actions that would bypass required artifacts, route-selected
+   gates, or evidence ownership rules.
+5. Return next-action suggestions that are descriptive, not imperative execution.
+6. Add tests for:
+   - commit/push requests with missing required artifacts;
+   - target execution requests outside the selected route;
+   - write attempts under generated-view paths;
+   - safe read-only explanation requests;
+   - human-input recommendations when a blocker cannot be resolved from facts.
+
+Acceptance:
+
+- The agent plan API is pure and side-effect free.
+- A denied action names the blocking rule and required remedy.
+- The kernel never shells out, edits files, commits, pushes, or invokes FAKE.
+- Build or agent edges can consume `AgentPlan` before deciding whether to execute an action.
 
 ### Phase 6: Build Front-End Integration
 
@@ -835,6 +942,19 @@ Add focused tests in `Governance.Core.Tests`:
   - default-deny conclusions are explicit;
   - JSON rendering is deterministic.
 
+- `GovernanceInferenceTests`
+  - fixed-point evaluation is idempotent;
+  - adding facts cannot lower a selected tier or remove required gates;
+  - every derived conclusion carries rule provenance;
+  - non-converging rules fail with a bounded diagnostic rather than looping.
+
+- `AgentGovernanceTests`
+  - read-only explanation queries are allowed without requiring gate execution;
+  - effectful target execution requests are denied when outside the selected route;
+  - commit/push plans surface missing evidence and route-selected gates;
+  - generated-view write attempts are blocked with the canonical source path;
+  - next-action suggestions do not execute commands.
+
 - `ArtifactRegistryTests`
   - route-required artifacts know their producer target where known;
   - feature-relative artifacts resolve with the active feature;
@@ -857,6 +977,9 @@ Use FsCheck where invariants are clearer as properties:
 - contract rendering and parsed compatibility views agree on rule ids;
 - task graph topological order respects every dependency;
 - artifact requirement union is order-stable.
+- fixed-point derivation reaches the same fact set regardless of repeated runs;
+- derived conclusions always have non-empty provenance;
+- agent authorization is conservative: unknown effectful actions deny by default.
 
 ### Integration Tests
 
@@ -1062,12 +1185,14 @@ The feature is complete when:
 7. Move evidence parser/graph/audit core and tests.
 8. Keep `GeneratedRunner` in Build and delegate to Core.
 9. Move skill/capability/generated-view pure modules cluster by cluster.
-10. Introduce `GovernanceSnapshot` and pure explanation queries.
-11. Wire optional `Route --json` through the build edge.
-12. Prove pack dependency and generated-product reflection behavior.
-13. Update active docs and guidance.
-14. Run route-selected gates sequentially.
-15. Review the diff for accidental namespace churn, dependency leaks, and generated-product
+10. Introduce `GovernanceSnapshot`, typed facts, fixed-point derivation, and pure
+    explanation queries.
+11. Add agent-facing authorization and planning queries over the derived facts.
+12. Wire optional `Route --json` through the build edge.
+13. Prove pack dependency and generated-product reflection behavior.
+14. Update active docs and guidance.
+15. Run route-selected gates sequentially.
+16. Review the diff for accidental namespace churn, dependency leaks, and generated-product
     package regressions.
 
 ## Final Recommendation
@@ -1080,5 +1205,5 @@ The most valuable early outcome is a small, fast test surface for governance dec
 path classification, target identity, route selection, contract rendering, artifact
 expectations, evidence graph/audit algorithms, and explanation provenance. Once that is
 stable, higher-level features such as `Route --json`, scoped authoring validation,
-artifact freshness, and concurrency-aware explanations become much easier to add without
-turning the build front-end into an even larger policy module.
+artifact freshness, agent action authorization, and concurrency-aware explanations become
+much easier to add without turning the build front-end into an even larger policy module.

@@ -1,0 +1,1 @@
+          definition "text-area" "Text Area" "input" "TextArea" "Plain multi-line text entry." [ "value" ] common [ "onChanged" ] states "TextBox"

@@ -1,0 +1,1 @@
+          definition "border" "Border" "layout" "Border" "Single child with border and padding." [ "child" ] common [] states "StaticText"

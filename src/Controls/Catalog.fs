@@ -73,32 +73,66 @@ module Catalog =
           // BEGIN GENERATED: typed-catalog/text-block
           definition "text-block" "Text Block" "display" "TextBlock" "Static model-owned text display." [ "text" ] common [] states "StaticText"
           // END GENERATED: typed-catalog/text-block
+          // BEGIN GENERATED: typed-catalog/rich-text
           definition "rich-text" "Rich Text" "display" "RichText" "Skia-specific rich text display with measurement, clipping, effects, diagnostics, and accessibility metadata." [ "runs" ] common [] states "StaticText"
+          // END GENERATED: typed-catalog/rich-text
+          // BEGIN GENERATED: typed-catalog/label
           definition "label" "Label" "display" "Label" "Short form label text." [ "text" ] common [] states "StaticText"
+          // END GENERATED: typed-catalog/label
+          // BEGIN GENERATED: typed-catalog/image
           definition "image" "Image" "display" "Image" "Image placeholder or drawing-surface reference." [ "value" ] common [] states "Image"
+          // END GENERATED: typed-catalog/image
+          // BEGIN GENERATED: typed-catalog/icon
           definition "icon" "Icon" "display" "Icon" "Named icon glyph or product symbol." [ "text" ] common [] states "Image"
+          // END GENERATED: typed-catalog/icon
+          // BEGIN GENERATED: typed-catalog/separator
           definition "separator" "Separator" "display" "Separator" "Visual divider between regions." [] common [] states "StaticText"
+          // END GENERATED: typed-catalog/separator
+          // BEGIN GENERATED: typed-catalog/badge
           definition "badge" "Badge" "display" "Badge" "Compact status label." [ "text" ] common [] states "StaticText"
+          // END GENERATED: typed-catalog/badge
           // BEGIN GENERATED: typed-catalog/button
           definition "button" "Button" "input" "Button" "Pointer and keyboard activatable command." [ "text" ] common [ "onClick" ] states "Button"
           // END GENERATED: typed-catalog/button
+          // BEGIN GENERATED: typed-catalog/icon-button
           definition "icon-button" "Icon Button" "input" "IconButton" "Icon-only activatable command." [ "text" ] common [ "onClick" ] states "Button"
+          // END GENERATED: typed-catalog/icon-button
           // BEGIN GENERATED: typed-catalog/text-box
           definition "text-box" "Text Box" "input" "TextBox" "Plain single-line text entry." [ "value" ] common [ "onChanged" ] states "TextBox"
           // END GENERATED: typed-catalog/text-box
+          // BEGIN GENERATED: typed-catalog/text-area
           definition "text-area" "Text Area" "input" "TextArea" "Plain multi-line text entry." [ "value" ] common [ "onChanged" ] states "TextBox"
+          // END GENERATED: typed-catalog/text-area
+          // BEGIN GENERATED: typed-catalog/numeric-input
           definition "numeric-input" "Numeric Input" "input" "NumericInput" "Model-owned numeric value editor." [ "value" ] common [ "onChanged" ] states "TextBox"
+          // END GENERATED: typed-catalog/numeric-input
           // BEGIN GENERATED: typed-catalog/check-box
           definition "check-box" "Check Box" "selection" "CheckBox" "Boolean choice with checked state." [ "text" ] common [ "onChanged" ] states "CheckBox"
           // END GENERATED: typed-catalog/check-box
+          // BEGIN GENERATED: typed-catalog/radio-group
           definition "radio-group" "Radio Group" "selection" "RadioGroup" "Single selection from a visible option set." [ "items" ] common [ "onChanged" ] states "RadioGroup"
+          // END GENERATED: typed-catalog/radio-group
+          // BEGIN GENERATED: typed-catalog/switch
           definition "switch" "Switch" "selection" "Switch" "Compact Boolean setting." [] common [ "onChanged" ] states "CheckBox"
+          // END GENERATED: typed-catalog/switch
+          // BEGIN GENERATED: typed-catalog/slider
           definition "slider" "Slider" "input" "Slider" "Continuous numeric value selection." [ "value" ] common [ "onChanged" ] states "Slider"
+          // END GENERATED: typed-catalog/slider
+          // BEGIN GENERATED: typed-catalog/list-view
           definition "list-view" "List View" "data" "Collections" "Bounded visible-range list display." [ "items" ] common [ "onSelected" ] states "List"
+          // END GENERATED: typed-catalog/list-view
+          // BEGIN GENERATED: typed-catalog/list-box
           definition "list-box" "List Box" "selection" "Collections" "Single-selection list box." [ "items" ] common [ "onSelected" ] states "List"
+          // END GENERATED: typed-catalog/list-box
+          // BEGIN GENERATED: typed-catalog/multi-select-list
           definition "multi-select-list" "Multi Select List" "selection" "Collections" "Multiple-selection list with model-owned selected keys." [ "items" ] common [ "onChanged" ] states "List"
+          // END GENERATED: typed-catalog/multi-select-list
+          // BEGIN GENERATED: typed-catalog/combo-box
           definition "combo-box" "Combo Box" "selection" "Collections" "Compact selection list." [ "items" ] common [ "onChanged" ] states "List"
+          // END GENERATED: typed-catalog/combo-box
+          // BEGIN GENERATED: typed-catalog/tree-view
           definition "tree-view" "Tree View" "data" "Collections" "Hierarchical item display." [ "items" ] common [ "onSelected" ] states "List"
+          // END GENERATED: typed-catalog/tree-view
           // BEGIN GENERATED: typed-catalog/data-grid
           definition "data-grid" "Data Grid" "data" "DataGrid" "Table-like bounded visible-range data control with product-owned rows, selection, focus, sort, and filter metadata." [ "columns"; "rows" ] common [ "onSelected"; "onFocusChanged"; "onSortChanged" ] states "Grid"
           |> withChartDataGridEvidence
@@ -106,35 +140,84 @@ module Catalog =
           // BEGIN GENERATED: typed-catalog/stack
           definition "stack" "Stack" "layout" "Stack" "Ordered vertical or horizontal child composition." [ "children" ] common [] states "StaticText"
           // END GENERATED: typed-catalog/stack
+          // BEGIN GENERATED: typed-catalog/grid
           definition "grid" "Grid" "layout" "Grid" "Structured child composition." [ "children" ] common [] states "StaticText"
+          // END GENERATED: typed-catalog/grid
+          // BEGIN GENERATED: typed-catalog/dock
           definition "dock" "Dock" "layout" "Dock" "Docked region composition." [ "children" ] common [] states "StaticText"
+          // END GENERATED: typed-catalog/dock
+          // BEGIN GENERATED: typed-catalog/wrap
           definition "wrap" "Wrap" "layout" "Wrap" "Wrapping child layout." [ "children" ] common [] states "StaticText"
+          // END GENERATED: typed-catalog/wrap
+          // BEGIN GENERATED: typed-catalog/border
           definition "border" "Border" "layout" "Border" "Single child with border and padding." [ "child" ] common [] states "StaticText"
+          // END GENERATED: typed-catalog/border
+          // BEGIN GENERATED: typed-catalog/panel
           definition "panel" "Panel" "layout" "Panel" "General-purpose child surface." [ "children" ] common [] states "StaticText"
+          // END GENERATED: typed-catalog/panel
+          // BEGIN GENERATED: typed-catalog/scroll-viewer
           definition "scroll-viewer" "Scroll Viewer" "layout" "Collections" "Scrollable child viewport." [ "child" ] common [ "onChanged" ] states "List"
+          // END GENERATED: typed-catalog/scroll-viewer
+          // BEGIN GENERATED: typed-catalog/split-view
           definition "split-view" "Split View" "layout" "Collections" "Resizable two-region layout." [ "children" ] common [ "onChanged" ] states "StaticText"
+          // END GENERATED: typed-catalog/split-view
+          // BEGIN GENERATED: typed-catalog/tabs
           definition "tabs" "Tabs" "navigation" "Tabs" "Model-owned active page selection." [ "items" ] common [ "onChanged" ] states "Tab"
+          // END GENERATED: typed-catalog/tabs
+          // BEGIN GENERATED: typed-catalog/menu
           definition "menu" "Menu" "navigation" "Menu" "Command menu selection." [ "items" ] common [ "onSelected" ] states "Menu"
+          // END GENERATED: typed-catalog/menu
+          // BEGIN GENERATED: typed-catalog/context-menu
           definition "context-menu" "Context Menu" "navigation" "Menu" "Contextual command menu." [ "items" ] common [ "onSelected" ] states "Menu"
+          // END GENERATED: typed-catalog/context-menu
+          // BEGIN GENERATED: typed-catalog/toolbar
           definition "toolbar" "Toolbar" "navigation" "Toolbar" "Compact command group." [ "children" ] common [ "onClick" ] states "Menu"
+          // END GENERATED: typed-catalog/toolbar
+          // BEGIN GENERATED: typed-catalog/tooltip
           definition "tooltip" "Tooltip" "overlay" "Tooltip" "Auxiliary hover/focus explanation." [ "text" ] common [] states "StaticText"
+          // END GENERATED: typed-catalog/tooltip
+          // BEGIN GENERATED: typed-catalog/dialog
           definition "dialog" "Dialog" "overlay" "Dialog" "Modal content region." [ "children" ] common [ "onSelected" ] states "Dialog"
+          // END GENERATED: typed-catalog/dialog
+          // BEGIN GENERATED: typed-catalog/toast
           definition "toast" "Toast" "feedback" "Toast" "Transient status message." [ "text" ] common [] states "StaticText"
+          // END GENERATED: typed-catalog/toast
+          // BEGIN GENERATED: typed-catalog/overlay
           definition "overlay" "Overlay" "overlay" "Overlay" "Layered child content." [ "child" ] common [] states "Dialog"
+          // END GENERATED: typed-catalog/overlay
+          // BEGIN GENERATED: typed-catalog/progress-bar
           definition "progress-bar" "Progress Bar" "feedback" "ProgressBar" "Determinate progress indicator." [ "value" ] common [] states "Progress"
+          // END GENERATED: typed-catalog/progress-bar
+          // BEGIN GENERATED: typed-catalog/spinner
           definition "spinner" "Spinner" "feedback" "Spinner" "Indeterminate progress indicator." [] common [] states "Progress"
+          // END GENERATED: typed-catalog/spinner
+          // BEGIN GENERATED: typed-catalog/validation-message
           definition "validation-message" "Validation Message" "feedback" "ValidationMessage" "Validation text tied to model state." [ "text" ] common [] states "StaticText"
+          // END GENERATED: typed-catalog/validation-message
+          // BEGIN GENERATED: typed-catalog/line-chart
           definition "line-chart" "Line Chart" "chart" "LineChart" "Controls-owned line data visualization." [ "series" ] common [ "onSelected" ] states "Chart"
           |> withChartDataGridEvidence
+          // END GENERATED: typed-catalog/line-chart
+          // BEGIN GENERATED: typed-catalog/bar-chart
           definition "bar-chart" "Bar Chart" "chart" "BarChart" "Controls-owned bar data visualization." [ "series" ] common [ "onSelected" ] states "Chart"
           |> withChartDataGridEvidence
+          // END GENERATED: typed-catalog/bar-chart
+          // BEGIN GENERATED: typed-catalog/pie-chart
           definition "pie-chart" "Pie Chart" "chart" "PieChart" "Controls-owned part-to-whole visualization." [ "values" ] common [ "onSelected" ] states "Chart"
           |> withChartDataGridEvidence
+          // END GENERATED: typed-catalog/pie-chart
+          // BEGIN GENERATED: typed-catalog/scatter-plot
           definition "scatter-plot" "Scatter Plot" "chart" "ScatterPlot" "Controls-owned point cloud visualization." [ "series" ] common [ "onSelected" ] states "Chart"
           |> withChartDataGridEvidence
+          // END GENERATED: typed-catalog/scatter-plot
+          // BEGIN GENERATED: typed-catalog/graph-view
           definition "graph-view" "Graph View" "graph" "GraphView" "Controls-owned node and edge visualization." [ "nodes" ] common [ "onSelected" ] states "Graph"
           |> withChartDataGridEvidence
-          definition "custom-control" "Custom Control" "custom" "CustomControl" "Product-owned wrapper for custom Skia content." [ "id"; "render"; "layout"; "hitTest"; "accessibility" ] common [ "onCustom" ] states "Custom" ]
+          // END GENERATED: typed-catalog/graph-view
+          // BEGIN GENERATED: typed-catalog/custom-control
+          definition "custom-control" "Custom Control" "custom" "CustomControl" "Product-owned wrapper for custom Skia content." [] common [ "onCustom" ] states "Custom"
+          // END GENERATED: typed-catalog/custom-control
+        ]
 
     let standardSchema =
         [ { Kind = StandardControlKind.TextBlock

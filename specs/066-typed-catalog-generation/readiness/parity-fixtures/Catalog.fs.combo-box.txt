@@ -1,0 +1,1 @@
+          definition "combo-box" "Combo Box" "selection" "Collections" "Compact selection list." [ "items" ] common [ "onChanged" ] states "List"

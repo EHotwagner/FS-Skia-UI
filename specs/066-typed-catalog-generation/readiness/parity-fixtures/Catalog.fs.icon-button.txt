@@ -1,0 +1,1 @@
+          definition "icon-button" "Icon Button" "input" "IconButton" "Icon-only activatable command." [ "text" ] common [ "onClick" ] states "Button"

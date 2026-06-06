@@ -1,0 +1,1 @@
+          definition "separator" "Separator" "display" "Separator" "Visual divider between regions." [] common [] states "StaticText"

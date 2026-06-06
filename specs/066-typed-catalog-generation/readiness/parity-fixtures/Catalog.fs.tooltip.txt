@@ -1,0 +1,1 @@
+          definition "tooltip" "Tooltip" "overlay" "Tooltip" "Auxiliary hover/focus explanation." [ "text" ] common [] states "StaticText"

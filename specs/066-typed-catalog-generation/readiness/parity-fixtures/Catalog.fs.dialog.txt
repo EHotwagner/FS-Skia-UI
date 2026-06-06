@@ -1,0 +1,1 @@
+          definition "dialog" "Dialog" "overlay" "Dialog" "Modal content region." [ "children" ] common [ "onSelected" ] states "Dialog"

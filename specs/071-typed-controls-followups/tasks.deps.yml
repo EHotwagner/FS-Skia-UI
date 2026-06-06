@@ -1,0 +1,74 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (071).
+#
+# Phase-checkpoint edges are auto-injected by the graph compute script (every
+# task in Phase N+1 depends on the last task of Phase N). Only non-phase
+# cross-edges are written below. Feature is Tier 2 (internal change) throughout.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: []
+  T006:
+    deps: []
+    skillist: ["fs-skia-typed-controls"]
+  T007:
+    deps: [T006]
+    skillist: ["fsharp-code-generation"]
+  T008:
+    deps: [T007]
+    skillist: ["fsharp-code-generation"]
+  T009:
+    deps: [T008]
+    skillist: ["fsharp-code-generation"]
+  T010:
+    deps: [T009]
+    skillist: ["fsharp-code-generation"]
+  T011:
+    deps: [T006, T009, T010]
+    skillist: []
+  T012:
+    deps: [T011]
+    skillist: []
+  T013:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+  T014:
+    deps: [T013]
+    skillist: ["fs-skia-typed-controls", "fs-skia-ui-widgets"]
+  T015:
+    deps: [T014]
+    skillist: ["fs-skia-ui-widgets"]
+  T016:
+    deps: [T013, T014]
+    skillist: []
+  T017:
+    deps: [T016]
+    skillist: ["fs-skia-evidence-mode"]
+  T018:
+    deps: [T009, T014]
+    skillist: []
+  T019:
+    deps: [T012, T017, T018]
+    skillist: []
+  T020:
+    deps: [T019]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T021:
+    deps: [T020]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]
