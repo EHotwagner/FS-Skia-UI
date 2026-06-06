@@ -81,6 +81,12 @@ let allCandidateFiles () =
           if File.Exists full then yield full
           elif Directory.Exists full then yield! Directory.EnumerateFiles(full, "*", SearchOption.AllDirectories) ]
     |> Seq.distinct
+    // Guard existence: the explicit root yields (build.fsx, README.md, AGENTS.md,
+    // CLAUDE.md) are not all present in every repo layout — this repo drives the
+    // build through scripts/build + fake.sh and has no root build.fsx — so a bare
+    // File.ReadAllLines on a missing candidate would throw. EnumerateFiles results
+    // always exist; this filter only drops the absent explicit yields.
+    |> Seq.filter File.Exists
     |> Seq.filter (fun path ->
         let extension = Path.GetExtension(path)
         [ ".md"; ".fsx"; ".fs"; ".fsi"; ".yml"; ".json"; ".txt" ] |> List.contains extension)
