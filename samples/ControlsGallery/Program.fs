@@ -192,7 +192,40 @@ let typedAuthoringPanel: Control<Msg> =
                       { FS.Skia.UI.Controls.Typed.LineChart.defaults with
                           Series = [ { Name = "typed"; Points = [ { X = 0.0; Y = 1.0; Label = None } ] } ] }
                   FS.Skia.UI.Controls.Typed.GraphView.view
-                      { FS.Skia.UI.Controls.Typed.GraphView.defaults with Nodes = [ "form"; "data" ] } ] }
+                      { FS.Skia.UI.Controls.Typed.GraphView.defaults with Nodes = [ "form"; "data" ] }
+                  // Feature 072 breadth expansion — the five new typed controls, dogfooded.
+                  FS.Skia.UI.Controls.Typed.ToggleButton.view
+                      { FS.Skia.UI.Controls.Typed.ToggleButton.defaults with
+                          Id = Some "typed-toggle"
+                          Text = "Typed toggle"
+                          IsOn = true
+                          OnToggle = Some(fun _ -> ToggleSave) }
+                  FS.Skia.UI.Controls.Typed.SplitButton.view
+                      { FS.Skia.UI.Controls.Typed.SplitButton.defaults with
+                          Id = Some "typed-split"
+                          Text = "Typed Save"
+                          Items =
+                              [ ({ Key = "save-as"; Label = "Save As" }: FS.Skia.UI.Controls.Typed.SplitButtonItem)
+                                { Key = "export"; Label = "Export" } ]
+                          OnClick = Some SaveRequested
+                          OnSelected = Some SelectItem }
+                  FS.Skia.UI.Controls.Typed.DatePicker.view
+                      { FS.Skia.UI.Controls.Typed.DatePicker.defaults with
+                          Id = Some "typed-date"
+                          Value = Some(System.DateOnly(2026, 6, 6))
+                          OnChange = Some(fun _ -> NoOp) }
+                  FS.Skia.UI.Controls.Typed.TimePicker.view
+                      { FS.Skia.UI.Controls.Typed.TimePicker.defaults with
+                          Id = Some "typed-time"
+                          Value = Some(System.TimeOnly(9, 30))
+                          OnChange = Some(fun _ -> NoOp) }
+                  FS.Skia.UI.Controls.Typed.ColorPicker.view
+                      { FS.Skia.UI.Controls.Typed.ColorPicker.defaults with
+                          Id = Some "typed-color"
+                          Swatches =
+                              [ ({ Name = "Accent"; Color = Theme.light.Accent }: FS.Skia.UI.Controls.Typed.ColorSwatch)
+                                { Name = "Danger"; Color = Theme.light.Danger } ]
+                          OnSelected = Some(fun _ -> NoOp) } ] }
     |> Widget.toControl
 
 let controlView model =

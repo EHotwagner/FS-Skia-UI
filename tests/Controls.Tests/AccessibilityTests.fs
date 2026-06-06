@@ -1,8 +1,10 @@
 module ControlsAccessibilityTests
 
+open System
 open Expecto
 open FS.Skia.UI.Scene
 open FS.Skia.UI.Controls
+open FS.Skia.UI.Controls.Typed
 
 [<Tests>]
 let typedGalleryAccessibilityTests =
@@ -32,6 +34,67 @@ let typedGalleryAccessibilityTests =
             |> List.iter (fun (kind, role) ->
                 Expect.isTrue (Set.contains kind kinds) $"typed gallery panel includes a typed {kind}"
                 Expect.equal (roleOf kind) role $"{kind} exposes the {role} accessibility role")
+        }
+    ]
+
+[<Tests>]
+let expansionAccessibilityTests =
+    // Feature 072 (T014, T026, FR-009): each new control's lowered tree carries its
+    // catalog accessibility role, an accessible name, and a focusable keyboard
+    // affordance (activation + popup arrow navigation), with no a11y diagnostics.
+    let cases : (string * AccessibilityRole * Control<int>) list =
+        [ "toggle-button",
+          AccessibilityRole.Button,
+          ToggleButton.view { ToggleButton.defaults with Text = "Bold"; IsOn = true; OnToggle = Some(fun _ -> 1) } |> Widget.toControl
+          "split-button",
+          AccessibilityRole.Menu,
+          SplitButton.view
+              { SplitButton.defaults with
+                  Text = "Save"
+                  IsOpen = true
+                  Items = [ { Key = "cut"; Label = "Cut" } ]
+                  OnSelected = Some(fun _ -> 1) }
+          |> Widget.toControl
+          "date-picker",
+          AccessibilityRole.TextBox,
+          DatePicker.view { DatePicker.defaults with Value = Some(DateOnly(2026, 6, 15)); IsOpen = true; OnChange = Some(fun _ -> 1) } |> Widget.toControl
+          "time-picker",
+          AccessibilityRole.TextBox,
+          TimePicker.view { TimePicker.defaults with Value = Some(TimeOnly(10, 30)); OnChange = Some(fun _ -> 1) } |> Widget.toControl
+          "color-picker",
+          AccessibilityRole.List,
+          ColorPicker.view
+              { ColorPicker.defaults with
+                  Swatches = [ { Name = "Red"; Color = { Red = 255uy; Green = 0uy; Blue = 0uy; Alpha = 255uy } } ]
+                  OnSelected = Some(fun _ -> 1) }
+          |> Widget.toControl ]
+
+    testList "Feature 072 new-control accessibility (FR-009, SC-005)" [
+        test "every new control carries its catalog role and a focusable keyboard affordance" {
+            for name, role, control in cases do
+                match control.Accessibility with
+                | None -> failtestf "%s lowered tree carries no accessibility metadata" name
+                | Some metadata ->
+                    Expect.equal metadata.Role role $"{name} carries its catalog accessibility role"
+                    Expect.isTrue metadata.Keyboard.Focusable $"{name} exposes a focusable trigger"
+                    Expect.contains metadata.Keyboard.ActivationKeys "Enter" $"{name} activates with Enter"
+                    Expect.contains metadata.Keyboard.ActivationKeys "Space" $"{name} activates with Space"
+                    Expect.isNonEmpty metadata.Keyboard.NavigationKeys $"{name} declares keyboard navigation"
+                    Expect.isEmpty
+                        (Accessibility.validate control |> List.filter (fun d -> d.Severity = ControlDiagnosticSeverity.Error))
+                        $"{name} has no accessibility diagnostics"
+        }
+
+        test "popup-bearing new controls navigate with arrow keys" {
+            let navOf control =
+                match (control: Control<int>).Accessibility with
+                | Some m -> m.Keyboard.NavigationKeys
+                | None -> []
+
+            let byName = cases |> List.map (fun (n, _, c) -> n, c) |> Map.ofList
+            Expect.contains (navOf byName.["date-picker"]) "ArrowDown" "date-picker calendar moves with arrows"
+            Expect.contains (navOf byName.["split-button"]) "ArrowDown" "split-button menu moves with arrows"
+            Expect.contains (navOf byName.["color-picker"]) "ArrowRight" "color-picker grid moves with arrows"
         }
     ]
 

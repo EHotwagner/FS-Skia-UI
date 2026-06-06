@@ -12,6 +12,7 @@
     <Compile Include="TypedControlContractTests.fs" />
     <Compile Include="TypedLoweringTests.fs" />
     <Compile Include="TypedMigrationTests.fs" />
+    <Compile Include="TypedExpansionTests.fs" />
     <Compile Include="DiagnosticsTests.fs" />
     <Compile Include="ControlRuntimeContractTests.fs" />
     <Compile Include="DataGridTests.fs" />

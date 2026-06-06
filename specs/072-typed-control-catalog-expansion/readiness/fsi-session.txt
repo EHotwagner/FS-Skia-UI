@@ -1,0 +1,10 @@
+# FSI session — feature 072 typed control catalog expansion (T009)
+# Exercises Props + defaults + view for the five new typed modules via the public surface.
+# Command: dotnet fsi scripts (captured 2026-06-06T18:29:27Z)
+---
+toggle-button -> button
+split-button -> toolbar
+date-picker -> stack
+time-picker -> stack
+color-picker -> wrap
+defaults are total: (false, None, [])

@@ -48,7 +48,7 @@ let catalogTests =
             let path = Path.Combine(repositoryRoot, "src", "Controls", "catalog.yml")
             let content = File.ReadAllText path
             Expect.stringContains content "owner: controls" "catalog is owned by Controls"
-            Expect.stringContains content "supportedCount: 47" "catalog declares supported count"
+            Expect.stringContains content "supportedCount: 52" "catalog declares supported count"
             Expect.stringContains content "id: rich-text" "catalog source includes rich text"
             Expect.stringContains content "module: DataGrid" "catalog source puts DataGrid under the Controls DataGrid module"
             Expect.isFalse (content.Contains("owner: charts")) "catalog does not delegate chart rows to Charts"
@@ -152,6 +152,12 @@ let catalogGenerationTests =
           "pie-chart", Some typeof<PieChartProps<int>>
           "scatter-plot", Some typeof<ScatterPlotProps<int>>
           "graph-view", Some typeof<GraphViewProps<int>>
+          // Feature 072 breadth expansion — five new typed-first controls.
+          "toggle-button", Some typeof<ToggleButtonProps<int>>
+          "split-button", Some typeof<SplitButtonProps<int>>
+          "date-picker", Some typeof<DatePickerProps<int>>
+          "time-picker", Some typeof<TimePickerProps<int>>
+          "color-picker", Some typeof<ColorPickerProps<int>>
           "custom-control", None ]
         |> Map.ofList
 
@@ -244,13 +250,13 @@ let catalogGenerationTests =
             Expect.isNonEmpty drift "the missing region fails loudly with a diagnostic"
         }
 
-        test "catalogFacts corresponds to exactly the 47 catalog typed ids (FR-001, R5, SC-003)" {
+        test "catalogFacts corresponds to exactly the 52 catalog typed ids (FR-001, R5, SC-003)" {
             Expect.equal
                 (factsById |> Map.toList |> List.map fst |> List.sort)
                 (typedPropsById |> Map.toList |> List.map fst |> List.sort)
-                "the fact table covers exactly the 47 catalog typed ids"
+                "the fact table covers exactly the 52 catalog typed ids"
 
-            // The 47 facts span the full 11-value catalog taxonomy (data-model E1),
+            // The 52 facts span the full 11-value catalog taxonomy (data-model E1),
             // including `overlay` (tooltip/dialog/overlay) which the 6-fact-era set omitted.
             let categories =
                 [ "display"; "input"; "selection"; "navigation"; "layout"; "feedback"; "data"; "overlay"; "chart"; "graph"; "custom" ]

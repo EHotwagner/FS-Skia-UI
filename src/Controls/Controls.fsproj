@@ -82,6 +82,10 @@
     <Compile Include="Widgets/ChartsWidgets.fs" />
     <Compile Include="Widgets/CustomControlWidget.fsi" />
     <Compile Include="Widgets/CustomControlWidget.fs" />
+    <Compile Include="Widgets/Buttons.fsi" />
+    <Compile Include="Widgets/Buttons.fs" />
+    <Compile Include="Widgets/Pickers.fsi" />
+    <Compile Include="Widgets/Pickers.fs" />
   </ItemGroup>
 
   <ItemGroup>

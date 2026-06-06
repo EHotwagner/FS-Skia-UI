@@ -2,7 +2,7 @@ schemaVersion: "1.0"
 catalogVersion: "2026-05-16"
 owner: controls
 summary:
-  supportedCount: 47
+  supportedCount: 52
   categories: [display, input, selection, navigation, layout, feedback, data, chart, graph, custom]
   evidence:
     - specs/010-skia-controls-library/readiness/control-catalog.md
@@ -827,3 +827,88 @@ controls:
     supportStatus: supported
     owner: controls
   # END GENERATED: typed-catalog/custom-control
+  # BEGIN GENERATED: typed-catalog/toggle-button
+  - id: toggle-button
+    displayName: Toggle Button
+    category: input
+    module: ToggleButton
+    purpose: On/off command with product-owned pressed state.
+    requiredAttributes: [text]
+    commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]
+    events: [onToggle]
+    visualStates: [normal, disabled, hover, pressed, focused, selected, validation, loading]
+    accessibility: { role: Button, nameSource: text/value/accessibility attribute, stateMetadata: [enabled, visible, selected, validation, loading], focusBehavior: catalog focus order, keyboardOperation: Tab navigation and Enter/Space activation where interactive, contrastEvidence: readiness/layout-rendering.md }
+    examples: [samples/ControlsGallery/Program.fs]
+    tests: [tests/Controls.Tests/CatalogTests.fs, tests/Controls.Tests/SemanticTests.fs, tests/Controls.Tests/InteractionTests.fs, tests/Controls.Tests/AccessibilityTests.fs, tests/Controls.Tests/RenderingTests.fs]
+    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
+    supportStatus: supported
+    owner: controls
+  # END GENERATED: typed-catalog/toggle-button
+  # BEGIN GENERATED: typed-catalog/split-button
+  - id: split-button
+    displayName: Split Button
+    category: input
+    module: SplitButton
+    purpose: Primary action plus a popup menu of secondary commands.
+    requiredAttributes: [text]
+    commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]
+    events: [onClick, onSelected]
+    visualStates: [normal, disabled, hover, pressed, focused, selected, validation, loading]
+    accessibility: { role: Menu, nameSource: text/value/accessibility attribute, stateMetadata: [enabled, visible, selected, validation, loading], focusBehavior: catalog focus order, keyboardOperation: Tab navigation and Enter/Space activation where interactive, contrastEvidence: readiness/layout-rendering.md }
+    examples: [samples/ControlsGallery/Program.fs]
+    tests: [tests/Controls.Tests/CatalogTests.fs, tests/Controls.Tests/SemanticTests.fs, tests/Controls.Tests/InteractionTests.fs, tests/Controls.Tests/AccessibilityTests.fs, tests/Controls.Tests/RenderingTests.fs]
+    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
+    supportStatus: supported
+    owner: controls
+  # END GENERATED: typed-catalog/split-button
+  # BEGIN GENERATED: typed-catalog/date-picker
+  - id: date-picker
+    displayName: Date Picker
+    category: input
+    module: DatePicker
+    purpose: Typed date entry with a popup calendar.
+    requiredAttributes: []
+    commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]
+    events: [onChange]
+    visualStates: [normal, disabled, hover, pressed, focused, selected, validation, loading]
+    accessibility: { role: TextBox, nameSource: text/value/accessibility attribute, stateMetadata: [enabled, visible, selected, validation, loading], focusBehavior: catalog focus order, keyboardOperation: Tab navigation and Enter/Space activation where interactive, contrastEvidence: readiness/layout-rendering.md }
+    examples: [samples/ControlsGallery/Program.fs]
+    tests: [tests/Controls.Tests/CatalogTests.fs, tests/Controls.Tests/SemanticTests.fs, tests/Controls.Tests/InteractionTests.fs, tests/Controls.Tests/AccessibilityTests.fs, tests/Controls.Tests/RenderingTests.fs]
+    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
+    supportStatus: supported
+    owner: controls
+  # END GENERATED: typed-catalog/date-picker
+  # BEGIN GENERATED: typed-catalog/time-picker
+  - id: time-picker
+    displayName: Time Picker
+    category: input
+    module: TimePicker
+    purpose: Typed time entry with hour and minute segments.
+    requiredAttributes: []
+    commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]
+    events: [onChange]
+    visualStates: [normal, disabled, hover, pressed, focused, selected, validation, loading]
+    accessibility: { role: TextBox, nameSource: text/value/accessibility attribute, stateMetadata: [enabled, visible, selected, validation, loading], focusBehavior: catalog focus order, keyboardOperation: Tab navigation and Enter/Space activation where interactive, contrastEvidence: readiness/layout-rendering.md }
+    examples: [samples/ControlsGallery/Program.fs]
+    tests: [tests/Controls.Tests/CatalogTests.fs, tests/Controls.Tests/SemanticTests.fs, tests/Controls.Tests/InteractionTests.fs, tests/Controls.Tests/AccessibilityTests.fs, tests/Controls.Tests/RenderingTests.fs]
+    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
+    supportStatus: supported
+    owner: controls
+  # END GENERATED: typed-catalog/time-picker
+  # BEGIN GENERATED: typed-catalog/color-picker
+  - id: color-picker
+    displayName: Color Picker
+    category: selection
+    module: ColorPicker
+    purpose: Palette swatch color selection.
+    requiredAttributes: [swatches]
+    commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]
+    events: [onSelected]
+    visualStates: [normal, disabled, hover, pressed, focused, selected, validation, loading]
+    accessibility: { role: List, nameSource: text/value/accessibility attribute, stateMetadata: [enabled, visible, selected, validation, loading], focusBehavior: catalog focus order, keyboardOperation: Tab navigation and Enter/Space activation where interactive, contrastEvidence: readiness/layout-rendering.md }
+    examples: [samples/ControlsGallery/Program.fs]
+    tests: [tests/Controls.Tests/CatalogTests.fs, tests/Controls.Tests/SemanticTests.fs, tests/Controls.Tests/InteractionTests.fs, tests/Controls.Tests/AccessibilityTests.fs, tests/Controls.Tests/RenderingTests.fs]
+    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
+    supportStatus: supported
+    owner: controls
+  # END GENERATED: typed-catalog/color-picker

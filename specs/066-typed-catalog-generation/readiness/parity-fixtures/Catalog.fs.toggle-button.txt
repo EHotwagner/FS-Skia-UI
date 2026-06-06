@@ -1,0 +1,1 @@
+          definition "toggle-button" "Toggle Button" "input" "ToggleButton" "On/off command with product-owned pressed state." [ "text" ] common [ "onToggle" ] states "Button"

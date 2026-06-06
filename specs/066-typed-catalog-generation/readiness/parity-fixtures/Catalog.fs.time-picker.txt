@@ -1,0 +1,1 @@
+          definition "time-picker" "Time Picker" "input" "TimePicker" "Typed time entry with hour and minute segments." [] common [ "onChange" ] states "TextBox"

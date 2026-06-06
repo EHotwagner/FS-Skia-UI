@@ -217,6 +217,21 @@ module Catalog =
           // BEGIN GENERATED: typed-catalog/custom-control
           definition "custom-control" "Custom Control" "custom" "CustomControl" "Product-owned wrapper for custom Skia content." [] common [ "onCustom" ] states "Custom"
           // END GENERATED: typed-catalog/custom-control
+          // BEGIN GENERATED: typed-catalog/toggle-button
+          definition "toggle-button" "Toggle Button" "input" "ToggleButton" "On/off command with product-owned pressed state." [ "text" ] common [ "onToggle" ] states "Button"
+          // END GENERATED: typed-catalog/toggle-button
+          // BEGIN GENERATED: typed-catalog/split-button
+          definition "split-button" "Split Button" "input" "SplitButton" "Primary action plus a popup menu of secondary commands." [ "text" ] common [ "onClick"; "onSelected" ] states "Menu"
+          // END GENERATED: typed-catalog/split-button
+          // BEGIN GENERATED: typed-catalog/date-picker
+          definition "date-picker" "Date Picker" "input" "DatePicker" "Typed date entry with a popup calendar." [] common [ "onChange" ] states "TextBox"
+          // END GENERATED: typed-catalog/date-picker
+          // BEGIN GENERATED: typed-catalog/time-picker
+          definition "time-picker" "Time Picker" "input" "TimePicker" "Typed time entry with hour and minute segments." [] common [ "onChange" ] states "TextBox"
+          // END GENERATED: typed-catalog/time-picker
+          // BEGIN GENERATED: typed-catalog/color-picker
+          definition "color-picker" "Color Picker" "selection" "ColorPicker" "Palette swatch color selection." [ "swatches" ] common [ "onSelected" ] states "List"
+          // END GENERATED: typed-catalog/color-picker
         ]
 
     let standardSchema =

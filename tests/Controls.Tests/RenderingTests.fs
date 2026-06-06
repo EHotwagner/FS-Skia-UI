@@ -1,8 +1,10 @@
 module ControlsRenderingTests
 
+open System
 open Expecto
 open FS.Skia.UI.Scene
 open FS.Skia.UI.Controls
+open FS.Skia.UI.Controls.Typed
 
 [<Tests>]
 let typedGalleryRenderingTests =
@@ -29,6 +31,55 @@ let typedGalleryRenderingTests =
             Expect.isTrue
                 (Set.isSubset required covered)
                 $"typed gallery panel covers every required mechanic group; missing: {Set.difference required covered}"
+        }
+    ]
+
+[<Tests>]
+let expansionRenderingTests =
+    // Feature 072 (T014, T026, SC-005): each new control renders through the existing
+    // IR path at >=2 viewports with no diagnostics and a stable node count.
+    let newControls : (string * Control<int>) list =
+        [ "toggle-button",
+          ToggleButton.view { ToggleButton.defaults with Text = "Bold"; IsOn = true; OnToggle = Some(fun _ -> 1) }
+          |> Widget.toControl
+          "split-button",
+          SplitButton.view
+              { SplitButton.defaults with
+                  Text = "Save"
+                  IsOpen = true
+                  Items = [ { Key = "cut"; Label = "Cut" }; { Key = "copy"; Label = "Copy" } ]
+                  OnClick = Some 1
+                  OnSelected = Some(fun _ -> 2) }
+          |> Widget.toControl
+          "date-picker",
+          DatePicker.view { DatePicker.defaults with Value = Some(DateOnly(2026, 6, 15)); IsOpen = true; OnChange = Some(fun _ -> 1) }
+          |> Widget.toControl
+          "time-picker",
+          TimePicker.view { TimePicker.defaults with Value = Some(TimeOnly(10, 30)); OnChange = Some(fun _ -> 1) }
+          |> Widget.toControl
+          "color-picker",
+          ColorPicker.view
+              { ColorPicker.defaults with
+                  Swatches =
+                      [ { Name = "Red"; Color = { Red = 255uy; Green = 0uy; Blue = 0uy; Alpha = 255uy } }
+                        { Name = "Blue"; Color = { Red = 0uy; Green = 0uy; Blue = 255uy; Alpha = 255uy } } ]
+                  Selected = Some { Name = "Red"; Color = { Red = 255uy; Green = 0uy; Blue = 0uy; Alpha = 255uy } }
+                  OnSelected = Some(fun _ -> 1) }
+          |> Widget.toControl ]
+
+    testList "Feature 072 new-control rendering (SC-005)" [
+        test "every new control renders at two viewports with no diagnostics and a stable node count" {
+            for name, control in newControls do
+                let counts =
+                    [ for width, height in [ 320, 240; 1024, 768 ] do
+                          let rendered = Control.render Theme.light control
+                          let evidence = Scene.renderReadbackEvidence { Width = width; Height = height } rendered.Scene
+                          Expect.isEmpty rendered.Diagnostics $"{name} renders with no diagnostics at {width}x{height}"
+                          Expect.isNonEmpty evidence.DeterministicHash $"{name} render evidence has a deterministic hash at {width}x{height}"
+                          yield rendered.NodeCount ]
+
+                Expect.allEqual counts (List.head counts) $"{name} node count is stable across viewports"
+                Expect.isGreaterThanOrEqual (List.head counts) 1 $"{name} lowers to at least one node"
         }
     ]
 

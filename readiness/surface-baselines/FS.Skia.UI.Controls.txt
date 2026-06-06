@@ -214,6 +214,9 @@ FS.Skia.UI.Controls.Typed.ButtonIntent+Tags
 FS.Skia.UI.Controls.Typed.ButtonProps`1
 FS.Skia.UI.Controls.Typed.CheckBox
 FS.Skia.UI.Controls.Typed.CheckBoxProps`1
+FS.Skia.UI.Controls.Typed.ColorPicker
+FS.Skia.UI.Controls.Typed.ColorPickerProps`1
+FS.Skia.UI.Controls.Typed.ColorSwatch
 FS.Skia.UI.Controls.Typed.ComboBox
 FS.Skia.UI.Controls.Typed.ComboBoxProps`1
 FS.Skia.UI.Controls.Typed.ContextMenu
@@ -221,6 +224,8 @@ FS.Skia.UI.Controls.Typed.ContextMenuProps`1
 FS.Skia.UI.Controls.Typed.CustomControl
 FS.Skia.UI.Controls.Typed.DataGrid
 FS.Skia.UI.Controls.Typed.DataGridProps`1
+FS.Skia.UI.Controls.Typed.DatePicker
+FS.Skia.UI.Controls.Typed.DatePickerProps`1
 FS.Skia.UI.Controls.Typed.Dialog
 FS.Skia.UI.Controls.Typed.DialogProps`1
 FS.Skia.UI.Controls.Typed.Dock
@@ -271,6 +276,9 @@ FS.Skia.UI.Controls.Typed.Slider
 FS.Skia.UI.Controls.Typed.SliderProps`1
 FS.Skia.UI.Controls.Typed.Spinner
 FS.Skia.UI.Controls.Typed.SpinnerProps`1
+FS.Skia.UI.Controls.Typed.SplitButton
+FS.Skia.UI.Controls.Typed.SplitButtonItem
+FS.Skia.UI.Controls.Typed.SplitButtonProps`1
 FS.Skia.UI.Controls.Typed.SplitView
 FS.Skia.UI.Controls.Typed.SplitViewProps`1
 FS.Skia.UI.Controls.Typed.Stack
@@ -287,8 +295,12 @@ FS.Skia.UI.Controls.Typed.TextBlock
 FS.Skia.UI.Controls.Typed.TextBlockProps`1
 FS.Skia.UI.Controls.Typed.TextBox
 FS.Skia.UI.Controls.Typed.TextBoxProps`1
+FS.Skia.UI.Controls.Typed.TimePicker
+FS.Skia.UI.Controls.Typed.TimePickerProps`1
 FS.Skia.UI.Controls.Typed.Toast
 FS.Skia.UI.Controls.Typed.ToastProps`1
+FS.Skia.UI.Controls.Typed.ToggleButton
+FS.Skia.UI.Controls.Typed.ToggleButtonProps`1
 FS.Skia.UI.Controls.Typed.Toolbar
 FS.Skia.UI.Controls.Typed.ToolbarProps`1
 FS.Skia.UI.Controls.Typed.Tooltip

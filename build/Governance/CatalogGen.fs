@@ -103,6 +103,14 @@ let catalogFacts : TypedCatalogFact list =
       fact "pie-chart" "Pie Chart" "chart" "PieChart" "Controls-owned part-to-whole visualization." [ "values" ] [ "onSelected" ] "Chart"
       fact "scatter-plot" "Scatter Plot" "chart" "ScatterPlot" "Controls-owned point cloud visualization." [ "series" ] [ "onSelected" ] "Chart"
       fact "graph-view" "Graph View" "graph" "GraphView" "Controls-owned node and edge visualization." [ "nodes" ] [ "onSelected" ] "Graph"
+      // Feature 072 (FR-001) — the breadth-expansion reference slice: five genuinely new
+      // controls spanning buttons / pickers / date-time, each a typed-first composition of
+      // existing legacy builders (no new StandardControlKind variant, no renderer change).
+      fact "toggle-button" "Toggle Button" "input" "ToggleButton" "On/off command with product-owned pressed state." [ "text" ] [ "onToggle" ] "Button"
+      fact "split-button" "Split Button" "input" "SplitButton" "Primary action plus a popup menu of secondary commands." [ "text" ] [ "onClick"; "onSelected" ] "Menu"
+      fact "date-picker" "Date Picker" "input" "DatePicker" "Typed date entry with a popup calendar." [] [ "onChange" ] "TextBox"
+      fact "time-picker" "Time Picker" "input" "TimePicker" "Typed time entry with hour and minute segments." [] [ "onChange" ] "TextBox"
+      fact "color-picker" "Color Picker" "selection" "ColorPicker" "Palette swatch color selection." [ "swatches" ] [ "onSelected" ] "List"
       // custom-control is bridge-typed (Widget.ofControl) — no Props schema, no fabricated
       // required attribute (FR-006/R3). The fact carries RequiredAttributes = [].
       fact "custom-control" "Custom Control" "custom" "CustomControl" "Product-owned wrapper for custom Skia content." [] [ "onCustom" ] "Custom" ]

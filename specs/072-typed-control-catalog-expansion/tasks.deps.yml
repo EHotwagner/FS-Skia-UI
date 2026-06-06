@@ -1,0 +1,133 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Phase-checkpoint edges are auto-injected by the graph compute script (every
+# task in Phase N+1 implicitly depends on the last task of Phase N), so only
+# non-phase cross-edges are written below.
+
+tasks:
+  # Phase 1: Setup
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: ["fs-skia-typed-controls"]
+
+  # Phase 2: Foundation
+  T005:
+    deps: []
+    skillist: ["fs-skia-typed-controls"]
+  T006:
+    deps: []
+    skillist: ["fsharp-code-generation"]
+  T007:
+    deps: []
+    skillist: ["fsharp-code-generation"]
+  T008:
+    deps: [T005]
+    skillist: ["fs-skia-ui-widgets"]
+  T009:
+    deps: [T005]
+    skillist: []
+  T010:
+    deps: [T005]
+    skillist: ["fs-skia-typed-controls"]
+  T011:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 3: US1 — DatePicker keystone
+  T012:
+    deps: []
+    skillist: ["fs-skia-typed-controls"]
+  T013:
+    deps: []
+    skillist: ["fs-skia-typed-controls"]
+  T014:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+  T015:
+    deps: [T012, T013, T014]
+    skillist: ["fs-skia-typed-controls"]
+  T016:
+    deps: [T015]
+    skillist: ["fs-skia-evidence-mode"]
+  T017:
+    deps: [T015]
+    skillist: ["fs-skia-ui-widgets"]
+  T018:
+    deps: [T015]
+    skillist: []
+
+  # Phase 4: US2 — catalog single-source generation & currency
+  T019:
+    deps: []
+    skillist: ["fsharp-code-generation"]
+  T020:
+    deps: [T019]
+    skillist: ["fsharp-code-generation"]
+  T021:
+    deps: [T020]
+    skillist: ["fsharp-code-generation"]
+  T022:
+    deps: [T020]
+    skillist: ["fsharp-build-orchestration"]
+  T023:
+    deps: [T020]
+    skillist: []
+
+  # Phase 5: US3 — button family + picker/date-time breadth
+  T024:
+    deps: []
+    skillist: ["fs-skia-typed-controls"]
+  T025:
+    deps: []
+    skillist: ["fs-skia-typed-controls"]
+  T026:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+  T027:
+    deps: [T024, T025, T026]
+    skillist: ["fs-skia-typed-controls"]
+  T028:
+    deps: [T024, T025, T026]
+    skillist: ["fs-skia-typed-controls"]
+  T029:
+    deps: [T027, T028]
+    skillist: ["fs-skia-evidence-mode"]
+  T030:
+    deps: [T027, T028]
+    skillist: ["fs-skia-ui-widgets"]
+  T031:
+    deps: [T027, T028]
+    skillist: []
+
+  # Phase 6: Integration & Polish
+  T032:
+    deps: []
+    skillist: ["fs-skia-typed-controls"]
+  T033:
+    deps: [T032]
+    skillist: ["fsharp-build-orchestration"]
+  T034:
+    deps: [T033]
+    skillist: ["fs-skia-typed-controls"]
+  T035:
+    deps: []
+    skillist: []
+  T036:
+    deps: [T034]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T037:
+    deps: [T036]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

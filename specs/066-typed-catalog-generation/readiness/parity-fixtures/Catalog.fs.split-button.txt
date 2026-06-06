@@ -1,0 +1,1 @@
+          definition "split-button" "Split Button" "input" "SplitButton" "Primary action plus a popup menu of secondary commands." [ "text" ] common [ "onClick"; "onSelected" ] states "Menu"

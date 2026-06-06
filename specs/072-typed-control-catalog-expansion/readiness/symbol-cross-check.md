@@ -1,0 +1,52 @@
+## Symbol consistency (analyze pass G)
+- entity-record ColorSwatch — in {plan, tasks}, missing from {data-model}
+- entity-record ControlsCatalogCheck — in {tasks}, missing from {plan, data-model}
+- entity-record ControlsCatalogGenerationCheck — in {tasks}, missing from {plan, data-model}
+- entity-record ControlsInteractionCheck — in {tasks}, missing from {plan, data-model}
+- entity-record ControlsRenderingCheck — in {tasks}, missing from {plan, data-model}
+- entity-record DateOnly — in {plan}, missing from {data-model, tasks}
+- entity-record DatePicker — in {tasks}, missing from {plan, data-model}
+- entity-record DesignTokenDrift — in {tasks}, missing from {plan, data-model}
+- entity-record Dev — in {tasks}, missing from {plan, data-model}
+- entity-record FsiTranscripts — in {tasks}, missing from {plan, data-model}
+- entity-record Id — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record Key — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record OnSelected — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record PackageSurfaceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record PerPackageSurfaceDiff — in {tasks}, missing from {plan, data-model}
+- entity-record Props — in {plan, tasks}, missing from {data-model}
+- entity-record TimeOnly — in {plan}, missing from {data-model, tasks}
+- fr-id FR-001 — in {plan}, missing from {data-model, tasks}
+- fr-id FR-004 — in {plan}, missing from {data-model, tasks}
+- fr-id FR-007 — in {plan}, missing from {data-model, tasks}
+- fr-id FR-008 — in {plan}, missing from {data-model, tasks}
+- fr-id FR-010 — in {tasks}, missing from {plan, data-model}
+- msg-case CheckBox — in {tasks}, missing from {plan, data-model}
+- msg-case ColorPicker — in {tasks}, missing from {plan, data-model}
+- msg-case ColorSwatch — in {tasks}, missing from {plan, data-model}
+- msg-case ControlKind — in {plan}, missing from {data-model, tasks}
+- msg-case DatePicker — in {tasks}, missing from {plan, data-model}
+- msg-case Effect — in {plan, tasks}, missing from {data-model}
+- msg-case IsOn — in {tasks}, missing from {plan, data-model}
+- msg-case IsOpen — in {tasks}, missing from {plan, data-model}
+- msg-case Items — in {tasks}, missing from {plan, data-model}
+- msg-case Key — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Menu — in {tasks}, missing from {plan, data-model}
+- msg-case Model — in {plan, tasks}, missing from {data-model}
+- msg-case Msg — in {plan, tasks}, missing from {data-model}
+- msg-case OnChange — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case OnClick — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case OnSelected — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case OnToggle — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Overlay — in {tasks}, missing from {plan, data-model}
+- msg-case Props — in {tasks}, missing from {plan, data-model}
+- msg-case SplitButton — in {tasks}, missing from {plan, data-model}
+- msg-case SplitButtonItem — in {tasks}, missing from {plan, data-model}
+- msg-case TimePicker — in {tasks}, missing from {plan, data-model}
+- msg-case ToggleButton — in {tasks}, missing from {plan, data-model}
+- sc-id SC-001 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-002 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-003 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-004 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-006 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-007 — in {plan, tasks}, missing from {data-model}

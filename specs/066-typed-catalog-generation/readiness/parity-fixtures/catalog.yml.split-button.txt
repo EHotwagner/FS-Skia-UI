@@ -1,0 +1,15 @@
+  - id: split-button
+    displayName: Split Button
+    category: input
+    module: SplitButton
+    purpose: Primary action plus a popup menu of secondary commands.
+    requiredAttributes: [text]
+    commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]
+    events: [onClick, onSelected]
+    visualStates: [normal, disabled, hover, pressed, focused, selected, validation, loading]
+    accessibility: { role: Menu, nameSource: text/value/accessibility attribute, stateMetadata: [enabled, visible, selected, validation, loading], focusBehavior: catalog focus order, keyboardOperation: Tab navigation and Enter/Space activation where interactive, contrastEvidence: readiness/layout-rendering.md }
+    examples: [samples/ControlsGallery/Program.fs]
+    tests: [tests/Controls.Tests/CatalogTests.fs, tests/Controls.Tests/SemanticTests.fs, tests/Controls.Tests/InteractionTests.fs, tests/Controls.Tests/AccessibilityTests.fs, tests/Controls.Tests/RenderingTests.fs]
+    evidence: [specs/010-skia-controls-library/readiness/control-catalog.md, specs/010-skia-controls-library/readiness/layout-rendering.md]
+    supportStatus: supported
+    owner: controls

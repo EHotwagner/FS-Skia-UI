@@ -1,0 +1,1 @@
+          definition "color-picker" "Color Picker" "selection" "ColorPicker" "Palette swatch color selection." [ "swatches" ] common [ "onSelected" ] states "List"

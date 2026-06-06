@@ -1,0 +1,1 @@
+          definition "date-picker" "Date Picker" "input" "DatePicker" "Typed date entry with a popup calendar." [] common [ "onChange" ] states "TextBox"
