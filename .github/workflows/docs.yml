@@ -48,6 +48,18 @@ jobs:
       - name: Restore tools
         run: dotnet tool restore
 
+      # Restore + build the 10 documented libraries BEFORE fsdocs. A cold runner has no
+      # restored packages, so fsdocs project-cracking would otherwise resolve no package
+      # assets and silently produce a degraded reference (only the assemblies that happen
+      # to crack). An explicit restore+build guarantees every project has its
+      # project.assets.json + built DLL + XML doc file before the API reference is read.
+      - name: Restore and build documented libraries
+        run: |
+          dotnet restore FS-Skia-UI.sln
+          for p in Scene SkiaViewer Elmish Input KeyboardInput Layout Controls Controls.Elmish Testing SkillSupport; do
+            dotnet build "src/$p/$p.fsproj" -c Debug --no-restore
+          done
+
       # Scope API-doc generation to the 10 published libraries; pass the project-pages
       # subpath as the site root so absolute links resolve under /FS-Skia-UI/. --eval
       # evaluates the literate .fsx examples; --strict fails on doc-generation problems
