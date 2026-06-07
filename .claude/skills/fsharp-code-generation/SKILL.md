@@ -12,8 +12,10 @@ metadata:
 Cookbook for the two *different* generation jobs in the port — keeping C10/C11 (text) distinct from C12
 (F# source) is its main pitfall. Owns **C10** (document/text generation — `task-graph.md` Mermaid +
 ASCII tree + count tables), **C11** (document generation + currency check — `.claude/skills/**` from
-`.agents/skills/**`, skillist render), and **C12** (one-shot F# *source* generation). Verdicts from the
-capability report (`metadata.source`) §5.
+`.agents/skills/**`, skillist render), **C12** (one-shot F# *source* generation), and **C13** (the
+feature-066 single-source *product-surface* catalog generator — one canonical `catalogFacts` table
+spliced into both `catalog.yml` and `Catalog.fs`, drift-guarded by `ControlsCatalogGenerationCheck`).
+Verdicts from the capability report (`metadata.source`) §5.
 
 ## When to use
 
@@ -136,6 +138,69 @@ YAML→compiled-F# migration (config ADR D6).
 Neither package is in the adopt set, so C12 stays prose — record the chosen path in the Stage-5 ADR
 before adding the dependency.
 
+### C13 — product-surface catalog generation (feature 066, worked example)
+
+The catalog generator is the **first product-surface generator** and the template every later
+single-source generator (design tokens in `069`, catalog expansion in `071+`) copies. It is the same
+single-source discipline as C11 (`.claude`←`.agents`) and `validation.contract.yml`←`Routing.fs`,
+applied to the typed-control catalog. The whole generator is `FS.Skia.UI.Build.CatalogGen`
+(`build/Governance/CatalogGen.fsi`/`.fs`); like C10–C12 it is pure rendering + currency over in-memory
+text, with every filesystem read/write kept at the `Engine/Interpret.fs` edge (Principle IV).
+
+**One canonical source, two generated artifacts.** A single typed value —
+`catalogFacts : TypedCatalogFact list` (51 rows: the six 065-seeded controls plus the 072 expansion) —
+is the one place each catalog fact is declared. Two artifacts are generated from it:
+
+- `catalog.yml` (`catalogYmlRel`) — rendered per row by `renderYamlRow`, spliced by `spliceYaml`.
+- `Catalog.fs` (`catalogFsRel`) — rendered per row by `renderFSharpRow`, spliced by `spliceFSharp`.
+
+**Splice only the marked regions — never the whole file.** Each renderer writes its row into that
+control's `typed-catalog/<id>` marked region (`// BEGIN GENERATED: typed-catalog/<id>` …
+`// END GENERATED: typed-catalog/<id>`). Every byte **outside** a marker — the hand-authored rows that
+are not part of `catalogFacts`, the file preamble, unknown marker ids — is left untouched, and the
+splice is idempotent on an already-current file. This is what lets a single fact table coexist with
+hand-maintained catalog content in the same two files.
+
+**Regenerate via `RegenerateCatalog`, inside `RefreshSurfaceBaselines`.** To add or change a catalog
+row, edit `catalogFacts` (and the typed module it names), then run
+`./fake.sh build -t RefreshSurfaceBaselines` — which runs `RegenerateCatalog` to re-splice both
+artifacts. **Never hand-edit a generated `typed-catalog/<id>` region**: the drift gate will fail it.
+
+**The drift gate: `ControlsCatalogGenerationCheck`.** It re-renders `catalogFacts` in memory and
+compares each on-disk region against the fresh render via `currency : catalogYmlText -> catalogFsText
+-> CatalogCurrency list` (each region is `Current`/`Stale`/`Missing`); the file set is clean iff
+`isCurrent` is true. On drift, `currencyDrift` returns one actionable line per stale/missing region,
+naming the divergent control, the file, and `./fake.sh build -t RefreshSurfaceBaselines` as the fix —
+so a hand-edited generated region (or a `catalogFacts` change with no regen) fails the gate with a
+pointer at the regeneration target, exactly like C11's `isStale`/`staleLines` currency check.
+
+**Cross-check against the typed surface.** Each row's `Module` and `RequiredAttributes` facts are
+cross-checked against the `FS.Skia.UI.Controls.Typed` surface, so the catalog cannot claim a typed
+control or required attribute the typed front door does not actually expose. (Authoring that typed
+surface is [[fs-skia-typed-controls]]'s job; this generator records and drift-guards the catalog facts
+about it.)
+
+```fsharp
+open FS.Skia.UI.Build
+
+// Single source: one fact per typed control. (abbreviated — real rows carry purpose/events/role)
+let catalogFacts : CatalogGen.TypedCatalogFact list =
+    [ { Id = "button"; DisplayName = "Button"; Category = "input"; Module = "Button"
+        Purpose = "Pointer and keyboard activatable command."
+        RequiredAttributes = [ "text" ]; Events = [ "onClick" ]; AccessibilityRole = "Button" }
+      // … 50 more rows … ]
+
+// Regeneration re-splices ONLY the typed-catalog/<id> regions of both files.
+let regeneratedFs  = CatalogGen.spliceFSharp (System.IO.File.ReadAllText CatalogGen.catalogFsRel)
+let regeneratedYml = CatalogGen.spliceYaml   (System.IO.File.ReadAllText CatalogGen.catalogYmlRel)
+
+// Drift gate: clean iff every region matches a fresh render; else currencyDrift names the fix.
+let regions = CatalogGen.currency regeneratedYml regeneratedFs
+if not (CatalogGen.isCurrent regions) then
+    CatalogGen.currencyDrift regions  // e.g. "catalog.yml is stale — its typed-catalog/button region … Regenerate via ./fake.sh build -t RefreshSurfaceBaselines."
+    |> List.iter (eprintfn "%s")
+```
+
 ## Pitfall: code quotations are the WRONG tool — reject
 
 F# code quotations (`<@ … @>`) are **runtime metaprogramming** producing `Expr` trees evaluated at run
@@ -200,4 +265,6 @@ rather than hard-failing the phase.
 
 [[fsharp-parsing]], [[fsharp-graph-algorithms]] (produce the model rendered here),
 [[fsharp-io-globbing]] (currency-check diffing), [[fsharp-build-orchestration]] (DiffPlex also backs
-the golden-parity gate).
+the golden-parity gate), [[fs-skia-typed-controls]] (authors the typed front door that C13's
+`catalogFacts` `Module`/required-attribute facts are cross-checked against; typed authoring is the
+preferred front door it owns).

@@ -21,6 +21,7 @@ ids resolved from the live registry and the closed `owns:`→implied-skill table
 | `fs-skia-keyboard-input` | src/KeyboardInput/skill/SKILL.md |
 | `fs-skia-layout` | src/Layout/skill/SKILL.md |
 | `fs-skia-layout-readability` | .agents/skills/fs-skia-layout-readability/SKILL.md |
+| `fs-skia-reconciliation` | .agents/skills/fs-skia-reconciliation/SKILL.md |
 | `fs-skia-samples` | template/fragments/samples/skill/SKILL.md |
 | `fs-skia-scene` | src/Scene/skill/SKILL.md |
 | `fs-skia-skiaviewer` | src/SkiaViewer/skill/SKILL.md |

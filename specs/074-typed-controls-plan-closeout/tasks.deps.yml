@@ -1,0 +1,100 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Phase-checkpoint edges are auto-injected by the graph compute script (every
+# task in Phase N+1 implicitly depends on the last foundation task of Phase N).
+# Only non-phase cross-edges are written here. Most tasks own nothing.
+
+tasks:
+  # Phase 1: Setup
+  T001:
+    deps: []
+    skillist: []
+    owns: []
+  T002:
+    deps: []
+    skillist: []
+    owns: []
+
+  # Phase 2: Foundation
+  T003:
+    deps: []
+    skillist: []
+    owns: []
+  T004:
+    deps: []
+    skillist: []
+    owns: []
+
+  # Phase 3: US1 — catalog-generation worked example
+  T005:
+    deps: [T003]
+    skillist: ["fsharp-code-generation"]
+    owns: []
+  T006:
+    deps: [T005]
+    skillist: []
+    owns: []
+  T007:
+    deps: [T005, T006]
+    skillist: []
+    owns: []
+  T008:
+    deps: [T007]
+    skillist: []
+    owns: []
+  T009:
+    deps: [T008]
+    skillist: []
+    owns: []
+
+  # Phase 4: US2 — refresh the implementation-plan report
+  T010:
+    deps: []
+    skillist: []
+    owns: []
+  T011:
+    deps: [T010]
+    skillist: []
+    owns: []
+  T012:
+    deps: [T011]
+    skillist: []
+    owns: []
+
+  # Phase 5: US3 — fs-skia-reconciliation capability skill
+  T013:
+    deps: [T003]
+    skillist: []
+    owns: []
+  T014:
+    deps: [T013]
+    skillist: []
+    owns: []
+  T015:
+    deps: [T014]
+    skillist: []
+    owns: []
+  T016:
+    deps: [T015]
+    skillist: []
+    owns: []
+
+  # Phase 6: Integration & Polish
+  T017:
+    deps: [T007, T011, T015]
+    skillist: []
+    owns: []
+  T018:
+    deps: [T017]
+    skillist: []
+    owns: []
+  T019:
+    deps: [T018]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T020:
+    deps: [T019]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

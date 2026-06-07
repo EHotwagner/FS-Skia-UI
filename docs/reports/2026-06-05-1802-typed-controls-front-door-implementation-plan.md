@@ -1,7 +1,7 @@
 # Typed Controls Front Door — Implementation Plan
 
-**Date:** 2026-06-05 18:02:02 +0200 · **Progress updated:** 2026-06-06 (069 spec)
-**Status:** ✅ **Landed + in progress.** Features `065-typed-controls-front-door` (squash `79ba420`), `066-typed-catalog-generation` (squash `7706ae1`), `067-keyed-reconciliation` (squash `28a9674`), and `068-controls-elmish-command-model` (squash `3daed58`) are all merged to `main` (post-merge lib bump `200d084` → `0.1.72-preview.1`, template pins `80fa3fa`). The next roadmap feature, `069-design-tokens-penpot`, is now **specified** (Draft `spec.md` on branch `069-design-tokens-penpot`) and awaiting `/speckit-clarify` → `/speckit-plan`. See the **Implementation progress** section below. The original plan text from §1 onward is retained unedited for provenance.
+**Date:** 2026-06-05 18:02:02 +0200 · **Progress updated:** 2026-06-06 (074 close-out)
+**Status:** ✅ **Landed — roadmap complete.** Every roadmap feature `065`–`073` is merged to `main`: `065-typed-controls-front-door` (squash `79ba420`), `066-typed-catalog-generation` (squash `7706ae1`), `067-keyed-reconciliation` (squash `28a9674`), `068-controls-elmish-command-model` (squash `3daed58`), `069-design-tokens-penpot` (squash `7372b14`), `070-typed-controls-migration` (squash `843ae65`), `071-typed-controls-followups` (squash `a0253b7`), `072-typed-control-catalog-expansion` (squash `ac90b04`), and `073-add-animations` (squash `24a79e6`). No roadmap feature is still "awaiting" or "Planned". See the **Implementation progress** section below. The original plan text from §1 onward is retained unedited for provenance.
 **Feature (proposed → shipped):** `065-typed-controls-front-door`
 **Scope:** Introduce an additive, compile-time-typed authoring surface (`Widget<'msg>` + per-control immutable `Props` records, plus per-control `Model`/`Msg`/`Effect`/`update` where the control owns ephemeral UI state) that lowers to the existing `Control<'msg>` IR. Prove it on a six-control reference slice without breaking the shipped `FS.Skia.UI.Controls` API.
 
@@ -27,9 +27,11 @@ It deliberately produces **only the typed front door for a representative slice*
 | **066 — Typed catalog generation** | ✅ **Merged** (squash `7706ae1`) | `build/Governance/CatalogGen.fsi`/`.fs` — a single-source `catalogFacts` table whose `Module`/required-attribute facts are cross-checked against the `FS.Skia.UI.Controls.Typed` surface; `catalog.yml` + `Catalog.fs` are now **generated** from it; `RegenerateCatalog` wired into `RefreshSurfaceBaselines`; new `ControlsCatalogGenerationCheck` currency/drift gate (`Routing.fs:138`, `Targets.fs`). Evidence audit verdict **PASS**. |
 | **067 — Internal keyed reconciliation** | ✅ **Merged** (squash `28a9674`) | `specs/067-keyed-reconciliation/**` (spec, plan, tasks, readiness); pure keyed VDOM diff over the lowered `Control<'msg>` IR — internal only, no public-surface delta, not wired into the live render path. Post-merge lib version bumps (`fd58c6e`) + template pins (`75bfe91`). |
 | **068 — `Controls.Elmish` command model** | ✅ **Merged** (squash `3daed58`) | Branch `068-controls-elmish-command-model`: spec + plan + tasks (19/19 `[X]`, 0 synthetic) + impl + evidence. **Source** (`src/Controls.Elmish/ControlsElmish.fsi`/`.fs`, additive-only): `ControlsElmish.widgetView` (`view >> Widget.toControl`) and `programOfWidget` — typed `Widget<'msg>` view through the adapter with **no shim in product code**; new `module AdapterCmd` (`none`/`ofMessage`/`productMessages`/`toCmd`) — pure **total** `AdapterCommand`↔Elmish `Cmd<'msg>` bridge (resolves §12 Q3). Base `FS.Skia.UI.Controls` byte-unchanged, still `Fable.Elmish`-free. **Tests:** `tests/Elmish.Tests/` 17/17 pass (US1 lowering-parity, US2 AdapterCmd edges + 2 FsCheck ≥1000-case properties, US3 contract + dependency guards, US4 coexistence). **Surface:** both `FS.Skia.UI.Controls.Elmish` baselines regenerated, additive-only. Routed to **`package-surface`**; all 8 Route-printed gates green, `EvidenceAudit verdict=PASS`. Post-merge lib bump `200d084` (`0.1.72-preview.1`) + template pins `80fa3fa`. |
-| **069 — Design tokens + Penpot (DTCG → F#)** *(specified)* | 🟢 **Spec drafted — awaiting clarify/plan** | Branch `069-design-tokens-penpot`: `specs/069-design-tokens-penpot/spec.md` (Draft) + quality checklist. **Scope:** a checked-in **DTCG-format JSON** token document becomes the single source of truth for the 10 `Theme` primitives (`src/Controls/Types.fs`); a **generated** F# token module ships in `FS.Skia.UI.Controls` and `Theme.light`/`dark` are re-expressed in terms of it with **byte-identical** values (behavior-preserving); a new **`DesignTokenDrift`** currency gate + `RegenerateDesignTokens` in `RefreshSurfaceBaselines` mirror the `066` catalog single-source pattern (`CatalogGen`/`ControlsCatalogGenerationCheck`); a new **`fs-skia-design-tokens`** skill lands in-branch (§16.4). DTCG is the Penpot interchange format — **live** Penpot/MCP sync stays out of scope (§13 "Later"). Additive public surface; routes to `controls-public-surface` + `DesignTokenDrift`. |
-| 070 — Migrate remaining 41 controls to typed Props/MVU | ⏳ Planned | — |
-| 071+ — Catalog expansion, overlays/virtualization, motion | ⏳ Planned | — |
+| **069 — Design tokens + Penpot (DTCG → F#)** | ✅ **Merged** (squash `7372b14`) | A checked-in **DTCG-format JSON** token document is the single source of truth for the 10 `Theme` primitives; a **generated** F# token module ships in `FS.Skia.UI.Controls` and `Theme.light`/`dark` are re-expressed in terms of it with **byte-identical** values; the **`DesignTokenDrift`** currency gate + `RegenerateDesignTokens` in `RefreshSurfaceBaselines` mirror the `066` catalog single-source pattern; the **`fs-skia-design-tokens`** skill landed in-branch (§16.3/§16.4). **Live** Penpot/MCP sync stays out of scope (§13 "Later"). |
+| **070 — Migrate remaining controls to typed Props/MVU** | ✅ **Merged** (squash `843ae65`) | The typed front door extended across the remaining catalog controls: each gained an additive `FS.Skia.UI.Controls.Typed.<Control>` module (immutable `Props` + `defaults` + `view`) that lowers structurally equal to its legacy builder, proven by the mandatory per-control lowering-parity test (§10.3). Additive-only public surface. The `fs-skia-typed-controls` skill (§16.3) drove the migration. |
+| **071 — Typed-controls follow-ups** | ✅ **Merged** (squash `a0253b7`) | Post-migration follow-ups closing residual gaps from `070`. |
+| **072 — Typed control catalog expansion** | ✅ **Merged** (squash `ac90b04`) | The `catalogFacts` single-source table (066) expanded to **51 typed controls** — re-exercising the `066` catalog-generation pattern (`CatalogGen`/`ControlsCatalogGenerationCheck`/`RegenerateCatalog`) at breadth and making that generator the load-bearing template `074`/US1 documents in `fsharp-code-generation`. |
+| **073 — Add animations (motion slice)** | ✅ **Merged** (squash `24a79e6`) | The delivered **"motion"** roadmap item (§13). A representative motion slice: pure interpolation/lowering in `src/Scene/Animation.*` + an `AnimationTick` message/subscription in Elmish, with deterministic render-only parity goldens. Additive `src/**/*.fsi` surface; redraw gated at the subscription level. |
 
 ### Open decisions (§12) — resolved as shipped
 
@@ -443,10 +445,12 @@ This feature is **F-α / feature 1** of the merged roadmap. Downstream features
 2. ✅ **066 — Typed catalog generation** (regenerate `catalog.yml`/`Catalog.fs` from the typed registry) — **merged** (`7706ae1`)
 3. ✅ **067 — Internal keyed reconciliation** (VDOM diff over lowered IR; internal only) — **merged** (`28a9674`)
 4. ✅ **068 — `Controls.Elmish` command model** (`Widget` view + `Cmd<'msg>` alignment) — **merged** (`3daed58`)
-5. 🟢 069 — Design tokens + Penpot tokens-first (DTCG JSON → generated F#, `DesignTokenDrift`) — **specified; awaiting clarify/plan** (`specs/069-design-tokens-penpot/spec.md`)
-6. 070 — Migrate remaining 41 controls to typed Props/MVU
-7. 071+ — Catalog expansion (buttons/pickers/date-time), overlays/virtualization, motion
-8. Later — Penpot MCP assist (inspect/draft/provenance), code→design catalog sync
+5. ✅ **069 — Design tokens + Penpot tokens-first** (DTCG JSON → generated F#, `DesignTokenDrift`) — **merged** (`7372b14`)
+6. ✅ **070 — Migrate remaining controls to typed Props/MVU** — **merged** (`843ae65`)
+7. ✅ **071 — Typed-controls follow-ups** — **merged** (`a0253b7`)
+8. ✅ **072 — Catalog expansion** (typed catalog grown to 51 controls) — **merged** (`ac90b04`)
+9. ✅ **073 — Motion / animations** (the delivered "motion" item: representative animation slice — `src/Scene/Animation.*` + Elmish `AnimationTick`) — **merged** (`24a79e6`)
+10. Later — Penpot MCP assist (inspect/draft/provenance), code→design catalog sync; overlays/virtualization breadth; wiring the parked keyed-reconciliation spike (`067`) into the render path (see `fs-skia-reconciliation`)
 
 Sequencing rationale (shared by both prior reports): type the authoring layer
 first (smallest blast radius, everything else depends on it), wire tokens second,
@@ -480,6 +484,13 @@ migrate breadth last.
 
 ## 16. Skills: update and add coverage
 
+> **Update (`074`):** this backlog is now **closed**. All three proposed
+> capability skills shipped — `fs-skia-typed-controls` (`070`),
+> `fs-skia-design-tokens` (`069`), and `fs-skia-reconciliation` (`074`/US3) — and the
+> catalog-generation gap was filled by folding it into `fsharp-code-generation` (C13,
+> `074`/US1) rather than creating a standalone skill. The original backlog text below
+> is preserved; per-row status is recorded in §16.2/§16.3.
+
 Landing `065`/`066` introduced two capabilities — a typed authoring front door
 and single-source catalog generation — that **no current skill covers**. The
 skill corpus (`.agents/skills/*`, the 9 capability skills `fs-skia-*` /
@@ -506,18 +517,23 @@ edit. A skill change routes (via `./fake.sh build -t Route`) to the
 
 | Skill | Update | Why now |
 | --- | --- | --- |
-| `fsharp-code-generation` | Add `066` as a worked example: a single-source `catalogFacts` table → generated `catalog.yml` + `Catalog.fs`, cross-checked against the `FS.Skia.UI.Controls.Typed` surface, with a `ControlsCatalogGenerationCheck` drift gate and `RegenerateCatalog` in `RefreshSurfaceBaselines`. The skill currently covers *governance* artifact emission only; catalog generation is the first **product-surface** generator and the template every later generator (tokens, catalog expansion) should copy. | Shipped in `066`; the pattern is now load-bearing and undocumented. |
+| `fsharp-code-generation` | ✅ **Done (`074`/US1).** Added `066` as the **C13** worked example: a single-source `catalogFacts` table → generated `catalog.yml` + `Catalog.fs`, cross-checked against the `FS.Skia.UI.Controls.Typed` surface, with the `ControlsCatalogGenerationCheck` drift gate and `RegenerateCatalog` in `RefreshSurfaceBaselines`, plus the "hand-editing a generated `typed-catalog/<id>` region fails the gate" rule. Catalog generation is the first **product-surface** generator and the template `069` tokens and `072` catalog expansion copied. | Shipped in `066`, exercised again by `072`; now documented as load-bearing. |
 | `fs-skia-template-update` | Already corrected for Feature `064`'s single `<FsSkiaUiVersion>` property (one-edit pin, no `build.fsx` literal). Keep aligned as the typed/catalog surface grows the package set. | Done 2026-06-05; listed here for completeness. |
-| `fs-skia-project` | Mention the typed authoring path (`FS.Skia.UI.Controls.Typed.*` + `Widget.toControl`) as the **preferred** way to build a generated product's view, alongside the legacy `Attr` path. | `065` made typed the preferred front door. |
+
+> **Correction (`074`):** the original §16.2 listed a generated-product "project" skill to
+> update so it would name the typed authoring path as preferred. **No such skill exists in the
+> repo skill corpus** (`.agents/skills/**`), so that row is removed. The "typed authoring is the
+> **preferred** front door" guidance is carried by **`fs-skia-typed-controls`** (§16.3), the
+> skill that actually owns typed-control authoring.
 
 ### 16.3 Skills to **add** (new)
 
-| Proposed skill | Scope | Unblocks |
-| --- | --- | --- |
-| `fs-skia-typed-controls` | **The workhorse skill.** How to author with the typed front door and how to **add a new typed control**: pick fields from the variable taxonomy (§3.4), write the immutable `Props` record + `defaults`, write `view` that lowers to `Control<'msg>`, and — mandatory — add the **lowering-parity test** (typed `view ≡ legacy builder`, §10.3). For stateful controls, reuse the existing `TextInput`/`DataGrid` MVU models via a typed façade (§3.5), never fork them. Encodes the additive-surface + `PackageSurfaceCheck` baseline discipline (§6). | `070` (migrate 41 controls) is essentially "run this skill 41 times"; also any `071+` new control. |
-| `fs-skia-catalog-generation` *(or fold into `fsharp-code-generation`)* | How to extend the `catalogFacts` fact table and regenerate both catalog artifacts without tripping `ControlsCatalogGenerationCheck`; how the `Module`/required-attribute cross-check against the typed surface works. | `071+` catalog expansion; keeps `066`'s drift gate teachable. |
-| `fs-skia-design-tokens` | DTCG JSON → generated F# token modules, the `DesignTokenDrift` currency gate, and the tokens-first authoring flow. Reuses `fsharp-parsing` + `fsharp-code-generation` patterns. | `069` (design tokens + Penpot). |
-| `fs-skia-reconciliation` *(internal, optional)* | The keyed VDOM diff over the lowered `Control<'msg>` IR — invariants, key handling, and property tests (leans on `fsharp-graph-algorithms`). Internal-only; may stay a contributor note rather than a full skill. | `067` (keyed reconciliation). |
+| Proposed skill | Status | Scope | Unblocks |
+| --- | --- | --- | --- |
+| `fs-skia-typed-controls` | ✅ **Shipped** (landed with `070`) | **The workhorse skill.** How to author with the typed front door and how to **add a new typed control**: pick fields from the variable taxonomy (§3.4), write the immutable `Props` record + `defaults`, write `view` that lowers to `Control<'msg>`, and — mandatory — add the **lowering-parity test** (typed `view ≡ legacy builder`, §10.3). For stateful controls, reuse the existing `TextInput`/`DataGrid` MVU models via a typed façade (§3.5), never fork them. Also carries the "typed authoring is the **preferred** front door" guidance (§16.2 correction). | Drove `070` (migrate the catalog to typed) and any `071+` new control. |
+| `fs-skia-catalog-generation` | 🔁 **Folded into `fsharp-code-generation`** (`074`/US1) | *(not created standalone)* How to extend the `catalogFacts` fact table and regenerate both catalog artifacts without tripping `ControlsCatalogGenerationCheck`; the `Module`/required-attribute cross-check against the typed surface. Folded per this §16.3's own "(or fold into `fsharp-code-generation`)" allowance — `CatalogGen` lives in `build/Governance`, within that skill's build-tooling scope. | `072` catalog expansion; keeps `066`'s drift gate teachable (now via `fsharp-code-generation` C13). |
+| `fs-skia-design-tokens` | ✅ **Shipped** (landed with `069`) | DTCG JSON → generated F# token modules, the `DesignTokenDrift` currency gate, and the tokens-first authoring flow. Reuses `fsharp-parsing` + `fsharp-code-generation` patterns. | `069` (design tokens + Penpot). |
+| `fs-skia-reconciliation` | ✅ **Shipped** (`074`/US3) | The keyed VDOM diff over the lowered `Control<'msg>` IR — invariants, key-first-then-positional matching, the `NodePatch`/`ChildOp` operation set, and the totality/determinism/identity-at-rest/round-trip property tests (leans on `fsharp-graph-algorithms`). Records the module **disposition**: `module internal`, property-tested, **deliberately unwired**, **parked** — wiring it into the render path is named as deferred future work. | `067` (keyed reconciliation); the eventual render-path wiring feature. |
 
 ### 16.4 Sequencing
 
