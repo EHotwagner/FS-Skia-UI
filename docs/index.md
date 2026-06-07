@@ -30,6 +30,8 @@ Pick the path that matches what you are doing. Each lands in one step.
   governance), each with a closing analysis.
 - [Governance system](governance/index.html) — routing, evidence/audit, and
   single-source generation.
+- [Roadmap & TODO](roadmap.html) — planned and in-progress work, each item linked
+  to its design/implementation plan.
 
 ### I'm running the Spec Kit process (speckit practitioner)
 
