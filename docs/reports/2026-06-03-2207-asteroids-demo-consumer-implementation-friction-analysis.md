@@ -1,3 +1,9 @@
+---
+title: Consumer Implementation Friction Analysis — Asteroids Arcade Demo
+category: Design history
+categoryindex: 90
+---
+
 # Consumer Implementation Friction Analysis — Asteroids Arcade Demo
 
 - **Date:** 2026-06-03T20:07Z

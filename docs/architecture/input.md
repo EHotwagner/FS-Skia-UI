@@ -1,7 +1,7 @@
 ---
 title: Input
 category: Architecture
-categoryindex: 4
+categoryindex: 3
 index: 4
 description: The FS.Skia.UI input subsystem — the keyboard-binding/command/mode runtime (FS.Skia.UI.Input), the lightweight keyboard package (FS.Skia.UI.KeyboardInput), and how host pointer events reach controls.
 ---

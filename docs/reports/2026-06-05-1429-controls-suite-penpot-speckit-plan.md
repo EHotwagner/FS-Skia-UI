@@ -1,3 +1,9 @@
+---
+title: Comprehensive Controls Suite and Penpot Spec Kit Integration Plan
+category: Design history
+categoryindex: 90
+---
+
 # Comprehensive Controls Suite and Penpot Spec Kit Integration Plan
 
 **Date:** 2026-06-05 14:29:15 +0200  

@@ -1,7 +1,7 @@
 ---
 title: Governance Kernel Extraction Implementation Plan
-category: Design
-categoryindex: 4
+category: Design history
+categoryindex: 90
 index: 18
 description: Implementation plan for splitting the FS.Skia.UI governance rules into a dedicated pure F# project consumed by the build front-end and generated-product evidence runner.
 ---

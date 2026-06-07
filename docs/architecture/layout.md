@@ -1,7 +1,7 @@
 ---
 title: Layout
 category: Architecture
-categoryindex: 4
+categoryindex: 3
 index: 3
 description: The FS.Skia.UI.Layout subsystem — a Yoga-backed flexbox layout engine with a pure F# fallback, an Elmish workflow loop, and graph layout.
 ---

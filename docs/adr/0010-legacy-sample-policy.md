@@ -1,3 +1,9 @@
+---
+title: ADR 0010 — Legacy-sample policy
+category: Design history
+categoryindex: 90
+---
+
 # ADR 0010 — Legacy-sample policy
 
 - **Status**: Accepted

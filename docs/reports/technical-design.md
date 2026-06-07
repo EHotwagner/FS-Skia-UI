@@ -1,7 +1,7 @@
 ---
 title: Technical Design
-category: Design
-categoryindex: 4
+category: Design history
+categoryindex: 90
 index: 1
 description: Entry point for architecture, subsystem, and design decision documentation.
 ---

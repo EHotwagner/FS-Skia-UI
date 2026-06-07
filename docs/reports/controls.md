@@ -1,3 +1,9 @@
+---
+title: Controls
+category: Design history
+categoryindex: 90
+---
+
 # Controls
 
 `FS.Skia.UI.Controls` provides Skia-rendered declarative controls for

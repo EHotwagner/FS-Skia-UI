@@ -1,6 +1,6 @@
 ---
 title: Design Tokens and Penpot
-category: Design
+category: Controls & design tokens
 categoryindex: 4
 index: 21
 description: The design-token flow from a Penpot/DTCG single source to the typed control surface — the DTCG token file, the generated typed F# DesignTokens module, the DesignTokenDrift gate, and how tokens reach typed controls and the Spec Kit process.

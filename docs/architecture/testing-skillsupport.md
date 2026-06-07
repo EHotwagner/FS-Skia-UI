@@ -1,3 +1,9 @@
+---
+title: Testing & SkillSupport
+category: Architecture
+categoryindex: 3
+---
+
 # Testing & SkillSupport
 
 `FS.Skia.UI.Testing` and `FS.Skia.UI.SkillSupport` are the two FS.Skia.UI

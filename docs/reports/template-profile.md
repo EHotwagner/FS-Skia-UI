@@ -1,3 +1,9 @@
+---
+title: Template Profile
+category: Design history
+categoryindex: 90
+---
+
 # Template Profile
 
 The `fs-skia-ui` template turns this repository into the governed source for

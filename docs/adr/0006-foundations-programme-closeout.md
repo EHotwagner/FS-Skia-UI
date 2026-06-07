@@ -1,3 +1,9 @@
+---
+title: ADR 0006 — Foundations programme closeout (Stage 7)
+category: Design history
+categoryindex: 90
+---
+
 # ADR 0006 — Foundations programme closeout (Stage 7)
 
 - **Status**: Accepted

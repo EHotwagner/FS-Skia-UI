@@ -1,3 +1,9 @@
+---
+title: ADR 0003 — Generated-product contract versioning policy
+category: Design history
+categoryindex: 90
+---
+
 # ADR 0003 — Generated-product contract versioning policy
 
 - **Status**: Accepted (policy recorded; enforcement deferred)

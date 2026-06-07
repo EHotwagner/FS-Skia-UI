@@ -1,7 +1,7 @@
 ---
 title: V2 Analysis
-category: Design
-categoryindex: 4
+category: Design history
+categoryindex: 90
 index: 7
 description: Analysis of deterministic governance, FAKE build harness boundaries, Spec Kit workflow, and the remaining nondeterministic AI surface.
 ---

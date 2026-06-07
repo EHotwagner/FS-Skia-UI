@@ -1,7 +1,7 @@
 ---
 title: Evidence and Merge-Gate Audit
-category: Design
-categoryindex: 4
+category: Governance
+categoryindex: 5
 index: 22
 description: The task-evidence model and the merge-gate audit — the five-state task legend, synthetic [S] evidence, computed [S*] propagation through the task DAG, the [SEH] error-handling exception, and the EvidenceGraph / EvidenceAudit gates with practitioner usage.
 ---

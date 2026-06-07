@@ -1,3 +1,9 @@
+---
+title: Silk.NET Window Platform Failure Analysis
+category: Design history
+categoryindex: 90
+---
+
 # Silk.NET Window Platform Failure Analysis
 
 Date: 2026-05-26 22:27 Europe/Vienna

@@ -1,3 +1,9 @@
+---
+title: Foundations Implementation Plan - Two-Tier Process + Governance Library
+category: Design history
+categoryindex: 90
+---
+
 # Foundations Implementation Plan: Two-Tier Process + Governance Library
 
 - **Date:** 2026-05-31 10:49 CEST

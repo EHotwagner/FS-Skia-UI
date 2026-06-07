@@ -1,3 +1,9 @@
+---
+title: Dependency Governance
+category: Design history
+categoryindex: 90
+---
+
 # Dependency Governance
 
 Direct external package versions are governed in `Directory.Packages.props`.

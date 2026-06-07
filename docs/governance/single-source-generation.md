@@ -1,7 +1,7 @@
 ---
 title: Single-Source Generation
-category: Design
-categoryindex: 4
+category: Governance
+categoryindex: 5
 index: 23
 description: How governance artifacts are generated from one canonical source instead of hand-synced — validation.contract.yml from Routing.fs, the .claude skill tree from .agents, and the other generated docs — with the RefreshSurfaceBaselines entry point and the currency gates that enforce it.
 ---

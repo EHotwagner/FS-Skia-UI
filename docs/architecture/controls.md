@@ -1,7 +1,7 @@
 ---
 title: Controls Suite
-category: Design
-categoryindex: 4
+category: Architecture
+categoryindex: 3
 index: 6
 description: The declarative control suite and its Elmish adapter — how controls compose over scene, layout, and input, render to a scene + diagnostics, and lower control/keyboard/pointer effects into Elmish commands.
 ---

@@ -1,3 +1,9 @@
+---
+title: Build Workflow
+category: Design history
+categoryindex: 90
+---
+
 # Build Workflow
 
 The repository command surface is the FAKE target graph invoked through the

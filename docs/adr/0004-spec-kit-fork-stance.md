@@ -1,3 +1,9 @@
+---
+title: ADR 0004 — Spec Kit fork stance (D4)
+category: Design history
+categoryindex: 90
+---
+
 # ADR 0004 — Spec Kit fork stance (D4)
 
 - **Status**: Accepted

@@ -1,6 +1,6 @@
 ---
 title: Typed Control Front Door
-category: Design
+category: Controls & design tokens
 categoryindex: 4
 index: 20
 description: The typed Props/MVU authoring surface under FS.Skia.UI.Controls.Typed — an immutable Props record plus defaults and a view returning Widget that lowers structurally equal to the legacy builder, proven by per-control parity tests.

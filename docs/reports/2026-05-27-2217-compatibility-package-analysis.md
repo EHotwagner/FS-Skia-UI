@@ -1,7 +1,7 @@
 ---
 title: Compatibility Package Analysis
-category: Design
-categoryindex: 4
+category: Design history
+categoryindex: 90
 index: 10
 description: Detailed phase 5 analysis for deciding the long-term role of the FS.Skia.UI compatibility package.
 ---

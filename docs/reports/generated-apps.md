@@ -1,3 +1,9 @@
+---
+title: Generated Apps
+category: Design history
+categoryindex: 90
+---
+
 # Generated Apps
 
 > **Canonical effects boundary:** the single source of truth for the two effect

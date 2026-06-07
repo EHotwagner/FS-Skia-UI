@@ -1,7 +1,7 @@
 ---
 title: Elmish / MVU Runtime
-category: Design
-categoryindex: 4
+category: Architecture
+categoryindex: 3
 index: 5
 description: The Elmish/MVU runtime — how a user model, messages, update, effects, and the animation tick drive the rendered scene.
 ---

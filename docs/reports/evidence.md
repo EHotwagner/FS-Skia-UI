@@ -1,3 +1,9 @@
+---
+title: Evidence Policy
+category: Design history
+categoryindex: 90
+---
+
 # Evidence Policy
 
 Repository evidence is produced by the canonical FAKE targets. Current package

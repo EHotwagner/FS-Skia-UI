@@ -1,3 +1,9 @@
+---
+title: Implementation Completeness Review - Foundations Rewrite + V3 Monolith Retirement
+category: Design history
+categoryindex: 90
+---
+
 # Implementation Completeness Review: Foundations Rewrite + V3 Monolith Retirement
 
 - **Date:** 2026-06-02 22:30 CEST

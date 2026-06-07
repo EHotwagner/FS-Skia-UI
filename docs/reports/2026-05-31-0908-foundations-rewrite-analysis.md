@@ -1,3 +1,9 @@
+---
+title: Foundations Re-examination - Process, Build, Language, and Governance
+category: Design history
+categoryindex: 90
+---
+
 # Foundations Re-examination: Process, Build, Language, and Governance
 
 - **Date:** 2026-05-31 09:08 CEST

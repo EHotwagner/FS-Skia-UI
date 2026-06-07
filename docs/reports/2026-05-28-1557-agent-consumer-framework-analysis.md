@@ -1,7 +1,7 @@
 ---
 title: Agent Consumer Framework Analysis
-category: Design
-categoryindex: 4
+category: Design history
+categoryindex: 90
 index: 7
 description: Timestamped analysis of FS.Skia.UI as a Spec Kit agent-consumed framework, with recommendations for validation tiers, controls typing, and build graph design.
 ---

@@ -1,3 +1,9 @@
+---
+title: ADR 0011 — Parity-oracle method
+category: Design history
+categoryindex: 90
+---
+
 # ADR 0011 — Parity-oracle method
 
 - **Status**: Accepted

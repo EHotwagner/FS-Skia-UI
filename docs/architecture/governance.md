@@ -1,3 +1,9 @@
+---
+title: Governance front-end (overview)
+category: Architecture
+categoryindex: 3
+---
+
 # Governance front-end (overview)
 
 FS.Skia.UI's build and governance logic is not a pile of shell and Python scripts —

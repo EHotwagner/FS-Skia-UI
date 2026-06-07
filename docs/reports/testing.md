@@ -1,3 +1,9 @@
+---
+title: Testing Workflow
+category: Design history
+categoryindex: 90
+---
+
 # Testing Workflow
 
 Use `./fake.sh build -t Dev` for the normal local check. It restores tools and

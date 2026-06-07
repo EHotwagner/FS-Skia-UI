@@ -1,3 +1,9 @@
+---
+title: Foundations Port - F# Capabilities & Library Selection
+category: Design history
+categoryindex: 90
+---
+
 # Foundations Port: F# Capabilities & Library Selection
 
 - **Date:** 2026-05-31 17:14 CEST

@@ -1,3 +1,9 @@
+---
+title: Typed Controls Front Door — Implementation Plan
+category: Design history
+categoryindex: 90
+---
+
 # Typed Controls Front Door — Implementation Plan
 
 **Date:** 2026-06-05 18:02:02 +0200 · **Progress updated:** 2026-06-06 (074 close-out)
