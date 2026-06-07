@@ -1,7 +1,5 @@
 ---
 title: ADR 0012 — V3 monolith-retirement closeout
-category: Design history
-categoryindex: 90
 ---
 
 # ADR 0012 — V3 monolith-retirement closeout

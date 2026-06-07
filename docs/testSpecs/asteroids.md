@@ -1,3 +1,9 @@
+---
+title: Asteroids Demo Spec
+category: Game specs
+categoryindex: 9
+---
+
 # Asteroids Demo Spec
 
 ## Goal

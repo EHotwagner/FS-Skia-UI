@@ -1,7 +1,5 @@
 ---
 title: Controls Boundary Refactor Process Report
-category: Design history
-categoryindex: 90
 index: 7
 description: Process issues, tooling failures, mitigations, and follow-up recommendations from the Controls boundary refactor.
 ---

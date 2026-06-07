@@ -1,7 +1,5 @@
 ---
 title: Testing Workflow
-category: Design history
-categoryindex: 90
 ---
 
 # Testing Workflow

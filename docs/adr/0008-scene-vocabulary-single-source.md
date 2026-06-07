@@ -1,7 +1,5 @@
 ---
 title: ADR 0008 — Scene-vocabulary single source
-category: Design history
-categoryindex: 90
 ---
 
 # ADR 0008 — Scene-vocabulary single source

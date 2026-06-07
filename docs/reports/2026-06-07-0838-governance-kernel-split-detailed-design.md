@@ -1,7 +1,5 @@
 ---
 title: Governance Kernel Split Detailed Design
-category: Design history
-categoryindex: 90
 index: 19
 description: Detailed design for splitting the governance kernel from the FAKE-facing build package while keeping rules typed, explainable, and reusable without inventing a new rule language.
 ---

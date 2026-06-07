@@ -1,7 +1,5 @@
 ---
 title: Foundations Re-examination - Process, Build, Language, and Governance
-category: Design history
-categoryindex: 90
 ---
 
 # Foundations Re-examination: Process, Build, Language, and Governance

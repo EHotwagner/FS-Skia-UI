@@ -1,3 +1,9 @@
+---
+title: Platformer Mini-Demo Spec
+category: Game specs
+categoryindex: 9
+---
+
 # Platformer Mini-Demo Spec
 
 ## Goal

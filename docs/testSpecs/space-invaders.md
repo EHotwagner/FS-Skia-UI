@@ -1,3 +1,9 @@
+---
+title: Space Invaders Demo Spec
+category: Game specs
+categoryindex: 9
+---
+
 # Space Invaders Demo Spec
 
 ## Goal

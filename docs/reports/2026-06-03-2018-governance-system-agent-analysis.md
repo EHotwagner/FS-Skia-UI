@@ -1,7 +1,5 @@
 ---
 title: Governance System Agent Analysis
-category: Design history
-categoryindex: 90
 index: 16
 description: Timestamped analysis of the FS.Skia.UI Spec Kit governance system as an agent-facing contract, including strengths, weaknesses, alternatives, and F# versus Markdown placement.
 ---

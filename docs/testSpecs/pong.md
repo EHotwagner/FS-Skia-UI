@@ -1,3 +1,9 @@
+---
+title: Pong Demo Spec
+category: Game specs
+categoryindex: 9
+---
+
 # Pong Demo Spec
 
 ## Goal

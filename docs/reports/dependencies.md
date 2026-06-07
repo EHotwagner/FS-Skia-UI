@@ -1,7 +1,5 @@
 ---
 title: Dependency Governance
-category: Design history
-categoryindex: 90
 ---
 
 # Dependency Governance

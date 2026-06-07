@@ -1,7 +1,5 @@
 ---
 title: ADR 0001 — Governance-library placement and distribution (D1)
-category: Design history
-categoryindex: 90
 ---
 
 # ADR 0001 — Governance-library placement and distribution (D1)

@@ -48,7 +48,7 @@ regenerate — you never edit the view.
 
 The authoritative routing policy — tiers, path globs, required gates, expected
 artifacts, failure owners — lives in the compiled F# module
-[`build/Governance/Routing.fs`](https://github.com/FS-Skia-UI/FS-Skia-UI/tree/main/build/Governance/Routing.fs).
+[`build/Governance/Routing.fs`](https://github.com/EHotwagner/FS-Skia-UI/tree/main/build/Governance/Routing.fs).
 `validation.contract.yml` at the repository root is a YAML *rendering* of those
 rules, produced by `ContractView.render` so that consumers which scan a contract
 file (and the compatibility `AgentValidation` selector) see the same rules the

@@ -1,3 +1,9 @@
+---
+title: Lunar Lander Demo Spec
+category: Game specs
+categoryindex: 9
+---
+
 # Lunar Lander Demo Spec
 
 ## Goal

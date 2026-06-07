@@ -64,9 +64,13 @@ jobs:
       # subpath as the site root so absolute links resolve under /FS-Skia-UI/. --eval
       # evaluates the literate .fsx examples; --strict fails on doc-generation problems
       # (broken links, project-crack/eval failures).
+      # --ignoreuncategorized drops the historical reports/ADRs (uncategorized) from the
+      # sidebar nav — their pages still generate and are reachable via the collapsed
+      # "Design history" rider. --parameters overrides the dead aspirational-org header/logo
+      # link with the real remote (without touching package metadata).
       - name: Build docs (strict, eval)
         run: |
-          dotnet fsdocs build --strict --eval \
+          dotnet fsdocs build --strict --eval --ignoreuncategorized \
             --projects \
               src/Scene/Scene.fsproj \
               src/SkiaViewer/SkiaViewer.fsproj \
@@ -78,7 +82,10 @@ jobs:
               src/Controls.Elmish/Controls.Elmish.fsproj \
               src/Testing/Testing.fsproj \
               src/SkillSupport/SkillSupport.fsproj \
-            --parameters root "${{ steps.pages.outputs.base_url }}/"
+            --parameters \
+              root "${{ steps.pages.outputs.base_url }}/" \
+              fsdocs-logo-link https://github.com/EHotwagner/FS-Skia-UI \
+              fsdocs-repository-link https://github.com/EHotwagner/FS-Skia-UI
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

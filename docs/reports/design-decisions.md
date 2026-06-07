@@ -1,7 +1,5 @@
 ---
 title: Design Decisions
-category: Design history
-categoryindex: 90
 index: 5
 description: Rationale for the major FS.Skia.UI architecture and governance decisions.
 ---

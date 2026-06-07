@@ -19,11 +19,11 @@ dispatch through `update` to effects and back to a re-rendered scene, and where
 the boundaries between pure logic and host side effects sit.
 
 This is a small package by design. The two source files are
-[`Elmish.fs`](https://github.com/FS-Skia-UI/FS-Skia-UI/blob/main/src/Elmish/Elmish.fs)
+[`Elmish.fs`](https://github.com/EHotwagner/FS-Skia-UI/blob/main/src/Elmish/Elmish.fs)
 (the adapter) and
-[`AnimationTick.fs`](https://github.com/FS-Skia-UI/FS-Skia-UI/blob/main/src/Elmish/AnimationTick.fs)
+[`AnimationTick.fs`](https://github.com/EHotwagner/FS-Skia-UI/blob/main/src/Elmish/AnimationTick.fs)
 (the tick subscription). The adapter contract is published in
-[`Elmish.fsi`](https://github.com/FS-Skia-UI/FS-Skia-UI/blob/main/src/Elmish/Elmish.fsi).
+[`Elmish.fsi`](https://github.com/EHotwagner/FS-Skia-UI/blob/main/src/Elmish/Elmish.fsi).
 
 ## Where this sits
 
@@ -145,7 +145,7 @@ runtime-parsed data, per
 ## The animation tick
 
 The one moving part beyond the adapter is the animation tick in
-[`AnimationTick.fs`](https://github.com/FS-Skia-UI/FS-Skia-UI/blob/main/src/Elmish/AnimationTick.fs)
+[`AnimationTick.fs`](https://github.com/EHotwagner/FS-Skia-UI/blob/main/src/Elmish/AnimationTick.fs)
 (feature 073). It is the only interpreter-edge component of the animation slice:
 it advances time by emitting frame-delta messages, and it gates redraws so that
 the host stops requesting frames once the UI settles.

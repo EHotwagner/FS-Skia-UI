@@ -24,9 +24,9 @@ own deep dive — see
 — so it is kept light here.
 
 The supported public surface is owned by the `.fsi` files under
-[`src/Controls`](https://github.com/FS-Skia-UI/FS-Skia-UI/tree/main/src/Controls)
+[`src/Controls`](https://github.com/EHotwagner/FS-Skia-UI/tree/main/src/Controls)
 and the governed catalog
-([`catalog.yml`](https://github.com/FS-Skia-UI/FS-Skia-UI/blob/main/src/Controls/catalog.yml)
+([`catalog.yml`](https://github.com/EHotwagner/FS-Skia-UI/blob/main/src/Controls/catalog.yml)
 plus `Catalog.supportedControls`). Background and the boundary history are in the
 [Controls report](../reports/controls.html) and the
 [Controls boundary refactor process report](../reports/controls-boundary-refactor-process-report.html).
@@ -46,7 +46,7 @@ documents the lower-level packages (`Scene`, `Layout`, `KeyboardInput`,
 ## The core control vocabulary
 
 Everything is built from one record. From
-[`Types.fsi`](https://github.com/FS-Skia-UI/FS-Skia-UI/blob/main/src/Controls/Types.fsi):
+[`Types.fsi`](https://github.com/EHotwagner/FS-Skia-UI/blob/main/src/Controls/Types.fsi):
 
 ```fsharp
 type Control<'msg> =
@@ -74,7 +74,7 @@ custom controls.
 
 Authors rarely touch the record directly. Each control has a module with a
 `create: Attr<'msg> list -> Control<'msg>` plus attribute builders. From
-[`Control.fsi`](https://github.com/FS-Skia-UI/FS-Skia-UI/blob/main/src/Controls/Control.fsi)
+[`Control.fsi`](https://github.com/EHotwagner/FS-Skia-UI/blob/main/src/Controls/Control.fsi)
 the suite spans display (`TextBlock`, `Label`, `Image`, `Icon`, `Badge`,
 `Separator`), input (`Button`, `CheckBox`, `Switch`, `Slider`, `NumericInput`,
 `TextBox`, `TextArea`, `RadioGroup`), layout containers (`Stack`, `Grid`, `Dock`,
@@ -160,7 +160,7 @@ your model. *Transient* interaction state (focus, hover, pressed, caret,
 selection, composition, drag) lives in a product-owned
 [`ControlRuntimeModel`](../reference/fs-skia-ui-controls-controlruntimemodel.html),
 an ordinary Elmish sub-model from
-[`ControlRuntime.fsi`](https://github.com/FS-Skia-UI/FS-Skia-UI/blob/main/src/Controls/ControlRuntime.fsi):
+[`ControlRuntime.fsi`](https://github.com/EHotwagner/FS-Skia-UI/blob/main/src/Controls/ControlRuntime.fsi):
 
 ```fsharp
 module ControlRuntime =
@@ -187,7 +187,7 @@ collections have a parallel pure sub-model in
 
 `FS.Skia.UI.Controls.Elmish` turns those runtime effects into a standard Elmish
 program. Its effect envelope and program record come from
-[`ControlsElmish.fsi`](https://github.com/FS-Skia-UI/FS-Skia-UI/blob/main/src/Controls.Elmish/ControlsElmish.fsi):
+[`ControlsElmish.fsi`](https://github.com/EHotwagner/FS-Skia-UI/blob/main/src/Controls.Elmish/ControlsElmish.fsi):
 
 ```fsharp
 type AdapterEffect<'msg> =

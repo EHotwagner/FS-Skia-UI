@@ -1,7 +1,5 @@
 ---
 title: Generated Apps
-category: Design history
-categoryindex: 90
 ---
 
 # Generated Apps

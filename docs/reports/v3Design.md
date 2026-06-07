@@ -1,7 +1,5 @@
 ---
 title: V3 Design
-category: Design history
-categoryindex: 90
 index: 8
 description: Modular package, skill, and lean template design for the next FS.Skia.UI generation.
 ---

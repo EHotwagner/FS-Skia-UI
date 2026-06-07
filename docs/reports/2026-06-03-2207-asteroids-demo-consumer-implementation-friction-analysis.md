@@ -1,7 +1,5 @@
 ---
 title: Consumer Implementation Friction Analysis — Asteroids Arcade Demo
-category: Design history
-categoryindex: 90
 ---
 
 # Consumer Implementation Friction Analysis — Asteroids Arcade Demo

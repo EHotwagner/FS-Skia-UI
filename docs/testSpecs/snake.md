@@ -1,3 +1,9 @@
+---
+title: Snake Demo Spec
+category: Game specs
+categoryindex: 9
+---
+
 # Snake Demo Spec
 
 ## Goal

@@ -1,3 +1,9 @@
+---
+title: Tetris Demo Spec
+category: Game specs
+categoryindex: 9
+---
+
 # Tetris Demo Spec
 
 ## Goal

@@ -1,3 +1,9 @@
+---
+title: Bomberman Lite Demo Spec
+category: Game specs
+categoryindex: 9
+---
+
 # Bomberman Lite Demo Spec
 
 ## Goal

@@ -1,3 +1,9 @@
+---
+title: Top-Down Racer Demo Spec
+category: Game specs
+categoryindex: 9
+---
+
 # Top-Down Racer Demo Spec
 
 ## Goal

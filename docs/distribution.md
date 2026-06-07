@@ -1,3 +1,9 @@
+---
+title: Distribution & release
+category: Guides
+categoryindex: 8
+---
+
 # Distribution & release
 
 FS.Skia.UI is distributed as **public NuGet.org packages** — 11 `FS.Skia.UI.*` libraries

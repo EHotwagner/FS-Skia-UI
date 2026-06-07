@@ -1,7 +1,5 @@
 ---
 title: ADR 0005 — Configuration representation (D6)
-category: Design history
-categoryindex: 90
 ---
 
 # ADR 0005 — Configuration representation (D6)

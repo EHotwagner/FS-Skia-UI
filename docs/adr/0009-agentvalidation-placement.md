@@ -1,7 +1,5 @@
 ---
 title: ADR 0009 — `AgentValidation` placement
-category: Design history
-categoryindex: 90
 ---
 
 # ADR 0009 — `AgentValidation` placement

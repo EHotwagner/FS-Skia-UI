@@ -46,6 +46,9 @@
     <FsDocsSourceRepository>https://github.com/EHotwagner/FS-Skia-UI/tree/main</FsDocsSourceRepository>
     <FsDocsLicenseLink>https://github.com/EHotwagner/FS-Skia-UI/blob/main/LICENSE</FsDocsLicenseLink>
     <FsDocsReleaseNotesLink>https://github.com/EHotwagner/FS-Skia-UI/blob/main/CHANGELOG.md</FsDocsReleaseNotesLink>
+    <!-- Real logo/favicon assets so the header shows a mark, not a broken placeholder. -->
+    <FsDocsLogoSource>img/logo.svg</FsDocsLogoSource>
+    <FsDocsFaviconSource>img/logo.svg</FsDocsFaviconSource>
   </PropertyGroup>
 
   <ItemGroup>

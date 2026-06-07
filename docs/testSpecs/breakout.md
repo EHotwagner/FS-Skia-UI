@@ -1,3 +1,9 @@
+---
+title: Breakout Demo Spec
+category: Game specs
+categoryindex: 9
+---
+
 # Breakout Demo Spec
 
 ## Goal

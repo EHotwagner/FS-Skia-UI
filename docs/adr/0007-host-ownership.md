@@ -1,7 +1,5 @@
 ---
 title: ADR 0007 — Host ownership
-category: Design history
-categoryindex: 90
 ---
 
 # ADR 0007 — Host ownership

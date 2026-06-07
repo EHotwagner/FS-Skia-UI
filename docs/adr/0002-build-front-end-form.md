@@ -1,7 +1,5 @@
 ---
 title: ADR 0002 — Build front-end form (D2)
-category: Design history
-categoryindex: 90
 ---
 
 # ADR 0002 — Build front-end form (D2)

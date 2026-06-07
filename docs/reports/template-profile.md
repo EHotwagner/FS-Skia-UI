@@ -1,7 +1,5 @@
 ---
 title: Template Profile
-category: Design history
-categoryindex: 90
 ---
 
 # Template Profile

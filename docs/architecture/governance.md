@@ -8,7 +8,7 @@ categoryindex: 3
 
 FS.Skia.UI's build and governance logic is not a pile of shell and Python scripts —
 it is a **compiled F# library**, `FS.Skia.UI.Build`, under
-[`build/Governance/**`](https://github.com/FS-Skia-UI/FS-Skia-UI/tree/main/build/Governance),
+[`build/Governance/**`](https://github.com/EHotwagner/FS-Skia-UI/tree/main/build/Governance),
 driven by a thin compiled FAKE front-end (`build/Build.fsproj`) that `fake.sh`
 invokes with `dotnet run`. This page is the **overview**: what the front-end is,
 the high-level shape of how a change flows from *what you edited* to *which gates

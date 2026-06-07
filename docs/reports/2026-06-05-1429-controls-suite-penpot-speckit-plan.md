@@ -1,7 +1,5 @@
 ---
 title: Comprehensive Controls Suite and Penpot Spec Kit Integration Plan
-category: Design history
-categoryindex: 90
 ---
 
 # Comprehensive Controls Suite and Penpot Spec Kit Integration Plan

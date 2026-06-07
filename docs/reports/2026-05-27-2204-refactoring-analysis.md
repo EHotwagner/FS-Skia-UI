@@ -1,7 +1,5 @@
 ---
 title: Refactoring Analysis
-category: Design history
-categoryindex: 90
 index: 9
 description: Maintainability assessment, duplication inventory, and phased refactoring plan.
 ---

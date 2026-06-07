@@ -1,7 +1,5 @@
 ---
 title: Silk.NET Window Platform Failure Analysis
-category: Design history
-categoryindex: 90
 ---
 
 # Silk.NET Window Platform Failure Analysis

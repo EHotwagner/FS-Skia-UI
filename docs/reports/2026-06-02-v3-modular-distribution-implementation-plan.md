@@ -1,7 +1,5 @@
 ---
 title: V3 Implementation Plan - Retire the `FS.Skia.UI` Monolith, Finish Modular Distribution
-category: Design history
-categoryindex: 90
 ---
 
 # V3 Implementation Plan: Retire the `FS.Skia.UI` Monolith, Finish Modular Distribution

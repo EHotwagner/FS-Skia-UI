@@ -1,7 +1,5 @@
 ---
 title: Implementation Completeness Review - Foundations Rewrite + V3 Monolith Retirement
-category: Design history
-categoryindex: 90
 ---
 
 # Implementation Completeness Review: Foundations Rewrite + V3 Monolith Retirement

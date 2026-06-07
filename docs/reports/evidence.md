@@ -1,7 +1,5 @@
 ---
 title: Evidence Policy
-category: Design history
-categoryindex: 90
 ---
 
 # Evidence Policy

@@ -1,3 +1,9 @@
+---
+title: Developing FS.Skia.UI
+category: Guides
+categoryindex: 8
+---
+
 # Developing FS.Skia.UI
 
 This page covers the development container, the technology stack, and the maintainer

@@ -1,7 +1,5 @@
 ---
 title: Spec Kit Governance
-category: Design history
-categoryindex: 90
 ---
 
 # Spec Kit Governance

@@ -1,7 +1,5 @@
 ---
 title: Typed Controls Front Door — Implementation Plan
-category: Design history
-categoryindex: 90
 ---
 
 # Typed Controls Front Door — Implementation Plan

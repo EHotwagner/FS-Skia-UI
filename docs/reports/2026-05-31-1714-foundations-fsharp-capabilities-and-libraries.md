@@ -1,7 +1,5 @@
 ---
 title: Foundations Port - F# Capabilities & Library Selection
-category: Design history
-categoryindex: 90
 ---
 
 # Foundations Port: F# Capabilities & Library Selection

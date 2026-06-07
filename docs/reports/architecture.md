@@ -1,7 +1,5 @@
 ---
 title: Architecture Overview
-category: Design history
-categoryindex: 90
 index: 2
 description: High-level architecture and component relationships for FS.Skia.UI.
 ---

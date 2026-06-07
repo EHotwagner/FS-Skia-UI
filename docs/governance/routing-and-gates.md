@@ -14,7 +14,7 @@ working-tree diff, matches the changed paths against a typed table of routing
 rules, picks the highest applicable **tier**, and prints the **minimal gate list**
 that satisfies every rule that matched. This page explains how that decision is
 made, grounded in the rules in
-[`Routing.fs`](https://github.com/FS-Skia-UI/FS-Skia-UI/blob/main/build/Governance/Routing.fs),
+[`Routing.fs`](https://github.com/EHotwagner/FS-Skia-UI/blob/main/build/Governance/Routing.fs),
 and how to respond when the route escalates or `--enforce` reports a failure. For
 the surrounding philosophy and the other subsystems, see the
 [governance deep-dive index](./index.html).

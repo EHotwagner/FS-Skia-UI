@@ -1,3 +1,9 @@
+---
+title: Tower Defense Prototype Spec
+category: Game specs
+categoryindex: 9
+---
+
 # Tower Defense Prototype Spec
 
 ## Goal

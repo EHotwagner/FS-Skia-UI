@@ -1,7 +1,5 @@
 ---
 title: Foundations Implementation Plan - Two-Tier Process + Governance Library
-category: Design history
-categoryindex: 90
 ---
 
 # Foundations Implementation Plan: Two-Tier Process + Governance Library

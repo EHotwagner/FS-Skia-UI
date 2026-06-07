@@ -1,7 +1,5 @@
 ---
 title: FS-Skia-UI Template Framework Proposal
-category: Design history
-categoryindex: 90
 ---
 
 # FS-Skia-UI Template Framework Proposal

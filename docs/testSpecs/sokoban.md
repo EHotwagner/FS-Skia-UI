@@ -1,3 +1,9 @@
+---
+title: Sokoban Demo Spec
+category: Game specs
+categoryindex: 9
+---
+
 # Sokoban Demo Spec
 
 ## Goal

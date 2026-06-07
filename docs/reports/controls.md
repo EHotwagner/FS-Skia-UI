@@ -1,7 +1,5 @@
 ---
 title: Controls
-category: Design history
-categoryindex: 90
 ---
 
 # Controls

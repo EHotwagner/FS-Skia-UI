@@ -1,7 +1,5 @@
 ---
 title: `/speckit.tasks` Process & Governance Analysis — Problems Encountered
-category: Design history
-categoryindex: 90
 ---
 
 # `/speckit.tasks` Process & Governance Analysis — Problems Encountered

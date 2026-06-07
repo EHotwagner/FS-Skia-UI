@@ -1,7 +1,5 @@
 ---
 title: Subsystem Design
-category: Design history
-categoryindex: 90
 index: 4
 description: Technical design notes for Controls-owned charts, DataGrid, layout, graph, keyboard input, samples, tests, and template governance.
 ---

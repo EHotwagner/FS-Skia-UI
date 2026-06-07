@@ -13,7 +13,7 @@ into a deterministic, provable one: given *what you edited*, it decides *which
 checks you must run* and *what evidence proves the change is safe to merge*. The
 distinguishing property of this system is that the rules are not prose to be
 remembered and not loose YAML to be hand-edited — they are **compiled F#** under
-[`build/Governance/**`](https://github.com/FS-Skia-UI/FS-Skia-UI/tree/main/build/Governance),
+[`build/Governance/**`](https://github.com/EHotwagner/FS-Skia-UI/tree/main/build/Governance),
 the `FS.Skia.UI.Build` library. A mistyped gate or tier in the source of truth is a
 *compile error*, not a silent runtime mismatch. This page explains what the system
 is, why it is built that way, and how to use it day to day; the linked deep-dive
@@ -43,9 +43,9 @@ records anchor this.
 
 The practical consequence is that the things that are easy to get wrong by hand —
 gate names, tier ordering, the path globs that select rules — are *typed*. The
-routing rules in [`Routing.fs`](https://github.com/FS-Skia-UI/FS-Skia-UI/blob/main/build/Governance/Routing.fs)
+routing rules in [`Routing.fs`](https://github.com/EHotwagner/FS-Skia-UI/blob/main/build/Governance/Routing.fs)
 hold `RequiredGates: Targets.Target list`, where `Targets.Target` is a closed union
-([`Targets.fsi`](https://github.com/FS-Skia-UI/FS-Skia-UI/blob/main/build/Governance/Targets.fsi)).
+([`Targets.fsi`](https://github.com/EHotwagner/FS-Skia-UI/blob/main/build/Governance/Targets.fsi)).
 There is no way to require a gate that does not exist.
 
 ## Why it exists
