@@ -25,6 +25,11 @@ specs/*/readiness/**/readiness*.zip
 # under readiness/ stays tracked.
 specs/*/readiness/package/
 
+# FSharp.Formatting (076): generated docs site is never committed (FR-012)
+output/
+.fsdocs/
+tmp/
+
 # Test output
 TestResults/
 artifacts/

@@ -1,7 +1,7 @@
 # package/governed Scan
 
 Root: `/home/developer/projects/FS-Skia-UI/artifacts/template-check/075-mouse-input-events/package-governed`
-Files scanned: 170
+Files scanned: 198
 Placeholder scan: PASS
 Excluded-history scan: PASS
 V3 framework-source exclusion scan: PASS

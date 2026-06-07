@@ -58,6 +58,9 @@ type PointerDiagnosticCode =
     | HitTestMiss
     | StaleTarget
 
+/// A diagnostic emitted when a pointer event could not be resolved to a control,
+/// carrying the reason code, a human-readable message, the candidate control (if
+/// any), and the pointer coordinates (FR-010).
 type PointerDiagnostic =
     { Code: PointerDiagnosticCode
       Message: string

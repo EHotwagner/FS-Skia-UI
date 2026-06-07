@@ -1,5 +1,13 @@
 {
   "version": 1,
   "isRoot": true,
-  "tools": {}
+  "tools": {
+    "fsdocs-tool": {
+      "version": "22.1.0",
+      "commands": [
+        "fsdocs"
+      ],
+      "rollForward": false
+    }
+  }
 }

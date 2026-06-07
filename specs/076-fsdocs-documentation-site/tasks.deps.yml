@@ -1,0 +1,141 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Phase-checkpoint edges are auto-injected by the graph script (every task in
+# Phase N+1 implicitly depends on the last task of Phase N). Only non-phase
+# cross-edges are written below.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+    owns: []
+  T002:
+    deps: []
+    skillist: ["fsdocs-setup"]
+    owns: []
+  T003:
+    deps: []
+    skillist: ["fsdocs-setup"]
+    owns: []
+  T004:
+    deps: []
+    skillist: []
+    owns: []
+  T005:
+    deps: [T002]
+    skillist: []
+    owns: []
+  T006:
+    deps: []
+    skillist: []
+    owns: []
+  T007:
+    deps: []
+    skillist: ["fsdocs-build"]
+    owns: []
+  T008:
+    deps: [T002]
+    skillist: ["fsdocs-setup"]
+    owns: []
+  T009:
+    deps: [T002]
+    skillist: ["fsdocs-build"]
+    owns: []
+  T010:
+    deps: []
+    skillist: ["fsdocs-build"]
+    owns: []
+  T011:
+    deps: [T010]
+    skillist: ["fsdocs-api-doc"]
+    owns: []
+  T012:
+    deps: [T011]
+    skillist: ["fsdocs-build"]
+    owns: []
+  T013:
+    deps: []
+    skillist: ["fsdocs-technical"]
+    owns: []
+  T014:
+    deps: []
+    skillist: ["fsdocs-technical"]
+    owns: []
+  T015:
+    deps: []
+    skillist: ["fsdocs-technical"]
+    owns: []
+  T016:
+    deps: []
+    skillist: ["fsdocs-technical"]
+    owns: []
+  T017:
+    deps: [T013, T014, T015, T016, T006]
+    skillist: ["fsdocs-build"]
+    owns: []
+  T018:
+    deps: []
+    skillist: ["fsdocs-technical"]
+    owns: []
+  T019:
+    deps: []
+    skillist: ["fsdocs-technical"]
+    owns: []
+  T020:
+    deps: [T018, T019]
+    skillist: ["fsdocs-technical"]
+    owns: []
+  T021:
+    deps: []
+    skillist: ["fs-skia-typed-controls", "fsdocs-technical"]
+    owns: []
+  T022:
+    deps: []
+    skillist: ["fs-skia-design-tokens", "fsdocs-technical"]
+    owns: []
+  T023:
+    deps: []
+    skillist: ["fsdocs-technical"]
+    owns: []
+  T024:
+    deps: [T021]
+    skillist: ["fsdocs-examples"]
+    owns: []
+  T025:
+    deps: [T022]
+    skillist: ["fsdocs-examples"]
+    owns: []
+  T026:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+  T027:
+    deps: []
+    skillist: ["fsdocs-build"]
+    owns: []
+  T028:
+    deps: [T007, T027]
+    skillist: ["fsdocs-build"]
+    owns: []
+  T029:
+    deps: [T012, T017]
+    skillist: ["fsdocs-build"]
+    owns: []
+  T030:
+    deps: [T011]
+    skillist: []
+    owns: []
+  T031:
+    deps: []
+    skillist: []
+    owns: []
+  T032:
+    deps: []
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T033:
+    deps: [T032]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

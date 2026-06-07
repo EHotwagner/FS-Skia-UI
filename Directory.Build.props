@@ -31,6 +31,23 @@
     <PackageReadmeFile Condition="Exists('$(MSBuildProjectDirectory)/README.md')">README.md</PackageReadmeFile>
   </PropertyGroup>
 
+  <!-- 076 (FR-001/FR-003): fsdocs documentation-site properties. These configure the
+       FSharp.Formatting build only; they do NOT touch package identity. Per research R2
+       decision (ii) the fsdocs source-link is set via FsDocs* properties so the published
+       PackageProjectUrl/RepositoryUrl metadata is left undisturbed. GenerateDocumentationFile
+       is already true above, so XML doc emission is on for the API reference. -->
+  <PropertyGroup Label="FsDocs">
+    <!-- FR-003 / SC-001: a missing summary on a supported public member becomes an fsdocs
+         warning; under a strict fsdocs build it fails the build (zero empty stubs). -->
+    <FsDocsWarnOnMissingDocs>true</FsDocsWarnOnMissingDocs>
+    <FsDocsTheme>default</FsDocsTheme>
+    <!-- Source/"edit" links point at the ACTUAL remote (EHotwagner) rather than the
+         aspirational PackageProjectUrl org, without rewriting package metadata. -->
+    <FsDocsSourceRepository>https://github.com/EHotwagner/FS-Skia-UI/tree/main</FsDocsSourceRepository>
+    <FsDocsLicenseLink>https://github.com/EHotwagner/FS-Skia-UI/blob/main/LICENSE</FsDocsLicenseLink>
+    <FsDocsReleaseNotesLink>https://github.com/EHotwagner/FS-Skia-UI/blob/main/CHANGELOG.md</FsDocsReleaseNotesLink>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="FSharp.Core" />
   </ItemGroup>

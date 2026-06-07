@@ -1,0 +1,85 @@
+# Feature 076 (FR-012): build the FSharp.Formatting (fsdocs) documentation site and
+# deploy it to GitHub Pages on push to main. The site is regenerated from source on
+# every run; NO generated output is committed (output/ is gitignored). Distinct from
+# publish.yml (which pushes nuget packages) — this only builds + publishes docs.
+#
+# One-time setup: repo Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
+# Published at https://ehotwagner.github.io/FS-Skia-UI/ (a project-pages subpath).
+#
+# The docs build cracks + builds the 10 published library projects only (samples are
+# excluded — they are app projects, not API-reference sources). The two literate
+# examples exercise GPU-free model/props/lowering paths, so this job needs NO Xvfb /
+# Vulkan stack (contrast publish.yml). If a future example renders, add the headless
+# graphics steps from publish.yml or mark that example [S] under Principle V.
+
+name: Build and deploy docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Pages deploys are serial; do not cancel an in-flight deploy.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      # Scope API-doc generation to the 10 published libraries; pass the project-pages
+      # subpath as the site root so absolute links resolve under /FS-Skia-UI/. --eval
+      # evaluates the literate .fsx examples; --strict fails on doc-generation problems
+      # (broken links, project-crack/eval failures).
+      - name: Build docs (strict, eval)
+        run: |
+          dotnet fsdocs build --strict --eval \
+            --projects \
+              src/Scene/Scene.fsproj \
+              src/SkiaViewer/SkiaViewer.fsproj \
+              src/Elmish/Elmish.fsproj \
+              src/Input/Input.fsproj \
+              src/KeyboardInput/KeyboardInput.fsproj \
+              src/Layout/Layout.fsproj \
+              src/Controls/Controls.fsproj \
+              src/Controls.Elmish/Controls.Elmish.fsproj \
+              src/Testing/Testing.fsproj \
+              src/SkillSupport/SkillSupport.fsproj \
+            --parameters root "${{ steps.pages.outputs.base_url }}/"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: output
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

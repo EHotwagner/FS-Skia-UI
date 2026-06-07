@@ -29,6 +29,11 @@ ids resolved from the live registry and the closed `owns:`→implied-skill table
 | `fs-skia-testing` | src/Testing/skill/SKILL.md |
 | `fs-skia-typed-controls` | .agents/skills/fs-skia-typed-controls/SKILL.md |
 | `fs-skia-ui-widgets` | src/Controls/skill/SKILL.md |
+| `fsdocs-api-doc` | .agents/skills/fsdocs-api-doc/SKILL.md |
+| `fsdocs-build` | .agents/skills/fsdocs-build/SKILL.md |
+| `fsdocs-examples` | .agents/skills/fsdocs-examples/SKILL.md |
+| `fsdocs-setup` | .agents/skills/fsdocs-setup/SKILL.md |
+| `fsdocs-technical` | .agents/skills/fsdocs-technical/SKILL.md |
 | `fsharp-build-orchestration` | .agents/skills/fsharp-build-orchestration/SKILL.md |
 | `fsharp-code-generation` | .agents/skills/fsharp-code-generation/SKILL.md |
 | `fsharp-graph-algorithms` | .agents/skills/fsharp-graph-algorithms/SKILL.md |

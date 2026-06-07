@@ -1,0 +1,32 @@
+<Project>
+  <PropertyGroup>
+    <!-- Generate XML documentation file for all projects -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- Warn on missing XML doc comments for public members -->
+    <!-- 3390: missing XML comment for publicly visible type or member -->
+    <WarnOn>3390</WarnOn>
+
+    <!-- Repository URL — used for source links on generated API pages -->
+    <RepositoryUrl>https://github.com/ORG/PROJECT_NAME</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <!-- FSharp.Formatting specific properties -->
+  <PropertyGroup>
+    <!-- Site chrome -->
+    <!-- <FsDocsLogoSource>img/logo.png</FsDocsLogoSource> -->
+    <!-- <FsDocsFaviconSource>img/favicon.ico</FsDocsFaviconSource> -->
+    <!-- <FsDocsTheme>default</FsDocsTheme> -->
+
+    <!-- Footer links -->
+    <FsDocsLicenseLink>https://github.com/ORG/PROJECT_NAME/blob/main/LICENSE</FsDocsLicenseLink>
+    <FsDocsReleaseNotesLink>https://github.com/ORG/PROJECT_NAME/blob/main/CHANGELOG.md</FsDocsReleaseNotesLink>
+
+    <!-- Warn when public API members lack documentation -->
+    <FsDocsWarnOnMissingDocs>true</FsDocsWarnOnMissingDocs>
+
+    <!-- Package URL for NuGet links -->
+    <PackageProjectUrl>https://github.com/ORG/PROJECT_NAME</PackageProjectUrl>
+  </PropertyGroup>
+</Project>

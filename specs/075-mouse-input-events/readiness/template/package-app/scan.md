@@ -1,7 +1,7 @@
 # package/app Scan
 
 Root: `/home/developer/projects/FS-Skia-UI/artifacts/template-check/075-mouse-input-events/package-app`
-Files scanned: 176
+Files scanned: 204
 Placeholder scan: PASS
 Excluded-history scan: PASS
 V3 framework-source exclusion scan: PASS
