@@ -1177,7 +1177,9 @@ module Viewer =
             | Host.ViewerEvent.Resized _
             | Host.ViewerEvent.PointerMoved _
             | Host.ViewerEvent.PointerPressed _
-            | Host.ViewerEvent.PointerReleased _ -> None
+            | Host.ViewerEvent.PointerReleased _
+            | Host.ViewerEvent.PointerScrolled _
+            | Host.ViewerEvent.PointerExited -> None
 
         let effectMapper msg =
             match msg with

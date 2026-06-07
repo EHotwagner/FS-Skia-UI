@@ -1,1 +1,2 @@
 - [Controls suite + Penpot initiative](controls-suite-penpot-initiative.md) — typed Elmish controls + Penpot Spec-Kit integration plan
+- [Controls namespace DU case collisions](controls-namespace-du-case-collisions.md) — new public DUs in FS.Skia.UI.Controls collide with ButtonIntent/VisualState case names; use [<RequireQualifiedAccess>]

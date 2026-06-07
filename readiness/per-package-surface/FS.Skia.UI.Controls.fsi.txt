@@ -693,6 +693,102 @@ module Diagnostics =
 
 namespace FS.Skia.UI.Controls
 
+open FS.Skia.UI.Layout
+
+[<RequireQualifiedAccess>]
+type PointerButton =
+    | Primary
+    | Secondary
+    | Middle
+
+type PointerOrigin = Pointer
+
+[<RequireQualifiedAccess>]
+type PointerPhase =
+    | Moved
+    | Pressed
+    | Released
+    | Wheel
+    | Exited
+
+type PointerSample =
+    { Phase: PointerPhase
+      X: float
+      Y: float
+      Button: PointerButton option
+      DeltaX: float
+      DeltaY: float }
+
+type PressCandidate =
+    { Control: ControlId
+      StartX: float
+      StartY: float
+      Dragging: bool }
+
+type PointerState =
+    { Hover: ControlId option
+      Presses: Map<PointerButton, PressCandidate>
+      LastX: float
+      LastY: float
+      DragThreshold: float }
+
+type PointerDiagnosticCode =
+    | HitTestMiss
+    | StaleTarget
+
+type PointerDiagnostic =
+    { Code: PointerDiagnosticCode
+      Message: string
+      Control: ControlId option
+      X: float
+      Y: float }
+
+type PointerInteraction =
+    | HoverEnter of control: ControlId * x: float * y: float
+    | HoverLeave of control: ControlId
+    | PressedDown of control: ControlId * button: PointerButton * x: float * y: float
+    | ReleasedUp of control: ControlId * button: PointerButton * x: float * y: float
+    | Click of control: ControlId * button: PointerButton * x: float * y: float
+    | DragBegin of control: ControlId * button: PointerButton * startX: float * startY: float
+    | DragMove of control: ControlId * button: PointerButton * x: float * y: float
+    | DragEnd of control: ControlId * button: PointerButton * x: float * y: float
+    | DragCancelled of control: ControlId option
+    | Scroll of control: ControlId * deltaX: float * deltaY: float * x: float * y: float
+    | FocusMovedByPointer of control: ControlId
+    | Diagnostic of PointerDiagnostic
+
+type PointerMsg =
+    | Move of x: float * y: float
+    | Down of button: PointerButton * x: float * y: float
+    | Up of button: PointerButton * x: float * y: float
+    | WheelMsg of deltaX: float * deltaY: float * x: float * y: float
+    | WindowExited
+    | FocusLost
+
+module Pointer =
+
+    val origin: PointerOrigin
+
+    val init: unit -> PointerState
+
+    val toMsg: sample: PointerSample -> PointerMsg option
+
+    val update:
+        policy: PixelSnapPolicy ->
+        layout: LayoutResult ->
+        msg: PointerMsg ->
+        state: PointerState ->
+            PointerState * PointerInteraction list * ControlRuntimeMsg list
+
+    val replay:
+        policy: PixelSnapPolicy ->
+        layout: LayoutResult ->
+        messages: PointerMsg list ->
+        initial: PointerState ->
+            PointerState * PointerInteraction list
+
+namespace FS.Skia.UI.Controls
+
 module internal Reconcile =
 
     type FieldChange<'a> =

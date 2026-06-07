@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 40
-xml-summary-count: 27
+symbol-count: 46
+xml-summary-count: 36
 source-fsi-paths:
 - src/Controls.Elmish/ControlsElmish.fsi
 sampled-symbols:
@@ -78,6 +78,22 @@ module ControlsElmish =
     val interpretKeyboardEffect: mapCommand: (CommandId -> 'msg) -> effect: KeyboardEffect -> AdapterCommand<'msg>
     /// Public contract function exposed by this FS.Skia.UI package.
     val interpretControlEffect: mapRuntime: (ControlRuntimeMsg -> 'msg) -> effect: ControlRuntimeEffect -> AdapterCommand<'msg>
+    /// Lower a single pointer interaction (075) into adapter commands. Diagnostics
+    /// lower to `ReportAdapterDiagnostic`; every other interaction is offered to the
+    /// consumer router `mapInteraction` (a `None` result is a no-op `[]`). Mirrors
+    /// `interpretKeyboardEffect`/`interpretControlEffect`; no new `AdapterEffect`
+    /// case is required. FR-001/FR-010/FR-011.
+    val interpretPointerEffect:
+        mapInteraction: (PointerInteraction -> 'msg option) -> interaction: PointerInteraction -> AdapterCommand<'msg>
+    /// Convenience: lower the `(PointerInteraction list, ControlRuntimeMsg list)`
+    /// produced by `Pointer.update` in one call — runtime messages through
+    /// `DispatchControlRuntimeMessage` (applied first to keep `ControlRuntime`
+    /// state consistent), then interactions through `interpretPointerEffect`.
+    val interpretPointerOutcome:
+        mapInteraction: (PointerInteraction -> 'msg option) ->
+        interactions: PointerInteraction list ->
+        runtimeMessages: ControlRuntimeMsg list ->
+            AdapterCommand<'msg>
     /// Public contract function exposed by this FS.Skia.UI package.
     val subscriptions: keyboard: AdapterSubscription<'msg> list -> controls: AdapterSubscription<'msg> list -> AdapterSubscription<'msg> list
     /// Public contract function exposed by this FS.Skia.UI package.

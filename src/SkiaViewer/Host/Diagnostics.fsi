@@ -42,6 +42,12 @@ type RenderDiagnostic =
       Message: string
       Cause: string option }
 
+/// Mouse button identity carried by host pointer press/release events (075, FR-013).
+type ViewerPointerButton =
+    | PrimaryButton
+    | SecondaryButton
+    | MiddleButton
+
 /// Viewer host contract type (moved from the FS.Skia.UI monolith, retyped onto FS.Skia.UI.Scene).
 type ViewerEvent =
     | Loaded
@@ -50,8 +56,15 @@ type ViewerEvent =
     | KeyDown of key: string
     | KeyUp of key: string
     | PointerMoved of x: float * y: float
-    | PointerPressed of x: float * y: float
-    | PointerReleased of x: float * y: float
+    // 075 (FR-013): press/release now carry the originating mouse button. Arity
+    // change is source-breaking only for matchers; the sole existing matcher
+    // (SkiaViewer.fs) is updated in lockstep.
+    | PointerPressed of x: float * y: float * button: ViewerPointerButton
+    | PointerReleased of x: float * y: float * button: ViewerPointerButton
+    // 075 (FR-014): wheel/scroll with signed per-axis delta.
+    | PointerScrolled of x: float * y: float * deltaX: float * deltaY: float
+    // 075 (FR-007): pointer left the window / host lost pointer focus — drives cancel.
+    | PointerExited
     | Resized of Size
     | CloseRequested
     | DiagnosticReported of RenderDiagnostic

@@ -1,0 +1,13 @@
+status=ok
+sample=PointerInteractionGallery
+hovered=Some "buttonB"
+activations=1
+contexts=1
+scroll-offset=-3
+thumb=Some (254.0, 20.0)
+last-action=scroll:scroll:-3
+scene-kinds=[GroupElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement;

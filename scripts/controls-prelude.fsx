@@ -4,6 +4,7 @@
 #r "../src/Controls/bin/Debug/net10.0/FS.Skia.UI.Controls.dll"
 
 open FS.Skia.UI.Scene
+open FS.Skia.UI.Layout
 open FS.Skia.UI.Controls
 
 type Msg =
@@ -67,3 +68,34 @@ printfn "controls-text-dispatch=%A" (Control.dispatch changed root)
 printfn "control-runtime-init-effects=%A" runtimeInitEffects
 printfn "control-runtime-focus-effects=%A focused=%A" focusEffects focusedRuntime.FocusedControl
 printfn "control-runtime-recovery-effects=%A diagnostics=%d" recoveryEffects recoveredRuntime.Diagnostics.Length
+
+// 075 — pointer front door (pure, host-independent, replayable). Two side-by-side
+// buttons; a scripted hover/click/drag/scroll sequence reduces deterministically.
+let pointerLayout: LayoutResult =
+    { Bounds =
+        [ { NodeId = "buttonA"; Bounds = { X = 0.0; Y = 0.0; Width = 100.0; Height = 40.0 }; Visibility = Visible }
+          { NodeId = "buttonB"; Bounds = { X = 100.0; Y = 0.0; Width = 100.0; Height = 40.0 }; Visibility = Visible } ]
+      Diagnostics = []
+      Invalidated = []
+      Revision = 0L }
+
+let pointerPolicy: PixelSnapPolicy = Defaults.pixelSnapPolicy 1.0
+
+let pointerScript =
+    [ Move(50.0, 20.0) // hover A
+      Move(150.0, 20.0) // leave A, enter B
+      Down(PointerButton.Primary, 150.0, 20.0)
+      Up(PointerButton.Primary, 150.0, 20.0) // click B
+      Down(PointerButton.Primary, 50.0, 20.0)
+      Move(50.0, 30.0) // drag begin (past 4px threshold)
+      Move(50.0, 38.0) // drag move
+      Up(PointerButton.Primary, 50.0, 38.0) // drag end
+      WheelMsg(0.0, -3.0, 150.0, 20.0) ] // scroll B
+
+let pointerFinal, pointerEffects = Pointer.replay pointerPolicy pointerLayout pointerScript (Pointer.init ())
+let pointerReplayAgain = snd (Pointer.replay pointerPolicy pointerLayout pointerScript (Pointer.init ()))
+
+printfn "pointer-origin=%A" Pointer.origin
+printfn "pointer-effects=%A" pointerEffects
+printfn "pointer-deterministic=%b" (pointerEffects = pointerReplayAgain)
+printfn "pointer-final-hover=%A presses=%d" pointerFinal.Hover pointerFinal.Presses.Count

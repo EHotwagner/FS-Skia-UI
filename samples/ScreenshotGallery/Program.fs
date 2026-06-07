@@ -97,7 +97,9 @@ let rec update msg model =
         | ViewerEvent.KeyUp _
         | PointerMoved _
         | PointerPressed _
-        | PointerReleased _ -> model, Cmd.none
+        | PointerReleased _
+        | PointerScrolled _
+        | PointerExited -> model, Cmd.none
     | NextFrame ->
         let next = { model with Frame = model.Frame + 1; Recovering = false }
         next, render next

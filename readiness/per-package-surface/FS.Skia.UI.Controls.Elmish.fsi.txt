@@ -44,6 +44,15 @@ module ControlsElmish =
 
     val interpretControlEffect: mapRuntime: (ControlRuntimeMsg -> 'msg) -> effect: ControlRuntimeEffect -> AdapterCommand<'msg>
 
+    val interpretPointerEffect:
+        mapInteraction: (PointerInteraction -> 'msg option) -> interaction: PointerInteraction -> AdapterCommand<'msg>
+
+    val interpretPointerOutcome:
+        mapInteraction: (PointerInteraction -> 'msg option) ->
+        interactions: PointerInteraction list ->
+        runtimeMessages: ControlRuntimeMsg list ->
+            AdapterCommand<'msg>
+
     val subscriptions: keyboard: AdapterSubscription<'msg> list -> controls: AdapterSubscription<'msg> list -> AdapterSubscription<'msg> list
 
     val program:

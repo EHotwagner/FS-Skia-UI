@@ -1,0 +1,1663 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm the `075-mouse-input-events` feature directory and ensure `spec.md`/`plan.md`/`research.md`/`data-model.md`/`quickstart.md`/`contracts/` are linked from the task breakdown",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T001",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T001: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Scaffold `specs/075-mouse-input-events/readiness/` with the audit-enforced readiness-contract files this feature actually produces \u2014 `governance-risk-levels.md`, `aggregate-hang-diagnostics.md`, `runtime-limitations.md`, `skill-loading-evidence.md`, `keyboard-regression.md`, `evidence-graph.md`, `evidence-audit.md` \u2014 plus the `fsi/`, `sample-smoke/`, `package-surfaces/`, `package/`, `logs/`, and `generated-product-verify/` subdirectories (each artifact names its authoritative command, artifact path, failure class, next action). NOTE: this feature delivers a pure pointer-coordination contract proven deterministically; per `contracts/sample-contract.md` the deterministic smoke \u2014 not a persistent visible GUI window \u2014 is the authoritative sample evidence, so the window-visibility evidence class (a persistent-visible-window deliverable) does not apply and its files are intentionally not scaffolded",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T002",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T002: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record feature Tier (Tier 1), affected layer (Controls / Controls.Elmish / SkiaViewer host), public-API impact, Elmish/MVU applicability (**Principle IV applies** \u2014 `PointerState`/`PointerMsg`/`PointerInteraction`/`init`/`update`/`replay`), and required evidence obligations",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T003",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T003: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record unsupported-scope handling and failure diagnostics design: `HitTestMiss`/`StaleTarget` diagnostics (FR-010), the `DragCancelled` window-exit/focus-loss cancel path (FR-007), and the SEH classification decision (none approved \u2014 all paths proven with real scripted messages)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T004",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T004: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Draft the host `ViewerEvent` extension `.fsi` in `src/SkiaViewer/Host/Diagnostics.fsi` \u2014 `ViewerPointerButton`, `button` on `PointerPressed`/`PointerReleased`, new `PointerScrolled`/`PointerExited` cases \u2014 with the case-arity compatibility note (`contracts/viewer-event.host.fsi`)",
+      "skillist": [
+        "fs-skia-skiaviewer"
+      ],
+      "skillist_mirror": [
+        "fs-skia-skiaviewer"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T005",
+          "declared_skillist": [
+            "fs-skia-skiaviewer"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T005: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Draft the `FS.Skia.UI.Controls` pointer front door `.fsi` in `src/Controls/Pointer.fsi` \u2014 `PointerButton`/`PointerOrigin`/`PointerPhase`/`PointerSample`/`PressCandidate`/`PointerState`/`PointerDiagnostic`/`PointerInteraction`/`PointerMsg` + `Pointer` module (`init`/`toMsg`/`update`/`replay`) \u2014 and add `Pointer.fs(i)` to `Controls.fsproj` compile order (`contracts/pointer.controls.fsi`)",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T006",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T006: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft the `FS.Skia.UI.Controls.Elmish` bridge `.fsi` in `src/Controls.Elmish/ControlsElmish.fsi` \u2014 `interpretPointerEffect` + `interpretPointerOutcome`, reusing `ReportAdapterDiagnostic`/`DispatchControlRuntimeMessage` (add an `AdapterEffect` case only if needed) (`contracts/pointer.controls-elmish.fsi`)",
+      "skillist": [
+        "fs-skia-elmish"
+      ],
+      "skillist_mirror": [
+        "fs-skia-elmish"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T007",
+          "declared_skillist": [
+            "fs-skia-elmish"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T007: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T006"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Exercise the draft `.fsi` shapes from FSI (`scripts/prelude.fsx` or ad-hoc) \u2014 `Pointer.init`, a scripted `replay`, and a `interpretPointerOutcome` lowering \u2014 capturing the session transcript to `readiness/fsi-session.txt` (Principle I: fix the surface if it reads awkwardly)",
+      "skillist": [
+        "fs-skia-ui-widgets",
+        "fs-skia-elmish"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets",
+        "fs-skia-elmish"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T008",
+          "declared_skillist": [
+            "fs-skia-ui-widgets",
+            "fs-skia-elmish"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T008: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T005",
+        "T006",
+        "T007"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record surface-area baselines for the new/changed public modules (`FS.Skia.UI.Controls`, `FS.Skia.UI.Controls.Elmish`, `FS.Skia.UI.SkiaViewer`); confirm `Layout`/`KeyboardInput` baselines are unchanged",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T009",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T009: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T005",
+        "T006",
+        "T007"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing-first hover tests: ordered `HoverLeave(prior)` \u2192 `HoverEnter(next)`, no transition when the hit id is unchanged, leave-only on empty space / window exit (SC-001/FR-003), plus an FsCheck property \"no duplicate or skipped hover transitions under random move bursts\" (FR-003); also include one overlap case (topmost/front-most in paint order wins) and one hidden/collapsed-control case (never a hover target), asserting the pointer path honors the `Layout.hitTestComputed` paint-order/visibility contract (FR-002 edge cases)",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T010",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T010: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Create `src/Controls/Pointer.fs` \u2014 `init`/`toMsg` and the `Move` path of pure `update` (hit-test via `Layout.hitTestComputed`, derive ordered hover transitions, emit `ControlRuntimeMsg.HoverControl` to keep runtime hover consistent)",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T011",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T011: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T010"
+      ],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `ControlsElmish.interpretPointerEffect`/`interpretPointerOutcome` in `src/Controls.Elmish/ControlsElmish.fs` (route meaningful interactions via `mapInteraction`, no-ops \u2192 `[]`, diagnostics \u2192 `ReportAdapterDiagnostic`, runtime messages \u2192 `DispatchControlRuntimeMessage`)",
+      "skillist": [
+        "fs-skia-elmish"
+      ],
+      "skillist_mirror": [
+        "fs-skia-elmish"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T012",
+          "declared_skillist": [
+            "fs-skia-elmish"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T012: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T011"
+      ],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Verify US1 end-to-end against the **packed** libraries from FSI: hover front door + Elmish bridge over a scripted move sequence; confirm every emitted effect is a `PointerInteraction` value carrying `PointerOrigin.Pointer` (type-distinct from keyboard/text effects), proving pointer-vs-keyboard origin discrimination (FR-011); capture transcript to `readiness/fsi/pointer-frontdoor.md`",
+      "skillist": [
+        "fs-skia-ui-widgets",
+        "fs-skia-elmish"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets",
+        "fs-skia-elmish"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T013",
+          "declared_skillist": [
+            "fs-skia-ui-widgets",
+            "fs-skia-elmish"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T013: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T011",
+        "T012"
+      ],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing-first click tests: click iff press+release over the **same** control, no click when released off the control (pressed state cleared), focus moves to a focusable pressed control (SC-002/FR-004/FR-005), plus an FsCheck property \"press/release pair never dropped or reordered under interleaved moves\" (FR-008)",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T014",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T014: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement the host `ViewerEvent` extension: mirror the type in `src/SkiaViewer/Host/Diagnostics.fs`, capture `MouseButton` in `src/SkiaViewer/Host/Vulkan.fs` (drop the `_` discard, map Silk.NET \u2192 `ViewerPointerButton`), subscribe/dispose `IMouse.Scroll`, wire a mouse-leave/blur \u2192 `PointerExited`, and update the sole `SkiaViewer.fs` matcher in lockstep",
+      "skillist": [
+        "fs-skia-skiaviewer"
+      ],
+      "skillist_mirror": [
+        "fs-skia-skiaviewer"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T015",
+          "declared_skillist": [
+            "fs-skia-skiaviewer"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T015: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Extend pure `update` with the `Down`/`Up` paths \u2014 record per-button `PressCandidate`, emit `PressedDown`/`ReleasedUp`/`Click` (click iff release over the press control), `FocusMovedByPointer` + `ControlRuntimeMsg.PressControl`/`FocusControl`, and `Diagnostic HitTestMiss` on a press miss",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T016",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T016: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T011",
+        "T014"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Verify US2 against the packed libraries from FSI: same-control click dispatches once, off-control release dispatches nothing, focus moves to the pressed focusable control; append transcript to `readiness/fsi/pointer-frontdoor.md`",
+      "skillist": [
+        "fs-skia-ui-widgets",
+        "fs-skia-elmish"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets",
+        "fs-skia-elmish"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T017",
+          "declared_skillist": [
+            "fs-skia-ui-widgets",
+            "fs-skia-elmish"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T017: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T016"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing-first drag tests: press \u2192 move-past-threshold emits one `DragBegin`, ordered `DragMove`s, one `DragEnd` on release; sub-threshold press/release is a `Click` not a drag (Click XOR drag); `WindowExited`/`FocusLost` mid-press/drag yields `DragCancelled` with `Presses` empty and no active drag (SC-003/SC-004/FR-006/FR-007)",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T018",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T018: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Extend pure `update` with the held-`Move` drag path (`DragThreshold` distance test, `DragBegin`/`DragMove` + `ControlRuntimeMsg.StartDrag`/`MoveDrag`), the `Up` drag-end path (`DragEnd` + `EndDrag`), and the `WindowExited`/`FocusLost` cancel (`DragCancelled`, reset `Presses`/`Hover`, `CancelInteraction`)",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T019",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T019: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T016",
+        "T018"
+      ],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Verify US3 against the packed libraries from FSI: a scripted drag (begin/move/end) and a scripted cancel-on-exit; append transcript to `readiness/fsi/pointer-frontdoor.md`",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T020",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T020: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T019"
+      ],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing-first per-button tests: a secondary press/release yields `Click(_, Secondary, \u2026)` and no primary click (and converse); a middle press/release yields `Click(_, Middle, \u2026)` distinct from both (FR-013 covers primary/secondary/middle); overlapping presses across buttons resolve independently with zero cross-button misattribution (SC-008/FR-013)",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T021",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T021: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Ensure `Down`/`Up` key the `Map<PointerButton, PressCandidate>` by button so each button's press resolves independently, and `Click`/drag effects carry the originating `PointerButton`",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T022",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T022: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T016",
+        "T021"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Verify US4 against the packed libraries from FSI: distinct secondary click + an overlapping primary/secondary sequence; append transcript to `readiness/fsi/pointer-frontdoor.md`",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T023",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T023: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T022"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": true,
+      "title": "Add failing-first wheel tests: a `PointerMsg.Wheel` over a control emits `Scroll(control, dx, dy, x, y)` with the correct signed delta; a wheel over empty space emits no scroll interaction (SC-009/FR-014)",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T024",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T024: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T023"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": false,
+      "title": "Extend pure `update` with the `PointerMsg.Wheel` path (hit-test \u2192 `Scroll` to control-under-pointer; silent miss over empty space) consuming the host `PointerScrolled` wired in T015",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T025",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T025: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T015",
+        "T016",
+        "T024"
+      ],
+      "phase_deps": [
+        "T023"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": "US5",
+      "tier": null,
+      "parallel": false,
+      "title": "Verify US5 against the packed libraries from FSI: wheel-over-control vs wheel-over-empty; append transcript to `readiness/fsi/pointer-frontdoor.md`",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T026",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T026: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T025"
+      ],
+      "phase_deps": [
+        "T023"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add the determinism test: `Pointer.replay` of the same `PointerMsg list` against the same `LayoutResult` yields identical effects on a re-run (SC-005/FR-009)",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T027",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T027: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Re-run an existing keyboard-only sample unchanged and confirm no behavior change is forced (SC-006/FR-012); record the regression note under `readiness/`",
+      "skillist": [
+        "fs-skia-keyboard-input"
+      ],
+      "skillist_mirror": [
+        "fs-skia-keyboard-input"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T028",
+          "declared_skillist": [
+            "fs-skia-keyboard-input"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T028: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Build the `samples/PointerInteractionGallery` sample (`Program.fs`): `ViewerEvent.Pointer*` \u2192 `PointerSample` \u2192 `Pointer.update` \u2192 `interpretPointerOutcome` \u2192 Elmish `Cmd`, demonstrating hover/click/drag/secondary/scroll using **only** `ControlId`-level messages and no consumer-side hit-testing (SC-007)",
+      "skillist": [
+        "fs-skia-ui-widgets",
+        "fs-skia-elmish",
+        "fs-skia-skiaviewer"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets",
+        "fs-skia-elmish",
+        "fs-skia-skiaviewer"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T029",
+          "declared_skillist": [
+            "fs-skia-ui-widgets",
+            "fs-skia-elmish",
+            "fs-skia-skiaviewer"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T029: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T012",
+        "T015",
+        "T019",
+        "T022",
+        "T025"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T030",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run the gallery sample from its default executable path through the deterministic contract smoke (the authoritative sample evidence per `contracts/sample-contract.md`), exercising hover/click/secondary/drag/scroll across the public front door, and capture the smoke log to `readiness/sample-smoke/PointerInteractionGallery.txt`; per `fs-skia-evidence-mode`, a persistent Vulkan window / render-only screenshot is unavailable under the headless validation host and is classified as an environment condition (see `readiness/runtime-limitations.md`), not a product defect \u2014 the deterministic smoke is the authoritative visual proof",
+      "skillist": [
+        "fs-skia-skiaviewer",
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-skiaviewer",
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T030",
+          "declared_skillist": [
+            "fs-skia-skiaviewer",
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T030: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T029"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T031",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Add the pointer sample fragment under `template/fragments/samples/` so the generated Samples capability includes it, and add a short pointer-interaction paragraph to the selected Controls generated guidance",
+      "skillist": [
+        "fs-skia-samples",
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-samples",
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T031",
+          "declared_skillist": [
+            "fs-skia-samples",
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T031: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T029"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T032",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Refresh surface-area baselines (`./fake.sh build -t RefreshSurfaceBaselines`) and regenerate the per-package `.fsi.txt` snapshots via `PerPackageSurface.captureCurrent` for `FS.Skia.UI.Controls`, `FS.Skia.UI.Controls.Elmish`, `FS.Skia.UI.SkiaViewer`; move snapshots into `readiness/package-surfaces/`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T032",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T032: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T015",
+        "T019",
+        "T022",
+        "T025"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T033",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run the serialized maintainer-verify gates sequentially (`Dev` \u2192 `GeneratedGuidanceCheck` \u2192 `TemplateCheck` \u2192 `GeneratedProductCheck`), recording logs to `readiness/logs/` and the governance risk-level note; classify the known `GeneratedProductCheck` local failure as an environment failure under `readiness/generated-product-verify/`, not a product defect",
+      "skillist": [
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T033",
+          "declared_skillist": [
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T033: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T030",
+        "T031",
+        "T032"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T034",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceGraph` \u2014 confirm no cycles, no dangling refs, no `[S*]` surprises; write `readiness/evidence-graph.md` and `readiness/task-graph.{md,json}`",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T034",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "owns:graph-validation"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T034: owns graph-validation requires skill speckit-evidence-graph; trigger_group=owns; matched_trigger=owns:graph-validation"
+        }
+      ],
+      "explicit_deps": [
+        "T033"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T035",
+      "declared": "done",
+      "effective": "done",
+      "phase": 8,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceAudit` \u2014 confirm verdict PASS (or document every `--accept-synthetic` override); write `readiness/evidence-audit.md`",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T035",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "owns:evidence-audit"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T035: owns evidence-audit requires skill speckit-evidence-audit; trigger_group=owns; matched_trigger=owns:evidence-audit"
+        }
+      ],
+      "explicit_deps": [
+        "T034"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    }
+  ]
+}

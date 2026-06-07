@@ -179,20 +179,22 @@ let update msg model =
         | PointerMoved(x, y) ->
             let next = { model with Pointer = Some(x, y) }
             next, requestRender next
-        | PointerPressed(x, y) ->
+        | PointerPressed(x, y, _) ->
             let next =
                 { model with
                     Pointer = Some(x, y)
                     PointerDown = true }
 
             next, requestRender next
-        | PointerReleased(x, y) ->
+        | PointerReleased(x, y, _) ->
             let next =
                 { model with
                     Pointer = Some(x, y)
                     PointerDown = false }
 
             next, requestRender next
+        | PointerScrolled _
+        | PointerExited -> model, Cmd.none
         | Resized size ->
             let next = { model with Size = size }
             next, requestRender next
@@ -242,7 +244,7 @@ let runSmoke seconds =
     let stopwatch = Stopwatch.StartNew()
     let model, _ = init ()
     let afterKey, _ = update (ViewerInput(ViewerEvent.KeyDown "Space")) model
-    let afterPointer, _ = update (ViewerInput(PointerPressed(240.0, 180.0))) afterKey
+    let afterPointer, _ = update (ViewerInput(PointerPressed(240.0, 180.0, PrimaryButton))) afterKey
     let rec tick count state =
         if count <= 0 then
             state
@@ -269,7 +271,7 @@ let runContractSmoke () =
 
     let model, initCmd = init ()
     let afterKey, _ = update (ViewerInput(ViewerEvent.KeyDown "Space")) model
-    let afterPointer, _ = update (ViewerInput(PointerPressed(320.0, 210.0))) afterKey
+    let afterPointer, _ = update (ViewerInput(PointerPressed(320.0, 210.0, PrimaryButton))) afterKey
     let afterResize, _ = update (ViewerInput(Resized { Width = 1024; Height = 640 })) afterPointer
     let afterTick, _ = update Tick afterResize
     let _, screenshotCmd = update (ScreenshotRequested screenshot) afterTick

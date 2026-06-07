@@ -18,6 +18,7 @@
     <Compile Include="DataGridTests.fs" />
     <Compile Include="SemanticTests.fs" />
     <Compile Include="InteractionTests.fs" />
+    <Compile Include="PointerInteractionTests.fs" />
     <Compile Include="TextInputTests.fs" />
     <Compile Include="TypedGalleryPanel.fs" />
     <Compile Include="AccessibilityTests.fs" />

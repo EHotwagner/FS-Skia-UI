@@ -49,3 +49,20 @@ kinds=[GroupElement; RectangleElement; GroupElement; GroupElement; RectangleElem
 elapsed-ms=51
 
 exit-code=0
+
+## ChartsGallery contract smoke
+$ dotnet run --project samples/ChartsGallery/ChartsGallery.fsproj --no-build --no-restore -- --contract-smoke
+status=ok
+sample=ChartsGallery
+selection-owned-by-model=true
+control-count=6
+kinds=[GroupElement; RectangleElement; GroupElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ChartElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ChartElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ChartElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ChartElement; ClipElement;
+ TextRunElement; TextElement]
+elapsed-ms=46
+
+exit-code=0

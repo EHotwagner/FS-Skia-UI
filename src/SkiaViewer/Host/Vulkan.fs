@@ -388,6 +388,14 @@ module VulkanHost =
                 keyboard.add_KeyUp keyUpHandler
                 addDisposable disposables (fun () -> keyboard.remove_KeyUp keyUpHandler)
 
+            // 075 (FR-013): map the Silk.NET button identity to the host contract.
+            let toViewerButton (button: MouseButton) =
+                match button with
+                | MouseButton.Left -> PrimaryButton
+                | MouseButton.Right -> SecondaryButton
+                | MouseButton.Middle -> MiddleButton
+                | _ -> PrimaryButton
+
             for mouse in input.Mice do
                 let pointerMoveHandler =
                     Action<IMouse, System.Numerics.Vector2>(fun _ position ->
@@ -397,20 +405,40 @@ module VulkanHost =
                 addDisposable disposables (fun () -> mouse.remove_MouseMove pointerMoveHandler)
 
                 let pointerPressedHandler =
-                    Action<IMouse, MouseButton>(fun mouse _ ->
+                    Action<IMouse, MouseButton>(fun mouse button ->
                         let position = mouse.Position
-                        dispatchViewerEvent program dispatch (PointerPressed(float position.X, float position.Y)))
+                        dispatchViewerEvent program dispatch (PointerPressed(float position.X, float position.Y, toViewerButton button)))
 
                 mouse.add_MouseDown pointerPressedHandler
                 addDisposable disposables (fun () -> mouse.remove_MouseDown pointerPressedHandler)
 
                 let pointerReleasedHandler =
-                    Action<IMouse, MouseButton>(fun mouse _ ->
+                    Action<IMouse, MouseButton>(fun mouse button ->
                         let position = mouse.Position
-                        dispatchViewerEvent program dispatch (PointerReleased(float position.X, float position.Y)))
+                        dispatchViewerEvent program dispatch (PointerReleased(float position.X, float position.Y, toViewerButton button)))
 
                 mouse.add_MouseUp pointerReleasedHandler
                 addDisposable disposables (fun () -> mouse.remove_MouseUp pointerReleasedHandler)
+
+                // 075 (FR-014): mouse wheel → signed per-axis scroll delta.
+                let pointerScrollHandler =
+                    Action<IMouse, ScrollWheel>(fun mouse wheel ->
+                        let position = mouse.Position
+                        dispatchViewerEvent program dispatch (PointerScrolled(float position.X, float position.Y, float wheel.X, float wheel.Y)))
+
+                mouse.add_Scroll pointerScrollHandler
+                addDisposable disposables (fun () -> mouse.remove_Scroll pointerScrollHandler)
+
+            // 075 (FR-007): window blur / focus-loss drives the deterministic
+            // pointer-cancel path (mouse-leave is not exposed by this Silk.NET
+            // version; focus loss is the available, reliable host trigger).
+            let focusChangedHandler =
+                Action<bool>(fun focused ->
+                    if not focused then
+                        dispatchViewerEvent program dispatch PointerExited)
+
+            window.add_FocusChanged focusChangedHandler
+            addDisposable disposables (fun () -> window.remove_FocusChanged focusChangedHandler)
 
             Ok
                 { new IDisposable with

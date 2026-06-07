@@ -28,6 +28,20 @@ let view model : Control<Msg> =
               Button.create [ Button.text "Save"; Button.onClick SaveRequested ] ] ]
 ```
 
+## Pointer / mouse interaction
+
+Mouse input is consumer-driven through the host-independent pointer front door in
+`FS.Skia.UI.Controls` (`Pointer.init`/`toMsg`/`update`/`replay`) and the MVU bridge
+`FS.Skia.UI.Controls.Elmish.interpretPointerOutcome`. A product translates host
+`ViewerEvent.Pointer*` events into a neutral `PointerSample`, runs the pure
+`Pointer.update` against the current `LayoutResult` (the framework hit-tests; the
+product writes no coordinate math), and routes the resulting `PointerInteraction`
+values — `HoverEnter`/`HoverLeave`, `Click`, `DragBegin`/`DragMove`/`DragEnd`,
+`Scroll` — to `ControlId`-level product messages. The per-button `Click` carries
+`PointerButton.Primary`/`Secondary`/`Middle`, so right-click context actions are a
+plain match. Pointer support is additive and opt-in: a keyboard-only product that
+never builds a `PointerState` behaves unchanged.
+
 Generated products must not copy framework galleries, framework samples,
 framework readiness evidence, historical specs, or framework implementation
 projects.

@@ -113,12 +113,15 @@ let updateInteractive msg model =
         | PointerMoved(x, y) ->
             { model with Pointer = Some(x, y) },
             emit (Dispatch FrameRequested)
-        | PointerPressed(x, y) ->
+        | PointerPressed(x, y, _) ->
             { model with Pointer = Some(x, y); PointerDown = true },
             emit (Dispatch FrameRequested)
-        | PointerReleased(x, y) ->
+        | PointerReleased(x, y, _) ->
             { model with Pointer = Some(x, y); PointerDown = false },
             emit (Dispatch FrameRequested)
+        | PointerScrolled _
+        | PointerExited ->
+            model, Cmd.none
         | Resized size ->
             let next = { model with Size = size }
             next, emit (RenderFrame(interactiveView next))
@@ -729,10 +732,10 @@ let us3ElmishFlowTests =
                 updateInteractive (ViewerInput(PointerMoved(15.0, 24.0))) initialInteractiveModel
 
             let afterPointerPress, _ =
-                updateInteractive (ViewerInput(PointerPressed(15.0, 24.0))) afterPointerMove
+                updateInteractive (ViewerInput(PointerPressed(15.0, 24.0, PrimaryButton))) afterPointerMove
 
             let afterPointerRelease, _ =
-                updateInteractive (ViewerInput(PointerReleased(18.0, 30.0))) afterPointerPress
+                updateInteractive (ViewerInput(PointerReleased(18.0, 30.0, PrimaryButton))) afterPointerPress
 
             let afterResize, _ =
                 updateInteractive (ViewerInput(Resized { Width = 800; Height = 600 })) initialInteractiveModel

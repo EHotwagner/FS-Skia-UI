@@ -48,6 +48,10 @@
     <Compile Include="TextInput.fs" />
     <Compile Include="ControlRuntime.fsi" />
     <Compile Include="ControlRuntime.fs" />
+    <!-- Feature 075: pure pointer-interaction front door over ControlRuntime +
+         Layout.hitTestComputed (host-independent; no SkiaViewer dependency). -->
+    <Compile Include="Pointer.fsi" />
+    <Compile Include="Pointer.fs" />
     <Compile Include="Collections.fsi" />
     <Compile Include="Collections.fs" />
     <Compile Include="Charts.fsi" />

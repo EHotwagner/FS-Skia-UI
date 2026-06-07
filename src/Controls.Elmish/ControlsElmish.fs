@@ -80,6 +80,23 @@ module ControlsElmish =
         | ReportControlRuntimeDiagnostic controlDiagnostic ->
             [ ReportAdapterDiagnostic(diagnostic "control-runtime" (string controlDiagnostic.Code) controlDiagnostic.Message) ]
 
+    let interpretPointerEffect (mapInteraction: PointerInteraction -> 'msg option) (interaction: PointerInteraction) =
+        match interaction with
+        | Diagnostic pointerDiagnostic ->
+            [ ReportAdapterDiagnostic(diagnostic "pointer" (string pointerDiagnostic.Code) pointerDiagnostic.Message) ]
+        | meaningful ->
+            match mapInteraction meaningful with
+            | Some msg -> [ DispatchProductMessage msg ]
+            | None -> []
+
+    let interpretPointerOutcome
+        (mapInteraction: PointerInteraction -> 'msg option)
+        (interactions: PointerInteraction list)
+        (runtimeMessages: ControlRuntimeMsg list)
+        =
+        (runtimeMessages |> List.map DispatchControlRuntimeMessage)
+        @ (interactions |> List.collect (interpretPointerEffect mapInteraction))
+
     let subscriptions (keyboard: AdapterSubscription<'msg> list) (controls: AdapterSubscription<'msg> list) =
         keyboard @ controls
 

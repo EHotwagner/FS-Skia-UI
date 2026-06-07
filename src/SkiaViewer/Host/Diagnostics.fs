@@ -37,6 +37,11 @@ type RenderDiagnostic =
       Message: string
       Cause: string option }
 
+type ViewerPointerButton =
+    | PrimaryButton
+    | SecondaryButton
+    | MiddleButton
+
 type ViewerEvent =
     | Loaded
     | UpdateTick of elapsedSeconds: float
@@ -44,8 +49,10 @@ type ViewerEvent =
     | KeyDown of key: string
     | KeyUp of key: string
     | PointerMoved of x: float * y: float
-    | PointerPressed of x: float * y: float
-    | PointerReleased of x: float * y: float
+    | PointerPressed of x: float * y: float * button: ViewerPointerButton
+    | PointerReleased of x: float * y: float * button: ViewerPointerButton
+    | PointerScrolled of x: float * y: float * deltaX: float * deltaY: float
+    | PointerExited
     | Resized of Size
     | CloseRequested
     | DiagnosticReported of RenderDiagnostic

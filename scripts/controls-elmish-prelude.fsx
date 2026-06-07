@@ -32,6 +32,29 @@ let controlCommand =
 
 printfn "controls-elmish-prelude view=%s commandCount=%d controlCommandCount=%d" (program.View 0).Kind command.Length controlCommand.Length
 
+// 075 — pointer outcome lowering: a primary Click routes to a product message, the
+// accompanying ControlRuntime messages lower to DispatchControlRuntimeMessage, and a
+// diagnostic lowers to ReportAdapterDiagnostic — no new AdapterEffect case required.
+let routePointer: PointerInteraction -> Msg option =
+    function
+    | Click(_, PointerButton.Primary, _, _) -> Some Save
+    | _ -> None
+
+let pointerInteractions =
+    [ PressedDown("save-button", PointerButton.Primary, 5.0, 5.0)
+      Click("save-button", PointerButton.Primary, 5.0, 5.0) ]
+
+let pointerRuntimeMsgs: ControlRuntimeMsg list = [ PressControl "save-button"; ReleaseControl "save-button" ]
+let pointerCommand = ControlsElmish.interpretPointerOutcome routePointer pointerInteractions pointerRuntimeMsgs
+let pointerDiagnosticCommand =
+    ControlsElmish.interpretPointerEffect routePointer (Diagnostic { Code = HitTestMiss; Message = "miss"; Control = None; X = 0.0; Y = 0.0 })
+
+printfn
+    "controls-elmish-075 pointerCommandCount=%d productMsgs=%A diagnosticCount=%d"
+    pointerCommand.Length
+    (AdapterCmd.productMessages pointerCommand)
+    pointerDiagnosticCommand.Length
+
 // 068 — Widget-returning view path: typed authoring composes through the adapter with no
 // Widget.toControl shim in this script; the adapter lowers internally via programOfWidget.
 let widgetProgram =
