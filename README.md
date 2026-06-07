@@ -62,160 +62,44 @@ The workflow is driven by coding agents with synchronized skill peers for
 [Codex](https://openai.com/codex/) (`.agents/skills/`). It is currently developed and tested
 against **Claude Opus 4.8** and **Codex 5.5**.
 
-## Get started
+## Documentation
 
-### 1. Generate a project from nuget.org
+Full documentation — getting started, the generated API reference, the
+architecture (one page per subsystem with a candid analysis), the governance
+system, and the typed-control / design-token workflow — lives on the
+documentation site:
 
-The 11 `FS.Skia.UI.*` libraries and the template are published on **public nuget.org** — no repo
-clone, no local feed:
+### 📖 **https://ehotwagner.github.io/FS-Skia-UI/**
 
-```bash
-dotnet new install FS.Skia.UI.Template          # from nuget.org
-dotnet new fs-skia-ui --name MyApp              # default profile: app
-cd MyApp
-dotnet restore                                  # resolves FS.Skia.UI.* from nuget.org only
-```
+Start there and follow the role-based entry points, or jump straight to a topic:
 
-The generated `NuGet.config` references the public feed only, and a single `<FsSkiaUiVersion>`
-pins every `FS.Skia.UI.*` package plus the build engine — so a consumer upgrade is one edit
-(see the generated `docs/UPGRADING.md`). Full install/upgrade and release detail:
-[`docs/distribution.md`](docs/distribution.md).
+### Using the library
 
-**Template options:**
+- [Get started](https://ehotwagner.github.io/FS-Skia-UI/) — install the template, generate a project, drive the workflow.
+- [API reference](https://ehotwagner.github.io/FS-Skia-UI/reference/index.html) — every supported public type and member, by package.
+- [Typed controls & the MVU front door](https://ehotwagner.github.io/FS-Skia-UI/controls-design/typed-front-door.html)
+- [Design tokens & the Penpot flow](https://ehotwagner.github.io/FS-Skia-UI/controls-design/design-tokens-penpot.html)
+- Runnable examples: [typed control / MVU](https://ehotwagner.github.io/FS-Skia-UI/examples/typed-control-mvu.html), [design-token flow](https://ehotwagner.github.io/FS-Skia-UI/examples/design-token-flow.html)
 
-| Option | Default | Effect |
-|--------|---------|--------|
-| `--profile <p>` | `app` | Which product to scaffold (see table below). |
-| `--feedback true` | `false` | Capture per-phase Spec Kit feedback into `specs/<feature>/feedback/` — adds the `after_*` feedback hooks and the `fs-skia-feedback-capture` skill so each completed phase records process friction, generalizable-code candidates, skill gaps, and a severity. Default `false` induces no diff. |
-| `--skipGitInit true` | `false` | Don't create the initial Git commit (use when generating inside an existing repo). |
+### Contributing to the framework
 
-| Profile | Scaffolds |
-|---------|-----------|
-| `app` | Default product — Scene, SkiaViewer, Elmish, KeyboardInput, Layout, Controls, product tests + governance. |
-| `headless-scene` | Headless Scene-only product for scene/widget authoring (no live window). |
-| `governed` | Scene plus Testing helpers, governance-focused. |
-| `sample-pack` | Scene, SkiaViewer, Elmish + sample-pack gallery content. |
+- [Architecture overview](https://ehotwagner.github.io/FS-Skia-UI/architecture/host-skiaviewer.html) — host, scene, layout, input, Elmish/MVU, controls, testing, governance.
+- [Governance system](https://ehotwagner.github.io/FS-Skia-UI/governance/index.html) — [routing & gates](https://ehotwagner.github.io/FS-Skia-UI/governance/routing-and-gates.html), [evidence & audit](https://ehotwagner.github.io/FS-Skia-UI/governance/evidence-and-audit.html), [single-source generation](https://ehotwagner.github.io/FS-Skia-UI/governance/single-source-generation.html).
+- [Developing FS.Skia.UI itself](https://ehotwagner.github.io/FS-Skia-UI/development.html)
 
-All profiles carry the Spec Kit install and `speckit-*` skills.
+### Spec Kit practitioners
 
-### 2. Drive the workflow
+- [Governance & speckit placement](https://ehotwagner.github.io/FS-Skia-UI/governance/speckit-placement.html) — which speckit phase governs each touchpoint, and how to respond.
+- [The Spec Kit process](https://ehotwagner.github.io/FS-Skia-UI/speckit/process.html) — where custom FS Skia UI components are created and consumed.
 
-Open the generated project with your coding agent and hand it a feature. The
-[`docs/testSpecs/`](docs/testSpecs/) folder has ready-made plain-language game specs you can use
-as a quickstart — e.g. [Pong](docs/testSpecs/pong.md):
+### Releases & distribution
 
-```text
-$speckit-specify  Build the Pong demo described in docs/testSpecs/pong.md
-$speckit-plan
-$speckit-tasks
-$speckit-implement
-```
+- [Releases & distribution](https://ehotwagner.github.io/FS-Skia-UI/distribution.html) — nuget.org install/upgrade and the Trusted-Publishing CI flow.
 
-The agent produces the spec, plan, tasks, the F# implementation, and the readiness evidence.
-Then build and run what it produced:
-
-```bash
-./fake.sh build -t Dev                          # restore, build, test
-dotnet run --project src/MyApp/MyApp.fsproj
-```
-
-## What the workflow produces
-
-An ordinary Elmish app: a model, messages, an `update`, and a `view` that returns immutable
-`Scene` values. You read and review code shaped like this — you don't write it from scratch:
-
-```fsharp
-open FS.Skia.UI.Scene
-open FS.Skia.UI.SkiaViewer
-
-let view () =
-    Scene.group [
-        Scene.rectangle (0.0, 0.0, 640.0, 480.0) (Colors.rgba 18uy 24uy 32uy 255uy)
-        Scene.text (48.0, 88.0) "Hello FS.Skia.UI" Colors.white
-    ]
-
-let options = { Title = "Hello"; InitialSize = { Width = 640; Height = 480 } }
-
-[<EntryPoint>]
-let main _ =
-    match Viewer.run options (view ()) with
-    | Ok _ -> 0
-    | Error d -> eprintfn "%s" d.Message; 1
-```
-
-The application owns the MVU four-tuple; the framework owns everything around it. Because
-`update` is pure, its behavior is tested without ever opening a window. When something can't
-start (unsupported OS, no Vulkan surface, swapchain/context failure), `Viewer.run` /
-`Viewer.runApp` returns `Result<_, ViewerRunFailure>` with a stage you can report — it does not
-throw or silently fall back.
-
-The workflow can compose any of these capability packages:
-
-| Package | Capability |
-|---------|-----------|
-| [`FS.Skia.UI.Scene`](https://www.nuget.org/packages/FS.Skia.UI.Scene) | Dependency-light scene vocabulary — shapes, paths, text, images, paint. |
-| [`FS.Skia.UI.SkiaViewer`](https://www.nuget.org/packages/FS.Skia.UI.SkiaViewer) | The Vulkan/Skia viewer host (`Viewer.run`, `Viewer.runApp`) + window/close-reason contracts. |
-| [`FS.Skia.UI.Elmish`](https://www.nuget.org/packages/FS.Skia.UI.Elmish) | The adapter that bridges the Elmish program to the viewer. |
-| [`FS.Skia.UI.Layout`](https://www.nuget.org/packages/FS.Skia.UI.Layout) | Pure flex/grid and graph layout scene builders, hit testing. |
-| [`FS.Skia.UI.KeyboardInput`](https://www.nuget.org/packages/FS.Skia.UI.KeyboardInput) | Package-owned keyboard runtime, reducer, effects, diagnostics, state display. |
-| [`FS.Skia.UI.Input`](https://www.nuget.org/packages/FS.Skia.UI.Input) | Host-coupled input runtime — YAML key bindings, modes, sequences, command intents. |
-| [`FS.Skia.UI.Controls`](https://www.nuget.org/packages/FS.Skia.UI.Controls) | Declarative controls — buttons, text, charts, graph views, `DataGrid`, theming. |
-| [`FS.Skia.UI.Controls.Elmish`](https://www.nuget.org/packages/FS.Skia.UI.Controls.Elmish) | Wires Controls + keyboard runtime effects into the Elmish program. |
-| [`FS.Skia.UI.Testing`](https://www.nuget.org/packages/FS.Skia.UI.Testing) | Generated-product and package validation helpers. |
-| [`FS.Skia.UI.SkillSupport`](https://www.nuget.org/packages/FS.Skia.UI.SkillSupport) | Backing library for the authoring skills — DAG algorithms, parsing, globbing, code generation. |
-| [`FS.Skia.UI.Build`](https://www.nuget.org/packages/FS.Skia.UI.Build) | The compiled governance engine (evidence graph + merge-gate audit). |
-
-### How they fit together
-
-`Scene` is the shared vocabulary everything returns; `SkiaViewer` is the Vulkan/Skia host:
-
-```
-Scene  ─────────────────  pure scene primitives (FSharp.Core only)
- ├─ Layout              (+ Yoga.Net)    flex/grid + graph layout, hit testing
- ├─ Testing                             generated-product validation helpers
- ├─ KeyboardInput       (+ YamlDotNet)  key bindings, reducer, effects
- │   └─ Controls                        controls, charts, DataGrid, graph views
- │       └─ Controls.Elmish             control + keyboard command/subscription adapters
- └─ SkiaViewer          (+ Silk.NET, SkiaSharp)   Vulkan desktop host  ← Viewer.run/runApp
-     ├─ Elmish          (+ Fable.Elmish)          Elmish ↔ viewer adapter
-     └─ Input                                     host-coupled interactive input runtime
-```
-
-Package boundaries are enforced: e.g. `Controls` may not reference Silk.NET/SkiaSharp/Elmish
-directly, keeping the layers separated. (`FS.Skia.UI.SkillSupport` and `FS.Skia.UI.Build` are
-authoring/build-time libraries, outside this runtime graph.)
-
-## Releases & distribution
-
-Packages ship on **nuget.org** on the **preview** channel (libraries `0.1.68-preview.1`,
-template `0.1.87-preview.1`). The production push runs in CI with **no stored API key**, using
-NuGet [Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing)
-(GitHub OIDC): `.github/workflows/publish.yml` mints a short-lived key per run, the job is
-gated behind a protected `release` environment requiring maintainer approval, and all 12
-packages push idempotently (`--skip-duplicate`). Channel is explicit in the version value
-(`-preview.N` ⇒ preview; bare `MAJOR.MINOR.PATCH` ⇒ stable). Full flow:
-[`docs/distribution.md`](docs/distribution.md).
-
-> **Preview status.** This is a first-version preview toolkit on the `-preview` channel. Treat
-> the SkiaSharp 4 preview dependency as preview-risk: Vulkan driver behavior, native assets, and
-> package shape may change before SkiaSharp 4 is stable. The public API exposes no renderer
-> selection and provides no OpenGL/CPU/software/fallback renderer. You bring a **Vulkan-capable
-> GPU** on a Windows or Linux desktop host (macOS, mobile, browser, and headless production are
-> out of scope) and a **coding agent** for the Spec Kit workflow.
-
-## Developing FS.Skia.UI itself
-
-Working on the framework — the dev container, the technology stack, and the maintainer
-validation flow — is covered in [`docs/development.md`](docs/development.md) and
-[`docs/reports/build.md`](docs/reports/build.md). In short: maintainers work through the same
-Spec Kit process and run `./fake.sh build -t Route` first to get the minimal gate list. Because
-FAKE-backed gates share `.fake` state and are **not safe to run concurrently**, run them
-**sequentially**, one at a time — never in parallel (safe non-FAKE file reads and checks may
-still run in parallel):
-
-- `./fake.sh build -t Route` — prints the tier and minimal gate list for your change.
-- `./fake.sh build -t Dev` — the inner-loop gate (restore, build, test).
-- `./fake.sh build -t Verify` and `./fake.sh build -t Ci` — the broad aggregate gates.
+> **Preview status.** First-version preview on the `-preview` channel. Requires a
+> **Vulkan-capable GPU** on a Windows/Linux desktop host (macOS, mobile, browser,
+> and headless production are out of scope; no software/CPU fallback renderer) and
+> a **coding agent** for the Spec Kit workflow.
 
 ## License
 
