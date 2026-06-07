@@ -101,6 +101,21 @@ Start there and follow the role-based entry points, or jump straight to a topic:
 > and headless production are out of scope; no software/CPU fallback renderer) and
 > a **coding agent** for the Spec Kit workflow.
 
+## Building & validating the framework
+
+Maintainers work through the same Spec Kit loop. Run **`./fake.sh build -t Route`** first to get
+the minimal gate list for your change, then run only the gates it prints. Those gates are
+FAKE-backed and share `.fake` state, so they are **not safe to run concurrently** — run them
+**sequentially**, one at a time, never in parallel (safe non-FAKE file reads and checks may still
+run in parallel):
+
+- `./fake.sh build -t Dev` — the inner-loop gate (restore, build, test).
+- `./fake.sh build -t Verify` and `./fake.sh build -t Ci` — the broad aggregate gates.
+
+The full maintainer flow, technology stack, and dev container are covered in
+[`docs/reports/build.md`](docs/reports/build.md) and on the
+[development docs](https://ehotwagner.github.io/FS-Skia-UI/development.html).
+
 ## License
 
 Licensed under the [MIT License](LICENSE).
