@@ -19,6 +19,10 @@
          generated project (SC-004). -->
     <PackageVersion Include="FS.Skia.UI.SkillSupport" Version="$(FsSkiaUiVersion)" />
     <PackageVersion Include="FS.Skia.UI.Scene" Version="$(FsSkiaUiVersion)" />
+    <!-- 083 (FR-013): the WCAG contrast + accessible-palette package, pinned unconditionally
+         (every profile) like FS.Skia.UI.Scene — it is a core color capability depending only
+         on Scene, so every generated project can consume Contrast/Palettes. -->
+    <PackageVersion Include="FS.Skia.UI.Color" Version="$(FsSkiaUiVersion)" />
     <!--#if (profile == "app" || profile == "sample-pack") -->
     <PackageVersion Include="FS.Skia.UI.SkiaViewer" Version="$(FsSkiaUiVersion)" />
     <PackageVersion Include="FS.Skia.UI.Elmish" Version="$(FsSkiaUiVersion)" />

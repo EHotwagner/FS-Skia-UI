@@ -96,6 +96,54 @@ printfn "isCurrent = %b" (DesignTokenGen.isCurrent current)   // true on a clean
 DesignTokenGen.currencyDrift current |> List.iter (printfn "%s")
 ```
 
+## Color contrast & the `ContrastCheck` gate (feature 083)
+
+Theme color values must stay **legible**: the `ContrastCheck` gate enforces that every shipped
+foreground/background pairing meets the WCAG ratio the theme's own `contrastRequiredRatio` token
+promises. The gate routes with this skill's `controls-public-surface` rule, so any token-value
+edit selects it.
+
+### How to measure contrast
+
+- The shipped WCAG arithmetic lives in the **`FS.Skia.UI.Color`** package (`Contrast.ratio`,
+  `Contrast.relativeLuminance`, `Contrast.compositeOver`, `Contrast.check`). Reproduce the
+  reference values to sanity-check: black-on-white = 21:1, white-on-white = 1:1.
+- `Contrast.check role bg fg` returns ratio + verdict in one call. Roles: `Text`
+  (AAA ≥ 7, AA ≥ 4.5, AA-Large ≥ 3), `GraphicOrUi` (≥ 3:1, WCAG 1.4.11), `Decorative` (exempt —
+  recorded, never enforced).
+- **Alpha + aliases**: a token with `Alpha < 255` is composited over its theme `background`
+  token (deterministic source-over) before measuring; DTCG `{group.token}` aliases are resolved
+  to their concrete value first. The gate reads the alias-resolved generated values.
+
+### How to choose ramp values
+
+- Pull replacements from the **`Palettes`** module in `FS.Skia.UI.Color` — Radix-derived,
+  role-labelled ramps in matched `Light`/`Dark` variants (e.g. `Palettes.ramp "red" Palettes.Dark`).
+  A dark-mode error red, for instance, comes from the red dark ramp's high-contrast text steps.
+- Radix states its own guarantees in APCA; the **WCAG gate is the authority** that certifies any
+  chosen value. The ramps are reusable catalog data, **not** a second source of truth for the
+  shipped themes — the DTCG document stays the sole source.
+
+### The gate contract (FR-007/FR-008/FR-009)
+
+- **Validated-pairing set**: an explicit, documented list of `(foreground token, background
+  token, role)` tuples — **NOT** the token cartesian product (so semantically-meaningless pairs
+  are never flagged). It lives in `build/Governance/ContrastGate.fs`.
+- **Threshold selection**: `Text` → the theme's `contrastRequiredRatio`; `GraphicOrUi` → fixed
+  3.0; `Decorative` → recorded, not enforced.
+- **Report**: `readiness/color-contrast-evidence.md` — every pairing in both themes with measured
+  vs. required and pass/fail.
+- **Fail-loud message**: each failing row names both token names, both resolved colors, measured
+  ratio, required ratio, theme, and role.
+
+### Curing a `ContrastCheck` failure
+
+1. Read the failing row in `readiness/color-contrast-evidence.md` (or the gate's stderr).
+2. Edit **only** the failing `$value` in `src/Controls/design-tokens.tokens.json`, choosing an
+   accessible replacement from a `Palettes` ramp. Leave conforming tokens byte-unchanged.
+3. `./fake.sh build -t RefreshSurfaceBaselines` (regenerates `DesignTokens.fs`).
+4. `./fake.sh build -t DesignTokenDrift` then `./fake.sh build -t ContrastCheck` — both PASS.
+
 ## Cautions
 
 - **Determinism.** Generation is byte-stable (fixed theme/token order, no clock/env), so the

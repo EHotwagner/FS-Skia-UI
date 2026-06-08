@@ -87,8 +87,13 @@ let designTokenGenerationTests =
             Expect.equal once twice "splice is deterministic"
         }
 
-        test "alias resolution is deterministic — dark.danger resolves to light.danger (#b91c1cff)" {
-            let facts = DesignTokenGen.parse (tokensJson ())
+        test "alias resolution is deterministic — a dark.danger -> light.danger alias resolves to the light value" {
+            // Feature 083 changed the *shipped* dark.danger to a concrete accessible value
+            // (WCAG conformance, ContrastCheck). Derive an alias fixture from the real source so
+            // this 069 contract — that the parser resolves a `{group.token}` alias deterministically
+            // to the target's concrete value — is still proven on representative, valid input.
+            let aliased = (tokensJson ()).Replace("#ff9592ff", "{light.danger}")
+            let facts = DesignTokenGen.parse aliased
             let darkDanger = facts |> List.find (fun f -> f.Theme = "dark" && f.Name = "danger")
             let lightDanger = facts |> List.find (fun f -> f.Theme = "light" && f.Name = "danger")
             Expect.equal darkDanger.Rendered "Colors.rgba 185uy 28uy 28uy 255uy" "dark.danger alias resolves to the light value"

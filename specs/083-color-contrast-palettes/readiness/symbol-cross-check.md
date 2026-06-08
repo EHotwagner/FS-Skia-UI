@@ -1,0 +1,38 @@
+## Symbol consistency (analyze pass G)
+- entity-record Color — in {tasks}, missing from {plan, data-model}
+- entity-record ContrastCheck — in {tasks}, missing from {plan, data-model}
+- entity-record Decorative — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record Dev — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedGuidanceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedProductCheck — in {tasks}, missing from {plan, data-model}
+- entity-record GraphicOrUi — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record Indeterminate — in {data-model, tasks}, missing from {plan}
+- entity-record PairingOutcome — in {tasks}, missing from {plan, data-model}
+- entity-record SkillSyncCheck — in {tasks}, missing from {plan, data-model}
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- entity-record ValidatedPairing — in {tasks}, missing from {plan, data-model}
+- fr-id FR-001 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-002 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-003 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-004 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-005 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-006 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-007 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-009 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-010 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-011 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-012 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-013 — in {plan, tasks}, missing from {data-model}
+- msg-case Effect — in {plan, tasks}, missing from {data-model}
+- msg-case Model — in {plan, tasks}, missing from {data-model}
+- msg-case Msg — in {plan, tasks}, missing from {data-model}
+- sc-id SC-001 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-002 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-005 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant Color — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant ContrastCheck — in {plan, tasks}, missing from {data-model}
+- union-or-screen-variant Dark — in {data-model, tasks}, missing from {plan}
+- union-or-screen-variant Light — in {data-model, tasks}, missing from {plan}
+- union-or-screen-variant Targets — in {plan, tasks}, missing from {data-model}
+- union-or-screen-variant Text — in {tasks}, missing from {plan, data-model}

@@ -82,6 +82,8 @@
     <Compile Include="DocsArchitectureAnalysisTests.fs" />
     <!-- Feature 077 (FR-006): the phase-hook parity guard (negative SEH + positive corpus). -->
     <Compile Include="PhaseHookParityTests.fs" />
+    <!-- Feature 083 (US1): ContrastCheck routing/registration (T012) + gate regression (T013). -->
+    <Compile Include="Feature083GovernanceTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

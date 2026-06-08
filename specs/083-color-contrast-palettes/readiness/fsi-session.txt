@@ -1,0 +1,33 @@
+# FSI session — FS.Skia.UI.Color packed surface (T008 draft, T022 ramps, T024 consumer)
+# Captured 2026-06-08T19:35:19Z via dotnet fsi against the built Scene + Color assemblies.
+# Command: dotnet fsi /tmp/color-fsi-session.fsx
+
+== US3 / SC-002: WCAG reference pairs ==
+ratio black/white   = 21.0000 (expect ~21.0)
+ratio white/white   = 1.0000 (expect 1.0)
+relLuminance white  = 1.0000
+relLuminance black  = 0.0000
+
+== US3 / SC-004: ratio + verdict in ONE call ==
+check Text white-on-black = { Ratio = 21.00; Role = Text; Verdict = Aaa }
+check GraphicOrUi accent-on-bg = { Ratio = 4.94; Verdict = Aa }
+
+== US3: per-role thresholds replayed ==
+verdict Text 7.0 = Aaa
+verdict Text 4.5 = Aa
+verdict Text 3.0 = AaLarge
+verdict Text 2.0 = Fail
+verdict GraphicOrUi 3.0 = Aa
+verdict GraphicOrUi 2.0 = Fail
+verdict Decorative 1.0 = Exempt
+
+== US3 / FR-004a: non-solid paint is Indeterminate ==
+checkPaint gradient = { Verdict = Indeterminate; Ratio isNaN = true }
+
+== US2 / SC-003: matched light/dark ramps; documented Text over AppBackground meets AA ==
+families offered: ["slate"; "blue"; "red"]
+blue has Light=true Dark=true
+blue-light text step 11 over app-background step 1 = 5.03:1 (AA >= 4.5 : true)
+blue-dark  text step 11 over app-background step 1 = 7.29:1 (AA >= 4.5 : true)
+
+DONE

@@ -26,6 +26,8 @@ type Target =
     | ControlsCatalogGenerationCheck
     // Feature 069 (US1, FR-006): the design-token generation-currency (drift) gate.
     | DesignTokenDrift
+    // Feature 083 (US1, FR-007): the WCAG color-contrast gate over the shipped theme tokens.
+    | ContrastCheck
     // Feature 078 (US1, FR-005): the controls-catalog docs currency/completeness/preview gate.
     | ControlsCatalogDocsCheck
     // Feature 080 (US2, FR-007/FR-012): the render-capable decoded-content fidelity gate.
@@ -96,6 +98,7 @@ let allTargets =
       ControlsCatalogCheck
       ControlsCatalogGenerationCheck
       DesignTokenDrift
+      ContrastCheck
       ControlsCatalogDocsCheck
       ControlFidelityCheck
       ControlsInteractionCheck
@@ -151,6 +154,7 @@ let name target =
     | ControlsCatalogCheck -> "ControlsCatalogCheck"
     | ControlsCatalogGenerationCheck -> "ControlsCatalogGenerationCheck"
     | DesignTokenDrift -> "DesignTokenDrift"
+    | ContrastCheck -> "ContrastCheck"
     | ControlsCatalogDocsCheck -> "ControlsCatalogDocsCheck"
     | ControlFidelityCheck -> "ControlFidelityCheck"
     | ControlsInteractionCheck -> "ControlsInteractionCheck"
@@ -206,6 +210,7 @@ let directPrerequisites target =
     | ControlsCatalogCheck -> []
     | ControlsCatalogGenerationCheck -> []
     | DesignTokenDrift -> []
+    | ContrastCheck -> []
     | ControlsCatalogDocsCheck -> []
     | ControlFidelityCheck -> []
     | ControlsInteractionCheck -> []
@@ -286,6 +291,7 @@ let private failureOwner target =
     | ControlsCatalogCheck
     | ControlsCatalogGenerationCheck
     | DesignTokenDrift
+    | ContrastCheck
     | ControlsCatalogDocsCheck
     | ControlFidelityCheck
     | ControlsInteractionCheck

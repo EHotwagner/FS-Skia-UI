@@ -1,0 +1,70 @@
+namespace FS.Skia.UI.Color
+
+open FS.Skia.UI.Scene
+
+type Role =
+    | Text
+    | GraphicOrUi
+    | Decorative
+
+type Verdict =
+    | Aaa
+    | Aa
+    | AaLarge
+    | Fail
+    | Exempt
+    | Indeterminate
+
+type ContrastResult =
+    { Ratio: float
+      Role: Role
+      Verdict: Verdict }
+
+module Contrast =
+
+    val relativeLuminance: color: Color -> float
+
+    val ratio: a: Color -> b: Color -> float
+
+    val compositeOver: background: Color -> foreground: Color -> Color
+
+    val verdict: role: Role -> ratio: float -> Verdict
+
+    val check: role: Role -> background: Color -> foreground: Color -> ContrastResult
+
+    val checkPaint: role: Role -> background: Color -> paint: Paint -> ContrastResult
+
+namespace FS.Skia.UI.Color
+
+open FS.Skia.UI.Scene
+
+module Palettes =
+
+    type StepRole =
+        | AppBackground
+        | SubtleBackground
+        | ComponentBackground
+        | Border
+        | FocusRing
+        | Solid
+        | Text
+
+    type RampVariant =
+        | Light
+        | Dark
+
+    type PaletteStep =
+        { Index: int
+          Role: StepRole
+          Color: Color }
+
+    type PaletteRamp =
+        { Family: string
+          Variant: RampVariant
+          Steps: PaletteStep list }
+
+    val all: PaletteRamp list
+
+    val ramp: family: string -> variant: RampVariant -> PaletteRamp option
+
+    val families: string list

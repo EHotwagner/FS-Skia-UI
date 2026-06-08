@@ -359,6 +359,39 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
           if not (List.isEmpty drift) then
               FailWith(String.Join(Environment.NewLine, drift))
           focusedGateSummary model "DesignTokenDrift" ]
+    | StartTarget Targets.ContrastCheck ->
+        // Feature 083 (US1, FR-007/FR-008): the WCAG color-contrast gate. Read the DTCG token
+        // source at this interpreter edge (DesignTokenDrift precedent), parse it into the
+        // alias-resolved fact table, and evaluate the explicit validated-pairing set for both
+        // themes through the pure ContrastGate core (which measures via the shipped
+        // FS.Skia.UI.Color WCAG arithmetic). Write the per-pairing readiness report and
+        // FailWith the actionable diagnostics — naming pairing/measured/required/theme/role —
+        // when any enforced pairing falls below its threshold. DesignTokenDrift guarantees the
+        // generated module matches this source, so reading the source honors FR-007.
+        let jsonPath = repoRelPath model.RepositoryRoot DesignTokenGen.tokensJsonRel
+
+        let outcomes =
+            if File.Exists jsonPath then
+                DesignTokenGen.parse (File.ReadAllText jsonPath)
+                |> ContrastGate.outcomesFromFacts
+            else
+                []
+
+        let diagnostics = ContrastGate.failureDiagnostics outcomes
+        let report = ContrastGate.renderReport outcomes
+
+        model,
+        [ focusedGateAssumptionCheck model "ContrastCheck"
+          WriteStructuredReport(
+              "color contrast evidence",
+              path [ model.ReadinessDir; "color-contrast-evidence.md" ],
+              report
+          )
+          if not (File.Exists jsonPath) then
+              FailWith(sprintf "ContrastCheck: DTCG token source %s is missing — cannot measure shipped themes" DesignTokenGen.tokensJsonRel)
+          if not (List.isEmpty diagnostics) then
+              FailWith(String.Join(Environment.NewLine, diagnostics))
+          focusedGateSummary model "ContrastCheck" ]
     | StartTarget Targets.ControlsCatalogDocsCheck ->
         // Feature 078 (US1, FR-005): the controls-catalog docs currency / completeness /
         // preview-honesty / link-resolution gate. Gather the observed docs tree at this

@@ -44,6 +44,11 @@ let private frozenDark : Theme =
         Foreground = Colors.rgba 241uy 245uy 249uy 255uy
         Background = Colors.rgba 17uy 24uy 39uy 255uy
         Accent = Colors.rgba 96uy 165uy 250uy 255uy
+        // Feature 083 (FR-010): dark.danger was the pre-069 `{light.danger}` alias (#b91c1c),
+        // which measured only 2.74:1 on the dark background and failed the WCAG ContrastCheck
+        // gate. It was deliberately brought into conformance with a Radix dark-red text step
+        // (#ff9592, 8.42:1). The parity oracle tracks that intentional accessibility fix.
+        Danger = Colors.rgba 255uy 149uy 146uy 255uy
         Muted = Colors.rgba 148uy 163uy 184uy 255uy }
 
 [<Tests>]

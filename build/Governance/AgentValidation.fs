@@ -365,6 +365,7 @@ module ValidationContract =
           "ControlsCatalogDocsCheck"
           "ControlFidelityCheck"
           "DesignTokenDrift"
+          "ContrastCheck"
           "ControlsInteractionCheck"
           "ControlsRenderingCheck"
           "Dev"

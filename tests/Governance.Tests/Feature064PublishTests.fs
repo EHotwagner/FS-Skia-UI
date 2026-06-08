@@ -72,16 +72,18 @@ let feature064PublishTests =
             Expect.isNone (Publish.validateConfig dry) "dry-run needs no credential"
         }
 
-        // --- US2 / SC-002 (T015): the dry-run plan is exactly 12 rows --------------------
-        test "T015 the publish plan is exactly 12 packages (11 libs + template)" {
-            Expect.equal (List.length packProjects) 11 "packProjects is the 11 packable libraries"
+        // --- US2 / SC-002 (T015): the dry-run plan is exactly 13 rows --------------------
+        // Feature 083 (FR-013): FS.Skia.UI.Color joined packProjects (12 libs); the plan is now
+        // 13 rows (12 libs + template).
+        test "T015 the publish plan is exactly 13 packages (12 libs + template)" {
+            Expect.equal (List.length packProjects) 12 "packProjects is the 12 packable libraries"
 
             let packages =
                 (packProjects |> List.map (fun (_, packageId) -> packageId, "0.1.67-preview.1"))
                 @ [ "FS.Skia.UI.Template", "0.1.86-preview.1" ]
 
             let rows = Publish.buildPlan packages (fun _ _ -> false)
-            Expect.equal (List.length rows) 12 "exactly 12 plan rows"
+            Expect.equal (List.length rows) 13 "exactly 13 plan rows"
             Expect.all rows (fun r -> r.Decision = Push) "with no feed versions present, every row is a Push"
         }
 

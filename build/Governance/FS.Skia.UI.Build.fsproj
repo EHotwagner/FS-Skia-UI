@@ -79,6 +79,12 @@
          Engine/Interpret.fs edge. Build-tooling .fsi (CatalogGen.fsi precedent). -->
     <Compile Include="DesignTokenGen.fsi" />
     <Compile Include="DesignTokenGen.fs" />
+    <!-- Feature 083 (US1, FR-007/FR-008/FR-009): the ContrastCheck gate's validated-pairing
+         set + pure evaluator. The WCAG arithmetic is single-sourced from the shipped
+         FS.Skia.UI.Color package (ProjectReference below); the gate reads the alias-resolved
+         DTCG facts (DesignTokenGen, compiled above) at the Engine/Interpret.fs edge. -->
+    <Compile Include="ContrastGate.fsi" />
+    <Compile Include="ContrastGate.fs" />
     <!-- Feature 078 (US1): single-source generator + currency check for the published
          "Controls" docs section. Reuses CatalogGen.catalogFacts + the keyed BEGIN/END
          GENERATED splice precedent (so it compiles after CatalogGen); pure, with IO at the
@@ -168,6 +174,11 @@
        version circularity). Governance runs the same code the fsharp-* skills cite. -->
   <ItemGroup>
     <ProjectReference Include="..\..\src\SkillSupport\SkillSupport.fsproj" />
+    <!-- Feature 083 (FR-007): consume the shipped FS.Skia.UI.Color WCAG arithmetic by
+         ProjectReference (source, not the packed nupkg — no build-of-the-builder version
+         circularity), so the ContrastCheck gate measures through exactly the same
+         Contrast.ratio / compositeOver the package ships. Color references only Scene. -->
+    <ProjectReference Include="..\..\src\Color\Color.fsproj" />
   </ItemGroup>
 
 </Project>

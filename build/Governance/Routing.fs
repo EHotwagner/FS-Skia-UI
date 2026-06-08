@@ -137,9 +137,13 @@ let rules =
           // Feature 069 (US1, FR-006): the design-token generation-currency gate routes with
           // the controls-surface checks so `Route` lists it for `src/Controls/**` and
           // `Route --enforce` blocks a stale generated DesignTokens.fs.
+          // Feature 083 (US1, FR-011): the WCAG color-contrast gate routes with the
+          // controls-surface checks so any design-token / theme value edit selects it and
+          // `Route --enforce` blocks a sub-threshold shipped token.
           [ Targets.ControlsCatalogCheck
             Targets.ControlsCatalogGenerationCheck
             Targets.DesignTokenDrift
+            Targets.ContrastCheck
             Targets.ControlsInteractionCheck
             Targets.ControlsRenderingCheck
             Targets.PackageSurfaceCheck
@@ -147,6 +151,21 @@ let rules =
             Targets.GeneratedProductCheck ]
           [ "readiness/typed-controls-front-door.md"
             "readiness/package-surface-expectations.md" ]
+          "focused"
+          "product"
+
+      // Feature 083 (US1, FR-011): a change to the new FS.Skia.UI.Color package selects the
+      // contrast gate (the package backs the gate's WCAG arithmetic) alongside the
+      // per-package surface checks its public `.fsi` requires.
+      internalRule
+          "color-contrast"
+          [ "src/Color/**" ]
+          FocusedAuthority
+          [ Targets.ContrastCheck
+            Targets.PackageSurfaceCheck
+            Targets.FsiTranscripts
+            Targets.PerPackageSurfaceDiff ]
+          [ "readiness/color-contrast-evidence.md" ]
           "focused"
           "product"
 

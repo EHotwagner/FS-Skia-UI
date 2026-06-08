@@ -32,6 +32,10 @@ type DiffOutcome =
 // runtime rehomed out of the monolith).
 let packagesInScope: PackageId list =
     [ "FS.Skia.UI.Scene"
+      // Feature 083 (US1/Foundation, FR-013): the new WCAG color/palette package joins the
+      // per-package surface scope; a new package with no baseline is never treated as clean
+      // (Principle VII). Baseline at readiness/per-package-surface/FS.Skia.UI.Color.fsi.txt.
+      "FS.Skia.UI.Color"
       "FS.Skia.UI.SkiaViewer"
       "FS.Skia.UI.Elmish"
       "FS.Skia.UI.KeyboardInput"
@@ -51,6 +55,7 @@ let packagesInScope: PackageId list =
 let private packageSourceDir (packageId: PackageId) =
     match packageId with
     | "FS.Skia.UI.Scene" -> "Scene"
+    | "FS.Skia.UI.Color" -> "Color"
     | "FS.Skia.UI.SkiaViewer" -> "SkiaViewer"
     | "FS.Skia.UI.Elmish" -> "Elmish"
     | "FS.Skia.UI.KeyboardInput" -> "KeyboardInput"

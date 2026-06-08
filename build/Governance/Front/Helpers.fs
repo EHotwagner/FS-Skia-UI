@@ -15,6 +15,8 @@ open FS.Skia.UI.Build.Engine.Model
 let defaultTestProjects =
     [ "tests/Lib.Tests/Lib.Tests.fsproj"
       "tests/Scene.Tests/Scene.Tests.fsproj"
+      // Feature 083: the FS.Skia.UI.Color contrast/palette suite (reference pairs, verdicts, ramps).
+      "tests/Color.Tests/Color.Tests.fsproj"
       "tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj"
       "tests/Elmish.Tests/Elmish.Tests.fsproj"
       "tests/KeyboardInput.Tests/KeyboardInput.Tests.fsproj"
@@ -28,6 +30,8 @@ let defaultTestProjects =
 
 let packProjects =
     [ "src/Scene/Scene.fsproj", "FS.Skia.UI.Scene"
+      // Feature 083: the WCAG contrast + accessible-palette package (depends only on Scene).
+      "src/Color/Color.fsproj", "FS.Skia.UI.Color"
       "src/SkiaViewer/SkiaViewer.fsproj", "FS.Skia.UI.SkiaViewer"
       "src/Elmish/Elmish.fsproj", "FS.Skia.UI.Elmish"
       "src/KeyboardInput/KeyboardInput.fsproj", "FS.Skia.UI.KeyboardInput"

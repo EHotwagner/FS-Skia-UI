@@ -1,0 +1,129 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (feature 083).
+#
+# Phase-checkpoint edges (every task in Phase N+1 -> last foundation task of
+# Phase N) are auto-injected by the graph compute script and are NOT repeated
+# here. Only non-phase cross-edges and within-phase edges are written.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+    owns: []
+  T002:
+    deps: []
+    skillist: ["fs-skia-scene"]
+    owns: []
+  T003:
+    deps: []
+    skillist: []
+    owns: []
+  T004:
+    deps: []
+    skillist: []
+    owns: []
+  T005:
+    deps: []
+    skillist: ["fs-skia-scene"]
+    owns: []
+  T006:
+    deps: []
+    skillist: ["fs-skia-design-tokens"]
+    owns: []
+  T007:
+    deps: []
+    skillist: ["fs-skia-design-tokens"]
+    owns: []
+  T008:
+    deps: [T005]
+    skillist: ["fs-skia-scene"]
+    owns: []
+  T009:
+    deps: [T005]
+    skillist: []
+    owns: []
+  T010:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+  T011:
+    deps: []
+    skillist: ["fs-skia-scene", "fsharp-build-orchestration"]
+    owns: []
+  T012:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+    owns: []
+  T013:
+    deps: []
+    skillist: ["fs-skia-design-tokens"]
+    owns: []
+  T014:
+    deps: [T011]
+    skillist: ["fs-skia-scene"]
+    owns: []
+  T015:
+    deps: [T014]
+    skillist: ["fs-skia-design-tokens", "fsharp-parsing"]
+    owns: []
+  T016:
+    deps: [T015]
+    skillist: ["fsharp-build-orchestration", "fsharp-code-generation"]
+    owns: []
+  T017:
+    deps: [T015]
+    skillist: ["fs-skia-design-tokens", "fsharp-code-generation"]
+    owns: []
+  T018:
+    deps: [T016, T017]
+    skillist: ["fs-skia-design-tokens"]
+    owns: []
+  T019:
+    deps: [T018]
+    skillist: []
+    owns: []
+  T020:
+    deps: []
+    skillist: ["fs-skia-scene", "fsharp-build-orchestration"]
+    owns: []
+  T021:
+    deps: [T020, T014]
+    skillist: ["fs-skia-scene"]
+    owns: []
+  T022:
+    deps: [T021]
+    skillist: ["fs-skia-scene"]
+    owns: []
+  T023:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+    owns: []
+  T024:
+    deps: [T023, T014]
+    skillist: ["fs-skia-scene"]
+    owns: []
+  T025:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+    owns: []
+  T026:
+    deps: []
+    skillist: []
+    owns: []
+  T027:
+    deps: [T006]
+    skillist: ["fs-skia-design-tokens"]
+    owns: []
+  T028:
+    deps: [T025, T026, T027]
+    skillist: ["fsharp-build-orchestration"]
+    owns: []
+  T029:
+    deps: [T028]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T030:
+    deps: [T029]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

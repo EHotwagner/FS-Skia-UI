@@ -17,7 +17,7 @@ FAIL
 
 - Changed alignment classes: `template-drift-docs`
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/070-typed-controls-migration`
+- Active feature evidence: `specs/083-color-contrast-palettes`
 
 ## Controls Boundary Guidance
 

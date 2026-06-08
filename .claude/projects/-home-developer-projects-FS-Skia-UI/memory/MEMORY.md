@@ -1,2 +1,4 @@
+- [new-packable-package-checklist](new-packable-package-checklist.md) — every governance single-source to touch when adding a packable FS.Skia.UI.* lib (per-package scope+baseline, defaultTestProjects, packProjects, template pin+skill feed loop, count tests, frozen token oracles)
+- [readiness-contract-required-tokens](readiness-contract-required-tokens.md) — EvidenceAudit blocks unless governance-risk-levels.md (small/medium/broad/required evidence/broad validation) + runtime-limitations.md (.NET 10 desktop/Vulkan/SkiaSharp preview/unsupported macOS·mobile·browser/no software-renderer fallback) carry fixed tokens
 - [Controls suite + Penpot initiative](controls-suite-penpot-initiative.md) — typed Elmish controls + Penpot Spec-Kit integration plan
 - [Controls namespace DU case collisions](controls-namespace-du-case-collisions.md) — new public DUs in FS.Skia.UI.Controls collide with ButtonIntent/VisualState case names; use [<RequireQualifiedAccess>]

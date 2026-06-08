@@ -58,6 +58,7 @@ routing_rules:
       - ControlsCatalogCheck
       - ControlsCatalogGenerationCheck
       - DesignTokenDrift
+      - ContrastCheck
       - ControlsInteractionCheck
       - ControlsRenderingCheck
       - PackageSurfaceCheck
@@ -66,6 +67,21 @@ routing_rules:
     expected_artifacts:
       - readiness/typed-controls-front-door.md
       - readiness/package-surface-expectations.md
+    timeout_class: focused
+    failure_owner: product
+  - id: color-contrast
+    tier: focused-authority
+    paths:
+      - "src/Color/**"
+    feature_concerns:
+      - color-contrast
+    required_gates:
+      - ContrastCheck
+      - PackageSurfaceCheck
+      - FsiTranscripts
+      - PerPackageSurfaceDiff
+    expected_artifacts:
+      - readiness/color-contrast-evidence.md
     timeout_class: focused
     failure_owner: product
   - id: generated-template

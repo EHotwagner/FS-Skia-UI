@@ -16,7 +16,7 @@
     "foreground":            { "$type": "color",      "$value": "#f1f5f9ff" },
     "background":            { "$type": "color",      "$value": "#111827ff" },
     "accent":                { "$type": "color",      "$value": "#60a5faff" },
-    "danger":                { "$type": "color",      "$value": "{light.danger}" },
+    "danger":                { "$type": "color",      "$value": "#ff9592ff" },
     "muted":                 { "$type": "color",      "$value": "#94a3b8ff" },
     "fontFamily":            { "$type": "fontFamily", "$value": null },
     "fontSize":              { "$type": "dimension",  "$value": 14.0 },

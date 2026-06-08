@@ -56,10 +56,11 @@ contract is the generated `Directory.Packages.props` pin set and the
      parity check.) `GovernanceTests.fs` asserts `build.fsx` resolves the engine
      from `FsSkiaUiVersion`, so reintroducing a literal would fail the build.
    - The single property drives every template-pinned `FS.Skia.UI*`
-     `<PackageVersion ... Version="$(FsSkiaUiVersion)">` entry (ten packages):
+     `<PackageVersion ... Version="$(FsSkiaUiVersion)">` entry (eleven packages):
      - `FS.Skia.UI.Build`
      - `FS.Skia.UI.SkillSupport`
      - `FS.Skia.UI.Scene`
+     - `FS.Skia.UI.Color`
      - `FS.Skia.UI.SkiaViewer`
      - `FS.Skia.UI.Elmish`
      - `FS.Skia.UI.KeyboardInput`
@@ -92,13 +93,13 @@ contract is the generated `Directory.Packages.props` pin set and the
    - Do not delete source files or reset the repo to fix FAKE cache problems.
    - After bumping, verify every current repo package exists in the local feed
      before validating generated projects. The loop enumerates the **full packable
-     set** (eleven projects: the props-pinned ten plus the packable-but-unpinned
+     set** (twelve projects: the props-pinned eleven plus the packable-but-unpinned
      `Input`); it is the authoritative package list and is checked against the
      packable `.fsproj` set by `TemplateUpdateSkillPackageCheck`, so it cannot drift.
      Loop over the exact package leaves and the version detected in step 2:
      ```bash
      v=<version>
-     for pkg in Build Scene SkiaViewer Elmish KeyboardInput Input Layout Controls Controls.Elmish Testing SkillSupport; do
+     for pkg in Build Scene Color SkiaViewer Elmish KeyboardInput Input Layout Controls Controls.Elmish Testing SkillSupport; do
        test -f "$HOME/.local/share/nuget-local/FS.Skia.UI.$pkg.$v.nupkg" && echo "OK  $pkg" || echo "MISS $pkg"
      done
      ```
