@@ -45,6 +45,7 @@ type Target =
     | GeneratedGuidanceCheck
     | SkillSyncCheck
     | SkillQualityCheck
+    | PhaseHookParityCheck
     | SkillContractPathCheck
     | TemplateUpdateSkillPackageCheck
     | TemplateDrift

@@ -33,6 +33,8 @@ type Target =
     | GeneratedGuidanceCheck
     | SkillSyncCheck
     | SkillQualityCheck
+    // Feature 077 (FR-006): the phase-skill hook-discovery anti-drift gate.
+    | PhaseHookParityCheck
     | SkillContractPathCheck
     | TemplateUpdateSkillPackageCheck
     | TemplateDrift
@@ -97,6 +99,7 @@ let allTargets =
       GeneratedGuidanceCheck
       SkillSyncCheck
       SkillQualityCheck
+      PhaseHookParityCheck
       SkillContractPathCheck
       TemplateUpdateSkillPackageCheck
       TemplateDrift
@@ -149,6 +152,7 @@ let name target =
     | GeneratedGuidanceCheck -> "GeneratedGuidanceCheck"
     | SkillSyncCheck -> "SkillSyncCheck"
     | SkillQualityCheck -> "SkillQualityCheck"
+    | PhaseHookParityCheck -> "PhaseHookParityCheck"
     | SkillContractPathCheck -> "SkillContractPathCheck"
     | TemplateUpdateSkillPackageCheck -> "TemplateUpdateSkillPackageCheck"
     | TemplateDrift -> "TemplateDrift"
@@ -201,6 +205,7 @@ let directPrerequisites target =
     | GeneratedGuidanceCheck -> []
     | SkillSyncCheck -> []
     | SkillQualityCheck -> []
+    | PhaseHookParityCheck -> [ Build ]
     | SkillContractPathCheck -> []
     | TemplateUpdateSkillPackageCheck -> []
     | TemplateDrift -> []

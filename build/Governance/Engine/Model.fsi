@@ -119,6 +119,8 @@ type BuildEffect =
     | PerPackageSurfaceDiffCheck
     // Feature 058: pure skill-quality rubric check (re-derived in interpret, so no payload).
     | SkillQualityScan
+    // Feature 077 (FR-006): pure phase-hook parity check (re-derived in interpret, no payload).
+    | PhaseHookScan
     // Feature 060: api-surface regeneration (FR-003) + anti-drift scans (FR-004 / FR-009);
     // re-derived in interpret, so no payload.
     | RegenerateApiSurface

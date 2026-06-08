@@ -421,6 +421,12 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
           SkillQualityScan
           RequireFiles("skill quality report", [ path [ model.ReadinessDir; "skill-quality-check.md" ]; path [ model.LogDir; "skill-quality-check.txt" ] ])
           focusedGateSummary model "SkillQualityCheck" ]
+    | StartTarget Targets.PhaseHookParityCheck ->
+        model,
+        [ focusedGateAssumptionCheck model "PhaseHookParityCheck"
+          PhaseHookScan
+          RequireFiles("phase hook parity report", [ path [ model.ReadinessDir; "phase-hook-parity-check.md" ]; path [ model.LogDir; "phase-hook-parity-check.txt" ] ])
+          focusedGateSummary model "PhaseHookParityCheck" ]
     | StartTarget Targets.SkillContractPathCheck ->
         model,
         [ focusedGateAssumptionCheck model "SkillContractPathCheck"

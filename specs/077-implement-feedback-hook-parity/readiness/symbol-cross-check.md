@@ -1,0 +1,19 @@
+## Symbol consistency (analyze pass G)
+- entity-record GeneratedProductCheck — in {tasks}, missing from {plan, data-model}
+- entity-record PhaseHookFinding — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record PhaseSkill — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record RequiredMarker — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- fr-id FR-004 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-005 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-006 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-009 — in {tasks}, missing from {plan, data-model}
+- msg-case Msg — in {plan, tasks}, missing from {data-model}
+- msg-case PhaseHookScan — in {tasks}, missing from {plan, data-model}
+- sc-id SC-001 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-002 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-003 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-004 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-005 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant PhaseHookParityCheck — in {tasks}, missing from {plan, data-model}

@@ -244,6 +244,7 @@ let rules =
           // api-surface path) and the template-update package-set gate (the
           // `fs-skia-template-update` skill lives under `.agents/skills/**`).
           [ Targets.SkillQualityCheck
+            Targets.PhaseHookParityCheck
             Targets.SkillSyncCheck
             Targets.SkillContractPathCheck
             Targets.TemplateUpdateSkillPackageCheck ]

@@ -172,6 +172,7 @@ routing_rules:
       - skill-quality
     required_gates:
       - SkillQualityCheck
+      - PhaseHookParityCheck
       - SkillSyncCheck
       - SkillContractPathCheck
       - TemplateUpdateSkillPackageCheck

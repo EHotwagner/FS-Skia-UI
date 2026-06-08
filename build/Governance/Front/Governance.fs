@@ -168,6 +168,48 @@ let runSkillQualityCheck (model: BuildModel) =
                 (Findings.renderDetail findings)
         )
 
+// Feature 077 — PhaseHookParityCheck (FR-006): read the nine roster phase skills (each
+// canonical `.agents` SKILL.md + its generated `.claude` mirror), check each carries the
+// modern multi-file hook-discovery block, write the per-phase report, and fail loud naming
+// each phase + missing marker. The pure roster/marker logic lives in PhaseHookParity; this
+// runner is the interpreter edge (Principle IV — the only IO is here).
+let runPhaseHookParityCheck (model: BuildModel) =
+    let root = model.RepositoryRoot
+
+    let readSkill (treeRoot: string) (phase: string) =
+        let rel = sprintf "%s/skills/speckit-%s/SKILL.md" treeRoot phase
+        let full = path (root :: (rel.Split('/') |> List.ofArray))
+
+        if File.Exists full then
+            Some
+                { PhaseHookParity.Phase = phase
+                  PhaseHookParity.RelPath = rel
+                  PhaseHookParity.Body = File.ReadAllText full }
+        else
+            None
+
+    let parsed =
+        PhaseHookParity.roster
+        |> List.collect (fun phase -> [ readSkill ".agents" phase; readSkill ".claude" phase ] |> List.choose id)
+
+    let report = PhaseHookParity.renderReport parsed
+    let reportPath = path [ model.ReadinessDir; "phase-hook-parity-check.md" ]
+    let logPath = path [ model.LogDir; "phase-hook-parity-check.txt" ]
+    ensureParent reportPath
+    File.WriteAllText(reportPath, report)
+    ensureParent logPath
+    File.WriteAllText(logPath, report)
+
+    let findings = PhaseHookParity.checkCorpus parsed
+
+    if not (List.isEmpty findings) then
+        failwith (
+            sprintf
+                "PhaseHookParityCheck failed: %d phase-hook parity violation(s) across in-scope phase skills.\n%s"
+                (List.length findings)
+                (Findings.renderDetail findings)
+        )
+
 // Feature 060 (FR-003) — api-surface regeneration edge. Plan the emitted tree from the
 // capability catalog `contracts:`, write each emitted `.fsi` byte-identical to its source,
 // and prune any orphan emitted file/dir with no capability source so the surface a consumer

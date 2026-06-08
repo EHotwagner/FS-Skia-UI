@@ -35,6 +35,9 @@
     <!-- Feature 058 (US1): pure skill-quality rubric check; depends only on Findings. -->
     <Compile Include="SkillQuality.fsi" />
     <Compile Include="SkillQuality.fs" />
+    <!-- Feature 077 (FR-006): pure phase-hook parity guard; depends only on Findings. -->
+    <Compile Include="PhaseHookParity.fsi" />
+    <Compile Include="PhaseHookParity.fs" />
     <Compile Include="Targets.fsi" />
     <Compile Include="Targets.fs" />
     <Compile Include="TargetMetadata.fsi" />

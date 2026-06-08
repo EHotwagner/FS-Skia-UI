@@ -1,0 +1,110 @@
+{
+  "base_ref": null,
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "specs/077-implement-feedback-hook-parity/plan.md",
+      "line": 129,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: The guard's **positive** evidence is real \u2014 the guard"
+    },
+    {
+      "file": "specs/077-implement-feedback-hook-parity/plan.md",
+      "line": 187,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-implement/SKILL.md      # add modern block (pre+post)"
+    },
+    {
+      "file": "specs/077-implement-feedback-hook-parity/plan.md",
+      "line": 188,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-tasks/SKILL.md          # add modern block (pre+post)"
+    },
+    {
+      "file": "specs/077-implement-feedback-hook-parity/plan.md",
+      "line": 189,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-taskstoissues/SKILL.md  # upgrade legacy -> modern"
+    },
+    {
+      "file": "specs/077-implement-feedback-hook-parity/plan.md",
+      "line": 190,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-constitution/SKILL.md   # add modern block (pre+post)"
+    },
+    {
+      "file": "specs/077-implement-feedback-hook-parity/plan.md",
+      "line": 191,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-*/SKILL.md              # regenerated via RefreshSurfaceBaselines"
+    },
+    {
+      "file": "specs/077-implement-feedback-hook-parity/readiness/task-graph.json",
+      "line": 249,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "\"design_source\": \"plan.md Constitution Check (\\\"Synthetic evidence\\\") + research.md D4\","
+    },
+    {
+      "file": "specs/077-implement-feedback-hook-parity/readiness/task-graph.md",
+      "line": 49,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "## Synthetic Error-Handling Classification"
+    },
+    {
+      "file": "specs/077-implement-feedback-hook-parity/readiness/task-graph.md",
+      "line": 51,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Accepted | Label | Design source | Synthetic input class | Expected error behavior | Diagnostics |"
+    },
+    {
+      "file": "specs/077-implement-feedback-hook-parity/readiness/task-graph.md",
+      "line": 53,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| T006 | yes | yes | plan.md Constitution Check (\"Synthetic evidence\") + research.md D4 | block-stripped SKILL.md body ("
+    },
+    {
+      "file": "specs/077-implement-feedback-hook-parity/readiness/task-graph.md",
+      "line": 142,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/077-implement-feedback-hook-parity/tasks.md",
+      "line": 163,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    },
+    {
+      "file": "specs/077-implement-feedback-hook-parity/tasks.md",
+      "line": 165,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| T006 | Negative guard proof requires a deficient skill body; keeping a permanently-broken real SKILL.md in the tree is"
+    }
+  ]
+}

@@ -11,6 +11,44 @@ metadata:
 
 # /speckit.constitution
 
+## Pre-Execution Checks
+
+**Check for extension hooks (before constitution)**:
+- Discover hooks across **all** extension files (multi-file discovery), not just the central file:
+  - Read `.specify/extensions.yml` from the project root (if present) and collect entries under the `hooks.before_constitution` key.
+  - Then enumerate every `.specify/extensions/*/*.yml` file in sorted order, parse each, and collect its `hooks.before_constitution` entries too — so a hook registered only in a per-extension file (e.g. the `feedback` extension at `.specify/extensions/feedback/feedback.yml`) is still discovered and runs.
+  - Merge all collected entries and dedupe by `(extension, command)` (first occurrence wins, so a hook declared in both files runs once).
+  - If a file is absent or its YAML cannot be parsed/is invalid, skip that file silently and continue.
+- For every `optional: true` hook that is discovered but not executed this phase, emit one line so the skip is a visible decision: `Note: optional hook {extension}:{command} is registered but was not run (skipped).`
+- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled.
+- For each remaining hook, do **not** interpret or evaluate hook `condition` expressions:
+  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
+  - If the hook defines a non-empty `condition`, skip it and leave condition evaluation to the HookExecutor implementation
+- For each executable hook, output the following based on its `optional` flag:
+  - **Optional hook** (`optional: true`):
+    ```
+    ## Extension Hooks
+
+    **Optional Pre-Hook**: {extension}
+    Command: `/{command}`
+    Description: {description}
+
+    Prompt: {prompt}
+    To execute: `/{command}`
+    ```
+  - **Mandatory hook** (`optional: false`):
+    ```
+    ## Extension Hooks
+
+    **Automatic Pre-Hook**: {extension}
+    Executing: `/{command}`
+    EXECUTE_COMMAND: {command}
+
+    Wait for the result of the hook command before proceeding to constitution setup.
+    ```
+  The registered `before_constitution` `git.initialize` hook (`optional: false`) is **mandatory** — under `auto_execute_hooks: true` it auto-runs and you wait for the repository to be initialized before populating the constitution.
+- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
+
 Populate `.specify/memory/constitution.md` from the preset's
 `constitution-template.md`. The template contains three kinds of sections,
 marked by HTML comments:
@@ -66,3 +104,46 @@ template and offer three options:
    TAILORABLE choices (warn if LOCKED sections have diverged — that's a
    sign the preset was amended upstream).
 3. Abort and let the user edit manually.
+
+## Post-Execution Checks
+
+**Check for extension hooks (after constitution)**: After the constitution is populated, discover hooks across **all** extension files (multi-file discovery), not just the central file:
+- Read `.specify/extensions.yml` from the project root (if present) and collect entries under the `hooks.after_constitution` key.
+- Then enumerate every `.specify/extensions/*/*.yml` file in sorted order, parse each, and collect its `hooks.after_constitution` entries too — so a hook registered only in a per-extension file (e.g. the `feedback` extension at `.specify/extensions/feedback/feedback.yml`) is still discovered and runs on phase completion.
+- Merge all collected entries and dedupe by `(extension, command)` (first occurrence wins, so a hook declared in both files runs once).
+- **Hook execution precedence** (D1): when `settings.auto_execute_hooks: true` in `.specify/extensions.yml`, a **mandatory** hook (`optional: false`) **auto-runs** with no confirmation; an **optional** hook (`optional: true`) is **always surfaced** ("To execute: `/{command}`") and is **never force-run** by `auto_execute_hooks`; a hook with a non-empty `condition` is **never** evaluated by this skill — evaluation is left to the executor and the notice reports the resolved decision. When `auto_execute_hooks: false`, even mandatory hooks are surfaced for confirmation.
+- **Effective-hooks notice** (D2): after the merge + dedup by `(extension, command)`, emit **one** consolidated notice for the phase so the operator never hand-reconciles files — a promoted feedback hook (`optional: false`) appears as `auto-run`, never as a surfaced optional:
+  ```
+  ## Effective hooks for constitution
+  - {extension}:{command} — auto-run        (mandatory; auto_execute_hooks=true)
+  - {extension}:{command} — surfaced        (optional)
+  - {extension}:{command} — skipped         (enabled: false)
+  - {extension}:{command} — condition-deferred
+  ```
+- If a file is absent or its YAML cannot be parsed/is invalid, skip that file silently and continue.
+- For every `optional: true` hook that is discovered but not executed this phase, emit one line so the skip is a visible decision: `Note: optional hook {extension}:{command} is registered but was not run (skipped).`
+- Filter out hooks where `enabled` is explicitly `false`. Treat hooks without an `enabled` field as enabled.
+- For each remaining hook, do **not** interpret or evaluate hook `condition` expressions:
+  - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
+  - If the hook defines a non-empty `condition`, skip it and leave condition evaluation to the HookExecutor implementation
+- For each executable hook, output the following based on its `optional` flag:
+  - **Optional hook** (`optional: true`):
+    ```
+    ## Extension Hooks
+
+    **Optional Hook**: {extension}
+    Command: `/{command}`
+    Description: {description}
+
+    Prompt: {prompt}
+    To execute: `/{command}`
+    ```
+  - **Mandatory hook** (`optional: false`):
+    ```
+    ## Extension Hooks
+
+    **Automatic Hook**: {extension}
+    Executing: `/{command}`
+    EXECUTE_COMMAND: {command}
+    ```
+- If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
