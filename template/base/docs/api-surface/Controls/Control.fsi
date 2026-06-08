@@ -1,5 +1,13 @@
 namespace FS.Skia.UI.Controls
 
+/// Internal extraction seam (feature 080) — `internal` accessibility, no public-surface
+/// entry (mirrors `module internal Reconcile`); reached from `Controls.Tests` via
+/// `InternalsVisibleTo`. Only `chartValues` is exposed, for the FR-002 extraction test that
+/// proves the typed-front-door `ChartSeries`/`ChartPoint` data is read (pre-080: yielded `[]`).
+module internal ControlInternals =
+    /// Extract the chart data points (X/Y/Label preserved) a chart-like control carries.
+    val chartValues: control: Control<'msg> -> ChartPoint list
+
 /// Public contract module exposed by this FS.Skia.UI package.
 module Control =
     /// Public contract function exposed by this FS.Skia.UI package.

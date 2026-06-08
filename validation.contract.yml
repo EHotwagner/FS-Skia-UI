@@ -154,10 +154,12 @@ routing_rules:
       - "build/Governance/CatalogDocsGen.fsi"
       - "build/Governance/CatalogGen.fs"
       - "src/Controls/catalog.yml"
+      - "tests/ControlsPreview.Harness/**"
     feature_concerns:
       - controls-catalog-docs
     required_gates:
       - ControlsCatalogDocsCheck
+      - ControlFidelityCheck
     expected_artifacts:
     timeout_class: focused
     failure_owner: product

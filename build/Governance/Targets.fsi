@@ -40,6 +40,8 @@ type Target =
     | DesignTokenDrift
     // Feature 078 (US1, FR-005): the controls-catalog docs currency/completeness/preview gate.
     | ControlsCatalogDocsCheck
+    // Feature 080 (US2, FR-007/FR-012): the render-capable decoded-content fidelity gate.
+    | ControlFidelityCheck
     | ControlsInteractionCheck
     | ControlsRenderingCheck
     | DependencyReport

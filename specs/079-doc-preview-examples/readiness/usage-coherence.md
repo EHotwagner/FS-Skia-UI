@@ -1,3 +1,9 @@
+> **Correction (feature 080).** The coherence claims below were reviewed against the
+> `UsageNote` text, not against decoded image content, while the 079 previews were label-on-a-box
+> schematics. Feature **080-control-render-fidelity** makes the previews faithful and verifies
+> each per-control claim against the decoded image via `ControlFidelityCheck`. See
+> `specs/080-control-render-fidelity/readiness/usage-coherence.md`.
+
 # Usage Coherence Review (US2) — 079-doc-preview-examples (T014/T015)
 
 Authoritative command: manual review of each `ControlSampleDefinition.UsageNote` +

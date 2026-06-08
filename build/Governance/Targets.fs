@@ -28,6 +28,8 @@ type Target =
     | DesignTokenDrift
     // Feature 078 (US1, FR-005): the controls-catalog docs currency/completeness/preview gate.
     | ControlsCatalogDocsCheck
+    // Feature 080 (US2, FR-007/FR-012): the render-capable decoded-content fidelity gate.
+    | ControlFidelityCheck
     | ControlsInteractionCheck
     | ControlsRenderingCheck
     | DependencyReport
@@ -95,6 +97,7 @@ let allTargets =
       ControlsCatalogGenerationCheck
       DesignTokenDrift
       ControlsCatalogDocsCheck
+      ControlFidelityCheck
       ControlsInteractionCheck
       ControlsRenderingCheck
       DependencyReport
@@ -149,6 +152,7 @@ let name target =
     | ControlsCatalogGenerationCheck -> "ControlsCatalogGenerationCheck"
     | DesignTokenDrift -> "DesignTokenDrift"
     | ControlsCatalogDocsCheck -> "ControlsCatalogDocsCheck"
+    | ControlFidelityCheck -> "ControlFidelityCheck"
     | ControlsInteractionCheck -> "ControlsInteractionCheck"
     | ControlsRenderingCheck -> "ControlsRenderingCheck"
     | DependencyReport -> "DependencyReport"
@@ -203,6 +207,7 @@ let directPrerequisites target =
     | ControlsCatalogGenerationCheck -> []
     | DesignTokenDrift -> []
     | ControlsCatalogDocsCheck -> []
+    | ControlFidelityCheck -> []
     | ControlsInteractionCheck -> []
     | ControlsRenderingCheck -> []
     | DependencyReport -> []
@@ -261,6 +266,7 @@ let private timeoutClass target =
     | TemplateCheck -> "broad"
     | GeneratedProductCheck
     | PackageSurfaceCheck
+    | ControlFidelityCheck
     | FsiTranscripts -> "medium"
     | _ -> "focused"
 
@@ -269,7 +275,8 @@ let private cost target =
     | Verify
     | Ci -> "high"
     | TemplateCheck
-    | GeneratedProductCheck -> "medium"
+    | GeneratedProductCheck
+    | ControlFidelityCheck -> "medium"
     | _ -> "low"
 
 let private failureOwner target =
@@ -280,6 +287,7 @@ let private failureOwner target =
     | ControlsCatalogGenerationCheck
     | DesignTokenDrift
     | ControlsCatalogDocsCheck
+    | ControlFidelityCheck
     | ControlsInteractionCheck
     | ControlsRenderingCheck -> "product"
     | _ -> "governance"

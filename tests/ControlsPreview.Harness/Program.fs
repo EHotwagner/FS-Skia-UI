@@ -12,5 +12,9 @@ let main argv =
     if argv |> Array.exists (fun a -> a = "--render") then
         ControlsPreview.Render.regenerateAll () |> ignore
         0
+    elif argv |> Array.exists (fun a -> a = "--fidelity") then
+        // Feature 080 (T017): decode each committed PNG, check its ContentSignature + the fixture
+        // matrix, write readiness/control-fidelity.md, and exit non-zero on any failure.
+        ControlsPreview.Fidelity.run ()
     else
         Tests.runTestsInAssemblyWithCLIArgs [] argv

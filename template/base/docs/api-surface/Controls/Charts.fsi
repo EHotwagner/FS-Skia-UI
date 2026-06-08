@@ -1,15 +1,6 @@
 namespace FS.Skia.UI.Controls
 
-/// Public contract type exposed by this FS.Skia.UI package.
-type ChartPoint =
-    { X: float
-      Y: float
-      Label: string option }
-
-/// Public contract type exposed by this FS.Skia.UI package.
-type ChartSeries =
-    { Name: string
-      Points: ChartPoint list }
+// `ChartPoint` / `ChartSeries` are declared in Types.fsi (feature 080, surface-neutral move).
 
 /// Public contract module exposed by this FS.Skia.UI package.
 module LineChart =

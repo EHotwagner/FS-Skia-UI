@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 686
-xml-summary-count: 295
+symbol-count: 688
+xml-summary-count: 300
 source-fsi-paths:
 - src/Controls/Accessibility.fsi
 - src/Controls/Attributes.fsi
@@ -180,16 +180,7 @@ module Catalog =
 
 namespace FS.Skia.UI.Controls
 
-/// Public contract type exposed by this FS.Skia.UI package.
-type ChartPoint =
-    { X: float
-      Y: float
-      Label: string option }
-
-/// Public contract type exposed by this FS.Skia.UI package.
-type ChartSeries =
-    { Name: string
-      Points: ChartPoint list }
+// `ChartPoint` / `ChartSeries` are declared in Types.fsi (feature 080, surface-neutral move).
 
 /// Public contract module exposed by this FS.Skia.UI package.
 module LineChart =
@@ -266,6 +257,14 @@ module Collections =
     val update: msg: CollectionMsg -> model: CollectionModel -> CollectionModel * CollectionEffect list
 
 namespace FS.Skia.UI.Controls
+
+/// Internal extraction seam (feature 080) — `internal` accessibility, no public-surface
+/// entry (mirrors `module internal Reconcile`); reached from `Controls.Tests` via
+/// `InternalsVisibleTo`. Only `chartValues` is exposed, for the FR-002 extraction test that
+/// proves the typed-front-door `ChartSeries`/`ChartPoint` data is read (pre-080: yielded `[]`).
+module internal ControlInternals =
+    /// Extract the chart data points (X/Y/Label preserved) a chart-like control carries.
+    val chartValues: control: Control<'msg> -> ChartPoint list
 
 /// Public contract module exposed by this FS.Skia.UI package.
 module Control =
@@ -917,6 +916,17 @@ open FS.Skia.UI.Layout
 type ControlId = string
 /// Public contract type exposed by this FS.Skia.UI package.
 type ControlKind = string
+
+/// Public contract type exposed by this FS.Skia.UI package.
+type ChartPoint =
+    { X: float
+      Y: float
+      Label: string option }
+
+/// Public contract type exposed by this FS.Skia.UI package.
+type ChartSeries =
+    { Name: string
+      Points: ChartPoint list }
 
 [<RequireQualifiedAccess>]
 /// Public contract type exposed by this FS.Skia.UI package.

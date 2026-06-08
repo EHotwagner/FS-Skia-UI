@@ -1,3 +1,10 @@
+> **Correction (feature 080).** The 079 previews this file describes were uniform
+> label-on-a-box schematics, and the per-control content implied below was not decoded from the
+> images. Feature **080-control-render-fidelity** replaces the renderer with faithful per-control
+> geometry and adds the build-enforced decoded-content gate `ControlFidelityCheck`. For the
+> decoded, asserted evidence see
+> `specs/080-control-render-fidelity/readiness/real-image-evidence.md` and `control-fidelity.md`.
+
 # Real Image Evidence (US1) — 079-doc-preview-examples
 
 Authoritative command: `dotnet run --project tests/ControlsPreview.Harness -- --render`

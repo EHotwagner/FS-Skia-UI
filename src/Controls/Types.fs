@@ -6,6 +6,19 @@ open FS.Skia.UI.Layout
 type ControlId = string
 type ControlKind = string
 
+// Chart data records (feature 080): defined here in Types.fs — which compiles before
+// Control.fs — so the renderer/extraction in Control.fs can read X/Y/Label. The public
+// `FS.Skia.UI.Controls.ChartPoint`/`ChartSeries` names are unchanged (surface-neutral move
+// out of Charts.fs); the chart authoring modules stay in Charts.fs.
+type ChartPoint =
+    { X: float
+      Y: float
+      Label: string option }
+
+type ChartSeries =
+    { Name: string
+      Points: ChartPoint list }
+
 [<RequireQualifiedAccess>]
 type KnownControl =
     | TextBlock

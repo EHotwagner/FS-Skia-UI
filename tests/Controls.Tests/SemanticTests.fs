@@ -94,7 +94,13 @@ let semanticTests =
 
             Expect.equal chart.Accessibility.Value.Role Chart "line chart defaults to chart accessibility role"
             Expect.equal graph.Accessibility.Value.Role Graph "graph view defaults to graph accessibility role"
-            Expect.equal (kinds |> List.filter ((=) ChartElement) |> List.length) 2 "chart and graph render through Controls-owned chart scene elements"
+            // Feature 080 (T012): charts/graphs lower to faithful geometry (Path/Circle/Line),
+            // not the opaque off-canvas `Chart` node — so `Scene.describe` no longer reports
+            // `ChartElement`; the line chart contributes a polyline `PathElement` and the graph
+            // contributes node `CircleElement`s.
+            Expect.isFalse (kinds |> List.contains ChartElement) "charts no longer emit the opaque Chart node (feature 080)"
+            Expect.isTrue (kinds |> List.contains PathElement) "line chart renders a polyline path within bounds"
+            Expect.isTrue (kinds |> List.contains CircleElement) "graph view renders node circles within bounds"
             Expect.isEmpty rendered.Diagnostics "valid chart and graph controls render without diagnostics"
         }
     ]

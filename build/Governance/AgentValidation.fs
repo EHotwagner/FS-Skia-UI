@@ -363,6 +363,7 @@ module ValidationContract =
           "ControlsCatalogCheck"
           "ControlsCatalogGenerationCheck"
           "ControlsCatalogDocsCheck"
+          "ControlFidelityCheck"
           "DesignTokenDrift"
           "ControlsInteractionCheck"
           "ControlsRenderingCheck"

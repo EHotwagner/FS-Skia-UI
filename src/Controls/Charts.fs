@@ -2,14 +2,9 @@ namespace FS.Skia.UI.Controls
 
 open System
 
-type ChartPoint =
-    { X: float
-      Y: float
-      Label: string option }
-
-type ChartSeries =
-    { Name: string
-      Points: ChartPoint list }
+// `ChartPoint` / `ChartSeries` are defined in Types.fs (feature 080) so the renderer in
+// Control.fs — which compiles before this file — can read them. The authoring modules stay
+// here.
 
 module ChartAttrs =
     let finite values =

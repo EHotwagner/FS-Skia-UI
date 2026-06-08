@@ -8,6 +8,17 @@ type ControlId = string
 /// Public contract type exposed by this FS.Skia.UI package.
 type ControlKind = string
 
+/// Public contract type exposed by this FS.Skia.UI package.
+type ChartPoint =
+    { X: float
+      Y: float
+      Label: string option }
+
+/// Public contract type exposed by this FS.Skia.UI package.
+type ChartSeries =
+    { Name: string
+      Points: ChartPoint list }
+
 [<RequireQualifiedAccess>]
 /// Public contract type exposed by this FS.Skia.UI package.
 type KnownControl =

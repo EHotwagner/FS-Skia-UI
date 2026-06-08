@@ -501,6 +501,16 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
               FailWith(String.Join(Environment.NewLine, drift))
           RequireFiles("controls catalog docs report output", [ path [ model.ReadinessDir; "controls-catalog-docs.md" ] ])
           focusedGateSummary model "ControlsCatalogDocsCheck" ]
+    | StartTarget Targets.ControlFidelityCheck ->
+        // Feature 080 (FR-008): the render-capable decoded-content gate. FS.Skia.UI.Build stays
+        // SkiaSharp-free and shells out to the harness (mirrors the SkiaViewer.Tests --sequenced
+        // pattern). The harness decodes each committed PNG + the fixture matrix, writes
+        // specs/080-control-render-fidelity/readiness/control-fidelity.md, and exits non-zero on
+        // any signature/fixture/fail-closed miss (naming the control).
+        model,
+        [ focusedGateAssumptionCheck model "ControlFidelityCheck"
+          processEffect "control fidelity gate (decode previews + fixtures)" "dotnet" "run --project tests/ControlsPreview.Harness --no-restore -- --fidelity" model.RepositoryRoot (path [ model.LogDir; "control-fidelity-check.txt" ])
+          focusedGateSummary model "ControlFidelityCheck" ]
     | StartTarget Targets.ControlsInteractionCheck ->
         let report = """# Interaction Tests
 

@@ -1,0 +1,24 @@
+
+## app/source generated Verify
+$ bash ./fake.sh build -t Verify
+Dev completed for generated product
+GeneratedGuidanceCheck completed for generated product
+TemplateDrift completed for generated product
+System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation.
+ ---> System.Exception: Cannot resolve the feature to validate: no SPECKIT_FEATURE_DIR override is set and /home/developer/projects/FS-Skia-UI/artifacts/generated-products/080-control-render-fidelity/app-source/.specify/feature.json has no usable "feature_directory" entry. Run /speckit.specify to record a feature, or set SPECKIT_FEATURE_DIR to the feature directory to validate. Validation never falls back to a bundled sample.
+   at Microsoft.FSharp.Core.PrintfModule.PrintFormatToStringThenFail@1447.Invoke(String message)
+   at FS.Skia.UI.Build.Evidence.GeneratedRunner.runGeneratedEvidenceGraph(String repoRoot)
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+   --- End of inner exception stack trace ---
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at FSI_0001.runGeneratedEvidence(String target) in /home/developer/projects/FS-Skia-UI/artifacts/generated-products/080-control-render-fidelity/app-source/build.fsx:line 162
+   at FSI_0001.run(String target) in /home/developer/projects/FS-Skia-UI/artifacts/generated-products/080-control-render-fidelity/app-source/build.fsx:line 227
+   at <StartupCode$FSI_0001>.$FSI_0001.main@() in /home/developer/projects/FS-Skia-UI/artifacts/generated-products/080-control-render-fidelity/app-source/build.fsx:line 239
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+Stopped due to error
+
+exit-code=1

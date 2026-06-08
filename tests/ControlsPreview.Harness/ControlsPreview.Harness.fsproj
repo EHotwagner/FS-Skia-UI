@@ -15,9 +15,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="FidelityTypes.fs" />
     <Compile Include="PreviewSamples.fs" />
     <Compile Include="PreviewRender.fs" />
     <Compile Include="PreviewHarnessTests.fs" />
+    <Compile Include="RendererFidelityTests.fs" />
+    <Compile Include="Fidelity.fs" />
+    <Compile Include="FidelityGateTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

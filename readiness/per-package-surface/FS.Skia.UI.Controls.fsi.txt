@@ -126,15 +126,6 @@ module Catalog =
 
 namespace FS.Skia.UI.Controls
 
-type ChartPoint =
-    { X: float
-      Y: float
-      Label: string option }
-
-type ChartSeries =
-    { Name: string
-      Points: ChartPoint list }
-
 module LineChart =
 
     val create: Attr<'msg> list -> Control<'msg>
@@ -200,6 +191,10 @@ module Collections =
     val update: msg: CollectionMsg -> model: CollectionModel -> CollectionModel * CollectionEffect list
 
 namespace FS.Skia.UI.Controls
+
+module internal ControlInternals =
+
+    val chartValues: control: Control<'msg> -> ChartPoint list
 
 module Control =
 
@@ -967,6 +962,15 @@ open FS.Skia.UI.Layout
 type ControlId = string
 
 type ControlKind = string
+
+type ChartPoint =
+    { X: float
+      Y: float
+      Label: string option }
+
+type ChartSeries =
+    { Name: string
+      Points: ChartPoint list }
 
 [<RequireQualifiedAccess>]
 

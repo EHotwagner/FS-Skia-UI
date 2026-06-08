@@ -223,9 +223,14 @@ let rules =
             "build/Governance/CatalogDocsGen.fs"
             "build/Governance/CatalogDocsGen.fsi"
             "build/Governance/CatalogGen.fs"
-            "src/Controls/catalog.yml" ]
+            "src/Controls/catalog.yml"
+            // Feature 080 (FR-012): the render-capable fidelity gate sources/fixtures. Editing
+            // a preview asset, the renderer-fidelity harness, or a fixture requires the decoded-
+            // content ControlFidelityCheck, not just the SkiaSharp-free docs currency gate.
+            "tests/ControlsPreview.Harness/**" ]
           FocusedAuthority
-          [ Targets.ControlsCatalogDocsCheck ]
+          [ Targets.ControlsCatalogDocsCheck
+            Targets.ControlFidelityCheck ]
           []
           "focused"
           "product"

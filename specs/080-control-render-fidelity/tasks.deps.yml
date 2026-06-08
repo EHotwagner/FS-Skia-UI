@@ -1,0 +1,115 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (feature 080).
+#
+# Phase-checkpoint edges are auto-injected by the graph compute script (every
+# task in Phase N+1 implicitly depends on the last foundation task of Phase N).
+# Only non-phase cross-edges are written below.
+
+tasks:
+  # Phase 1 — Setup
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: ["fs-skia-skiaviewer"]
+
+  # Phase 2 — Foundation
+  T005:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+  T006:
+    deps: [T005]
+    skillist: ["fs-skia-ui-widgets"]
+  T007:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 3 — US1: faithful renderer + sample data
+  T008:
+    deps: [T006]
+    skillist: ["fs-skia-scene"]
+  T009:
+    deps: []
+    skillist: ["fs-skia-scene"]
+  T010:
+    deps: [T007]
+    skillist: ["fs-skia-typed-controls"]
+  T011:
+    deps: [T008, T009, T010]
+    skillist: ["fs-skia-scene", "fs-skia-layout-readability"]
+  T012:
+    deps: [T011]
+    skillist: ["fs-skia-skiaviewer"]
+  T013:
+    deps: [T011]
+    skillist: ["fs-skia-ui-widgets"]
+  T014:
+    deps: [T011, T012, T013]
+    skillist: ["fs-skia-skiaviewer"]
+
+  # Phase 4 — US2: fidelity gate
+  T015:
+    deps: [T007]
+    skillist: ["fs-skia-evidence-mode"]
+  T016:
+    deps: [T007, T015]
+    skillist: ["fs-skia-evidence-mode"]
+  T017:
+    deps: [T016]
+    skillist: ["fs-skia-skiaviewer"]
+  T018:
+    deps: [T004]
+    skillist: ["fs-skia-evidence-mode"]
+  T019:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T020:
+    deps: [T019]
+    skillist: ["fsharp-build-orchestration"]
+  T021:
+    deps: [T019]
+    skillist: ["fsharp-code-generation"]
+  T022:
+    deps: [T016, T017, T018, T020, T021]
+    skillist: ["fsharp-build-orchestration"]
+
+  # Phase 5 — US3: honest catalog + evidence
+  T023:
+    deps: []
+    skillist: ["fs-skia-skiaviewer", "fs-skia-evidence-mode"]
+  T024:
+    deps: [T023]
+    skillist: ["fsharp-code-generation"]
+  T025:
+    deps: [T023]
+    skillist: ["fs-skia-evidence-mode"]
+  T026:
+    deps: [T023, T024, T025]
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 6 — Integration & Polish
+  T027:
+    deps: []
+    skillist: ["fs-skia-scene"]
+  T028:
+    deps: []
+    skillist: ["fs-skia-skiaviewer"]
+  T029:
+    deps: [T027]
+    skillist: ["fsharp-build-orchestration"]
+  T030:
+    deps: [T029]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T031:
+    deps: [T030]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]
