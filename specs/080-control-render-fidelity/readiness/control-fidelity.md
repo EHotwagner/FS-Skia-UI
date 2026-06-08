@@ -7,16 +7,16 @@ distinct colours are measured OUTSIDE the title band; present kinds are from the
 | control id | declared | coverage | distinct colours | present kinds | verdict | failure reason |
 |---|---|---|---|---|---|---|
 | text-block | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| rich-text | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
+| rich-text | Signature | 0.0258 | 16 | GroupElement ClipElement TextRunElement | pass |  |
 | label | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
 | image | Signature | 0.0819 | 24 | GroupElement ClipElement TextRunElement RectangleElement LineElement | pass |  |
 | icon | Signature | 0.0228 | 3 | GroupElement ClipElement TextRunElement PathElement | pass |  |
-| separator | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
+| separator | Signature | 0.0269 | 2 | GroupElement ClipElement TextRunElement LineElement | pass |  |
 | badge | Signature | 0.0252 | 21 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
 | button | Signature | 0.0630 | 21 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
 | icon-button | Signature | 0.0116 | 3 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
-| text-box | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| text-area | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
+| text-box | Signature | 0.2844 | 42 | GroupElement ClipElement TextRunElement RectangleElement LineElement | pass |  |
+| text-area | Signature | 0.4266 | 9 | GroupElement ClipElement TextRunElement RectangleElement LineElement | pass |  |
 | numeric-input | Signature | 0.0406 | 8 | GroupElement ClipElement TextRunElement RectangleElement LineElement | pass |  |
 | check-box | Signature | 0.0509 | 30 | GroupElement ClipElement TextRunElement RectangleElement LineElement | pass |  |
 | radio-group | Signature | 0.0310 | 14 | GroupElement ClipElement TextRunElement CircleElement | pass |  |
@@ -73,9 +73,13 @@ distinct colours are measured OUTSIDE the title band; present kinds are from the
 | pie-chart | lowfi | fail | fail | coverage=0.0000 distinct=0 | ok |
 | progress-bar | lowfi | fail | fail | coverage=0.0000 distinct=0 | ok |
 | radio-group | lowfi | fail | fail | coverage=0.0000 distinct=0 | ok |
+| rich-text | lowfi | fail | fail | coverage=0.0000 distinct=0 | ok |
 | scatter-plot | lowfi | fail | fail | coverage=0.0000 distinct=0 | ok |
+| separator | lowfi | fail | fail | coverage=0.0000 distinct=0 | ok |
 | slider | lowfi | fail | fail | coverage=0.0000 distinct=0 | ok |
 | tabs | lowfi | fail | fail | coverage=0.0000 distinct=0 | ok |
+| text-area | lowfi | fail | fail | coverage=0.0000 distinct=0 | ok |
+| text-box | lowfi | fail | fail | coverage=0.0000 distinct=0 | ok |
 | bar-chart | faithful | pass | pass | coverage=0.3863 distinct=4 | ok |
 | graph-view | faithful | pass | pass | coverage=0.0218 distinct=2 | ok |
 | icon | faithful | pass | pass | coverage=0.0228 distinct=3 | ok |
@@ -86,6 +90,10 @@ distinct colours are measured OUTSIDE the title band; present kinds are from the
 | pie-chart | faithful | pass | pass | coverage=0.1062 distinct=28 | ok |
 | progress-bar | faithful | pass | pass | coverage=0.1076 distinct=2 | ok |
 | radio-group | faithful | pass | pass | coverage=0.0310 distinct=14 | ok |
+| rich-text | faithful | pass | pass | coverage=0.0258 distinct=16 | ok |
 | scatter-plot | faithful | pass | pass | coverage=0.0056 distinct=1 | ok |
+| separator | faithful | pass | pass | coverage=0.0269 distinct=2 | ok |
 | slider | faithful | pass | pass | coverage=0.0301 distinct=2 | ok |
 | tabs | faithful | pass | pass | coverage=0.1974 distinct=29 | ok |
+| text-area | faithful | pass | pass | coverage=0.4266 distinct=9 | ok |
+| text-box | faithful | pass | pass | coverage=0.2844 distinct=42 | ok |

@@ -87,6 +87,12 @@ let private sSplit = withKinds 0.02 2 [ RectangleElement; PathElement ] []
 let private sPicker = withKinds 0.005 1 [ RectangleElement; LineElement ] []
 let private sSwatches n = withKinds 0.2 2 [ RectangleElement ] [ RectangleElement, n ]
 let private sContainer = withKinds 0.05 2 [ RectangleElement; TextRunElement ] []
+// 082 — text-input / rich-text / divider controls now render control-specific geometry below the
+// title band (a framed field + caret, styled runs, a divider rule) instead of the box+label that
+// hid a field's chrome, dropped rich-text styling, or drew `separator` as the word "separator".
+let private sTextField = withKinds 0.005 2 [ RectangleElement; TextRunElement; LineElement ] []
+let private sRichText = withKinds 0.01 2 [ TextRunElement ] [ TextRunElement, 2 ]
+let private sSeparator = withKinds 0.005 1 [ LineElement ] []
 
 // ---- shared sample content (fixed literals) --------------------------------------------
 let private lbl (t: string) : Widget<unit> = Label.view { Label.defaults with Text = t }
@@ -117,17 +123,17 @@ let samples : ControlSampleDefinition list =
                   Runs =
                       [ { Text = "Bold "; Style = { FontFamily = None; FontSize = 18.0; Weight = RichTextWeight.Bold; Foreground = Colors.black; Background = None; Underline = false; Italic = false }; Diagnostics = [] }
                         { Text = "and italic"; Style = { FontFamily = None; FontSize = 18.0; Weight = RichTextWeight.Regular; Foreground = Colors.rgb 40uy 80uy 160uy; Background = None; Underline = false; Italic = true }; Diagnostics = [] } ] })
-          sText "Styled runs (weight, colour, italic) in one display."
+          sRichText "Styled runs (bold black, regular blue) drawn with per-run colour and weight."
       demo "label" (fun () -> lbl "Username") sText "Short form label text."
       demo "image" (fun () -> Image.view { Image.defaults with Value = "logo.png" }) sImage "Image placeholder frame referencing a sample source."
       demo "icon" (fun () -> Icon.view { Icon.defaults with Text = "home" }) sIcon "A named icon shown as a font-independent vector glyph."
-      demo "separator" (fun () -> Separator.view { Separator.defaults with Id = None }) sText "A visual divider between regions."
+      demo "separator" (fun () -> Separator.view { Separator.defaults with Id = None }) sSeparator "A visual divider rule between regions."
       demo "badge" (fun () -> Badge.view { Badge.defaults with Text = "NEW" }) sOutlineButton "A compact status label shown as an accent pill."
       // input
       demo "button" (fun () -> Button.view { Button.defaults with Text = "Save"; Intent = ButtonIntent.Primary }) sButton "A primary command button with a filled accent surface and label."
       demo "icon-button" (fun () -> IconButton.view { IconButton.defaults with Text = "+"; Intent = ButtonIntent.Secondary }) sOutlineButton "An icon-only activatable command shown as an outlined button."
-      demo "text-box" (fun () -> let p = { (TextBox.defaults "text-box") with Value = "jane@example.com" } in let m, _ = TextBox.init p in TextBox.view p m) sText "Single-line text entry with a populated value."
-      demo "text-area" (fun () -> let p = { (TextArea.defaults "text-area") with Value = "Multi-line\nnotes here" } in let m, _ = TextArea.init p in TextArea.view p m) sText "Multi-line text entry with populated content."
+      demo "text-box" (fun () -> let p = { (TextBox.defaults "text-box") with Value = "jane@example.com" } in let m, _ = TextBox.init p in TextBox.view p m) sTextField "Single-line text entry: a framed field with its value and a caret."
+      demo "text-area" (fun () -> let p = { (TextArea.defaults "text-area") with Value = "Multi-line\nnotes here" } in let m, _ = TextArea.init p in TextArea.view p m) sTextField "Multi-line text entry: a framed field with wrapped value lines and a caret."
       demo "numeric-input" (fun () -> NumericInput.view { NumericInput.defaults with Value = 42.0 }) sFramed "A model-owned numeric value editor with a framed field."
       demo "check-box" (fun () -> CheckBox.view { CheckBox.defaults with Text = "Enable notifications"; Checked = true }) sCheck "A checked Boolean choice with a tick and its label."
       demo "radio-group" (fun () -> RadioGroup.view { RadioGroup.defaults with Items = [ "Low"; "Medium"; "High" ]; SelectedKey = Some "Medium" }) (sRadio 3) "A single selection from a visible option set, one marked."

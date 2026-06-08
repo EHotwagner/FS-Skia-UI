@@ -84,4 +84,24 @@ module RichText =
           Diagnostics = (block.Runs |> List.collect _.Diagnostics) @ effectDiagnostics }
 
     let create (block: RichTextBlock) attrs =
-        Control.create "rich-text" (Attr.create "richText" Content (UntypedValue block) :: attrs)
+        // Stash a field-name-free projection of the styled runs (text, colour, size, weight) that
+        // the preview renderer reads to draw per-run colour/weight instead of the kind-id label.
+        // Control.fs compiles before this file and so cannot see `RichTextBlock`; a tuple carries
+        // the data across without re-declaring the type there (and a record would clash with the
+        // many overlapping `Theme`/`Control` field names). Both the typed and legacy authoring
+        // paths call this `create`, so the added attr keeps lowering parity by construction.
+        let weightInt =
+            function
+            | Bold -> 700
+            | Medium -> 600
+            | Regular -> 400
+
+        let runViews: (string * Color * float * int) list =
+            block.Runs
+            |> List.map (fun run -> run.Text, run.Style.Foreground, run.Style.FontSize, weightInt run.Style.Weight)
+
+        Control.create
+            "rich-text"
+            (Attr.create "richText" Content (UntypedValue block)
+             :: Attr.create "richTextRuns" Data (UntypedValue runViews)
+             :: attrs)

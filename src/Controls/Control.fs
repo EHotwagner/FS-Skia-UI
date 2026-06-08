@@ -194,6 +194,18 @@ module internal ControlInternals =
             |> Option.defaultValue []
         | _ -> []
 
+    /// Read the field-name-free run projection (text, colour, size, weight) that `RichText.create`
+    /// stashes in the `richTextRuns` attr, so the preview can draw real per-run colour/weight
+    /// rather than the kind id. (Control.fs compiles before RichText.fs, so the typed
+    /// `RichTextBlock` is intentionally not in scope here.)
+    let richTextRuns (control: Control<'msg>) : (string * Color * float * int) list =
+        tryLast "richTextRuns" control.Attributes
+        |> Option.bind (fun attr ->
+            match attr.Value with
+            | UntypedValue(:? (list<string * Color * float * int>) as runs) -> Some runs
+            | _ -> None)
+        |> Option.defaultValue []
+
     // Feature 080 (FR-001/003/004/005/011) — faithful per-control preview geometry.
     //
     // Controls in `richFamilies` lower to control-specific geometry built from EXISTING Scene
@@ -213,7 +225,13 @@ module internal ControlInternals =
               "date-picker"; "time-picker"; "color-picker"; "spinner"; "image"; "icon"
               // layout / container families (built as single-Kind preview schematics, FR-001):
               "stack"; "grid"; "dock"; "wrap"; "panel"; "border"; "scroll-viewer"
-              "split-view"; "toolbar"; "overlay" ]
+              "split-view"; "toolbar"; "overlay"
+              // feature 082 — text-input / rich-text / divider controls. These were previously in
+              // the box+label fallback, which is faithful for static text (label/text-block) but
+              // hid an editable field's chrome (text-box/text-area read as plain labels), dropped
+              // rich-text's styled runs (it rendered its kind id), and drew `separator` as the word
+              // "separator" instead of a divider rule. They now lower to control-specific geometry.
+              "text-box"; "text-area"; "rich-text"; "separator" ]
 
     /// A human caption for the rich-family title band: "date-picker" -> "Date picker".
     /// Used so the thumbnail's title is the control's NAME, not its sample content (which the
@@ -255,6 +273,14 @@ module internal ControlInternals =
             { Text = s
               Position = { X = x; Y = baseline }
               Font = { Family = theme.FontFamily; Size = size; Weight = None }
+              Paint = Paint.fill color }
+
+    /// `mkText` with an explicit weight — used by the rich-text schematic to draw bold runs.
+    let private mkTextW (theme: Theme) (x: float) (baseline: float) (size: float) (weight: int option) (color: Color) (s: string) =
+        Scene.textRun
+            { Text = s
+              Position = { X = x; Y = baseline }
+              Font = { Family = theme.FontFamily; Size = size; Weight = weight }
               Paint = Paint.fill color }
 
     let private stringListOf name (control: Control<'msg>) =
@@ -714,6 +740,67 @@ module internal ControlInternals =
         regionRect theme box.X box.Y (box.Width - off) (box.Height - off) theme.Muted ""
         @ regionRect theme (box.X + off) (box.Y + off) (box.Width - off) (box.Height - off) theme.Background label
 
+    // ---- text-input / rich-text / divider geometry (feature 082) ----------------------------
+
+    /// A bordered single-line input field showing its value text and a caret — `text-box`. The
+    /// frame + caret are what distinguish an editable field from a static label.
+    let private textFieldGeom theme (box: Rect) (value: string) : Scene list =
+        let h = min box.Height 40.0
+        let by = box.Y + box.Height / 2.0 - h / 2.0
+        let field: Rect = { X = box.X; Y = by; Width = box.Width; Height = h }
+        let textX = box.X + 10.0
+        let baseline = by + h / 2.0 + 5.0
+        let textW = (Scene.measureText value { Family = theme.FontFamily; Size = 15.0; Weight = None }).Width
+        let caretX = min (box.X + box.Width - 8.0) (textX + textW + 3.0)
+        [ Scene.rectangle (box.X, by, box.Width, h) theme.Background
+          Scene.rectangleWithPaint field (Paint.stroke theme.Foreground 2.0)
+          Scene.clipped
+              (RectClip field)
+              (mkText theme textX baseline 15.0 theme.Foreground value)
+          Scene.line { X = caretX; Y = by + 7.0 } { X = caretX; Y = by + h - 7.0 } (Paint.stroke theme.Accent 2.0) ]
+
+    /// A bordered multi-line input field showing each value line plus a caret — `text-area`.
+    let private textAreaFieldGeom theme (box: Rect) (value: string) : Scene list =
+        let lineH = 22.0
+        let lines = value.Replace("\r\n", "\n").Split('\n') |> Array.toList |> List.truncate 4
+        let firstBaseline = box.Y + 22.0
+        let texts =
+            lines
+            |> List.mapi (fun i ln -> mkText theme (box.X + 10.0) (firstBaseline + float i * lineH) 14.0 theme.Foreground ln)
+        let lastLine = lines |> List.tryLast |> Option.defaultValue ""
+        let lastW = (Scene.measureText lastLine { Family = theme.FontFamily; Size = 14.0; Weight = None }).Width
+        let caretX = min (box.X + box.Width - 8.0) (box.X + 10.0 + lastW + 3.0)
+        let caretY = firstBaseline + float (max 0 (List.length lines - 1)) * lineH
+        [ Scene.rectangle (box.X, box.Y, box.Width, box.Height) theme.Background
+          Scene.rectangleWithPaint box (Paint.stroke theme.Foreground 2.0)
+          Scene.clipped (RectClip box) (Scene.group texts)
+          Scene.line { X = caretX; Y = caretY - 13.0 } { X = caretX; Y = caretY + 3.0 } (Paint.stroke theme.Accent 2.0) ]
+
+    /// Styled runs flowing left-to-right with per-run colour and weight — `rich-text`. Each run
+    /// keeps its own `Foreground`/`Weight`, so the preview demonstrates rich formatting rather
+    /// than collapsing to a single-colour label (or, pre-082, the kind id).
+    let private richTextGeom theme (box: Rect) (runs: (string * Color * float * int) list) : Scene list =
+        match runs with
+        | [] -> emptyState theme box "(no runs)"
+        | _ ->
+            let baseline = box.Y + box.Height / 2.0 + 6.0
+            runs
+            |> List.fold
+                (fun (x, acc) (text, fg, fontSize, weight) ->
+                    let size = max 8.0 fontSize
+                    let font: FontSpec = { Family = theme.FontFamily; Size = size; Weight = Some weight }
+                    let w = (Scene.measureText text font).Width
+                    let node = mkTextW theme x baseline size (Some weight) fg text
+                    x + w, node :: acc)
+                (box.X + 4.0, [])
+            |> snd
+            |> List.rev
+
+    /// A horizontal divider rule centred in the canvas — `separator`.
+    let private separatorGeom theme (box: Rect) : Scene list =
+        let cy = box.Y + box.Height / 2.0
+        [ Scene.line { X = box.X; Y = cy } { X = box.X + box.Width; Y = cy } (Paint.stroke theme.Foreground 3.0) ]
+
     /// Dispatch a rich-family control to its faithful geometry (within `box`, below the title).
     let faithfulContent (theme: Theme) (box: Rect) (control: Control<'msg>) : Scene list =
         let label = control.Content |> Option.defaultValue ""
@@ -762,6 +849,11 @@ module internal ControlInternals =
         | "color-picker" -> swatchGeom theme box
         | "spinner" -> spinnerGeom theme box
         | "image" -> imageGeom theme box (textValueOf "value" control |> Option.defaultValue "image")
+        // text-input / rich-text / divider family (feature 082)
+        | "text-box" -> textFieldGeom theme box (textValueOf "value" control |> Option.defaultValue "")
+        | "text-area" -> textAreaFieldGeom theme box (textValueOf "value" control |> Option.defaultValue "")
+        | "rich-text" -> richTextGeom theme box (richTextRuns control)
+        | "separator" -> separatorGeom theme box
         | "icon" ->
             let name =
                 control.Content
