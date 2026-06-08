@@ -1,7 +1,7 @@
 ---
 title: Icon
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 14
 description: Named icon glyph or product symbol.
 ---

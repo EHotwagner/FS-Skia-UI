@@ -1,7 +1,7 @@
 ---
 title: Graph View
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 55
 description: Controls-owned node and edge visualization.
 ---

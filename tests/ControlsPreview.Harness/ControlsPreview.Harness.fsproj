@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Feature 079: the committed, compiled render harness (R2) feature 078 lacked. It
+       renders the demonstrative control previews from the single sample source through the
+       real render-only evidence path, and hosts the totality/explicitness/idempotence tests.
+       Rendering requires a render-capable host (SkiaSharp natives), so this project is
+       compile-checked by the solution Build but is intentionally NOT in defaultTestProjects
+       (GPU-free CI Dev/Test must stay render-free). Run on a render-capable host with the
+       generator flag (render) or the Expecto sequenced flag (tests); see PreviewRender.fs. -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="PreviewSamples.fs" />
+    <Compile Include="PreviewRender.fs" />
+    <Compile Include="PreviewHarnessTests.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Scene\Scene.fsproj" />
+    <ProjectReference Include="..\..\src\Controls\Controls.fsproj" />
+    <ProjectReference Include="..\..\src\SkiaViewer\SkiaViewer.fsproj" />
+    <!-- catalogFacts single source for the totality test. -->
+    <ProjectReference Include="..\..\build\Governance\FS.Skia.UI.Build.fsproj" />
+    <PackageReference Include="Expecto" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="SkiaSharp" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
+    <PackageReference Include="YoloDev.Expecto.TestSdk" />
+  </ItemGroup>
+
+</Project>

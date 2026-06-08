@@ -1,7 +1,7 @@
 ---
 title: Check Box
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 22
 description: Boolean choice with checked state.
 ---

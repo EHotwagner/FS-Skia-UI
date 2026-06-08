@@ -1,0 +1,83 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (feature 079).
+#
+# Phase-checkpoint edges are auto-injected (every task in Phase N+1 implicitly
+# depends on the last foundation task of Phase N). Only non-phase cross-edges
+# are written here.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: ["fs-skia-typed-controls", "fs-skia-ui-widgets"]
+  T005:
+    deps: [T004]
+    skillist: ["fs-skia-scene", "fs-skia-skiaviewer", "fs-skia-evidence-mode"]
+  T006:
+    deps: []
+    skillist: ["fsharp-code-generation"]
+  T007:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+  T008:
+    deps: [T004]
+    skillist: ["fsharp-build-orchestration"]
+  T009:
+    deps: [T005]
+    skillist: ["fsharp-build-orchestration"]
+  T010:
+    deps: [T004, T008]
+    skillist: ["fs-skia-typed-controls", "fs-skia-ui-widgets", "fs-skia-layout-readability"]
+  T011:
+    deps: [T005, T010]
+    skillist: ["fs-skia-scene", "fs-skia-skiaviewer", "fs-skia-evidence-mode"]
+  T012:
+    deps: [T011]
+    skillist: []
+  T013:
+    deps: [T011]
+    skillist: ["fs-skia-evidence-mode"]
+  T014:
+    deps: [T010]
+    skillist: ["fs-skia-typed-controls", "fs-skia-ui-widgets"]
+  T015:
+    deps: [T014]
+    skillist: []
+  T016:
+    deps: [T006]
+    skillist: ["fsharp-build-orchestration", "fsharp-io-globbing"]
+  T017:
+    deps: [T016, T012]
+    skillist: ["fsharp-code-generation", "fsharp-io-globbing"]
+  T018:
+    deps: [T011, T017]
+    skillist: []
+  T019:
+    deps: [T017]
+    skillist: ["fsharp-code-generation"]
+  T020:
+    deps: []
+    skillist: ["fsdocs-build"]
+  T021:
+    deps: [T020, T011]
+    skillist: ["fsdocs-build"]
+  T022:
+    deps: [T017, T018, T020, T021]
+    skillist: ["fsharp-build-orchestration"]
+  T023:
+    deps: [T022]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T024:
+    deps: [T023]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

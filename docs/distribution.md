@@ -1,7 +1,7 @@
 ---
 title: Distribution & release
 category: Guides
-categoryindex: 8
+categoryindex: 10
 ---
 
 # Distribution & release

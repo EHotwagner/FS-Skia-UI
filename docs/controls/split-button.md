@@ -1,7 +1,7 @@
 ---
 title: Split Button
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 57
 description: Primary action plus a popup menu of secondary commands.
 ---

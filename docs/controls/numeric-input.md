@@ -1,7 +1,7 @@
 ---
 title: Numeric Input
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 21
 description: Model-owned numeric value editor.
 ---

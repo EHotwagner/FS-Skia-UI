@@ -1,7 +1,7 @@
 ---
 title: Overlay
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 47
 description: Layered child content.
 ---

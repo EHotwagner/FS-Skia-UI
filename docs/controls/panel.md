@@ -1,7 +1,7 @@
 ---
 title: Panel
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 37
 description: General-purpose child surface.
 ---

@@ -1,7 +1,7 @@
 ---
 title: Wrap
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 35
 description: Wrapping child layout.
 ---

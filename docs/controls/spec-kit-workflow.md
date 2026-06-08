@@ -1,7 +1,7 @@
 ---
 title: Controls in the Spec Kit workflow
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 1
 description: Where controls are chosen, authored, and validated across the Spec Kit phases (specify → plan → tasks → implement), and how Penpot/design-token changes flow into control theming.
 ---

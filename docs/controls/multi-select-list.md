@@ -1,7 +1,7 @@
 ---
 title: Multi Select List
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 28
 description: Multiple-selection list with model-owned selected keys.
 ---

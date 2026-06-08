@@ -26,8 +26,12 @@ type DocFinding =
     | OrphanDetailPage of controlId: string
     /// A required preview is absent and the detail page carries no honest unsupported note.
     | MissingPreview of controlId: string
-    /// A preview is present but fails PNG validation (undecodable / 1x1 / trivial).
+    /// A preview is present but fails PNG structural validation (undecodable / 1x1).
     | UndecodablePreview of controlId: string
+    /// A decodable preview whose committed byte size is below `trivialPreviewFloorBytes` —
+    /// its content has regressed to empty/near-empty (Feature 079, FR-004/FR-005). Fails
+    /// like a missing preview.
+    | TrivialPreview of controlId: string
     /// A `docs/img/controls/<id>.png` exists for an id not in `catalogFacts`.
     | OrphanPreview of controlId: string
     /// A generated detail→API-reference link does not resolve in the built site.
@@ -36,9 +40,10 @@ type DocFinding =
 /// A present detail page: its control id (filename stem) and full file text.
 type DetailPage = { ControlId: string; Text: string }
 
-/// A present preview asset: its control id and whether it passed PNG validation
-/// (`Testing.readPngArtifact`: decodable, non-1x1 dimensions, non-trivial content).
-type PreviewAsset = { ControlId: string; Decodable: bool }
+/// A present preview asset: its control id, whether it passed PNG structural validation
+/// (decodable, non-1x1 dimensions), and its committed byte size (Feature 079) for the
+/// trivial-content byte floor — a real structural property read without decoding pixels.
+type PreviewAsset = { ControlId: string; Decodable: bool; Bytes: int64 }
 
 /// The observed docs tree the currency check reads (gathered at the interpreter edge).
 type DocsTree =
@@ -65,6 +70,12 @@ val previewRel: id: string -> string
 /// The honest-unsupported-note marker a detail page must carry when its control has no
 /// preview asset (so an honest omission is distinguishable from an accidental one).
 val previewUnsupportedMarker: string
+
+/// The pinned trivial-content byte floor `T` (Feature 079, R3/T012). A committed
+/// demonstrative preview MUST exceed this; it sits between the ~363-byte near-empty
+/// 320×160 canvas and the smallest committed demonstrative render (486 bytes), so a preview
+/// regressing to empty/near-empty drops below it and fails. Read without decoding pixels.
+val trivialPreviewFloorBytes: int64
 
 /// The fsdocs reference-page slug (without `reference/` prefix or `.html`) for a control's
 /// API page, derived from its `Module` (research R2). The 072 typed-front-door-only controls

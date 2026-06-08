@@ -1,7 +1,7 @@
 ---
 title: Dialog
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 45
 description: Modal content region.
 ---

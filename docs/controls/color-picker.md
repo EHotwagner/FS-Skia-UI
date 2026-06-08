@@ -1,7 +1,7 @@
 ---
 title: Color Picker
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 60
 description: Palette swatch color selection.
 ---

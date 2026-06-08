@@ -1,7 +1,7 @@
 ---
 title: Spinner
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 49
 description: Indeterminate progress indicator.
 ---

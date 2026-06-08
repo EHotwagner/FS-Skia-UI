@@ -1,7 +1,7 @@
 ---
 title: Validation Message
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 50
 description: Validation text tied to model state.
 ---

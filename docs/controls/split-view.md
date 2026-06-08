@@ -1,7 +1,7 @@
 ---
 title: Split View
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 39
 description: Resizable two-region layout.
 ---

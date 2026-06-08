@@ -1,7 +1,7 @@
 ---
 title: List Box
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 27
 description: Single-selection list box.
 ---

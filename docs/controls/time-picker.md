@@ -1,7 +1,7 @@
 ---
 title: Time Picker
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 59
 description: Typed time entry with hour and minute segments.
 ---

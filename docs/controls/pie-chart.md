@@ -1,7 +1,7 @@
 ---
 title: Pie Chart
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 53
 description: Controls-owned part-to-whole visualization.
 ---

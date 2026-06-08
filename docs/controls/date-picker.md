@@ -1,7 +1,7 @@
 ---
 title: Date Picker
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 58
 description: Typed date entry with a popup calendar.
 ---

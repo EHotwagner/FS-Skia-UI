@@ -1,7 +1,7 @@
 ---
 title: Rich Text
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 11
 description: Skia-specific rich text display with measurement, clipping, effects, diagnostics, and accessibility metadata.
 ---

@@ -1,7 +1,7 @@
 ---
 title: Progress Bar
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 48
 description: Determinate progress indicator.
 ---

@@ -1,7 +1,7 @@
 ---
 title: Scatter Plot
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 54
 description: Controls-owned point cloud visualization.
 ---

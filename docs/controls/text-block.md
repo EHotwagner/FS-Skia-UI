@@ -1,7 +1,7 @@
 ---
 title: Text Block
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 10
 description: Static model-owned text display.
 ---

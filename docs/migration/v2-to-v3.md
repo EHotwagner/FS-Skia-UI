@@ -1,7 +1,7 @@
 ---
 title: Migrating from V2 (`FS.Skia.UI` monolith) to V3 (split packages)
 category: Guides
-categoryindex: 8
+categoryindex: 10
 ---
 
 # Migrating from V2 (`FS.Skia.UI` monolith) to V3 (split packages)

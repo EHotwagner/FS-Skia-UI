@@ -1,7 +1,7 @@
 ---
 title: Data Grid
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 31
 description: Table-like bounded visible-range data control with product-owned rows, selection, focus, sort, and filter metadata.
 ---

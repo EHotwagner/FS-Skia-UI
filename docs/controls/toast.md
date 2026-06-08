@@ -1,7 +1,7 @@
 ---
 title: Toast
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 46
 description: Transient status message.
 ---

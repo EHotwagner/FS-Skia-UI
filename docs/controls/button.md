@@ -1,7 +1,7 @@
 ---
 title: Button
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 17
 description: Pointer and keyboard activatable command.
 ---

@@ -1,7 +1,7 @@
 ---
 title: Tabs
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 40
 description: Model-owned active page selection.
 ---

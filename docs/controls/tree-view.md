@@ -1,7 +1,7 @@
 ---
 title: Tree View
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 30
 description: Hierarchical item display.
 ---

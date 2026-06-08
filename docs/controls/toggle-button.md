@@ -1,7 +1,7 @@
 ---
 title: Toggle Button
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 56
 description: On/off command with product-owned pressed state.
 ---

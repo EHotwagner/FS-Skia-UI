@@ -1,0 +1,32 @@
+## Symbol consistency (analyze pass G)
+- entity-record ControlsCatalogDocsCheck — in {tasks}, missing from {plan, data-model}
+- entity-record DeadLink — in {tasks}, missing from {plan, data-model}
+- entity-record Dev — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedGuidanceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedProductCheck — in {tasks}, missing from {plan, data-model}
+- entity-record PreviewContentVerdict — in {tasks}, missing from {plan, data-model}
+- entity-record PreviewEvidenceRecord — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record RenderingFailure — in {tasks}, missing from {plan, data-model}
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- entity-record TrivialPreview — in {tasks}, missing from {plan, data-model}
+- entity-record Unsupported — in {tasks}, missing from {plan, data-model}
+- fr-id FR-001 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-003 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-004 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-005 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-006 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-009 — in {plan, data-model}, missing from {tasks}
+- fr-id FR-010 — in {data-model, tasks}, missing from {plan}
+- msg-case Effect — in {plan, tasks}, missing from {data-model}
+- msg-case Model — in {plan, tasks}, missing from {data-model}
+- msg-case Msg — in {plan, tasks}, missing from {data-model}
+- sc-id SC-001 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-002 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-003 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-004 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant ControlSampleDefinition — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant Demonstrative — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant Scene — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant SkiaViewer — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant Unsupported — in {tasks}, missing from {plan, data-model}

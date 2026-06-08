@@ -1,7 +1,7 @@
 ---
 title: Tooltip
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 44
 description: Auxiliary hover/focus explanation.
 ---

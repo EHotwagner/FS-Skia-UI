@@ -401,9 +401,11 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
             |> List.filter (fun (id, _) -> not (excluded.Contains id))
             |> List.map (fun (id, p) -> { ControlId = id; Text = readOrEmpty p })
 
+        // Feature 079 (US3, FR-004/FR-005): carry the committed byte size so the SkiaSharp-free
+        // currency check can apply the trivial-content byte floor (CatalogDocsGen.TrivialPreview).
         let previews : CatalogDocsGen.PreviewAsset list =
             (if Directory.Exists imgDir then Directory.GetFiles(imgDir, "*.png") |> List.ofArray else [])
-            |> List.map (fun p -> { ControlId = stem p; Decodable = validatePng p })
+            |> List.map (fun p -> { ControlId = stem p; Decodable = validatePng p; Bytes = (FileInfo p).Length })
 
         let referenceDir = repoRelPath model.RepositoryRoot "output/reference"
 
@@ -425,6 +427,27 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
         let findings = CatalogDocsGen.catalogDocsCurrency facts tree
         let drift = CatalogDocsGen.currencyDrift findings
 
+        // Feature 079 (US3, FR-007/SC-005): reconcile rendered vs honestly-declared-unsupported
+        // counts against the supported catalog, surfaced in the PASS report so there is no silent
+        // omission. On PASS (empty findings) these necessarily sum to |catalogFacts|.
+        let factIdSet = facts |> List.map (fun f -> f.Id) |> Set.ofList
+
+        let renderedCount =
+            previews
+            |> List.filter (fun p ->
+                factIdSet.Contains p.ControlId
+                && p.Decodable
+                && p.Bytes >= CatalogDocsGen.trivialPreviewFloorBytes)
+            |> List.length
+
+        let unsupportedCount =
+            facts
+            |> List.filter (fun f ->
+                not (previews |> List.exists (fun p -> p.ControlId = f.Id))
+                && (detailPages
+                    |> List.exists (fun pg -> pg.ControlId = f.Id && pg.Text.Contains CatalogDocsGen.previewUnsupportedMarker)))
+            |> List.length
+
         let report =
             if List.isEmpty findings then
                 [ "# Controls Catalog Docs"
@@ -439,6 +462,16 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
                   sprintf
                       "- previews-present: %d (validated decodable, non-1x1, non-trivial)"
                       (previews |> List.filter (fun p -> p.Decodable) |> List.length)
+                  sprintf
+                      "- rendered-previews: %d (render-only, non-1x1, >= %d-byte trivial floor)"
+                      renderedCount
+                      (int CatalogDocsGen.trivialPreviewFloorBytes)
+                  sprintf "- unsupported-declared: %d (honest no-image: '%s')" unsupportedCount CatalogDocsGen.previewUnsupportedMarker
+                  sprintf
+                      "- reconciled: %d rendered + %d unsupported == %d supported controls"
+                      renderedCount
+                      unsupportedCount
+                      (List.length facts)
                   (match availableSlugs with
                    | Some _ -> "- api-links: resolved against output/reference/"
                    | None -> "- api-links: resolution deferred to dotnet fsdocs build --strict (no built site present)")

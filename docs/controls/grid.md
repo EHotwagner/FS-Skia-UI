@@ -1,7 +1,7 @@
 ---
 title: Grid
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 33
 description: Structured child composition.
 ---

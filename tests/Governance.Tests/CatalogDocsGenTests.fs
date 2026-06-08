@@ -166,18 +166,38 @@ let catalogDocsCurrencyTests =
         }
 
         test "UndecodablePreview when a present preview fails validation" {
-            let tree = { cleanTree () with Previews = [ { ControlId = "button"; Decodable = false } ] }
+            let tree = { cleanTree () with Previews = [ { ControlId = "button"; Decodable = false; Bytes = 600L } ] }
             Expect.contains (catalogDocsCurrency facts tree) (UndecodablePreview "button") "undecodable preview is detected"
         }
 
-        test "a decodable preview is accepted (no finding for it)" {
-            let tree = { cleanTree () with Previews = [ { ControlId = "button"; Decodable = true } ] }
+        test "a decodable preview above the byte floor is accepted (no finding for it)" {
+            let tree = { cleanTree () with Previews = [ { ControlId = "button"; Decodable = true; Bytes = 600L } ] }
             let findings = catalogDocsCurrency facts tree
-            Expect.isFalse (findings |> List.exists (function UndecodablePreview _ -> true | _ -> false)) "decodable preview raises no finding"
+            Expect.isFalse (findings |> List.exists (function UndecodablePreview _ -> true | _ -> false)) "decodable preview raises no undecodable finding"
+            Expect.isFalse (findings |> List.exists (function TrivialPreview _ -> true | _ -> false)) "above-floor preview raises no trivial finding"
+        }
+
+        // Feature 079 (US3, T016, P3.2/P3.3): a decodable preview that regressed to
+        // empty/near-empty (bytes below the pinned floor) fails exactly like a missing one.
+        test "TrivialPreview when a decodable preview is below the byte floor" {
+            let tree = { cleanTree () with Previews = [ { ControlId = "button"; Decodable = true; Bytes = trivialPreviewFloorBytes - 1L } ] }
+            Expect.contains (catalogDocsCurrency facts tree) (TrivialPreview "button") "below-floor preview is a TrivialPreview"
+        }
+
+        test "a decodable preview exactly at the byte floor raises no TrivialPreview" {
+            let tree = { cleanTree () with Previews = [ { ControlId = "button"; Decodable = true; Bytes = trivialPreviewFloorBytes } ] }
+            let findings = catalogDocsCurrency facts tree
+            Expect.isFalse (findings |> List.exists (function TrivialPreview _ -> true | _ -> false)) "at-floor preview is not trivial"
+        }
+
+        test "an empty-canvas-sized preview (~363 bytes) is a TrivialPreview" {
+            // The near-empty 320x160 light canvas committed by 078 was ~363 bytes; it must now fail.
+            let tree = { cleanTree () with Previews = [ { ControlId = "button"; Decodable = true; Bytes = 363L } ] }
+            Expect.contains (catalogDocsCurrency facts tree) (TrivialPreview "button") "a blanked ~363-byte preview is trivial"
         }
 
         test "OrphanPreview when a preview exists for an unknown control" {
-            let tree = { cleanTree () with Previews = [ { ControlId = "ghost-control"; Decodable = true } ] }
+            let tree = { cleanTree () with Previews = [ { ControlId = "ghost-control"; Decodable = true; Bytes = 600L } ] }
             Expect.contains (catalogDocsCurrency facts tree) (OrphanPreview "ghost-control") "orphan preview is detected"
         }
 
@@ -214,8 +234,10 @@ let catalogDocsCurrencyTests =
                 if Directory.Exists imgDir then
                     Directory.GetFiles(imgDir, "*.png")
                     |> Array.map (fun p ->
+                        let len = (FileInfo p).Length
                         { ControlId = Path.GetFileNameWithoutExtension p |> Option.ofObj |> Option.defaultValue ""
-                          Decodable = (FileInfo p).Length > 256L })
+                          Decodable = len > 256L
+                          Bytes = len })
                     |> Array.toList
                 else []
             let tree =

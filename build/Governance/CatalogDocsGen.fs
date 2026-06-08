@@ -20,11 +20,17 @@ type DocFinding =
     | OrphanDetailPage of controlId: string
     | MissingPreview of controlId: string
     | UndecodablePreview of controlId: string
+    // Feature 079 (US3, FR-004/FR-005): a decodable preview whose committed byte size is below
+    // the pinned trivial-content floor — its content has regressed to empty/near-empty. Treated
+    // as a failing preview exactly like missing/undecodable.
+    | TrivialPreview of controlId: string
     | OrphanPreview of controlId: string
     | DeadLink of controlId: string * target: string
 
 type DetailPage = { ControlId: string; Text: string }
-type PreviewAsset = { ControlId: string; Decodable: bool }
+// Feature 079: `Bytes` carries the committed PNG byte size so the SkiaSharp-free gate can apply
+// the trivial-content byte floor (a real structural property of the committed file, not a decode).
+type PreviewAsset = { ControlId: string; Decodable: bool; Bytes: int64 }
 
 type DocsTree =
     { CatalogIndexText: string
@@ -39,6 +45,18 @@ let detailPageRel (id: string) = sprintf "docs/controls/%s.md" id
 let previewRel (id: string) = sprintf "docs/img/controls/%s.png" id
 
 let previewUnsupportedMarker = "preview-status: unsupported"
+
+// Feature 079 (US1 T012, R3) — the pinned trivial-content byte floor `T`. A committed
+// demonstrative preview MUST exceed this; a near-empty 320×160 light canvas compresses to
+// ~363 bytes, while the smallest committed demonstrative render is 486 bytes (icon-button).
+// `T = 420` sits between them with headroom on both sides (~57 above the empty baseline,
+// ~66 below the smallest demonstrative) and is a real structural property of the committed
+// bytes readable without decoding pixels, keeping the governance build SkiaSharp-free.
+let trivialPreviewFloorBytes = 420L
+
+// Feature 079 — the deterministic render-only harness that regenerates the demonstrative
+// previews (named in trivial/undecodable remedies so a failure points at the fix).
+let private rerenderCommand = "dotnet run --project tests/ControlsPreview.Harness -- --render"
 
 let private regenCommand = "./fake.sh build -t RefreshSurfaceBaselines"
 
@@ -167,7 +185,11 @@ let catalogDocsCurrency (facts: TypedCatalogFact list) (tree: DocsTree) : DocFin
             | _ -> findings.Add(StaleDetailHeader fact.Id)
 
         match Map.tryFind fact.Id previewById with
-        | Some preview -> if not preview.Decodable then findings.Add(UndecodablePreview fact.Id)
+        | Some preview ->
+            // Undecodable takes priority; an otherwise-decodable preview below the byte floor is
+            // a trivial/near-empty regression (Feature 079, FR-005).
+            if not preview.Decodable then findings.Add(UndecodablePreview fact.Id)
+            elif preview.Bytes < trivialPreviewFloorBytes then findings.Add(TrivialPreview fact.Id)
         | None ->
             // No preview asset: honest only if the detail page declares it unsupported.
             let hasHonestNote =
@@ -226,8 +248,15 @@ let currencyDrift (findings: DocFinding list) : string list =
                 previewUnsupportedMarker
         | UndecodablePreview id ->
             sprintf
-                "%s failed PNG validation (undecodable / 1x1 / trivial content). Re-render it through the deterministic render-only path."
+                "%s failed PNG validation (undecodable / 1x1). Re-render it through the deterministic render-only path (%s)."
                 (previewRel id)
+                rerenderCommand
+        | TrivialPreview id ->
+            sprintf
+                "%s is below the %d-byte trivial-content floor — its content has regressed to empty/near-empty and fails like a missing preview. Re-render it demonstratively through the deterministic render-only path (%s)."
+                (previewRel id)
+                (int trivialPreviewFloorBytes)
+                rerenderCommand
         | OrphanPreview id ->
             sprintf
                 "%s is an orphan preview — control %s is not in CatalogGen.catalogFacts. Remove the asset."

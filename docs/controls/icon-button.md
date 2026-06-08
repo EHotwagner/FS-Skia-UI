@@ -1,7 +1,7 @@
 ---
 title: Icon Button
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 18
 description: Icon-only activatable command.
 ---

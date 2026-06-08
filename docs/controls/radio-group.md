@@ -1,7 +1,7 @@
 ---
 title: Radio Group
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 23
 description: Single selection from a visible option set.
 ---

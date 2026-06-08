@@ -1,7 +1,7 @@
 ---
 title: Custom Control
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 61
 description: Product-owned wrapper for custom Skia content.
 ---
@@ -36,12 +36,15 @@ so the example stays in lock-step with the public API.
 
 ## Preview
 
-![Custom Control render-only preview](../img/controls/custom-control.png)
+_No render-only preview is committed for **Custom Control**._
 
-A deterministic **render-only** preview of **Custom Control** (320×160), produced through the
-render-only evidence path (`Widget.render` → `SkiaViewer.captureScreenshotEvidence`,
-`ViewerRenderTargetPng`) and validated decodable / non-1×1 / non-trivial via
-`Testing.readPngArtifact`. It shows the control rendered against the default
-`DesignTokens.Light` theme.
+<!-- preview-status: unsupported -->
+
+**Custom Control** is a product-owned wrapper for arbitrary custom Skia content, so there is
+no canonical sample state to depict through the deterministic render-only path. Rather than
+commit a fabricated, placeholder, or 1×1 image, its preview is honestly declared
+**unsupported** (FR-007): the control renders whatever product-defined content the consumer
+supplies. The reconciled preview ledger counts it under *unsupported* (see
+`specs/079-doc-preview-examples/readiness/controls-preview-evidence.md`).
 
 [← Back to the controls catalog](catalog.html)

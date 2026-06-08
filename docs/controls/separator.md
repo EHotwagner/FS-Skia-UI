@@ -1,7 +1,7 @@
 ---
 title: Separator
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 15
 description: Visual divider between regions.
 ---

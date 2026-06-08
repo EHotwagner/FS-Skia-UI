@@ -1,7 +1,7 @@
 ---
 title: List View
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 26
 description: Bounded visible-range list display.
 ---

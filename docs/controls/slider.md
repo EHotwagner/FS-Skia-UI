@@ -1,7 +1,7 @@
 ---
 title: Slider
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 25
 description: Continuous numeric value selection.
 ---

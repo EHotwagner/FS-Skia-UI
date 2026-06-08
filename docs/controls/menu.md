@@ -1,7 +1,7 @@
 ---
 title: Menu
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 41
 description: Command menu selection.
 ---

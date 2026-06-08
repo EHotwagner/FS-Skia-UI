@@ -1,7 +1,7 @@
 ---
 title: Border
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 36
 description: Single child with border and padding.
 ---

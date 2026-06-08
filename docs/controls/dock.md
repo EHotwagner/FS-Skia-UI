@@ -1,7 +1,7 @@
 ---
 title: Dock
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 34
 description: Docked region composition.
 ---

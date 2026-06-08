@@ -1,7 +1,7 @@
 ---
 title: Controls Catalog
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 2
 description: The authoritative catalog of every supported FS.Skia.UI control, grouped by category, each linking to its detail page and generated from the single-source control catalog.
 ---

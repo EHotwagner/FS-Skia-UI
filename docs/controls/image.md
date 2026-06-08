@@ -1,7 +1,7 @@
 ---
 title: Image
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 13
 description: Image placeholder or drawing-surface reference.
 ---

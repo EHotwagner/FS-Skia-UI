@@ -1,7 +1,7 @@
 ---
 title: Switch
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 24
 description: Compact Boolean setting.
 ---

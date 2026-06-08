@@ -1,7 +1,7 @@
 ---
 title: Roadmap & TODO
 category: Roadmap
-categoryindex: 7
+categoryindex: 9
 index: 0
 description: Forward-looking, planned and in-progress work for FS Skia UI. Each item links to its design/implementation plan. Distinct from the Design history section, which holds superseded historical documents.
 ---

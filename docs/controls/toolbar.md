@@ -1,7 +1,7 @@
 ---
 title: Toolbar
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 43
 description: Compact command group.
 ---

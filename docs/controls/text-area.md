@@ -1,7 +1,7 @@
 ---
 title: Text Area
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 20
 description: Plain multi-line text entry.
 ---

@@ -1,7 +1,7 @@
 ---
 title: Badge
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 16
 description: Compact status label.
 ---

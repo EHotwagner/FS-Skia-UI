@@ -1,7 +1,7 @@
 ---
 title: Context Menu
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 42
 description: Contextual command menu.
 ---

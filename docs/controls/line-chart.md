@@ -1,7 +1,7 @@
 ---
 title: Line Chart
 category: Controls
-categoryindex: 2
+categoryindex: 8
 index: 51
 description: Controls-owned line data visualization.
 ---
