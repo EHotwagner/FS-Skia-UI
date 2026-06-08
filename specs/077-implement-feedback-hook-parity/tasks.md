@@ -149,7 +149,7 @@ skills without manual patching.
 ## Phase 6: Integration & Polish (broad validation)
 
 - [X] T024 [P] [T1] [skillist: []] Regenerate `validation.contract.yml` from `Routing.fs` via `RefreshSurfaceBaselines` (new `PhaseHookParityCheck` gate on the `skill-quality` rule) and confirm `TargetMetadataDrift` reports no contract drift
-- [ ] T025 [T1] [skillist: []] Bump and pack `FS.Skia.UI.Build` (its assembly changed) per the build-package-version-drift guidance so the template-posture check stays green, even though no product src libs were touched
+- [X] T025 [T1] [skillist: []] Bump and pack `FS.Skia.UI.Build` (its assembly changed) per the build-package-version-drift guidance so the template-posture check stays green, even though no product src libs were touched
 - [X] T026 [T1] [skillist: []] Run `./fake.sh build -t Route` and `./fake.sh build -t Route --enforce`: confirm a `.agents/skills/**` diff escalates to `FocusedAuthority` and that `PhaseHookParityCheck` appears in the printed `skill-quality` gate list with its required evidence artifact present
 - [X] T027 [P] [T1] [skillist: speckit-evidence-graph] Run `./fake.sh build -t EvidenceGraph` — confirm the echoed `feature-directory`/`tasks=<n>` match this feature, no cycles, no dangling refs, no `[S*]` surprises
 - [X] T028 [T1] [skillist: speckit-evidence-audit] Run `./fake.sh build -t EvidenceAudit` — confirm verdict PASS (synthetic-propagation + diff-scan); the single `[SEH]` row (T006) must remain `[S]`/`accepted-seh`, never `[X]`
