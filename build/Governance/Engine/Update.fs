@@ -117,6 +117,10 @@ let update msg model =
           // from the DTCG source design-tokens.tokens.json in the same refresh, so the
           // DesignTokenDrift currency gate cannot trip on drift.
           RegenerateDesignTokens
+          // Feature 078 (US1, FR-004): splice the catalog index + detail-page header regions
+          // in docs/controls/** from CatalogGen.catalogFacts, so ControlsCatalogDocsCheck
+          // cannot trip on a stale index or detail-header region.
+          RegenerateCatalogDocs
           RegenerateSkillTree
           RegenerateConstitutionFragments
           // Feature 060 (FR-003): regenerate the emitted `docs/api-surface/` tree from the
@@ -355,6 +359,115 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
           if not (List.isEmpty drift) then
               FailWith(String.Join(Environment.NewLine, drift))
           focusedGateSummary model "DesignTokenDrift" ]
+    | StartTarget Targets.ControlsCatalogDocsCheck ->
+        // Feature 078 (US1, FR-005): the controls-catalog docs currency / completeness /
+        // preview-honesty / link-resolution gate. Gather the observed docs tree at this
+        // interpreter edge (file reads/listing + a dependency-free PNG structural validation),
+        // compute drift against CatalogGen.catalogFacts via the pure
+        // CatalogDocsGen.catalogDocsCurrency, write a PASS/FAIL readiness report, and FailWith
+        // the actionable drift when non-empty.
+        let facts = CatalogGen.catalogFacts
+        let controlsDir = repoRelPath model.RepositoryRoot CatalogDocsGen.catalogDocsRelDir
+        let imgDir = repoRelPath model.RepositoryRoot CatalogDocsGen.previewRelDir
+        let readOrEmpty p = if File.Exists p then File.ReadAllText p else ""
+
+        // Dependency-free, honest PNG structural validation: the 8-byte PNG signature, an IHDR
+        // chunk whose width/height are both > 1, and a non-trivial byte length. Rejects a 1x1 /
+        // truncated / non-PNG placeholder without taking a SkiaSharp dependency in the build.
+        let validatePng (p: string) =
+            try
+                let bytes = File.ReadAllBytes p
+                let signature = [| 0x89uy; 0x50uy; 0x4Euy; 0x47uy; 0x0Duy; 0x0Auy; 0x1Auy; 0x0Auy |]
+                let beUInt (offset: int) =
+                    (int bytes.[offset] <<< 24)
+                    ||| (int bytes.[offset + 1] <<< 16)
+                    ||| (int bytes.[offset + 2] <<< 8)
+                    ||| int bytes.[offset + 3]
+                bytes.Length > 256
+                && Array.sub bytes 0 8 = signature
+                && bytes.[12] = byte 'I' && bytes.[13] = byte 'H' && bytes.[14] = byte 'D' && bytes.[15] = byte 'R'
+                && beUInt 16 > 1
+                && beUInt 20 > 1
+            with _ -> false
+
+        let stem (p: string) =
+            Path.GetFileNameWithoutExtension p |> Option.ofObj |> Option.defaultValue ""
+
+        let excluded = Set.ofList [ "catalog"; "spec-kit-workflow" ]
+
+        let detailPages : CatalogDocsGen.DetailPage list =
+            (if Directory.Exists controlsDir then Directory.GetFiles(controlsDir, "*.md") |> List.ofArray else [])
+            |> List.map (fun p -> stem p, p)
+            |> List.filter (fun (id, _) -> not (excluded.Contains id))
+            |> List.map (fun (id, p) -> { ControlId = id; Text = readOrEmpty p })
+
+        let previews : CatalogDocsGen.PreviewAsset list =
+            (if Directory.Exists imgDir then Directory.GetFiles(imgDir, "*.png") |> List.ofArray else [])
+            |> List.map (fun p -> { ControlId = stem p; Decodable = validatePng p })
+
+        let referenceDir = repoRelPath model.RepositoryRoot "output/reference"
+
+        let availableSlugs =
+            if Directory.Exists referenceDir then
+                Directory.GetFiles(referenceDir, "*.html")
+                |> Array.map stem
+                |> Set.ofArray
+                |> Some
+            else
+                None
+
+        let tree : CatalogDocsGen.DocsTree =
+            { CatalogIndexText = readOrEmpty (repoRelPath model.RepositoryRoot CatalogDocsGen.catalogIndexRel)
+              DetailPages = detailPages
+              Previews = previews
+              AvailableReferenceSlugs = availableSlugs }
+
+        let findings = CatalogDocsGen.catalogDocsCurrency facts tree
+        let drift = CatalogDocsGen.currencyDrift findings
+
+        let report =
+            if List.isEmpty findings then
+                [ "# Controls Catalog Docs"
+                  ""
+                  sprintf
+                      "PASS: the published Controls docs section is a current, complete, honest projection of CatalogGen.catalogFacts (%d controls)."
+                      (List.length facts)
+                  ""
+                  sprintf "- supported-controls: %d" (List.length facts)
+                  sprintf "- generated-index: %s (catalog-docs/index region)" CatalogDocsGen.catalogIndexRel
+                  "- detail-pages: one per control; catalog-docs/<id> header region current"
+                  sprintf
+                      "- previews-present: %d (validated decodable, non-1x1, non-trivial)"
+                      (previews |> List.filter (fun p -> p.Decodable) |> List.length)
+                  (match availableSlugs with
+                   | Some _ -> "- api-links: resolved against output/reference/"
+                   | None -> "- api-links: resolution deferred to dotnet fsdocs build --strict (no built site present)")
+                  "- single-source: build/Governance/CatalogGen.fs (catalogFacts)"
+                  "- regenerate: ./fake.sh build -t RefreshSurfaceBaselines"
+                  "- failure-class: none" ]
+                |> String.concat Environment.NewLine
+            else
+                [ "# Controls Catalog Docs"
+                  ""
+                  "FAIL: the published Controls docs section has drifted from CatalogGen.catalogFacts."
+                  ""
+                  yield! drift |> List.map (fun d -> sprintf "- %s" d)
+                  ""
+                  "- regenerate: ./fake.sh build -t RefreshSurfaceBaselines"
+                  "- failure-class: stale-generated-catalog-docs" ]
+                |> String.concat Environment.NewLine
+
+        model,
+        [ focusedGateAssumptionCheck model "ControlsCatalogDocsCheck"
+          WriteStructuredReport(
+              "controls catalog docs",
+              path [ model.ReadinessDir; "controls-catalog-docs.md" ],
+              report
+          )
+          if not (List.isEmpty drift) then
+              FailWith(String.Join(Environment.NewLine, drift))
+          RequireFiles("controls catalog docs report output", [ path [ model.ReadinessDir; "controls-catalog-docs.md" ] ])
+          focusedGateSummary model "ControlsCatalogDocsCheck" ]
     | StartTarget Targets.ControlsInteractionCheck ->
         let report = """# Interaction Tests
 

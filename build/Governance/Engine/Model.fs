@@ -208,6 +208,11 @@ type BuildEffect =
     // the DTCG source `src/Controls/design-tokens.tokens.json` in one operation. The file
     // read/write lives at the interpret edge; `DesignTokenGen.splice` is pure (Principle IV).
     | RegenerateDesignTokens
+    // Feature 078 (US1, FR-004): splice the catalog-index region in docs/controls/catalog.md
+    // and every detail-page header region in docs/controls/<id>.md from CatalogGen.catalogFacts
+    // in one operation, so the published Controls section cannot drift from the single source.
+    // The file reads/writes live at the interpret edge; CatalogDocsGen.splice* are pure.
+    | RegenerateCatalogDocs
     | RouteSelect
     // Feature 043: in-process evidence gates (model is re-derived in interpret, so no payload).
     | EvidenceGraphCheck

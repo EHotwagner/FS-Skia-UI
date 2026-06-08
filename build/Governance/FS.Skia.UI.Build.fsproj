@@ -79,6 +79,12 @@
          Engine/Interpret.fs edge. Build-tooling .fsi (CatalogGen.fsi precedent). -->
     <Compile Include="DesignTokenGen.fsi" />
     <Compile Include="DesignTokenGen.fs" />
+    <!-- Feature 078 (US1): single-source generator + currency check for the published
+         "Controls" docs section. Reuses CatalogGen.catalogFacts + the keyed BEGIN/END
+         GENERATED splice precedent (so it compiles after CatalogGen); pure, with IO at the
+         interpreter edge. Build-tooling .fsi (CatalogGen.fsi precedent). -->
+    <Compile Include="CatalogDocsGen.fsi" />
+    <Compile Include="CatalogDocsGen.fs" />
     <Compile Include="Evidence/EvidenceFormatSchema.fsi" />
     <Compile Include="Evidence/EvidenceFormatSchema.fs" />
     <Compile Include="Evidence/TaskParser.fsi" />

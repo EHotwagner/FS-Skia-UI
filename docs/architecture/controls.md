@@ -8,6 +8,11 @@ description: The declarative control suite and its Elmish adapter — how contro
 
 # Controls Suite
 
+> **Looking for the list of controls?** The [Controls Catalog](../controls/catalog.html)
+> is the authoritative, generated reference of every supported control — grouped by
+> category, each with a detail page and API link. This page explains the *architecture*
+> behind that catalog.
+
 The control suite is two published packages that share one story.
 `FS.Skia.UI.Controls` is the declarative, Elmish-shaped widget layer: you build
 an immutable tree of `Control<'msg>` values and render it against a `Theme` to get

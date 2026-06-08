@@ -16,6 +16,9 @@ Pick the path that matches what you are doing. Each lands in one step.
 
 ### I'm building an app on FS Skia UI (consumer)
 
+- [**Controls Catalog**](controls/catalog.html) — the authoritative list of every
+  supported control, grouped by category, each with a detail page and API link.
+  Start with [Controls in the Spec Kit workflow](controls/spec-kit-workflow.html).
 - [**API Reference**](reference/index.html) — every supported public type and
   member, with summaries, parameters, and returns.
 - [Typed controls & the design-token / Penpot flow](controls-design/typed-front-door.html)

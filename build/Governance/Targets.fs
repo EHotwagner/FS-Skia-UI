@@ -26,6 +26,8 @@ type Target =
     | ControlsCatalogGenerationCheck
     // Feature 069 (US1, FR-006): the design-token generation-currency (drift) gate.
     | DesignTokenDrift
+    // Feature 078 (US1, FR-005): the controls-catalog docs currency/completeness/preview gate.
+    | ControlsCatalogDocsCheck
     | ControlsInteractionCheck
     | ControlsRenderingCheck
     | DependencyReport
@@ -92,6 +94,7 @@ let allTargets =
       ControlsCatalogCheck
       ControlsCatalogGenerationCheck
       DesignTokenDrift
+      ControlsCatalogDocsCheck
       ControlsInteractionCheck
       ControlsRenderingCheck
       DependencyReport
@@ -145,6 +148,7 @@ let name target =
     | ControlsCatalogCheck -> "ControlsCatalogCheck"
     | ControlsCatalogGenerationCheck -> "ControlsCatalogGenerationCheck"
     | DesignTokenDrift -> "DesignTokenDrift"
+    | ControlsCatalogDocsCheck -> "ControlsCatalogDocsCheck"
     | ControlsInteractionCheck -> "ControlsInteractionCheck"
     | ControlsRenderingCheck -> "ControlsRenderingCheck"
     | DependencyReport -> "DependencyReport"
@@ -198,6 +202,7 @@ let directPrerequisites target =
     | ControlsCatalogCheck -> []
     | ControlsCatalogGenerationCheck -> []
     | DesignTokenDrift -> []
+    | ControlsCatalogDocsCheck -> []
     | ControlsInteractionCheck -> []
     | ControlsRenderingCheck -> []
     | DependencyReport -> []
@@ -274,6 +279,7 @@ let private failureOwner target =
     | ControlsCatalogCheck
     | ControlsCatalogGenerationCheck
     | DesignTokenDrift
+    | ControlsCatalogDocsCheck
     | ControlsInteractionCheck
     | ControlsRenderingCheck -> "product"
     | _ -> "governance"

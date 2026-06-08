@@ -362,6 +362,7 @@ module ValidationContract =
         [ "AgentReady"
           "ControlsCatalogCheck"
           "ControlsCatalogGenerationCheck"
+          "ControlsCatalogDocsCheck"
           "DesignTokenDrift"
           "ControlsInteractionCheck"
           "ControlsRenderingCheck"

@@ -111,6 +111,9 @@ type BuildEffect =
     // Feature 069 (US1, FR-002): regenerate src/Controls/DesignTokens.fs (whole-file) from
     // the DTCG source design-tokens.tokens.json in one operation (interpreter edge).
     | RegenerateDesignTokens
+    // Feature 078 (US1, FR-004): splice the catalog-index + detail-page header regions in
+    // docs/controls/** from CatalogGen.catalogFacts in one operation (interpreter edge).
+    | RegenerateCatalogDocs
     | RouteSelect
     // Feature 043: in-process evidence gates (model is re-derived in interpret, so no payload).
     | EvidenceGraphCheck

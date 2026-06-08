@@ -209,6 +209,27 @@ let rules =
           "focused"
           "governance"
 
+      // Feature 078 (US1, FR-005, research R5): the published Controls docs section is a
+      // single-source projection of CatalogGen.catalogFacts. A change to the section
+      // (docs/controls/**, docs/img/controls/**), the docs generator
+      // (build/Governance/CatalogDocsGen.fs[i]), or the catalog single source
+      // (build/Governance/CatalogGen.fs, src/Controls/catalog.yml) routes the dedicated
+      // ControlsCatalogDocsCheck currency/completeness/preview gate alongside the docs-only
+      // EvidenceGraph. docs-only alone cannot enforce catalog↔index↔detail↔preview currency.
+      internalRule
+          "controls-catalog-docs"
+          [ "docs/controls/**"
+            "docs/img/controls/**"
+            "build/Governance/CatalogDocsGen.fs"
+            "build/Governance/CatalogDocsGen.fsi"
+            "build/Governance/CatalogGen.fs"
+            "src/Controls/catalog.yml" ]
+          FocusedAuthority
+          [ Targets.ControlsCatalogDocsCheck ]
+          []
+          "focused"
+          "product"
+
       // Feature 053 (V3 Stage 5, FR-007): `PerPackageSurfaceDiff` is now a Route-gated
       // requirement of the package-surface rule, so a public `src/**/*.fsi` change
       // selects the per-package DiffPlex surface check alongside the aggregate

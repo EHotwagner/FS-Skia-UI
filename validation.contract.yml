@@ -145,6 +145,22 @@ routing_rules:
       - readiness/validation-contract.md
     timeout_class: focused
     failure_owner: governance
+  - id: controls-catalog-docs
+    tier: focused-authority
+    paths:
+      - "docs/controls/**"
+      - "docs/img/controls/**"
+      - "build/Governance/CatalogDocsGen.fs"
+      - "build/Governance/CatalogDocsGen.fsi"
+      - "build/Governance/CatalogGen.fs"
+      - "src/Controls/catalog.yml"
+    feature_concerns:
+      - controls-catalog-docs
+    required_gates:
+      - ControlsCatalogDocsCheck
+    expected_artifacts:
+    timeout_class: focused
+    failure_owner: product
   - id: package-surface
     tier: focused-authority
     paths:

@@ -523,6 +523,26 @@ let regenerateDesignTokens (model: BuildModel) =
     if File.Exists jsonPath then
         File.WriteAllText(fsPath, DesignTokenGen.splice (File.ReadAllText jsonPath))
 
+// Feature 078 — RefreshSurfaceBaselines regeneration edge (US1, FR-004). Splice the catalog
+// index region (docs/controls/catalog.md) and every detail-page header region
+// (docs/controls/<id>.md) from CatalogGen.catalogFacts in ONE operation, preserving every byte
+// outside the `catalog-docs/<key>` markers (authored prose/usage/previews). A file missing its
+// marker region is left untouched here; ControlsCatalogDocsCheck reports it as stale/missing
+// (loud, not silent). The read/write is the only filesystem effect, at the interpret edge;
+// CatalogDocsGen.spliceCatalogDocs is pure (Principle IV).
+let regenerateCatalogDocs (model: BuildModel) =
+    let renders = CatalogDocsGen.renderMap CatalogGen.catalogFacts
+
+    let spliceFile relPath =
+        let full = repoRelPath model.RepositoryRoot relPath
+
+        if File.Exists full then
+            File.WriteAllText(full, CatalogDocsGen.spliceCatalogDocs renders (File.ReadAllText full))
+
+    spliceFile CatalogDocsGen.catalogIndexRel
+    for fact in CatalogGen.catalogFacts do
+        spliceFile (CatalogDocsGen.detailPageRel fact.Id)
+
 // Feature 042 (FR-002a, research R2): the git union-diff is read here at the `Route`
 // interpreter edge so the Routing selector stays pure and unit-testable without git.
 let routeGitCapture root (arguments: string) =

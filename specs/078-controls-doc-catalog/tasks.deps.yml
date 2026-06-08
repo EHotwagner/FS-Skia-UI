@@ -1,0 +1,112 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Phase-checkpoint edges are auto-injected by the graph script (every task in
+# Phase N+1 implicitly depends on the last foundation task of Phase N). Only
+# non-phase cross-edges are written below.
+
+tasks:
+  # Phase 1: Setup
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+
+  # Phase 2: Foundation (generator + gate scaffolding)
+  T004:
+    deps: []
+    skillist: ["fsharp-code-generation"]
+  T005:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T006:
+    deps: []
+    skillist: ["fsharp-code-generation"]
+  T007:
+    deps: [T005]
+    skillist: ["fsharp-build-orchestration"]
+  T008:
+    deps: [T005]
+    skillist: []
+
+  # Phase 3: User Story 1 (US1)
+  T009:
+    deps: [T004]
+    skillist: ["fsharp-code-generation"]
+  T010:
+    deps: [T004]
+    skillist: ["fsharp-io-globbing"]
+  T011:
+    deps: [T009]
+    skillist: ["fsharp-code-generation"]
+  T012:
+    deps: [T010]
+    skillist: ["fsharp-io-globbing"]
+  T013:
+    deps: [T011, T006]
+    skillist: ["fsharp-code-generation"]
+  T014:
+    deps: []
+    skillist: ["fs-skia-evidence-mode", "fs-skia-skiaviewer"]
+  T015:
+    deps: [T014]
+    skillist: ["fs-skia-testing", "fs-skia-evidence-mode"]
+  T016:
+    deps: [T013, T014]
+    skillist: []
+  T017:
+    deps: [T013, T016]
+    skillist: []
+  T018:
+    deps: [T016, T017]
+    skillist: ["fsdocs-build"]
+  T019:
+    deps: [T012, T013, T015, T016, T017]
+    skillist: []
+  T020:
+    deps: [T019]
+    skillist: []
+
+  # Phase 4: User Story 2 (US2)
+  T021:
+    deps: []
+    skillist: ["fsdocs-technical"]
+  T022:
+    deps: [T021]
+    skillist: ["fs-skia-typed-controls"]
+  T023:
+    deps: [T021, T022]
+    skillist: []
+
+  # Phase 5: User Story 3 (US3)
+  T024:
+    deps: [T021]
+    skillist: ["fs-skia-design-tokens"]
+  T025:
+    deps: [T024]
+    skillist: []
+
+  # Phase 6: Integration & Polish
+  T026:
+    deps: [T017]
+    skillist: []
+  T027:
+    deps: [T018, T022, T024, T026]
+    skillist: ["fsdocs-build"]
+  T028:
+    deps: [T019, T027]
+    skillist: ["fsharp-build-orchestration"]
+  T029:
+    deps: [T028]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T030:
+    deps: [T029]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]
