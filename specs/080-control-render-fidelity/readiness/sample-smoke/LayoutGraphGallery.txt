@@ -193,3 +193,81 @@ kinds=[GroupElement; RectangleElement; TextElement; GroupElement; GroupElement;
 elapsed-ms=123
 
 exit-code=0
+
+## LayoutGraphGallery contract smoke
+$ dotnet run --project samples/LayoutGraphGallery/LayoutGraphGallery.fsproj --no-build --no-restore -- --contract-smoke
+status=ok
+sample=LayoutGraphGallery
+model-owns-focus=true
+invalid-dag-issues=1
+directed-layout=Ok (4, 3)
+automatic-layout-bounds=7
+automatic-layout-diagnostics=0
+automatic-layout-resized-bounds=7
+automatic-layout-hidden-status=Hidden
+automatic-layout-nested=true
+automatic-layout-hit=Some "gallery-auto-title"
+datagrid-visible-range={ FirstIndex = 0
+  Count = 6
+  Total = 8 }
+kinds=[GroupElement; RectangleElement; TextElement; GroupElement; GroupElement;
+ GroupElement; LineElement; EmptyElement; GroupElement; LineElement;
+ EmptyElement; GroupElement; LineElement; EmptyElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement; GroupElement; GroupElement; LineElement; TextElement; GroupElement;
+ LineElement; TextElement; GroupElement; LineElement; TextElement; GroupElement;
+ LineElement; TextElement; GroupElement; LineElement; TextElement; GroupElement;
+ LineElement; TextElement; GroupElement; LineElement; TextElement; GroupElement;
+ LineElement; TextElement; GroupElement; LineElement; TextElement; GroupElement;
+ LineElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; TextElement; TextElement;
+ TextElement; TextElement; TextElement; GroupElement; GroupElement; ClipElement;
+ TextRunElement; PathElement; PathElement; CircleElement; ...]
+elapsed-ms=127
+
+exit-code=0
+
+## LayoutGraphGallery contract smoke
+$ dotnet run --project samples/LayoutGraphGallery/LayoutGraphGallery.fsproj --no-build --no-restore -- --contract-smoke
+status=ok
+sample=LayoutGraphGallery
+model-owns-focus=true
+invalid-dag-issues=1
+directed-layout=Ok (4, 3)
+automatic-layout-bounds=7
+automatic-layout-diagnostics=0
+automatic-layout-resized-bounds=7
+automatic-layout-hidden-status=Hidden
+automatic-layout-nested=true
+automatic-layout-hit=Some "gallery-auto-title"
+datagrid-visible-range={ FirstIndex = 0
+  Count = 6
+  Total = 8 }
+kinds=[GroupElement; RectangleElement; TextElement; GroupElement; GroupElement;
+ GroupElement; LineElement; EmptyElement; GroupElement; LineElement;
+ EmptyElement; GroupElement; LineElement; EmptyElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement; GroupElement; GroupElement; LineElement; TextElement; GroupElement;
+ LineElement; TextElement; GroupElement; LineElement; TextElement; GroupElement;
+ LineElement; TextElement; GroupElement; LineElement; TextElement; GroupElement;
+ LineElement; TextElement; GroupElement; LineElement; TextElement; GroupElement;
+ LineElement; TextElement; GroupElement; LineElement; TextElement; GroupElement;
+ LineElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; RectangleElement; TextElement;
+ GroupElement; RectangleElement; TextElement; GroupElement; RectangleElement;
+ TextElement; GroupElement; RectangleElement; TextElement; GroupElement;
+ RectangleElement; TextElement; GroupElement; TextElement; TextElement;
+ TextElement; TextElement; TextElement; GroupElement; GroupElement; ClipElement;
+ TextRunElement; PathElement; PathElement; CircleElement; ...]
+elapsed-ms=128
+
+exit-code=0

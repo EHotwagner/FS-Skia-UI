@@ -345,8 +345,11 @@ module Paint =
           PathEffect = NoPathEffect }
 
     let stroke color width =
+        // `Fill` carries the paint colour for BOTH fills and strokes: the painter sets
+        // `paint.Color` from `Fill` (defaulting a `None` to white) and selects stroke vs fill
+        // style from `Stroke`. Keep `Fill = Some color` so a stroked shape actually renders in
+        // its colour instead of white-on-white (previously `Fill = None` discarded the colour).
         { fill color with
-            Fill = None
             Stroke =
                 Some
                     { Width = width

@@ -11,9 +11,11 @@ hidden=KeyboardStateDisplayHidden
 last-command=Some "move.left"
 recovered-pressed=[]
 adapter-init-commands=0 mode-commands=0 key-commands=1 recovery-commands=1
-scene-kinds=[GroupElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+scene-kinds=[GroupElement; GroupElement; ClipElement; TextRunElement; RectangleElement;
+ RectangleElement; TextRunElement; RectangleElement; RectangleElement;
+ TextRunElement; RectangleElement; RectangleElement; TextRunElement;
  GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
  RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
  ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
  TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement]
-elapsed-ms=49
+elapsed-ms=63

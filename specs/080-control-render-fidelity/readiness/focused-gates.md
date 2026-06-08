@@ -684,3 +684,93 @@
 - remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
 
 
+## ControlFidelityCheck
+
+- command: `./fake.sh build -t ControlFidelityCheck`
+- direct-prerequisites: (none)
+- timestamp-utc: `2026-06-08T15:46:16.9719302+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/080-control-render-fidelity/readiness/logs/ControlFidelityCheck.txt`
+- readiness-path: `(none)`
+- verdict-category: `degraded`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active
+- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists
+- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared
+- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure
+- affected-gate: `ControlFidelityCheck`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+
+## ControlsRenderingCheck
+
+- command: `./fake.sh build -t ControlsRenderingCheck`
+- direct-prerequisites: (none)
+- timestamp-utc: `2026-06-08T15:46:27.7336262+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/080-control-render-fidelity/readiness/logs/controls-rendering-check.txt`
+- readiness-path: `/home/developer/projects/FS-Skia-UI/specs/080-control-render-fidelity/readiness/layout-rendering.md`
+- verdict-category: `success`
+- stale-build-restore-assumptions: requires-restored-project:tests/Controls.Tests/Controls.Tests.fsproj, requires-built-project:tests/Controls.Tests/Controls.Tests.fsproj
+- failure-rule: `stale-build-restore-assumption`
+- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active
+- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists
+- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared
+- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure
+- affected-gate: `ControlsRenderingCheck`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+
+## ControlsCatalogDocsCheck
+
+- command: `./fake.sh build -t ControlsCatalogDocsCheck`
+- direct-prerequisites: (none)
+- timestamp-utc: `2026-06-08T15:46:35.5456799+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/080-control-render-fidelity/readiness/logs/ControlsCatalogDocsCheck.txt`
+- readiness-path: `(none)`
+- verdict-category: `degraded`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active
+- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists
+- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared
+- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure
+- affected-gate: `ControlsCatalogDocsCheck`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+
+## SkillSyncCheck
+
+- command: `./fake.sh build -t SkillSyncCheck`
+- direct-prerequisites: (none)
+- timestamp-utc: `2026-06-08T15:47:00.3036526+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/080-control-render-fidelity/readiness/logs/skill-sync-check.txt`
+- readiness-path: `/home/developer/projects/FS-Skia-UI/specs/080-control-render-fidelity/readiness/skill-sync-check.md`
+- verdict-category: `success`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active
+- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists
+- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared
+- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure
+- affected-gate: `SkillSyncCheck`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+
+## SkillSyncCheck
+
+- command: `./fake.sh build -t SkillSyncCheck`
+- direct-prerequisites: (none)
+- timestamp-utc: `2026-06-08T16:05:30.3580057+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/080-control-render-fidelity/readiness/logs/skill-sync-check.txt`
+- readiness-path: `/home/developer/projects/FS-Skia-UI/specs/080-control-render-fidelity/readiness/skill-sync-check.md`
+- verdict-category: `success`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active
+- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists
+- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared
+- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure
+- affected-gate: `SkillSyncCheck`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+

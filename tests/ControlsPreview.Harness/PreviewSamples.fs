@@ -66,7 +66,7 @@ let private sText = pixelOnly 0.0 0
 let private sLine = withKinds 0.02 2 [ PathElement ] []
 let private sBars n = withKinds 0.02 2 [ RectangleElement ] [ RectangleElement, n ]
 let private sPie n = withKinds 0.04 2 [ ArcElement ] [ ArcElement, n ]
-let private sScatter n = withKinds 0.002 1 [ CircleElement ] [ CircleElement, n ]
+let private sScatter n = withKinds 0.004 1 [ CircleElement; LineElement ] [ CircleElement, n ]
 let private sGraph n = withKinds 0.01 1 [ CircleElement; LineElement ] [ CircleElement, n ]
 let private sRows n = withKinds 0.04 2 [ RectangleElement; TextRunElement ] [ RectangleElement, n ]
 let private sRadio n = withKinds 0.005 1 [ CircleElement ] [ CircleElement, n ]
@@ -77,12 +77,27 @@ let private sSwitch = withKinds 0.005 2 [ RectangleElement; CircleElement ] []
 let private sCheck = withKinds 0.002 1 [ RectangleElement; LineElement ] []
 let private sFramed = withKinds 0.002 1 [ RectangleElement ] []
 let private sGrid = withKinds 0.01 2 [ RectangleElement; LineElement ] []
-let private sSpinner = withKinds 0.001 1 [ ArcElement ] []
+let private sSpinner = withKinds 0.02 1 [ ArcElement ] []
 let private sImage = withKinds 0.003 1 [ RectangleElement; LineElement ] []
 let private sIcon = withKinds 0.003 1 [ PathElement ] []
+// 081 — command/button family and layout/container family (single-Kind preview schematics).
+let private sButton = withKinds 0.02 1 [ RectangleElement ] []
+let private sOutlineButton = withKinds 0.004 1 [ RectangleElement ] []
+let private sSplit = withKinds 0.02 2 [ RectangleElement; PathElement ] []
+let private sPicker = withKinds 0.005 1 [ RectangleElement; LineElement ] []
+let private sSwatches n = withKinds 0.2 2 [ RectangleElement ] [ RectangleElement, n ]
+let private sContainer = withKinds 0.05 2 [ RectangleElement; TextRunElement ] []
 
 // ---- shared sample content (fixed literals) --------------------------------------------
 let private lbl (t: string) : Widget<unit> = Label.view { Label.defaults with Text = t }
+
+// 081 — Composite controls (pickers, split-button, layout containers) lower through the typed
+// front door to MULTI-NODE trees (Stack/Wrap/Toolbar + children) whose preview flattens into
+// stray rows with the wrong title band. To render them faithfully as a SINGLE rich-family
+// schematic (the renderer dispatches per `Control.Kind`), the preview builds a single-Kind node
+// directly via the public `Control.create` + `Widget.ofControl` (toControl ∘ ofControl = id).
+let private rawWidget (kind: string) (attrs: Attr<unit> list) : Widget<unit> =
+    FS.Skia.UI.Controls.Control.create kind attrs |> Widget.ofControl
 let private items4 = [ "Alpha"; "Beta"; "Gamma"; "Delta" ]
 let private sampleSeries: ChartSeries list =
     [ { Name = "Sales"
@@ -107,10 +122,10 @@ let samples : ControlSampleDefinition list =
       demo "image" (fun () -> Image.view { Image.defaults with Value = "logo.png" }) sImage "Image placeholder frame referencing a sample source."
       demo "icon" (fun () -> Icon.view { Icon.defaults with Text = "home" }) sIcon "A named icon shown as a font-independent vector glyph."
       demo "separator" (fun () -> Separator.view { Separator.defaults with Id = None }) sText "A visual divider between regions."
-      demo "badge" (fun () -> Badge.view { Badge.defaults with Text = "NEW" }) sText "A compact status label."
+      demo "badge" (fun () -> Badge.view { Badge.defaults with Text = "NEW" }) sOutlineButton "A compact status label shown as an accent pill."
       // input
-      demo "button" (fun () -> Button.view { Button.defaults with Text = "Save"; Intent = ButtonIntent.Primary }) sText "A primary command button with a visible label."
-      demo "icon-button" (fun () -> IconButton.view { IconButton.defaults with Text = "+"; Intent = ButtonIntent.Secondary }) sText "An icon-only activatable command."
+      demo "button" (fun () -> Button.view { Button.defaults with Text = "Save"; Intent = ButtonIntent.Primary }) sButton "A primary command button with a filled accent surface and label."
+      demo "icon-button" (fun () -> IconButton.view { IconButton.defaults with Text = "+"; Intent = ButtonIntent.Secondary }) sOutlineButton "An icon-only activatable command shown as an outlined button."
       demo "text-box" (fun () -> let p = { (TextBox.defaults "text-box") with Value = "jane@example.com" } in let m, _ = TextBox.init p in TextBox.view p m) sText "Single-line text entry with a populated value."
       demo "text-area" (fun () -> let p = { (TextArea.defaults "text-area") with Value = "Multi-line\nnotes here" } in let m, _ = TextArea.init p in TextArea.view p m) sText "Multi-line text entry with populated content."
       demo "numeric-input" (fun () -> NumericInput.view { NumericInput.defaults with Value = 42.0 }) sFramed "A model-owned numeric value editor with a framed field."
@@ -123,35 +138,27 @@ let samples : ControlSampleDefinition list =
       demo "multi-select-list" (fun () -> let p = { (MultiSelectList.defaults "multi-select-list") with Items = items4 } in let m, _ = MultiSelectList.init p in let m2, _ = MultiSelectList.update (ToggleKey "Alpha") m in let m3, _ = MultiSelectList.update (ToggleKey "Gamma") m2 in MultiSelectList.view p m3) (sRows 3) "A list with several selected keys highlighted."
       demo "combo-box" (fun () -> let p = { (ComboBox.defaults "combo-box") with Items = items4 } in let m, _ = ComboBox.init p in ComboBox.view p m) (sRows 3) "A compact selection list of option rows."
       demo "tree-view" (fun () -> let p = { (TreeView.defaults "tree-view") with Items = [ "Root"; "  Child A"; "  Child B" ] } in let m, _ = TreeView.init p in TreeView.view p m) (sRows 3) "A hierarchical item display of indented rows."
-      demo "data-grid" (fun () ->
-          let cols = [ { Key = "name"; Header = "Name"; Width = 80.0; ColumnType = TextColumn }
-                       { Key = "qty"; Header = "Qty"; Width = 50.0; ColumnType = NumericColumn } ]
-          let rows = [ { Key = "r1"; Cells = [ { RowKey = "r1"; ColumnKey = "name"; Value = "Widget" }; { RowKey = "r1"; ColumnKey = "qty"; Value = "12" } ] }
-                       { Key = "r2"; Cells = [ { RowKey = "r2"; ColumnKey = "name"; Value = "Gadget" }; { RowKey = "r2"; ColumnKey = "qty"; Value = "7" } ] } ]
-          let p = { (DataGrid.defaults "data-grid") with Columns = cols; Rows = rows }
-          let m, _ = DataGrid.init p
-          let m2, _ = DataGrid.update (SelectRow "r1") m
-          DataGrid.view p m2)
-          sGrid "A tabular grid layout with a header row and body rows."
-      // layout
-      demo "stack" (fun () -> Stack.view { Stack.defaults with Children = [ lbl "One"; lbl "Two"; lbl "Three" ] }) sText "An ordered composition of child controls."
-      demo "grid" (fun () -> Grid.view { Grid.defaults with Children = [ lbl "A1"; lbl "B2"; lbl "C3" ] }) sText "A structured child composition."
-      demo "dock" (fun () -> Dock.view { Dock.defaults with Children = [ lbl "Top"; lbl "Fill" ] }) sText "A docked-region composition."
-      demo "wrap" (fun () -> Wrap.view { Wrap.defaults with Children = [ lbl "tag1"; lbl "tag2"; lbl "tag3" ] }) sText "A wrapping child layout."
-      demo "border" (fun () -> Border.view (Border.defaults (lbl "Bordered"))) sText "A single child with border and padding."
-      demo "panel" (fun () -> Panel.view { Panel.defaults with Children = [ lbl "Panel content" ] }) sText "A general-purpose child surface."
-      demo "scroll-viewer" (fun () -> ScrollViewer.view (ScrollViewer.defaults "scroll-viewer" (lbl "Scrollable content"))) sText "A scrollable child viewport."
-      demo "split-view" (fun () -> SplitView.view { SplitView.defaults with Children = [ lbl "Left"; lbl "Right" ] }) sText "A resizable two-region layout."
+      demo "data-grid" (fun () -> rawWidget "data-grid" [ Attr.items [ "Name"; "Qty"; "Widget"; "12"; "Gadget"; "7" ] ])
+          sGrid "A tabular grid layout with a header row and body cells."
+      // layout — single-Kind container schematics (see `rawWidget`)
+      demo "stack" (fun () -> rawWidget "stack" [ Attr.items [ "One"; "Two"; "Three" ] ]) sContainer "An ordered vertical composition of child regions."
+      demo "grid" (fun () -> rawWidget "grid" [ Attr.items [ "A1"; "B2"; "C3" ] ]) sContainer "A structured cell composition."
+      demo "dock" (fun () -> rawWidget "dock" [ Attr.items [ "Top"; "Fill" ] ]) sContainer "A docked top bar with a left rail and a filled centre."
+      demo "wrap" (fun () -> rawWidget "wrap" [ Attr.items [ "tag1"; "tag2"; "tag3" ] ]) sContainer "A wrapping flow of child chips."
+      demo "border" (fun () -> rawWidget "border" [ Attr.text "Bordered" ]) sContainer "A single child framed by a border with padding."
+      demo "panel" (fun () -> rawWidget "panel" [ Attr.text "Panel content" ]) sContainer "A general-purpose child surface with a header band."
+      demo "scroll-viewer" (fun () -> rawWidget "scroll-viewer" [ Attr.text "Scrollable content" ]) sContainer "A scrollable child viewport with a scrollbar."
+      demo "split-view" (fun () -> rawWidget "split-view" [ Attr.items [ "Left"; "Right" ] ]) sContainer "A resizable two-pane layout with a divider."
       // navigation
       demo "tabs" (fun () -> Tabs.view { Tabs.defaults with Items = [ "Home"; "Profile"; "Settings" ]; SelectedKey = Some "Profile" }) (sTabs 3) "Active page selection across a tab strip."
       demo "menu" (fun () -> Menu.view { Menu.defaults with Items = [ "File"; "Edit"; "View" ] }) (sRows 3) "A command menu of item rows."
       demo "context-menu" (fun () -> ContextMenu.view { ContextMenu.defaults with Items = [ "Cut"; "Copy"; "Paste" ] }) (sRows 3) "A contextual command menu of item rows."
-      demo "toolbar" (fun () -> Toolbar.view { Toolbar.defaults with Children = [ lbl "B"; lbl "I"; lbl "U" ] }) sText "A compact command group."
+      demo "toolbar" (fun () -> rawWidget "toolbar" [ Attr.items [ "B"; "I"; "U" ] ]) sContainer "A compact horizontal command group."
       // overlay / feedback
       demo "tooltip" (fun () -> Tooltip.view { Tooltip.defaults with Text = "Click to save your work" }) sText "An auxiliary hover/focus explanation."
       demo "dialog" (fun () -> Dialog.view { Dialog.defaults with Title = Some "Confirm"; IsOpen = true; Children = [ lbl "Are you sure?" ] }) sText "A modal content region (one static frame)."
       demo "toast" (fun () -> Toast.view { Toast.defaults with Text = "Saved successfully"; Severity = ValidationState.Valid }) sText "A transient status message (one static frame)."
-      demo "overlay" (fun () -> Overlay.view (Overlay.defaults (lbl "Overlaid content"))) sText "Layered child content (one static frame)."
+      demo "overlay" (fun () -> rawWidget "overlay" [ Attr.text "Overlaid content" ]) sContainer "Layered child content shown as offset surfaces (one static frame)."
       demo "progress-bar" (fun () -> ProgressBar.view { ProgressBar.defaults with Value = 0.6 }) sProgress "A determinate progress indicator: track plus partial fill."
       demo "spinner" (fun () -> Spinner.view { Spinner.defaults with Id = None }) sSpinner "An indeterminate progress indicator (one static frame)."
       demo "validation-message" (fun () -> ValidationMessage.view { ValidationMessage.defaults with Text = "Email is required"; Severity = ValidationState.Invalid "required" }) sText "Validation text tied to model state."
@@ -161,17 +168,13 @@ let samples : ControlSampleDefinition list =
       demo "pie-chart" (fun () -> PieChart.view { PieChart.defaults with Values = [ { X = 0.0; Y = 30.0; Label = Some "A" }; { X = 1.0; Y = 50.0; Label = Some "B" }; { X = 2.0; Y = 20.0; Label = Some "C" } ] }) (sPie 3) "A part-to-whole visualization of three slices."
       demo "scatter-plot" (fun () -> ScatterPlot.view { ScatterPlot.defaults with Series = sampleSeries }) (sScatter 4) "A point-cloud visualization, one mark per sample point."
       demo "graph-view" (fun () -> GraphView.view { GraphView.defaults with Nodes = [ "A"; "B"; "C"; "D" ] }) (sGraph 4) "A node-and-edge visualization of four nodes."
-      // 072 expansion
-      demo "toggle-button" (fun () -> ToggleButton.view { ToggleButton.defaults with Text = "Bold"; IsOn = true }) sText "An on/off command shown pressed."
-      demo "split-button" (fun () -> SplitButton.view { SplitButton.defaults with Text = "Export"; Items = [ { Key = "pdf"; Label = "PDF" }; { Key = "csv"; Label = "CSV" } ] }) sText "A primary action plus a secondary command menu."
-      demo "date-picker" (fun () -> DatePicker.view { DatePicker.defaults with Value = Some(DateOnly(2026, 6, 8)) }) sFramed "Typed date entry shown as a framed segmented field."
-      demo "time-picker" (fun () -> TimePicker.view { TimePicker.defaults with Value = Some(TimeOnly(9, 30)) }) sFramed "Typed time entry shown as a framed segmented field."
-      demo "color-picker" (fun () ->
-          let swatches = [ { Name = "Red"; Color = Colors.rgb 200uy 60uy 60uy }
-                           { Name = "Green"; Color = Colors.rgb 60uy 160uy 80uy }
-                           { Name = "Blue"; Color = Colors.rgb 60uy 90uy 200uy } ]
-          ColorPicker.view { ColorPicker.defaults with Swatches = swatches; Selected = Some { Name = "Green"; Color = Colors.rgb 60uy 160uy 80uy } })
-          sText "Palette swatches with a selected colour."
+      // 072 expansion — single-Kind schematics (these lower through the typed front door to
+      // composite Button/Toolbar/Stack/Wrap trees; the preview renders them as one rich node).
+      demo "toggle-button" (fun () -> rawWidget "toggle-button" [ Attr.text "Bold"; Attr.selected true ]) sButton "An on/off command shown pressed."
+      demo "split-button" (fun () -> rawWidget "split-button" [ Attr.text "Export" ]) sSplit "A primary action joined to a dropdown command trigger."
+      demo "date-picker" (fun () -> rawWidget "date-picker" [ Attr.text "2026-06-08" ]) sPicker "Typed date entry shown as a framed segmented field."
+      demo "time-picker" (fun () -> rawWidget "time-picker" [ Attr.text "09:30" ]) sPicker "Typed time entry shown as a framed segmented field."
+      demo "color-picker" (fun () -> rawWidget "color-picker" []) (sSwatches 5) "Palette swatches shown as a colour strip."
       // custom — the one honest Unsupported declaration (FR-007)
       unsupported "custom-control" "Product-owned wrapper for custom Skia content; no canonical sample to depict render-only." ]
 

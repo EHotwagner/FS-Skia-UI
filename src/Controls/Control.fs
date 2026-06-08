@@ -208,8 +208,22 @@ module internal ControlInternals =
             [ "line-chart"; "bar-chart"; "pie-chart"; "scatter-plot"; "graph-view"
               "list-view"; "list-box"; "multi-select-list"; "combo-box"; "tree-view"; "data-grid"
               "menu"; "context-menu"; "radio-group"; "tabs"
-              "slider"; "progress-bar"; "numeric-input"; "switch"; "check-box"; "toggle-button"
-              "date-picker"; "time-picker"; "color-picker"; "spinner"; "image"; "icon" ]
+              "slider"; "progress-bar"; "numeric-input"; "switch"; "check-box"
+              "button"; "icon-button"; "badge"; "toggle-button"; "split-button"
+              "date-picker"; "time-picker"; "color-picker"; "spinner"; "image"; "icon"
+              // layout / container families (built as single-Kind preview schematics, FR-001):
+              "stack"; "grid"; "dock"; "wrap"; "panel"; "border"; "scroll-viewer"
+              "split-view"; "toolbar"; "overlay" ]
+
+    /// A human caption for the rich-family title band: "date-picker" -> "Date picker".
+    /// Used so the thumbnail's title is the control's NAME, not its sample content (which the
+    /// schematic below already shows) — fixing composite-lowering title bleed (e.g. "STACK").
+    let prettyKind (kind: string) =
+        match kind.Split('-') |> Array.toList with
+        | [] -> kind
+        | head :: tail ->
+            let cap (w: string) = if w.Length = 0 then w else string (System.Char.ToUpper w[0]) + w.Substring 1
+            cap head :: tail |> String.concat " "
 
     /// Preview node width: explicit `width` wins; rich families fill the preview canvas.
     let nodeWidth (control: Control<'msg>) =
@@ -330,21 +344,31 @@ module internal ControlInternals =
             |> snd
             |> List.rev
 
+    /// L-shaped axes (left + bottom) so a sparse point cloud reads as a plotted chart, not
+    /// scattered dots floating on the canvas.
+    let private axes theme (box: Rect) : Scene list =
+        [ Scene.line { X = box.X; Y = box.Y } { X = box.X; Y = box.Y + box.Height } (Paint.stroke theme.Foreground 1.5)
+          Scene.line { X = box.X; Y = box.Y + box.Height } { X = box.X + box.Width; Y = box.Y + box.Height } (Paint.stroke theme.Foreground 1.5) ]
+
     let private scatterGeom theme (box: Rect) (pts: ChartPoint list) : Scene list =
         match pts with
         | [] -> emptyState theme box "(no data)"
         | _ ->
+            // Inset the plot area so axes and edge points stay inside the canvas.
+            let plot: Rect = { X = box.X + 6.0; Y = box.Y + 4.0; Width = box.Width - 12.0; Height = box.Height - 12.0 }
             let xs = pts |> List.map (fun p -> p.X)
             let ys = pts |> List.map (fun p -> p.Y)
             let minX, maxX = List.min xs, List.max xs
             let minY, maxY = List.min ys, List.max ys
             let sx = if maxX - minX < 1e-9 then 1.0 else maxX - minX
             let sy = if maxY - minY < 1e-9 then 1.0 else maxY - minY
-            pts
-            |> List.map (fun p ->
-                let cx = box.X + (p.X - minX) / sx * box.Width
-                let cy = box.Y + box.Height - (p.Y - minY) / sy * box.Height
-                Scene.circle { X = cx; Y = cy } 4.5 theme.Accent)
+            let dots =
+                pts
+                |> List.map (fun p ->
+                    let cx = plot.X + (p.X - minX) / sx * plot.Width
+                    let cy = plot.Y + plot.Height - (p.Y - minY) / sy * plot.Height
+                    Scene.circle { X = cx; Y = cy } 5.5 theme.Accent)
+            axes theme plot @ dots
 
     let private graphGeom theme (box: Rect) (pts: ChartPoint list) : Scene list =
         match pts with
@@ -362,8 +386,8 @@ module internal ControlInternals =
             let edges =
                 (positions @ [ List.head positions ])
                 |> List.pairwise
-                |> List.map (fun (a, b) -> Scene.line a b (Paint.stroke theme.Muted 1.5))
-            let nodes = positions |> List.map (fun p -> Scene.circle p 7.0 theme.Accent)
+                |> List.map (fun (a, b) -> Scene.line a b (Paint.stroke theme.Foreground 2.0))
+            let nodes = positions |> List.map (fun p -> Scene.circle p 8.0 theme.Accent)
             edges @ nodes
 
     // ---- collection / selection / value geometry --------------------------------------------
@@ -386,12 +410,12 @@ module internal ControlInternals =
                     [ Scene.rectangle (box.X, ry, box.Width, rowH - 1.5) bg
                       mkText theme (box.X + 8.0) (ry + rowH * 0.62) 12.0 theme.Foreground it ])
 
-    /// Generic tabular chrome for `data-grid` (its typed `DataGridRow` cells are not reachable
-    /// from this file's compile position, so the preview shows a faithful header+rows+columns
-    /// grid structure rather than a label-on-a-box; the prose describes it as a grid layout).
-    let private gridGeom theme (box: Rect) : Scene list =
+    /// Tabular chrome for `data-grid`: a header band, column/row rules, and sample cell text laid
+    /// out row-major from `cells` (first `cols` entries are the header). The preview is built as a
+    /// single-Kind node so the composite header/cell tree does not flatten into stray rows.
+    let private gridGeom theme (box: Rect) (cells: string list) : Scene list =
         let cols = 2
-        let rows = 3
+        let rows = 2
         let cw = box.Width / float cols
         let rh = box.Height / float (rows + 1)
         let frame = Scene.rectangleWithPaint box (Paint.stroke theme.Foreground 1.5)
@@ -400,7 +424,14 @@ module internal ControlInternals =
             [ for r in 1..rows -> Scene.line { X = box.X; Y = box.Y + float r * rh } { X = box.X + box.Width; Y = box.Y + float r * rh } (Paint.stroke theme.Muted 1.0) ]
         let colLines =
             [ for c in 1 .. cols - 1 -> Scene.line { X = box.X + float c * cw; Y = box.Y } { X = box.X + float c * cw; Y = box.Y + box.Height } (Paint.stroke theme.Muted 1.0) ]
-        frame :: header :: (rowLines @ colLines)
+        let texts =
+            cells
+            |> List.truncate (cols * (rows + 1))
+            |> List.mapi (fun i s ->
+                let r = i / cols
+                let c = i % cols
+                mkText theme (box.X + float c * cw + 6.0) (box.Y + float r * rh + rh * 0.66) 11.0 theme.Foreground s)
+        frame :: header :: (rowLines @ colLines @ texts)
 
     let private radioGeom theme (box: Rect) (items: string list) (selected: string option) : Scene list =
         match items with
@@ -458,21 +489,36 @@ module internal ControlInternals =
         [ Scene.rectangle (box.X, cy - 12.0, w, 24.0) (if on then theme.Accent else theme.Muted)
           Scene.circle { X = thumbX; Y = cy } 10.0 theme.Background ]
 
-    let private checkboxGeom theme (box: Rect) (on: bool) : Scene list =
-        let s = 24.0
+    let private checkboxGeom theme (box: Rect) (on: bool) (label: string) : Scene list =
+        let s = 28.0
         let bx = box.X
-        let by = box.Y + box.Height / 2.0 - s / 2.0
-        let frame = Scene.rectangleWithPaint { X = bx; Y = by; Width = s; Height = s } (Paint.stroke theme.Foreground 2.0)
+        let cy = box.Y + box.Height / 2.0
+        let by = cy - s / 2.0
+        // Filled accent box + white tick when checked; outlined empty box when not.
+        let boxRect = { X = bx; Y = by; Width = s; Height = s }
+        let fill =
+            if on then [ Scene.rectangle (bx, by, s, s) theme.Accent ]
+            else [ Scene.rectangleWithPaint boxRect (Paint.stroke theme.Foreground 2.0) ]
         let tick =
             if on then
-                [ Scene.line { X = bx + 4.0; Y = by + 12.0 } { X = bx + 10.0; Y = by + 18.0 } (Paint.stroke theme.Accent 3.0)
-                  Scene.line { X = bx + 10.0; Y = by + 18.0 } { X = bx + 20.0; Y = by + 5.0 } (Paint.stroke theme.Accent 3.0) ]
+                [ Scene.line { X = bx + 6.0; Y = by + 15.0 } { X = bx + 12.0; Y = by + 21.0 } (Paint.stroke theme.Background 3.0)
+                  Scene.line { X = bx + 12.0; Y = by + 21.0 } { X = bx + 23.0; Y = by + 7.0 } (Paint.stroke theme.Background 3.0) ]
             else
                 []
-        frame :: tick
+        let text = [ mkText theme (bx + s + 10.0) (cy + 5.0) 13.0 theme.Foreground label ]
+        fill @ tick @ text
 
-    let private toggleGeom theme (box: Rect) (on: bool) : Scene list =
-        [ Scene.rectangle (box.X, box.Y, box.Width * 0.5, 30.0) (if on then theme.Accent else theme.Muted) ]
+    let private toggleGeom theme (box: Rect) (on: bool) (label: string) : Scene list =
+        // A button-shaped chip; filled accent when pressed (on), outlined when not.
+        let h = 36.0
+        let w = min box.Width 150.0
+        let by = box.Y + box.Height / 2.0 - h / 2.0
+        let rect = { X = box.X; Y = by; Width = w; Height = h }
+        let textColor = if on then theme.Background else theme.Foreground
+        let surface =
+            if on then [ Scene.rectangle (box.X, by, w, h) theme.Accent ]
+            else [ Scene.rectangleWithPaint rect (Paint.stroke theme.Accent 2.0) ]
+        surface @ [ mkText theme (box.X + 12.0) (by + h / 2.0 + 5.0) 14.0 textColor label ]
 
     let private pickerGeom theme (box: Rect) (text: string) : Scene list =
         let frame = Scene.rectangleWithPaint box (Paint.stroke theme.Foreground 2.0)
@@ -487,11 +533,13 @@ module internal ControlInternals =
         [ for i in 0 .. n - 1 -> Scene.rectangle (box.X + float i * sw, box.Y, sw - 3.0, box.Height) (colorAt theme i) ]
 
     let private spinnerGeom theme (box: Rect) : Scene list =
-        let r = (min box.Width box.Height) / 2.0 - 4.0
+        let r = (min box.Width box.Height) / 2.0 - 8.0
         let cx = box.X + box.Width / 2.0
         let cy = box.Y + box.Height / 2.0
         let bounds: Rect = { X = cx - r; Y = cy - r; Width = 2.0 * r; Height = 2.0 * r }
-        [ Scene.arc bounds -90.0 270.0 (Paint.stroke theme.Accent 4.0) ]
+        // A faint full-circle track plus a bold accent sweep with a gap reads as a busy spinner.
+        [ Scene.arc bounds 0.0 360.0 (Paint.stroke theme.Muted 7.0)
+          Scene.arc bounds -90.0 280.0 (Paint.stroke theme.Accent 7.0) ]
 
     let private imageGeom theme (box: Rect) (source: string) : Scene list =
         [ Scene.rectangleWithPaint box (Paint.stroke theme.Foreground 2.0)
@@ -516,8 +564,160 @@ module internal ControlInternals =
         [ Scene.path (Path.create Winding cmds) (Paint.fill theme.Accent)
           mkText theme (cx + r + 8.0) (cy + 5.0) 14.0 theme.Foreground name ]
 
+    // ---- command / button geometry ----------------------------------------------------------
+
+    /// A filled command button sized to its label, vertically centred. `primary` ⇒ accent fill
+    /// with light text; otherwise an accent-outlined neutral surface.
+    let private buttonGeom theme (box: Rect) (primary: bool) (label: string) : Scene list =
+        let h = 38.0
+        let textW = (Scene.measureText label { Family = theme.FontFamily; Size = 15.0; Weight = None }).Width
+        let w = min box.Width (max 70.0 (textW + 32.0))
+        let by = box.Y + box.Height / 2.0 - h / 2.0
+        let rect = { X = box.X; Y = by; Width = w; Height = h }
+        if primary then
+            [ Scene.rectangle (box.X, by, w, h) theme.Accent
+              mkText theme (box.X + 16.0) (by + h / 2.0 + 5.0) 15.0 theme.Background label ]
+        else
+            [ Scene.rectangleWithPaint rect (Paint.stroke theme.Accent 2.0)
+              mkText theme (box.X + 16.0) (by + h / 2.0 + 5.0) 15.0 theme.Accent label ]
+
+    /// A compact accent pill with light text — a status badge.
+    let private badgeGeom theme (box: Rect) (label: string) : Scene list =
+        let h = 26.0
+        let textW = (Scene.measureText label { Family = theme.FontFamily; Size = 12.0; Weight = None }).Width
+        let w = max 40.0 (textW + 20.0)
+        let by = box.Y + box.Height / 2.0 - h / 2.0
+        [ Scene.rectangle (box.X, by, w, h) theme.Accent
+          mkText theme (box.X + 10.0) (by + h / 2.0 + 4.0) 12.0 theme.Background label ]
+
+    /// A primary command button joined to a dropdown trigger (caret) — a split button.
+    let private splitGeom theme (box: Rect) (label: string) : Scene list =
+        let h = 38.0
+        let by = box.Y + box.Height / 2.0 - h / 2.0
+        let triggerW = 30.0
+        let primaryW = min (box.Width - triggerW - 2.0) 160.0
+        let caretX = box.X + primaryW + 2.0 + triggerW / 2.0
+        let caretY = by + h / 2.0
+        let caret =
+            Path.create
+                Winding
+                [ Path.moveTo (caretX - 6.0) (caretY - 3.0)
+                  Path.lineTo (caretX + 6.0) (caretY - 3.0)
+                  Path.lineTo caretX (caretY + 5.0)
+                  Path.close ]
+        [ Scene.rectangle (box.X, by, primaryW, h) theme.Accent
+          mkText theme (box.X + 14.0) (by + h / 2.0 + 5.0) 15.0 theme.Background label
+          Scene.rectangle (box.X + primaryW + 2.0, by, triggerW, h) theme.Muted
+          Scene.path caret (Paint.fill theme.Foreground) ]
+
+    // ---- layout / container geometry --------------------------------------------------------
+
+    /// A bordered, filled, labelled region — the building block for container schematics so every
+    /// region is visible against the canvas (a `theme.Background` fill alone would be invisible).
+    let private regionRect theme (x: float) (y: float) (w: float) (h: float) (fill: Color) (label: string) : Scene list =
+        [ Scene.rectangle (x, y, w, h) fill
+          Scene.rectangleWithPaint { X = x; Y = y; Width = w; Height = h } (Paint.stroke theme.Foreground 1.0)
+          mkText theme (x + 6.0) (y + h / 2.0 + 4.0) 12.0 theme.Foreground label ]
+
+    let private itemsOr (fallback: string list) (items: string list) =
+        match items with
+        | [] -> fallback
+        | _ -> items
+
+    /// Vertically stacked child regions — `stack`.
+    let private stackGeom theme (box: Rect) (items: string list) : Scene list =
+        let shown = items |> itemsOr [ "One"; "Two"; "Three" ] |> List.truncate 4
+        let n = max 1 (List.length shown)
+        let rowH = box.Height / float n
+        shown |> List.mapi (fun i it -> regionRect theme box.X (box.Y + float i * rowH) box.Width (rowH - 4.0) theme.Muted it) |> List.concat
+
+    /// A 2-column cell grid — `grid` (distinct from `data-grid`'s tabular `gridGeom`).
+    let private gridLayoutGeom theme (box: Rect) (items: string list) : Scene list =
+        let shown = items |> itemsOr [ "A1"; "B2"; "C3"; "D4" ] |> List.truncate 4
+        let cols = 2
+        let cw = box.Width / float cols
+        let rows = max 1 ((List.length shown + cols - 1) / cols)
+        let rh = box.Height / float rows
+        shown
+        |> List.mapi (fun i it -> regionRect theme (box.X + float (i % cols) * cw) (box.Y + float (i / cols) * rh) (cw - 5.0) (rh - 5.0) theme.Muted it)
+        |> List.concat
+
+    /// Small chips flowing left-to-right and wrapping — `wrap`.
+    let private wrapGeom theme (box: Rect) (items: string list) : Scene list =
+        let shown = items |> itemsOr [ "tag1"; "tag2"; "tag3" ] |> List.truncate 6
+        let chipW = 66.0
+        let chipH = 26.0
+        let gap = 7.0
+        let perRow = max 1 (int (box.Width / (chipW + gap)))
+        shown
+        |> List.mapi (fun i it ->
+            let r = i / perRow
+            let c = i % perRow
+            regionRect theme (box.X + float c * (chipW + gap)) (box.Y + float r * (chipH + gap)) chipW chipH theme.Muted it)
+        |> List.concat
+
+    /// A docked top bar plus a left rail and a filled centre — `dock`.
+    let private dockGeom theme (box: Rect) (items: string list) : Scene list =
+        let shown = items |> itemsOr [ "Top"; "Fill" ]
+        let topH = 26.0
+        let leftW = 72.0
+        let bodyY = box.Y + topH + 2.0
+        let bodyH = box.Height - topH - 2.0
+        regionRect theme box.X box.Y box.Width topH theme.Accent (List.tryItem 0 shown |> Option.defaultValue "Top")
+        @ regionRect theme box.X bodyY leftW bodyH theme.Muted "Left"
+        @ regionRect theme (box.X + leftW + 2.0) bodyY (box.Width - leftW - 2.0) bodyH theme.Background (List.tryItem 1 shown |> Option.defaultValue "Fill")
+
+    /// Two side-by-side panes with a divider — `split-view`.
+    let private splitViewGeom theme (box: Rect) (items: string list) : Scene list =
+        let shown = items |> itemsOr [ "Left"; "Right" ]
+        let half = box.Width / 2.0
+        regionRect theme box.X box.Y (half - 4.0) box.Height theme.Muted (List.tryItem 0 shown |> Option.defaultValue "Left")
+        @ [ Scene.rectangle (box.X + half - 2.0, box.Y, 4.0, box.Height) theme.Foreground ]
+        @ regionRect theme (box.X + half + 4.0) box.Y (half - 4.0) box.Height theme.Background (List.tryItem 1 shown |> Option.defaultValue "Right")
+
+    /// A command strip of horizontal buttons — `toolbar`.
+    let private toolbarGeom theme (box: Rect) (items: string list) : Scene list =
+        let shown = items |> itemsOr [ "B"; "I"; "U" ] |> List.truncate 6
+        let stripH = 38.0
+        let strip = Scene.rectangle (box.X, box.Y, box.Width, stripH) theme.Muted
+        let bw = 42.0
+        let btns =
+            shown
+            |> List.mapi (fun i it -> regionRect theme (box.X + 8.0 + float i * (bw + 6.0)) (box.Y + 5.0) bw (stripH - 10.0) theme.Background it)
+            |> List.concat
+        strip :: btns
+
+    /// A surface with a header band and a body — `panel`.
+    let private panelGeom theme (box: Rect) (label: string) : Scene list =
+        let headH = 26.0
+        [ Scene.rectangle (box.X, box.Y, box.Width, headH) theme.Accent
+          Scene.rectangleWithPaint box (Paint.stroke theme.Foreground 1.0) ]
+        @ [ mkText theme (box.X + 8.0) (box.Y + box.Height / 2.0 + 8.0) 12.0 theme.Foreground label ]
+
+    /// A thick border framing inner content — `border`.
+    let private borderGeom theme (box: Rect) (label: string) : Scene list =
+        let inset = 10.0
+        [ Scene.rectangleWithPaint box (Paint.stroke theme.Accent 4.0) ]
+        @ regionRect theme (box.X + inset) (box.Y + inset) (box.Width - 2.0 * inset) (box.Height - 2.0 * inset) theme.Muted label
+
+    /// A scrollable viewport: content area plus a vertical scrollbar thumb — `scroll-viewer`.
+    let private scrollViewerGeom theme (box: Rect) (label: string) : Scene list =
+        let barW = 10.0
+        let contentW = box.Width - barW - 4.0
+        regionRect theme box.X box.Y contentW box.Height theme.Muted label
+        @ [ Scene.rectangle (box.X + contentW + 4.0, box.Y, barW, box.Height) theme.Muted
+            Scene.rectangle (box.X + contentW + 4.0, box.Y + 6.0, barW, box.Height * 0.4) theme.Accent ]
+
+    /// Two layered, offset surfaces suggesting stacked content — `overlay`.
+    let private overlayGeom theme (box: Rect) (label: string) : Scene list =
+        let off = 16.0
+        regionRect theme box.X box.Y (box.Width - off) (box.Height - off) theme.Muted ""
+        @ regionRect theme (box.X + off) (box.Y + off) (box.Width - off) (box.Height - off) theme.Background label
+
     /// Dispatch a rich-family control to its faithful geometry (within `box`, below the title).
     let faithfulContent (theme: Theme) (box: Rect) (control: Control<'msg>) : Scene list =
+        let label = control.Content |> Option.defaultValue ""
+        let items = stringListOf "items" control
         match control.Kind with
         | "line-chart" -> lineGeom theme box (chartValues control)
         | "bar-chart" -> barGeom theme box (chartValues control)
@@ -532,15 +732,31 @@ module internal ControlInternals =
         | "menu"
         | "context-menu" ->
             rowsGeom theme box (stringListOf "items" control) (stringListOf "selectedKeys" control |> Set.ofList)
-        | "data-grid" -> gridGeom theme box
+        | "data-grid" -> gridGeom theme box (itemsOr [ "Name"; "Qty"; "Widget"; "12"; "Gadget"; "7" ] items)
         | "radio-group" -> radioGeom theme box (stringListOf "items" control) (textValueOf "value" control)
         | "tabs" -> tabsGeom theme box (stringListOf "items" control) (textValueOf "value" control)
         | "slider" -> sliderGeom theme box (floatValue "value" 0.5 control.Attributes)
         | "progress-bar" -> progressGeom theme box (floatValue "value" 0.0 control.Attributes)
         | "numeric-input" -> numericGeom theme box (floatValue "value" 0.0 control.Attributes)
         | "switch" -> switchGeom theme box (boolValue "selected" false control.Attributes)
-        | "check-box" -> checkboxGeom theme box (boolValue "selected" false control.Attributes)
-        | "toggle-button" -> toggleGeom theme box (boolValue "selected" false control.Attributes)
+        | "check-box" -> checkboxGeom theme box (boolValue "selected" false control.Attributes) label
+        // command / button family
+        | "button" -> buttonGeom theme box true label
+        | "icon-button" -> buttonGeom theme box false label
+        | "badge" -> badgeGeom theme box label
+        | "toggle-button" -> toggleGeom theme box (boolValue "selected" true control.Attributes) label
+        | "split-button" -> splitGeom theme box label
+        // layout / container family
+        | "stack" -> stackGeom theme box items
+        | "grid" -> gridLayoutGeom theme box items
+        | "dock" -> dockGeom theme box items
+        | "wrap" -> wrapGeom theme box items
+        | "split-view" -> splitViewGeom theme box items
+        | "toolbar" -> toolbarGeom theme box items
+        | "panel" -> panelGeom theme box (if label = "" then "Panel content" else label)
+        | "border" -> borderGeom theme box (if label = "" then "Bordered" else label)
+        | "scroll-viewer" -> scrollViewerGeom theme box (if label = "" then "Scrollable content" else label)
+        | "overlay" -> overlayGeom theme box (if label = "" then "Overlaid content" else label)
         | "date-picker"
         | "time-picker" -> pickerGeom theme box (control.Content |> Option.defaultValue control.Kind)
         | "color-picker" -> swatchGeom theme box
@@ -567,10 +783,12 @@ module internal ControlInternals =
             let pad = 10.0
             let titleH = 30.0
             let box: Rect = { X = pad; Y = y + titleH; Width = width - 2.0 * pad; Height = height - titleH - pad }
+            // Title band shows the control's NAME (the schematic below shows its content); this
+            // fixes composite-lowering title bleed and content duplication for rich families.
             let title =
                 Scene.clipped
                     (RectClip { X = 0.0; Y = y; Width = width; Height = titleH })
-                    (mkText theme 8.0 (y + 19.0) 13.0 theme.Foreground label)
+                    (mkText theme 8.0 (y + 19.0) 13.0 theme.Foreground (prettyKind control.Kind))
             Scene.group (title :: faithfulContent theme box control)
         else
             // Text / container controls: the control IS its text, so box + clipped label is faithful.

@@ -9,16 +9,16 @@ distinct colours are measured OUTSIDE the title band; present kinds are from the
 | text-block | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
 | rich-text | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
 | label | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| image | Signature | 0.0819 | 29 | GroupElement ClipElement TextRunElement RectangleElement LineElement | pass |  |
+| image | Signature | 0.0819 | 24 | GroupElement ClipElement TextRunElement RectangleElement LineElement | pass |  |
 | icon | Signature | 0.0228 | 3 | GroupElement ClipElement TextRunElement PathElement | pass |  |
 | separator | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| badge | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| button | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| icon-button | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
+| badge | Signature | 0.0252 | 21 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
+| button | Signature | 0.0630 | 21 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
+| icon-button | Signature | 0.0116 | 3 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
 | text-box | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
 | text-area | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
 | numeric-input | Signature | 0.0406 | 8 | GroupElement ClipElement TextRunElement RectangleElement LineElement | pass |  |
-| check-box | Signature | 0.0069 | 1 | GroupElement ClipElement TextRunElement RectangleElement LineElement | pass |  |
+| check-box | Signature | 0.0509 | 30 | GroupElement ClipElement TextRunElement RectangleElement LineElement | pass |  |
 | radio-group | Signature | 0.0310 | 14 | GroupElement ClipElement TextRunElement CircleElement | pass |  |
 | switch | Signature | 0.0295 | 2 | GroupElement ClipElement TextRunElement RectangleElement CircleElement | pass |  |
 | slider | Signature | 0.0301 | 2 | GroupElement ClipElement TextRunElement RectangleElement CircleElement | pass |  |
@@ -27,36 +27,36 @@ distinct colours are measured OUTSIDE the title band; present kinds are from the
 | multi-select-list | Signature | 0.5917 | 48 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
 | combo-box | Signature | 0.5917 | 43 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
 | tree-view | Signature | 0.5917 | 43 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
-| data-grid | Signature | 0.3552 | 7 | GroupElement ClipElement TextRunElement RectangleElement LineElement | pass |  |
-| stack | Signature | 0.4091 | 4 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| grid | Signature | 0.4091 | 4 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| dock | Signature | 0.2727 | 4 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| wrap | Signature | 0.4091 | 4 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| border | Signature | 0.1364 | 4 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| panel | Signature | 0.1364 | 4 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| scroll-viewer | Signature | 0.1364 | 4 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| split-view | Signature | 0.2727 | 4 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
+| data-grid | Signature | 0.2791 | 23 | GroupElement ClipElement TextRunElement RectangleElement LineElement | pass |  |
+| stack | Signature | 0.5823 | 15 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
+| grid | Signature | 0.4245 | 14 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
+| dock | Signature | 0.6365 | 54 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
+| wrap | Signature | 0.1352 | 15 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
+| border | Signature | 0.5372 | 15 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
+| panel | Signature | 0.2195 | 16 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
+| scroll-viewer | Signature | 0.6271 | 16 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
+| split-view | Signature | 0.6318 | 42 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
 | tabs | Signature | 0.1974 | 29 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
 | menu | Signature | 0.5917 | 43 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
 | context-menu | Signature | 0.5917 | 45 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
-| toolbar | Signature | 0.4091 | 4 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
+| toolbar | Signature | 0.2555 | 32 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
 | tooltip | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
 | dialog | Signature | 0.1364 | 4 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
 | toast | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| overlay | Signature | 0.1364 | 4 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
+| overlay | Signature | 0.6243 | 36 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
 | progress-bar | Signature | 0.1076 | 2 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
-| spinner | Signature | 0.0238 | 1 | GroupElement ClipElement TextRunElement ArcElement | pass |  |
+| spinner | Signature | 0.0455 | 28 | GroupElement ClipElement TextRunElement ArcElement | pass |  |
 | validation-message | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| line-chart | Signature | 0.4281 | 22 | GroupElement ClipElement TextRunElement PathElement CircleElement | pass |  |
+| line-chart | Signature | 0.4281 | 14 | GroupElement ClipElement TextRunElement PathElement CircleElement | pass |  |
 | bar-chart | Signature | 0.3863 | 4 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
 | pie-chart | Signature | 0.1062 | 28 | GroupElement ClipElement TextRunElement ArcElement | pass |  |
-| scatter-plot | Signature | 0.0056 | 1 | GroupElement ClipElement TextRunElement CircleElement | pass |  |
-| graph-view | Signature | 0.0218 | 2 | GroupElement ClipElement TextRunElement LineElement CircleElement | pass |  |
-| toggle-button | Signature | 0.0000 | 0 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| split-button | Signature | 0.5378 | 19 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| date-picker | Signature | 0.5132 | 7 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| time-picker | Signature | 0.4091 | 4 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
-| color-picker | Signature | 0.4091 | 7 | GroupElement RectangleElement ClipElement TextRunElement | pass |  |
+| scatter-plot | Signature | 0.0249 | 2 | GroupElement ClipElement TextRunElement LineElement CircleElement | pass |  |
+| graph-view | Signature | 0.0299 | 4 | GroupElement ClipElement TextRunElement LineElement CircleElement | pass |  |
+| toggle-button | Signature | 0.1278 | 4 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
+| split-button | Signature | 0.1709 | 27 | GroupElement ClipElement TextRunElement RectangleElement PathElement | pass |  |
+| date-picker | Signature | 0.0577 | 6 | GroupElement ClipElement TextRunElement RectangleElement LineElement | pass |  |
+| time-picker | Signature | 0.0514 | 6 | GroupElement ClipElement TextRunElement RectangleElement LineElement | pass |  |
+| color-picker | Signature | 0.5859 | 5 | GroupElement ClipElement TextRunElement RectangleElement | pass |  |
 | custom-control | UnsupportedNoPreview | n/a | n/a |  | pass |  |
 
 ## Fixture matrix (SC-003 — durable red→green guard)
