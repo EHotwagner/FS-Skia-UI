@@ -1036,37 +1036,51 @@ module Viewer =
             Unavailable
 
     let private restoreVisibleWindow forceTopMost (behavior: ViewerWindowBehaviorRequest) (options: ViewerOptions) (window: IWindow) =
-        let windowedFullscreen = behavior.StartupState = ViewerWindowStartupState.WindowedFullscreen
+        // Re-apply the *requested* startup state when restoring visibility, so the
+        // visibility repair never silently downgrades Fullscreen / Maximized /
+        // WindowedFullscreen to a plain Normal window.
+        let setState state =
+            try
+                window.WindowState <- state
+            with _ ->
+                ()
 
-        (match behavior.StartupState, tryResolveWorkArea () with
-         | ViewerWindowStartupState.WindowedFullscreen, Some(origin, size) ->
-             // Keep borderless work-area coverage rather than collapsing to the
-             // initial size; degrade to the initial size if bounds cannot resolve.
-             try
-                 window.WindowBorder <- WindowBorder.Hidden
-             with _ ->
-                 ()
-
-             try
-                 window.Position <- origin
-             with _ ->
-                 ()
-
-             try
-                 window.Size <- size
-             with _ ->
-                 ()
-         | _ ->
-             try
-                 window.Size <- toNativeSize options.InitialSize
+        match behavior.StartupState, tryResolveWorkArea () with
+        | ViewerWindowStartupState.WindowedFullscreen, Some(origin, size) ->
+            // Borderless work-area coverage; degrade to the initial size if bounds
+            // cannot resolve (handled by the None arm below).
+            (try
+                window.WindowBorder <- WindowBorder.Hidden
              with _ ->
                  ())
 
-        if not windowedFullscreen then
-            try
-                window.WindowState <- WindowState.Normal
-            with _ ->
-                ()
+            (try
+                window.Position <- origin
+             with _ ->
+                 ())
+
+            (try
+                window.Size <- size
+             with _ ->
+                 ())
+
+            setState WindowState.Normal
+        | ViewerWindowStartupState.WindowedFullscreen, None ->
+            (try
+                window.WindowBorder <- WindowBorder.Hidden
+             with _ ->
+                 ())
+
+            setState WindowState.Normal
+        | ViewerWindowStartupState.Fullscreen, _ -> setState WindowState.Fullscreen
+        | ViewerWindowStartupState.Maximized, _ -> setState WindowState.Maximized
+        | (ViewerWindowStartupState.Normal | ViewerWindowStartupState.Minimized), _ ->
+            (try
+                window.Size <- toNativeSize options.InitialSize
+             with _ ->
+                 ())
+
+            setState WindowState.Normal
 
         try
             window.IsVisible <- true
@@ -1165,7 +1179,11 @@ module Viewer =
             { Host.Viewer.defaultConfiguration options.Title options.InitialSize with
                 ClearColor = Some Colors.black
                 TargetFrameRate = Some 60
-                Diagnostics = { Verbose = false } }
+                Diagnostics = { Verbose = false }
+                // Carry the requested startup state (fullscreen / maximized /
+                // windowed-fullscreen / borderless) into the live presented window —
+                // previously `behavior` only reached the diagnostic report.
+                ConfigureWindow = Some(applyWindowBehaviorToOptions behavior) }
 
         let renderCurrentScene () =
             getScene ()

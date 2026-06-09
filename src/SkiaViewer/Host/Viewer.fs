@@ -12,7 +12,8 @@ module Viewer =
           InitialSize = initialSize
           ClearColor = Some Colors.black
           TargetFrameRate = Some 60
-          Diagnostics = { Verbose = false } }
+          Diagnostics = { Verbose = false }
+          ConfigureWindow = None }
 
     let create configuration init update view =
         { Configuration = configuration

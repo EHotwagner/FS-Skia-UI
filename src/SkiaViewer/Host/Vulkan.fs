@@ -298,6 +298,11 @@ module VulkanHost =
             options.API <- GraphicsAPI.DefaultVulkan
             options.FramesPerSecond <- configuration.TargetFrameRate |> Option.defaultValue 60 |> float
             options.UpdatesPerSecond <- options.FramesPerSecond
+            // Carry window-startup intent (fullscreen / maximized / windowed-fullscreen
+            // / borderless) into the live window before creation.
+            match configuration.ConfigureWindow with
+            | Some configure -> options <- configure options
+            | None -> ()
             Ok(Window.Create options)
         with ex ->
             Result.Error(Diagnostics.startupFailed VulkanSurface $"Silk.NET window creation failed: {ex.Message}")

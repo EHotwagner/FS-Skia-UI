@@ -8,13 +8,17 @@ open FS.Skia.UI.Scene
 type DiagnosticOptions =
     { Verbose: bool }
 
+[<NoEquality; NoComparison>]
 /// Viewer host contract type (moved from the FS.Skia.UI monolith, retyped onto FS.Skia.UI.Scene).
 type ViewerConfiguration =
     { Title: string
       InitialSize: Size
       ClearColor: Color option
       TargetFrameRate: int option
-      Diagnostics: DiagnosticOptions }
+      Diagnostics: DiagnosticOptions
+      /// Optional transform applied to the native WindowOptions just before window
+      /// creation, carrying window-startup intent into the live presented window.
+      ConfigureWindow: (Silk.NET.Windowing.WindowOptions -> Silk.NET.Windowing.WindowOptions) option }
 
 /// Viewer host contract type (moved from the FS.Skia.UI monolith, retyped onto FS.Skia.UI.Scene).
 type DiagnosticSeverity =
