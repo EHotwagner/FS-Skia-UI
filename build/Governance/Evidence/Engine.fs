@@ -13,6 +13,9 @@ type EvidenceInputs =
       Scan: ScanInput
       AuditStatusFiles: (string * string) list
       PatternsYml: string
+      // FR-009: the resolved diff-scan base ref (default branch), threaded so
+      // DiffScanResult.BaseRef and the audit summary report it instead of null.
+      BaseRef: string option
       UnifiedDiff: string }
 
 type GraphArtifacts =
@@ -119,7 +122,7 @@ module Engine =
         let pg = Scans.persistentGui inputs.Scan
         let wv = Scans.windowVisibility inputs.Scan
         let asScan = StatusRegion.scan inputs.AuditStatusFiles
-        let diff = DiffScan.scan inputs.PatternsYml inputs.UnifiedDiff
+        let diff = DiffScan.scan inputs.BaseRef inputs.PatternsYml inputs.UnifiedDiff
 
         let result =
             Audit.verdict resolved seh (List.length diff.Blocking) rc.BlockingCount pl.BlockingCount pg.BlockingCount

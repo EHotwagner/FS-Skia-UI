@@ -52,6 +52,26 @@ module EvidenceFormatSchema =
     /// The required `key=value` keys in `interactive-visible-window.md`.
     val interactiveVisibleWindowKeys: string list
 
+    /// The complete window-visibility readiness file set the engine enforces,
+    /// single-sourced so `Scans.windowVisibility` and the generated
+    /// `evidence-formats.md` share one ordered list (FR-007 / SC-003).
+    val windowVisibilityFiles: string list
+
+    /// The required native-window facts in `window-state-diagnostics.md`.
+    val windowNativeFacts: string list
+
+    /// The required `option=` rows in `window-options.md`.
+    val windowOptionRows: string list
+
+    /// The close-reason vs evidence-close separation keys in `close-reason-separation.md`.
+    val closeReasonSeparationKeys: string list
+
+    /// The decodable-image proof keys in `real-image-evidence.md`.
+    val realImageEvidenceKeys: string list
+
+    /// The required generated-project validation fields in `generated-validation.md`.
+    val generatedValidationKeys: string list
+
     /// The SEH acceptance tokens (acceptance status + approval label), no backticks.
     val sehAcceptanceTokens: string list
 

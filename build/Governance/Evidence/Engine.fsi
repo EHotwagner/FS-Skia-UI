@@ -25,6 +25,9 @@ type EvidenceInputs =
       /// (path, contents) for readiness .md files containing an audit-status region.
       AuditStatusFiles: (string * string) list
       PatternsYml: string
+      /// FR-009: the resolved diff-scan base ref (default branch), or None when no
+      /// default-branch ancestor resolves; threaded into DiffScanResult.BaseRef.
+      BaseRef: string option
       UnifiedDiff: string }
 
 /// The two graph artifacts to write under readiness/.

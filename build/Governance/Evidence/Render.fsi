@@ -49,3 +49,13 @@ module Render =
     /// the `missing` subset, derived from the same data that enforces the rule.
     /// Empty string when the scan has no hits.
     val readinessContractDiagnostics: ScanResult -> string
+
+    /// FR-008 (084): one legible block per blocker — `(area, hitsFileName, scanResult)`
+    /// triples render to area + file + one-line reason + absent/missing detail + the
+    /// originating hit-file path, so the audit is self-sufficient on stdout. Empty
+    /// string when no area has hits.
+    val auditBlockerDiagnostics: (string * string * ScanResult) list -> string
+
+    /// FR-009 (084): the diff-scan base-ref line — resolved base ref (with merge-base
+    /// sha when known) or an explicit absence message.
+    val diffScanBaseRefLine: baseRef: string option -> mergeBase: string option -> string

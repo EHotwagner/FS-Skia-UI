@@ -283,9 +283,9 @@ module Scans =
             result "window-visibility" []
         else
             let hits = ResizeArray<ScanHit>()
-            let requiredFiles =
-                [ "interactive-visible-window.md"; "close-reason-separation.md"; "window-state-diagnostics.md"
-                  "window-options.md"; "real-image-evidence.md"; "generated-validation.md"; "evidence-audit.md" ]
+            // Single-sourced in EvidenceFormatSchema so the engine's required set and the
+            // generated evidence-formats.md window-visibility list cannot drift (FR-007).
+            let requiredFiles = EvidenceFormatSchema.windowVisibilityFiles
             for fileName in requiredFiles do
                 if not (exists files fileName) then
                     hits.Add { ScanHit.basic (pathOf input fileName) "missing required window visibility readiness file" with Missing = Some [ fileName ] }
@@ -328,7 +328,7 @@ module Scans =
                         && not (diagnosticsLower.Contains(sprintf "failure-class=%s" cls)))
                 if not (List.isEmpty missingClasses) then
                     hits.Add { ScanHit.basic (pathOf input "window-state-diagnostics.md") "missing diagnostic classes" with Missing = Some missingClasses }
-                let requiredFacts = [ "native-handle"; "visible"; "focusable"; "renderable-surface"; "input-devices" ]
+                let requiredFacts = EvidenceFormatSchema.windowNativeFacts
                 let missingFacts = missingKeys diagnosticsValues requiredFacts
                 if not (List.isEmpty missingFacts) then
                     hits.Add { ScanHit.basic (pathOf input "window-state-diagnostics.md") "missing observable-vs-unsupported native facts" with Missing = Some missingFacts }
@@ -349,7 +349,7 @@ module Scans =
 
             let optionsLower = lower (readText files "window-options.md")
             if exists files "window-options.md" then
-                let requiredOptions = [ "resize"; "maximize"; "startup-state"; "startup-position"; "backend" ]
+                let requiredOptions = EvidenceFormatSchema.windowOptionRows
                 let missingOptions =
                     requiredOptions
                     |> List.filter (fun opt ->
@@ -416,7 +416,7 @@ module Scans =
 
             let generatedValues = parseKeyValues (readText files "generated-validation.md")
             if exists files "generated-validation.md" then
-                let missing = missingKeys generatedValues [ "exact-package-match"; "generated-tests-ran"; "authoritative"; "failure-class" ]
+                let missing = missingKeys generatedValues EvidenceFormatSchema.generatedValidationKeys
                 if not (List.isEmpty missing) then
                     hits.Add { ScanHit.basic (pathOf input "generated-validation.md") "missing generated validation fields" with Missing = Some missing }
                 let exact = lower (getv generatedValues "exact-package-match")

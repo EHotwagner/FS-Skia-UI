@@ -47,6 +47,9 @@ type ViewerWindowStartupState =
     | Maximized
     | Minimized
     | Fullscreen
+    /// Borderless coverage of the monitor work area (no title bar / resize chrome,
+    /// no exclusive-mode resolution change). Distinct from exclusive `Fullscreen`.
+    | WindowedFullscreen
 
 /// Public contract type exposed by this FS.Skia.UI package.
 type ViewerWindowPosition =

@@ -148,6 +148,17 @@ path is `./fake.sh build -t Test` / `./fake.sh build -t Verify` (which run
 need actual compiler errors and test results. A green `Dev` is not evidence that
 the product compiles.
 
+**`Verify` embeds the merge-gate audit — use `-t Test` mid-implementation.**
+`./fake.sh build -t Verify` runs the merge-gate audit (`EvidenceGraph` then
+`EvidenceAudit`) **before** it runs the tests, and that audit **hard-blocks until
+the feature is complete** (every task `[X]`). So `Verify` cannot give you a green
+test run while tasks are still open — it will fail at the audit step first. The
+**mid-implementation green-test path is `./fake.sh build -t Test`** (the first real
+compile, audit-free): use `-t Test` while iterating, and `-t Verify` only when the
+feature is complete and you want the full merge-gate. The documented
+`Dev → Test → Verify` order does **not** mean the audit is a separate later step —
+it is embedded inside `Verify`.
+
 Evidence graph and audit checks are exposed as generated FAKE targets:
 
 Generated FAKE-backed commands (`./fake.sh`, `fake.cmd`, or `dotnet fake`)

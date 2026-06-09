@@ -162,6 +162,19 @@ Run the **compiled, deterministic** symbol set-difference as a real command — 
 ./fake.sh build -t SymbolCrossCheck
 ```
 
+**Probe target availability first; skip-with-documented-notice when it is absent.**
+`SymbolCrossCheck` is a framework-repo-only governance target — **generated projects
+do not ship it**, so the command fails there with `Unknown … target:
+SymbolCrossCheck`. Before invoking, probe whether the target resolves (e.g.
+`./fake.sh build --list` / a target-resolution check), mirroring how the
+evidence-graph step resolves the active feature from `.specify/feature.json` and
+fails loudly only when nothing resolves. When `SymbolCrossCheck` resolves, run it and
+fold its output in. When it is **absent**, do **not** fail the analysis: record a
+documented skip notice in this report — `Symbol consistency (analyze pass G): skipped
+— SymbolCrossCheck target not available in this project; manual cross-check is
+non-authoritative` — and continue. The skip is a visible decision, not a silent
+omission, and never blocks the invocation.
+
 The target takes **no file arguments**: it resolves the active feature directory
 (the `DependencyReport` pattern), reads `plan.md`, `data-model.md`, and `tasks.md`
 from it, runs the `SymbolCrossCheck` analyzer in `FS.Skia.UI.Build`, **prints** the

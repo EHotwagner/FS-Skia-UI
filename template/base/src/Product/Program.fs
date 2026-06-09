@@ -143,7 +143,17 @@ let main args =
             |> List.map (fun (option, _, _, status, _) -> $"{option}:{windowOptionStatusText status}")
             |> String.concat ","
 
-        match Viewer.runApp viewerOptions generatedHost with
+        // FR-004/FR-005: a window flag routes the live launch through
+        // runAppWithWindowBehavior so the real window honors the request; with no
+        // flag the durable runApp path stays reachable and inherits the framework
+        // windowed-fullscreen default.
+        let launchResult =
+            if Product.WindowOptions.windowFlagSupplied args then
+                Viewer.runAppWithWindowBehavior viewerOptions (Product.WindowOptions.toViewerLaunchRequest windowBehavior) generatedHost
+            else
+                Viewer.runApp viewerOptions generatedHost
+
+        match launchResult with
         | Result.Ok outcome ->
             let inputDispatchStatus =
                 match $"%A{outcome.InputDispatch}" with

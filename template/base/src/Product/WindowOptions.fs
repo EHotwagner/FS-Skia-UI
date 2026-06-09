@@ -63,6 +63,8 @@ let parseWindowBehavior args =
             loop tail { behavior with Startup = "minimized" }
         | "--window-startup" :: "fullscreen" :: tail ->
             loop tail { behavior with Startup = "fullscreen" }
+        | "--window-startup" :: "windowed-fullscreen" :: tail ->
+            loop tail { behavior with Startup = "windowed-fullscreen" }
         | "--window-position" :: value :: tail ->
             loop tail { behavior with Position = value }
         | "--window-backend" :: "default" :: tail ->
@@ -80,11 +82,63 @@ let parseWindowBehavior args =
         args
         { Resize = "resizable"
           Maximize = "maximizable"
-          Startup = "normal"
+          // Windowed fullscreen is the no-flag default; an explicit --window-startup
+          // selection overrides it (the last-specified value wins on conflict).
+          Startup = "windowed-fullscreen"
           Position = "centered"
           Backend = "default" }
 
 let toViewerWindowBehavior behavior = behavior
+
+/// Map the parsed string settings onto a real ViewerWindowBehaviorRequest so the
+/// live launch (runAppWithWindowBehavior) honors the request — not only the report.
+let toViewerLaunchRequest behavior : ViewerWindowBehaviorRequest =
+    let startupState =
+        match behavior.Startup with
+        | "normal" -> ViewerWindowStartupState.Normal
+        | "maximized" -> ViewerWindowStartupState.Maximized
+        | "minimized" -> ViewerWindowStartupState.Minimized
+        | "fullscreen" -> ViewerWindowStartupState.Fullscreen
+        | "windowed-fullscreen" -> ViewerWindowStartupState.WindowedFullscreen
+        | _ -> Viewer.defaultWindowBehavior.StartupState
+
+    let startupPosition =
+        match behavior.Position with
+        | "centered" -> Some Centered
+        | value ->
+            match value.Split(',', StringSplitOptions.TrimEntries) with
+            | [| x; y |] ->
+                match Int32.TryParse x, Int32.TryParse y with
+                | (true, parsedX), (true, parsedY) when parsedX >= 0 && parsedY >= 0 -> Some(Coordinates(parsedX, parsedY))
+                | _ -> Some Centered
+            | _ -> Some Centered
+
+    { ResizePolicy = (if behavior.Resize = "fixed-size" then FixedSize else Resizable)
+      MaximizePolicy = (if behavior.Maximize = "not-maximizable" then NotMaximizable else Maximizable)
+      StartupState = startupState
+      StartupPosition = startupPosition
+      BackendPreference =
+        match behavior.Backend with
+        | "vulkan" -> Some Vulkan
+        | "opengl" -> Some OpenGL
+        | "software" -> Some Software
+        | _ -> Some DefaultBackend }
+
+/// True when any explicit --window-* selection flag is present. When false the
+/// generated app launches through the durable runApp path and inherits the
+/// framework's windowed-fullscreen default; when true the launch is routed through
+/// runAppWithWindowBehavior so the live window honors the request.
+let windowFlagSupplied (args: string list) =
+    args
+    |> List.exists (fun arg ->
+        match arg with
+        | "--window-startup"
+        | "--window-resize"
+        | "--window-maximize"
+        | "--window-position"
+        | "--window-backend"
+        | "--window-options-file" -> true
+        | _ -> false)
 
 let windowOptionStatusText status = status
 
@@ -117,7 +171,8 @@ let manualWindowOptionResults behavior =
         | "normal" -> "honored", "normal", "Normal startup state can be honored by the viewer host."
         | "maximized" -> "honored", "maximized", "Maximized startup state can be requested."
         | "minimized" -> "unsupported", "none", "Minimized startup is not accepted for visible interactive launch validation."
-        | "fullscreen" -> "unsupported", "none", "Fullscreen startup is not yet supported by the viewer host."
+        | "fullscreen" -> "honored", "fullscreen", "Fullscreen startup can be honored by the viewer host."
+        | "windowed-fullscreen" -> "honored", "windowed-fullscreen", "Windowed-fullscreen startup (borderless work-area coverage) can be honored by the viewer host."
         | _ -> "failed", "none", "Startup state is not recognized."
 
     let backendStatus, backendObserved, backendMessage =

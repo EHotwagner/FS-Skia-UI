@@ -126,6 +126,7 @@ module GeneratedRunner =
           Scan = { ReadinessDir = readinessDir; FeatureText = featureText; ReadinessFiles = readinessFiles }
           AuditStatusFiles = auditStatusFiles
           PatternsYml = evidenceReadAll (path [ repoRoot; ".specify"; "extensions"; "evidence"; "audit-patterns.yml" ])
+          BaseRef = None
           UnifiedDiff = "" }
 
     let private evidenceWrite (p: string) (content: string) =

@@ -41,6 +41,28 @@ module EvidenceFormatSchema =
         [ "status"; "mode"; "window-visible"; "accessible-window"; "first-frame-presented"
           "self-closed-for-evidence" ]
 
+    // The complete window-visibility readiness file set the engine enforces, single-
+    // sourced here so `Scans.windowVisibility` and the generated `evidence-formats.md`
+    // reference the same ordered list and cannot drift (FR-007 / SC-003).
+    let windowVisibilityFiles =
+        [ "interactive-visible-window.md"; "close-reason-separation.md"; "window-state-diagnostics.md"
+          "window-options.md"; "real-image-evidence.md"; "generated-validation.md"; "evidence-audit.md" ]
+
+    let windowNativeFacts =
+        [ "native-handle"; "visible"; "focusable"; "renderable-surface"; "input-devices" ]
+
+    let windowOptionRows =
+        [ "resize"; "maximize"; "startup-state"; "startup-position"; "backend" ]
+
+    let closeReasonSeparationKeys =
+        [ "close-reason"; "user-close-observed"; "evidence-close-observed" ]
+
+    let realImageEvidenceKeys =
+        [ "evidence-kind"; "status"; "artifact-decodable"; "proves-scene-rendering"; "proves-desktop-visibility" ]
+
+    let generatedValidationKeys =
+        [ "exact-package-match"; "generated-tests-ran"; "authoritative"; "failure-class" ]
+
     let sehAcceptanceTokens = [ "accepted-seh"; "synthetic-error-handling-approved" ]
 
     // The readiness-contract scan's enforced files, single-sourced here so
@@ -85,11 +107,46 @@ module EvidenceFormatSchema =
               OrderingRules = []
               ResolvedPathPattern = None
               Blocking = true }
+            { FileName = "close-reason-separation.md"
+              FormatClass = WindowVisibility
+              RequiredTokens = closeReasonSeparationKeys
+              TableColumns = None
+              OrderingRules = [ "evidence close and user close stay separated (evidence-close-observed must not be reported as user-close-observed)" ]
+              ResolvedPathPattern = None
+              Blocking = true }
             { FileName = "window-state-diagnostics.md"
               FormatClass = WindowVisibility
-              RequiredTokens = (windowDiagnosticClasses |> List.map (sprintf "diagnostic-class=%s"))
+              RequiredTokens = (windowDiagnosticClasses |> List.map (sprintf "diagnostic-class=%s")) @ windowNativeFacts
               TableColumns = None
               OrderingRules = [ "diagnostic-class ∈ { " + String.concat ", " windowDiagnosticClasses + " }" ]
+              ResolvedPathPattern = None
+              Blocking = true }
+            { FileName = "window-options.md"
+              FormatClass = WindowVisibility
+              RequiredTokens = (windowOptionRows |> List.map (sprintf "option=%s"))
+              TableColumns = None
+              OrderingRules = [ "each option row carries status/observed; an unsupported option diagnoses under diagnostic-class=window-options (never silently ignored)" ]
+              ResolvedPathPattern = None
+              Blocking = true }
+            { FileName = "real-image-evidence.md"
+              FormatClass = WindowVisibility
+              RequiredTokens = realImageEvidenceKeys
+              TableColumns = None
+              OrderingRules = [ "decodable image/screenshot evidence; pixel-readback alone cannot prove desktop visibility" ]
+              ResolvedPathPattern = None
+              Blocking = true }
+            { FileName = "generated-validation.md"
+              FormatClass = WindowVisibility
+              RequiredTokens = generatedValidationKeys
+              TableColumns = None
+              OrderingRules = [ "exact-package-match must be true with the generated tests actually run and authoritative" ]
+              ResolvedPathPattern = None
+              Blocking = true }
+            { FileName = "evidence-audit.md"
+              FormatClass = WindowVisibility
+              RequiredTokens = [ "verdict" ]
+              TableColumns = None
+              OrderingRules = [ "feature-local merge-gate audit record (file presence required)" ]
               ResolvedPathPattern = None
               Blocking = true }
             { FileName = "tasks.md (Synthetic-Evidence Inventory)"

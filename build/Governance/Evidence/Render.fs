@@ -481,3 +481,41 @@ module Render =
                      sb.Append(sprintf "  absent-from-file: %s\n" (String.concat ", " missing)) |> ignore
                  | _ -> ())
             sb.ToString()
+
+    /// FR-008 (084): one legible block per blocker — validation area, file name,
+    /// one-line reason, the absent/missing detail, and the originating hit-file path
+    /// — so an operator can identify every blocker from the audit's own stdout
+    /// without opening any `*-hits.json` sidecar. Sourced from the same `ScanHit`
+    /// records the JSON sidecars carry, so stdout and sidecars cannot diverge.
+    let auditBlockerDiagnostics (areas: (string * string * ScanResult) list) : string =
+        let blocking = areas |> List.filter (fun (_, _, sr) -> not (List.isEmpty sr.Hits))
+        if List.isEmpty blocking then
+            ""
+        else
+            let sb = StringBuilder()
+            sb.Append("blockers:\n") |> ignore
+            for (area, hitsFile, sr) in blocking do
+                for h in sr.Hits do
+                    let fileName = System.IO.Path.GetFileName h.Path
+                    sb.Append(sprintf "  [%s] %s\n" area fileName) |> ignore
+                    sb.Append(sprintf "    reason: %s\n" h.Reason) |> ignore
+                    (match h.MissingTerms, h.Missing with
+                     | Some m, _ when not (List.isEmpty m) ->
+                         sb.Append(sprintf "    absent-from-file: %s\n" (String.concat ", " m)) |> ignore
+                     | _, Some m when not (List.isEmpty m) ->
+                         sb.Append(sprintf "    missing: %s\n" (String.concat ", " m)) |> ignore
+                     | _ -> ())
+                    sb.Append(sprintf "    hit-file: readiness/%s\n" hitsFile) |> ignore
+            sb.ToString()
+
+    /// FR-009 (084): the diff-scan base-ref line — the resolved default-branch ref
+    /// (with the merge-base sha when known) or an explicit absence, so an empty
+    /// diff-scan is never mistaken for the source of blockers.
+    let diffScanBaseRefLine (baseRef: string option) (mergeBase: string option) : string =
+        match baseRef with
+        | Some ref ->
+            match mergeBase with
+            | Some sha when sha.Trim() <> "" -> sprintf "diff-scan base_ref: %s (merge-base %s)" ref (sha.Trim())
+            | _ -> sprintf "diff-scan base_ref: %s" ref
+        | None ->
+            "diff-scan base_ref: none — no default-branch ancestor; empty diff-scan is by absence, not a clean diff"

@@ -1,0 +1,15 @@
+# FSI session — packed/built ViewerWindowStartupState surface (084, T015)
+
+Exercised against the built FS.Skia.UI.SkiaViewer surface (Principle I). Confirms the new
+windowed-fullscreen default (FR-003/SC-001) and the Honored reclassification of fullscreen +
+windowed fullscreen with minimized still UnsupportedOption (FR-002/SC-002).
+
+```
+> Viewer.defaultWindowBehavior.StartupState
+default-startup-state = WindowedFullscreen
+state=Normal status=Honored observed=Some "normal"
+state=Maximized status=Honored observed=Some "maximized"
+state=Minimized status=UnsupportedOption observed=None
+state=Fullscreen status=Honored observed=Some "fullscreen"
+state=WindowedFullscreen status=Honored observed=Some "windowed-fullscreen"
+```

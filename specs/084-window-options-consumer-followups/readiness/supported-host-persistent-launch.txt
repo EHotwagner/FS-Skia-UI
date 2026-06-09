@@ -1,0 +1,17 @@
+status=deferred
+mode=interactive-window
+command=dotnet run --project src/<ProjectName> -- --window-startup windowed-fullscreen (generated default executable)
+window-opened=deferred
+window-visible=deferred
+accessible-window=deferred
+first-frame-presented=deferred
+user-close-observed=false
+self-closed-for-evidence=false
+input-dispatch=deferred
+exit-path=deferred
+renderer-mode=vulkan
+blocked-stage=none
+classification=none
+category=none
+message=Supported-host persistent launch is captured from the generated default executable on a display-capable host; on this framework dev host (libraries + template, no runnable windowed product) the launch is deferred to that host. The new windowed-fullscreen default + Honored reclassification are proven against the built library in fsi-session.txt and tests/SkiaViewer.Tests.
+source-note=Authoritative capture runs where a real window exists (the project's documented non-authoritative GeneratedProductCheck path; see aggregate-hang-diagnostics.md).

@@ -1,0 +1,1603 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Confirm `./fake.sh build -t Route` escalates this change to `maintainer-verify`; record the printed tier + minimal gate list; link spec + plan in the feature directory",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T001",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T001: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T1",
+      "parallel": true,
+      "title": "Scaffold the seven-file window-visibility readiness set under `readiness/` (`interactive-visible-window.md`, `window-state-diagnostics.md`, `window-options.md`, `close-reason-separation.md`, `real-image-evidence.md`, `generated-validation.md`, `evidence-audit.md`) plus the visual-demo scaffolds (`visual-evidence-honesty.md`, `window-visibility.md`, `governance-risk-levels.md`, `aggregate-hang-diagnostics.md`, `runtime-limitations.md`, `generated-guidance-validation.md`, `audit-diagnostics.md`) \u2014 each naming authoritative command, artifact path, failure class, next action",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T002",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T002: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T1",
+      "parallel": true,
+      "title": "Record feature Tier (escalated Tier 1), affected layer (SkiaViewer + Build governance + template + skill), public-API impact (additive union case + default-value change), Elmish/MVU applicability (viewer is the stateful boundary; `ApplyWindowOptions` carrier unchanged, no new effect type), and evidence obligations",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T003",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T003: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Draft the `src/SkiaViewer/SkiaViewer.fsi` surface delta: additive `WindowedFullscreen` case on `ViewerWindowStartupState` and the `defaultWindowBehavior` value-change note (signatures of `runApp`/`runAppWithWindowBehavior`/`validate*`/request/result/effect all unchanged) per `contracts/skiaviewer-window-surface.md`",
+      "skillist": [
+        "fs-skia-skiaviewer"
+      ],
+      "skillist_mirror": [
+        "fs-skia-skiaviewer"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T004",
+          "declared_skillist": [
+            "fs-skia-skiaviewer"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T004: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T003"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": "T1",
+      "parallel": true,
+      "title": "Record that the per-package `readiness/per-package-surface/FS.Skia.UI.SkiaViewer.fsi.txt` baseline **and** the cross-package surface baseline move and must be recaptured (`RefreshSurfaceBaselines` / `PerPackageSurface`); note the additive-case incomplete-match warning is desirable",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T005",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T005: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T003"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": "T1",
+      "parallel": true,
+      "title": "Record unsupported-scope handling & failure diagnostics: headless/no-display degrades to honest render-only (no false visible-window claim); exclusive fullscreen on an incapable host falls back with an honest diagnostic (not a false \"honored\"); windowed fullscreen remains the capable default",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T006",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T006: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T003"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Failing-first `tests/SkiaViewer.Tests`: `defaultWindowBehavior.StartupState = WindowedFullscreen` (SC-001); `validateWindowBehavior`/`validateWindowLaunchBehavior` report `Honored` for `Fullscreen` and `WindowedFullscreen` and `UnsupportedOption` for `Minimized` (SC-002)",
+      "skillist": [
+        "fs-skia-skiaviewer"
+      ],
+      "skillist_mirror": [
+        "fs-skia-skiaviewer"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T007",
+          "declared_skillist": [
+            "fs-skia-skiaviewer"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T007: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Failing-first `tests/SkiaViewer.Tests`: `applyWindowBehaviorToOptions` maps `WindowedFullscreen` to `WindowBorder.Hidden` + work-area `Position`/`Size` + `WindowState.Normal`, and `Fullscreen` to `WindowState.Fullscreen` (distinctness invariant)",
+      "skillist": [
+        "fs-skia-skiaviewer"
+      ],
+      "skillist_mirror": [
+        "fs-skia-skiaviewer"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T008",
+          "declared_skillist": [
+            "fs-skia-skiaviewer"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T008: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Add the `WindowedFullscreen` union case to `SkiaViewer.fsi` + `SkiaViewer.fs` and change `defaultWindowBehavior.StartupState` to `WindowedFullscreen` (FR-001/FR-003)",
+      "skillist": [
+        "fs-skia-skiaviewer"
+      ],
+      "skillist_mirror": [
+        "fs-skia-skiaviewer"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T009",
+          "declared_skillist": [
+            "fs-skia-skiaviewer"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T009: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T007",
+        "T008"
+      ],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Reclassify `validateBehavior`/`validateLaunch`: `Fullscreen` and `WindowedFullscreen` \u2192 `Honored` (replace the stale \"not yet supported\" message), keep `Minimized` `UnsupportedOption`; preserve the launch-aware capability check so an incapable host still falls back honestly (FR-002)",
+      "skillist": [
+        "fs-skia-skiaviewer"
+      ],
+      "skillist_mirror": [
+        "fs-skia-skiaviewer"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T010",
+          "declared_skillist": [
+            "fs-skia-skiaviewer"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T010: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T009"
+      ],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Implement the `WindowedFullscreen` arm of `applyWindowBehaviorToOptions` (hidden border + work-area geometry, `WindowState.Normal`) and the edge interpreter that reads default-monitor work-area bounds, degrading to honest render-only when bounds cannot be resolved (FR-001)",
+      "skillist": [
+        "fs-skia-skiaviewer",
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-skiaviewer",
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T011",
+          "declared_skillist": [
+            "fs-skia-skiaviewer",
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T011: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T009"
+      ],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Extend `template/base/src/Product/WindowOptions.fs`: add the `windowed-fullscreen` flag value, change the no-flag default to `windowed-fullscreen`, reclassify `fullscreen`/`windowed-fullscreen` to honored, and resolve conflicting flags to the explicit last-specified value (FR-006, conflict edge case)",
+      "skillist": [
+        "fs-skia-skiaviewer"
+      ],
+      "skillist_mirror": [
+        "fs-skia-skiaviewer"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T012",
+          "declared_skillist": [
+            "fs-skia-skiaviewer"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T012: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T009"
+      ],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Wire `template/base/src/Product/Program.fs` with a guarded branch: `if windowFlagSupplied then Viewer.runAppWithWindowBehavior \u2026` else the durable `Viewer.runApp viewerOptions generatedHost` literal \u2014 keeping that literal present and reachable (FR-004/FR-005)",
+      "skillist": [
+        "fs-skia-skiaviewer"
+      ],
+      "skillist_mirror": [
+        "fs-skia-skiaviewer"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T013",
+          "declared_skillist": [
+            "fs-skia-skiaviewer"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T013: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T012"
+      ],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Persistent graphical launch from the generated default executable path; capture real visible-window evidence for the no-flag windowed-fullscreen default and once per supported state (normal, maximized, fullscreen, windowed-fullscreen), writing decodable image evidence to `readiness/real-image-evidence.md` (SC-001/SC-002); on a headless host record the honest render-only degradation",
+      "skillist": [
+        "fs-skia-skiaviewer",
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-skiaviewer",
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T014",
+          "declared_skillist": [
+            "fs-skia-skiaviewer",
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T014: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T010",
+        "T011",
+        "T012",
+        "T013"
+      ],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "spec.md Edge case (headless \u2192 honest render-only)",
+        "synthetic_input_class": "host-without-self-closing-windowed-product",
+        "expected_error_behavior": "honest render-only; no false visible-window claim",
+        "rationale": "Real visible-window launch needs a display-capable host running the generated default executable; the framework repo ships libraries + a template (no runnable windowed product) and the local `GeneratedProductCheck` is a documented non-authoritative environment-failure. The new state/default/validation/mapping are proven against the built library (real).",
+        "acceptance_status": "render-only-deferred",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Exercise the packed `ViewerWindowStartupState` surface from FSI (new default + Honored reclassification) and capture the transcript to `readiness/fsi-session.txt` (Principle I)",
+      "skillist": [
+        "fs-skia-skiaviewer"
+      ],
+      "skillist_mirror": [
+        "fs-skia-skiaviewer"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T015",
+          "declared_skillist": [
+            "fs-skia-skiaviewer"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T015: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T009",
+        "T010"
+      ],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Populate `readiness/window-options.md` with the new states and document US1's independent validation path (`option=` rows for resize/maximize/startup-state/startup-position/backend reflecting windowed-fullscreen)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T016",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T016: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T014"
+      ],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Failing-first `tests/Governance.Tests`: the rendered `evidence-formats.md` window-visibility file list **equals** `Scans.requiredFiles` (all seven files), so the doc cannot silently drift behind the engine (SC-003)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T017",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T017: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Failing-first `tests/Governance.Tests`: on a poisoned readiness fixture, audit stdout contains each blocker's area + file + one-line reason + hit-file path and a non-misleading `diff-scan base_ref:` line (SC-004)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T018",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T018: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Extend the `WindowVisibility` class in `build/Governance/Evidence/EvidenceFormatSchema.fs` (the single source) to enumerate all seven `Scans.requiredFiles` with each file's required tokens per `data-model.md` (FR-007)",
+      "skillist": [
+        "fsharp-code-generation"
+      ],
+      "skillist_mirror": [
+        "fsharp-code-generation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T019",
+          "declared_skillist": [
+            "fsharp-code-generation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T019: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T017"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Regenerate `template/base/docs/evidence-formats.md` from the extended schema via `./fake.sh build -t RefreshSurfaceBaselines` (no hand-edit of the generated doc)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T020",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T020: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T019"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Surface per-blocker `reason` + originating hit-file path on `EvidenceAudit` stdout by wiring the existing per-area renderers (`Render.readinessContractDiagnostics` and siblings) into the summary block in `GeneratedRunner.fs` / `Front/Governance.fs` (FR-008)",
+      "skillist": [
+        "fsharp-code-generation"
+      ],
+      "skillist_mirror": [
+        "fsharp-code-generation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T021",
+          "declared_skillist": [
+            "fsharp-code-generation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T021: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T018"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Thread the already-resolved merge-base into `EvidenceInputs` \u2192 populate `DiffScanResult.BaseRef` (was hardcoded `None`) and print `diff-scan base_ref:` to stdout; emit the explicit-absence message when no default-branch ancestor resolves (FR-009, base_ref edge case)",
+      "skillist": [
+        "fsharp-shell-process"
+      ],
+      "skillist_mirror": [
+        "fsharp-shell-process"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T022",
+          "declared_skillist": [
+            "fsharp-shell-process"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T022: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T018"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Trigger a deliberate readiness gap and capture real `EvidenceAudit` stdout proving every blocker + base-ref line is legible without opening any `*-hits.json`, to `readiness/audit-diagnostics.md` (SC-004)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T023",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T023: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T020",
+        "T021",
+        "T022"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Failing-first `tests/Governance.Tests` (extend `Feature062GovernanceTests`): `docs/scaffold-map.md` contains the `<ProjectName>`/`<ProductDir>` project-named paths, the durable-but-must-re-point class phrase, and a non-game HUD\u2192headers / gameplay\u2192grid remap example (SC-005)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T024",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T024: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T023"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Hand-edit `template/base/docs/scaffold-map.md`: replace `src/Product/**` with `<ProjectName>`/`<ProductDir>` placeholders, split durable into model-agnostic vs must-re-point (moving `LayoutEvidence.fs`/`EvidenceCommands.fs`/`WindowOptions.fs` into must-re-point with the \"keep file + scanned tokens, re-point model-field references\" definition), and add the non-game layout-region remap example (FR-010/FR-011)",
+      "skillist": [
+        "fs-skia-layout-readability"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout-readability"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T025",
+          "declared_skillist": [
+            "fs-skia-layout-readability"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T025: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T024"
+      ],
+      "phase_deps": [
+        "T023"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Diff the scaffold-map's cited paths against a freshly generated project tree and confirm zero manual reconciliation (SC-005)",
+      "skillist": [
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T026",
+          "declared_skillist": [
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T026: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T025"
+      ],
+      "phase_deps": [
+        "T023"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Edit `template/base/docs/product.md` + `README.md`: state that `Verify` embeds the merge-gate audit (`EvidenceGraph` then `EvidenceAudit`) before tests and hard-blocks until every task is `[X]`, name `-t Test` as the mid-implementation green-test path, and confirm the existing `Dev`-is-log-only disclosure is present (FR-012/FR-013)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T027",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T027: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Edit the canonical `.agents/skills/speckit-analyze/SKILL.md` so the symbol-cross-check step probes target availability and skips-with-documented-notice when `SymbolCrossCheck` is absent, mirroring how `EvidenceGraph` resolves the feature from `.specify/feature.json` (FR-014); keep `SkillQualityCheck` detector phrases intact",
+      "skillist": [
+        "speckit-analyze"
+      ],
+      "skillist_mirror": [
+        "speckit-analyze"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T028",
+          "declared_skillist": [
+            "speckit-analyze"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T028: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Regenerate the `.claude/skills/speckit-analyze/**` mirror from the canonical `.agents` tree via `./fake.sh build -t RefreshSurfaceBaselines` (SkillSyncCheck-enforced currency)",
+      "skillist": [
+        "fsharp-code-generation"
+      ],
+      "skillist_mirror": [
+        "fsharp-code-generation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T029",
+          "declared_skillist": [
+            "fsharp-code-generation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T029: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T028"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T030",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Confirm the durable `GovernanceTests.fs:105` literal still passes after the guarded launch wiring (FR-005); document the mid-implementation green-test path (`-t Test`, SC-006) and the `/speckit-analyze` graceful skip-with-notice in a project lacking `SymbolCrossCheck` (SC-007)",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T030",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T030: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T027",
+        "T029"
+      ],
+      "phase_deps": [
+        "T026"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T031",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Recapture the per-package (`FS.Skia.UI.SkiaViewer.fsi.txt`) and cross-package surface baselines, the `.claude` skill mirror, and `validation.contract.yml` via `./fake.sh build -t RefreshSurfaceBaselines` (Tier 1 surface move)",
+      "skillist": [
+        "fs-skia-skiaviewer"
+      ],
+      "skillist_mirror": [
+        "fs-skia-skiaviewer"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T031",
+          "declared_skillist": [
+            "fs-skia-skiaviewer"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T031: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T009"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T032",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Run the escalated broad gates sequentially (shared `.fake` state): `./fake.sh build -t Dev`, `-t GeneratedGuidanceCheck`, `-t TemplateCheck`, `-t GeneratedProductCheck`; record the governance risk level and note any non-authoritative aggregate/hang result with its sequential rerun",
+      "skillist": [
+        "fsharp-build-orchestration"
+      ],
+      "skillist_mirror": [
+        "fsharp-build-orchestration"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T032",
+          "declared_skillist": [
+            "fsharp-build-orchestration"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T032: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T031"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T033",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceGraph` \u2014 confirm no cycles, no dangling refs, no `[S*]` surprises; confirm the echoed `feature-directory=` matches this feature",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T033",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "owns:graph-validation"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T033: owns graph-validation requires skill speckit-evidence-graph; trigger_group=owns; matched_trigger=owns:graph-validation"
+        }
+      ],
+      "explicit_deps": [
+        "T032"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T034",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceAudit` \u2014 confirm verdict PASS (no `[S]`/`[S*]`, clean diff-scan) or document every `--accept-synthetic` override",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T034",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "owns:evidence-audit"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T034: owns evidence-audit requires skill speckit-evidence-audit; trigger_group=owns; matched_trigger=owns:evidence-audit"
+        }
+      ],
+      "explicit_deps": [
+        "T033"
+      ],
+      "phase_deps": [
+        "T030"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    }
+  ]
+}

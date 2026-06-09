@@ -1,42 +1,79 @@
 # Scaffold map — durable vs replaceable (read before you design)
 
 This generated product ships a **scaffold game model** plus a **durable governance
-spine**. When you replace the scaffold with your own game, you rewrite only the
+spine**. When you replace the scaffold with your own UI, you rewrite only the
 replaceable parts; the durable parts keep compiling and keep their source/evidence
 scans green across the swap. Read this map **before** you start designing, so you
 know what survives and what you own.
 
-## Replaceable `src/Product/**` (rewrite when you swap the scaffold model)
+> **Project-named paths.** A generated tree puts the product under
+> `src/<ProjectName>/**` (e.g. `src/Invoice1/**`, `src/Spread1/**`), not a literal
+> `src/Product/**`. Below, `<ProductDir>` means that directory — `src/<ProjectName>`
+> — so every cited path matches your generated tree verbatim. The module name stays
+> `Product.*` even though the directory is project-named.
+
+## Replaceable `<ProductDir>/**` (rewrite when you swap the scaffold model)
 
 These call/define the scaffold game model directly — they are yours to replace:
 
-- `src/Product/Model.fs` — the scaffold `Model`/`Msg`/`update` (the game state machine).
-- `src/Product/View.fs` — the scaffold `view` (`Model -> SceneNode`).
+- `<ProductDir>/Model.fs` — the scaffold `Model`/`Msg`/`update` (the game state machine).
+- `<ProductDir>/View.fs` — the scaffold `view` (`Model -> SceneNode`).
 
-## Durable `src/Product/**` (keep — model-agnostic host/evidence wiring)
+## Durable — model-agnostic (keep, do not touch)
 
-These are model-agnostic plumbing; keep them and re-point them at your own model:
+These are pure plumbing with **no scaffold model references**; they keep compiling
+unchanged across a model swap — do not rewrite them:
 
-- `src/Product/Program.fs` — host/CLI entry point (`Viewer.runApp`, the
-  `--scene-evidence` / evidence command wiring).
-- `src/Product/EvidenceCommands.fs` — the deterministic `SceneEvidence.render`
-  evidence command (`RendererMode = "deterministic-scene"`).
-- `src/Product/WindowOptions.fs` — window-options parsing/diagnostics.
-- `src/Product/LayoutEvidence.fs` — layout/gameplay-region bounds evidence.
+- `<ProductDir>/Program.fs` — host/CLI entry point (`Viewer.runApp`, the
+  `--scene-evidence` / evidence command wiring). Host wiring only.
+- `tests/Product.Tests/GovernanceTests.fs` — reads the product **source text** and
+  asserts structural / evidence / discoverability invariants; never calls the
+  product's `view`/`update`, so it **survives a scaffold-model swap**.
+
+## Durable — must re-point (keep the file + its scanned tokens, re-point model fields)
+
+These are **durable** — keep the file and every must-survive source-scan token it
+carries — **but** they read scaffold *model fields*, so on a model swap you must
+**re-point those model-field references** at your own model. "Durable" here means
+*keep the file and its scanned evidence tokens while re-pointing the model-field references* —
+it does **not** mean "do not touch":
+
+- `<ProductDir>/LayoutEvidence.fs` — layout-region bounds evidence; reads the
+  scaffold's HUD/gameplay regions. Re-point the region computations at your own
+  layout, keeping the evidence tokens.
+- `<ProductDir>/EvidenceCommands.fs` — the deterministic `SceneEvidence.render`
+  evidence command (`RendererMode = "deterministic-scene"`); renders the scaffold
+  scene. Re-point it at your own `view`, keeping the command surface and tokens.
+- `<ProductDir>/WindowOptions.fs` — window-options parsing/diagnostics; mostly
+  model-agnostic but re-confirm any product-specific defaults after the swap.
 
 ## The test split: `GovernanceTests.fs` durable, `BehaviorTests.fs` replaceable
 
 `tests/Product.Tests/` compiles `GovernanceTests.fs` **first** and
 `BehaviorTests.fs` **after** (see `Product.Tests.fsproj`):
 
-- **`GovernanceTests.fs` — durable, model-agnostic.** Reads the product **source
-  text** and asserts structural / evidence / discoverability invariants. It never
-  calls the product's `view`/`update`, so it **survives a scaffold-model swap** —
-  do not rewrite it.
+- **`GovernanceTests.fs` — durable, model-agnostic.** See above — do not rewrite it.
 - **`BehaviorTests.fs` — replaceable scaffold-behavior.** Calls the scaffold
   product's `view`/`update`/host/scene-text directly. When you replace the
   scaffold model with your own, you **rewrite this file**; `GovernanceTests.fs`
   keeps passing.
+
+## Worked example: remap the layout regions onto a non-game UI
+
+`LayoutEvidence.fs` describes the scaffold as a **HUD** region and a **gameplay**
+region. For a non-game UI you keep the file and its evidence tokens and re-point the
+two regions onto your own surface:
+
+- **HUD region → headers / toolbar.** The scaffold's status HUD becomes your app's
+  header bar, toolbar, or command strip — the persistent chrome around the content.
+- **Gameplay region → main content grid.** The scaffold's gameplay field becomes
+  your main content area — e.g. the invoice line-item table or the spreadsheet
+  cell grid — the scrollable region the user actually edits.
+
+So an invoice builder maps HUD→the invoice header/toolbar and gameplay→the
+line-item grid; a spreadsheet editor maps HUD→the formula/menu bar and
+gameplay→the cell grid. Keep the region names' **evidence tokens** intact; only the
+bounds computations re-point.
 
 ## Must-survive source-scan strings (keep these tokens present)
 

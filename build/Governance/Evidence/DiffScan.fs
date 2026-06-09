@@ -124,7 +124,7 @@ module DiffScan =
 
     let private headerRe = Regex(@"^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@", RegexOptions.Compiled)
 
-    let scan (patternsYml: string) (unifiedDiff: string) : DiffScanResult =
+    let scan (baseRef: string option) (patternsYml: string) (unifiedDiff: string) : DiffScanResult =
         let patterns, whitelist, overrides = parsePatterns patternsYml
         for p in patterns do
             match overrides.TryFind p.Id with
@@ -187,6 +187,6 @@ module DiffScan =
                 elif raw.StartsWith(" ") then
                     curLine <- curLine + 1
 
-        { BaseRef = None
+        { BaseRef = baseRef
           Blocking = hits |> Seq.filter (fun h -> h.Severity = "block") |> List.ofSeq
           Advisory = hits |> Seq.filter (fun h -> h.Severity = "advisory") |> List.ofSeq }

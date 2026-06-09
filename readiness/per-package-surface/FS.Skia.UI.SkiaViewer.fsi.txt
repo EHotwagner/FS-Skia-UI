@@ -42,6 +42,8 @@ type ViewerWindowStartupState =
     | Minimized
     | Fullscreen
 
+    | WindowedFullscreen
+
 type ViewerWindowPosition =
     | Centered
     | Coordinates of x: int * y: int

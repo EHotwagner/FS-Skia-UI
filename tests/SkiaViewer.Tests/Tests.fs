@@ -207,7 +207,7 @@ let tests =
                         BackendPreference = Some ViewerBackendPreference.Software }
 
             Expect.exists windowResults (fun item -> item.Option = "initial-size" && item.Status = FailedOption && item.Message.Contains "positive") "window launch diagnostics keep positive-size validation"
-            Expect.exists windowResults (fun item -> item.Option = "startup-state" && item.Status = UnsupportedOption && item.Message.Contains "Fullscreen") "unsupported startup states remain explicit diagnostics"
+            Expect.exists windowResults (fun item -> item.Option = "startup-state" && item.Status = Honored && item.Message.Contains "Fullscreen") "fullscreen startup is now honored, not host-unsupported"
             Expect.exists windowResults (fun item -> item.Option = "backend" && item.Status = UnsupportedOption && item.Message.Contains "not supported") "unsupported backend preferences remain explicit diagnostics"
         }
 
@@ -1036,6 +1036,47 @@ let tests =
             Expect.exists results (fun item -> item.Option = "startup-state" && item.Status = UnsupportedOption && item.Message.Contains "visible interactive") "minimized startup is unsupported for visible launch validation"
             Expect.exists results (fun item -> item.Option = "startup-position" && item.Status = FailedOption && item.Message.Contains "non-negative") "invalid coordinates fail validation"
             Expect.exists results (fun item -> item.Option = "backend" && item.Status = UnsupportedOption && item.Message.Contains "not supported") "unsupported backend is explicit"
+        }
+
+        test "default window behavior starts in windowed fullscreen" {
+            // SC-001 / FR-003: a no-flag launch opens borderless over the work area.
+            Expect.equal Viewer.defaultWindowBehavior.StartupState ViewerWindowStartupState.WindowedFullscreen "windowed fullscreen is the new no-flag default startup state"
+        }
+
+        test "fullscreen and windowed fullscreen validate as honored while minimized stays unsupported" {
+            // SC-002 / FR-002: neither fullscreen state may report UnsupportedOption.
+            let resultFor state =
+                Viewer.validateWindowBehavior { Viewer.defaultWindowBehavior with StartupState = state }
+                |> List.find (fun item -> item.Option = "startup-state")
+
+            let launchResultFor state =
+                Viewer.validateWindowLaunchBehavior { Width = 800; Height = 600 } { Viewer.defaultWindowBehavior with StartupState = state }
+                |> List.find (fun item -> item.Option = "startup-state")
+
+            Expect.equal (resultFor ViewerWindowStartupState.Fullscreen).Status Honored "fullscreen is honored in validateWindowBehavior"
+            Expect.equal (resultFor ViewerWindowStartupState.WindowedFullscreen).Status Honored "windowed fullscreen is honored in validateWindowBehavior"
+            Expect.equal (resultFor ViewerWindowStartupState.Minimized).Status UnsupportedOption "minimized is not a visible interactive launch state"
+
+            Expect.equal (launchResultFor ViewerWindowStartupState.Fullscreen).Status Honored "fullscreen is honored in validateWindowLaunchBehavior"
+            Expect.equal (launchResultFor ViewerWindowStartupState.WindowedFullscreen).Status Honored "windowed fullscreen is honored in validateWindowLaunchBehavior"
+            Expect.equal (launchResultFor ViewerWindowStartupState.Minimized).Status UnsupportedOption "minimized stays unsupported in validateWindowLaunchBehavior"
+        }
+
+        test "fullscreen and windowed fullscreen are distinct selectable states, not aliases" {
+            // T008 distinctness invariant. The concrete WindowState/WindowBorder mapping
+            // (applyWindowBehaviorToOptions) is internal to the viewer and exercised by the
+            // real visible-window launch evidence; the public surface proves the two states
+            // are distinct (different requested/observed values), never aliases.
+            let resultFor state =
+                Viewer.validateWindowBehavior { Viewer.defaultWindowBehavior with StartupState = state }
+                |> List.find (fun item -> item.Option = "startup-state")
+
+            let fullscreen = resultFor ViewerWindowStartupState.Fullscreen
+            let windowedFullscreen = resultFor ViewerWindowStartupState.WindowedFullscreen
+
+            Expect.equal fullscreen.Observed (Some "fullscreen") "exclusive fullscreen observes the fullscreen value"
+            Expect.equal windowedFullscreen.Observed (Some "windowed-fullscreen") "windowed fullscreen observes a distinct value"
+            Expect.notEqual fullscreen.Observed windowedFullscreen.Observed "fullscreen and windowed fullscreen are never aliased"
         }
 
         test "window launch behavior validation includes positive size constraints and all public option families" {

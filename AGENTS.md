@@ -1,7 +1,7 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
 <!-- SPECKIT START -->
-specs/083-color-contrast-palettes/plan.md
+specs/084-window-options-consumer-followups/plan.md
 <!-- SPECKIT END -->
 
 ## Run `Route` first; run only the gates it prints

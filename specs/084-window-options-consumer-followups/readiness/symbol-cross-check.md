@@ -1,0 +1,38 @@
+## Symbol consistency (analyze pass G)
+- entity-record PerPackageSurface — in {tasks}, missing from {plan, data-model}
+- entity-record RefreshSurfaceBaselines — in {tasks}, missing from {plan, data-model}
+- entity-record ViewerWindowBehaviorRequest — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-001 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-002 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-003 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-004 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-005 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-006 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-007 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-008 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-009 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-010 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-011 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-012 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-013 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-014 — in {plan, tasks}, missing from {data-model}
+- msg-case Msg — in {plan}, missing from {data-model, tasks}
+- msg-case Start — in {plan}, missing from {data-model, tasks}
+- msg-case ViewerModel — in {plan}, missing from {data-model, tasks}
+- msg-case WindowBehavior — in {plan}, missing from {data-model, tasks}
+- sc-id SC-001 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-002 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-003 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-004 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-005 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-007 — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant ApplyWindowOptions — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant Honored — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant Minimized — in {plan, tasks}, missing from {data-model}
+- union-or-screen-variant Normal — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant Position — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant Size — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant StartupState — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant UnsupportedOption — in {plan, tasks}, missing from {data-model}
+- union-or-screen-variant ViewerWindowStartupState — in {plan, tasks}, missing from {data-model}

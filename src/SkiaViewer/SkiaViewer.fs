@@ -47,6 +47,7 @@ type ViewerWindowStartupState =
     | Maximized
     | Minimized
     | Fullscreen
+    | WindowedFullscreen
 
 type ViewerWindowPosition =
     | Centered
@@ -547,7 +548,7 @@ module Viewer =
     let defaultWindowBehavior =
         { ResizePolicy = Resizable
           MaximizePolicy = Maximizable
-          StartupState = ViewerWindowStartupState.Normal
+          StartupState = ViewerWindowStartupState.WindowedFullscreen
           StartupPosition = Some Centered
           BackendPreference = Some DefaultBackend }
 
@@ -575,7 +576,8 @@ module Viewer =
                 | ViewerWindowStartupState.Normal -> optionResult "startup-state" "normal" (Some "normal") Honored "Normal startup state can be honored by the viewer host."
                 | ViewerWindowStartupState.Maximized -> optionResult "startup-state" "maximized" (Some "maximized") Honored "Maximized startup state can be requested."
                 | ViewerWindowStartupState.Minimized -> optionResult "startup-state" "minimized" None UnsupportedOption "Minimized startup is not accepted for visible interactive launch validation."
-                | ViewerWindowStartupState.Fullscreen -> optionResult "startup-state" "fullscreen" None UnsupportedOption "Fullscreen startup is not yet supported by the viewer host."
+                | ViewerWindowStartupState.Fullscreen -> optionResult "startup-state" "fullscreen" (Some "fullscreen") Honored "Fullscreen startup can be honored by the viewer host."
+                | ViewerWindowStartupState.WindowedFullscreen -> optionResult "startup-state" "windowed-fullscreen" (Some "windowed-fullscreen") Honored "Windowed-fullscreen startup (borderless work-area coverage) can be honored by the viewer host."
 
             let startupPosition =
                 match request.StartupPosition with
@@ -970,6 +972,25 @@ module Viewer =
     let private toNativeSize (size: Size) =
         Vector2D<int>(size.Width, size.Height)
 
+    /// Resolve the default monitor's work-area origin/size for windowed-fullscreen
+    /// coverage. Returns None on a headless / no-display host so callers degrade to
+    /// honest render-only behavior rather than fabricating a geometry.
+    let private tryResolveWorkArea () : (Vector2D<int> * Vector2D<int>) option =
+        try
+            let monitor = Silk.NET.Windowing.Monitor.GetMainMonitor null
+
+            if isNull (box monitor) then
+                None
+            else
+                let bounds = monitor.Bounds
+
+                if bounds.Size.X > 0 && bounds.Size.Y > 0 then
+                    Some(bounds.Origin, bounds.Size)
+                else
+                    None
+        with _ ->
+            None
+
     let applyWindowBehaviorToOptions behavior (windowOptions: WindowOptions) =
         let mutable applied = windowOptions
 
@@ -982,6 +1003,17 @@ module Viewer =
         | ViewerWindowStartupState.Maximized -> applied.WindowState <- WindowState.Maximized
         | ViewerWindowStartupState.Minimized -> applied.WindowState <- WindowState.Minimized
         | ViewerWindowStartupState.Fullscreen -> applied.WindowState <- WindowState.Fullscreen
+        | ViewerWindowStartupState.WindowedFullscreen ->
+            // Borderless coverage of the monitor work area: hidden chrome + work-area
+            // geometry, no exclusive-mode resolution change (WindowState stays Normal).
+            applied.WindowBorder <- WindowBorder.Hidden
+            applied.WindowState <- WindowState.Normal
+
+            match tryResolveWorkArea () with
+            | Some(origin, size) ->
+                applied.Position <- origin
+                applied.Size <- size
+            | None -> ()
 
         match behavior.StartupPosition with
         | Some(Coordinates(x, y)) -> applied.Position <- Vector2D<int>(x, y)
@@ -1003,16 +1035,38 @@ module Viewer =
         with _ ->
             Unavailable
 
-    let private restoreVisibleNormalWindow forceTopMost (options: ViewerOptions) (window: IWindow) =
-        try
-            window.Size <- toNativeSize options.InitialSize
-        with _ ->
-            ()
+    let private restoreVisibleWindow forceTopMost (behavior: ViewerWindowBehaviorRequest) (options: ViewerOptions) (window: IWindow) =
+        let windowedFullscreen = behavior.StartupState = ViewerWindowStartupState.WindowedFullscreen
 
-        try
-            window.WindowState <- WindowState.Normal
-        with _ ->
-            ()
+        (match behavior.StartupState, tryResolveWorkArea () with
+         | ViewerWindowStartupState.WindowedFullscreen, Some(origin, size) ->
+             // Keep borderless work-area coverage rather than collapsing to the
+             // initial size; degrade to the initial size if bounds cannot resolve.
+             try
+                 window.WindowBorder <- WindowBorder.Hidden
+             with _ ->
+                 ()
+
+             try
+                 window.Position <- origin
+             with _ ->
+                 ()
+
+             try
+                 window.Size <- size
+             with _ ->
+                 ()
+         | _ ->
+             try
+                 window.Size <- toNativeSize options.InitialSize
+             with _ ->
+                 ())
+
+        if not windowedFullscreen then
+            try
+                window.WindowState <- WindowState.Normal
+            with _ ->
+                ()
 
         try
             window.IsVisible <- true
@@ -1272,7 +1326,7 @@ module Viewer =
                 let loadedHandler =
                     Action(fun () ->
                         windowOpened := true
-                        restoreVisibleNormalWindow true options window
+                        restoreVisibleWindow true behavior options window
 
                         capture
                             { Level = ViewerDiagnosticLevel.Info
@@ -1339,7 +1393,7 @@ module Viewer =
                                 !lastDiagnostic
                         )
                     else
-                        restoreVisibleNormalWindow true options window
+                        restoreVisibleWindow true behavior options window
                         windowOpened := true
                         let inputDisposables = ResizeArray<IDisposable>()
                         let mutable inputAvailable = ViewerObservedValue.Unavailable
@@ -1398,7 +1452,7 @@ module Viewer =
 
                             while not window.IsClosing do
                                 if visibilityRepairFrames > 0 then
-                                    restoreVisibleNormalWindow (visibilityRepairFrames > 60) options window
+                                    restoreVisibleWindow (visibilityRepairFrames > 60) behavior options window
                                     visibilityRepairFrames <- visibilityRepairFrames - 1
 
                                 window.DoEvents()

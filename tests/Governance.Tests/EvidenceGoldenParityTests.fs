@@ -51,6 +51,7 @@ let private buildInputs (feature: string) : EvidenceInputs =
       Scan = { ReadinessDir = readinessDir; FeatureText = featureText; ReadinessFiles = readinessFiles }
       AuditStatusFiles = auditStatusFiles
       PatternsYml = File.ReadAllText(Path.Combine(repoRoot, ".specify/extensions/evidence/audit-patterns.yml"))
+      BaseRef = None
       UnifiedDiff = "" }
 
 let private firstDivergence (golden: string) (produced: string) : string =

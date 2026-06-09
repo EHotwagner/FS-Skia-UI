@@ -676,7 +676,7 @@ let runPerPackageSurfaceDiff (model: BuildModel) =
 
 let private evidenceReadAll p = if File.Exists p then File.ReadAllText p else ""
 
-let buildEvidenceInputs (model: BuildModel) (unifiedDiff: string) : FS.Skia.UI.Build.Evidence.EvidenceInputs =
+let buildEvidenceInputs (model: BuildModel) (baseRef: string option) (unifiedDiff: string) : FS.Skia.UI.Build.Evidence.EvidenceInputs =
     let featDir = model.FeatureDir
     let readinessDir = model.ReadinessDir
     let repoRoot = model.RepositoryRoot
@@ -712,6 +712,7 @@ let buildEvidenceInputs (model: BuildModel) (unifiedDiff: string) : FS.Skia.UI.B
       Scan = { ReadinessDir = readinessDir; FeatureText = featureText; ReadinessFiles = readinessFiles }
       AuditStatusFiles = auditStatusFiles
       PatternsYml = evidenceReadAll (Path.Combine(repoRoot, ".specify/extensions/evidence/audit-patterns.yml"))
+      BaseRef = baseRef
       UnifiedDiff = unifiedDiff }
 
 let private evidenceWrite (p: string) (content: string) =
@@ -719,7 +720,7 @@ let private evidenceWrite (p: string) (content: string) =
     File.WriteAllText(p, content)
 
 let runEvidenceGraphCheck (model: BuildModel) =
-    let inputs = buildEvidenceInputs model ""
+    let inputs = buildEvidenceInputs model None ""
     let gr, arts = FS.Skia.UI.Build.Evidence.Engine.runGraph inputs
     evidenceWrite (path [ model.ReadinessDir; "task-graph.json" ]) arts.TaskGraphJson
     evidenceWrite (path [ model.ReadinessDir; "task-graph.md" ]) arts.TaskGraphMd
@@ -734,26 +735,30 @@ let runEvidenceGraphCheck (model: BuildModel) =
         failwithf "Evidence graph validation failed (%d errors); see %s" (List.length gr.Errors) (path [ model.ReadinessDir; "task-graph.md" ])
     | _ -> ()
 
-let private resolveBaseRef root =
+// FR-009: resolve the default-branch base ref, or None when no default-branch
+// ancestor exists (brand-new repo) so the absence is reported explicitly.
+let private resolveBaseRef root : string option =
     let hasRef name =
         match routeGitCapture root (sprintf "show-ref --verify --quiet refs/heads/%s" name) with
         | Ok _ -> true
         | Error _ -> false
-    if hasRef "main" then "main"
-    elif hasRef "master" then "master"
-    else "HEAD~1"
+    if hasRef "main" then Some "main"
+    elif hasRef "master" then Some "master"
+    else None
 
 let runEvidenceAuditCheck root (model: BuildModel) =
     let baseRef = resolveBaseRef root
+    let effectiveBase = baseRef |> Option.defaultValue "HEAD~1"
     let mergeBase =
-        match routeGitCapture root (sprintf "merge-base %s HEAD" baseRef) with
-        | Ok s when s.Trim() <> "" -> s.Trim()
-        | _ -> baseRef
+        match routeGitCapture root (sprintf "merge-base %s HEAD" effectiveBase) with
+        | Ok s when s.Trim() <> "" -> Some(s.Trim())
+        | _ -> None
+    let diffFrom = mergeBase |> Option.defaultValue effectiveBase
     let unifiedDiff =
-        match routeGitCapture root (sprintf "diff %s --unified=0" mergeBase) with
+        match routeGitCapture root (sprintf "diff %s --unified=0" diffFrom) with
         | Ok s -> s
         | Error _ -> ""
-    let inputs = buildEvidenceInputs model unifiedDiff
+    let inputs = buildEvidenceInputs model baseRef unifiedDiff
     let gr, graphArts = FS.Skia.UI.Build.Evidence.Engine.runGraph inputs
     evidenceWrite (path [ model.ReadinessDir; "task-graph.json" ]) graphArts.TaskGraphJson
     evidenceWrite (path [ model.ReadinessDir; "task-graph.md" ]) graphArts.TaskGraphMd
@@ -811,7 +816,24 @@ let runEvidenceAuditCheck root (model: BuildModel) =
                 + FS.Skia.UI.Build.Evidence.TaskParser.sehAcceptanceSchemaText ()
             else
                 log
+        // FR-009 (084): surface the resolved diff-scan base ref (or its explicit
+        // absence) so an empty diff-scan is not mistaken for the source of blockers.
+        let baseRefLine = FS.Skia.UI.Build.Evidence.Render.diffScanBaseRefLine baseRef mergeBase
+        let log = log + "\n" + baseRefLine + "\n"
+        // FR-008 (084): enumerate every blocker (area, file, one-line reason, and the
+        // originating hit-file path) on the audit's own output, sourced from the same
+        // ScanHit records the sidecars carry — no `*-hits.json` open required.
+        let scanAreas =
+            [ "readiness-contract", "readiness-contract-hits.json", FS.Skia.UI.Build.Evidence.Scans.readinessContract inputs.Scan
+              "persistent-launch", "persistent-launch-hits.json", FS.Skia.UI.Build.Evidence.Scans.persistentLaunch inputs.Scan
+              "persistent-gui-runtime", "persistent-gui-runtime-hits.json", FS.Skia.UI.Build.Evidence.Scans.persistentGui inputs.Scan
+              "window-visibility", "window-visibility-hits.json", FS.Skia.UI.Build.Evidence.Scans.windowVisibility inputs.Scan ]
+        let blockerBlock = FS.Skia.UI.Build.Evidence.Render.auditBlockerDiagnostics scanAreas
+        let log = if blockerBlock = "" then log else log + "\n" + blockerBlock
         evidenceWrite (path [ model.LogDir; "evidence-audit.txt" ]) log
+        // The audit summary is self-sufficient on stdout (FR-008/FR-009): every
+        // blocker and the base-ref line are legible without opening a sidecar.
+        printfn "%s" log
         match res.Verdict with
         | FS.Skia.UI.Build.Evidence.AuditVerdict.Fail ->
             failwithf "Evidence audit FAIL (%d blockers); see %s" res.TotalBlockers (path [ model.LogDir; "evidence-audit.txt" ])

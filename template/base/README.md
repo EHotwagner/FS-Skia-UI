@@ -32,6 +32,14 @@ invoke FAKE or depend on `.fake`.
 > need actual compiler errors and test results. Do not infer "it compiles" from a
 > green `Dev`.
 
+> **`Verify` embeds the merge-gate audit; `-t Test` is the mid-implementation
+> green-test path.** `./fake.sh build -t Verify` runs `EvidenceGraph` then
+> `EvidenceAudit` **before** the tests, and that audit **hard-blocks until every
+> task is `[X]`** — so `Verify` cannot produce a green test run while the feature is
+> still in progress. Use `./fake.sh build -t Test` (the first real compile,
+> audit-free) for a green test run mid-implementation, and `-t Verify` for the full
+> merge-gate once the feature is complete.
+
 Run Spec Kit evidence checks through the generated FAKE targets:
 
 1. `./fake.sh build -t EvidenceGraph`

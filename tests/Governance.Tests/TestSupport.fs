@@ -426,6 +426,7 @@ let evidenceInputsForDir (featDir: string) (recordedFeature: string option) : Ev
       Scan = { ReadinessDir = readinessDir; FeatureText = featureText; ReadinessFiles = readinessFiles }
       AuditStatusFiles = auditStatusFiles
       PatternsYml = File.ReadAllText(Path.Combine(repositoryRoot, ".specify/extensions/evidence/audit-patterns.yml"))
+      BaseRef = None
       UnifiedDiff = "" }
 
 /// Run the in-process merge-gate audit over an absolute feature/fixture dir.

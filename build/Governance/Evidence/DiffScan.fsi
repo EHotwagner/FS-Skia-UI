@@ -24,4 +24,4 @@ module DiffScan =
 
     /// Scan `unifiedDiff` against the patterns/whitelist/severity-overrides in
     /// `patternsYml` (read via YamlDotNet). Pure. FR-010.
-    val scan: patternsYml: string -> unifiedDiff: string -> DiffScanResult
+    val scan: baseRef: string option -> patternsYml: string -> unifiedDiff: string -> DiffScanResult
