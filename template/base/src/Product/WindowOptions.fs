@@ -118,11 +118,13 @@ let toViewerLaunchRequest behavior : ViewerWindowBehaviorRequest =
       StartupState = startupState
       StartupPosition = startupPosition
       BackendPreference =
+        // Qualify the cases: ViewerBackendPreference.Vulkan clashes with
+        // ViewerDiagnosticCategory.Vulkan (bare `Vulkan` resolves to the latter).
         match behavior.Backend with
-        | "vulkan" -> Some Vulkan
-        | "opengl" -> Some OpenGL
-        | "software" -> Some Software
-        | _ -> Some DefaultBackend }
+        | "vulkan" -> Some ViewerBackendPreference.Vulkan
+        | "opengl" -> Some ViewerBackendPreference.OpenGL
+        | "software" -> Some ViewerBackendPreference.Software
+        | _ -> Some ViewerBackendPreference.DefaultBackend }
 
 /// True when any explicit --window-* selection flag is present. When false the
 /// generated app launches through the durable runApp path and inherits the

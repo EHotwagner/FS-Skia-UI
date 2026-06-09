@@ -306,3 +306,21 @@
 - remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
 
 
+## TemplateCheck
+
+- command: `./fake.sh build -t TemplateCheck`
+- direct-prerequisites: TemplatePack, TemplateInstallSource, TemplateInstallPackage, TemplateInstantiate, TemplateSmoke
+- timestamp-utc: `2026-06-09T06:49:48.5229182+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/084-window-options-consumer-followups/readiness/template/verdict.md`
+- readiness-path: `/home/developer/projects/FS-Skia-UI/specs/084-window-options-consumer-followups/readiness/template/verdict.md`
+- verdict-category: `success`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active
+- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists
+- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared
+- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure
+- affected-gate: `TemplateCheck`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+
