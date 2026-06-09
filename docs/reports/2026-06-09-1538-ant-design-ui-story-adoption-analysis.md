@@ -10,7 +10,9 @@ categoryindex: 8
 - Status: Research report. No product code changed.
 - Scope: How FS.Skia.UI can make heavy use of Ant Design's design principles,
   visual choices, token model, enterprise patterns, and agent-facing guidance
-  without taking a React or DOM dependency.
+  without taking a React or DOM dependency. Updated decision: Ant Design's
+  color/contrast choices should be selectable as a design-system policy that can
+  replace the current WCAG-only gate for generated-template validation.
 - Primary external source: <https://ant.design/docs/spec/introduce/?theme=light>
 - Ant Design docs version observed during research: 6.4.3.
 
@@ -23,6 +25,10 @@ path is to translate Ant's stable ideas into local primitives:
 
 - A richer semantic token layer generated from the existing DTCG source, with
   Ant-style seed, map, alias, and component-token groups.
+- A design-system color/contrast policy selector. The current WCAG gate becomes
+  the `wcag` policy; Ant Design becomes the first alternative policy; later
+  policies can add Material, Fluent/Fluid, or other systems without changing the
+  template UX.
 - A central visual-state style resolver that maps `ControlKind`, `VisualState`,
   intent, validation state, and theme into concrete draw styles.
 - A controls story that emphasizes enterprise workflows: list pages, dense
@@ -32,12 +38,75 @@ path is to translate Ant's stable ideas into local primitives:
   mirrored to `.claude` by the existing generated-skill machinery, so Codex and
   Claude follow the same Ant-inspired rules.
 
-The most important constraint: do not copy Ant colors blindly. Ant's default
-brand blue is `#1677ff`, and Ant has a mature semantic color model, but this repo
-has an explicit `ContrastCheck` gate over shipped token pairings. Every imported
-or inspired color must be certified by the local WCAG gate. Ant's visual system
-is a source of intent and vocabulary; `ContrastCheck` remains the authority for
-legibility in this codebase.
+The revised design decision is that the repo should no longer hard-code one
+universal color/contrast authority. Instead, validation should be policy-driven:
+`wcag` preserves today's explicit ratio gate, `ant` validates Ant Design's own
+semantic color and contrast choices, and future policies such as `material` or
+`fluent` can plug into the same mechanism. Ant's default brand blue is
+`#1677ff`, but the point is broader than one color: selecting the Ant policy
+should select the Ant token palette, neutral transparency model, functional
+colors, text/background contrast expectations, and restrained enterprise color
+usage.
+
+## Design Decision: Policy-Selected Color And Contrast
+
+The design-system policy should become a template parameter and a governance
+input, not a fixed assumption baked into `ContrastCheck`.
+
+Proposed template surface:
+
+```text
+dotnet new fs-skia-ui --design-system wcag
+dotnet new fs-skia-ui --design-system ant
+```
+
+`wcag` should be the compatibility default at first because it preserves current
+generated-product behavior. `ant` should be the first richer design-system
+alternative. Future values can include `material`, `fluent`, or `fluid` depending
+on the naming decision for the next design language.
+
+The conceptual gate should become `DesignSystemColorCheck` or
+`ColorPolicyCheck`. It may keep the existing `ContrastCheck` target name for
+backward compatibility, but internally it should delegate to a selected policy:
+
+```fsharp
+type DesignSystemPolicy =
+    | Wcag
+    | Ant
+    | Material
+    | Fluent
+    | Custom of string
+
+type ColorPolicy =
+    { Id: DesignSystemPolicy
+      TokenSeed: string
+      Pairings: ValidatedPairing list
+      ThresholdFor: Role -> float
+      ReportLabel: string }
+```
+
+The policy controls both token selection and validation semantics. The template
+parameter should not merely switch colors while leaving the WCAG-only gate in
+place; that would make Ant a paint preset rather than a design-system choice.
+For Ant, the policy should encode Ant Design's choices: `colorPrimary #1677ff`,
+functional color families such as success, warning, error, and info, neutral text
+and surface roles, default typography of 14/22, body/title contrast expectations,
+and semantic pairings for text, controls, feedback, selection, and navigation.
+
+This gives follow-up work a clean extension seam:
+
+| Template value | Policy source | Gate behavior |
+|----------------|---------------|---------------|
+| `wcag` | Current local WCAG pairings and thresholds. | Preserves today's `ContrastCheck` semantics. |
+| `ant` | Ant Design visual/token/pattern docs. | Replaces WCAG-only validation with Ant semantic color/contrast validation. |
+| `material` | Future Material policy. | Adds Material tokens, pairings, and contrast rules through the same interface. |
+| `fluent` / `fluid` | Future Fluent/Fluid policy. | Adds that design language without changing templates or generated-product contracts. |
+
+This also changes the report's earlier recommendation: Ant colors should not just
+be "certified by the local WCAG gate." For the Ant option, Ant's policy is the
+selected authority. A WCAG-derived measurement can remain useful implementation
+machinery, but the user-facing contract is "this generated product follows the
+Ant Design policy."
 
 ## Research Basis
 
@@ -90,11 +159,12 @@ The repository already has several pieces that make this feasible.
 | `src/Controls/DesignTokens.fs` | Generated typed F# token module. | New semantic tokens should be generated, not hand-coded. |
 | `src/Controls/Theme.fs` | Builds `Theme.light` and `Theme.dark` from generated tokens. | Keep the existing public `Theme` stable while adding richer internal/adaptive style resolution. |
 | `src/Controls/Types.fsi` | Public `Theme`, `VisualState`, diagnostics, accessibility, and control contracts. | Adding fields to public records is a contract change; avoid doing that until a feature explicitly routes and validates it. |
-| `src/Color/Contrast.fsi` | WCAG contrast arithmetic and verdicts. | Use this as the local accessibility authority. |
-| `src/Color/Palettes.fsi` | Radix-derived, role-labelled light/dark ramps. | Use these as accessible raw material, then certify with the local gate. |
-| `build/Governance/ContrastGate.fs` | Explicit validated pairings for foreground/background roles. | Extend this when new semantic text, status, fill, selection, and focus pairings become real rendering roles. |
+| `src/Color/Contrast.fsi` | WCAG contrast arithmetic and verdicts. | Keep this as the `wcag` policy engine and optional ratio diagnostics for other policies, not the only possible authority. |
+| `src/Color/Palettes.fsi` | Radix-derived, role-labelled light/dark ramps. | Use these as accessible raw material for `wcag`; Ant should prefer Ant seed, functional, and neutral tokens. |
+| `build/Governance/ContrastGate.fs` | Explicit validated pairings for foreground/background roles. | Refactor this conceptually into policy-backed color validation: `wcag` uses current pairings, `ant` uses Ant pairings, later policies add Material/Fluent equivalents. |
 | `docs/testSpecs/Showcase/*.md` | Controls-gallery user story, palette, state mapping, and evidence requirements. | This is the best near-term home for Ant-inspired UI-story changes. |
 | `.agents/skills/**` and `.claude/skills/**` | Canonical skills plus generated mirror. | A new Ant skill should be authored in `.agents`, then synced/generated into `.claude`; do not hand-maintain both. |
+| `template/**` | `dotnet new fs-skia-ui` consumer defaults. | Add a design-system parameter such as `--design-system wcag|ant`; default to `wcag` for compatibility and route template changes through the escalated gates. |
 
 The current design-token set is intentionally small: foreground, background,
 accent, danger, muted, font family, font size, density, corner radius, and
@@ -108,7 +178,7 @@ The UI story should become:
 
 > FS.Skia.UI.Controls provides a deterministic, Skia-rendered, F#-native
 > enterprise interface system. It uses typed controls, generated DTCG design
-> tokens, WCAG-checked contrast, and Ant-inspired interaction patterns to produce
+> tokens, policy-selected color/contrast validation, and Ant-inspired interaction patterns to produce
 > clear, dense, consistent operational UIs.
 
 That story can be expressed in four user-visible ways:
@@ -157,23 +227,23 @@ brand color, functional colors, neutral text/background/border/separator roles,
 and restrained enterprise usage. Ant's default brand color is `#1677ff`.
 Functional defaults include success green, warning gold, and error red families.
 
-Local recommendation:
+Policy-specific recommendation:
 
 | Role | Ant-inspired intent | Local implementation rule |
 |------|---------------------|---------------------------|
-| Primary/accent | Key action point, operation state, important highlight, graphic emphasis. | Start from Ant blue semantics, but choose a WCAG-passing local step for text and UI pairings. |
-| Success | Completion, valid state, positive result. | Add success text/bg/border pairings before rendering success UI broadly. |
-| Warning | Caution, pending risk, recoverable issue. | Warning on light backgrounds often needs darker text than the visible swatch. Gate it. |
+| Primary/accent | Key action point, operation state, important highlight, graphic emphasis. | For `wcag`, choose a local step that passes the current pairings. For `ant`, prefer Ant blue semantics and validate through Ant policy pairings. |
+| Success | Completion, valid state, positive result. | Add success text/bg/border pairings to both policies before rendering success UI broadly. |
+| Warning | Caution, pending risk, recoverable issue. | Warning on light backgrounds often needs darker text than the visible swatch. Make that a policy-specific pairing, not a visual guess. |
 | Error/danger | Failure, destructive action, invalid input. | Map existing `Danger` to a richer `error` family; distinguish danger button, validation, alert, and status text. |
 | Info | Neutral helpful feedback and links. | Keep separate from primary where possible so every blue mark is not a primary action. |
 | Neutral | Text, secondary text, disabled text, border, separator, layout, container, elevated surface. | Expand the current foreground/background/muted model into transparent or explicit neutral roles. |
 
 Ant's font docs target high contrast for body/title text. This repo currently
-uses `contrastRequiredRatio = 4.5` in shipped tokens. That is a reasonable AA
-contract, but if Ant-inspired typography becomes a stated product claim, consider
-raising specific body/title text pairings to 7.0 while keeping UI graphics at
-3.0 and ordinary AA text at 4.5. This should be done through explicit pairing
-metadata, not a blanket cartesian-product check.
+uses `contrastRequiredRatio = 4.5` in shipped tokens. That remains the `wcag`
+policy's compatibility contract. For `ant`, the right move is to encode Ant's
+body/title, neutral, functional, and primary pairings as the selected policy.
+The checker can still report ratios, but it should not reject Ant solely because
+Ant's chosen policy differs from the existing WCAG-only gate.
 
 ### 3. Typography
 
@@ -436,8 +506,10 @@ be expected, not worked around.
 |-------------|---------------|----------------|
 | Report-only docs under `docs/reports` | Low risk. | Run `Route`; run only printed gates. |
 | Showcase spec docs | Docs/test-spec impact. | `Route` decides. Likely docs/guidance gates. |
-| DTCG value-only token changes | Token public-surface area due generated module. | `RefreshSurfaceBaselines`, `DesignTokenDrift`, `ContrastCheck`, plus printed gates. |
+| DTCG value-only token changes | Token public-surface area and selected-policy color behavior. | `RefreshSurfaceBaselines`, `DesignTokenDrift`, policy-backed color gate, plus printed gates. |
 | New token names exposed in `.fsi` | Public API contract. | Per-package surface checks and generated surface baselines. |
+| `--design-system` template parameter | Consumer template contract. | `TemplateCheck`, generated product validation, routed maintainer evidence. |
+| New design-system policy | Governance/build surface. | Policy unit tests, generated policy report, routed governance evidence. |
 | `Theme` record shape changes | Breaking consumer contract. | Avoid until explicitly planned; likely high/escalated route. |
 | New style resolver internal to controls | Framework/internal behavior. | Dev plus focused rendering/interaction checks if routed. |
 | New controls or typed props | Public control surface. | Typed parity tests, public-surface checks, rendering/interaction checks. |
@@ -465,6 +537,9 @@ Low implementation risk, high clarity:
 
 - Update showcase specs to explicitly say "Ant-inspired enterprise controls
   story".
+- Document the design-system selector as the governing color/contrast decision:
+  `wcag` remains the default, `ant` becomes the first alternative, and future
+  values can add Material or Fluent/Fluid policies.
 - Replace palette-only language with semantic roles: primary, success, warning,
   error, info, text, secondary text, disabled text, border, separator, container,
   elevated, selected, hover, focus.
@@ -480,7 +555,10 @@ Design before code:
   DTCG groups and generated F# names.
 - Decide whether the first implementation is explicit DTCG values/aliases or a
   generator-side derivation algorithm.
-- Define new `ContrastGate` pairings before shipping status/selection/focus text
+- Introduce `DesignSystemPolicy`/`ColorPolicy` plumbing:
+  `wcag` delegates to today's pairings, `ant` owns Ant semantic pairings, and
+  later providers add Material/Fluent equivalents.
+- Define policy-specific pairings before shipping status/selection/focus text
   roles.
 - Decide which tokens are public and which remain internal.
 
@@ -523,7 +601,8 @@ around those profiles will make the project feel like a coherent UI system.
 | Risk | Why it matters | Recommendation |
 |------|----------------|----------------|
 | Token sprawl | Ant exposes many tokens; copying them all would create maintenance burden. | Start with roles the renderer actually consumes. Add component tokens only when a component needs them. |
-| Contrast mismatch | Ant defaults are designed for its own CSS/component contexts, not this Skia theme/gate. | Certify every local semantic pairing through `ContrastCheck`. |
+| Contrast mismatch | Ant defaults are designed for their own component contexts, not this Skia theme's current WCAG-only gate. | Do not force Ant through the WCAG policy. Make the selected policy explicit, report the active verdict, and optionally show WCAG ratios as diagnostics. |
+| Policy ambiguity in templates | Consumers may not know whether generated apps use WCAG or Ant color rules. | Expose a visible template parameter, keep `wcag` as the default, and write the selected policy into generated app metadata/docs. |
 | Public API breakage | Adding fields to public F# records is costly for consumers. | Prefer additive modules and internal resolver state first. |
 | Renderer drift | Docs may promise Ant-like states that renderer does not draw. | Tie every promise to fidelity tests/evidence captures. |
 | Agent inconsistency | Codex and Claude can diverge if local guidance is hand-copied. | Author only in `.agents`; let generated sync own `.claude`. |
@@ -554,10 +633,14 @@ metadata:
 ## Scope
 
 Use this skill for Ant-inspired UI story, control behavior, design-token,
-theme, showcase, generated-template, and docs work in FS.Skia.UI.
+theme, showcase, generated-template, color/contrast policy, and docs work in
+FS.Skia.UI.
 
 Do not use this skill to import Ant Design React components, CSS classes,
 Less variables, DOM structure, or runtime dependencies into the Skia/F# product.
+Do not treat the current WCAG gate as the only acceptable color/contrast
+authority. Generated templates should select a design-system policy such as
+`wcag` or `ant`.
 
 ## Source Priority
 
@@ -602,14 +685,19 @@ Less variables, DOM structure, or runtime dependencies into the Skia/F# product.
    - Ant components -> local typed controls and Skia draw styles.
    - Ant page templates -> showcase specs and generated app profiles.
    - Ant feedback patterns -> local overlay/toast/dialog/validation controls.
+   - Ant color and contrast choices -> selected `ant` policy pairings, not
+     WCAG-only certification.
 4. Preserve local governance:
    - Edit `src/Controls/design-tokens.tokens.json` for token values.
    - Regenerate generated surfaces instead of hand-editing them.
    - Run `./fake.sh build -t Route` before validation.
    - Run only the gates that `Route` prints.
-5. For colors, never trust imported values by sight. Run or respect
-   `ContrastCheck`; expand `ContrastGate` validated pairings when a new semantic
-   role becomes real rendered text or essential UI.
+5. For colors, identify the selected design-system policy:
+   - `wcag`: use today's contrast pairings and thresholds.
+   - `ant`: use Ant seed, functional, neutral, body/title, and semantic pairing
+     expectations as the authority; ratios can be diagnostic.
+   - future policies: add Material, Fluent/Fluid, or project-specific providers
+     through the same policy interface.
 
 ## Mapping Rules
 
@@ -628,7 +716,10 @@ Less variables, DOM structure, or runtime dependencies into the Skia/F# product.
 
 - Docs-only: run `Route`; obey printed gates.
 - Token value/name change: expect `RefreshSurfaceBaselines`,
-  `DesignTokenDrift`, `ContrastCheck`, and public-surface gates if routed.
+  `DesignTokenDrift`, policy-backed color checks, and public-surface gates if
+  routed.
+- Template policy change: expect `TemplateCheck` and generated-product checks if
+  routed.
 - Renderer/style change: add focused rendering and interaction tests for visual
   states touched.
 - Skill change: regenerate/check `.claude` mirrors through existing generated
@@ -728,8 +819,8 @@ Less variables, DOM structure, or runtime dependencies into the Skia/F# product.
 
 1. Should the project explicitly market the controls story as "Ant-inspired", or
    should Ant remain internal inspiration and research lineage?
-2. Should body/title text pairings move toward Ant's 7.0 contrast target, or is
-   the current 4.5 AA theme contract the right product stance?
+2. What should the final template values be named: `wcag`/`ant`, or more
+   explicit names such as `wcag-aa`/`ant-design`?
 3. Should Ant semantic tokens be public API, or should they remain an internal
    style system behind the existing `Theme` record?
 4. Should token derivation be explicit DTCG values first, or should the generator
@@ -741,14 +832,17 @@ Less variables, DOM structure, or runtime dependencies into the Skia/F# product.
 
 The highest-signal first implementation slice is:
 
-1. Add an Ant-inspired semantic-token design doc.
-2. Add internal semantic roles for primary, success, warning, error, info,
+1. Add the design-system selector contract to the template/UI story:
+   `--design-system wcag|ant`, with `wcag` as the compatibility default.
+2. Add an Ant-inspired semantic-token and color-policy design doc.
+3. Add internal semantic roles for primary, success, warning, error, info,
    surface, border, selected, hover, focus, and secondary text.
-3. Implement a style resolver for buttons, text inputs, list rows, tabs, and
+4. Implement the policy-backed color checker with `wcag` and `ant` providers.
+5. Implement a style resolver for buttons, text inputs, list rows, tabs, and
    data-grid rows/cells.
-4. Update the showcase specs so the Controls Gallery presents an Ant-inspired
+6. Update the showcase specs so the Controls Gallery presents an Ant-inspired
    enterprise shell and pattern pages.
-5. Add the local `fs-skia-ant-design` skill and sync it to `.claude`.
+7. Add the local `fs-skia-ant-design` skill and sync it to `.claude`.
 
 This slice is narrow enough to govern and test, but broad enough to make the UI
 story visibly different.
