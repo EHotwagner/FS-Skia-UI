@@ -427,7 +427,8 @@ let evidenceInputsForDir (featDir: string) (recordedFeature: string option) : Ev
       AuditStatusFiles = auditStatusFiles
       PatternsYml = File.ReadAllText(Path.Combine(repositoryRoot, ".specify/extensions/evidence/audit-patterns.yml"))
       BaseRef = None
-      UnifiedDiff = "" }
+      UnifiedDiff = ""
+      AcceptedDeferrals = [] }
 
 /// Run the in-process merge-gate audit over an absolute feature/fixture dir.
 let runEvidenceAuditAt (featDir: string) : AuditResult * AuditArtifacts =

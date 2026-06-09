@@ -120,6 +120,12 @@ type BuildEffect =
     | EvidenceAuditCheck
     // Feature 048: additive per-package surface diff (re-derived in interpret, so no payload).
     | PerPackageSurfaceDiffCheck
+    // Feature 087 (FR-005/006): fold byte-idempotent per-package baseline capture into
+    // RefreshSurfaceBaselines (re-derived in interpret over the source tree, so no payload).
+    | RegeneratePerPackageBaselines
+    // Feature 087 (FR-003/004): static pinned-vs-local package-skew sub-check over captured
+    // surface baselines + generated template source (re-derived in interpret, no payload).
+    | PackageSkewCheck
     // Feature 058: pure skill-quality rubric check (re-derived in interpret, so no payload).
     | SkillQualityScan
     // Feature 077 (FR-006): pure phase-hook parity check (re-derived in interpret, no payload).

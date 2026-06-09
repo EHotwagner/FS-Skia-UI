@@ -1,0 +1,142 @@
+{
+  "base_ref": "main",
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "specs/087-governance-gate-hardening/data-model.md",
+      "line": 22,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "`unacceptedSynthetic = 0` **and** every blocking-hit count = 0"
+    },
+    {
+      "file": "specs/087-governance-gate-hardening/plan.md",
+      "line": 94,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: This feature *fixes* the synthetic machinery; its own"
+    },
+    {
+      "file": "specs/087-governance-gate-hardening/readiness/feature-tier-record.md",
+      "line": 22,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: none expected. Seeded defect/skew/deferral/violation"
+    },
+    {
+      "file": "specs/087-governance-gate-hardening/readiness/synthetic-propagation-no-phase-edge.txt",
+      "line": 13,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "was computed AutoSynthetic \u2014 the contamination bug)"
+    },
+    {
+      "file": "specs/087-governance-gate-hardening/readiness/task-graph.json",
+      "line": 858,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "\"title\": \"Add an FsCheck property (FR-011 invariant): `PassWithAcceptedDeferrals` requires `unacceptedSynthetic = 0` **a"
+    },
+    {
+      "file": "specs/087-governance-gate-hardening/readiness/task-graph.md",
+      "line": 154,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/087-governance-gate-hardening/readiness/task-graph.md",
+      "line": 180,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "T019 [X] Add an FsCheck property (FR-011 invariant): `PassWithAcceptedDeferrals` requires `unacceptedSynthetic = 0` **an"
+    },
+    {
+      "file": "specs/087-governance-gate-hardening/spec.md",
+      "line": 93,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "### User Story 5 - Synthetic propagation reflects real dependencies (Priority: P3)"
+    },
+    {
+      "file": "specs/087-governance-gate-hardening/spec.md",
+      "line": 148,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **FR-009**: Synthetic (`[S*]`) propagation MUST follow **real data dependencies** declared in"
+    },
+    {
+      "file": "specs/087-governance-gate-hardening/tasks.md",
+      "line": 24,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "expected (plan \"Synthetic evidence\"). If a seeded error-path input proves"
+    },
+    {
+      "file": "specs/087-governance-gate-hardening/tasks.md",
+      "line": 126,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- [X] T019 [P] [US4] [skillist: fsharp-build-orchestration] Add an FsCheck property (FR-011 invariant): `PassWithAccepte"
+    },
+    {
+      "file": "specs/087-governance-gate-hardening/tasks.md",
+      "line": 186,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    },
+    {
+      "file": "tests/Governance.Tests/Feature087GovernanceTests.fs",
+      "line": 209,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "[ mkTask087 \"T100\" Synthetic [] []                 // leaf [S], nothing consumes it"
+    },
+    {
+      "file": "tests/Governance.Tests/Feature087GovernanceTests.fs",
+      "line": 220,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "[ mkTask087 \"T100\" Synthetic [] []"
+    },
+    {
+      "file": "tests/Governance.Tests/Feature087GovernanceTests.fs",
+      "line": 222,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "Expect.equal (effOf tasks \"T300\") AutoSynthetic"
+    },
+    {
+      "file": "tests/Governance.Tests/Feature087GovernanceTests.fs",
+      "line": 233,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "[ mkTask087 \"T100\" Synthetic [] []"
+    },
+    {
+      "file": "tests/Governance.Tests/Feature087GovernanceTests.fs",
+      "line": 235,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "effOf tasks \"T200\" = AutoSynthetic"
+    }
+  ]
+}

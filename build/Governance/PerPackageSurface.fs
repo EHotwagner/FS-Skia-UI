@@ -173,6 +173,15 @@ let diff (baselines: Surface list) (current: Surface list) =
       CheckedPackages = current |> List.map (fun s -> s.PackageId)
       MissingBaselines = missing }
 
+// Feature 087 (FR-005/006): the canonical, byte-idempotent on-disk serialization of a
+// captured surface baseline — exactly the normalized surface text followed by a single
+// trailing newline. `normalize` already drops trailing blanks/newlines, so the `TrimEnd`
+// is the defensive fixed point: serializing twice (even after a read-and-renormalize
+// round-trip) yields byte-identical bytes, so a re-capture on an unchanged tree produces
+// no trailing-newline/whitespace churn (SC-006). Pure.
+let serializeBaseline (surface: Surface) : string =
+    surface.NormalizedText.TrimEnd('\n') + "\n"
+
 // --- edge interpreter ---------------------------------------------------------
 
 let rec private findRepoRoot (dir: string) =
@@ -203,6 +212,21 @@ let captureCurrent (packages: PackageId list) =
 
         { PackageId = packageId
           NormalizedText = normalize raw })
+
+// Feature 087 (FR-005/006): capture every in-scope package's current surface and write each
+// as a byte-idempotent baseline at <directory>/<PackageId>.fsi.txt, so one
+// `RefreshSurfaceBaselines` run regenerates the per-package baselines completely (no longer
+// a hand-maintained snapshot) and a second run on an unchanged tree leaves `git status`
+// clean. Returns the written package ids in scope order. Edge (file reads/writes).
+let captureBaselines (directory: string) (packages: PackageId list) : PackageId list =
+    Directory.CreateDirectory directory |> ignore
+    let surfaces = captureCurrent packages
+
+    for surface in surfaces do
+        let target = Path.Combine(directory, surface.PackageId + ".fsi.txt")
+        File.WriteAllText(target, serializeBaseline surface)
+
+    surfaces |> List.map (fun s -> s.PackageId)
 
 let loadBaselines (directory: string) =
     if not (Directory.Exists directory) then

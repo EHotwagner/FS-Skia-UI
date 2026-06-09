@@ -1,0 +1,51 @@
+T018 — RefreshSurfaceBaselines folds per-package baseline capture and is byte-idempotent (FR-005/006, SC-005/006)
+authoritative-command: ./fake.sh build -t RefreshSurfaceBaselines (run repeatedly)
+artifact-path: specs/087-governance-gate-hardening/readiness/refresh-surface-baselines-idempotent.txt
+failure-class: per-package baseline byte churn (trailing-newline/whitespace) on a no-op rerun; git status non-empty after a clean re-run (FR-005/006, SC-005/006)
+status: PASS
+
+## What changed (T017)
+PerPackageSurface.captureBaselines (edge) + serializeBaseline (pure) were folded into
+RefreshSurfaceBaselines via the new RegeneratePerPackageBaselines effect. The refresh now
+regenerates readiness/per-package-surface/<PackageId>.fsi.txt for every in-scope package
+(11 packages) in the same run as the cross-package/api-surface/skill baselines — the
+per-package snapshots are no longer a hand-maintained side artifact.
+
+The canonical on-disk form is `normalize(<package .fsi text>) + "\n"` — exactly one
+trailing newline. `normalize` already drops trailing blanks/blank-line runs, so the write
+is a byte-stable fixed point.
+
+## One-time normalization (first refresh on this branch)
+Before this change the committed baselines were inconsistent: 6 ended with "\n",
+5 did not (Controls, Controls.Elmish, Elmish, Scene, SkiaViewer). The first refresh
+canonicalized all 11 to end with exactly one "\n":
+
+  $ git diff --stat readiness/per-package-surface/
+   FS.Skia.UI.Controls.Elmish.fsi.txt | 2 +-
+   FS.Skia.UI.Controls.fsi.txt        | 2 +-
+   FS.Skia.UI.Elmish.fsi.txt          | 2 +-
+   FS.Skia.UI.Scene.fsi.txt           | 2 +-
+   FS.Skia.UI.SkiaViewer.fsi.txt      | 2 +-
+   5 files changed, 5 insertions(+), 5 deletions(-)
+
+These 5 are committed once; thereafter the form is stable.
+
+## Byte-idempotence proof (authoritative)
+Hash the per-package baselines, run RefreshSurfaceBaselines again, hash again:
+
+  hash before re-run: 1512935b49efa8d5d45086662d827f26
+  hash after  re-run: 1512935b49efa8d5d45086662d827f26
+  IDEMPOTENT: byte-equal across a re-run
+
+A no-op re-run produces byte-identical files (no trailing-newline/whitespace churn);
+once the one-time canonicalization is committed, `git status` is clean after any
+subsequent RefreshSurfaceBaselines run (SC-005/006).
+
+## Test coverage (T016, Governance.Tests)
+feature 087 US3 — per-package baseline byte-idempotence (FR-005/006):
+- "serializeBaseline is a byte-stable fixed point (no trailing-newline churn)" — PASS
+- "capturing the real in-scope surfaces twice serializes byte-equal" — PASS
+(Run via ./fake.sh build -t Dev — all Governance.Tests pass.)
+
+next-action: none; US3 complete. The committed one-time normalization of the 5 baselines
+lands with this feature.

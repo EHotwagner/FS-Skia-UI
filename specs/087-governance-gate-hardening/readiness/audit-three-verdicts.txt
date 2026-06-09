@@ -1,0 +1,84 @@
+T022 — FR-007/008 / SC-007: three seeded inputs produce the three distinct
+verdicts (Pass / PassWithAcceptedDeferrals / Fail). PassWithAcceptedDeferrals is
+reachable ONLY with zero unaccepted synthetic AND zero blocking hits (FR-011).
+
+authoritative source: the pure Audit.verdict derivation (data-model §1) — the
+authoritative verdict function — exercised through tests/Governance.Tests
+"feature 087 US4 — three-state verdict (FR-007/008/011)" and rendered to real
+seh-audit-summary.json via Render.sehAuditSummaryJson.
+
+--- Governance.Tests US4 (Expecto + FsCheck) ---
+feature 087 US4 — 5 tests run – 5 passed, 0 failed, 0 errored. Success.
+  * three seeded inputs → Pass / PassWithAcceptedDeferrals / Fail
+  * FR-011: an accepted deferral never masks a blocking hit (diff-scan blocker
+    forces Fail even with every synthetic accepted)
+  * FR-008: accepted/unaccepted counts separated; deferral records recorded
+  * FsCheck (100 cases): PassWithAcceptedDeferrals ⇒ unacceptedSynthetic=0 AND
+    blocking=0 AND acceptedSynthetic>0; Fail iff (unacceptedSynthetic>0 OR blocking>0)
+  * parseAcceptedDeferrals: reads taskId+justification, rejects empty
+    justification (Constitution §V), tolerant of absent/malformed JSON
+Full suite regression: 529 tests run – 529 passed, 0 failed, 0 errored.
+
+--- three rendered seh-audit-summary.json samples (real Render output) ---
+
+INPUT 1 (clean): no synthetic, no deferral, no blocking
+{
+  "verdict": "Pass",
+  "acceptedSyntheticCount": 0,
+  "unacceptedSyntheticCount": 0,
+  "acceptedDeferrals": [],
+  "acceptedSyntheticTasks": [],
+  "accepted_seh_tasks": [],
+  "unaccepted_synthetic_tasks": [],
+  "auto_synthetic_tasks": [],
+  "late_seh_tasks": [],
+  "diagnostics": []
+}
+
+INPUT 2 (one synthetic T900 accepted via deferral, no blocking):
+  see readiness/seh-audit-summary.sample.json (written by Render.sehAuditSummaryJson)
+{
+  "verdict": "PassWithAcceptedDeferrals",
+  "acceptedSyntheticCount": 1,
+  "unacceptedSyntheticCount": 0,
+  "acceptedDeferrals": [
+    {
+      "taskId": "T900",
+      "justification": "T900 deferred: native keystroke injection host capability not yet available (086 deferral)",
+      "realEvidencePath": "specs/087-governance-gate-hardening/readiness/T900-real.txt",
+      "awaitedHostCapability": "native-keystroke-injection"
+    }
+  ],
+  "acceptedSyntheticTasks": [ "T900" ],
+  "accepted_seh_tasks": [],
+  "unaccepted_synthetic_tasks": [],
+  "auto_synthetic_tasks": [],
+  "late_seh_tasks": [],
+  "diagnostics": []
+}
+  (note: unaccepted_synthetic_tasks is EMPTY for a Pass* — contract C1 — the
+   accepted deferral moved T900 into acceptedSyntheticTasks.)
+
+INPUT 3 (one UNaccepted synthetic T901):
+{
+  "verdict": "Fail",
+  "acceptedSyntheticCount": 0,
+  "unacceptedSyntheticCount": 1,
+  "acceptedDeferrals": [],
+  "acceptedSyntheticTasks": [],
+  "accepted_seh_tasks": [],
+  "unaccepted_synthetic_tasks": [ "T901" ],
+  "auto_synthetic_tasks": [],
+  "late_seh_tasks": [],
+  "diagnostics": []
+}
+
+--- durable accepted-deferral record (FR-008) ---
+readiness/synthetic-evidence.json is read at the interpreter edge
+(Audit.parseAcceptedDeferrals) and populates EvidenceInputs.AcceptedDeferrals;
+--accept-synthetic writes these records with the required written justification.
+
+failure-class: a binary verdict (the old Pass|Fail) made a clean PASS unreachable
+for any feature with a legitimately-deferred artifact; the three-state verdict
+keeps "audit clean" meaningful while never passing an unaccepted synthetic or a
+blocking hit (FR-007/008/011, SC-007).

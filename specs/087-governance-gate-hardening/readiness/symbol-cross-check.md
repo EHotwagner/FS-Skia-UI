@@ -1,0 +1,22 @@
+## Symbol consistency (analyze pass G)
+- entity-record AuditVerdict — in {plan}, missing from {data-model, tasks}
+- entity-record Dev — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedGuidanceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedProductCheck — in {plan, tasks}, missing from {data-model}
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- fr-id FR-001 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-006 — in {plan}, missing from {data-model, tasks}
+- msg-case Effect — in {tasks}, missing from {plan, data-model}
+- msg-case Model — in {tasks}, missing from {plan, data-model}
+- msg-case Msg — in {tasks}, missing from {plan, data-model}
+- sc-id SC-001 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-002 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-003 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-004 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-005 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-007 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-008 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-009 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-010 — in {plan, tasks}, missing from {data-model}
+- union-or-screen-variant PassWithAcceptedDeferrals — in {data-model, tasks}, missing from {plan}

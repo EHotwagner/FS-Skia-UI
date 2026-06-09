@@ -416,17 +416,40 @@ module Render =
     let auditStatusJson (scannedFiles: string list) (blocking: string list) : string =
         ser (JObj [ "scanned_files", jStrList scannedFiles; "blocking", jStrList blocking ]) 0 + "\n"
 
-    let sehAuditSummaryJson (s: SehSummary) : string =
+    // Feature 087 (FR-007/008, C1): the verdict-state enum + separated
+    // accepted/unaccepted synthetic counts + durable accepted-deferral records,
+    // alongside the existing summary lists. `autoSyntheticTasks` now reflects the
+    // FR-009 ExplicitDeps-only propagation. Existing snake_case keys are kept so
+    // existing readers do not break; the new fields use the C1 camelCase names.
+    let sehAuditSummaryJson (result: AuditResult) : string =
+        let s = result.SehSummary
         let diag (task, rule, source, action) =
             JObj
                 [ "task", JStr task
                   "failed_rule", JStr rule
                   "source", JStr source
                   "required_action", JStr action ]
+        let deferral (d: AcceptedDeferral) =
+            JObj
+                [ "taskId", JStr d.TaskId
+                  "justification", JStr d.Justification
+                  "realEvidencePath", JStr d.RealEvidencePath
+                  "awaitedHostCapability", JStr d.AwaitedHostCapability ]
+        // C1: `unaccepted_synthetic_tasks` must be empty for any Pass* — an
+        // accepted deferral moves its task out of the unaccepted list and into
+        // `acceptedSyntheticTasks`. The raw seh list is filtered by the deferral set.
+        let acceptedIds = result.AcceptedDeferrals |> List.map (fun d -> d.TaskId) |> Set.ofList
+        let unacceptedList = s.UnacceptedSyntheticTasks |> List.filter (acceptedIds.Contains >> not)
+        let acceptedSyntheticList = s.UnacceptedSyntheticTasks |> List.filter acceptedIds.Contains
         let payload =
             JObj
-                [ "accepted_seh_tasks", jStrList s.AcceptedSehTasks
-                  "unaccepted_synthetic_tasks", jStrList s.UnacceptedSyntheticTasks
+                [ "verdict", JStr(EvidenceFormatSchema.auditVerdictLabel result.Verdict)
+                  "acceptedSyntheticCount", JInt result.AcceptedSyntheticCount
+                  "unacceptedSyntheticCount", JInt result.UnacceptedSyntheticCount
+                  "acceptedDeferrals", JArr(result.AcceptedDeferrals |> List.map deferral)
+                  "acceptedSyntheticTasks", jStrList acceptedSyntheticList
+                  "accepted_seh_tasks", jStrList s.AcceptedSehTasks
+                  "unaccepted_synthetic_tasks", jStrList unacceptedList
                   "auto_synthetic_tasks", jStrList s.AutoSyntheticTasks
                   "late_seh_tasks", jStrList s.LateSehTasks
                   "diagnostics", JArr(s.Diagnostics |> List.map diag) ]

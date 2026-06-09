@@ -125,6 +125,11 @@
          (diagnostics/guidance for speckit-analyze pass G, not a hard gate). -->
     <Compile Include="SymbolCrossCheck.fsi" />
     <Compile Include="SymbolCrossCheck.fs" />
+    <!-- Feature 087 (US2, FR-003/004): static pinned-vs-local package-skew check over the
+         captured per-package surface baselines (no network restore). Pure comparison +
+         extraction; the file reads live at the Front/Governance.fs interpreter edge. -->
+    <Compile Include="PackageSkew.fsi" />
+    <Compile Include="PackageSkew.fs" />
     <!-- Feature 045: the build front-end relocated out of build.fsx into the compiled
          library. Helper modules first (BCL/regex only), then the value types, the MEL
          engine (Model/Update/Interpret), and the relocated heavy validators. -->

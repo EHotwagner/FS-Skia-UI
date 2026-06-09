@@ -36,8 +36,10 @@ module Render =
     /// Serialize audit-status-hits.json (`{scanned_files, blocking}`).
     val auditStatusJson: scannedFiles: string list -> blocking: string list -> string
 
-    /// Serialize seh-audit-summary.json.
-    val sehAuditSummaryJson: SehSummary -> string
+    /// Serialize seh-audit-summary.json (feature 087 C1: three-state `verdict`,
+    /// separated accepted/unaccepted synthetic counts, and durable
+    /// `acceptedDeferrals` records, alongside the existing summary lists).
+    val sehAuditSummaryJson: AuditResult -> string
 
     /// FR-007 (061): the explicit terminal `verdict=…` line for an EvidenceGraph
     /// run (clean: `verdict=ok (no cycles, no dangling refs, no [S*])`; failing:

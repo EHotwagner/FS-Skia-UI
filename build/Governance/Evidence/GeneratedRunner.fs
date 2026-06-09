@@ -114,6 +114,11 @@ module GeneratedRunner =
                 && not (rel.ToLowerInvariant().StartsWith "audit-rejections/"))
 
         let slePath = path [ readinessDir; "skill-loading-evidence.md" ]
+        // Feature 087 (FR-008): durable accepted-deferral records (absent → none).
+        let synthEvidencePath = path [ readinessDir; "synthetic-evidence.json" ]
+        let acceptedDeferrals =
+            (if File.Exists synthEvidencePath then Some(File.ReadAllText synthEvidencePath) else None)
+            |> Audit.parseAcceptedDeferrals
 
         { FeatureName = featureName
           TasksMd = evidenceReadAll (path [ featureDir; "tasks.md" ])
@@ -127,7 +132,8 @@ module GeneratedRunner =
           AuditStatusFiles = auditStatusFiles
           PatternsYml = evidenceReadAll (path [ repoRoot; ".specify"; "extensions"; "evidence"; "audit-patterns.yml" ])
           BaseRef = None
-          UnifiedDiff = "" }
+          UnifiedDiff = ""
+          AcceptedDeferrals = acceptedDeferrals }
 
     let private evidenceWrite (p: string) (content: string) =
         let dir = Path.GetDirectoryName p |> Option.ofObj |> Option.defaultValue ""
@@ -234,7 +240,8 @@ module GeneratedRunner =
 
             let exitCode =
                 match res.Verdict with
-                | AuditVerdict.Pass -> 0
+                | AuditVerdict.Pass
+                | AuditVerdict.PassWithAcceptedDeferrals -> 0
                 | AuditVerdict.Fail -> 2
 
             let verdictStr = if exitCode = 0 then "PASS" else "FAIL"

@@ -220,6 +220,16 @@ type BuildEffect =
     // Feature 048: additive per-package surface diff (pure diff + edge interpreter re-derived
     // in interpret over the real source tree + committed baselines, so no payload).
     | PerPackageSurfaceDiffCheck
+    // Feature 087 (FR-005/006): fold the per-package surface baseline capture into
+    // RefreshSurfaceBaselines with byte-idempotent writes, so one refresh regenerates the
+    // per-package `.fsi.txt` baselines alongside the cross-package/api-surface/skill baselines
+    // (no longer a hand-maintained snapshot). Pure serialize + edge writes, re-derived in
+    // interpret over the real source tree, so no payload.
+    | RegeneratePerPackageBaselines
+    // Feature 087 (FR-003/004): static pinned-vs-local package-skew sub-check (LocalPacked
+    // context). Pure comparison over captured surface baselines + generated template source,
+    // re-derived in interpret, so no payload. No network restore.
+    | PackageSkewCheck
     // Feature 058 (US1): pure skill-quality rubric check; enumeration/IO at the interpret edge.
     | SkillQualityScan
     // Feature 077 (FR-006): pure phase-hook parity check; the roster SKILL.md reads, the

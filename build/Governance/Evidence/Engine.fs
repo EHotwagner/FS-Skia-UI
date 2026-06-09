@@ -16,7 +16,10 @@ type EvidenceInputs =
       // FR-009: the resolved diff-scan base ref (default branch), threaded so
       // DiffScanResult.BaseRef and the audit summary report it instead of null.
       BaseRef: string option
-      UnifiedDiff: string }
+      UnifiedDiff: string
+      // Feature 087 (FR-008): the durable accepted-deferral records parsed from
+      // readiness/synthetic-evidence.json at the interpreter edge.
+      AcceptedDeferrals: AcceptedDeferral list }
 
 type GraphArtifacts =
     { TaskGraphJson: string
@@ -125,7 +128,7 @@ module Engine =
         let diff = DiffScan.scan inputs.BaseRef inputs.PatternsYml inputs.UnifiedDiff
 
         let result =
-            Audit.verdict resolved seh (List.length diff.Blocking) rc.BlockingCount pl.BlockingCount pg.BlockingCount
+            Audit.verdict resolved seh inputs.AcceptedDeferrals (List.length diff.Blocking) rc.BlockingCount pl.BlockingCount pg.BlockingCount
                 wv.BlockingCount asScan.BlockingCount
 
         let auditStatusBlockingLines =
@@ -140,7 +143,7 @@ module Engine =
           AuditCounts =
             Render.auditCounts inputs.FeatureName result.RealTasks (List.length seh.AcceptedSehTasks)
                 (List.length seh.UnacceptedSyntheticTasks) (List.length seh.AutoSyntheticTasks) (List.length seh.LateSehTasks)
-          SehAuditSummary = Render.sehAuditSummaryJson seh
+          SehAuditSummary = Render.sehAuditSummaryJson result
           ReadinessContractHits = Render.scanHitsJson "readiness-contract" rc
           PersistentLaunchHits = Render.scanHitsJson "persistent-launch" pl
           PersistentGuiRuntimeHits = Render.scanHitsJson "persistent-gui-runtime" pg

@@ -15,13 +15,17 @@ type SehSummary =
       LateSehTasks: string list
       Diagnostics: (string * string * string * string) list }
 
-type AuditVerdict =
-    | Pass
-    | Fail
+// `AuditVerdict` is single-sourced in EvidenceFormatSchema (feature 087, FR-007);
+// it is the three-state Pass | PassWithAcceptedDeferrals | Fail.
 
 type AuditResult =
     { Verdict: AuditVerdict
       SehSummary: SehSummary
+      // Feature 087 (FR-008): the accepted deferrals that converted otherwise
+      // unaccepted synthetic tasks into accepted ones, plus the separated counts.
+      AcceptedDeferrals: AcceptedDeferral list
+      AcceptedSyntheticCount: int
+      UnacceptedSyntheticCount: int
       RealTasks: int
       TotalBlockers: int
       DiffBlocking: int
@@ -235,7 +239,10 @@ module Audit =
           LoadedAt: string
           WorkStartedAt: string
           EvidencePath: string
-          Exception: string }
+          Exception: string
+          // Feature 087 (FR-010): the 9th column. "" when the row is a legacy
+          // 8-column row (lenient); a present value must be captured|asserted.
+          Provenance: string }
 
     let private rangeRe = Regex(@"\bT\d{3,4}\s*-\s*T\d{3,4}\b", RegexOptions.Compiled)
     let private twoIdsRe = Regex(@"\bT\d{3,4}\b.*\bT\d{3,4}\b", RegexOptions.Compiled)
@@ -270,7 +277,8 @@ module Audit =
                           LoadedAt = cells.[4]
                           WorkStartedAt = cells.[5]
                           EvidencePath = cells.[6]
-                          Exception = cells.[7] }
+                          Exception = cells.[7]
+                          Provenance = (if List.length cells >= 9 then cells.[8] else "") }
         List.ofSeq rows, List.ofSeq errors
 
     let private parseUtc (value: string) : DateTimeOffset option =
@@ -340,10 +348,37 @@ module Audit =
                         errors.Add(sprintf "%s: declared skill %s evidence path is unreadable: %s" task.Id skillId row.ResolvedSkillPath)
                     elif List.length matches <> 1 || canonicalize (List.head matches) <> canonicalize row.ResolvedSkillPath then
                         errors.Add(sprintf "%s: declared skill %s evidence path does not match resolved skill path" task.Id skillId)
+                    // Feature 087 (FR-010): a present provenance column must be in
+                    // the closed set; a legacy 8-column row (empty) is lenient.
+                    if row.Provenance <> "" then
+                        match EvidenceFormatSchema.parseProvenance row.Provenance with
+                        | Some _ -> ()
+                        | None ->
+                            errors.Add(
+                                sprintf "%s: declared skill %s has invalid provenance '%s'; expected captured|asserted" task.Id skillId row.Provenance)
                 | _ -> ()
             | None -> ()
 
         List.ofSeq errors
+
+    // Feature 087 (FR-010): the declared-but-unloaded (task, skill) gaps surfaced
+    // AT IMPLEMENTATION TIME — for every task carrying a non-empty declared
+    // skillist, REGARDLESS of [X]/[S] status — so a missing load is reported when
+    // the declaring task is being implemented, not deferred to the [X] flip
+    // (which is what `validateSkillLoadingEvidence` enforces only for Done/Synthetic).
+    let skillLoadingGapsAtImplementation
+        (tasks: TaskRecord list)
+        (evidenceText: string option)
+        : (string * string) list =
+        let rows, _ =
+            match evidenceText with
+            | Some t -> parseEvidence t
+            | None -> [], []
+        let observed = rows |> List.map (fun r -> r.TaskId, r.DeclaredSkillId) |> Set.ofList
+        [ for t in tasks do
+              for skillId in t.Skillist do
+                  if not (observed.Contains(t.Id, skillId)) then
+                      yield (t.Id, skillId) ]
 
     // Feature 062 (FR-005): the skill-loading-evidence evidence-format schema text
     // (the 8-column row, the `loaded_at < work_started_at` ordering rule, and the
@@ -399,9 +434,43 @@ module Audit =
           LateSehTasks = List.ofSeq late
           Diagnostics = List.ofSeq diagnostics }
 
+    // Feature 087 (FR-008): parse the durable accepted-deferral records from
+    // readiness/synthetic-evidence.json. `--accept-synthetic` writes these (with
+    // the Constitution §V written justification); the verdict reads them. A record
+    // with an empty taskId or empty justification is ignored (justification is
+    // required). Tolerant: a missing file / malformed JSON yields no deferrals.
+    let parseAcceptedDeferrals (jsonText: string option) : AcceptedDeferral list =
+        match jsonText with
+        | None -> []
+        | Some text when String.IsNullOrWhiteSpace text -> []
+        | Some text ->
+            let getStr (el: System.Text.Json.JsonElement) (name: string) : string =
+                match el.TryGetProperty name with
+                | true, v when v.ValueKind = System.Text.Json.JsonValueKind.String ->
+                    v.GetString() |> Option.ofObj |> Option.defaultValue ""
+                | _ -> ""
+            try
+                use doc = System.Text.Json.JsonDocument.Parse text
+                let mutable arr = Unchecked.defaultof<System.Text.Json.JsonElement>
+                if doc.RootElement.TryGetProperty("acceptedDeferrals", &arr)
+                   && arr.ValueKind = System.Text.Json.JsonValueKind.Array then
+                    [ for el in arr.EnumerateArray() do
+                          let taskId = getStr el "taskId"
+                          let justification = getStr el "justification"
+                          if taskId <> "" && justification <> "" then
+                              yield
+                                  { TaskId = taskId
+                                    Justification = justification
+                                    RealEvidencePath = getStr el "realEvidencePath"
+                                    AwaitedHostCapability = getStr el "awaitedHostCapability" } ]
+                else
+                    []
+            with _ -> []
+
     let verdict
         (resolved: ResolvedTask list)
         (seh: SehSummary)
+        (acceptedDeferrals: AcceptedDeferral list)
         (diffBlocking: int)
         (readinessContract: int)
         (persistentLaunch: int)
@@ -409,14 +478,32 @@ module Audit =
         (windowVisibility: int)
         (auditStatus: int)
         : AuditResult =
+        // An accepted deferral converts an otherwise-unaccepted synthetic task
+        // into an accepted one. It can NEVER cover a blocking hit or an
+        // invalid-SEH diagnostic (FR-011) — those are counted independently.
+        let acceptedIds = acceptedDeferrals |> List.map (fun d -> d.TaskId) |> Set.ofList
+        let acceptedSyntheticCount =
+            seh.UnacceptedSyntheticTasks |> List.filter acceptedIds.Contains |> List.length
+        let unacceptedSyntheticCount =
+            seh.UnacceptedSyntheticTasks |> List.filter (acceptedIds.Contains >> not) |> List.length
         let invalidSeh = List.length seh.Diagnostics
-        let total =
-            List.length seh.UnacceptedSyntheticTasks
-            + invalidSeh + diffBlocking + readinessContract + persistentLaunch
+        let blocking =
+            invalidSeh + diffBlocking + readinessContract + persistentLaunch
             + persistentGuiRuntime + windowVisibility + auditStatus
+        let total = unacceptedSyntheticCount + blocking
         let realTasks = resolved |> List.filter (fun r -> Graph.effectiveString r.Effective = "done") |> List.length
-        { Verdict = (if total = 0 then Pass else Fail)
+        // FR-007/FR-011: PassWithAcceptedDeferrals is reachable ONLY with zero
+        // unaccepted synthetic AND zero blocking hits, and only when at least one
+        // accepted deferral actually covered a synthetic task.
+        let v =
+            if total > 0 then Fail
+            elif acceptedSyntheticCount > 0 then PassWithAcceptedDeferrals
+            else Pass
+        { Verdict = v
           SehSummary = seh
+          AcceptedDeferrals = acceptedDeferrals
+          AcceptedSyntheticCount = acceptedSyntheticCount
+          UnacceptedSyntheticCount = unacceptedSyntheticCount
           RealTasks = realTasks
           TotalBlockers = total
           DiffBlocking = diffBlocking

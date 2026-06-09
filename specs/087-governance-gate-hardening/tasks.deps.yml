@@ -1,0 +1,129 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+# Only non-phase cross-edges are written here; phase-checkpoint edges are
+# auto-injected (every Phase N+1 task implicitly depends on the last task of
+# Phase N).
+
+tasks:
+  # Phase 1: Setup
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+
+  # Phase 2: Foundation
+  T004:
+    deps: []
+    skillist: ["fsharp-code-generation"]
+  T005:
+    deps: [T004]
+    skillist: ["fsharp-build-orchestration"]
+  T006:
+    deps: [T004]
+    skillist: ["fsharp-code-generation"]
+
+  # Phase 3: US1 — GeneratedProductCheck (FR-001/002)
+  T007:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T008:
+    deps: []
+    skillist: ["fsharp-build-orchestration", "fs-skia-template-update"]
+  T009:
+    deps: [T007, T008]
+    skillist: ["fsharp-build-orchestration", "fs-skia-template-update"]
+  T010:
+    deps: [T007]
+    skillist: ["fsharp-build-orchestration"]
+  T011:
+    deps: [T009, T010]
+    skillist: ["fs-skia-template-update", "fsharp-build-orchestration"]
+
+  # Phase 4: US2 — package skew (FR-003/004)
+  T012:
+    deps: []
+    skillist: ["fsharp-io-globbing", "fsharp-build-orchestration"]
+  T013:
+    deps: [T012]
+    skillist: ["fsharp-io-globbing", "fs-skia-template-update"]
+  T014:
+    deps: [T012]
+    skillist: ["fsharp-build-orchestration"]
+  T015:
+    deps: [T013, T014]
+    skillist: ["fs-skia-template-update"]
+
+  # Phase 5: US3 — refresh idempotence (FR-005/006)
+  T016:
+    deps: []
+    skillist: ["fsharp-io-globbing"]
+  T017:
+    deps: [T016]
+    skillist: ["fsharp-io-globbing"]
+  T018:
+    deps: [T017]
+    skillist: ["fsharp-build-orchestration"]
+
+  # Phase 6: US4 — three-state verdict (FR-007/008)
+  T019:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T020:
+    deps: [T019]
+    skillist: ["fsharp-parsing"]
+  T021:
+    deps: [T020]
+    skillist: ["fsharp-code-generation"]
+  T022:
+    deps: [T020, T021]
+    skillist: ["speckit-evidence-audit"]
+
+  # Phase 7: US5 — propagation over ExplicitDeps (FR-009)
+  T023:
+    deps: []
+    skillist: ["fsharp-graph-algorithms"]
+  T024:
+    deps: [T023]
+    skillist: ["fsharp-graph-algorithms"]
+  T025:
+    deps: [T024]
+    skillist: ["speckit-evidence-graph"]
+
+  # Phase 8: US6 — skill-loading provenance (FR-010)
+  T026:
+    deps: []
+    skillist: ["fsharp-parsing"]
+  T027:
+    deps: [T026]
+    skillist: ["fsharp-parsing", "fsharp-code-generation"]
+  T028:
+    deps: [T027]
+    skillist: ["fsharp-parsing"]
+  T029:
+    deps: [T027, T028]
+    skillist: ["fsharp-parsing"]
+
+  # Phase 9: Integration & Polish — FR-011 + validation
+  T030:
+    deps: []
+    skillist: ["fsharp-code-generation"]
+  T031:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+  T032:
+    deps: [T030, T031]
+    skillist: ["fsharp-build-orchestration", "fs-skia-template-update"]
+  T033:
+    deps: [T032]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T034:
+    deps: [T033]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

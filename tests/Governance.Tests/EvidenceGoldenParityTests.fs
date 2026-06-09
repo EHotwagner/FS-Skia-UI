@@ -52,7 +52,8 @@ let private buildInputs (feature: string) : EvidenceInputs =
       AuditStatusFiles = auditStatusFiles
       PatternsYml = File.ReadAllText(Path.Combine(repoRoot, ".specify/extensions/evidence/audit-patterns.yml"))
       BaseRef = None
-      UnifiedDiff = "" }
+      UnifiedDiff = ""
+      AcceptedDeferrals = [] }
 
 let private firstDivergence (golden: string) (produced: string) : string =
     let diff = InlineDiffBuilder.Diff(golden, produced)

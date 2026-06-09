@@ -1,0 +1,40 @@
+T011 — product defect + concurrent environment obstacle -> product-defect verdict (FR-002, SC-002)
+authoritative-command: Governance.Tests over the real EvidenceFormatSchema.generatedProductVerdict / classifyGeneratedCategory (the same functions the engine applies); ./fake.sh build -t GeneratedProductCheck for the clean-tree green
+artifact-path: specs/087-governance-gate-hardening/readiness/generated-product-defect-classification.txt
+failure-class: overall verdict = ProductDefectFail iff any step passed=false AND classification=ProductDefect; an Environment step never suppresses a ProductDefect in the same run (FR-002, SC-002)
+status: PASS (the invariant holds)
+
+## The classification machinery (single source, EvidenceFormatSchema)
+- classifyGeneratedCategory maps each failure category to a StepClassification: a genuine
+  host obstacle (UnsupportedHost / Completed) -> Environment; every product/contract failure
+  category (PackageDrift, RestoreFailure, SemanticTestFailure, ViewerStartupFailure,
+  SceneEvidenceFailure, WindowDiagnosticsFailure, WindowOptionsFailure, VisualEvidenceFailure,
+  PersistentLaunchDiagnosticFailure) -> ProductDefect.
+- generatedProductVerdict aggregates per-step results: ProductDefectFail iff ANY step failed
+  as ProductDefect; else EnvironmentNonAuthoritative if any step failed; else ProductPass.
+- runGeneratedConsumerValidation attaches a { Step; Passed; Classification; PackageSet } result
+  to each step (package-set=Pinned) and the final fail decision uses the verdict: it fails on
+  ProductDefectFail, prints EnvironmentNonAuthoritative non-authoritatively, passes ProductPass.
+- Because the product-defect steps run LAST in fixed order, a product defect always survives in
+  the final category, so an earlier environment obstacle can never mask it.
+
+## SC-002 — seeded product defect + concurrent environment obstacle -> ProductDefectFail
+Exercised over the REAL aggregation function (Governance.Tests, feature 087 US1):
+- "FR-002 SC-002 an Environment failure never suppresses a ProductDefect failure" — PASS
+    steps = [ Verify: passed=false ProductDefect ; window-options: passed=false Environment ]
+    generatedProductVerdict steps = ProductDefectFail   (the env obstacle does NOT suppress it)
+- "FR-002 an environment-only failure is EnvironmentNonAuthoritative" — PASS
+    steps = [ Verify: passed=true ; image-evidence: passed=false Environment ]
+    generatedProductVerdict steps = EnvironmentNonAuthoritative   (reported, non-authoritative)
+- "FR-002 classifyGeneratedCategory keeps product defects authoritative" — PASS
+    SemanticTestFailure/PackageDrift -> ProductDefect ; UnsupportedHost -> Environment
+- "FR-002 verdict is ProductDefectFail iff a ProductDefect step failed (FsCheck)" — PASS
+    property over arbitrary mixes of passing/failing ProductDefect/Environment steps.
+
+## Clean-tree green (contrast)
+The same machinery on a clean tree yields product-verdict=ProductPass with all eight steps
+passing (see generated-product-check-green.txt). An Environment obstacle on a headless host
+would yield EnvironmentNonAuthoritative (reported, not a defect), never masking a product
+defect in the same run.
+
+next-action: none; SC-002 is enforced by the real per-step verdict.

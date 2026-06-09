@@ -64,6 +64,8 @@ let interpret root effect =
     | EvidenceGraphCheck -> runEvidenceGraphCheck model
     | EvidenceAuditCheck -> runEvidenceAuditCheck root model
     | PerPackageSurfaceDiffCheck -> runPerPackageSurfaceDiff model
+    | RegeneratePerPackageBaselines -> regeneratePerPackageBaselines model
+    | PackageSkewCheck -> runPackageSkewCheck model
     | SkillQualityScan -> runSkillQualityCheck model
     | PhaseHookScan -> runPhaseHookParityCheck model
     | RegenerateApiSurface -> regenerateApiSurface model

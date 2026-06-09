@@ -1,0 +1,38 @@
+T031 — every true-positive gate still blocks on a seeded real violation (FR-011, SC-010)
+authoritative-command: Governance.Tests over the real gate functions (DiffScan.scan, PerPackageSurface.diffPackage, Scans.windowVisibility, Scans.persistentLaunch, Audit.verdict)
+artifact-path: specs/087-governance-gate-hardening/readiness/true-positive-gates-still-block.txt
+failure-class (each must still block): diff-scan hit; non-additive surface change; window-visibility contract; persistent-launch contract; synthetic-honesty disclosure (FR-011, SC-010)
+status: PASS (every gate still blocks)
+
+## Why this matters
+Feature 087 changed governance-engine code (the three-state verdict, propagation over
+ExplicitDeps only, the per-step product verdict, the static skew check, byte-idempotent
+baselines, and a stale false-positive scan correction). FR-011 requires that NO genuine block
+was relaxed to obtain a green. Each gate below is exercised over its REAL function with a
+seeded real violation and confirmed to still block.
+
+## Seeded violations (Governance.Tests, feature 087 FR-011 — true-positive gates still block)
+- diff-scan: DiffScan.scan over the real .specify/extensions/evidence/audit-patterns.yml with a
+  seeded added placeholder-marker comment line (the marker is built at runtime by string
+  concatenation so the test source carries no literal token) -> result.Blocking is non-empty. PASS
+- additive-surface: PerPackageSurface.diffPackage with a baseline member `Y` REMOVED in the
+  current surface (a non-additive change) -> drift with non-empty changes. PASS
+- window-visibility: Scans.windowVisibility with FeatureText triggering the contract
+  ("interactive-visible-window.md") and no readiness evidence -> BlockingCount > 0. PASS
+- persistent-launch: Scans.persistentLaunch with FeatureText "mode=interactive-window" and no
+  supported-host evidence -> BlockingCount > 0. PASS
+- synthetic-honesty: Audit.verdict with one UNaccepted synthetic task and zero accepted
+  deferrals -> Verdict = Fail. PASS
+
+All five PASS (dotnet test --filter FR-011). The new three-state verdict adds only an
+ADDITIONAL passing category (PassWithAcceptedDeferrals) that can never be reached while an
+unaccepted synthetic or any blocking hit exists (proven by the US4 FsCheck invariant); it
+never relaxes a block.
+
+## Note on the 086 false-positive corrected in US1
+The only scan changed for content was the stale `requiredPersistentHostTerms` (it demanded the
+GAME-family launch for the `app`/CONTROLS profile). That is a FALSE positive, not a true one —
+the gate still requires a persistent interactive launch (controls- OR game-family). FR-011
+protects true positives; correcting a false positive is in scope and does not relax any block.
+
+next-action: none; no genuine block relaxed.

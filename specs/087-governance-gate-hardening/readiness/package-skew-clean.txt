@@ -1,0 +1,40 @@
+T015 — package-skew check is clean on the real tree, no network restore (FR-003/004, SC-004)
+authoritative-command: ./fake.sh build -t TemplateCheck (PackageSkewCheck sub-check); independently exercised by Governance.Tests over the real committed files
+artifact-path: specs/087-governance-gate-hardening/readiness/package-skew-clean.txt
+failure-class: a generated-source FS.Skia.UI reference absent from the pinned/published surface (would compile under local-packed TemplateCheck but fail under pinned GeneratedProductCheck)
+status: PASS (clean)
+
+## What runs (T013/T014)
+PackageSkew.detectSkew compares every FS.Skia.UI symbol the generated template source/tests
+reference (scoped to the surface-tracked consumer packages — the build-tooling
+FS.Skia.UI.Build is excluded) against the captured per-package surface baselines
+(readiness/per-package-surface/*.fsi.txt — the pinned/published surface a consumer relies
+on). NO network restore: the surface is already captured. Wired as a sub-check of
+TemplateCheck (the LocalPacked gate). Reports state their package set explicitly (FR-004):
+TemplateCheck = LocalPacked, GeneratedProductCheck = Pinned.
+
+## Version pins (read statically)
+pinned-version  (template FsSkiaUiVersion)        = 0.1.92-preview.1
+local-version   (src/Controls/Controls.fsproj)    = 0.1.92-preview.1
+version-gap                                        = none
+
+## Real-tree result (the package-skew.md the sub-check writes)
+package-set=LocalPacked
+
+# Package skew (pinned-vs-local) check
+
+pinned-version=0.1.92-preview.1
+local-version=0.1.92-preview.1
+version-gap=none
+
+status=clean
+findings=0
+message=every referenced FS.Skia.UI symbol resolves in the pinned/published surface (no network restore).
+
+## Authoritative exercise (Governance.Tests over the REAL committed files)
+feature 087 US2 — static pinned-vs-local package-skew (FR-003/004):
+- "FR-003 SC-004 the real generated template references all resolve in the captured surface" — PASS
+  (reads template/base/src + tests + readiness/per-package-surface/*.fsi.txt; detectSkew -> []).
+All 540 Governance.Tests pass (dotnet test tests/Governance.Tests).
+
+next-action: none; the real tree is skew-clean.

@@ -1,0 +1,47 @@
+T011 — GeneratedProductCheck reaches a real green on a clean tree (FR-001/002, SC-001)
+authoritative-command: ./fake.sh build -t GeneratedProductCheck
+artifact-path: specs/087-governance-gate-hardening/readiness/generated-product-check-green.txt
+failure-class: ProductDefect on Build/Test/Verify (Environment steps non-authoritative; packageSet=Pinned)
+status: PASS (Status: Ok)
+
+## Result
+`./fake.sh build -t GeneratedProductCheck` -> Status: Ok (full target green; GeneratedProductCheck ~00:01:30).
+The generated app/source product generated, scanned, restored (pinned set), built, ran its
+Verify (EvidenceGraph + EvidenceAudit + tests), and exercised every display step on this host.
+
+## FR-001 - the generated Verify now RESOLVES a feature (no longer hard-fails)
+Before this feature the generated Verify step (and the generation-time Verify in
+generateV3Product) hard-failed: "Cannot resolve the feature to validate: no
+SPECKIT_FEATURE_DIR override is set and .../.specify/feature.json has no usable
+feature_directory" - and the whole target was hand-classified non-authoritative, masking any
+real Verify-step defect (the 086 near-miss). Both Verify paths now provision a minimal,
+audit-clean seed feature and point SPECKIT_FEATURE_DIR at it (gate-scoped; no spec-kit feature
+state ships into the consumer). From the green run's validation report:
+
+  feature-context: SPECKIT_FEATURE_DIR=.../app-source/specs/seed-087-generated-verify (FR-001 seeded resolvable feature)
+
+## FR-002 - per-step product-defect vs environment verdict (from the report)
+package-set: Pinned
+product-verdict: `ProductPass`
+- step `package-resolution`: passed=true classification=- package-set=Pinned
+- step `generated-verify`:   passed=true classification=- package-set=Pinned
+- step `bounded-smoke`:      passed=true classification=- package-set=Pinned
+- step `scene-evidence`:     passed=true classification=- package-set=Pinned
+- step `window-diagnostics`: passed=true classification=- package-set=Pinned
+- step `window-options`:     passed=true classification=- package-set=Pinned
+- step `image-evidence`:     passed=true classification=- package-set=Pinned
+- step `persistent-launch`:  passed=true classification=- package-set=Pinned
+Category: `Completed`
+
+## Unmasked + fixed: a stale 086 false-positive scan (FR-011-respecting)
+With the Verify env obstacle removed, GeneratedProductCheck reached the structural scan for
+the first time and surfaced a stale check: `requiredPersistentHostTerms` demanded the
+GAME-family launch `Viewer.runApp viewerOptions generatedHost`, but feature 086 (D6) split the
+launch per family - the `app` profile (CONTROLS family) launches
+`ControlsElmish.runInteractiveApp viewerOptions interactiveHost`. The scan now accepts EITHER
+family's persistent interactive launch. This fixes a FALSE positive (the app was correctly
+wired); it does not relax the TRUE positive - a persistent interactive launch is still
+required (FR-011). This is precisely the masking the gate-hardening prevents: a previously
+hidden divergence is now a trustworthy, surfaced signal.
+
+next-action: none; the clean tree reaches a real green.

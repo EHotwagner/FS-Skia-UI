@@ -125,7 +125,13 @@ module Graph =
 
         for tid in topo do
             let t = g.Nodes.[tid]
-            let tainted = allDeps t |> List.filter isTainted
+            // Feature 087 (FR-009): taint propagates over REAL data dependencies
+            // (`ExplicitDeps`, incl. owns/consumes) ONLY — never over the
+            // auto-injected phase-checkpoint edges (`PhaseDeps`). Toposort, cycle
+            // detection, and ordering keep using `allDeps` (above), so a
+            // phase-checkpoint edge still orders the graph but no longer carries
+            // synthetic contamination to an unrelated downstream task.
+            let tainted = t.ExplicitDeps |> List.distinct |> List.filter isTainted
             let eff =
                 if t.Declared = Synthetic then
                     DeclaredEff Synthetic

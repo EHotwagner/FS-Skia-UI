@@ -28,7 +28,10 @@ type EvidenceInputs =
       /// FR-009: the resolved diff-scan base ref (default branch), or None when no
       /// default-branch ancestor resolves; threaded into DiffScanResult.BaseRef.
       BaseRef: string option
-      UnifiedDiff: string }
+      UnifiedDiff: string
+      /// Feature 087 (FR-008): durable accepted-deferral records parsed from
+      /// readiness/synthetic-evidence.json at the interpreter edge.
+      AcceptedDeferrals: AcceptedDeferral list }
 
 /// The two graph artifacts to write under readiness/.
 type GraphArtifacts =

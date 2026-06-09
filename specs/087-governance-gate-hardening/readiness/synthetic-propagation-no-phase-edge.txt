@@ -1,0 +1,35 @@
+T025 — FR-009 / SC-008: a leaf [S] whose output nothing consumes propagates [S*]
+to ZERO phase-edge-only tasks. Taint follows ExplicitDeps only; the auto-injected
+phase-checkpoint edges (PhaseDeps) still order the graph but carry no contamination.
+
+authoritative-command: ./fake.sh build -t EvidenceGraph  (real 087 graph)
+pure-function evidence: tests/Governance.Tests "feature 087 US5 — [S*] propagation
+  over ExplicitDeps only (FR-009)" exercising the production Graph.propagate.
+
+--- red→green (failing-first, Principle I/VI) ---
+BEFORE T024 (taint over allDeps = ExplicitDeps @ PhaseDeps):
+  - "FR-009 a phase-edge-only downstream of an [S] leaf is never [S*]"  FAILED
+      (T200, connected to synthetic leaf T100 by a phase-checkpoint edge ONLY,
+       was computed AutoSynthetic — the contamination bug)
+  - "FR-009 taint follows ExplicitDeps iff explicit (FsCheck)"          ERRORED
+  - "FR-009 a real ExplicitDeps edge to an [S] leaf still propagates [S*]"  passed
+  => 1 passed, 1 failed, 1 errored
+
+AFTER T024 (Graph.fs: `let tainted = t.ExplicitDeps |> List.distinct |> List.filter isTainted`):
+  feature 087 US5 — 3 tests run – 3 passed, 0 failed, 0 errored. Success.
+  FsCheck property: Ok, passed 100 tests.
+  Positive control still green: a REAL ExplicitDeps edge to the [S] leaf still
+  propagates [S*] (no over-correction).
+
+--- no regression ---
+Full Governance.Tests suite: 524 tests run – 524 passed, 0 failed, 0 errored.
+(includes the graph golden-parity, cycle/toposort, and existing propagation tests;
+toposort/cycle/ordering still use allDeps, so ordering is unchanged.)
+
+--- real 087 graph ---
+./fake.sh build -t EvidenceGraph  => Status: Ok
+readiness/task-graph.md status counts: [S] synthetic = 0, [S*] auto-synthetic = 0,
+accepted [SEH] synthetic = 0, unaccepted synthetic = 0 — zero phase-edge-only [S*].
+
+failure-class: a phase-checkpoint edge alone contaminating a downstream task with
+  [S*] (FR-009, SC-008) — now structurally impossible.

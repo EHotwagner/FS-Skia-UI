@@ -674,6 +674,97 @@ let runPerPackageSurfaceDiff (model: BuildModel) =
             missing
             reportPath
 
+// Feature 087 (FR-005/006): the RefreshSurfaceBaselines edge for the per-package baselines —
+// capture every in-scope package's current surface and write each byte-idempotently to
+// readiness/per-package-surface/<PackageId>.fsi.txt, so one refresh regenerates them
+// completely and a re-run on an unchanged tree leaves git status clean (SC-005/006).
+let regeneratePerPackageBaselines (model: BuildModel) =
+    let baselineDir = path [ model.RepositoryRoot; "readiness"; "per-package-surface" ]
+
+    let written =
+        FS.Skia.UI.Build.PerPackageSurface.captureBaselines baselineDir FS.Skia.UI.Build.PerPackageSurface.packagesInScope
+
+    printfn "regenerated %d per-package surface baseline(s) under %s" (List.length written) baselineDir
+
+// Feature 087 (US2, FR-003/004): the static pinned-vs-local package-skew sub-check. It is a
+// LocalPacked-context gate (it runs where TemplateCheck builds the generated template against
+// the locally-packed/unreleased package). It compares every FS.Skia.UI symbol the generated
+// template source/tests reference against the captured per-package surface baselines (the
+// pinned/published surface a consumer relies on) — NO network restore. A referenced symbol
+// absent from that surface compiles locally yet would fail against the pinned package
+// (GeneratedProductCheck), so it fails loud naming symbol + file + pinned-vs-local version gap.
+let runPackageSkewCheck (model: BuildModel) =
+    let readText p = if File.Exists p then File.ReadAllText p else ""
+
+    let matchVersion (pattern: string) (text: string) =
+        let m = Regex.Match(text, pattern)
+        if m.Success then m.Groups.[1].Value.Trim() else "unknown"
+
+    // pinned = template's single FsSkiaUiVersion; local = the packable project version.
+    let pinnedVersion =
+        readText (path [ model.RepositoryRoot; "template"; "base"; "Directory.Packages.props" ])
+        |> matchVersion @"<FsSkiaUiVersion>([^<]+)</FsSkiaUiVersion>"
+
+    let localVersion =
+        readText (path [ model.RepositoryRoot; "src"; "Controls"; "Controls.fsproj" ])
+        |> matchVersion @"<Version>([^<]+)</Version>"
+
+    // The pinned/published surface = the captured per-package surface baselines.
+    let baselineDir = path [ model.RepositoryRoot; "readiness"; "per-package-surface" ]
+
+    let pinnedSurface =
+        if Directory.Exists baselineDir then
+            Directory.GetFiles(baselineDir, "*.fsi.txt")
+            |> Array.collect (fun f -> FS.Skia.UI.Build.PackageSkew.surfaceSymbols (File.ReadAllText f) |> Set.toArray)
+            |> Set.ofArray
+        else
+            Set.empty
+
+    // Referenced FS.Skia.UI symbols across the generated template source + tests, scoped to
+    // the surface-tracked consumer packages (the build-tooling FS.Skia.UI.Build is excluded).
+    let trackedPackages = Set.ofList FS.Skia.UI.Build.PerPackageSurface.packagesInScope
+
+    let referenced =
+        [ path [ model.RepositoryRoot; "template"; "base"; "src" ]
+          path [ model.RepositoryRoot; "template"; "base"; "tests" ] ]
+        |> List.filter Directory.Exists
+        |> List.collect (fun root ->
+            Directory.GetFiles(root, "*.fs", SearchOption.AllDirectories)
+            |> Array.toList
+            |> List.collect (fun file ->
+                let rel = file.Substring(model.RepositoryRoot.Length).TrimStart('/', '\\').Replace('\\', '/')
+                FS.Skia.UI.Build.PackageSkew.referencedSymbols trackedPackages rel (File.ReadAllText file)))
+
+    let findings =
+        FS.Skia.UI.Build.PackageSkew.detectSkew pinnedVersion localVersion pinnedSurface referenced
+
+    // Every generated-product report states its package set explicitly (FR-004): this gate
+    // runs in the local-packed context.
+    let packageSetTag =
+        FS.Skia.UI.Build.Evidence.EvidenceFormatSchema.packageSetLabel FS.Skia.UI.Build.Evidence.LocalPacked
+
+    let report =
+        sprintf "package-set=%s\n\n%s" packageSetTag (FS.Skia.UI.Build.PackageSkew.renderFindings pinnedVersion localVersion findings)
+
+    let reportPath = path [ model.ReadinessDir; "package-skew.md" ]
+    ensureParent reportPath
+    File.WriteAllText(reportPath, report)
+    printfn "package skew check (package-set=%s): %d finding(s); see %s" packageSetTag (List.length findings) reportPath
+
+    if not (List.isEmpty findings) then
+        let named =
+            findings
+            |> List.map (fun f -> sprintf "%s (%s)" f.Symbol f.File)
+            |> String.concat ", "
+
+        failwithf
+            "PackageSkew: %d generated-source reference(s) absent from the pinned surface (pinned=%s, local=%s): %s. See %s. Either publish the symbol at the pinned version or stop referencing it in the generated template."
+            (List.length findings)
+            pinnedVersion
+            localVersion
+            named
+            reportPath
+
 let private evidenceReadAll p = if File.Exists p then File.ReadAllText p else ""
 
 let buildEvidenceInputs (model: BuildModel) (baseRef: string option) (unifiedDiff: string) : FS.Skia.UI.Build.Evidence.EvidenceInputs =
@@ -701,6 +792,12 @@ let buildEvidenceInputs (model: BuildModel) (baseRef: string option) (unifiedDif
             && not (rel.ToLowerInvariant().StartsWith "audit-fixtures/")
             && not (rel.ToLowerInvariant().StartsWith "audit-rejections/"))
     let slePath = Path.Combine(readinessDir, "skill-loading-evidence.md")
+    // Feature 087 (FR-008): the durable accepted-deferral records, read at the
+    // interpreter edge from readiness/synthetic-evidence.json (absent → none).
+    let synthEvidencePath = Path.Combine(readinessDir, "synthetic-evidence.json")
+    let acceptedDeferrals =
+        (if File.Exists synthEvidencePath then Some(File.ReadAllText synthEvidencePath) else None)
+        |> FS.Skia.UI.Build.Evidence.Audit.parseAcceptedDeferrals
     { FeatureName = featureName
       TasksMd = evidenceReadAll (Path.Combine(featDir, "tasks.md"))
       DepsYml = evidenceReadAll (Path.Combine(featDir, "tasks.deps.yml"))
@@ -713,7 +810,8 @@ let buildEvidenceInputs (model: BuildModel) (baseRef: string option) (unifiedDif
       AuditStatusFiles = auditStatusFiles
       PatternsYml = evidenceReadAll (Path.Combine(repoRoot, ".specify/extensions/evidence/audit-patterns.yml"))
       BaseRef = baseRef
-      UnifiedDiff = unifiedDiff }
+      UnifiedDiff = unifiedDiff
+      AcceptedDeferrals = acceptedDeferrals }
 
 let private evidenceWrite (p: string) (content: string) =
     ensureParent p
@@ -778,7 +876,8 @@ let runEvidenceAuditCheck root (model: BuildModel) =
         let verdictStr =
             match res.Verdict with
             | FS.Skia.UI.Build.Evidence.AuditVerdict.Pass -> "PASS"
-            | _ -> "FAIL"
+            | FS.Skia.UI.Build.Evidence.AuditVerdict.PassWithAcceptedDeferrals -> "PASS-WITH-ACCEPTED-DEFERRALS"
+            | FS.Skia.UI.Build.Evidence.AuditVerdict.Fail -> "FAIL"
         let log =
             sprintf
                 "=== speckit.evidence.audit (in-process) ===\nfeature: %s\nverdict=%s\nreal-tasks=%d\naccepted-seh-tasks=%d\nunaccepted-synthetic-tasks=%d\nauto-synthetic-tasks=%d\nlate-seh-tasks=%d\ndiff-scan-hits=%d\nreadiness-contract-hits=%d\npersistent-launch-hits=%d\npersistent-gui-runtime-hits=%d\nwindow-visibility-hits=%d\naudit-status-hits=%d\ntotal-blockers=%d\n"

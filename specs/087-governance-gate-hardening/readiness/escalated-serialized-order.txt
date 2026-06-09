@@ -1,0 +1,29 @@
+T032 — escalated serialized FAKE order (FR-011 cross-gate sweep)
+authoritative-command: ./fake.sh build -t Dev ; GeneratedGuidanceCheck ; TemplateCheck ; GeneratedProductCheck (sequential, no concurrent .fake)
+artifact-path: specs/087-governance-gate-hardening/readiness/escalated-serialized-order.txt
+status: PASS (all green; no non-authoritative aggregate handling required)
+
+This is a consumer-contract / governance-engine change, so it escalates to the serialized
+maintainer-verify path. FAKE-backed targets were run sequentially (shared .fake state).
+
+## Results
+1. ./fake.sh build -t Dev                    -> Status: Ok   (build + all tests, incl. 087 US1-US6 + FR-011)
+2. ./fake.sh build -t GeneratedGuidanceCheck  -> Status: Ok
+3. ./fake.sh build -t TemplateCheck           -> Status: Ok   (incl. the new PackageSkewCheck sub-check, package-set=LocalPacked)
+4. ./fake.sh build -t GeneratedProductCheck   -> Status: Ok   (real green; product-verdict=ProductPass, package-set=Pinned)
+
+GeneratedProductCheck's dependency chain also executed Restore, TemplatePack,
+TemplateInstallSource/Package, Build, SampleContractSmoke, TemplateInstantiate, Test,
+TemplateSmoke, Dev, TemplateCheck — all Ok.
+
+## Non-authoritative aggregate handling
+None required: every step reached an authoritative green on this display host. No aggregate
+hang, no environment-classified obstacle suppressed any product defect. The GeneratedProductCheck
+green is genuine (FR-001 seeded feature resolved; FR-002 per-step verdict = ProductPass).
+
+## Currency (T030)
+- validation.contract.yml regenerates byte-identically from Routing.fs (git status clean).
+- ./fake.sh build -t TargetMetadataDrift -> Status: Ok
+- ./fake.sh build -t SkillSyncCheck      -> Status: Ok
+
+next-action: EvidenceGraph (T033) + EvidenceAudit (T034) below.

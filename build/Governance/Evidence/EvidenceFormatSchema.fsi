@@ -7,6 +7,62 @@
 // Build-tooling only. Pure data. Visibility lives here (Principle II).
 namespace FS.Skia.UI.Build.Evidence
 
+/// FR-007: the three-state merge-gate verdict (replaces the binary Pass|Fail).
+/// Single-sourced here so the audit, the renderers, and the interpreter edge
+/// reference one definition. `PassWithAcceptedDeferrals` is reachable only with
+/// zero unaccepted synthetic and zero blocking hits (FR-011 invariant).
+type AuditVerdict =
+    | Pass
+    | PassWithAcceptedDeferrals
+    | Fail
+
+/// FR-008: a durable accepted-deferral record (synthetic-evidence.json).
+type AcceptedDeferral =
+    { TaskId: string
+      Justification: string
+      RealEvidencePath: string
+      AwaitedHostCapability: string }
+
+/// FR-010: skill-loading-evidence provenance — captured (observed during the
+/// run) vs asserted (hand-authored).
+type LoadProvenance =
+    | Captured
+    | Asserted
+
+/// FR-002: per-step generated-product failure classification.
+type StepClassification =
+    | ProductDefect
+    | Environment
+
+/// FR-004: the explicit package-source tag a generated-product report states.
+type PackageSet =
+    | LocalPacked
+    | Pinned
+
+/// FR-002: a per-step generated-product result. `Classification` is only meaningful when
+/// `Passed = false`. `PackageSet` records which package source the step exercised (FR-004).
+type GeneratedProductStepResult =
+    { Step: string
+      Passed: bool
+      Classification: StepClassification
+      PackageSet: PackageSet }
+
+/// FR-002: the overall generated-product verdict aggregated over per-step results.
+/// `ProductDefectFail` iff ANY step failed as a `ProductDefect`; `EnvironmentNonAuthoritative`
+/// when the only failures are `Environment` (reported, never a clean green, never a defect);
+/// `ProductPass` when every step passed.
+type GeneratedProductVerdict =
+    | ProductPass
+    | EnvironmentNonAuthoritative
+    | ProductDefectFail
+
+/// FR-003: a static pinned-vs-local package-skew finding.
+type PackageSkewFinding =
+    { Symbol: string
+      File: string
+      PinnedVersion: string
+      LocalVersion: string }
+
 /// The evidence-format classes whose required shape is single-sourced and
 /// recoverable without decompiling (SC-002).
 type EvidenceFormatClass =
@@ -35,6 +91,41 @@ module EvidenceFormatSchema =
     /// Human-readable label for a format class (used by the diagnostics + doc).
     val classLabel: EvidenceFormatClass -> string
 
+    // --- feature 087 label/parse helpers (single source) --------------------
+
+    /// The JSON/string label for an `AuditVerdict` (the C1 verdict-state enum).
+    val auditVerdictLabel: AuditVerdict -> string
+
+    /// Whether a verdict is a passing state (`Pass` or `PassWithAcceptedDeferrals`).
+    val isPassingVerdict: AuditVerdict -> bool
+
+    /// The JSON/string label for a `StepClassification` (C5).
+    val stepClassificationLabel: StepClassification -> string
+
+    /// The JSON/string label for a `PackageSet` (C4/C5).
+    val packageSetLabel: PackageSet -> string
+
+    /// The JSON/string label for a `GeneratedProductVerdict` (FR-002).
+    val generatedProductVerdictLabel: GeneratedProductVerdict -> string
+
+    /// FR-002: map a generated-consumer failure category to its step classification. A
+    /// genuine host-environment obstacle (`UnsupportedHost`, the unsupported-host signal)
+    /// classifies as `Environment`; every product/contract failure category classifies as
+    /// `ProductDefect`, so an environment obstacle can never relabel a product defect.
+    val classifyGeneratedCategory: category: string -> StepClassification
+
+    /// FR-002 (SC-002): aggregate per-step results into the overall verdict — `ProductDefectFail`
+    /// iff any step failed as `ProductDefect` (an `Environment` failure can NEVER suppress it),
+    /// else `EnvironmentNonAuthoritative` if any step failed, else `ProductPass`.
+    val generatedProductVerdict: steps: GeneratedProductStepResult list -> GeneratedProductVerdict
+
+    /// The skill-loading-evidence `provenance` column value (C3, FR-010).
+    val loadProvenanceLabel: LoadProvenance -> string
+
+    /// Parse a `provenance` column value; `None` for any value outside the
+    /// closed `{ captured, asserted }` set.
+    val parseProvenance: string -> LoadProvenance option
+
     // --- single-source constant lists (referenced by the enforcing code) -----
 
     /// The 8 columns of one `skill-loading-evidence.md` row, in order.
@@ -42,6 +133,10 @@ module EvidenceFormatSchema =
 
     /// The `loaded_at < work_started_at` ordering rule text.
     val skillLoadingOrderingRule: string
+
+    /// Feature 087 (FR-010): the closed `provenance ∈ { captured, asserted }`
+    /// value-set rule text for the 9th skill-loading-evidence column.
+    val skillLoadingProvenanceRule: string
 
     /// The resolved `SKILL.md` path pattern recorded per `(task, skill)` row.
     val skillLoadingPathPattern: string

@@ -1,0 +1,21 @@
+{
+  "verdict": "PassWithAcceptedDeferrals",
+  "acceptedSyntheticCount": 1,
+  "unacceptedSyntheticCount": 0,
+  "acceptedDeferrals": [
+    {
+      "taskId": "T900",
+      "justification": "T900 deferred: native keystroke injection host capability not yet available (086 deferral)",
+      "realEvidencePath": "specs/087-governance-gate-hardening/readiness/T900-real.txt",
+      "awaitedHostCapability": "native-keystroke-injection"
+    }
+  ],
+  "acceptedSyntheticTasks": [
+    "T900"
+  ],
+  "accepted_seh_tasks": [],
+  "unaccepted_synthetic_tasks": [],
+  "auto_synthetic_tasks": [],
+  "late_seh_tasks": [],
+  "diagnostics": []
+}

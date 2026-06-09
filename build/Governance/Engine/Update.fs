@@ -136,6 +136,11 @@ let update msg model =
           // Feature 062 (FR-006): regenerate docs/skillist-reference.md from the live
           // SkillRegistry + the closed owns vocabulary (currency in TargetMetadataDrift).
           RegenerateSkillistReference
+          // Feature 087 (FR-005/006): fold the per-package surface baseline capture into the
+          // same refresh with byte-idempotent writes, so one refresh regenerates the
+          // per-package readiness/per-package-surface/<PackageId>.fsi.txt baselines completely
+          // and a second run on an unchanged tree leaves git status clean (SC-005/006).
+          RegeneratePerPackageBaselines
           RequireFiles(
               "stable package surface baselines",
               [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.Layout.txt" ]
@@ -212,7 +217,13 @@ let update msg model =
                 path [ model.TemplateEvidenceDir; "package-governed"; "dev.log" ]
                 path [ model.TemplateEvidenceDir; "package-sample-pack"; "dev.log" ] ]
             )
-          WriteStructuredReport("template verdict", path [ model.TemplateEvidenceDir; "verdict.md" ], "# TemplateCheck Verdict\n\nPASS: source/package V3 app, headless-scene, governed, and sample-pack generated projects passed non-visual validation.\n")
+          // Feature 087 (US2, FR-003/004): the static pinned-vs-local package-skew sub-check.
+          // TemplateCheck builds against the locally-packed package, so this is where a
+          // generated reference to an unreleased symbol must be caught before merge.
+          PackageSkewCheck
+          RequireFiles("package skew check report", [ path [ model.ReadinessDir; "package-skew.md" ] ])
+          // FR-004: TemplateCheck operates on the LocalPacked package set; the verdict states it.
+          WriteStructuredReport("template verdict", path [ model.TemplateEvidenceDir; "verdict.md" ], "# TemplateCheck Verdict\n\npackage-set: LocalPacked\n\nPASS: source/package V3 app, headless-scene, governed, and sample-pack generated projects passed non-visual validation; pinned-vs-local package-skew sub-check clean.\n")
           focusedGateSummary model "TemplateCheck" ]
     | StartTarget Targets.CapabilityCheck ->
         model,

@@ -49,6 +49,18 @@ val diffPackage: baseline: Surface -> current: Surface -> PackageDrift option
 /// baseline lands in `MissingBaselines` and is never treated as clean (Principle VII).
 val diff: baselines: Surface list -> current: Surface list -> DiffOutcome
 
+/// FR-005/006: the canonical byte-idempotent on-disk form of a baseline — the normalized
+/// surface text plus exactly one trailing newline. Serializing twice (even after a
+/// read-and-renormalize round-trip) is byte-identical, so a re-capture on an unchanged tree
+/// produces no trailing-newline/whitespace churn (SC-006). Pure.
+val serializeBaseline: surface: Surface -> string
+
+/// Edge: capture every in-scope package's current surface and write each as a byte-idempotent
+/// baseline at `<directory>/<PackageId>.fsi.txt`. Returns the written package ids in scope
+/// order. One run regenerates all per-package baselines; a second run on an unchanged tree
+/// rewrites byte-equal files (FR-005/006).
+val captureBaselines: directory: string -> packages: PackageId list -> PackageId list
+
 /// Edge: read each in-scope package's `.fsi` file(s) from the source tree and normalize,
 /// aggregating a package's multiple `.fsi` files in filename order. Discovers the
 /// repository root by walking up for the `src` + `.specify/feature.json` markers.

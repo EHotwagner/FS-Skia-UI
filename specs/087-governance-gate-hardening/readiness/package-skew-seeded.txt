@@ -1,0 +1,42 @@
+T015 — package-skew check fails on a seeded unpinned-API reference (FR-003, SC-003)
+authoritative-command: PackageSkew.detectSkew over the real captured surface with a seeded generated reference; exercised by Governance.Tests
+artifact-path: specs/087-governance-gate-hardening/readiness/package-skew-seeded.txt
+failure-class: PackageSkewFinding — a referenced symbol absent from the pinned surface; names symbol + file + pinned-vs-local version gap; blocking when non-empty (FR-003, SC-003)
+status: PASS (the seeded skew is caught)
+
+## Seeded input (the 086 near-miss class)
+A generated test file referencing an unreleased member on an existing framework type:
+
+  // tests/Product.Tests/BehaviorTests.fs (seeded)
+  let x = FS.Skia.UI.Controls.ControlRenderResult.UnreleasedBoundsV087
+
+`UnreleasedBoundsV087` exists in NO captured per-package surface baseline — i.e. it is in
+the local-packed build but absent from the pinned/published surface. This is exactly the
+086 near-miss (`ControlRenderResult.Bounds`): it compiles under TemplateCheck (local-packed)
+yet would fail under GeneratedProductCheck (pinned).
+
+## Result — the finding the sub-check produces (renderFindings format)
+package-set=LocalPacked
+
+# Package skew (pinned-vs-local) check
+
+pinned-version=0.1.92-preview.1
+local-version=0.1.93-preview.1
+version-gap=0.1.92-preview.1 -> 0.1.93-preview.1
+
+status=skew
+findings=1
+- symbol=UnreleasedBoundsV087 file=tests/Product.Tests/BehaviorTests.fs pinned=0.1.92-preview.1 local=0.1.93-preview.1 (referenced symbol is absent from the pinned surface)
+
+The sub-check fails loud (non-zero) naming the symbol, the referencing file, and the
+pinned-vs-local version gap; the merge is blocked until the symbol is published at the
+pinned version or the reference is removed from the generated template.
+
+## Authoritative exercise (Governance.Tests)
+feature 087 US2 — static pinned-vs-local package-skew (FR-003/004):
+- "FR-003 SC-003 a referenced symbol absent from the pinned surface is a finding" — PASS
+- "FR-003 SC-003 a seeded unreleased FS.Skia.UI reference is caught against the real surface" — PASS
+- "FR-003 a reference is a finding iff absent from the pinned surface (FsCheck)" — PASS
+All 540 Governance.Tests pass (dotnet test tests/Governance.Tests).
+
+next-action: none; seeded skew is detected and blocks.

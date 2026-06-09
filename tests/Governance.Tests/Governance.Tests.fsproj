@@ -86,6 +86,10 @@
     <Compile Include="Feature083GovernanceTests.fs" />
     <!-- Feature 084 (US2/US3): evidence-formats parity (T017), audit-stdout legibility (T018), scaffold-map clarity (T024). -->
     <Compile Include="Feature084GovernanceTests.fs" />
+    <!-- Feature 087 (Governance Gate Hardening): single-source value types + the
+         six-story red-green coverage (verdict, propagation, skew, provenance,
+         per-package idempotence). -->
+    <Compile Include="Feature087GovernanceTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

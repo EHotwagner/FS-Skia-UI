@@ -31,9 +31,10 @@ failure, without decompiling `FS.Skia.UI.Build.dll` or copying a sibling project
 
 ### `skill-loading-evidence.md`
 
-- required tokens: TaskId, DeclaredSkillId, ResolvedSkillPath, LoadResult, LoadedAt, WorkStartedAt, EvidencePath, Exception
-- columns (in order): TaskId | DeclaredSkillId | ResolvedSkillPath | LoadResult | LoadedAt | WorkStartedAt | EvidencePath | Exception
+- required tokens: TaskId, DeclaredSkillId, ResolvedSkillPath, LoadResult, LoadedAt, WorkStartedAt, EvidencePath, Exception, Provenance
+- columns (in order): TaskId | DeclaredSkillId | ResolvedSkillPath | LoadResult | LoadedAt | WorkStartedAt | EvidencePath | Exception | Provenance
 - ordering: loaded_at < work_started_at
+- ordering: provenance ∈ { captured, asserted } (captured = observed during the run, recorded at the load action before code changes; asserted = hand-authored)
 - resolved-path: .agents/skills/<id>/SKILL.md
 - blocking: true
 
