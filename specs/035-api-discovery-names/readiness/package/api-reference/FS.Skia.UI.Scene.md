@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 354
-xml-summary-count: 124
+symbol-count: 360
+xml-summary-count: 129
 source-fsi-paths:
 - src/Scene/Scene.fsi
 sampled-symbols:
@@ -252,6 +252,8 @@ type SceneElementKind =
     | PerspectiveElement
     | PictureElement
     | ChartElement
+    | TranslateElement
+    | SizedTextElement
 
 /// Public contract type exposed by this FS.Skia.UI package.
 type RenderReadbackEvidence =
@@ -375,6 +377,8 @@ type SceneNode =
     | PerspectiveNode of PerspectiveTransform * Scene
     | PictureNode of Picture
     | Chart of values: float list
+    | Translate of (float * float) * Scene
+    | SizedText of (float * float) * string * float * Color
 
 and Scene =
     { Nodes: SceneNode list }
@@ -515,6 +519,13 @@ module Scene =
     val picture: picture: Picture -> Scene
     /// Public contract function exposed by this FS.Skia.UI package.
     val chart: values: float list -> Scene
+    /// Offset an entire sub-scene by (dx, dy). Offsets ALL node kinds uniformly —
+    /// including Path/Points/Vertices/Chart — by pushing a canvas translation, so it
+    /// replaces a hand-written coordinate-walking shift. Nesting composes additively.
+    val translate: dx: float -> dy: float -> scene: Scene -> Scene
+    /// A Text node with an explicit font size, for chrome sized to its container.
+    /// Bare `Scene.text` (no size) keeps its current default-font rendering.
+    val sizedText: position: (float * float) -> text: string -> size: float -> color: Color -> Scene
     /// Public contract function exposed by this FS.Skia.UI package.
     val describe: scene: Scene -> SceneElementKind list
     /// Public contract function exposed by this FS.Skia.UI package.

@@ -6,7 +6,7 @@
       "src/Scene/Scene.fsi"
     ],
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.Scene.md",
-    "SymbolCount": 354,
+    "SymbolCount": 360,
     "SampledSymbols": [
       "type Rect =",
       "Width: float",
@@ -16,7 +16,7 @@
       "TextRun",
       "SceneElementKind"
     ],
-    "XmlSummaryCount": 124,
+    "XmlSummaryCount": 129,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"
@@ -130,7 +130,7 @@
       "src/Controls/Types.fsi"
     ],
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.Controls.md",
-    "SymbolCount": 690,
+    "SymbolCount": 693,
     "SampledSymbols": [
       "type Control\u003C\u0027msg\u003E",
       "KnownControl.TextBlock",
@@ -139,7 +139,7 @@
       "LineChart.series",
       "TextBox.onChanged"
     ],
-    "XmlSummaryCount": 306,
+    "XmlSummaryCount": 315,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"
