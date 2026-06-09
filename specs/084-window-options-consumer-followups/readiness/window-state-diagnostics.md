@@ -1,31 +1,31 @@
 # Window-State Diagnostics (084)
 
-status=deferred
+status=ok
 
 ## Diagnostic classes (separation preserved)
 
-- diagnostic-class=environment-session — the framework repo opens no desktop session
-  window; the windowed-fullscreen interpreter reads the default-monitor work area at
-  the window edge on a display-capable host.
-- diagnostic-class=window-visibility — deferred; the real visible-window launch is
-  captured from the generated executable on a display-capable host, not here.
-- diagnostic-class=app-lifecycle — the new `WindowedFullscreen` arm
+- diagnostic-class=environment-session — the display-capable host (`DISPLAY=:1`) granted a
+  real desktop session; the windowed-fullscreen interpreter reads the default-monitor
+  work area at the window edge.
+- diagnostic-class=window-visibility — a real visible window was observed
+  (`window-visible=observed:true`) for the no-flag windowed-fullscreen default and each
+  supported startup state (see `interactive-visible-window.md`).
+- diagnostic-class=app-lifecycle — the `WindowedFullscreen` arm
   (`applyWindowBehaviorToOptions`: hidden border + work-area geometry +
-  `WindowState.Normal`) and the guarded `runAppWithWindowBehavior` launch wiring are
-  exercised by the unit tests and the FSI surface session.
-- diagnostic-class=product-defect — none observed; the validation reclassification and
-  default change are proven against the built library (`tests/SkiaViewer.Tests`).
+  `WindowState.Normal`) and the guarded `runAppWithWindowBehavior` launch wiring opened,
+  presented a first frame, and self-closed (`close-reason=AppRequestedClose`).
+- diagnostic-class=product-defect — none observed; every supported state launched a real
+  window and the validation reclassification/default are proven by `tests/SkiaViewer.Tests`.
 
 ## Observable-vs-unsupported native facts
 
-native-handle=deferred
-visible=deferred
-focusable=deferred
-renderable-surface=deferred
-input-devices=deferred
+native-handle=observed:true
+visible=observed:true
+focusable=observed:true
+renderable-surface=observed:true
+input-devices=observed:true
 
 No taskbar-entry or process-only success is claimed, and no unsupported-host-only
-visible-window claim is made. The native facts are honestly `deferred` because the
-authoritative visible-window capture runs on a display-capable host via the generated
-product (the project's documented non-authoritative `GeneratedProductCheck` path); on
-this framework dev host the launch degrades to render-only.
+visible-window claim is made: the window was a real visible desktop window
+(`window-visible=observed:true`, `renderer-mode=skia`) that presented its first frame and
+then self-closed for evidence.

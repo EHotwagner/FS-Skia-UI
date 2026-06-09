@@ -638,11 +638,11 @@
       "seh": {
         "annotation": false,
         "approval_label": false,
-        "design_source": "spec.md Edge case (headless \u2192 honest render-only)",
-        "synthetic_input_class": "host-without-self-closing-windowed-product",
-        "expected_error_behavior": "honest render-only; no false visible-window claim",
-        "rationale": "Real visible-window launch needs a display-capable host running the generated default executable; the framework repo ships libraries + a template (no runnable windowed product) and the local `GeneratedProductCheck` is a documented non-authoritative environment-failure. The new state/default/validation/mapping are proven against the built library (real).",
-        "acceptance_status": "render-only-deferred",
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
         "diagnostics": [],
         "accepted": false
       }

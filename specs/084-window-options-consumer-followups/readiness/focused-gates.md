@@ -198,3 +198,111 @@
 - remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
 
 
+## EvidenceGraph
+
+- command: `./fake.sh build -t EvidenceGraph`
+- direct-prerequisites: (none)
+- timestamp-utc: `2026-06-09T06:04:17.5401789+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/084-window-options-consumer-followups/readiness/logs/evidence-graph.txt`
+- readiness-path: `/home/developer/projects/FS-Skia-UI/specs/084-window-options-consumer-followups/readiness/task-graph.md`
+- verdict-category: `success`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active
+- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists
+- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared
+- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure
+- affected-gate: `EvidenceGraph`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+
+## EvidenceGraph
+
+- command: `./fake.sh build -t EvidenceGraph`
+- direct-prerequisites: (none)
+- timestamp-utc: `2026-06-09T06:06:49.2043097+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/084-window-options-consumer-followups/readiness/logs/evidence-graph.txt`
+- readiness-path: `/home/developer/projects/FS-Skia-UI/specs/084-window-options-consumer-followups/readiness/task-graph.md`
+- verdict-category: `success`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active
+- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists
+- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared
+- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure
+- affected-gate: `EvidenceGraph`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+
+## EvidenceAudit
+
+- command: `./fake.sh build -t EvidenceAudit`
+- direct-prerequisites: EvidenceGraph
+- timestamp-utc: `2026-06-09T06:06:49.3407929+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/084-window-options-consumer-followups/readiness/logs/evidence-audit.txt`
+- readiness-path: `/home/developer/projects/FS-Skia-UI/specs/084-window-options-consumer-followups/readiness/evidence-audit.md`
+- verdict-category: `success`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active
+- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists
+- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared
+- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure
+- affected-gate: `EvidenceAudit`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+
+## EvidenceGraph
+
+- command: `./fake.sh build -t EvidenceGraph`
+- direct-prerequisites: (none)
+- timestamp-utc: `2026-06-09T06:08:04.5290664+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/084-window-options-consumer-followups/readiness/logs/evidence-graph.txt`
+- readiness-path: `/home/developer/projects/FS-Skia-UI/specs/084-window-options-consumer-followups/readiness/task-graph.md`
+- verdict-category: `success`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active
+- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists
+- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared
+- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure
+- affected-gate: `EvidenceGraph`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+
+## EvidenceGraph
+
+- command: `./fake.sh build -t EvidenceGraph`
+- direct-prerequisites: (none)
+- timestamp-utc: `2026-06-09T06:08:06.9825286+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/084-window-options-consumer-followups/readiness/logs/evidence-graph.txt`
+- readiness-path: `/home/developer/projects/FS-Skia-UI/specs/084-window-options-consumer-followups/readiness/task-graph.md`
+- verdict-category: `success`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active
+- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists
+- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared
+- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure
+- affected-gate: `EvidenceGraph`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+
+## EvidenceAudit
+
+- command: `./fake.sh build -t EvidenceAudit`
+- direct-prerequisites: EvidenceGraph
+- timestamp-utc: `2026-06-09T06:08:07.1171525+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/084-window-options-consumer-followups/readiness/logs/evidence-audit.txt`
+- readiness-path: `/home/developer/projects/FS-Skia-UI/specs/084-window-options-consumer-followups/readiness/evidence-audit.md`
+- verdict-category: `success`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active
+- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists
+- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared
+- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure
+- affected-gate: `EvidenceAudit`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+

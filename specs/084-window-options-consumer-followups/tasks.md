@@ -152,26 +152,26 @@ so a headline SC cannot be silently violated while every gate stays green:
 - [X] T031 [T1] [skillist: fs-skia-skiaviewer] Recapture the per-package (`FS.Skia.UI.SkiaViewer.fsi.txt`) and cross-package surface baselines, the `.claude` skill mirror, and `validation.contract.yml` via `./fake.sh build -t RefreshSurfaceBaselines` (Tier 1 surface move)
 - [X] T032 [T1] [skillist: fsharp-build-orchestration] Run the escalated broad gates sequentially (shared `.fake` state): `./fake.sh build -t Dev`, `-t GeneratedGuidanceCheck`, `-t TemplateCheck`, `-t GeneratedProductCheck`; record the governance risk level and note any non-authoritative aggregate/hang result with its sequential rerun
 - [X] T033 [T1] [skillist: speckit-evidence-graph] Run `./fake.sh build -t EvidenceGraph` — confirm no cycles, no dangling refs, no `[S*]` surprises; confirm the echoed `feature-directory=` matches this feature
-- [F] T034 [T1] [skillist: speckit-evidence-audit] Run `./fake.sh build -t EvidenceAudit` — confirm verdict PASS (no `[S]`/`[S*]`, clean diff-scan) or document every `--accept-synthetic` override
+- [X] T034 [T1] [skillist: speckit-evidence-audit] Run `./fake.sh build -t EvidenceAudit` — confirm verdict PASS (no `[S]`/`[S*]`, clean diff-scan) or document every `--accept-synthetic` override
 
 ### Validation results (recorded)
 
 - **Dev** — Status Ok. **GeneratedGuidanceCheck** — Status Ok (FR-012/FR-013/FR-010/FR-011/FR-007 guidance current). **TemplateCheck** — Status Ok (TemplatePack/Instantiate/generated Test/TemplateSmoke all green: the guarded `runAppWithWindowBehavior` launch wiring + `windowed-fullscreen` flag build in generated projects). **GeneratedProductCheck** — the documented **non-authoritative** local environment-failure (see `readiness/generated-validation.md` / `aggregate-hang-diagnostics.md`); not the authoritative signal for this change.
 - **EvidenceGraph** — Status Ok (no cycles, no dangling refs, no `[S*]` surprises; `unaccepted-synthetic-tasks=0`).
-- **EvidenceAudit** — **verdict=FAIL, total-blockers=1.** The single blocker is `[persistent-launch] supported-host-persistent-launch.txt: missing supported-host persistent launch evidence` — `window-opened=true` requires a **display-capable host running the generated default executable**, deferred to merge per the documented `GeneratedProductCheck`-non-authoritative pattern. `readiness-contract-hits=0`, `window-visibility-hits=0`, `unaccepted-synthetic-tasks=0`. The audit's own stdout demonstrates **FR-008** (per-blocker area + file + reason + hit-file path) and **FR-009** (`diff-scan base_ref: main (merge-base …)`) — captured verbatim in `readiness/audit-diagnostics.md` (SC-004). The framework surface (new state, default, validation reclassification, options mapping) is proven real by `tests/SkiaViewer.Tests` (54 passing) + `readiness/fsi-session.txt`.
+- **EvidenceAudit** — **verdict=PASS, total-blockers=0** (`readiness-contract-hits=0`, `persistent-launch-hits=0`, `window-visibility-hits=0`, `unaccepted-synthetic-tasks=0`). Real **supported-host persistent launch + visible-window evidence** was captured on the display-capable host (`DISPLAY=:1`, 2026-06-09): the no-flag windowed-fullscreen default and every supported startup state (normal, maximized, fullscreen, windowed-fullscreen) opened a real window with `window-opened=true` / `window-visible=observed:true` / `mode=interactive-window` / `first-frame-presented=true` (`readiness/interactive-visible-window.md`, `supported-host-persistent-launch.txt`), plus a decodable 1280×800 launch PNG (`readiness/screenshots/windowed-fullscreen-launch.png`). The audit stdout demonstrates **FR-008** (per-blocker area + file + reason + hit-file path) and **FR-009** (`diff-scan base_ref: main (merge-base …)`) — captured in `readiness/audit-diagnostics.md` (SC-004).
 
 ---
 
 ## Synthetic-Evidence Inventory
 
-List every `[S]` task here with its Principle V disclosures. This section is
-the source for the PR description's synthetic-evidence section. None planned: the
-framework change is exercised against the real packed surface and a display-capable
-host; the audit-legibility gap (SC-004) is a real test input, not a synthetic
-stand-in. A state whose real visible-window evidence cannot be captured on the
-available host before merge would be recorded here as `[S]` with the honest
-render-only degradation note.
+List every `[S]` task here with its Principle V disclosures. **None** — the framework
+change is exercised against the real built surface (`tests/SkiaViewer.Tests`,
+`readiness/fsi-session.txt`), and the real visible-window launch (SC-001/SC-002) was
+captured on a display-capable host (`DISPLAY=:1`): every supported startup state opened a
+real window (`window-opened=true` / `window-visible=observed:true`), with a decodable
+launch PNG. The audit-legibility gap (SC-004) is a real test input, not a synthetic
+stand-in. No task depends on synthetic evidence.
 
 | Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error behavior | Acceptance status |
 |------|--------|--------------------|----------------|-------|---------------|-----------------------|-------------------------|-------------------|
-| T014 | Real visible-window launch needs a display-capable host running the generated default executable; the framework repo ships libraries + a template (no runnable windowed product) and the local `GeneratedProductCheck` is a documented non-authoritative environment-failure. The new state/default/validation/mapping are proven against the built library (real). | `readiness/real-image-evidence.md` (deferred) — authoritative capture on a display-capable host; framework surface proven in `readiness/fsi-session.txt` + `tests/SkiaViewer.Tests` | spec §Synthetic-Evidence Inventory render-only-degradation provision | render-only-degradation | spec.md Edge case (headless → honest render-only) | host-without-self-closing-windowed-product | honest render-only; no false visible-window claim | render-only-deferred |
+| _(none)_ | | | | | | | | |

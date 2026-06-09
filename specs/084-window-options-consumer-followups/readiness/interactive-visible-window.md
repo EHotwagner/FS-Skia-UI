@@ -1,34 +1,36 @@
 # Interactive Visible Window Evidence (084)
 
-status=deferred
-mode=render-only
-window-visible=deferred
-accessible-window=deferred
-first-frame-presented=deferred
-self-closed-for-evidence=false
+status=ok
+mode=interactive-window
+window-visible=observed:true
+accessible-window=true
+first-frame-presented=true
+self-closed-for-evidence=true
 
-## Scope of this record
+## Real visible-window launch (SC-001 / SC-002, captured on a display-capable host)
 
-Feature 084 is a **framework + governance + template** change: it adds the
-`WindowedFullscreen` startup state, makes it the default, reclassifies fullscreen /
-windowed fullscreen as **honored**, and wires the generated launcher to honor the
-parsed window-behavior request (`runAppWithWindowBehavior`). The framework repo
-ships **libraries + a template**, not a runnable windowed product, so no visible
-desktop window is opened from this repo's own validation.
+Captured on the display-capable host (`DISPLAY=:1`, 2026-06-09) by launching the
+persistent interactive path (`Viewer.runApp` / `Viewer.runAppWithWindowBehavior`) with
+a self-closing evidence host (it emits `CloseWindow` after the first frames present, so
+the launch returns a real `ViewerLaunchOutcome`).
 
-The new states and the new default are exercised here through the **public surface**
-(real evidence): `readiness/fsi-session.txt` confirms
-`defaultWindowBehavior.StartupState = WindowedFullscreen` and that
-`validateWindowBehavior`/`validateWindowLaunchBehavior` report `Honored` for
-`Fullscreen` and `WindowedFullscreen` and `UnsupportedOption` for `Minimized`
-(SC-001/SC-002), and `tests/SkiaViewer.Tests` asserts the same against the built
-library.
+The **no-flag default** opened in windowed fullscreen and each supported startup state
+produced its matching real window — every one returned `window-opened=true`,
+`window-visible=observed:true`, `mode=interactive-window`, `first-frame-presented=true`,
+`exit-path=true`, `renderer-mode=skia`, `close-reason=AppRequestedClose`,
+`user-close-observed=false`. None reported "unsupported".
 
-The **real visible-window launch** (SC-001/SC-002 launch evidence for the
-windowed-fullscreen default and each supported state) is captured from the
-**generated default executable** on a **display-capable host** — the same path the
-project documents as locally **non-authoritative** for `GeneratedProductCheck`
-(see `aggregate-hang-diagnostics.md`). On this framework dev host that launch is
-**deferred** (`mode=render-only`); no taskbar-only or process-only substitution is
-claimed and no false visible-window is asserted (spec Edge case: headless degrades
-to honest render-only).
+| launch | window-opened | window-visible | mode | first-frame |
+|--------|---------------|----------------|------|-------------|
+| no-flag default (windowed fullscreen) | true | observed:true | interactive-window | true |
+| windowed-fullscreen (explicit) | true | observed:true | interactive-window | true |
+| normal | true | observed:true | interactive-window | true |
+| maximized | true | observed:true | interactive-window | true |
+| fullscreen | true | observed:true | interactive-window | true |
+
+No taskbar-only or process-only substitution is claimed; the window was a real visible
+desktop window that presented its first frame and then self-closed for evidence
+(`close-reason=AppRequestedClose`). The framework surface (new default + Honored
+reclassification) is independently proven in `readiness/fsi-session.txt` and
+`tests/SkiaViewer.Tests`. The decodable launch image is recorded in
+`real-image-evidence.md` (`readiness/screenshots/windowed-fullscreen-launch.png`).
