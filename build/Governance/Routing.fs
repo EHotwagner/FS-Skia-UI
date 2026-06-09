@@ -126,8 +126,65 @@ let internalRule id paths tier gates artifacts timeoutClass failureOwner =
       TimeoutClass = timeoutClass
       FailureOwner = failureOwner }
 
+// Feature 088 (US2, FR-008): doc-path classification for the doc-only routing relaxation.
+// A "doc" path is a Markdown file; the SKILL.md skill home is excluded from the doc-only rules
+// so it keeps its existing (heavier) skill-quality / generated-guidance routing.
+let internalIsDocPath (p: string) =
+    p.Replace('\\', '/').EndsWith(".md", StringComparison.OrdinalIgnoreCase)
+
+let internalIsSkillDoc (p: string) =
+    p.Replace('\\', '/').EndsWith("skill/SKILL.md", StringComparison.OrdinalIgnoreCase)
+
+// Feature 088 (US2, FR-008): a SOURCE rule whose heavy gates apply only when the diff carries
+// at least one non-doc (`*.md`) path under the rule's tree. A pure doc-only change under the
+// tree leaves this rule unmatched (the dedicated doc rule handles it); a mixed doc+source diff
+// re-escalates because the non-doc path is present, so mixed/source routing is UNCHANGED.
+let internalSourceRule id paths tier gates artifacts timeoutClass failureOwner =
+    { Id = id
+      Paths = paths
+      Matches =
+        fun diff ->
+            diff.ChangedPaths
+            |> List.exists (fun p ->
+                (not (internalIsDocPath p))
+                && (paths |> List.exists (fun pat -> internalMatchesGlob pat p)))
+      Tier = tier
+      RequiredGates = gates
+      ExpectedArtifacts = artifacts
+      TimeoutClass = timeoutClass
+      FailureOwner = failureOwner }
+
+// Feature 088 (US2, FR-008): a DOC-ONLY rule. It fires only when the change under the broad
+// source subtree (`treeGlobs`) is purely documentation: at least one changed path matches the
+// doc globs (`docPaths`, a non-skill `*.md`), AND no changed path under `treeGlobs` is a
+// non-doc source file. Checking the BROAD subtree (not just `docPaths`) is what keeps a mixed
+// `a.md + b.fsi` diff OUT of this rule, so the refined source rule re-escalates it to the full
+// set — mixed/source routing is byte-identical to today. `Paths` renders `docPaths`. Only the
+// `skill/SKILL.md` skill home is excluded; README and other Markdown get the doc-only path.
+let internalDocRule id docPaths treeGlobs tier gates artifacts timeoutClass failureOwner =
+    { Id = id
+      Paths = docPaths
+      Matches =
+        fun diff ->
+            let underTree p = treeGlobs |> List.exists (fun pat -> internalMatchesGlob pat p)
+
+            let matchesDoc p =
+                (docPaths |> List.exists (fun pat -> internalMatchesGlob pat p))
+                && not (internalIsSkillDoc p)
+
+            let hasNonDocSource =
+                diff.ChangedPaths
+                |> List.exists (fun p -> underTree p && not (internalIsDocPath p))
+
+            (diff.ChangedPaths |> List.exists matchesDoc) && not hasNonDocSource
+      Tier = tier
+      RequiredGates = gates
+      ExpectedArtifacts = artifacts
+      TimeoutClass = timeoutClass
+      FailureOwner = failureOwner }
+
 let rules =
-    [ internalRule
+    [ internalSourceRule
           "controls-public-surface"
           [ "src/Controls/**" ]
           FocusedAuthority
@@ -171,7 +228,10 @@ let rules =
 
       // template/** (F2 broadened) keeps the original template/base/** and
       // template/fragments/** globs the contract's existing consumers scan for.
-      internalRule
+      // Feature 088 (US2, FR-008): refined to a SOURCE rule — the heavy template/generated
+      // checks apply only when a non-doc (`*.md`) path is present under template/**. A pure
+      // `template/**/*.md` change routes through `template-docs` instead.
+      internalSourceRule
           "generated-template"
           [ "template/base/**"; "template/fragments/**"; "template/**" ]
           FocusedAuthority
@@ -227,6 +287,37 @@ let rules =
           [ "readiness/validation-contract.md" ]
           "focused"
           "governance"
+
+      // Feature 088 (US2, FR-008): doc-only relaxation for the published Controls source tree.
+      // A pure `src/Controls/**/*.md` change (NOT the SKILL.md home, which routes via
+      // skill-quality) validates only the task DAG — the refined `controls-public-surface`
+      // source rule no longer fires its heavy controls/generated pipeline for docs alone. The
+      // pinned `[ EvidenceGraph ]` keeps a doc-only change DAG-validated; a mixed doc+source
+      // diff re-escalates because the source rule sees the non-doc path.
+      internalDocRule
+          "controls-docs"
+          [ "src/Controls/**/*.md" ]
+          [ "src/Controls/**" ]
+          FocusedAuthority
+          [ Targets.EvidenceGraph ]
+          [ "readiness/validation-contract.md" ]
+          "focused"
+          "product"
+
+      // Feature 088 (US2, FR-008): doc-only relaxation for the template tree. A pure
+      // `template/**/*.md` change (excluding `skill/SKILL.md` and README, which keep their
+      // existing routing via skill-quality / generated-guidance) validates only the task DAG.
+      // The refined `generated-template` source rule no longer fires the heavy template set for
+      // docs alone; mixed/source template changes are unchanged.
+      internalDocRule
+          "template-docs"
+          [ "template/**/*.md" ]
+          [ "template/base/**"; "template/fragments/**"; "template/**" ]
+          FocusedAuthority
+          [ Targets.EvidenceGraph ]
+          [ "readiness/validation-contract.md" ]
+          "focused"
+          "template"
 
       // Feature 078 (US1, FR-005, research R5): the published Controls docs section is a
       // single-source projection of CatalogGen.catalogFacts. A change to the section

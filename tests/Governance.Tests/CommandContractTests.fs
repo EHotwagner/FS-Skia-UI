@@ -105,7 +105,12 @@ let commandContractTests =
             [ "CapabilityCheck"; "SkillCheck"; "GeneratedProductCheck"; "TemplateCheck"; "Verify"; "Ci" ]
             |> List.iter expectFakeTarget
 
-            expectDependency "GeneratedProductCheck" [ "CapabilityCheck"; "SkillCheck"; "Dev"; "TemplateCheck" ]
+            // Feature 088 (US2, FR-006/FR-007): the umbrella keeps its setup prerequisites and
+            // now composes the two split sub-targets (GeneratedProductStructure /
+            // GeneratedConsumerValidation), delegating the scan + consumer validation to them.
+            expectDependency
+                "GeneratedProductCheck"
+                [ "CapabilityCheck"; "SkillCheck"; "Dev"; "TemplateCheck"; "GeneratedProductStructure"; "GeneratedConsumerValidation" ]
             expectFakeTarget "Verify"
             expectContains content "\"CapabilityCheck\"" "Verify includes CapabilityCheck"
             expectContains content "\"SkillCheck\"" "Verify includes SkillCheck"

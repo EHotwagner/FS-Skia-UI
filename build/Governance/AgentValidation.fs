@@ -358,37 +358,14 @@ module AgentVerdict =
         |> String.concat System.Environment.NewLine
 
 module ValidationContract =
+    // Feature 088 (US1, FR-003): the allowlist is now DERIVED from the typed routable-gate
+    // projection in Targets, not a parallel hand-maintained string list. A renamed/retired
+    // gate is a compile error in Targets.fs (the closed DU) and flows here automatically, so
+    // the contract validator's "unknown gate" allowlist can never silently drift. The derived
+    // list is set-equal to the prior literal (pinned by a failing-first Governance.Tests).
     let knownGates =
-        [ "AgentReady"
-          "ControlsCatalogCheck"
-          "ControlsCatalogGenerationCheck"
-          "ControlsCatalogDocsCheck"
-          "ControlFidelityCheck"
-          "DesignTokenDrift"
-          "ContrastCheck"
-          "ControlsInteractionCheck"
-          "ControlsRenderingCheck"
-          "Dev"
-          "EvidenceAudit"
-          "EvidenceGraph"
-          "FsiTranscripts"
-          "GeneratedGuidanceCheck"
-          "GeneratedProductCheck"
-          "PackageSurfaceCheck"
-          "PerPackageSurfaceDiff"
-          "PhaseHookParityCheck"
-          "PrePublishCheck"
-          "Publish"
-          "SkillContractPathCheck"
-          "SkillQualityCheck"
-          "SkillSyncCheck"
-          "SymbolCrossCheck"
-          "TargetMetadataDrift"
-          "TemplateUpdateSkillPackageCheck"
-          "TemplateCheck"
-          "TemplateDrift"
-          "Verify"
-          "Ci" ]
+        FS.Skia.UI.Build.Targets.routableGates
+        |> List.map FS.Skia.UI.Build.Targets.name
 
     let private diagnostic code path message =
         { Code = code

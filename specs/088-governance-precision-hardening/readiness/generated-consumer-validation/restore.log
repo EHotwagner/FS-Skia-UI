@@ -1,0 +1,8 @@
+
+## generated consumer restore from local packages
+$ dotnet restore tests/Product.Tests/Product.Tests.fsproj --configfile nuget.validation.config --no-cache
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/088-governance-precision-hardening/app-source/src/Product/Product.fsproj (in 352 ms).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/088-governance-precision-hardening/app-source/tests/Product.Tests/Product.Tests.fsproj (in 352 ms).
+
+exit-code=0

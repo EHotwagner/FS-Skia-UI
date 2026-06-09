@@ -152,29 +152,29 @@ let update msg model =
         model,
         [ processEffect "package surface test build" "dotnet" "build tests/Package.Tests/Package.Tests.fsproj -m:1 --no-restore --disable-build-servers" model.RepositoryRoot (path [ model.LogDir; "package-surface-check.txt" ])
           processEffect "generate package API reference" "dotnet" "fsi scripts/generate-package-api-reference.fsx" model.RepositoryRoot (path [ model.LogDir; "package-surface-check.txt" ])
-          focusedGateAssumptionCheck model "PackageSurfaceCheck"
+          focusedGateAssumptionCheck model Targets.PackageSurfaceCheck
           processEffect "package surface check" "dotnet" "test tests/Package.Tests/Package.Tests.fsproj -m:1 --no-build --no-restore" model.RepositoryRoot (path [ model.LogDir; "package-surface-check.txt" ])
           PackageSurfaceReport
           RequireFiles("stable package surface baselines", [ path [ model.SurfaceBaselineDir; "FS.Skia.UI.KeyboardInput.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.txt" ]; path [ model.SurfaceBaselineDir; "FS.Skia.UI.Controls.Elmish.txt" ] ])
-          focusedGateSummary model "PackageSurfaceCheck" ]
+          focusedGateSummary model Targets.PackageSurfaceCheck ]
     | StartTarget Targets.PerPackageSurfaceDiff ->
         model,
-        [ focusedGateAssumptionCheck model "PerPackageSurfaceDiff"
+        [ focusedGateAssumptionCheck model Targets.PerPackageSurfaceDiff
           PerPackageSurfaceDiffCheck
           RequireFiles(
               "per-package surface diff artifacts",
               [ path [ model.ReadinessDir; "per-package-surface-diff.md" ]
                 path [ model.RepositoryRoot; "readiness"; "per-package-surface-expectations.md" ] ]
           )
-          focusedGateSummary model "PerPackageSurfaceDiff" ]
+          focusedGateSummary model Targets.PerPackageSurfaceDiff ]
     | StartTarget Targets.FsiTranscripts ->
         model,
-        [ focusedGateAssumptionCheck model "FsiTranscripts"
+        [ focusedGateAssumptionCheck model Targets.FsiTranscripts
           yield!
               fsiScripts
               |> List.map (fun (name, script) ->
                   processEffect $"dotnet fsi {script}" "dotnet" $"fsi {script}" model.RepositoryRoot (path [ model.FsiDir; $"{name}.txt" ]))
-          focusedGateSummary model "FsiTranscripts" ]
+          focusedGateSummary model Targets.FsiTranscripts ]
     | StartTarget Targets.SampleContractSmoke ->
         model,
         sampleSmokeProjects
@@ -199,7 +199,7 @@ let update msg model =
           WriteStructuredReport("template smoke support boundary", path [ model.TemplateEvidenceDir; "non-visual-support.md" ], "# Non-Visual Support\n\nV3 template validation is non-visual. Full visual evidence, release validation, an external template repository, and broader distribution automation remain deferred roadmap work.\n") ]
     | StartTarget Targets.TemplateCheck ->
         model,
-        [ focusedGateAssumptionCheck model "TemplateCheck"
+        [ focusedGateAssumptionCheck model Targets.TemplateCheck
           RequireFiles(
               "template validation artifact set",
               [ path [ model.TemplateEvidenceDir; "template-pack.log" ]
@@ -224,7 +224,7 @@ let update msg model =
           RequireFiles("package skew check report", [ path [ model.ReadinessDir; "package-skew.md" ] ])
           // FR-004: TemplateCheck operates on the LocalPacked package set; the verdict states it.
           WriteStructuredReport("template verdict", path [ model.TemplateEvidenceDir; "verdict.md" ], "# TemplateCheck Verdict\n\npackage-set: LocalPacked\n\nPASS: source/package V3 app, headless-scene, governed, and sample-pack generated projects passed non-visual validation; pinned-vs-local package-skew sub-check clean.\n")
-          focusedGateSummary model "TemplateCheck" ]
+          focusedGateSummary model Targets.TemplateCheck ]
     | StartTarget Targets.CapabilityCheck ->
         model,
         [ CapabilityCatalogCheck
@@ -233,12 +233,40 @@ let update msg model =
         model,
         [ SkillCatalogCheck
           RequireFiles("selected skill report output", [ model.SelectedSkillsReportPath ]) ]
-    | StartTarget Targets.GeneratedProductCheck ->
+    // Feature 088 (US2, FR-006): the cheap structural sub-target — generate + structural scan
+    // + the five file-list reports. Independent (no prereqs) so it fails fast before any
+    // consumer validation pays its restore/build cost. Re-emits the EXISTING effects (no new
+    // Effect constructor); `update` stays pure and the interpreter is unchanged.
+    | StartTarget Targets.GeneratedProductStructure ->
         model,
-        [ focusedGateAssumptionCheck model "GeneratedProductCheck"
+        [ focusedGateAssumptionCheck model Targets.GeneratedProductStructure
           GenerateV3Products
           ScanV3GeneratedProducts
+          RequireFiles(
+              "generated product file-list reports",
+              [ path [ model.GeneratedFileListsDir; "app-source.txt" ]
+                path [ model.GeneratedFileListsDir; "app-package.txt" ]
+                path [ model.GeneratedFileListsDir; "headless-scene-source.txt" ]
+                path [ model.GeneratedFileListsDir; "governed-source.txt" ]
+                path [ model.GeneratedFileListsDir; "sample-pack-source.txt" ] ]
+            )
+          focusedGateSummary model Targets.GeneratedProductStructure ]
+    // Feature 088 (US2, FR-006): the expensive consumer-validation sub-target — consumer
+    // restore/build/Verify over the generated product. Depends on the structural sub-target.
+    | StartTarget Targets.GeneratedConsumerValidation ->
+        model,
+        [ focusedGateAssumptionCheck model Targets.GeneratedConsumerValidation
           ValidateGeneratedConsumer
+          RequireFiles("generated consumer validation report", [ model.GeneratedProductValidationPath ])
+          focusedGateSummary model Targets.GeneratedConsumerValidation ]
+    // Feature 088 (US2, FR-007): the umbrella stays resolvable and produces the IDENTICAL
+    // evidence/verdict, but delegates the scan + validation to the two sub-targets (its
+    // prerequisites). It re-asserts the full artifact set so `GeneratedProductCheck` keeps its
+    // byte-identical RequireFiles guard; the scan/validation effects are NOT re-emitted here,
+    // so nothing runs twice.
+    | StartTarget Targets.GeneratedProductCheck ->
+        model,
+        [ focusedGateAssumptionCheck model Targets.GeneratedProductCheck
           RequireFiles(
               "generated product file-list reports",
               [ path [ model.GeneratedFileListsDir; "app-source.txt" ]
@@ -248,7 +276,7 @@ let update msg model =
                 path [ model.GeneratedFileListsDir; "sample-pack-source.txt" ]
                 model.GeneratedProductValidationPath ]
             )
-          focusedGateSummary model "GeneratedProductCheck" ]
+          focusedGateSummary model Targets.GeneratedProductCheck ]
     | StartTarget Targets.ControlsCatalogCheck ->
         let report = """# Control Catalog
 
@@ -262,10 +290,10 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
 - chart-graph-owner: controls
 """
         model,
-        [ focusedGateAssumptionCheck model "ControlsCatalogCheck"
+        [ focusedGateAssumptionCheck model Targets.ControlsCatalogCheck
           processEffect "controls catalog tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj -m:1 --no-build --no-restore --filter Catalog" model.RepositoryRoot (path [ model.LogDir; "controls-catalog-check.txt" ])
           WriteStructuredReport("controls catalog", path [ model.ReadinessDir; "control-catalog.md" ], report)
-          focusedGateSummary model "ControlsCatalogCheck" ]
+          focusedGateSummary model Targets.ControlsCatalogCheck ]
     | StartTarget Targets.ControlsCatalogGenerationCheck ->
         // Feature 066 (US1, FR-005): the standalone typed-catalog drift gate. Read both
         // generated files at this interpreter edge (TargetMetadataDrift precedent), compute
@@ -308,7 +336,7 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
                 |> String.concat Environment.NewLine
 
         model,
-        [ focusedGateAssumptionCheck model "ControlsCatalogGenerationCheck"
+        [ focusedGateAssumptionCheck model Targets.ControlsCatalogGenerationCheck
           WriteStructuredReport(
               "controls catalog generation",
               path [ model.ReadinessDir; "control-catalog-generation.md" ],
@@ -316,7 +344,7 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
           )
           if not (List.isEmpty drift) then
               FailWith(String.Join(Environment.NewLine, drift))
-          focusedGateSummary model "ControlsCatalogGenerationCheck" ]
+          focusedGateSummary model Targets.ControlsCatalogGenerationCheck ]
     | StartTarget Targets.DesignTokenDrift ->
         // Feature 069 (US1, FR-006): the design-token generation-currency (drift) gate. Read
         // the generated module at this interpreter edge (ControlsCatalogGenerationCheck
@@ -361,7 +389,7 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
                 |> String.concat Environment.NewLine
 
         model,
-        [ focusedGateAssumptionCheck model "DesignTokenDrift"
+        [ focusedGateAssumptionCheck model Targets.DesignTokenDrift
           WriteStructuredReport(
               "design token generation",
               path [ model.ReadinessDir; "design-token-generation.md" ],
@@ -369,7 +397,7 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
           )
           if not (List.isEmpty drift) then
               FailWith(String.Join(Environment.NewLine, drift))
-          focusedGateSummary model "DesignTokenDrift" ]
+          focusedGateSummary model Targets.DesignTokenDrift ]
     | StartTarget Targets.ContrastCheck ->
         // Feature 083 (US1, FR-007/FR-008): the WCAG color-contrast gate. Read the DTCG token
         // source at this interpreter edge (DesignTokenDrift precedent), parse it into the
@@ -392,7 +420,7 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
         let report = ContrastGate.renderReport outcomes
 
         model,
-        [ focusedGateAssumptionCheck model "ContrastCheck"
+        [ focusedGateAssumptionCheck model Targets.ContrastCheck
           WriteStructuredReport(
               "color contrast evidence",
               path [ model.ReadinessDir; "color-contrast-evidence.md" ],
@@ -402,7 +430,7 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
               FailWith(sprintf "ContrastCheck: DTCG token source %s is missing — cannot measure shipped themes" DesignTokenGen.tokensJsonRel)
           if not (List.isEmpty diagnostics) then
               FailWith(String.Join(Environment.NewLine, diagnostics))
-          focusedGateSummary model "ContrastCheck" ]
+          focusedGateSummary model Targets.ContrastCheck ]
     | StartTarget Targets.ControlsCatalogDocsCheck ->
         // Feature 078 (US1, FR-005): the controls-catalog docs currency / completeness /
         // preview-honesty / link-resolution gate. Gather the observed docs tree at this
@@ -535,7 +563,7 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
                 |> String.concat Environment.NewLine
 
         model,
-        [ focusedGateAssumptionCheck model "ControlsCatalogDocsCheck"
+        [ focusedGateAssumptionCheck model Targets.ControlsCatalogDocsCheck
           WriteStructuredReport(
               "controls catalog docs",
               path [ model.ReadinessDir; "controls-catalog-docs.md" ],
@@ -544,7 +572,7 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
           if not (List.isEmpty drift) then
               FailWith(String.Join(Environment.NewLine, drift))
           RequireFiles("controls catalog docs report output", [ path [ model.ReadinessDir; "controls-catalog-docs.md" ] ])
-          focusedGateSummary model "ControlsCatalogDocsCheck" ]
+          focusedGateSummary model Targets.ControlsCatalogDocsCheck ]
     | StartTarget Targets.ControlFidelityCheck ->
         // Feature 080 (FR-008): the render-capable decoded-content gate. FS.Skia.UI.Build stays
         // SkiaSharp-free and shells out to the harness (mirrors the SkiaViewer.Tests --sequenced
@@ -552,9 +580,9 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
         // specs/080-control-render-fidelity/readiness/control-fidelity.md, and exits non-zero on
         // any signature/fixture/fail-closed miss (naming the control).
         model,
-        [ focusedGateAssumptionCheck model "ControlFidelityCheck"
+        [ focusedGateAssumptionCheck model Targets.ControlFidelityCheck
           processEffect "control fidelity gate (decode previews + fixtures)" "dotnet" "run --project tests/ControlsPreview.Harness --no-restore -- --fidelity" model.RepositoryRoot (path [ model.LogDir; "control-fidelity-check.txt" ])
-          focusedGateSummary model "ControlFidelityCheck" ]
+          focusedGateSummary model Targets.ControlFidelityCheck ]
     | StartTarget Targets.ControlsInteractionCheck ->
         let report = """# Interaction Tests
 
@@ -568,10 +596,10 @@ PASS: pointer, keyboard, disabled/read-only suppression, exactly-once dispatch, 
 - IME/composition without host support reports `UnsupportedEnvironment`
 """
         model,
-        [ focusedGateAssumptionCheck model "ControlsInteractionCheck"
+        [ focusedGateAssumptionCheck model Targets.ControlsInteractionCheck
           processEffect "controls interaction tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj -m:1 --no-build --no-restore --filter Interaction" model.RepositoryRoot (path [ model.LogDir; "controls-interaction-check.txt" ])
           WriteStructuredReport("controls interactions", path [ model.ReadinessDir; "interaction-tests.md" ], report)
-          focusedGateSummary model "ControlsInteractionCheck" ]
+          focusedGateSummary model Targets.ControlsInteractionCheck ]
     | StartTarget Targets.ControlsRenderingCheck ->
         let report = """# Layout And Rendering
 
@@ -586,79 +614,79 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
 - environment-diagnostics: none for deterministic scene readback
 """
         model,
-        [ focusedGateAssumptionCheck model "ControlsRenderingCheck"
+        [ focusedGateAssumptionCheck model Targets.ControlsRenderingCheck
           processEffect "controls rendering tests" "dotnet" "test tests/Controls.Tests/Controls.Tests.fsproj -m:1 --no-build --no-restore --filter Rendering" model.RepositoryRoot (path [ model.LogDir; "controls-rendering-check.txt" ])
           WriteStructuredReport("controls rendering", path [ model.ReadinessDir; "layout-rendering.md" ], report)
-          focusedGateSummary model "ControlsRenderingCheck" ]
+          focusedGateSummary model Targets.ControlsRenderingCheck ]
     | StartTarget Targets.DependencyReport ->
         model,
-        [ focusedGateAssumptionCheck model "DependencyReport"
+        [ focusedGateAssumptionCheck model Targets.DependencyReport
           DependencyOwnershipReport
           processEffect "dependency report" "dotnet" ("fsi scripts/dependency-report.fsx " + quote (path [ model.ReadinessDir; "dependencies.md" ])) model.RepositoryRoot (path [ model.LogDir; "dependency-report.txt" ])
           RequireFiles("dependency report output", [ model.DependencyReportPath ])
-          focusedGateSummary model "DependencyReport" ]
+          focusedGateSummary model Targets.DependencyReport ]
     | StartTarget Targets.SymbolCrossCheck ->
         model,
-        [ focusedGateAssumptionCheck model "SymbolCrossCheck"
+        [ focusedGateAssumptionCheck model Targets.SymbolCrossCheck
           SymbolCrossCheckAnalyze
           RequireFiles("symbol cross-check output", [ path [ model.ReadinessDir; "symbol-cross-check.md" ] ])
-          focusedGateSummary model "SymbolCrossCheck" ]
+          focusedGateSummary model Targets.SymbolCrossCheck ]
     | StartTarget Targets.GeneratedGuidanceCheck ->
         model,
-        [ focusedGateAssumptionCheck model "GeneratedGuidanceCheck"
+        [ focusedGateAssumptionCheck model Targets.GeneratedGuidanceCheck
           GeneratedGuidanceScan model.GeneratedGuidanceReportPath
           RequireFiles("generated guidance report output", [ model.GeneratedGuidanceReportPath ])
-          focusedGateSummary model "GeneratedGuidanceCheck" ]
+          focusedGateSummary model Targets.GeneratedGuidanceCheck ]
     | StartTarget Targets.SkillSyncCheck ->
         model,
-        [ focusedGateAssumptionCheck model "SkillSyncCheck"
+        [ focusedGateAssumptionCheck model Targets.SkillSyncCheck
           SkillSyncGate
           RequireFiles("skill sync report", [ path [ model.ReadinessDir; "skill-sync-check.md" ]; path [ model.LogDir; "skill-sync-check.txt" ] ])
-          focusedGateSummary model "SkillSyncCheck" ]
+          focusedGateSummary model Targets.SkillSyncCheck ]
     | StartTarget Targets.SkillQualityCheck ->
         model,
-        [ focusedGateAssumptionCheck model "SkillQualityCheck"
+        [ focusedGateAssumptionCheck model Targets.SkillQualityCheck
           SkillQualityScan
           RequireFiles("skill quality report", [ path [ model.ReadinessDir; "skill-quality-check.md" ]; path [ model.LogDir; "skill-quality-check.txt" ] ])
-          focusedGateSummary model "SkillQualityCheck" ]
+          focusedGateSummary model Targets.SkillQualityCheck ]
     | StartTarget Targets.PhaseHookParityCheck ->
         model,
-        [ focusedGateAssumptionCheck model "PhaseHookParityCheck"
+        [ focusedGateAssumptionCheck model Targets.PhaseHookParityCheck
           PhaseHookScan
           RequireFiles("phase hook parity report", [ path [ model.ReadinessDir; "phase-hook-parity-check.md" ]; path [ model.LogDir; "phase-hook-parity-check.txt" ] ])
-          focusedGateSummary model "PhaseHookParityCheck" ]
+          focusedGateSummary model Targets.PhaseHookParityCheck ]
     | StartTarget Targets.SkillContractPathCheck ->
         model,
-        [ focusedGateAssumptionCheck model "SkillContractPathCheck"
+        [ focusedGateAssumptionCheck model Targets.SkillContractPathCheck
           SkillContractPathScan
           RequireFiles("skill contract path report", [ path [ model.ReadinessDir; "skill-contract-path-check.md" ] ])
-          focusedGateSummary model "SkillContractPathCheck" ]
+          focusedGateSummary model Targets.SkillContractPathCheck ]
     | StartTarget Targets.TemplateUpdateSkillPackageCheck ->
         model,
-        [ focusedGateAssumptionCheck model "TemplateUpdateSkillPackageCheck"
+        [ focusedGateAssumptionCheck model Targets.TemplateUpdateSkillPackageCheck
           TemplateUpdatePackageScan
           RequireFiles("template update package report", [ path [ model.ReadinessDir; "template-update-package-check.md" ] ])
-          focusedGateSummary model "TemplateUpdateSkillPackageCheck" ]
+          focusedGateSummary model Targets.TemplateUpdateSkillPackageCheck ]
     | StartTarget Targets.TemplateDrift ->
         model,
-        [ focusedGateAssumptionCheck model "TemplateDrift"
+        [ focusedGateAssumptionCheck model Targets.TemplateDrift
           processEffect "template drift" "dotnet" $"fsi scripts/template-drift.fsx {quote model.TemplateDriftReportPath}" model.RepositoryRoot (path [ model.LogDir; "template-drift.txt" ])
           RequireFiles("template drift report output", [ model.TemplateDriftReportPath ])
-          focusedGateSummary model "TemplateDrift" ]
+          focusedGateSummary model Targets.TemplateDrift ]
     | StartTarget Targets.EvidenceGraph ->
         model,
-        [ focusedGateAssumptionCheck model "EvidenceGraph"
+        [ focusedGateAssumptionCheck model Targets.EvidenceGraph
           EvidenceGraphCheck
           RequireFiles("task graph output", [ path [ model.ReadinessDir; "task-graph.json" ]; path [ model.ReadinessDir; "task-graph.md" ] ])
           WriteStructuredReport("evidence graph readiness", model.EvidenceGraphReportPath, "# Evidence Graph Evidence\n\nPASS: `EvidenceGraph` ran graph validation only and refreshed `task-graph.md` and `task-graph.json` with accepted `[SEH]`, unaccepted `[S]`, and `[S*]` counts reported separately.\n\nRun `EvidenceAudit` for full merge-gate validation, including diff-scan and synthetic-evidence blocking checks.\n")
-          focusedGateSummary model "EvidenceGraph" ]
+          focusedGateSummary model Targets.EvidenceGraph ]
     | StartTarget Targets.EvidenceAudit ->
         model,
-        [ focusedGateAssumptionCheck model "EvidenceAudit"
+        [ focusedGateAssumptionCheck model Targets.EvidenceAudit
           EvidenceAuditCheck
           RequireFiles("evidence audit output", [ path [ model.LogDir; "evidence-audit.txt" ]; path [ model.ReadinessDir; "diff-scan-hits.json" ] ])
           WriteStructuredReport("evidence audit readiness", model.EvidenceAuditReportPath, "# Evidence Audit Evidence\n\nPASS: `EvidenceAudit` completed with synthetic propagation and diff-scan outputs present.\n\nSee `readiness/logs/evidence-audit.txt` for `accepted-seh-tasks`, `unaccepted-synthetic-tasks`, `auto-synthetic-tasks`, and `late-seh-tasks` counts. Accepted `[SEH]` evidence remains synthetic and is reported separately from real task evidence.\n")
-          focusedGateSummary model "EvidenceAudit" ]
+          focusedGateSummary model Targets.EvidenceAudit ]
     | StartTarget Targets.AgentReady ->
         let verdictJson =
             [ "{"
@@ -704,7 +732,7 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
           WriteStructuredJsonReport("agent-ready verdict json", path [ model.ReadinessDir; "agent-verdict.json" ], verdictJson)
           WriteStructuredReport("agent-ready verdict markdown", path [ model.ReadinessDir; "agent-verdict.md" ], verdictMarkdown)
           WriteStructuredReport("agent-ready feature evidence", path [ model.ReadinessDir; "agent-ready-verdict.md" ], verdictMarkdown + Environment.NewLine)
-          focusedGateSummary model "AgentReady" ]
+          focusedGateSummary model Targets.AgentReady ]
     | StartTarget Targets.TargetMetadata ->
         let metadata = allTargetMetadata model
         let report =
@@ -712,7 +740,7 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
 
         model,
         [ WriteStructuredJsonReport("target metadata", model.TargetMetadataReportPath, report)
-          focusedGateSummary model "TargetMetadata" ]
+          focusedGateSummary model Targets.TargetMetadata ]
     | StartTarget Targets.TargetMetadataDrift ->
         let metadata = allTargetMetadata model
         let structuralDiagnostics = validateTargetMetadataAgainstRepo model.RepositoryRoot requiredTargets metadata
@@ -880,7 +908,7 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
           WriteStructuredReport("target metadata drift", model.TargetMetadataDriftReportPath, report)
           if not diagnostics.IsEmpty then
               FailWith(String.Join(Environment.NewLine, diagnostics))
-          focusedGateSummary model "TargetMetadataDrift" ]
+          focusedGateSummary model Targets.TargetMetadataDrift ]
     | StartTarget Targets.Route ->
         // Feature 042 (FR-004): the typed selector runs in-process at the edge. The git
         // union-diff read, the --enforce File.Exists probe, and printing are interpreter I/O
@@ -968,7 +996,9 @@ PASS: Controls render evidence covered three viewport sizes, two scale factors, 
                 Target = "Verify"
                 Stage = "final"
                 ExitCode = Some 0
-                ProductChecksRun = [ "Dev"; "PackageSurfaceCheck"; "FsiTranscripts"; "ControlsCatalogCheck"; "ControlsInteractionCheck"; "ControlsRenderingCheck"; "DependencyReport"; "TemplateCheck"; "GeneratedProductCheck"; "GeneratedGuidanceCheck"; "TemplateDrift"; "EvidenceAudit" ]
+                // Feature 088 (US1, FR-004): derived from the typed productCheckGates projection
+                // (single source in Targets), byte-identical to the prior hand-maintained literal.
+                ProductChecksRun = Targets.productCheckGates |> List.map Targets.name
                 ProductFailures = []
                 EnvironmentFailures = []
                 HealthSnapshotPath = model.ProcessHealthPath

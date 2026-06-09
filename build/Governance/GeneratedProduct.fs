@@ -134,6 +134,14 @@ let runTemplateInstantiation model outputPath =
 let fileShouldBeScanned (filePath: string) =
     BuildGeneratedScanning.fileShouldBeScanned filePath
 
+// Feature 088 (US3, FR-011): the shared required-file validator both generated-row scans use.
+// `scanGeneratedRow` probes on-disk `File.Exists` under the row root; `scanV3GeneratedRow`
+// probes membership in its already-enumerated file list. The presence predicate differs; the
+// "which required relatives are absent" filter is identical and now single-sourced, so the
+// findings stay byte-identical by construction (the same `List.filter` over the same list).
+let missingRequiredFiles (isPresent: string -> bool) (required: string list) =
+    required |> List.filter (fun relative -> not (isPresent relative))
+
 let generatedShellScripts (row: TemplateRow) =
     Directory.EnumerateFiles(row.Root, "*.sh", SearchOption.AllDirectories)
     |> Seq.filter fileShouldBeScanned
@@ -268,7 +276,7 @@ let scanGeneratedRow (row: TemplateRow) =
 
     let missingRequired =
         required
-        |> List.filter (fun relative -> not (File.Exists(path [ row.Root; relative ])))
+        |> missingRequiredFiles (fun relative -> File.Exists(path [ row.Root; relative ]))
 
     if not (List.isEmpty placeholderHits) then
         failwithf "%s/%s generated project has unreplaced identity tokens:%s%s" row.Artifact row.Profile Environment.NewLine (String.Join(Environment.NewLine, placeholderHits))
@@ -1069,7 +1077,7 @@ let scanV3GeneratedRow model row =
           "build.fsx"
           "fake.sh"
           "fake.cmd" ]
-        |> List.filter (fun required -> files |> List.contains required |> not)
+        |> missingRequiredFiles (fun required -> files |> List.contains required)
 
     if row.Profile = "app" && appProjects.Length <> 1 then
         failwithf "%s/%s expected exactly one product app, found %d" row.Artifact row.Profile appProjects.Length
@@ -1448,16 +1456,31 @@ let runScanV3GeneratedProducts model =
 // no `~/.local/share/nuget-local` directory restores successfully once the packages are on
 // nuget.org. The in-repo dev loop keeps the local feed via a separate validation overlay
 // (`validationFeedNuGetConfigContent`), never emitted into a consumer project.
-let consumerNuGetConfigContent (model: BuildModel) =
-    ignore model
-    """<?xml version="1.0" encoding="utf-8"?>
+// Feature 088 (US3, FR-012): the two NuGet.config templates (the shipped public-feed-only
+// consumer config and the in-repo validation overlay that adds the machine-local feed) are
+// rendered from ONE source. The ONLY difference is the optional `local` feed line inserted
+// between `<clear />` and the public source, so a single renderer eliminates the paired
+// near-duplicate templates while keeping both outputs byte-identical to the prior literals.
+let private renderNuGetConfig (localFeedDir: string option) =
+    let localSource =
+        match localFeedDir with
+        | Some dir ->
+            $"""    <add key="local" value="{dir}" />
+"""
+        | None -> ""
+
+    $"""<?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <packageSources>
     <clear />
-    <add key="nuget" value="https://api.nuget.org/v3/index.json" />
+{localSource}    <add key="nuget" value="https://api.nuget.org/v3/index.json" />
   </packageSources>
 </configuration>
 """
+
+let consumerNuGetConfigContent (model: BuildModel) =
+    ignore model
+    renderNuGetConfig None
 
 // Feature 064 (FR-003 conflict resolution): the in-repo validation overlay. NEVER emitted
 // into a generated consumer project — only used by `runGeneratedConsumerValidation` so the
@@ -1465,15 +1488,7 @@ let consumerNuGetConfigContent (model: BuildModel) =
 // nuget.org. The two configs are independent: the consumer config is public-feed only; this
 // overlay adds the machine-local feed for in-repo release validation.
 let validationFeedNuGetConfigContent model =
-    $"""<?xml version="1.0" encoding="utf-8"?>
-<configuration>
-  <packageSources>
-    <clear />
-    <add key="local" value="{model.LocalPackageDir}" />
-    <add key="nuget" value="https://api.nuget.org/v3/index.json" />
-  </packageSources>
-</configuration>
-"""
+    renderNuGetConfig (Some model.LocalPackageDir)
 
 let writeLocalNuGetConfig model root =
     File.WriteAllText(path [ root; "NuGet.config" ], consumerNuGetConfigContent model)

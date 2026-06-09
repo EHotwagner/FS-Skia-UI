@@ -1,0 +1,26 @@
+graphics-env normalization: DualDisplay detected — removed WAYLAND_DISPLAY; set GDK_BACKEND=x11, SDL_VIDEODRIVER=x11
+run Route
+Building project with version: LocalBuild
+Shortened DependencyGraph for Target Route:
+<== Route
+
+The running order is:
+Group - 1
+  - Route
+Starting target 'Route'
+developer-class=framework-author
+tier=agent-ready
+gates=Dev, GeneratedGuidanceCheck, TemplateDrift, EvidenceGraph, EvidenceAudit
+dogfood-forced=false
+matched-rules=evidence-governance, specify-catchall, docs-only
+Finished (Success) 'Route' in 00:00:00.0934643
+
+---------------------------------------------------------------------
+Build Time Report
+---------------------------------------------------------------------
+Target     Duration
+------     --------
+Route      00:00:00.0910348
+Total:     00:00:00.1672749
+Status:    Ok
+---------------------------------------------------------------------

@@ -185,16 +185,41 @@ validation_verdict:
   diagnostic: The FAKE Test target runs the native-GUI Expecto suites (Smoke.Tests and SkiaViewer.Tests) via direct Expecto execution to bypass the VSTest/YoloDev adapter testhost (libdecor-gtk crash under a dual Wayland/X11 display); all other test projects continue to use dotnet test.
 """
 
-let focusedGateContract model target =
+// Feature 088 (US1, FR-001/FR-002/FR-005): the focused-gate contract is keyed by the typed
+// Targets.Target (was a `string` with a `_ -> degraded` wildcard). The match is exhaustive
+// and wildcard-free, so adding a future Target case without classifying it is a COMPILE
+// ERROR (SC-001) rather than a silent verification-degraded fall-through. Every routable gate
+// resolves to a non-degraded contract (SC-003); true non-routable/internal targets resolve
+// through `internalTargetContract`, which reproduces the exact former wildcard value so their
+// target-metadata stays byte-identical (FR-002).
+let focusedGateContract model (target: Targets.Target) =
     let log name = path [ model.LogDir; name ]
     let readiness name = Some(path [ model.ReadinessDir; name ])
     let noRestoreControls =
         [ "requires-restored-project:tests/Controls.Tests/Controls.Tests.fsproj"
           "requires-built-project:tests/Controls.Tests/Controls.Tests.fsproj" ]
 
+    let nm = Targets.name target
+
+    // The exact former wildcard value (`VerificationDegraded`, no readiness path) reproduced
+    // verbatim for non-routable/internal targets — preserves target-metadata byte-identity.
+    let internalTargetContract () =
+        { TargetName = nm
+          DirectPrerequisites = []
+          Command = $"./fake.sh build -t {nm}"
+          LogPath = log $"{nm}.txt"
+          ReadinessPath = None
+          StaleAssumptions = []
+          VerdictCategory = VerificationDegraded }
+
+    // A routable gate that previously fell through the wildcard now resolves to a non-degraded
+    // (authoritative) contract of the same shape — the SC-003 fix, minimal and explicit.
+    let routableTargetContract () =
+        { internalTargetContract () with VerdictCategory = VerificationSuccess }
+
     match target with
-    | "PackageSurfaceCheck" ->
-        { TargetName = target
+    | Targets.PackageSurfaceCheck ->
+        { TargetName = nm
           DirectPrerequisites = [ "Build" ]
           Command = "./fake.sh build -t PackageSurfaceCheck"
           LogPath = log "package-surface-check.txt"
@@ -203,134 +228,171 @@ let focusedGateContract model target =
               [ "requires-restored-project:tests/Package.Tests/Package.Tests.fsproj"
                 "requires-built-project:tests/Package.Tests/Package.Tests.fsproj" ]
           VerdictCategory = VerificationSuccess }
-    | "FsiTranscripts" ->
-        { TargetName = target
+    | Targets.FsiTranscripts ->
+        { TargetName = nm
           DirectPrerequisites = [ "Build" ]
           Command = "./fake.sh build -t FsiTranscripts"
           LogPath = path [ model.FsiDir; "prelude.txt" ]
           ReadinessPath = Some model.FsiDir
           StaleAssumptions = []
           VerdictCategory = VerificationSuccess }
-    | "ControlsCatalogCheck" ->
-        { TargetName = target
+    | Targets.ControlsCatalogCheck ->
+        { TargetName = nm
           DirectPrerequisites = []
           Command = "./fake.sh build -t ControlsCatalogCheck"
           LogPath = log "controls-catalog-check.txt"
           ReadinessPath = readiness "control-catalog.md"
           StaleAssumptions = noRestoreControls
           VerdictCategory = VerificationSuccess }
-    | "ControlsCatalogGenerationCheck" ->
+    | Targets.ControlsCatalogGenerationCheck ->
         // Feature 066: pure text-comparison currency gate over committed files — no project
         // build prerequisite (so no requires-restored/built assumptions, unlike the sibling
         // Controls test gates).
-        { TargetName = target
+        { TargetName = nm
           DirectPrerequisites = []
           Command = "./fake.sh build -t ControlsCatalogGenerationCheck"
           LogPath = log "controls-catalog-generation-check.txt"
           ReadinessPath = readiness "control-catalog-generation.md"
           StaleAssumptions = []
           VerdictCategory = VerificationSuccess }
-    | "ControlsInteractionCheck" ->
-        { TargetName = target
+    | Targets.ControlsInteractionCheck ->
+        { TargetName = nm
           DirectPrerequisites = []
           Command = "./fake.sh build -t ControlsInteractionCheck"
           LogPath = log "controls-interaction-check.txt"
           ReadinessPath = readiness "interaction-tests.md"
           StaleAssumptions = noRestoreControls
           VerdictCategory = VerificationSuccess }
-    | "ControlsRenderingCheck" ->
-        { TargetName = target
+    | Targets.ControlsRenderingCheck ->
+        { TargetName = nm
           DirectPrerequisites = []
           Command = "./fake.sh build -t ControlsRenderingCheck"
           LogPath = log "controls-rendering-check.txt"
           ReadinessPath = readiness "layout-rendering.md"
           StaleAssumptions = noRestoreControls
           VerdictCategory = VerificationSuccess }
-    | "DependencyReport" ->
-        { TargetName = target
+    | Targets.DependencyReport ->
+        { TargetName = nm
           DirectPrerequisites = []
           Command = "./fake.sh build -t DependencyReport"
           LogPath = log "dependency-report.txt"
           ReadinessPath = Some model.DependencyReportPath
           StaleAssumptions = []
           VerdictCategory = VerificationSuccess }
-    | "SymbolCrossCheck" ->
-        { TargetName = target
+    | Targets.SymbolCrossCheck ->
+        { TargetName = nm
           DirectPrerequisites = []
           Command = "./fake.sh build -t SymbolCrossCheck"
           LogPath = log "symbol-cross-check.txt"
           ReadinessPath = readiness "symbol-cross-check.md"
           StaleAssumptions = []
           VerdictCategory = VerificationSuccess }
-    | "TemplateCheck" ->
-        { TargetName = target
+    | Targets.TemplateCheck ->
+        { TargetName = nm
           DirectPrerequisites = [ "TemplatePack"; "TemplateInstallSource"; "TemplateInstallPackage"; "TemplateInstantiate"; "TemplateSmoke" ]
           Command = "./fake.sh build -t TemplateCheck"
           LogPath = path [ model.TemplateEvidenceDir; "verdict.md" ]
           ReadinessPath = Some(path [ model.TemplateEvidenceDir; "verdict.md" ])
           StaleAssumptions = []
           VerdictCategory = VerificationSuccess }
-    | "GeneratedProductCheck" ->
-        { TargetName = target
+    | Targets.GeneratedProductCheck ->
+        { TargetName = nm
           DirectPrerequisites = [ "CapabilityCheck"; "SkillCheck" ]
           Command = "./fake.sh build -t GeneratedProductCheck"
           LogPath = path [ model.GeneratedFileListsDir; "summary.md" ]
           ReadinessPath = Some(path [ model.GeneratedFileListsDir; "summary.md" ])
           StaleAssumptions = []
           VerdictCategory = VerificationSuccess }
-    | "GeneratedGuidanceCheck" ->
-        { TargetName = target
+    | Targets.GeneratedGuidanceCheck ->
+        { TargetName = nm
           DirectPrerequisites = []
           Command = "./fake.sh build -t GeneratedGuidanceCheck"
           LogPath = model.GeneratedGuidanceReportPath
           ReadinessPath = Some model.GeneratedGuidanceReportPath
           StaleAssumptions = []
           VerdictCategory = VerificationSuccess }
-    | "TemplateDrift" ->
-        { TargetName = target
+    | Targets.TemplateDrift ->
+        { TargetName = nm
           DirectPrerequisites = []
           Command = "./fake.sh build -t TemplateDrift"
           LogPath = log "template-drift.txt"
           ReadinessPath = Some model.TemplateDriftReportPath
           StaleAssumptions = []
           VerdictCategory = VerificationSuccess }
-    | "SkillSyncCheck" ->
-        { TargetName = target
+    | Targets.SkillSyncCheck ->
+        { TargetName = nm
           DirectPrerequisites = []
           Command = "./fake.sh build -t SkillSyncCheck"
           LogPath = log "skill-sync-check.txt"
           ReadinessPath = readiness "skill-sync-check.md"
           StaleAssumptions = []
           VerdictCategory = VerificationSuccess }
-    | "EvidenceGraph" ->
-        { TargetName = target
+    | Targets.EvidenceGraph ->
+        { TargetName = nm
           DirectPrerequisites = []
           Command = "./fake.sh build -t EvidenceGraph"
           LogPath = log "evidence-graph.txt"
           ReadinessPath = Some(path [ model.ReadinessDir; "task-graph.md" ])
           StaleAssumptions = []
           VerdictCategory = VerificationSuccess }
-    | "EvidenceAudit" ->
-        { TargetName = target
+    | Targets.EvidenceAudit ->
+        { TargetName = nm
           DirectPrerequisites = [ "EvidenceGraph" ]
           Command = "./fake.sh build -t EvidenceAudit"
           LogPath = log "evidence-audit.txt"
           ReadinessPath = Some model.EvidenceAuditReportPath
           StaleAssumptions = []
           VerdictCategory = VerificationSuccess }
-    | _ ->
-        { TargetName = target
-          DirectPrerequisites = []
-          Command = $"./fake.sh build -t {target}"
-          LogPath = log $"{target}.txt"
-          ReadinessPath = None
-          StaleAssumptions = []
-          VerdictCategory = VerificationDegraded }
+    // Routable gates that previously fell through the wildcard — now explicit, non-degraded
+    // (SC-003). Same contract shape as the former wildcard, but authoritative. Includes the
+    // two new GeneratedProductCheck split sub-targets (Feature 088, US2).
+    | Targets.Dev
+    | Targets.PerPackageSurfaceDiff
+    | Targets.DesignTokenDrift
+    | Targets.ContrastCheck
+    | Targets.ControlsCatalogDocsCheck
+    | Targets.ControlFidelityCheck
+    | Targets.SkillQualityCheck
+    | Targets.PhaseHookParityCheck
+    | Targets.SkillContractPathCheck
+    | Targets.TemplateUpdateSkillPackageCheck
+    | Targets.AgentReady
+    | Targets.TargetMetadataDrift
+    | Targets.Verify
+    | Targets.Ci
+    | Targets.PrePublishCheck
+    | Targets.Publish
+    | Targets.GeneratedProductStructure
+    | Targets.GeneratedConsumerValidation -> routableTargetContract ()
+    // Non-routable / internal targets — reproduce the exact former wildcard value verbatim
+    // (VerificationDegraded, no readiness) so target-metadata is byte-identical (FR-002).
+    | Targets.Clean
+    | Targets.Restore
+    | Targets.Build
+    | Targets.Test
+    | Targets.PackLocal
+    | Targets.RefreshSurfaceBaselines
+    | Targets.SampleContractSmoke
+    | Targets.TemplatePack
+    | Targets.TemplateInstallSource
+    | Targets.TemplateInstallPackage
+    | Targets.TemplateInstantiate
+    | Targets.TemplateSmoke
+    | Targets.CapabilityCheck
+    | Targets.SkillCheck
+    | Targets.TargetMetadata
+    | Targets.VerifyPreflight
+    | Targets.CiPreflight
+    | Targets.StaleBoundaryScan
+    | Targets.FinalReadiness
+    | Targets.Route
+    | Targets.PackageSmoke
+    | Targets.BuildWorkflowCheck -> internalTargetContract ()
 
-let focusedGateSummary model target =
+let focusedGateSummary model (target: Targets.Target) =
     focusedGateContract model target |> WriteFocusedGateSummary
 
-let focusedGateAssumptionCheck model target =
+let focusedGateAssumptionCheck model (target: Targets.Target) =
     focusedGateContract model target |> CheckFocusedGateAssumptions
 
 // Feature 041 (FR-002): TargetMetadata is computed from the typed Targets.spec
@@ -339,7 +401,7 @@ let focusedGateAssumptionCheck model target =
 // interpreter edge, Principle IV). The record type itself is owned by the library.
 let targetMetadata model (target: Targets.Target) : TargetMetadata.TargetMetadata =
     let spec = Targets.spec target
-    let contract = focusedGateContract model spec.Name
+    let contract = focusedGateContract model spec.Target
 
     { RunnableTargetName = spec.Name
       DirectPrerequisites = spec.DirectPrerequisites |> List.map Targets.name

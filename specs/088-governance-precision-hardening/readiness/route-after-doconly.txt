@@ -1,0 +1,16 @@
+# Route scenario: doc-only template/**/*.md
+# diff: template/base/docs/getting-started.md
+developer-class=framework-author
+tier=focused-authority
+gates=Dev, EvidenceGraph
+dogfood-forced=false
+matched-rules=template-docs
+
+# Route scenario: doc-only src/Controls/**/*.md
+# diff: src/Controls/widgets.md
+developer-class=framework-author
+tier=focused-authority
+gates=Dev, EvidenceGraph
+dogfood-forced=false
+matched-rules=controls-docs
+

@@ -90,6 +90,7 @@
          six-story red-green coverage (verdict, propagation, skew, provenance,
          per-package idempotence). -->
     <Compile Include="Feature087GovernanceTests.fs" />
+    <Compile Include="Feature088GovernanceTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

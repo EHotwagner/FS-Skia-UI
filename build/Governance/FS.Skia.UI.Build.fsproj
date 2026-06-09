@@ -24,6 +24,11 @@
   <ItemGroup>
     <Compile Include="Spike.fsi" />
     <Compile Include="Spike.fs" />
+    <!-- Feature 088 (US1, FR-003): Targets is the single source for the routable-gate
+         projection AgentValidation.knownGates derives from, so it compiles before
+         AgentValidation. Targets is self-contained (a closed DU + total functions). -->
+    <Compile Include="Targets.fsi" />
+    <Compile Include="Targets.fs" />
     <Compile Include="AgentValidation.fsi" />
     <Compile Include="AgentValidation.fs" />
     <Compile Include="SkillTreeGen.fsi" />
@@ -38,8 +43,6 @@
     <!-- Feature 077 (FR-006): pure phase-hook parity guard; depends only on Findings. -->
     <Compile Include="PhaseHookParity.fsi" />
     <Compile Include="PhaseHookParity.fs" />
-    <Compile Include="Targets.fsi" />
-    <Compile Include="Targets.fs" />
     <Compile Include="TargetMetadata.fsi" />
     <Compile Include="TargetMetadata.fs" />
     <Compile Include="Routing.fsi" />

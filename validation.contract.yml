@@ -161,6 +161,30 @@ routing_rules:
       - readiness/validation-contract.md
     timeout_class: focused
     failure_owner: governance
+  - id: controls-docs
+    tier: focused-authority
+    paths:
+      - "src/Controls/**/*.md"
+    feature_concerns:
+      - controls-docs
+    required_gates:
+      - EvidenceGraph
+    expected_artifacts:
+      - readiness/validation-contract.md
+    timeout_class: focused
+    failure_owner: product
+  - id: template-docs
+    tier: focused-authority
+    paths:
+      - "template/**/*.md"
+    feature_concerns:
+      - template-docs
+    required_gates:
+      - EvidenceGraph
+    expected_artifacts:
+      - readiness/validation-contract.md
+    timeout_class: focused
+    failure_owner: template
   - id: controls-catalog-docs
     tier: focused-authority
     paths:

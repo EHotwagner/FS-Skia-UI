@@ -1,0 +1,42 @@
+## Symbol consistency (analyze pass G)
+- entity-record Cost — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record Dev — in {tasks}, missing from {plan, data-model}
+- entity-record DirectPrerequisites — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record EvidenceAudit — in {tasks}, missing from {plan, data-model}
+- entity-record EvidenceGraph — in {tasks}, missing from {plan, data-model}
+- entity-record ExpectedArtifacts — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record FailureOwner — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record GeneratedGuidanceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedProductCheck — in {plan, tasks}, missing from {data-model}
+- entity-record Id — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record Matches — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record Name — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record Paths — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record RequiredGates — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record SkillSyncCheck — in {tasks}, missing from {plan, data-model}
+- entity-record Target — in {data-model, tasks}, missing from {plan}
+- entity-record TargetMetadataDrift — in {tasks}, missing from {plan, data-model}
+- entity-record TargetName — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- entity-record Tier — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record TimeoutClass — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-002 — in {plan, data-model}, missing from {tasks}
+- fr-id FR-004 — in {plan, data-model}, missing from {tasks}
+- fr-id FR-005 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-007 — in {plan, data-model}, missing from {tasks}
+- fr-id FR-009 — in {plan, data-model}, missing from {tasks}
+- fr-id FR-014 — in {plan}, missing from {data-model, tasks}
+- msg-case Effect — in {data-model, tasks}, missing from {plan}
+- msg-case Model — in {plan}, missing from {data-model, tasks}
+- msg-case ValidateGeneratedConsumer — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- sc-id SC-001 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-002 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-003 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-004 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-005 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-006 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-007 — in {plan, tasks}, missing from {data-model}
+- union-or-screen-variant Ci — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant GeneratedProductCheck — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant RequiredGates — in {plan}, missing from {data-model, tasks}
+- union-or-screen-variant Verify — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]

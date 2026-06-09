@@ -1,0 +1,16 @@
+# Route scenario: source: non-doc src/Controls + template source
+# diff: src/Controls/Controls.fsi, template/base/Directory.Build.props
+developer-class=framework-author
+tier=focused-authority
+gates=Dev, PackageSurfaceCheck, PerPackageSurfaceDiff, FsiTranscripts, TemplateCheck, GeneratedProductCheck, ControlsCatalogCheck, ControlsCatalogGenerationCheck, DesignTokenDrift, ContrastCheck, ControlsInteractionCheck, ControlsRenderingCheck, SkillContractPathCheck
+dogfood-forced=false
+matched-rules=controls-public-surface, generated-template, package-surface
+
+# Route scenario: mixed: src/Controls doc + source re-escalates
+# diff: src/Controls/widgets.md, src/Controls/Controls.fsi
+developer-class=framework-author
+tier=focused-authority
+gates=Dev, PackageSurfaceCheck, PerPackageSurfaceDiff, FsiTranscripts, GeneratedProductCheck, ControlsCatalogCheck, ControlsCatalogGenerationCheck, DesignTokenDrift, ContrastCheck, ControlsInteractionCheck, ControlsRenderingCheck
+dogfood-forced=false
+matched-rules=controls-public-surface, package-surface
+

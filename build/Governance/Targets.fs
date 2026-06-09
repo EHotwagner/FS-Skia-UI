@@ -21,6 +21,9 @@ type Target =
     | CapabilityCheck
     | SkillCheck
     | GeneratedProductCheck
+    // Feature 088 (US2, FR-006): the GeneratedProductCheck split (umbrella stays resolvable).
+    | GeneratedProductStructure
+    | GeneratedConsumerValidation
     | ControlsCatalogCheck
     // Feature 066 (US3, FR-006): the typed-catalog generation-currency (drift) gate.
     | ControlsCatalogGenerationCheck
@@ -71,9 +74,10 @@ type TargetSpec =
       FailureOwner: string }
 
 // Registry order (replaces requiredTargets). PackageSmoke/BuildWorkflowCheck are
-// dispatched but excluded here so the metadata registry stays at 40 rows
+// dispatched but excluded here so the metadata registry stays at 42 rows
 // (feature 044 retired SkillExamplesCheck; feature 063 added SymbolCrossCheck;
-// feature 064 added PrePublishCheck + Publish, 38 -> 40).
+// feature 064 added PrePublishCheck + Publish, 38 -> 40; feature 088 added the
+// GeneratedProductStructure/GeneratedConsumerValidation split sub-targets, 40 -> 42).
 let allTargets =
     [ Clean
       Restore
@@ -95,6 +99,8 @@ let allTargets =
       CapabilityCheck
       SkillCheck
       GeneratedProductCheck
+      GeneratedProductStructure
+      GeneratedConsumerValidation
       ControlsCatalogCheck
       ControlsCatalogGenerationCheck
       DesignTokenDrift
@@ -151,6 +157,8 @@ let name target =
     | CapabilityCheck -> "CapabilityCheck"
     | SkillCheck -> "SkillCheck"
     | GeneratedProductCheck -> "GeneratedProductCheck"
+    | GeneratedProductStructure -> "GeneratedProductStructure"
+    | GeneratedConsumerValidation -> "GeneratedConsumerValidation"
     | ControlsCatalogCheck -> "ControlsCatalogCheck"
     | ControlsCatalogGenerationCheck -> "ControlsCatalogGenerationCheck"
     | DesignTokenDrift -> "DesignTokenDrift"
@@ -206,7 +214,17 @@ let directPrerequisites target =
     | TemplateCheck -> [ TemplatePack; TemplateInstallSource; TemplateInstallPackage; TemplateInstantiate; TemplateSmoke ]
     | CapabilityCheck -> []
     | SkillCheck -> [ CapabilityCheck ]
-    | GeneratedProductCheck -> [ CapabilityCheck; SkillCheck; Dev; TemplateCheck ]
+    // Feature 088 (US2, FR-006/FR-007): the umbrella keeps its setup prerequisites and now
+    // composes the two split sub-targets, so `GeneratedProductCheck` produces the identical
+    // evidence/verdict while delegating the cheap structural scan and the expensive consumer
+    // validation to resolvable sub-targets. The umbrella arm no longer re-emits the scan/
+    // validation effects (they live on the sub-targets), so nothing runs twice.
+    | GeneratedProductCheck ->
+        [ CapabilityCheck; SkillCheck; Dev; TemplateCheck; GeneratedProductStructure; GeneratedConsumerValidation ]
+    // The structural sub-target is independent so it fails fast before any consumer cost; it
+    // reads the same local package feed (populated by PackLocal) the umbrella always assumed.
+    | GeneratedProductStructure -> []
+    | GeneratedConsumerValidation -> [ GeneratedProductStructure ]
     | ControlsCatalogCheck -> []
     | ControlsCatalogGenerationCheck -> []
     | DesignTokenDrift -> []
@@ -270,6 +288,7 @@ let private timeoutClass target =
     | Ci
     | TemplateCheck -> "broad"
     | GeneratedProductCheck
+    | GeneratedConsumerValidation
     | PackageSurfaceCheck
     | ControlFidelityCheck
     | FsiTranscripts -> "medium"
@@ -281,13 +300,16 @@ let private cost target =
     | Ci -> "high"
     | TemplateCheck
     | GeneratedProductCheck
+    | GeneratedConsumerValidation
     | ControlFidelityCheck -> "medium"
     | _ -> "low"
 
 let private failureOwner target =
     match target with
     | TemplateCheck
-    | GeneratedProductCheck -> "template"
+    | GeneratedProductCheck
+    | GeneratedProductStructure
+    | GeneratedConsumerValidation -> "template"
     | ControlsCatalogCheck
     | ControlsCatalogGenerationCheck
     | DesignTokenDrift
@@ -311,3 +333,81 @@ let requiredTargetNames = allTargets |> List.map name
 let targetDependencyRows =
     dispatchTargets
     |> List.map (fun target -> name target, directPrerequisites target |> List.map name)
+
+// Feature 088 (US1, FR-003): the routable-gate projection — the single source for
+// AgentValidation.knownGates. A routing rule can require any of these gates, plus the two
+// aggregate composites (Verify/Ci). Rendered in `allTargets` registry order so the derived
+// allowlist is byte-stable. Set-equal to the prior hand-maintained knownGates literal.
+let routableGates =
+    let routable target =
+        match target with
+        | Dev
+        | PackageSurfaceCheck
+        | PerPackageSurfaceDiff
+        | FsiTranscripts
+        | TemplateCheck
+        | GeneratedProductCheck
+        | ControlsCatalogCheck
+        | ControlsCatalogGenerationCheck
+        | DesignTokenDrift
+        | ContrastCheck
+        | ControlsCatalogDocsCheck
+        | ControlFidelityCheck
+        | ControlsInteractionCheck
+        | ControlsRenderingCheck
+        | SymbolCrossCheck
+        | GeneratedGuidanceCheck
+        | SkillSyncCheck
+        | SkillQualityCheck
+        | PhaseHookParityCheck
+        | SkillContractPathCheck
+        | TemplateUpdateSkillPackageCheck
+        | TemplateDrift
+        | EvidenceGraph
+        | EvidenceAudit
+        | AgentReady
+        | TargetMetadataDrift
+        | Verify
+        | Ci
+        | PrePublishCheck
+        | Publish -> true
+        | _ -> false
+
+    allTargets |> List.filter routable
+
+// Feature 088 (US1, FR-004): whether a target is one of Verify's product-facing evidence
+// gates. The membership is pinned to the historical `ProductChecksRun` set so the verdict's
+// derived list is byte-identical to the prior literal.
+let isProductCheck target =
+    match target with
+    | Dev
+    | PackageSurfaceCheck
+    | FsiTranscripts
+    | ControlsCatalogCheck
+    | ControlsInteractionCheck
+    | ControlsRenderingCheck
+    | DependencyReport
+    | TemplateCheck
+    | GeneratedProductCheck
+    | GeneratedGuidanceCheck
+    | TemplateDrift
+    | EvidenceAudit -> true
+    | _ -> false
+
+// Feature 088 (US1, FR-004): Verify's product-check gates in the pinned canonical order the
+// verdict has always rendered (NOT registry order — the historical ProductChecksRun literal
+// lists ControlsCatalog/Interaction/Rendering/Dependency before Template/GeneratedProduct).
+// `productCheckGates |> List.map name` equals the prior literal byte-for-byte and in order.
+let productCheckGates =
+    [ Dev
+      PackageSurfaceCheck
+      FsiTranscripts
+      ControlsCatalogCheck
+      ControlsInteractionCheck
+      ControlsRenderingCheck
+      DependencyReport
+      TemplateCheck
+      GeneratedProductCheck
+      GeneratedGuidanceCheck
+      TemplateDrift
+      EvidenceAudit ]

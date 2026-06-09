@@ -1,0 +1,5 @@
+# GeneratedProductCheck structural-vs-consumer split classification (Feature 088, US2)
+umbrella    GeneratedProductCheck      prereqs = ["CapabilityCheck"; "SkillCheck"; "Dev"; "TemplateCheck";
+ "GeneratedProductStructure"; "GeneratedConsumerValidation"]
+structural  GeneratedProductStructure  prereqs = []
+consumer    GeneratedConsumerValidation prereqs = ["GeneratedProductStructure"]
