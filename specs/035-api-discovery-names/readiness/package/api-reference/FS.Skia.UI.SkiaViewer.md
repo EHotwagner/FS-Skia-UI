@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 440
-xml-summary-count: 82
+symbol-count: 467
+xml-summary-count: 95
 source-fsi-paths:
 - src/SkiaViewer/SkiaViewer.fsi
 sampled-symbols:
@@ -550,6 +550,46 @@ type GeneratedAppHost<'model,'msg> =
       Tick: TimeSpan -> 'msg option
       Diagnostics: ViewerDiagnosticsOptions }
 
+[<RequireQualifiedAccess>]
+/// Framework-neutral pointer button identity surfaced to the interactive host (085).
+type ViewerPointerButtonKind =
+    | Primary
+    | Secondary
+    | Middle
+
+[<RequireQualifiedAccess>]
+/// The kind of raw pointer sample the interactive host delivers (085).
+type ViewerPointerPhaseKind =
+    | Moved
+    | Pressed
+    | Released
+    | Wheel
+    | Exited
+
+/// A host-independent pointer sample raised by the live window for the interactive host
+/// (085). X/Y are in the swapchain/scene coordinate space.
+type ViewerPointerInput =
+    { Phase: ViewerPointerPhaseKind
+      X: float
+      Y: float
+      Button: ViewerPointerButtonKind option
+      DeltaX: float
+      DeltaY: float }
+
+/// Pointer-aware, size-aware durable host variant (feature 085). Mirrors `GeneratedAppHost`
+/// field-for-field PLUS a model-aware pointer seam (`MapPointer`) and a size-carrying `View`.
+/// Controls-free lower runner; the Control/PointerInteraction-aware `InteractiveAppHost`
+/// (FS.Skia.UI.Controls.Elmish) adapts onto it (research D3-AMEND). `GeneratedAppHost` and
+/// `Viewer.runApp` are left intact (FR-006).
+type InteractiveViewerHost<'model,'msg> =
+    { Init: unit -> 'model * ViewerEffect list
+      Update: 'msg -> 'model -> 'model * ViewerEffect list
+      View: Size -> 'model -> SceneNode
+      MapKey: ViewerKey -> bool -> 'msg option
+      MapPointer: ViewerPointerInput -> Size -> 'model -> 'msg list
+      Tick: TimeSpan -> 'msg option
+      Diagnostics: ViewerDiagnosticsOptions }
+
 /// Public contract module exposed by this FS.Skia.UI package.
 module Viewer =
     /// Public contract function exposed by this FS.Skia.UI package.
@@ -590,6 +630,12 @@ module Viewer =
     val runApp: options: ViewerOptions -> host: GeneratedAppHost<'model,'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
     /// Public contract function exposed by this FS.Skia.UI package.
     val runAppWithWindowBehavior: options: ViewerOptions -> behavior: ViewerWindowBehaviorRequest -> host: GeneratedAppHost<'model,'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
+    /// Feature 085 — pointer-aware, size-aware durable launch. Routes native pointer events
+    /// and window resizes to the host and renders the size-aware `View`; additive to
+    /// `runApp`/`runAppWithWindowBehavior`, which stay intact (FR-004/FR-006/FR-009).
+    val runInteractiveViewer: options: ViewerOptions -> host: InteractiveViewerHost<'model,'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
+    /// As `runInteractiveViewer` with an explicit window behavior.
+    val runInteractiveViewerWithWindowBehavior: options: ViewerOptions -> behavior: ViewerWindowBehaviorRequest -> host: InteractiveViewerHost<'model,'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
     /// Public contract function exposed by this FS.Skia.UI package.
     val runAppEvidence: request: ViewerRunRequest -> options: ViewerOptions -> host: GeneratedAppHost<'model,'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
     /// Public contract function exposed by this FS.Skia.UI package.

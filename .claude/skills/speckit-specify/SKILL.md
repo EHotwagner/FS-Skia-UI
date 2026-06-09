@@ -110,6 +110,18 @@ Given that feature description, do this:
      depend on a remote that may move or change.
    - If the feature input is a **local file or inline text**, this snapshot step is an
      explicit **no-op** — do not fabricate a redundant `source-spec.md` copy.
+   - **Multi-file external source (feature 085, FR-016).** When the source spec is **not a
+     single file** but a **directory/tree** of files at a remote (e.g. a GitHub folder of
+     `.md` parts), snapshot the whole set, not just one URL:
+     1. **Enumerate** the tree — for GitHub, the contents API
+        `https://api.github.com/repos/<owner>/<repo>/contents/<path>?ref=<ref>` lists the
+        files (or use the `git/trees/<ref>?recursive=1` API for a deep tree).
+     2. **Fetch each file** in a stable (sorted) order.
+     3. **Assemble** them into one `SPECIFY_FEATURE_DIRECTORY/source-spec.md` with a top
+        header recording the source tree URL + ref + fetch context, and a **per-file header**
+        (`## <relative/path>` + the file's own source URL) before each file's content, so the
+        composite is reproducible offline and each part's provenance is preserved. `spec.md`
+        references the assembled in-repo `source-spec.md`, never the live tree.
 
    **IMPORTANT**:
    - Create only one feature per `/speckit-specify` invocation

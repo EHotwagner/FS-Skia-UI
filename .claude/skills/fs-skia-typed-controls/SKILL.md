@@ -96,6 +96,24 @@ let legacy = FS.Skia.UI.Controls.Badge.create [ FS.Skia.UI.Controls.Badge.text "
 Expect.equal (show (Widget.toControl typed)) (show legacy) "Badge lowers to legacy IR"
 ```
 
+## Consumer note: author via `Typed.*`; probe the package / `catalog.yml`, NOT `docs/api-surface/`
+
+A whole-catalog consumer should author through the typed front door
+(`FS.Skia.UI.Controls.Typed.*` — immutable `Props` records + `view`). When confirming a typed
+control's availability, **do not rely on `docs/api-surface/`** (feature 085, FR-012): that tree
+lists only the **legacy builder** surface (`X.create`), so the typed modules appear "missing"
+there even though they ship. Verify availability deterministically from:
+
+- the **package** — `FS.Skia.UI.Controls.dll` exposes the `FS.Skia.UI.Controls.Typed` modules; or
+- the catalog's per-control **`module:`** field in `catalog.yml` (e.g. `module: TextBlock`,
+  `module: Button`) — the authoritative typed-front-door probe (no DLL reflection and no
+  `docs/api-surface/` lookup needed).
+
+```bash
+# Enumerate the typed front door without docs/api-surface/:
+grep -E '^\s*module:' catalog.yml | sort -u        # per-control typed module ids
+```
+
 ## Build and test commands
 
 Run `./fake.sh build -t Dev` for the inner loop. When the public `.fsi` changes,

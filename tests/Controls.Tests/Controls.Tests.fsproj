@@ -26,6 +26,7 @@
     <Compile Include="ReconcileTests.fs" />
     <Compile Include="DesignTokenParityTests.fs" />
     <Compile Include="Feature080ExtractionTests.fs" />
+    <Compile Include="RenderTreeTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

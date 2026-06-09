@@ -10,3 +10,4 @@ FS.Skia.UI.Controls.Elmish.AdapterEffect`1+Tags
 FS.Skia.UI.Controls.Elmish.AdapterProgram`2
 FS.Skia.UI.Controls.Elmish.AdapterSubscription`1
 FS.Skia.UI.Controls.Elmish.ControlsElmish
+FS.Skia.UI.Controls.Elmish.InteractiveAppHost`2

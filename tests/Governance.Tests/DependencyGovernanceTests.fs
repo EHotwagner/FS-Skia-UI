@@ -183,8 +183,15 @@ let dependencyGovernanceTests =
 
             Expect.equal
                 adapterRefs
-                (Set.ofList [ "../Controls/Controls.fsproj"; "../KeyboardInput/KeyboardInput.fsproj" ])
-                "Controls.Elmish adapter references only Controls and KeyboardInput"
+                // Feature 085 (research D3-AMEND): the interactive pointer/size-aware host
+                // (InteractiveAppHost + runInteractiveApp) lives in Controls.Elmish because
+                // PointerInteraction/interpretPointerOutcome are Controls surface and the viewer is
+                // host-independent; this adds the acyclic Controls.Elmish -> SkiaViewer edge.
+                (Set.ofList
+                    [ "../Controls/Controls.fsproj"
+                      "../KeyboardInput/KeyboardInput.fsproj"
+                      "../SkiaViewer/SkiaViewer.fsproj" ])
+                "Controls.Elmish adapter references Controls, KeyboardInput, and (085) SkiaViewer"
             Expect.equal adapterPackages (Set.ofList [ "Fable.Elmish" ]) "Fable.Elmish is isolated in the adapter package"
 
             let keyboardRuntimeDefinitions =

@@ -1,7 +1,10 @@
 namespace FS.Skia.UI.Controls.Elmish
 
+open System
 open FS.Skia.UI.Controls
 open FS.Skia.UI.KeyboardInput
+open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer
 open Elmish
 
 type AdapterDiagnostic =
@@ -27,6 +30,16 @@ type AdapterProgram<'model, 'msg> =
       Update: 'msg -> 'model -> 'model * AdapterCommand<'msg>
       View: 'model -> Control<'msg>
       Subscriptions: 'model -> AdapterSubscription<'msg> list }
+
+type InteractiveAppHost<'model, 'msg> =
+    { Init: unit -> 'model * ViewerEffect list
+      Update: 'msg -> 'model -> 'model * ViewerEffect list
+      View: Size -> 'model -> Control<'msg>
+      Theme: Theme
+      MapKey: ViewerKey -> bool -> 'msg option
+      MapPointer: PointerInteraction -> 'msg option
+      Tick: TimeSpan -> 'msg option
+      Diagnostics: ViewerDiagnosticsOptions }
 
 module AdapterCmd =
     let none: Cmd<'msg> = Cmd.none
@@ -111,3 +124,83 @@ module ControlsElmish =
 
     let programOfWidget init update view subscriptions =
         program init update (widgetView view) subscriptions
+
+    // The single pointer-routing step the interactive host performs per native sample: render the
+    // current Control tree at the live extent, hit-test the laid-out bounds via the shipped 075
+    // pipeline (Pointer.update over the LayoutResult, incl. the 4px click/drag fold), then route the
+    // emitted interactions through interpretPointerOutcome host.MapPointer to product messages.
+    // Returns the advanced PointerState (threaded across samples) + the product messages. Exposed so
+    // a headless test exercises the EXACT routing runInteractiveApp wires (research D6 honest bar).
+    let routeInteractivePointer
+        (host: InteractiveAppHost<'model, 'msg>)
+        (state: PointerState)
+        (size: Size)
+        (model: 'model)
+        (input: ViewerPointerInput)
+        : PointerState * 'msg list =
+        let toSample (input: ViewerPointerInput) : PointerSample =
+            let phase =
+                match input.Phase with
+                | ViewerPointerPhaseKind.Moved -> PointerPhase.Moved
+                | ViewerPointerPhaseKind.Pressed -> PointerPhase.Pressed
+                | ViewerPointerPhaseKind.Released -> PointerPhase.Released
+                | ViewerPointerPhaseKind.Wheel -> PointerPhase.Wheel
+                | ViewerPointerPhaseKind.Exited -> PointerPhase.Exited
+
+            let button =
+                input.Button
+                |> Option.map (fun b ->
+                    match b with
+                    | ViewerPointerButtonKind.Primary -> PointerButton.Primary
+                    | ViewerPointerButtonKind.Secondary -> PointerButton.Secondary
+                    | ViewerPointerButtonKind.Middle -> PointerButton.Middle)
+
+            { Phase = phase
+              X = input.X
+              Y = input.Y
+              Button = button
+              DeltaX = input.DeltaX
+              DeltaY = input.DeltaY }
+
+        match Pointer.toMsg (toSample input) with
+        | None -> state, []
+        | Some pointerMsg ->
+            let rendered = Control.renderTree host.Theme size (host.View size model)
+
+            let available: FS.Skia.UI.Layout.AvailableSpace =
+                { Width = float size.Width
+                  WidthMode = FS.Skia.UI.Layout.Exactly
+                  Height = float size.Height
+                  HeightMode = FS.Skia.UI.Layout.Exactly }
+
+            let layoutResult = FS.Skia.UI.Layout.Layout.evaluate available rendered.Layout
+            let policy = FS.Skia.UI.Layout.Defaults.pixelSnapPolicy 1.0
+
+            let state', interactions, runtimeMessages =
+                Pointer.update policy layoutResult pointerMsg state
+
+            let messages =
+                interpretPointerOutcome host.MapPointer interactions runtimeMessages
+                |> AdapterCmd.productMessages
+
+            state', messages
+
+    let runInteractiveApp (options: ViewerOptions) (host: InteractiveAppHost<'model, 'msg>) =
+        // Durable pointer coordination state (hover/press/4px-fold), threaded across samples.
+        let pointerState = ref (Pointer.init ())
+
+        let mapPointer (input: ViewerPointerInput) (size: Size) (model: 'model) : 'msg list =
+            let state', messages = routeInteractivePointer host pointerState.Value size model input
+            pointerState.Value <- state'
+            messages
+
+        let viewerHost: InteractiveViewerHost<'model, 'msg> =
+            { Init = host.Init
+              Update = host.Update
+              View = fun size model -> SceneNode.Group [ (Control.renderTree host.Theme size (host.View size model)).Scene ]
+              MapKey = host.MapKey
+              MapPointer = mapPointer
+              Tick = host.Tick
+              Diagnostics = host.Diagnostics }
+
+        Viewer.runInteractiveViewer options viewerHost

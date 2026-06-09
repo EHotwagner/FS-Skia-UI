@@ -1,0 +1,15 @@
+
+## app/source generated Test
+$ bash ./fake.sh build -t Test
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/085-showcase-feedback-followups/app-source/src/Product/Product.fsproj (in 1.8 sec).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/085-showcase-feedback-followups/app-source/tests/Product.Tests/Product.Tests.fsproj (in 1.8 sec).
+  Product -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/085-showcase-feedback-followups/app-source/src/Product/bin/Debug/net10.0/Product.dll
+  Product.Tests -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/085-showcase-feedback-followups/app-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/artifacts/generated-products/085-showcase-feedback-followups/app-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    28, Skipped:     0, Total:    28, Duration: 76 ms - Product.Tests.dll (net10.0)
+Test completed for generated product
+
+exit-code=0

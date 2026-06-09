@@ -474,11 +474,55 @@ type GeneratedAppHost<'model,'msg> =
       Tick: TimeSpan -> 'msg option
       Diagnostics: ViewerDiagnosticsOptions }
 
+[<RequireQualifiedAccess>]
+/// Framework-neutral pointer button identity surfaced to the interactive host (085).
+type ViewerPointerButtonKind =
+    | Primary
+    | Secondary
+    | Middle
+
+[<RequireQualifiedAccess>]
+/// The kind of raw pointer sample the interactive host delivers (085).
+type ViewerPointerPhaseKind =
+    | Moved
+    | Pressed
+    | Released
+    | Wheel
+    | Exited
+
+/// A host-independent pointer sample raised by the live window for the interactive host
+/// (085). X/Y are in the swapchain/scene coordinate space; consumers hit-test against the
+/// scene they rendered for the same `Size`.
+type ViewerPointerInput =
+    { Phase: ViewerPointerPhaseKind
+      X: float
+      Y: float
+      Button: ViewerPointerButtonKind option
+      DeltaX: float
+      DeltaY: float }
+
+/// Pointer-aware, size-aware durable host variant (feature 085). Mirrors `GeneratedAppHost`
+/// field-for-field PLUS a model-aware pointer seam (`MapPointer`) and a size-carrying `View`,
+/// so the existing `GeneratedAppHost` construction sites and the durable
+/// `Viewer.runApp viewerOptions generatedHost` GovernanceTests literal are unbroken (FR-006).
+/// This is the Controls-free lower runner; the Control/PointerInteraction-aware
+/// `InteractiveAppHost` (FS.Skia.UI.Controls.Elmish) adapts onto it (research D3-AMEND).
+type InteractiveViewerHost<'model,'msg> =
+    { Init: unit -> 'model * ViewerEffect list
+      Update: 'msg -> 'model -> 'model * ViewerEffect list
+      View: Size -> 'model -> SceneNode
+      MapKey: ViewerKey -> bool -> 'msg option
+      MapPointer: ViewerPointerInput -> Size -> 'model -> 'msg list
+      Tick: TimeSpan -> 'msg option
+      Diagnostics: ViewerDiagnosticsOptions }
+
 type private LegacyHostMsg<'msg> =
     | LegacyLoaded
     | LegacyUpdateTick of float
     | LegacyRenderTick of float
     | LegacyKey of rawKey: string * isDown: bool
+    | LegacyPointer of ViewerPointerInput
+    | LegacyResized of Size
     | LegacyCloseRequested
     | LegacyDiagnosticReported of Host.RenderDiagnostic
     | LegacyHostEffect of Host.ViewerEffect<LegacyHostMsg<'msg>>
@@ -1170,7 +1214,13 @@ module Viewer =
 
         makeFailure stage UnsupportedEnvironment category diagnostic.Message None
 
-    let private runPresentedPersistentWindow options behavior diagnostics inputDispatch getScene onTick onKey inputVerified =
+    let private toViewerPointerButtonKind (button: Host.ViewerPointerButton) =
+        match button with
+        | Host.ViewerPointerButton.PrimaryButton -> ViewerPointerButtonKind.Primary
+        | Host.ViewerPointerButton.SecondaryButton -> ViewerPointerButtonKind.Secondary
+        | Host.ViewerPointerButton.MiddleButton -> ViewerPointerButtonKind.Middle
+
+    let private runPresentedPersistentWindow options behavior diagnostics inputDispatch getScene onTick onKey onPointer onResize inputVerified =
         let windowOpened = ref false
         let framePresented = ref false
         let closeReason: ViewerCloseReason option ref = ref None
@@ -1212,6 +1262,15 @@ module Viewer =
                     closeReason := Some AppRequestedClose
                     (), Cmd.ofMsg (LegacyHostEffect Host.ViewerEffect.Shutdown)
                 | _ -> (), Cmd.none
+            | LegacyPointer input ->
+                match onPointer with
+                | Some handle when handle input ->
+                    closeReason := Some AppRequestedClose
+                    (), Cmd.ofMsg (LegacyHostEffect Host.ViewerEffect.Shutdown)
+                | _ -> (), Cmd.ofMsg (LegacyHostEffect(Host.ViewerEffect.RenderFrame(renderCurrentScene ())))
+            | LegacyResized size ->
+                onResize |> Option.iter (fun handle -> handle size)
+                (), Cmd.ofMsg (LegacyHostEffect(Host.ViewerEffect.RenderFrame(renderCurrentScene ())))
             | LegacyCloseRequested ->
                 if closeReason.Value.IsNone then
                     closeReason := Some UserClose
@@ -1246,12 +1305,17 @@ module Viewer =
             | Host.ViewerEvent.KeyUp key -> Some(LegacyKey(key, false))
             | Host.ViewerEvent.CloseRequested -> Some LegacyCloseRequested
             | Host.ViewerEvent.DiagnosticReported diagnostic -> Some(LegacyDiagnosticReported diagnostic)
-            | Host.ViewerEvent.Resized _
-            | Host.ViewerEvent.PointerMoved _
-            | Host.ViewerEvent.PointerPressed _
-            | Host.ViewerEvent.PointerReleased _
-            | Host.ViewerEvent.PointerScrolled _
-            | Host.ViewerEvent.PointerExited -> None
+            | Host.ViewerEvent.Resized size -> Some(LegacyResized size)
+            | Host.ViewerEvent.PointerMoved(x, y) ->
+                Some(LegacyPointer { Phase = ViewerPointerPhaseKind.Moved; X = x; Y = y; Button = None; DeltaX = 0.0; DeltaY = 0.0 })
+            | Host.ViewerEvent.PointerPressed(x, y, button) ->
+                Some(LegacyPointer { Phase = ViewerPointerPhaseKind.Pressed; X = x; Y = y; Button = Some(toViewerPointerButtonKind button); DeltaX = 0.0; DeltaY = 0.0 })
+            | Host.ViewerEvent.PointerReleased(x, y, button) ->
+                Some(LegacyPointer { Phase = ViewerPointerPhaseKind.Released; X = x; Y = y; Button = Some(toViewerPointerButtonKind button); DeltaX = 0.0; DeltaY = 0.0 })
+            | Host.ViewerEvent.PointerScrolled(x, y, deltaX, deltaY) ->
+                Some(LegacyPointer { Phase = ViewerPointerPhaseKind.Wheel; X = x; Y = y; Button = None; DeltaX = deltaX; DeltaY = deltaY })
+            | Host.ViewerEvent.PointerExited ->
+                Some(LegacyPointer { Phase = ViewerPointerPhaseKind.Exited; X = 0.0; Y = 0.0; Button = None; DeltaX = 0.0; DeltaY = 0.0 })
 
         let effectMapper msg =
             match msg with
@@ -2185,9 +2249,11 @@ module Viewer =
                     (fun () -> scene)
                     (fun _ -> false)
                     None
+                    None
+                    None
                     (fun () -> true)
 
-    let runAppWithWindowBehavior options behavior host =
+    let runAppWithWindowBehavior options behavior (host: GeneratedAppHost<'model, 'msg>) =
         match validateOptions options with
         | Result.Error failure -> Result.Error failure
         | Result.Ok() ->
@@ -2286,7 +2352,7 @@ module Viewer =
                     let inputVerified () =
                         not (requireInputDispatchVerification ()) || inputDispatch = "true"
 
-                    match runPresentedPersistentWindow options behavior host.Diagnostics inputDispatch (fun () -> currentScene) handleTick (Some handleKey) inputVerified with
+                    match runPresentedPersistentWindow options behavior host.Diagnostics inputDispatch (fun () -> currentScene) handleTick (Some handleKey) None None inputVerified with
                     | Result.Ok outcome ->
                         Result.Ok(
                             { outcome with
@@ -2300,7 +2366,134 @@ module Viewer =
     let runApp options host =
         runAppWithWindowBehavior options defaultWindowBehavior host
 
-    let runAppEvidence (request: ViewerRunRequest) options host =
+    // Feature 085 — pointer-aware, size-aware durable launch. Mirrors
+    // `runAppWithWindowBehavior` but routes native pointer events and resizes to the host,
+    // and renders a size-aware `View`. `runApp`/`GeneratedAppHost` are untouched (FR-006).
+    let runInteractiveViewerWithWindowBehavior options behavior (host: InteractiveViewerHost<'model,'msg>) =
+        match validateOptions options with
+        | Result.Error failure -> Result.Error failure
+        | Result.Ok() ->
+            let optionFailures =
+                validateWindowLaunchBehavior options.InitialSize behavior
+                |> List.filter (fun result -> result.Status = FailedOption)
+
+            if not (List.isEmpty optionFailures) then
+                let message =
+                    optionFailures
+                    |> List.map (fun result -> $"{result.Option}: {result.Message}")
+                    |> String.concat "; "
+
+                Result.Error(makeFailure Window ProductDefect ViewerDiagnosticCategory.Startup message None)
+            else
+                let capability = runtimeCapability ()
+
+                if not capability.PersistentWindow then
+                    Result.Error(persistentUnsupportedFailure capability)
+                else
+                    let model, initEffects = host.Init()
+                    let mutable currentModel = model
+                    let mutable currentSize = options.InitialSize
+                    let mutable currentScene = host.View currentSize currentModel
+                    let mutable inputDispatch = "false"
+
+                    let interpretEffects effects =
+                        effects
+                        |> List.fold
+                            (fun closeRequested effect ->
+                                match effect with
+                                | RenderScene scene ->
+                                    currentScene <- scene
+                                    closeRequested
+                                | DispatchInput _ ->
+                                    inputDispatch <- "true"
+                                    closeRequested
+                                | CloseWindow -> true
+                                | EmitDiagnostic diagnostic ->
+                                    captureDiagnostic host.Diagnostics diagnostic |> ignore
+                                    closeRequested
+                                | OpenWindow _
+                                | ApplyWindowOptions _
+                                | QueryNativeWindowState
+                                | StartBoundedRun _
+                                | CheckDesktopSession
+                                | CaptureScreenshot _
+                                | CaptureImageEvidence _
+                                | ReadPixels
+                                | WriteVisualEvidence _
+                                | WriteRunEvidence _ -> closeRequested)
+                            false
+
+                    let initialCloseRequested = interpretEffects initEffects
+
+                    let dispatchHostMsg msg =
+                        let next, effects = host.Update msg currentModel
+                        currentModel <- next
+                        currentScene <- host.View currentSize currentModel
+                        interpretEffects effects
+
+                    let handleTick elapsed =
+                        match host.Tick elapsed with
+                        | Some msg -> dispatchHostMsg msg
+                        | None -> false
+
+                    let handleKey rawKey isDown =
+                        let key, normalizedDown =
+                            ViewerKeyboard.normalizeEvent
+                                { RawKey = rawKey
+                                  Direction =
+                                    if isDown then
+                                        ViewerKeyDirection.KeyDown
+                                    else
+                                        ViewerKeyDirection.KeyUp }
+
+                        match host.MapKey key normalizedDown with
+                        | Some msg ->
+                            inputDispatch <- "true"
+                            dispatchHostMsg msg
+                        | None -> false
+
+                    let handlePointer (input: ViewerPointerInput) =
+                        let msgs = host.MapPointer input currentSize currentModel
+
+                        if not (List.isEmpty msgs) then
+                            inputDispatch <- "true"
+
+                        msgs |> List.fold (fun close msg -> dispatchHostMsg msg || close) false
+
+                    let handleResize (size: Size) =
+                        currentSize <- size
+                        currentScene <- host.View currentSize currentModel
+
+                    let inputVerified () =
+                        not (requireInputDispatchVerification ()) || inputDispatch = "true"
+
+                    match
+                        runPresentedPersistentWindow
+                            options
+                            behavior
+                            host.Diagnostics
+                            inputDispatch
+                            (fun () -> currentScene)
+                            handleTick
+                            (Some handleKey)
+                            (Some handlePointer)
+                            (Some handleResize)
+                            inputVerified
+                    with
+                    | Result.Ok outcome ->
+                        Result.Ok(
+                            { outcome with
+                                InputDispatch = inputDispatch
+                                OptionResults = validateWindowLaunchBehavior options.InitialSize behavior
+                                ExitPath = initialCloseRequested || outcome.ExitPath
+                                Message = "Persistent interactive viewer launch completed after intentional close." }
+                        )
+                    | Result.Error failure -> Result.Error failure
+
+    let runInteractiveViewer options host =
+        runInteractiveViewerWithWindowBehavior options defaultWindowBehavior host
+
+    let runAppEvidence (request: ViewerRunRequest) options (host: GeneratedAppHost<'model, 'msg>) =
         let model, _ = host.Init()
         let scene = host.View model
 
@@ -2610,14 +2803,14 @@ module Viewer =
             []
 
 module GeneratedAppHost =
-    let dispatchKey host raw model =
+    let dispatchKey (host: GeneratedAppHost<'model, 'msg>) raw model =
         let key, isDown = ViewerKeyboard.normalizeEvent raw
 
         match host.MapKey key isDown with
         | Some msg -> host.Update msg model
         | None -> model, [ DispatchInput(key, isDown) ]
 
-    let smoke host (request: ViewerRunRequest) =
+    let smoke (host: GeneratedAppHost<'model, 'msg>) (request: ViewerRunRequest) =
         let model, _ = host.Init()
         let scene = host.View model
         let size =

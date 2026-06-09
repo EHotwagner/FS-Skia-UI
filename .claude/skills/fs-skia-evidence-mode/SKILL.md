@@ -89,6 +89,18 @@ warning, and name-collision guidance.
 Exact owner phrases for scans: framework runtime; generated template workflow; documentation discoverability; consumer authoring; persistent-window blocking; display/session availability; auto-close smoke; benign warning; blocking warning; deferred warning; name-collision guidance.
 <!-- END GENERATED: gov/owner-phrases -->
 
+## Evidence token parsing reads `key=value` lines, NOT tables (feature 085, FR-015)
+
+The readiness validators (window-visibility, readiness-contract, generated-validation, the
+audit-status region) read machine-readable tokens **only from `key=value` lines** — e.g.
+`window-visible=observed:true`, `exact-package-match=true`, `verdict=...`. A markdown **table**
+that carries the same token names in cells (`| window-visible | observed:true |`) does **not**
+satisfy the validators — the token must appear as a bare `key=value` line. Put the authoritative
+tokens as `key=value` lines (tables are fine as *human-readable supplements alongside* them, never
+as the sole carrier). The exact required-token list per evidence class is single-sourced in
+`docs/evidence-formats.md` (generated from `FS.Skia.UI.Build.Evidence.EvidenceFormatSchema`; read
+it before authoring, and regenerate via `./fake.sh build -t RefreshSurfaceBaselines` — never hand-edit).
+
 ## `--evidence-run` deterministic-summary discipline (documented, not a shipped helper)
 
 Generated games expose an `--evidence-run` command that drives the **pure** model

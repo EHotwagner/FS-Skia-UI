@@ -222,6 +222,19 @@ module ViewerKeyboard =
         | "esc" -> Escape
         | "backspace"
         | "back" -> Backspace
+        // Feature 085 (FR-007/FR-008) — toolkit key-name families. Browser/toolkit codes spell
+        // digits as Number5/Digit5/Keypad5/Key5 and letters as KeyL; map them to the existing
+        // Digit n / Letter X cases. The terminal `Unknown raw` arm below is preserved (totality).
+        | _ when (lower.StartsWith "number" || lower.StartsWith "keypad") && lower.Length = 7 && System.Char.IsDigit lower[6] ->
+            Digit(int lower[6] - int '0')
+        | _ when lower.StartsWith "digit" && lower.Length = 6 && System.Char.IsDigit lower[5] ->
+            Digit(int lower[5] - int '0')
+        | _ when lower.StartsWith "key" && lower.Length = 4 ->
+            // Key{n} / Key{X}: classify the single trailing char (resolves Key5-vs-KeyL in one arm).
+            let c = value[value.Length - 1]
+            if System.Char.IsDigit c then Digit(int c - int '0')
+            elif System.Char.IsLetter c then Letter(System.Char.ToUpperInvariant c)
+            else Unknown raw
         | _ when value.Length = 1 && System.Char.IsLetter value[0] ->
             Letter(System.Char.ToUpperInvariant value[0])
         | _ when value.Length = 1 && System.Char.IsDigit value[0] ->

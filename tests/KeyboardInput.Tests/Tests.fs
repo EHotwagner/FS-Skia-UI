@@ -123,3 +123,33 @@ let tests =
             Expect.isFalse isStillDown "key-up event is marked not down"
         }
     ]
+
+[<Tests>]
+let feature085NormalizeFamilies =
+    // Feature 085 (US3, SC-003, FR-007/FR-008) — toolkit key-name families map onto the existing
+    // Digit/Letter cases; unrecognized names stay Unknown raw (totality, no regression).
+    testList "Feature 085 normalize key-name families (US3)" [
+        test "Number5/Digit5/Keypad5/Key5 all normalize to Digit 5 (FR-007)" {
+            for spelling in [ "Number5"; "Digit5"; "Keypad5"; "Key5" ] do
+                Expect.equal (ViewerKeyboard.normalize spelling) (Digit 5) (sprintf "%s -> Digit 5" spelling)
+        }
+        test "the families are case-insensitive" {
+            for spelling in [ "number5"; "DIGIT5"; "KeyPad5"; "kEy5" ] do
+                Expect.equal (ViewerKeyboard.normalize spelling) (Digit 5) (sprintf "%s -> Digit 5 (case-insensitive)" spelling)
+        }
+        test "KeyL normalizes to Letter 'L' (case-insensitive, FR-007)" {
+            Expect.equal (ViewerKeyboard.normalize "KeyL") (Letter 'L') "KeyL -> Letter 'L'"
+            Expect.equal (ViewerKeyboard.normalize "keyl") (Letter 'L') "keyl -> Letter 'L' (case-insensitive)"
+        }
+        test "unrecognized names still normalize to Unknown raw (totality, FR-008)" {
+            Expect.equal (ViewerKeyboard.normalize "Totally-Unknown") (Unknown "Totally-Unknown") "unknown stays Unknown raw"
+            Expect.equal (ViewerKeyboard.normalize "Number") (Unknown "Number") "prefix-only is not a digit family"
+            Expect.equal (ViewerKeyboard.normalize "KeyLong") (Unknown "KeyLong") "multi-char Key suffix is not a single key"
+        }
+        test "existing recognized names are unchanged (no regression)" {
+            Expect.equal (ViewerKeyboard.normalize "Left") ArrowLeft "arrows unchanged"
+            Expect.equal (ViewerKeyboard.normalize "F5") (Function 5) "function keys unchanged"
+            Expect.equal (ViewerKeyboard.normalize "L") (Letter 'L') "bare single letter unchanged"
+            Expect.equal (ViewerKeyboard.normalize "5") (Digit 5) "bare single digit unchanged"
+        }
+    ]

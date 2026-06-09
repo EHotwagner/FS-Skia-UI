@@ -212,6 +212,9 @@ module Control =
 
     val render: theme: Theme -> control: Control<'msg> -> ControlRenderResult<'msg>
 
+    val renderTree:
+        theme: Theme -> size: FS.Skia.UI.Scene.Size -> control: Control<'msg> -> ControlRenderResult<'msg>
+
     val diagnostics: control: Control<'msg> -> ControlDiagnostic list
 
     val dispatch: event: ControlEvent -> control: Control<'msg> -> 'msg list

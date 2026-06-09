@@ -469,6 +469,39 @@ type GeneratedAppHost<'model,'msg> =
       Tick: TimeSpan -> 'msg option
       Diagnostics: ViewerDiagnosticsOptions }
 
+[<RequireQualifiedAccess>]
+
+type ViewerPointerButtonKind =
+    | Primary
+    | Secondary
+    | Middle
+
+[<RequireQualifiedAccess>]
+
+type ViewerPointerPhaseKind =
+    | Moved
+    | Pressed
+    | Released
+    | Wheel
+    | Exited
+
+type ViewerPointerInput =
+    { Phase: ViewerPointerPhaseKind
+      X: float
+      Y: float
+      Button: ViewerPointerButtonKind option
+      DeltaX: float
+      DeltaY: float }
+
+type InteractiveViewerHost<'model,'msg> =
+    { Init: unit -> 'model * ViewerEffect list
+      Update: 'msg -> 'model -> 'model * ViewerEffect list
+      View: Size -> 'model -> SceneNode
+      MapKey: ViewerKey -> bool -> 'msg option
+      MapPointer: ViewerPointerInput -> Size -> 'model -> 'msg list
+      Tick: TimeSpan -> 'msg option
+      Diagnostics: ViewerDiagnosticsOptions }
+
 module Viewer =
 
     val init: options: ViewerOptions -> ViewerModel * ViewerEffect list
@@ -508,6 +541,10 @@ module Viewer =
     val runApp: options: ViewerOptions -> host: GeneratedAppHost<'model,'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
 
     val runAppWithWindowBehavior: options: ViewerOptions -> behavior: ViewerWindowBehaviorRequest -> host: GeneratedAppHost<'model,'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
+
+    val runInteractiveViewer: options: ViewerOptions -> host: InteractiveViewerHost<'model,'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
+
+    val runInteractiveViewerWithWindowBehavior: options: ViewerOptions -> behavior: ViewerWindowBehaviorRequest -> host: InteractiveViewerHost<'model,'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
 
     val runAppEvidence: request: ViewerRunRequest -> options: ViewerOptions -> host: GeneratedAppHost<'model,'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
 

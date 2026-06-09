@@ -1,0 +1,140 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (feature 085).
+#
+# Phase-checkpoint edges are auto-injected by the graph script (every task in
+# Phase N+1 implicitly depends on the last task of Phase N). Only non-phase
+# cross-edges are written below.
+
+tasks:
+  # Phase 1: Setup
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+
+  # Phase 2: Foundation
+  T005:
+    deps: []
+    skillist: ["fs-skia-ui-widgets", "fs-skia-scene"]
+  T006:
+    deps: []
+    skillist: ["fs-skia-skiaviewer", "fs-skia-elmish"]
+  T007:
+    deps: [T005, T006]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-elmish"]
+  T008:
+    deps: [T005, T006]
+    skillist: []
+  T009:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 3: User Story 1 — renderTree
+  T010:
+    deps: []
+    skillist: ["fs-skia-scene", "fs-skia-ui-widgets"]
+  T011:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+  T012:
+    deps: [T010, T011]
+    skillist: ["fs-skia-ui-widgets", "fs-skia-scene"]
+  T013:
+    deps: [T012]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-evidence-mode"]
+  T014:
+    deps: [T012]
+    skillist: []
+
+  # Phase 4: User Story 2 — pointer host
+  T015:
+    deps: []
+    skillist: ["fs-skia-elmish", "fs-skia-skiaviewer"]
+  T016:
+    deps: []
+    skillist: ["fs-skia-skiaviewer", "fs-skia-elmish"]
+  T017:
+    deps: [T015, T016]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-elmish"]
+  T018:
+    deps: [T017]
+    skillist: ["fs-skia-skiaviewer"]
+  T019:
+    deps: [T017, T018]
+    skillist: ["fs-skia-evidence-mode", "fs-skia-skiaviewer"]
+
+  # Phase 5: User Story 3 — key normalization
+  T020:
+    deps: []
+    skillist: ["fs-skia-keyboard-input"]
+  T021:
+    deps: [T020]
+    skillist: ["fs-skia-keyboard-input"]
+  T022:
+    deps: [T021]
+    skillist: ["fs-skia-keyboard-input"]
+
+  # Phase 6: User Story 4 — size-aware rendering
+  T023:
+    deps: []
+    skillist: ["fs-skia-skiaviewer", "fs-skia-scene"]
+  T024:
+    deps: [T023]
+    skillist: ["fs-skia-skiaviewer"]
+  T025:
+    deps: [T024]
+    skillist: ["fs-skia-skiaviewer", "fs-skia-evidence-mode"]
+
+  # Phase 7: User Story 5 — authoring guidance
+  T026:
+    deps: []
+    skillist: ["fs-skia-skiaviewer"]
+  T027:
+    deps: []
+    skillist: ["fs-skia-typed-controls"]
+  T028:
+    deps: []
+    skillist: ["fs-skia-typed-controls"]
+  T029:
+    deps: []
+    skillist: ["speckit-specify"]
+  T030:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+  T031:
+    deps: []
+    skillist: ["speckit-specify"]
+  T032:
+    deps: [T026, T027, T028, T029, T030, T031]
+    skillist: []
+
+  # Phase 8: Integration & Polish (FAKE-backed — serialized)
+  T033:
+    deps: []
+    skillist: []
+  T034:
+    deps: [T033]
+    skillist: []
+  T035:
+    deps: [T034]
+    skillist: ["fs-skia-template-update"]
+  T036:
+    deps: [T035]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T037:
+    deps: [T036]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]
+  T038:
+    deps: [T037]
+    skillist: ["fs-skia-evidence-mode"]

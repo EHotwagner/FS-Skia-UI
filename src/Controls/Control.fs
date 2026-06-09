@@ -1000,6 +1000,128 @@ module Control =
           EventBindings = ControlInternals.recursively ControlInternals.eventBindings control
           NodeCount = count control }
 
+    // Feature 085 (FR-001/FR-002/FR-003) — faithful NESTED-tree renderer.
+    //
+    // Unlike `render` (the 080 single-control preview, which flattens every descendant and
+    // stacks them at fixed y offsets), `renderTree` runs a REAL recursive Yoga layout over the
+    // nested tree at the supplied output `size`, then paints every node — containers AND their
+    // children — at its COMPUTED bounds. Two structurally different trees therefore produce
+    // visibly different scenes (SC-001). `render`/`Widget.render` are left untouched (FR-003).
+    let renderTree (theme: Theme) (size: FS.Skia.UI.Scene.Size) (control: Control<'msg>) =
+        let directionOf kind =
+            match kind with
+            | "toolbar"
+            | "split-view"
+            | "wrap"
+            | "grid"
+            | "dock" -> FS.Skia.UI.Layout.Row
+            | _ -> FS.Skia.UI.Layout.Column
+
+        let wrapOf kind =
+            match kind with
+            | "wrap"
+            | "grid" -> FS.Skia.UI.Layout.Wrap
+            | _ -> FS.Skia.UI.Layout.NoWrap
+
+        // Build the nested layout tree: leaves carry an explicit size (their preview geometry),
+        // containers let direction + children drive arrangement. Content is painted afterwards at
+        // the computed bounds, so each node keeps Content = None here.
+        let rec toLayout (c: Control<'msg>) : FS.Skia.UI.Layout.LayoutNode =
+            let id = c.Key |> Option.defaultValue c.Kind
+            let isLeaf = List.isEmpty c.Children
+
+            let size: FS.Skia.UI.Layout.LayoutSize =
+                if isLeaf then
+                    { Width = Some(ControlInternals.nodeWidth c)
+                      Height = Some(ControlInternals.nodeHeight c) }
+                else
+                    { Width =
+                        (if ControlInternals.hasAttr "width" c.Attributes then
+                             Some(ControlInternals.nodeWidth c)
+                         else
+                             None)
+                      Height =
+                        (if ControlInternals.hasAttr "height" c.Attributes then
+                             Some(ControlInternals.nodeHeight c)
+                         else
+                             None) }
+
+            { LayoutDefaults.layoutNode id with
+                Intent =
+                    { LayoutDefaults.layoutIntent with
+                        Direction = directionOf c.Kind
+                        Wrap = wrapOf c.Kind
+                        Gap = { Row = 8.0; Column = 8.0 }
+                        Padding = { Left = 8.0; Top = 8.0; Right = 8.0; Bottom = 8.0 }
+                        Size = size }
+                Children = c.Children |> List.map toLayout }
+
+        let root = toLayout control
+
+        let available: FS.Skia.UI.Layout.AvailableSpace =
+            { Width = float size.Width
+              WidthMode = FS.Skia.UI.Layout.Exactly
+              Height = float size.Height
+              HeightMode = FS.Skia.UI.Layout.Exactly }
+
+        let result = FS.Skia.UI.Layout.Layout.evaluate available root
+
+        let boundsById =
+            result.Bounds
+            |> List.map (fun (b: FS.Skia.UI.Layout.ComputedBounds) -> b.NodeId, b.Bounds)
+            |> Map.ofList
+
+        let paintLeaf (box: Rect) (c: Control<'msg>) : Scene list =
+            if Set.contains c.Kind ControlInternals.richFamilies then
+                // chart/button/field/etc. — its faithful per-control geometry, drawn into `box`.
+                ControlInternals.faithfulContent theme box c
+            else
+                // text / static controls: the control IS its text, so a filled box + clipped label.
+                let label = c.Content |> Option.defaultValue c.Kind
+
+                let fill =
+                    if ControlInternals.disabledOrReadOnly c then theme.Muted
+                    elif ControlInternals.boolValue "selected" false c.Attributes then theme.Accent
+                    else theme.Background
+
+                let fontSize =
+                    ControlInternals.fittedFontSize theme.FontSize 6.0 box.Width box.Height theme.FontFamily label
+
+                let textY = box.Y + (box.Height + fontSize) * 0.5 - 3.0
+
+                let labelRun =
+                    { Text = label
+                      Position = { X = box.X + 8.0; Y = textY }
+                      Font = { Family = theme.FontFamily; Size = fontSize; Weight = None }
+                      Paint = Paint.fill theme.Foreground }
+
+                [ Scene.rectangle (box.X, box.Y, box.Width, box.Height) fill
+                  Scene.clipped (RectClip box) (Scene.textRun labelRun) ]
+
+        let rec paint (c: Control<'msg>) : Scene list =
+            let id = c.Key |> Option.defaultValue c.Kind
+
+            let here =
+                match Map.tryFind id boundsById with
+                | None -> []
+                | Some(b: FS.Skia.UI.Layout.LayoutBounds) ->
+                    let box: Rect = { X = b.X; Y = b.Y; Width = b.Width; Height = b.Height }
+
+                    if List.isEmpty c.Children then
+                        paintLeaf box c
+                    else
+                        // Container: a faint frame so the nesting is visible; the real children
+                        // are painted (below) at their own computed bounds.
+                        [ Scene.rectangleWithPaint box (Paint.stroke theme.Muted 1.0) ]
+
+            here @ (c.Children |> List.collect paint)
+
+        { Scene = paint control |> Scene.group
+          Layout = root
+          Diagnostics = diagnostics control
+          EventBindings = ControlInternals.recursively ControlInternals.eventBindings control
+          NodeCount = count control }
+
     let dispatch (event: ControlEvent) (control: Control<'msg>) =
         let rec loop (current: Control<'msg>) =
             let own =

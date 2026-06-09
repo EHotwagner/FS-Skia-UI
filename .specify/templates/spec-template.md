@@ -25,6 +25,11 @@
 
 ### Framework Governance Prompts *(mandatory)*
 
+> **Exempt from the "no implementation details" rule (feature 085, FR-014).** Unlike the rest
+> of the spec (which states WHAT/why, not HOW), this section is *expected* to name concrete
+> packages, `.fsi` signatures, build targets, effects/interpreters, Vulkan/Skia, and evidence
+> paths — that is its purpose. Naming implementation surfaces here is correct, not a violation.
+
 - **Package impact**: State whether package identities, package contents,
   package versions, or generated package consumers change. For controls,
   chart, graph, or DataGrid authoring changes, name the active package path

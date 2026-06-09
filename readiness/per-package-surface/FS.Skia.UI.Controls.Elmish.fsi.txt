@@ -1,7 +1,10 @@
 namespace FS.Skia.UI.Controls.Elmish
 
+open System
 open FS.Skia.UI.Controls
 open FS.Skia.UI.KeyboardInput
+open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer
 open Elmish
 
 type AdapterDiagnostic =
@@ -27,6 +30,16 @@ type AdapterProgram<'model, 'msg> =
       Update: 'msg -> 'model -> 'model * AdapterCommand<'msg>
       View: 'model -> Control<'msg>
       Subscriptions: 'model -> AdapterSubscription<'msg> list }
+
+type InteractiveAppHost<'model, 'msg> =
+    { Init: unit -> 'model * ViewerEffect list
+      Update: 'msg -> 'model -> 'model * ViewerEffect list
+      View: Size -> 'model -> Control<'msg>
+      Theme: Theme
+      MapKey: ViewerKey -> bool -> 'msg option
+      MapPointer: PointerInteraction -> 'msg option
+      Tick: TimeSpan -> 'msg option
+      Diagnostics: ViewerDiagnosticsOptions }
 
 module AdapterCmd =
 
@@ -72,3 +85,14 @@ module ControlsElmish =
         view: ('model -> Widget<'msg>) ->
         subscriptions: ('model -> AdapterSubscription<'msg> list) ->
             AdapterProgram<'model, 'msg>
+
+    val routeInteractivePointer:
+        host: InteractiveAppHost<'model, 'msg> ->
+        state: PointerState ->
+        size: Size ->
+        model: 'model ->
+        input: ViewerPointerInput ->
+            PointerState * 'msg list
+
+    val runInteractiveApp:
+        options: ViewerOptions -> host: InteractiveAppHost<'model, 'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>

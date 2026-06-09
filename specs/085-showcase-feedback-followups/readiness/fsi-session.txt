@@ -1,0 +1,11 @@
+# T007 FSI session — feature 085 foundation (captured 2026-06-09T11:57:12Z)
+# script: specs/085-showcase-feedback-followups/readiness/fsi/exercise.fsx
+# command: dotnet fsi readiness/fsi/exercise.fsx
+---
+renderTree A node-count=3  bindings=1
+renderTree B node-count=4
+SC-001 scenes differ = true
+A scene top-level nodes = 1 (nested children laid out + painted)
+InteractiveAppHost constructed; runInteractiveApp is bound
+synthetic Down at (320,240) -> 2 interaction(s): [PressedDown ("go", Primary, 320.0, 240.0); FocusMovedByPointer "go"]
+FSI exercise complete.

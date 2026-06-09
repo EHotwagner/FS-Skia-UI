@@ -1,0 +1,47 @@
+## Symbol consistency (analyze pass G)
+- entity-record Dev — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedGuidanceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedProductCheck — in {tasks}, missing from {plan, data-model}
+- entity-record Init — in {tasks}, missing from {plan, data-model}
+- entity-record MapPointer — in {tasks}, missing from {plan, data-model}
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- entity-record Update — in {tasks}, missing from {plan, data-model}
+- entity-record View — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-010 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-011 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-012 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-013 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-014 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-015 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-016 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-017 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-018 — in {tasks}, missing from {plan, data-model}
+- msg-case ControlId — in {data-model, tasks}, missing from {plan}
+- msg-case Diagnostics — in {tasks}, missing from {plan, data-model}
+- msg-case EventBindings — in {data-model, tasks}, missing from {plan}
+- msg-case GeneratedAppHost — in {tasks}, missing from {plan, data-model}
+- msg-case GovernanceTests — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Init — in {tasks}, missing from {plan, data-model}
+- msg-case Layout — in {data-model, tasks}, missing from {plan}
+- msg-case LayoutNode — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Model — in {plan}, missing from {data-model, tasks}
+- msg-case Msg — in {plan, data-model}, missing from {tasks}
+- msg-case PointerInteraction — in {tasks}, missing from {plan, data-model}
+- msg-case PointerPressed — in {tasks}, missing from {plan, data-model}
+- msg-case PointerReleased — in {tasks}, missing from {plan, data-model}
+- msg-case Update — in {tasks}, missing from {plan, data-model}
+- msg-case ViewerEffect — in {tasks}, missing from {plan, data-model}
+- sc-id SC-002 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-003 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-004 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-005 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant MapKey — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant MapPointer — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant Scene — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant ViewerDiagnosticsOptions — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant ViewerEffect — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant ViewerKey — in {data-model, tasks}, missing from {plan}
+- union-or-screen-variant ViewerLaunchOutcome — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant ViewerOptions — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant ViewerRunFailure — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]

@@ -1,0 +1,17 @@
+status=ok
+mode=interactive-window
+command=ControlsElmish-runInteractiveApp-self-closing-harness-on-DISPLAY-1
+window-opened=true
+window-visible=observed:true
+accessible-window=true
+first-frame-presented=true
+user-close-observed=false
+self-closed-for-evidence=true
+input-dispatch=not-verified
+exit-path=true
+renderer-mode=skia
+close-reason=AppRequestedClose
+blocked-stage=none
+classification=none
+category=none
+message=real-persistent-interactive-window-opened-and-presented-first-frame-then-self-closed-for-evidence-via-Tick-CloseWindow-using-ControlsElmish-runInteractiveApp-from-a-compiled-harness-on-the-display-capable-host

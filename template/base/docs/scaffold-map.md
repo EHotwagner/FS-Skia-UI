@@ -100,6 +100,24 @@ truth**: it can silently mix confirmed signatures with inferred or stale shapes.
 Always reconcile any agent-produced API summary against the `.fsi` / `docs/api-surface/`
 before you design against it; when they disagree, the `.fsi` wins.
 
+> **Typed front door is absent from `docs/api-surface/` (feature 085, FR-013).** The
+> generated `docs/api-surface/` tree exposes only the **legacy builder** surface
+> (`TextBlock.create`, `Button.create`, `Stack.children`, …). The **typed** front door
+> (`FS.Skia.UI.Controls.Typed.*` — immutable `Props` records + `view`) is **not** listed
+> there, so "it's not in `docs/api-surface/`" does **not** mean it's unavailable. To
+> enumerate the typed surface, read the **package** (`FS.Skia.UI.Controls.dll` →
+> `FS.Skia.UI.Controls.Typed` modules) or the catalog's per-control **`module:`** field in
+> `catalog.yml` (e.g. `module: TextBlock`) — that is the authoritative typed-front-door probe,
+> not `docs/api-surface/`. See the `fs-skia-typed-controls` skill's consumer note.
+
+## Resolution-independent rendering: windowed-fullscreen blur (feature 085, FR-010)
+
+The default window startup is **windowed fullscreen**, which scales a fixed-resolution scene
+up to the monitor work area and **blurs** it. Two fixes: render with a **size-aware view**
+(`InteractiveAppHost.View: Size -> 'model -> Control<'msg>`, content laid out to the actual
+swapchain extent — the preferred path), **or** launch with exactly one flag —
+`--window-startup normal` — for a 1:1 sharp normal window. See the `fs-skia-viewer-host` skill.
+
 ## Pre-design pointer: record-label collision (fs-skia-scene)
 
 **Before** you design your model's records, read the `fs-skia-scene` skill's

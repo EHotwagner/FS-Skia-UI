@@ -32,14 +32,14 @@
       "src/SkiaViewer/SkiaViewer.fsi"
     ],
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.SkiaViewer.md",
-    "SymbolCount": 440,
+    "SymbolCount": 467,
     "SampledSymbols": [
       "type ViewerOptions =",
       "InitialSize: Size",
       "ViewerWindowPosition",
       "Coordinates of x: int * y: int"
     ],
-    "XmlSummaryCount": 82,
+    "XmlSummaryCount": 95,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"
@@ -130,7 +130,7 @@
       "src/Controls/Types.fsi"
     ],
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.Controls.md",
-    "SymbolCount": 688,
+    "SymbolCount": 690,
     "SampledSymbols": [
       "type Control\u003C\u0027msg\u003E",
       "KnownControl.TextBlock",
@@ -139,7 +139,7 @@
       "LineChart.series",
       "TextBox.onChanged"
     ],
-    "XmlSummaryCount": 300,
+    "XmlSummaryCount": 306,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"
@@ -155,9 +155,9 @@
       "src/Controls.Elmish/ControlsElmish.fsi"
     ],
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.Controls.Elmish.md",
-    "SymbolCount": 46,
+    "SymbolCount": 63,
     "SampledSymbols": [],
-    "XmlSummaryCount": 36,
+    "XmlSummaryCount": 56,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"

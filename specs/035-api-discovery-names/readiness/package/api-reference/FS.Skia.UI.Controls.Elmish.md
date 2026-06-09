@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 46
-xml-summary-count: 36
+symbol-count: 63
+xml-summary-count: 56
 source-fsi-paths:
 - src/Controls.Elmish/ControlsElmish.fsi
 sampled-symbols:
@@ -23,8 +23,11 @@ diagnostics:
 ```fsharp
 namespace FS.Skia.UI.Controls.Elmish
 
+open System
 open FS.Skia.UI.Controls
 open FS.Skia.UI.KeyboardInput
+open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer
 open Elmish
 
 /// Public contract type exposed by this FS.Skia.UI package.
@@ -55,6 +58,22 @@ type AdapterProgram<'model, 'msg> =
       Update: 'msg -> 'model -> 'model * AdapterCommand<'msg>
       View: 'model -> Control<'msg>
       Subscriptions: 'model -> AdapterSubscription<'msg> list }
+
+/// Pointer-routing, size-aware durable host (feature 085, research D3-AMEND). Mirrors
+/// `GeneratedAppHost` field-for-field PLUS a `MapPointer` seam over `PointerInteraction` and a
+/// size-carrying `View` that returns a `Control<'msg>` tree (so `Control.renderTree` yields the
+/// `Scene` + `Layout` + `EventBindings` the host hit-tests by `ControlId`). Lives in
+/// Controls.Elmish — not SkiaViewer — because `PointerInteraction`/`interpretPointerOutcome` are
+/// Controls surface and the viewer is host-independent. `Theme` drives `renderTree`.
+type InteractiveAppHost<'model, 'msg> =
+    { Init: unit -> 'model * ViewerEffect list
+      Update: 'msg -> 'model -> 'model * ViewerEffect list
+      View: Size -> 'model -> Control<'msg>
+      Theme: Theme
+      MapKey: ViewerKey -> bool -> 'msg option
+      MapPointer: PointerInteraction -> 'msg option
+      Tick: TimeSpan -> 'msg option
+      Diagnostics: ViewerDiagnosticsOptions }
 
 /// Pure, total bridge between the adapter's effect-list command model
 /// (`AdapterCommand<'msg>`) and Elmish `Cmd<'msg>` (068, additive).
@@ -118,5 +137,30 @@ module ControlsElmish =
         view: ('model -> Widget<'msg>) ->
         subscriptions: ('model -> AdapterSubscription<'msg> list) ->
             AdapterProgram<'model, 'msg>
+
+    /// The single pointer-routing step the interactive host performs per native pointer sample:
+    /// renders `host.View size model` via `Control.renderTree host.Theme size`, hit-tests the
+    /// laid-out bounds through the shipped 075 pipeline (`Pointer.update`, incl. the 4px click/drag
+    /// fold), and routes the emitted interactions through `interpretPointerOutcome host.MapPointer`
+    /// to product messages. Returns the advanced `PointerState` (threaded across samples) plus the
+    /// product messages. `runInteractiveApp` wires exactly this; exposed so a headless test
+    /// exercises the real adapter path without opening a window (research D6). FR-004/FR-005.
+    val routeInteractivePointer:
+        host: InteractiveAppHost<'model, 'msg> ->
+        state: PointerState ->
+        size: Size ->
+        model: 'model ->
+        input: ViewerPointerInput ->
+            PointerState * 'msg list
+
+    /// Launch `host` as a durable, pointer-routing, size-aware window (feature 085). Each frame
+    /// renders `host.View size model` through `Control.renderTree host.Theme size`; native pointer
+    /// samples are hit-tested (`Layout.hitTestComputed` × `EventBindings` by `ControlId`, with the
+    /// shipped 4px click/drag fold via `Pointer.update`) and routed through
+    /// `interpretPointerOutcome host.MapPointer` to product messages folded by `host.Update`.
+    /// Reuses `Viewer.runInteractiveViewer`; the durable `Viewer.runApp` literal is untouched
+    /// (FR-004/FR-005/FR-006/FR-009).
+    val runInteractiveApp:
+        options: ViewerOptions -> host: InteractiveAppHost<'model, 'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
 
 ```

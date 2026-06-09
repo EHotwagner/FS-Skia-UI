@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 688
-xml-summary-count: 300
+symbol-count: 690
+xml-summary-count: 306
 source-fsi-paths:
 - src/Controls/Accessibility.fsi
 - src/Controls/Attributes.fsi
@@ -282,6 +282,14 @@ module Control =
     val withKey: key: ControlId -> control: Control<'msg> -> Control<'msg>
     /// Public contract function exposed by this FS.Skia.UI package.
     val render: theme: Theme -> control: Control<'msg> -> ControlRenderResult<'msg>
+    /// Faithfully rasterize a NESTED control tree to a Scene using real Yoga layout and paint
+    /// at the given output size (distinct from `render`, the Feature-080 single-control
+    /// PREVIEW). Lays out and paints nested containers AND their children at their computed
+    /// bounds, so two structurally different trees produce visibly different scenes. The
+    /// returned `Layout`/`EventBindings` correlate by `ControlId` for host hit-testing.
+    /// Additive: `render` and `Widget.render` are unchanged (FR-001/FR-002/FR-003).
+    val renderTree:
+        theme: Theme -> size: FS.Skia.UI.Scene.Size -> control: Control<'msg> -> ControlRenderResult<'msg>
     /// Public contract function exposed by this FS.Skia.UI package.
     val diagnostics: control: Control<'msg> -> ControlDiagnostic list
     /// Public contract function exposed by this FS.Skia.UI package.
