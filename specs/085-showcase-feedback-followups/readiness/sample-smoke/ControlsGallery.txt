@@ -292,3 +292,52 @@ manual-click-path=[SaveRequested]
 elapsed-ms=81
 
 exit-code=0
+
+## ControlsGallery contract smoke
+$ dotnet run --project samples/ControlsGallery/ControlsGallery.fsproj --no-build --no-restore -- --contract-smoke
+status=ok
+sample=ControlsGallery
+control-count=94
+catalog-count=52
+visible-range={ FirstIndex = 0
+  Count = 11
+  Total = 10000 }
+datagrid-visible-range={ FirstIndex = 0
+  Count = 6
+  Total = 25 }
+datagrid-columns-attr=columns
+rich-text=420.0x18.9 diagnostics=0
+keyboard-last-command=Some "save"
+keyboard-state-display={ PressedKeys = ["S"]
+  ActiveLayout = "default"
+  ActiveModeStack = []
+  PendingSequence = []
+  LastCommand = Some "save" }
+runtime-focused=Some "save-button"
+adapter-init-commands=0 keyboard-commands=1 focus-commands=2
+diagnostics=[]
+scene-kinds=[GroupElement; GroupElement; ClipElement; TextRunElement; RectangleElement;
+ RectangleElement; TextRunElement; RectangleElement; RectangleElement;
+ TextRunElement; RectangleElement; RectangleElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ ClipElement; TextRunElement; RectangleElement; RectangleElement; TextRunElement;
+ RectangleElement; RectangleElement; TextRunElement; RectangleElement;
+ RectangleElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; ClipElement; TextRunElement; RectangleElement;
+ TextRunElement; GroupElement; ClipElement; TextRunElement; RectangleElement;
+ RectangleElement; ClipElement; GroupElement; TextRunElement; LineElement;
+ GroupElement; ClipElement; TextRunElement; RectangleElement; LineElement;
+ LineElement; TextRunElement; GroupElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; TextRunElement; GroupElement; RectangleElement;
+ TextRunElement; GroupElement; RectangleElement; TextRunElement; GroupElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; TextRunElement;
+ GroupElement; RectangleElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; ClipElement; TextRunElement;
+ PathElement; PathElement; CircleElement; GroupElement; ClipElement;
+ TextRunElement; LineElement; LineElement; CircleElement; CircleElement;
+ GroupElement; ClipElement; TextRunElement; RectangleElement; TextRunElement;
+ GroupElement; ClipElement; TextRunElement; ...]
+manual-click-path=[SaveRequested]
+elapsed-ms=70
+
+exit-code=0
