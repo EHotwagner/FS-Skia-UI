@@ -261,6 +261,7 @@ type ControlEventBinding<'msg> =
 type ControlRenderResult<'msg> =
     { Scene: Scene
       Layout: LayoutNode
+      Bounds: (ControlId * Rect) list
       Diagnostics: ControlDiagnostic list
       EventBindings: ControlEventBinding<'msg> list
       NodeCount: int }

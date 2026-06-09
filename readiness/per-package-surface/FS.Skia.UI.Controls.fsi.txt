@@ -215,6 +215,8 @@ module Control =
     val renderTree:
         theme: Theme -> size: FS.Skia.UI.Scene.Size -> control: Control<'msg> -> ControlRenderResult<'msg>
 
+    val hitTest: result: ControlRenderResult<'msg> -> x: float -> y: float -> ControlId option
+
     val diagnostics: control: Control<'msg> -> ControlDiagnostic list
 
     val dispatch: event: ControlEvent -> control: Control<'msg> -> 'msg list
@@ -344,6 +346,8 @@ module Stack =
     val create: Attr<'msg> list -> Control<'msg>
 
     val children: Control<'msg> list -> Attr<'msg>
+
+    val orientation: string -> Attr<'msg>
 
 module Grid =
 
@@ -1224,6 +1228,8 @@ type ControlEventBinding<'msg> =
 type ControlRenderResult<'msg> =
     { Scene: Scene
       Layout: LayoutNode
+
+      Bounds: (ControlId * Rect) list
       Diagnostics: ControlDiagnostic list
       EventBindings: ControlEventBinding<'msg> list
       NodeCount: int }

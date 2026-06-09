@@ -1,7 +1,7 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
 <!-- SPECKIT START -->
-specs/085-showcase-feedback-followups/plan.md
+specs/086-interactive-consumer-fitness/plan.md
 <!-- SPECKIT END -->
 
 ## Run `Route` first; run only the gates it prints

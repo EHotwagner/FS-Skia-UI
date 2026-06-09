@@ -1,0 +1,21 @@
+SC-007 — no dropped keystrokes at window focus (US6, FR-015/016)
+
+status=deferred (live compiled-host capture on a GPU/display host)
+mode=interactive-window
+supported-host=false (live native keystroke injection within the focus window not available here)
+
+Implementation (real, compiles, deterministic): a bounded pre-ready FIFO in
+src/SkiaViewer/SkiaViewer.fs `runPersistentWindow`. Native key events captured before the
+render pipeline signals ready (first presented frame) are buffered in capture order and
+flushed once ready; past the cap (64) the oldest is dropped with a structured Input/Warning
+diagnostic (Principle VII — explicit degradation, no silent loss). After ready, dispatch is
+direct. Single-threaded Silk windowing => a plain mutable queue on the host edge needs no lock.
+
+Documented (T037 [X]): .agents/skills/fs-skia-viewer-host/SKILL.md § "Keyboard warm-up"
+(regenerated to .claude via RefreshSurfaceBaselines).
+
+Deferred (T035/T038): the compiled-host warm-up smoke that issues a known keystroke sequence
+within a bounded window (<=2 s) after focus and asserts all are delivered to MapKey (none
+dropped) requires a compiled self-closing host with GPU/display passthrough; fsi cannot open
+a Vulkan window. Recorded as [S] in the Synthetic-Evidence Inventory with the unsupported-host
+reason; the real compiled-host path stays documented for capture on a supported host.

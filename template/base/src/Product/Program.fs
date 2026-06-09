@@ -25,9 +25,12 @@ let main args =
 open FS.Skia.UI.SkiaViewer
 open System.IO
 open Product.WindowOptions
+//#if (profile == "app")
+open FS.Skia.UI.Controls.Elmish
+//#endif
 
 type Model = Product.Model.Model
-type Screen = Product.Model.Screen
+type Page = Product.Model.Page
 type InputFlowDiagnostic = Product.Model.InputFlowDiagnostic
 type Msg = Product.Model.Msg
 type GeneratedLayoutValidationFailureClass = Product.Model.GeneratedLayoutValidationFailureClass
@@ -35,7 +38,7 @@ type GeneratedLayoutValidationResult = Product.Model.GeneratedLayoutValidationRe
 type WindowBehaviorSettings = Product.WindowOptions.WindowBehaviorSettings
 
 let initialModel = Product.Model.initialModel
-let screenName = Product.Model.screenName
+let pageName = Product.Model.pageName
 let keyName = Product.Model.keyName
 let diagnostic = Product.Model.diagnostic
 let transitionViewerInput = Product.Model.transitionViewerInput
@@ -63,6 +66,9 @@ let appCommandName = Product.EvidenceCommands.appCommandName
 let viewerEffectsForModel = Product.EvidenceCommands.viewerEffectsForModel
 let interpretAtHostBoundary = Product.EvidenceCommands.interpretAtHostBoundary
 let generatedHost = Product.EvidenceCommands.generatedHost
+//#if (profile == "app")
+let interactiveHost = Product.EvidenceCommands.interactiveHost
+//#endif
 let defaultCommand = Product.EvidenceCommands.defaultCommand
 let windowBehaviorArgsFromFile = Product.WindowOptions.windowBehaviorArgsFromFile
 let parseWindowBehavior = Product.WindowOptions.parseWindowBehavior
@@ -143,15 +149,21 @@ let main args =
             |> List.map (fun (option, _, _, status, _) -> $"{option}:{windowOptionStatusText status}")
             |> String.concat ","
 
-        // FR-004/FR-005: a window flag routes the live launch through
-        // runAppWithWindowBehavior so the real window honors the request; with no
-        // flag the durable runApp path stays reachable and inherits the framework
-        // windowed-fullscreen default.
+        // Per-family governed default launch (feature 086, FR-004/005/006, D6):
+        //#if (profile == "app")
+        // CONTROLS family: a pointer-aware persistent host — a mouse click on a live control
+        // dispatches that control's bound message (via MapPointer over the renderTree bounds).
+        let launchResult = ControlsElmish.runInteractiveApp viewerOptions interactiveHost
+        //#else
+        // GAME family: the keyboard-only persistent host is preserved (FR-006). A window flag
+        // routes through runAppWithWindowBehavior; otherwise the durable runApp path stays
+        // reachable and inherits the framework windowed-fullscreen default.
         let launchResult =
             if Product.WindowOptions.windowFlagSupplied args then
                 Viewer.runAppWithWindowBehavior viewerOptions (Product.WindowOptions.toViewerLaunchRequest windowBehavior) generatedHost
             else
                 Viewer.runApp viewerOptions generatedHost
+        //#endif
 
         match launchResult with
         | Result.Ok outcome ->

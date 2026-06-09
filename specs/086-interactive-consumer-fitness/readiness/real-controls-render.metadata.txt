@@ -1,0 +1,21 @@
+SC-002 (helper evidence) — real-controls render through the production tree-render path
+
+evidence-kind=render-target-png
+status=ok
+artifact=specs/086-interactive-consumer-fitness/readiness/real-controls-render.png
+artifact-decodable=true (PNG image data, 640 x 480, 8-bit/color RGBA, non-interlaced; 14447 bytes)
+proves-scene-rendering=true
+proves-desktop-visibility=false (headless render-target raster; not a live persistent window)
+
+What this proves: the default scaffold `view` path — `controlsExampleView` → `Control.renderTree`
+→ the shared SceneRenderer painter (Viewer.captureScreenshotEvidence, ViewerRenderTargetPng,
+no window) — rasterizes REAL styled controls (a TextBlock, TextBox, Button, LineChart, and
+GraphView laid out by the framework), NOT hand-drawn placeholder geometry. This is honest
+real-controls, not placeholder geometry.
+
+renderTree facts: nodeCount=6, Bounds entries=6 (one per laid-out control), control count=6.
+
+This is the headless production-render-path helper evidence (FR-003 / SC-002). The live
+persistent-launch screenshot (real-controls-live-screenshot.png, SC-002 production launch)
+remains pending the US2 controls-family pointer-host default + compiled self-closing host.
+Repro: dotnet fsi over the built assemblies with LD_LIBRARY_PATH → linux-x64 libSkiaSharp.

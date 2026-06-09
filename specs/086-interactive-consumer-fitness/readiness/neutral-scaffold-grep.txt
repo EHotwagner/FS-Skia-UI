@@ -1,0 +1,29 @@
+SC-001 — neutral controls-first scaffold (US1, FR-001/002)
+
+Scan: generated product model/view/tests carry ZERO game-model identifiers.
+Files: template/base/src/Product/Model.fs, View.fs;
+       template/base/tests/Product.Tests/BehaviorTests.fs
+
+Game-model identifiers searched (all ABSENT):
+  Screen | Initial | Paused | Ended (Screen state machine)
+  ActiveColumn | ActiveRow | Tally | NextToken (game cursor/counter fields)
+  GameTick | EndReached | PrimaryInteractions (game messages/fields)
+  playfield | circular | "tally:" | "stage:" | "upcoming:" | grid-style (view concepts)
+Result: NONE — model/view/tests carry zero game-model identifiers.
+
+Durable / framework names that legitimately remain (NOT game-model tokens, out of the
+neutral-rename scope):
+  - `playfield-readable` — DURABLE governance-scanned token in EvidenceCommands.fs
+    (GovernanceTests.fs:138 requires it); must-survive per scaffold-map.md.
+  - `GameplayRegion` / `GameplayBounds` — FRAMEWORK fields of FS.Skia.UI.Scene's
+    `LayoutEvidenceReport` type (cannot be renamed); `gameplayRegionForSize` etc. are the
+    durable LayoutEvidence API names re-pointed in body to the neutral content region.
+  - `viewerOptions` / `WindowOptions` — host wiring, not game tokens.
+
+Neutral model: Page (Home|Browse|Detail|Settings|Summary) navigation, content-region
+cursor (ContentColumn/ContentRow), generic counters (ItemCount/Step/NextLabel). The default
+`view` renders the real `controlsExampleView` via `Control.renderTree` (FR-003).
+GovernanceTests.fs stays model-agnostic (reads source text; compiles before BehaviorTests.fs).
+
+Note: authoritative validation is TemplateCheck/GeneratedProductCheck over the GENERATED
+product (Phase 9); this scan is over the template source that generates it.

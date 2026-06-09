@@ -285,6 +285,11 @@ type ControlEventBinding<'msg> =
 type ControlRenderResult<'msg> =
     { Scene: Scene
       Layout: LayoutNode
+      /// Evaluated absolute bounds of every laid-out control, keyed by `ControlId`
+      /// (one entry per laid-out control instance). Populated by `Control.renderTree`
+      /// from the computed `LayoutResult`; the preview `Control.render` leaves it empty.
+      /// A host joins this with `EventBindings` (also keyed by `ControlId`) for hit-testing.
+      Bounds: (ControlId * Rect) list
       Diagnostics: ControlDiagnostic list
       EventBindings: ControlEventBinding<'msg> list
       NodeCount: int }

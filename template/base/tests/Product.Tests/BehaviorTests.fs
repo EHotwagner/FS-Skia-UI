@@ -129,48 +129,111 @@ let behaviorTests =
             Expect.isGreaterThan (Control.count view) 7 "adapter view returns Controls"
         }
 
-        test "generated graphical app starts through viewer key event" {
-            let started, _ =
-                dispatchViewerKey { RawKey = "Enter"; Direction = ViewerKeyDirection.KeyDown } initialModel
+        // FR-003 / SC-002: the unmodified default `view` renders the REAL example controls
+        // through the production tree-render path (`Control.renderTree`), not hand-drawn
+        // placeholder geometry. The rendered scene therefore carries the example control text.
+        test "default view renders real controls through the production render path" {
+            let rendered = view initialModel
+            let nodes = collectSceneNodes rendered |> Seq.toList
+            let text = sceneText rendered
 
-            Expect.equal started.Screen Main "initial screen starts from viewer Enter"
-            Expect.equal started.LastInput (Some Enter) "normalized input is stored"
-            Expect.exists started.InputDiagnostics (fun item -> item.Flow = "initial-start" && item.RawKey = Some "Enter") "diagnostic names the viewer input flow"
+            Expect.isGreaterThan (List.length nodes) (Control.count (controlsExampleView initialModel)) "renderTree paints nested controls (more nodes than the control count)"
+            Expect.stringContains text "Product controls" "the rendered scene shows the example TextBlock's real text"
+            Expect.stringContains text "Save" "the rendered scene shows the example Button's real label"
         }
 
-        test "generated graphical app options pause back and restart flows use viewer keys" {
-            let options, _ =
-                dispatchViewerKey { RawKey = "O"; Direction = ViewerKeyDirection.KeyDown } initialModel
+        // SC-002 corollary: a NESTED-control change is reflected in the rendered scene, proving
+        // the real control tree (not a fixed placeholder) drives the view.
+        test "default view reflects the control tree (nested change changes the scene)" {
+            let before = view initialModel
+            let after = view { initialModel with Name = "Renamed" }
+            Expect.notEqual before after "the TextBox value flows through renderTree into the scene"
+        }
 
-            let main, _ =
-                dispatchViewerKey { RawKey = "Return"; Direction = ViewerKeyDirection.KeyDown } options
+        //#if (profile == "app")
+        // SC-003 (FR-004): a synthetic pointer press+release at a live control's bounds, routed
+        // through the EXACT step runInteractiveApp wires (ControlsElmish.routeInteractivePointer),
+        // dispatches that control's bound message — proving the pointer host is interactive.
+        test "pointer click on the Save control routes its bound message (SC-003)" {
+            let host = Product.Program.interactiveHost
+            let size: FS.Skia.UI.Scene.Size = { Width = 640; Height = 480 }
+            let model0 = fst (host.Init())
+            let rendered = Control.renderTree host.Theme size (host.View size model0)
 
-            let paused, _ =
-                dispatchViewerKey { RawKey = "Space"; Direction = ViewerKeyDirection.KeyDown } main
+            // Resolve the "save" control's evaluated box via the layout engine (the same path
+            // runInteractiveApp hit-tests), then click its centre.
+            let available: FS.Skia.UI.Layout.AvailableSpace =
+                { Width = float size.Width
+                  WidthMode = FS.Skia.UI.Layout.Exactly
+                  Height = float size.Height
+                  HeightMode = FS.Skia.UI.Layout.Exactly }
 
-            let resumed, _ =
-                dispatchViewerKey { RawKey = "Esc"; Direction = ViewerKeyDirection.KeyDown } paused
+            let layoutResult = FS.Skia.UI.Layout.Layout.evaluate available rendered.Layout
+            let saveBox = (layoutResult.Bounds |> List.find (fun b -> b.NodeId = "save")).Bounds
+            let cx = saveBox.X + saveBox.Width / 2.0
+            let cy = saveBox.Y + saveBox.Height / 2.0
 
-            let ended, _ = Product.Program.update EndReached resumed
+            let pointer phase x y : ViewerPointerInput =
+                { Phase = phase; X = x; Y = y; Button = Some ViewerPointerButtonKind.Primary; DeltaX = 0.0; DeltaY = 0.0 }
+
+            let state1, downMsgs =
+                ControlsElmish.routeInteractivePointer host (Pointer.init ()) size model0 (pointer ViewerPointerPhaseKind.Pressed cx cy)
+
+            let _state2, upMsgs =
+                ControlsElmish.routeInteractivePointer host state1 size model0 (pointer ViewerPointerPhaseKind.Released cx cy)
+
+            let routed = downMsgs @ upMsgs
+            Expect.contains routed SaveRequested "press+release on the Save control dispatches its bound SaveRequested message"
+
+            let _, effects =
+                routed |> List.fold (fun (m, fx) msg -> let m', fx' = host.Update msg m in m', fx @ fx') (model0, [])
+
+            Expect.isNonEmpty effects "the routed control message produces a host effect"
+        }
+        //#endif
+
+        test "generated graphical app navigates pages through viewer key events" {
+            let browse, _ =
+                dispatchViewerKey { RawKey = "Enter"; Direction = ViewerKeyDirection.KeyDown } initialModel
+
+            Expect.equal browse.Page Browse "Home opens Browse from viewer Enter"
+            Expect.equal browse.LastInput (Some Enter) "normalized input is stored"
+            Expect.exists browse.InputDiagnostics (fun item -> item.Flow = "home-open" && item.RawKey = Some "Enter") "diagnostic names the viewer input flow"
+        }
+
+        test "generated app settings, detail-back, and restart flows use viewer keys" {
+            let settings, _ =
+                dispatchViewerKey { RawKey = "S"; Direction = ViewerKeyDirection.KeyDown } initialModel
+
+            let browse, _ =
+                dispatchViewerKey { RawKey = "Return"; Direction = ViewerKeyDirection.KeyDown } settings
+
+            let detail, _ =
+                dispatchViewerKey { RawKey = "Enter"; Direction = ViewerKeyDirection.KeyDown } browse
+
+            let backToBrowse, _ =
+                dispatchViewerKey { RawKey = "Esc"; Direction = ViewerKeyDirection.KeyDown } detail
+
+            let summary, _ = Product.Program.update (Navigated Summary) backToBrowse
 
             let restarted, _ =
-                dispatchViewerKey { RawKey = "Enter"; Direction = ViewerKeyDirection.KeyDown } ended
+                dispatchViewerKey { RawKey = "Enter"; Direction = ViewerKeyDirection.KeyDown } summary
 
-            Expect.equal options.Screen Options "options screen opens through viewer key"
-            Expect.equal main.Screen Main "options selection enters main screen"
-            Expect.equal paused.Screen Paused "space pauses main interaction"
-            Expect.equal resumed.Screen Main "escape resumes from pause"
-            Expect.equal restarted.Screen Initial "end screen restarts through viewer Enter"
+            Expect.equal settings.Page Settings "settings page opens through viewer key"
+            Expect.equal browse.Page Browse "settings apply enters browse page"
+            Expect.equal detail.Page Detail "enter opens the detail page"
+            Expect.equal backToBrowse.Page Browse "escape returns from detail to browse"
+            Expect.equal restarted.Page Home "summary page restarts through viewer Enter"
         }
 
         test "pure generated app transitions expose model message and effect behavior" {
             let started, startEffects = Product.Program.update (ViewerInput(Enter, true)) initialModel
             let interacted, interactionEffects = Product.Program.update (ViewerInput(ArrowLeft, true)) started
 
-            Expect.equal started.Screen Main "pure update starts app"
+            Expect.equal started.Page Browse "pure update opens the browse page"
             Expect.isEmpty startEffects "input transition has no host command"
-            Expect.equal interacted.PrimaryInteractions 1 "primary interaction is counted"
-            Expect.isEmpty interactionEffects "primary interaction has no host command"
+            Expect.equal interacted.Interactions 1 "content-region interaction is counted"
+            Expect.isEmpty interactionEffects "content interaction has no host command"
         }
 
         test "generated host boundary keeps app commands separate from viewer effects" {
@@ -189,104 +252,73 @@ let behaviorTests =
             Expect.exists hostViewerEffects (function RenderScene _ -> true | _ -> false) "generated host returns render effects to SkiaViewer"
         }
 
-        test "generated default game view renders grid playfield and side information" {
-            let rendered = view initialModel
-            let nodes = collectSceneNodes rendered |> Seq.toList
-            let text = sceneText rendered
-
-            let rectangleCount =
-                nodes
-                |> List.filter (function Rectangle _ | PaintedRectangle _ -> true | _ -> false)
-                |> List.length
-
-            let lineCount =
-                nodes
-                |> List.filter (function Line _ -> true | _ -> false)
-                |> List.length
-
-            Expect.isGreaterThanOrEqual rectangleCount 20 "grid-style playfield renders multiple cells"
-            Expect.isGreaterThanOrEqual lineCount 10 "grid-style playfield renders visible grid lines"
-            Expect.stringContains text "tally" "side panel includes tally"
-            Expect.stringContains text "stage" "side panel includes stage"
-            Expect.stringContains text "upcoming" "side panel includes upcoming token"
-        }
-
-        test "generated default game view uses circular and elliptical entities without rectangle substitution" {
-            let rendered = view initialModel
-            let nodes = collectSceneNodes rendered |> Seq.toList
-
-            let roundEntityCount =
-                nodes
-                |> List.filter (function Circle _ | FilledEllipse _ | Ellipse _ -> true | _ -> false)
-                |> List.length
-
-            Expect.isGreaterThanOrEqual roundEntityCount 3 "generated scene renders at least three circular or elliptical entities"
-            Expect.contains (Scene.describe { Nodes = nodes }) CircleElement "generated scene contains public circle element"
-            Expect.contains (Scene.describe { Nodes = nodes }) EllipseElement "generated scene contains public ellipse element"
-        }
-
-        test "generated game layout evidence separates HUD and gameplay at default and constrained sizes" {
+        test "generated layout evidence separates summary and content regions at default and constrained sizes" {
             let defaultReport = Product.Program.layoutEvidenceForSize { Width = 1280; Height = 720 } initialModel
             let constrainedReport = Product.Program.layoutEvidenceForSize { Width = 640; Height = 480 } initialModel
 
             [ defaultReport; constrainedReport ]
             |> List.iter (fun report ->
                 Expect.equal report.ProofLevel ReadableLayout "generated report proves readable layout"
-                Expect.isSome report.HudRegion "HUD region is named"
-                Expect.isSome report.GameplayRegion "gameplay region is named"
-                Expect.isNonEmpty report.TextBounds "HUD text bounds are present"
-                Expect.isNonEmpty report.GameplayBounds "active gameplay bounds are present"
-                Expect.equal report.OverlapStatus NoLayoutOverlap "HUD and gameplay bounds do not overlap"
+                Expect.isSome report.HudRegion "summary region is named"
+                Expect.isSome report.GameplayRegion "content region is named"
+                Expect.isNonEmpty report.TextBounds "summary text bounds are present"
+                Expect.isNonEmpty report.GameplayBounds "active content bounds are present"
+                Expect.equal report.OverlapStatus NoLayoutOverlap "summary and content bounds do not overlap"
                 Expect.equal report.MeasurementMode ApproximateTextBounds "generated layout evidence reports the measurement mode"
                 Expect.isEmpty report.UnsupportedReasons "readable generated layout does not use unsupported-host classification")
         }
 
-        test "generated game layout validation fails broken HUD and gameplay layouts" {
-            let hudOverlap = Product.Program.layoutEvidenceForSize { Width = 480; Height = 480 } initialModel
-            let gameplayOverlap =
+        test "generated layout validation fails broken summary and content layouts" {
+            let summaryOverlap = Product.Program.layoutEvidenceForSize { Width = 480; Height = 480 } initialModel
+            let contentOverlap =
                 Product.Program.layoutEvidenceForSize
                     { Width = 640; Height = 480 }
-                    { initialModel with ActiveRow = -6 }
+                    { initialModel with ContentRow = -6 }
 
-            let hudResult = Product.Program.validateGeneratedLayout hudOverlap
-            let gameplayResult = Product.Program.validateGeneratedLayout gameplayOverlap
+            let summaryResult = Product.Program.validateGeneratedLayout summaryOverlap
+            let contentResult = Product.Program.validateGeneratedLayout contentOverlap
 
-            Expect.isFalse hudResult.Accepted "HUD/HUD overlap fails validation"
-            Expect.equal hudResult.FailureClass (Some OverlappingLayoutBounds) "HUD/HUD overlap is classified"
-            Expect.isFalse gameplayResult.Accepted "HUD/gameplay overlap fails validation"
-            Expect.equal gameplayResult.FailureClass (Some OverlappingLayoutBounds) "HUD/gameplay overlap is classified"
+            Expect.isFalse summaryResult.Accepted "summary/summary overlap fails validation"
+            Expect.equal summaryResult.FailureClass (Some OverlappingLayoutBounds) "summary overlap is classified"
+            Expect.isFalse contentResult.Accepted "summary/content overlap fails validation"
+            Expect.equal contentResult.FailureClass (Some OverlappingLayoutBounds) "summary/content overlap is classified"
         }
 
-        test "generated gameplay policies use gameplay region for active entity movement and bounds" {
+        test "generated content policies use the content region for the active item and bounds" {
             let started, _ = Product.Program.update (ViewerInput(Enter, true)) initialModel
-            let moved, _ = Product.Program.update (ViewerInput(ArrowLeft, true)) started
-            let ticked, _ = Product.Program.update GameTick moved
+            let moved, _ = Product.Program.update (ViewerInput(ArrowRight, true)) started
+            let ticked, _ = Product.Program.update Tick moved
 
             let region = Product.Program.gameplayRegionForSize { Width = 640; Height = 480 }
             let bounds = Product.Program.activeGameplayBoundsForSize { Width = 640; Height = 480 } ticked
 
-            Expect.isTrue (Product.Program.boundsInside region.Bounds bounds.Bounds) "active entity remains inside gameplay region"
+            Expect.isTrue (Product.Program.boundsInside region.Bounds bounds.Bounds) "active item remains inside the content region"
             Expect.isTrue (Product.Program.movementUsesGameplayRegion { Width = 640; Height = 480 } ticked) "movement policy is region based"
             Expect.isTrue (Product.Program.spawnUsesGameplayRegion { Width = 640; Height = 480 } initialModel) "spawn policy is region based"
             Expect.isTrue (Product.Program.collisionUsesGameplayRegion { Width = 640; Height = 480 } ticked) "collision policy is region based"
         }
 
-        test "generated default game dispatches input advances over time and keeps evidence flags opt-in" {
+        test "generated default app dispatches input, advances over time, and keeps evidence flags opt-in" {
             let started, _ = dispatchViewerKey { RawKey = "Enter"; Direction = ViewerKeyDirection.KeyDown } initialModel
-            let moved, _ = dispatchViewerKey { RawKey = "ArrowLeft"; Direction = ViewerKeyDirection.KeyDown } started
+            let moved, _ = dispatchViewerKey { RawKey = "ArrowRight"; Direction = ViewerKeyDirection.KeyDown } started
 
-            Expect.notEqual moved initialModel "keyboard input changes playable game state"
-            Expect.isGreaterThan moved.PrimaryInteractions started.PrimaryInteractions "left input is reflected in gameplay state"
+            Expect.notEqual moved initialModel "keyboard input changes application state"
+            Expect.isGreaterThan moved.Interactions started.Interactions "right input is reflected in content state"
 
             match tick (TimeSpan.FromMilliseconds 500.0) with
             | Some tickMsg ->
                 let afterTick, _ = Product.Program.update tickMsg moved
-                Expect.notEqual afterTick moved "time-based tick advances gameplay state"
-            | None -> failtest "generated game tick must advance gameplay over time"
+                Expect.notEqual afterTick moved "time-based tick advances application state"
+            | None -> failtest "generated tick must advance application state over time"
 
             let source = System.IO.File.ReadAllText(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "..", "..", "src", "Product", "Program.fs"))
             let defaultBranch = source.Substring(source.LastIndexOf("| None ->", StringComparison.Ordinal))
-            Expect.stringContains defaultBranch "Viewer.runApp viewerOptions generatedHost" "normal launch uses interactive host"
+            // FR-005 (086): per-family persistent interactive host in the default launch.
+            //#if (profile == "app")
+            Expect.stringContains defaultBranch "ControlsElmish.runInteractiveApp viewerOptions interactiveHost" "controls-family normal launch uses the pointer-aware persistent host"
+            //#else
+            Expect.stringContains defaultBranch "Viewer.runApp viewerOptions generatedHost" "game-family normal launch uses the keyboard-only persistent host"
+            //#endif
             Expect.isFalse (defaultBranch.Contains("--launch-evidence")) "launch evidence flag stays out of normal launch branch"
             Expect.isFalse (defaultBranch.Contains("--bounded-smoke")) "bounded smoke flag stays out of normal launch branch"
             Expect.isFalse (defaultBranch.Contains("self-closed-for-evidence=true")) "normal launch does not report evidence self-close"

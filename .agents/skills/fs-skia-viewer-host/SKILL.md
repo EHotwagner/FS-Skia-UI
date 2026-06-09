@@ -78,6 +78,23 @@ monitor work area and **blurs** it. Two fixes:
    actual swapchain extent (sharp at any size) — the preferred path.
 2. Or pass exactly one flag — **`--window-startup normal`** — for a 1:1 normal window.
 
+## Keyboard warm-up: no dropped keystrokes at focus (feature 086)
+
+When a persistent window first gains focus there is a brief **warm-up window** before the
+render pipeline signals ready (its first presented frame). Key events that fire in that gap
+used to be dropped. The persistent host now buffers them in a **bounded pre-ready FIFO** and
+flushes them **in capture order** the moment the pipeline is ready, so every keystroke issued
+in the first seconds after focus still reaches your `MapKey`.
+
+- The buffer is **bounded** (capacity 64). Past the cap it **drops the oldest** event and
+  emits a structured `Input`/`Warning` diagnostic — explicit degradation, never silent loss
+  (Principle VII). In practice the cap is never reached: the first frame arrives within a few
+  frames of focus and the buffer drains.
+- After the pipeline is ready, dispatch is **direct** (no buffering), and any residual
+  buffered keys are drained in order before the live key.
+- You do not opt in — it is automatic on the persistent host input path. This only closes the
+  focus-time gap; there is no behavior change once the window is warm.
+
 ## Persistent problems
 
 When a problem outlasts reasonable in-repo attempts, extensive external research is

@@ -68,6 +68,7 @@ let tryRunEvidenceCommand args =
     | _ -> None
 
 //#else
+open FS.Skia.UI.Controls
 open FS.Skia.UI.Controls.Elmish
 open FS.Skia.UI.KeyboardInput
 open FS.Skia.UI.SkiaViewer
@@ -233,7 +234,7 @@ let mapKey key isDown =
 
 let tick elapsed =
     if elapsed >= TimeSpan.FromMilliseconds 16.0 then
-        Some GameTick
+        Some Tick
     else
         None
 
@@ -266,6 +267,32 @@ let generatedHost =
       MapKey = mapKey
       Tick = tick
       Diagnostics = Viewer.defaultDiagnostics }
+
+//#if (profile == "app")
+// FR-004/FR-006 (D6): the CONTROLS family's governed default is a pointer-aware persistent
+// host. `runInteractiveApp` renders `View size model` via `Control.renderTree`, hit-tests
+// native pointer samples against the laid-out control bounds, and routes the emitted
+// `PointerInteraction`s through `MapPointer` to product messages folded by `Update`. The
+// game family keeps the keyboard-only `Viewer.runApp ... generatedHost` (FR-006) — the
+// keyboard host is not removed, it is the per-family alternative.
+let interactiveHost: InteractiveAppHost<Model, Msg> =
+    { Init = fun () -> initialModel, []
+      Update =
+        fun msg model ->
+            let next, _, viewerEffects = interpretAtHostBoundary msg model
+            next, viewerEffects
+      View = fun _size model -> controlsExampleView model
+      Theme = Theme.light
+      MapKey = mapKey
+      MapPointer =
+        fun interaction ->
+            // A click on the bound "save" control dispatches that control's message.
+            match interaction with
+            | Click(controlId, _, _, _) when controlId = "save" -> Some SaveRequested
+            | _ -> None
+      Tick = tick
+      Diagnostics = Viewer.defaultDiagnostics }
+//#endif
 
 let defaultCommand = "dotnet run --project src/Product/Product.fsproj"
 

@@ -17,7 +17,7 @@ FAIL
 
 - Changed alignment classes: ``
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/085-showcase-feedback-followups`
+- Active feature evidence: `specs/086-interactive-consumer-fitness`
 
 ## Controls Boundary Guidance
 

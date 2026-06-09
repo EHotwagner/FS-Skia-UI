@@ -1,0 +1,27 @@
+SC-003 — pointer interaction in the governed default app (US2, FR-004/005/006)
+
+Evidence kind: headless MVU pointer-routing through the PUBLIC adapter path
+(ControlsElmish.routeInteractivePointer — the exact per-sample step runInteractiveApp
+wires), against the controls-family InteractiveAppHost. Pure, window-free transition.
+
+Mechanism: render host.View via Control.renderTree → hit-test the laid-out Bounds →
+emit PointerInteraction.Click(controlId,...) → MapPointer routes to the product message →
+host.Update folds it.
+
+Reproduced values (dotnet fsi over the built assemblies):
+  save control bounds = (8.0, 8.0, 304.0, 132.0); synthetic click at centre (160.0, 74.0)
+  press+release routed = [SaveRequested]   (the control's bound message)
+  host.Update fold: model.Saved = true; effects = 1 (RenderScene)
+
+In the generated product (profile == "app", controls family):
+  - template/base/src/Product/EvidenceCommands.fs `interactiveHost.MapPointer` maps
+    Click("save", _, _, _) -> Some SaveRequested.
+  - template/base/tests/Product.Tests/BehaviorTests.fs test
+    "pointer click on the Save control routes its bound message (SC-003)" exercises this
+    via routeInteractivePointer and PASSES inside TemplateCheck (generated product tests green).
+
+Governance (SC-008): the host-lock assertions in GovernanceTests.fs (3 sites) and
+BehaviorTests.fs are generalized to the per-family persistent interactive host — controls
+family asserts `ControlsElmish.runInteractiveApp viewerOptions interactiveHost`; the game
+family keeps `Viewer.runApp viewerOptions generatedHost` (keyboard host not removed, FR-006).
+TemplateCheck (generates the app/controls family) PASSES with the pointer host as default.

@@ -409,3 +409,10 @@ module internal SceneRenderer =
                     let x = chartLeft + float32 index * (barWidth + 12.0f)
                     let y = chartTop + chartHeight - height
                     canvas.DrawRect(x, y, barWidth, height, paint))
+        | Translate((dx, dy), scene) ->
+            canvas.Save() |> ignore
+            canvas.Translate(float32 dx, float32 dy)
+            scene.Nodes |> List.iter (paintNode canvas)
+            canvas.Restore()
+        | SizedText((x, y), text, size, color) ->
+            drawTextWithFallback canvas x y text size (skColor color) true

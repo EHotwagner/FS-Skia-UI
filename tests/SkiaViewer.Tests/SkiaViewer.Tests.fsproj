@@ -11,6 +11,7 @@
     <Compile Include="Tests.fs" />
     <Compile Include="Feature063RendererTests.fs" />
     <Compile Include="Feature085InteractiveHostTests.fs" />
+    <Compile Include="Feature086SceneTranslateTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

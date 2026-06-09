@@ -1,0 +1,20 @@
+T008 — exercise the draft .fsi deltas against the built/packed libraries
+
+The additive public-surface deltas were exercised through the built FS.Skia.UI assemblies
+via the package semantic test suites (which reference the compiled libraries and call the
+public entry points directly — a stronger equivalent of an FSI transcript, run reproducibly
+in CI). Representative paths exercised:
+
+Controls (FS.Skia.UI.Controls):
+  Control.renderTree theme size control  ->  result.Bounds : (ControlId * Rect) list
+  Control.hitTest result x y             ->  ControlId option
+  Stack.orientation "horizontal"         ->  Attr<'msg>  (row layout)
+  See tests/Controls.Tests/Feature086LayoutBoundsTests.fs  (all assertions PASS)
+
+Scene (FS.Skia.UI.Scene) + shared painter (FS.Skia.UI.SkiaViewer):
+  Scene.translate dx dy scene            ->  Scene (TranslateElement; uniform pixel offset)
+  Scene.sizedText pos text size color    ->  Scene (SizedTextElement; explicit glyph size)
+  See tests/SkiaViewer.Tests/Feature086SceneTranslateTests.fs  (all assertions PASS)
+
+Logs: readiness/logs/controls-feature086-tests.txt, readiness/logs/viewer-feature086-tests.txt
+Build: src/Scene, src/Controls, src/Controls.Elmish, src/SkiaViewer all build 0 errors.

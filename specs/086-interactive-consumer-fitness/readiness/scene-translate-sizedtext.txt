@@ -1,0 +1,26 @@
+SC-006 — compose and size sub-scenes with framework primitives (US5, FR-013/014)
+
+Evidence kind: render-through-painter tests via the PUBLIC headless raster entry point
+(Viewer.captureScreenshotEvidence, ViewerRenderTargetPng — no window) plus Scene.describe
+structural checks. The decoded PNG pixels are the visual proof (the shared painter renders
+both evidence and interactive paths). Vertical-slice: exercises the public Scene constructors
+and the public render-target capture.
+
+Source: tests/SkiaViewer.Tests/Feature086SceneTranslateTests.fs
+Log:    readiness/logs/viewer-feature086-tests.txt
+Run:    dotnet test tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj
+
+Assertions (all PASS):
+- FR-013 Scene.translate / SceneNode.Translate shifts EVERY painted pixel of a Path sub-scene
+  by exactly (dx,dy): decoded lit-pixel bounding box of the translated render = base bbox +
+  (50,30) on all four edges (uniform offset, proven on a non-rectangular Path kind).
+- FR-013 nesting composes additively: Translate(20,0)·Translate(35,0)·s renders the identical
+  lit-pixel bbox as Translate(55,0)·s.
+- FR-014 Scene.sizedText / SceneNode.SizedText renders glyphs at the explicit size (larger
+  size => wider lit glyph extent); a bare Text still renders pixels unchanged (back-compat).
+- Structural: describe reports SizedTextElement / TranslateElement.
+
+Mechanism: paintNode pushes a canvas Translate around the child (all kinds shift uniformly)
+and routes SizedText through drawTextWithFallback at the explicit size; the existing Text case
+is unchanged. Both new cases are handled in the exhaustive describe/diagnostics/scaleNode/
+paintNode matches.

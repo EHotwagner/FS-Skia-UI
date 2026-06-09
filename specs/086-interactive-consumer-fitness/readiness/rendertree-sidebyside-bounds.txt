@@ -1,0 +1,25 @@
+SC-004 — real side-by-side layout from a control tree (US3, FR-007/008/009)
+
+Evidence kind: semantic tests through the PUBLIC packed Controls API (Control.renderTree),
+asserting the evaluated public `ControlRenderResult.Bounds`. Vertical-slice: exercises the
+public render entry point, not internal helpers.
+
+Source: tests/Controls.Tests/Feature086LayoutBoundsTests.fs
+Log:    readiness/logs/controls-feature086-tests.txt
+Run:    dotnet test tests/Controls.Tests/Controls.Tests.fsproj
+
+Assertions (all PASS):
+- FR-007 horizontal Stack (Stack.orientation "horizontal") lays two children along the row
+  axis: distinct X, shared Y (|Δy| < 2px), non-overlapping.
+- FR-008 two UNKEYED same-kind siblings ("text-block") receive TWO distinct, non-overlapping
+  Bounds entries at distinct positions — the collision the structural LayoutNodeId fixes.
+  Previously both collapsed onto one box (overlap + masked size).
+- FR-009 an explicit container width=200/height=120 is reflected in that container's Bounds
+  entry (floatClose medium).
+
+Mechanism: renderTree now threads a collision-free structural id (`parent.index`, preferring
+an explicit Key) into both layout and paint, and `directionOf` reads `orientation=horizontal`.
+Deterministic (no clock/randomness), resume-safe.
+
+FR-010 preservation: the 080 single-control preview (Control.render / Widget.render) stays
+byte-identical — see readiness/logs/controls-feature086-tests.txt (080-preview parity tests).

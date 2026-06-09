@@ -32,6 +32,10 @@ module Control =
     /// Additive: `render` and `Widget.render` are unchanged (FR-001/FR-002/FR-003).
     val renderTree:
         theme: Theme -> size: FS.Skia.UI.Scene.Size -> control: Control<'msg> -> ControlRenderResult<'msg>
+    /// Resolve which rendered control (if any) contains the point (x, y), from the public
+    /// `renderTree` result alone. `None` when the point lies in a gap. Layered over
+    /// `Layout.hitTestComputed` against the evaluated `Bounds` (FR-012).
+    val hitTest: result: ControlRenderResult<'msg> -> x: float -> y: float -> ControlId option
     /// Public contract function exposed by this FS.Skia.UI package.
     val diagnostics: control: Control<'msg> -> ControlDiagnostic list
     /// Public contract function exposed by this FS.Skia.UI package.
@@ -178,6 +182,9 @@ module Stack =
     val create: Attr<'msg> list -> Control<'msg>
     /// Public contract function exposed by this FS.Skia.UI package.
     val children: Control<'msg> list -> Attr<'msg>
+    /// Lay the stack's children along the row axis when value = "horizontal"; any other
+    /// value (or omission) keeps the default vertical column (FR-007).
+    val orientation: string -> Attr<'msg>
 
 /// Public contract module exposed by this FS.Skia.UI package.
 module Grid =

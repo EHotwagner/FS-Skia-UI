@@ -40,17 +40,17 @@ let layoutEvidenceForSize (size: Size) (model: Model) : LayoutEvidenceReport =
 //#else
 
 let hudRegionForSize (size: Size) : LayoutRegionEvidence =
-    { Name = "hud"
+    { Name = "summary"
       Bounds = { X = 0.0; Y = 0.0; Width = float size.Width; Height = 96.0 } }
 
 let gameplayRegionForSize (size: Size) : LayoutRegionEvidence =
-    let hud = hudRegionForSize size
-    { Name = "gameplay"
+    let summary = hudRegionForSize size
+    { Name = "content"
       Bounds =
         { X = 0.0
-          Y = hud.Bounds.Height
+          Y = summary.Bounds.Height
           Width = float size.Width
-          Height = max 1.0 (float size.Height - hud.Bounds.Height) } }
+          Height = max 1.0 (float size.Height - summary.Bounds.Height) } }
 
 let boundsInside outer inner =
     inner.X >= outer.X
@@ -64,27 +64,27 @@ let private intersects first second =
     && first.Y < second.Y + second.Height
     && first.Y + first.Height > second.Y
 
-let private playfieldLayout size =
-    let gameplay = gameplayRegionForSize size
+let private contentLayout size =
+    let content = gameplayRegionForSize size
     let cell =
         min
-            ((gameplay.Bounds.Width - 64.0) / 10.0)
-            ((gameplay.Bounds.Height - 48.0) / 20.0)
+            ((content.Bounds.Width - 64.0) / 10.0)
+            ((content.Bounds.Height - 48.0) / 20.0)
         |> max 10.0
 
-    let playfieldWidth = cell * 10.0
-    let playfieldHeight = cell * 20.0
-    let playfieldX = gameplay.Bounds.X + 32.0
-    let playfieldY = gameplay.Bounds.Y + 24.0
+    let contentWidth = cell * 10.0
+    let contentHeight = cell * 20.0
+    let contentX = content.Bounds.X + 32.0
+    let contentY = content.Bounds.Y + 24.0
 
-    playfieldX, playfieldY, cell, playfieldWidth, playfieldHeight
+    contentX, contentY, cell, contentWidth, contentHeight
 
 let activeGameplayBoundsForSize size model : LayoutGameplayBounds =
-    let playfieldX, playfieldY, cell, _, _ = playfieldLayout size
-    { Name = "active-token"
+    let contentX, contentY, cell, _, _ = contentLayout size
+    { Name = "active-item"
       Bounds =
-        { X = playfieldX + float model.ActiveColumn * cell + 1.0
-          Y = playfieldY + float model.ActiveRow * cell + 1.0
+        { X = contentX + float model.ContentColumn * cell + 1.0
+          Y = contentY + float model.ContentRow * cell + 1.0
           Width = cell * 2.0 - 2.0
           Height = cell * 2.0 - 2.0 } }
 
@@ -95,7 +95,7 @@ let movementUsesGameplayRegion size model =
 
 let spawnUsesGameplayRegion size model =
     let region = gameplayRegionForSize size
-    let bounds = activeGameplayBoundsForSize size { model with ActiveColumn = 4; ActiveRow = 1 }
+    let bounds = activeGameplayBoundsForSize size { model with ContentColumn = 0; ContentRow = 0 }
     boundsInside region.Bounds bounds.Bounds
 
 let collisionUsesGameplayRegion size model =
@@ -108,10 +108,10 @@ let private hudTextBounds (size: Size) model =
           Bounds = { X = x; Y = y; Width = width; Height = 24.0 }
           MeasurementMode = ApproximateTextBounds }
 
-    [ text 128.0 16.0 16.0 "tally" $"tally: {model.Tally}"
-      text 96.0 168.0 16.0 "stage" $"stage: {model.Stage}"
-      text 96.0 296.0 16.0 "upcoming" $"upcoming: {model.NextToken}"
-      text 152.0 (float size.Width - 184.0) 16.0 "status" $"screen: {screenName model.Screen}" ]
+    [ text 128.0 16.0 16.0 "items" $"items: {model.ItemCount}"
+      text 96.0 168.0 16.0 "step" $"step: {model.Step}"
+      text 96.0 296.0 16.0 "next" $"next: {model.NextLabel}"
+      text 152.0 (float size.Width - 184.0) 16.0 "status" $"page: {pageName model.Page}" ]
 
 let private overlapDiagnostics report =
     let hudTextOverlaps =

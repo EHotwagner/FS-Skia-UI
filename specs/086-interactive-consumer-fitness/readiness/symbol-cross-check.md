@@ -1,0 +1,17 @@
+## Symbol consistency (analyze pass G)
+- entity-record InteractiveAppHost — in {tasks}, missing from {plan, data-model}
+- fr-id FR-003 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-005 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-009 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-010 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-012 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-016 — in {data-model, tasks}, missing from {plan}
+- msg-case InteractiveAppHost — in {plan}, missing from {data-model, tasks}
+- msg-case Model — in {plan}, missing from {data-model, tasks}
+- msg-case Msg — in {plan}, missing from {data-model, tasks}
+- sc-id SC-001 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-004 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-005 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-006 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-007 — in {plan, tasks}, missing from {data-model}
+- union-or-screen-variant Page — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]

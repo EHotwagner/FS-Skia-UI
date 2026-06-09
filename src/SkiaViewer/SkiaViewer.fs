@@ -1377,6 +1377,15 @@ module Viewer =
     let private runPersistentWindow options behavior diagnostics inputDispatch renderScene onTick onKey inputVerified =
         let windowOpened = ref false
         let framePresented = ref false
+        // FR-015/016 (data-model §9): a bounded pre-ready FIFO. Native key events that arrive
+        // before the render pipeline signals ready (first presented frame) are buffered in order
+        // and flushed once ready, so no early keystroke is dropped at window warm-up. Past the cap
+        // we drop-oldest with a structured diagnostic (Principle VII — explicit degradation, never
+        // silent loss). Silk windowing is single-threaded (load/update/render/input callbacks share
+        // one thread), so a plain mutable queue on the host edge needs no locking.
+        let warmupCapacity = 64
+        let warmupQueue = System.Collections.Generic.Queue<string * bool>()
+        let mutable flushWarmup: unit -> unit = fun () -> ()
         let closeReason: ViewerCloseReason option ref = ref None
         let lastDiagnostic = ref None
         let windowDiagnostics = ResizeArray<ViewerWindowStateDiagnostic>()
@@ -1434,6 +1443,11 @@ module Viewer =
 
                 let updateHandler =
                     Action<float>(fun elapsedSeconds ->
+                        // Once the pipeline is ready, drain any keystrokes buffered during warm-up
+                        // (in order) before advancing the tick, so no early input is lost.
+                        if !framePresented then
+                            flushWarmup ()
+
                         if onTick(TimeSpan.FromSeconds elapsedSeconds) && not window.IsClosing then
                             closeReason := Some AppRequestedClose
                             window.Close())
@@ -1483,16 +1497,46 @@ module Viewer =
                         match onKey with
                         | Some dispatchKey ->
                             try
+                                let deliverKey (raw: string) (isDown: bool) =
+                                    if dispatchKey raw isDown && not window.IsClosing then
+                                        closeReason := Some AppRequestedClose
+                                        window.Close()
+
+                                // Drain the warm-up FIFO in capture order.
+                                flushWarmup <-
+                                    fun () ->
+                                        while warmupQueue.Count > 0 do
+                                            let raw, isDown = warmupQueue.Dequeue()
+                                            deliverKey raw isDown
+
+                                // Before the first frame: buffer (bounded, drop-oldest with a
+                                // diagnostic). After: drain any residual buffer in order, then
+                                // dispatch directly.
+                                let onKeyEvent (raw: string) (isDown: bool) =
+                                    if !framePresented then
+                                        flushWarmup ()
+                                        deliverKey raw isDown
+                                    else
+                                        if warmupQueue.Count >= warmupCapacity then
+                                            warmupQueue.Dequeue() |> ignore
+
+                                            capture
+                                                { Level = ViewerDiagnosticLevel.Warning
+                                                  Category = ViewerDiagnosticCategory.Input
+                                                  Message = $"key warm-up buffer overflow (cap={warmupCapacity}); dropped oldest pre-ready key event"
+                                                  FrameIndex = None
+                                                  Stage = Some App
+                                                  Elapsed = None }
+
+                                        warmupQueue.Enqueue((raw, isDown))
+
                                 let input = window.CreateInput()
                                 inputDisposables.Add(input)
                                 inputAvailable <- ViewerObservedValue.Observed(input.Keyboards.Count > 0)
 
                                 for keyboard in input.Keyboards do
                                     let keyDownHandler =
-                                        Action<IKeyboard, Key, int>(fun _ key _ ->
-                                            if dispatchKey (key.ToString()) true && not window.IsClosing then
-                                                closeReason := Some AppRequestedClose
-                                                window.Close())
+                                        Action<IKeyboard, Key, int>(fun _ key _ -> onKeyEvent (key.ToString()) true)
 
                                     keyboard.add_KeyDown keyDownHandler
                                     inputDisposables.Add
@@ -1500,10 +1544,7 @@ module Viewer =
                                             member _.Dispose() = keyboard.remove_KeyDown keyDownHandler }
 
                                     let keyUpHandler =
-                                        Action<IKeyboard, Key, int>(fun _ key _ ->
-                                            if dispatchKey (key.ToString()) false && not window.IsClosing then
-                                                closeReason := Some AppRequestedClose
-                                                window.Close())
+                                        Action<IKeyboard, Key, int>(fun _ key _ -> onKeyEvent (key.ToString()) false)
 
                                     keyboard.add_KeyUp keyUpHandler
                                     inputDisposables.Add

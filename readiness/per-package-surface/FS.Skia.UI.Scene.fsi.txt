@@ -270,6 +270,8 @@ type SceneElementKind =
     | PerspectiveElement
     | PictureElement
     | ChartElement
+    | TranslateElement
+    | SizedTextElement
 
 type RenderReadbackEvidence =
     { Size: Size
@@ -376,6 +378,8 @@ type SceneNode =
     | PerspectiveNode of PerspectiveTransform * Scene
     | PictureNode of Picture
     | Chart of values: float list
+    | Translate of (float * float) * Scene
+    | SizedText of (float * float) * string * float * Color
 
 and Scene =
     { Nodes: SceneNode list }
@@ -509,6 +513,10 @@ module Scene =
     val picture: picture: Picture -> Scene
 
     val chart: values: float list -> Scene
+
+    val translate: dx: float -> dy: float -> scene: Scene -> Scene
+
+    val sizedText: position: (float * float) -> text: string -> size: float -> color: Color -> Scene
 
     val describe: scene: Scene -> SceneElementKind list
 

@@ -189,6 +189,8 @@ type SceneElementKind =
     | PerspectiveElement
     | PictureElement
     | ChartElement
+    | TranslateElement
+    | SizedTextElement
 
 type RenderReadbackEvidence =
     { Size: Size
@@ -295,6 +297,8 @@ type SceneNode =
     | PerspectiveNode of PerspectiveTransform * Scene
     | PictureNode of Picture
     | Chart of values: float list
+    | Translate of (float * float) * Scene
+    | SizedText of (float * float) * string * float * Color
 
 and Scene =
     { Nodes: SceneNode list }
@@ -546,6 +550,12 @@ module Scene =
     let chart values =
         { Nodes = [ Chart values ] }
 
+    let translate dx dy scene =
+        { Nodes = [ Translate((dx, dy), scene) ] }
+
+    let sizedText position text size color =
+        { Nodes = [ SizedText(position, text, size, color) ] }
+
     let rec describe scene =
         let describeNode node =
             match node with
@@ -570,6 +580,8 @@ module Scene =
             | PerspectiveNode(_, scene) -> PerspectiveElement :: describe scene
             | PictureNode picture -> PictureElement :: describe picture.Scene
             | Chart _ -> [ ChartElement ]
+            | Translate(_, scene) -> TranslateElement :: describe scene
+            | SizedText _ -> [ SizedTextElement ]
 
         scene.Nodes |> List.collect describeNode
 
@@ -613,7 +625,8 @@ module Scene =
             | Image(_, source) when not (IO.File.Exists source) -> [ diagnostic Error "Invalid image resource declaration." (Some $"Image source '{source}' does not exist.") ]
             | ClipNode(_, scene)
             | ColorSpaceNode(_, scene)
-            | PerspectiveNode(_, scene) -> diagnostics scene
+            | PerspectiveNode(_, scene)
+            | Translate(_, scene) -> diagnostics scene
             | PictureNode picture -> diagnostics picture.Scene
             | _ -> []
 

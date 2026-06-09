@@ -1,0 +1,20 @@
+SC-005 — map a pointer to a control from the public render result (US4, FR-011/012)
+
+Evidence kind: semantic tests through the PUBLIC packed Controls API
+(Control.renderTree → ControlRenderResult.Bounds, Control.hitTest). Vertical-slice:
+exercises the public render + hit-test entry points.
+
+Source: tests/Controls.Tests/Feature086LayoutBoundsTests.fs
+Log:    readiness/logs/controls-feature086-tests.txt
+Run:    dotnet test tests/Controls.Tests/Controls.Tests.fsproj
+
+Assertions (all PASS):
+- FR-011 every laid-out control with a ControlId appears in `Bounds` with its evaluated box;
+  the bound Button's ControlId joins Bounds with EventBindings (both keyed by ControlId).
+- FR-012 Control.hitTest resolves a point INSIDE the button's evaluated box to Some "button";
+  a point in a gap (-50,-50) resolves to None.
+
+Mechanism: `Bounds : (ControlId * Rect) list` is populated in renderTree from the
+already-computed LayoutResult bounds (previously computed-and-discarded); `Layout = root`
+kept for back-compat. `hitTest` is layered over `Layout.hitTestComputed` (topmost-wins
+reverse scan) by reconstructing a LayoutResult whose NodeIds are the ControlIds.

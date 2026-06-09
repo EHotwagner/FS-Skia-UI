@@ -1,0 +1,24 @@
+{
+  "accepted_seh_tasks": [],
+  "unaccepted_synthetic_tasks": [
+    "T035",
+    "T036",
+    "T037",
+    "T038",
+    "T039",
+    "T040",
+    "T041",
+    "T042",
+    "T043"
+  ],
+  "auto_synthetic_tasks": [
+    "T037",
+    "T039",
+    "T040",
+    "T041",
+    "T042",
+    "T043"
+  ],
+  "late_seh_tasks": [],
+  "diagnostics": []
+}

@@ -1,0 +1,150 @@
+{
+  "base_ref": "main",
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "specs/086-interactive-consumer-fitness/plan.md",
+      "line": 121,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: None planned for headless-testable FRs (FR-007..FR-014 and the"
+    },
+    {
+      "file": "specs/086-interactive-consumer-fitness/readiness/task-graph.md",
+      "line": 66,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "## Synthetic Error-Handling Classification"
+    },
+    {
+      "file": "specs/086-interactive-consumer-fitness/readiness/task-graph.md",
+      "line": 68,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Accepted | Label | Design source | Synthetic input class | Expected error behavior | Diagnostics |"
+    },
+    {
+      "file": "specs/086-interactive-consumer-fitness/readiness/task-graph.md",
+      "line": 120,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "T037[\"T037 Document the keyboard warm-up window and the buffe\"]:::autoSynthetic"
+    },
+    {
+      "file": "specs/086-interactive-consumer-fitness/readiness/task-graph.md",
+      "line": 122,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "T039[\"T039 Regenerate the skill tree from the canonical `.age\"]:::autoSynthetic"
+    },
+    {
+      "file": "specs/086-interactive-consumer-fitness/readiness/task-graph.md",
+      "line": 123,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "T040[\"T040 Run `./fake.sh build -t Dev` \u2014 semantic/property t\"]:::autoSynthetic"
+    },
+    {
+      "file": "specs/086-interactive-consumer-fitness/readiness/task-graph.md",
+      "line": 124,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "T041[\"T041 Run `./fake.sh build -t GeneratedGuidanceCheck`\"]:::autoSynthetic"
+    },
+    {
+      "file": "specs/086-interactive-consumer-fitness/readiness/task-graph.md",
+      "line": 125,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "T042[\"T042 Run `./fake.sh build -t TemplateCheck` \u2014 exercises\"]:::autoSynthetic"
+    },
+    {
+      "file": "specs/086-interactive-consumer-fitness/readiness/task-graph.md",
+      "line": 126,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "T043[\"T043 Run `./fake.sh build -t GeneratedProductCheck` \u2014 r\"]:::autoSynthetic"
+    },
+    {
+      "file": "specs/086-interactive-consumer-fitness/readiness/task-graph.md",
+      "line": 211,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/086-interactive-consumer-fitness/readiness/template/template-package-contents.md",
+      "line": 15,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/template/base/CLAUDE.md`"
+    },
+    {
+      "file": "specs/086-interactive-consumer-fitness/readiness/template/template-package-contents.md",
+      "line": 16,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/template/base/.claude/settings.json`"
+    },
+    {
+      "file": "specs/086-interactive-consumer-fitness/readiness/template/template-package-contents.md",
+      "line": 17,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/template/base/.claude/skills/fs-skia-project/SKILL.md`"
+    },
+    {
+      "file": "specs/086-interactive-consumer-fitness/readiness/template/template-package-contents.md",
+      "line": 26,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/.agents/skills/speckit-specify/SKILL.md`"
+    },
+    {
+      "file": "specs/086-interactive-consumer-fitness/readiness/template/template-package-contents.md",
+      "line": 27,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/.claude/skills/speckit-specify/SKILL.md`"
+    },
+    {
+      "file": "specs/086-interactive-consumer-fitness/readiness/template/template-package-contents.md",
+      "line": 28,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/.template.config/generated/CLAUDE.md`"
+    },
+    {
+      "file": "specs/086-interactive-consumer-fitness/readiness/template/template-package-contents.md",
+      "line": 29,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/.template.config/generated/.claude/settings.json`"
+    },
+    {
+      "file": "specs/086-interactive-consumer-fitness/tasks.md",
+      "line": 213,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    }
+  ]
+}

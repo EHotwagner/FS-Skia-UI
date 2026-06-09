@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Feature 086 T026 — tiny COMPILED self-closing harness for the controls-family
+       interactive-host launch (ControlsElmish.runInteractiveApp). A compiled exe (not fsi) is
+       required for Silk.NET Vulkan window-surface creation. Outside FS-Skia-UI.sln so it does
+       not affect governance test discovery. References local src so it exercises 086 changes. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\src\Controls.Elmish\Controls.Elmish.fsproj" />
+  </ItemGroup>
+
+</Project>

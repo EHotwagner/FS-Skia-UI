@@ -102,7 +102,13 @@ let governanceTests =
             Expect.stringContains source "\"--screenshot-evidence\"" "screenshot evidence records the evidence command"
             Expect.stringContains source "\"--pixel-readback-evidence\"" "pixel-readback evidence records the evidence command"
             Expect.stringContains source "Viewer.runBounded" "generated evidence commands use bounded viewer evidence entry points"
-            Expect.stringContains defaultBranch "Viewer.runApp viewerOptions generatedHost" "normal launch remains the persistent interactive path"
+            // FR-005 (086, D6): the host-lock assertion is generalized to the per-family
+            // persistent interactive host — controls → runInteractiveApp, game → runApp.
+            //#if (profile == "app")
+            Expect.stringContains defaultBranch "ControlsElmish.runInteractiveApp viewerOptions interactiveHost" "controls-family normal launch is the pointer-aware persistent interactive host"
+            //#else
+            Expect.stringContains defaultBranch "Viewer.runApp viewerOptions generatedHost" "game-family normal launch remains the keyboard-only persistent interactive path"
+            //#endif
             Expect.isFalse (defaultBranch.Contains("mode=persistent-evidence")) "normal launch does not report bounded evidence mode"
             Expect.isFalse (defaultBranch.Contains("self-closed-for-evidence=true")) "normal launch does not claim evidence self-close"
             Expect.isFalse (defaultBranch.Contains("input-dispatch=not-required")) "normal launch does not reuse bounded evidence input-dispatch wording"
@@ -171,7 +177,12 @@ let governanceTests =
             Expect.stringContains source "let generatedHost" "generated product declares generated host"
             Expect.stringContains source "MapKey = mapKey" "generated host wires keyboard mapping"
             Expect.stringContains source "Tick = tick" "generated host wires tick mapping"
-            Expect.stringContains source "Viewer.runApp viewerOptions generatedHost" "default path runs persistent generated app host"
+            // FR-005 (086): default path runs the per-family persistent interactive host.
+            //#if (profile == "app")
+            Expect.stringContains source "ControlsElmish.runInteractiveApp viewerOptions interactiveHost" "controls-family default path runs the pointer-aware persistent host"
+            //#else
+            Expect.stringContains source "Viewer.runApp viewerOptions generatedHost" "game-family default path runs the keyboard-only persistent generated app host"
+            //#endif
             Expect.stringContains source "mode=interactive-window" "default path reports interactive mode"
             Expect.stringContains source "accessible-window=true" "successful default path reports accessible desktop window claim"
             Expect.stringContains source "window-visible=observed:true" "successful default path reports observed visible window"
@@ -235,7 +246,13 @@ let governanceTests =
             Expect.stringContains source "windowBehaviorArgsFromFile" "option files are parsed into launch flags"
             Expect.stringContains source "toViewerWindowBehavior windowBehavior" "parsed flags become the public viewer request"
             Expect.stringContains source "Viewer.validateWindowLaunchBehavior viewerOptions.InitialSize" "generated diagnostics use public launch behavior validation"
-            Expect.stringContains source "Viewer.runApp viewerOptions generatedHost" "default launch applies the selected persistent viewer contract"
+            // FR-005 (086): the default launch applies the selected persistent viewer contract
+            // appropriate to the product family (controls → runInteractiveApp, game → runApp).
+            //#if (profile == "app")
+            Expect.stringContains source "ControlsElmish.runInteractiveApp viewerOptions interactiveHost" "controls-family default launch applies the pointer-aware persistent viewer contract"
+            //#else
+            Expect.stringContains source "Viewer.runApp viewerOptions generatedHost" "game-family default launch applies the keyboard-only persistent viewer contract"
+            //#endif
             Expect.stringContains source "manualWindowOptionResults windowBehaviorRequest" "normal launch validates parsed behavior request before calling SkiaViewer"
             Expect.stringContains source "window-options=%s" "normal launch reports option validation output"
             Expect.stringContains source "option=resize" "option report includes resize rows"

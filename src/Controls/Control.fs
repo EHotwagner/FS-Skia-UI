@@ -996,6 +996,10 @@ module Control =
     let render (theme: Theme) (control: Control<'msg>) =
         { Scene = ControlInternals.renderScene theme control
           Layout = ControlInternals.layoutNode theme control
+          // The 080 single-control PREVIEW does not expose per-control evaluated bounds;
+          // that is a `renderTree` (nested layout) feature (FR-011). Kept empty here so the
+          // preview Scene stays byte-identical (FR-010).
+          Bounds = []
           Diagnostics = diagnostics control
           EventBindings = ControlInternals.recursively ControlInternals.eventBindings control
           NodeCount = count control }
@@ -1008,14 +1012,27 @@ module Control =
     // children — at its COMPUTED bounds. Two structurally different trees therefore produce
     // visibly different scenes (SC-001). `render`/`Widget.render` are left untouched (FR-003).
     let renderTree (theme: Theme) (size: FS.Skia.UI.Scene.Size) (control: Control<'msg>) =
-        let directionOf kind =
-            match kind with
+        // FR-007: an explicit `orientation = "horizontal"` attribute makes ANY container lay
+        // its children along the row axis, in addition to the documented always-horizontal
+        // kinds; otherwise containers stack as a vertical column.
+        let orientationOf (c: Control<'msg>) =
+            ControlInternals.tryLast "orientation" c.Attributes
+            |> Option.bind (fun attr ->
+                match attr.Value with
+                | TextValue value -> Some value
+                | _ -> None)
+
+        let directionOf (c: Control<'msg>) =
+            match c.Kind with
             | "toolbar"
             | "split-view"
             | "wrap"
             | "grid"
             | "dock" -> FS.Skia.UI.Layout.Row
-            | _ -> FS.Skia.UI.Layout.Column
+            | _ ->
+                match orientationOf c with
+                | Some "horizontal" -> FS.Skia.UI.Layout.Row
+                | _ -> FS.Skia.UI.Layout.Column
 
         let wrapOf kind =
             match kind with
@@ -1026,8 +1043,13 @@ module Control =
         // Build the nested layout tree: leaves carry an explicit size (their preview geometry),
         // containers let direction + children drive arrangement. Content is painted afterwards at
         // the computed bounds, so each node keeps Content = None here.
-        let rec toLayout (c: Control<'msg>) : FS.Skia.UI.Layout.LayoutNode =
-            let id = c.Key |> Option.defaultValue c.Kind
+        // FR-008/FR-009 (data-model §4): each node's layout id is a COLLISION-FREE structural
+        // id derived from its tree path (`parent.index`), preferring an explicit `Key`. Two
+        // unkeyed same-kind siblings therefore get DISTINCT ids — so their computed bounds no
+        // longer collapse onto one entry (which masked both an overlap and any explicit size).
+        // Deterministic (no clock/randomness) and resume-safe.
+        let rec toLayout (path: string) (c: Control<'msg>) : FS.Skia.UI.Layout.LayoutNode =
+            let id = c.Key |> Option.defaultValue path
             let isLeaf = List.isEmpty c.Children
 
             let size: FS.Skia.UI.Layout.LayoutSize =
@@ -1049,14 +1071,14 @@ module Control =
             { LayoutDefaults.layoutNode id with
                 Intent =
                     { LayoutDefaults.layoutIntent with
-                        Direction = directionOf c.Kind
+                        Direction = directionOf c
                         Wrap = wrapOf c.Kind
                         Gap = { Row = 8.0; Column = 8.0 }
                         Padding = { Left = 8.0; Top = 8.0; Right = 8.0; Bottom = 8.0 }
                         Size = size }
-                Children = c.Children |> List.map toLayout }
+                Children = c.Children |> List.mapi (fun index child -> toLayout (path + "." + string index) child) }
 
-        let root = toLayout control
+        let root = toLayout "0" control
 
         let available: FS.Skia.UI.Layout.AvailableSpace =
             { Width = float size.Width
@@ -1098,8 +1120,29 @@ module Control =
                 [ Scene.rectangle (box.X, box.Y, box.Width, box.Height) fill
                   Scene.clipped (RectClip box) (Scene.textRun labelRun) ]
 
-        let rec paint (c: Control<'msg>) : Scene list =
-            let id = c.Key |> Option.defaultValue c.Kind
+        // FR-011 (data-model §5): surface the evaluated absolute bounds `renderTree` already
+        // computes and previously discarded — one entry per laid-out control, keyed by its
+        // `ControlId` (`Key` or `Kind`, matching `EventBindings`). The lookup uses the SAME
+        // collision-free structural id threaded through `toLayout`, so unkeyed same-kind
+        // siblings each contribute their own distinct box.
+        let rec collectBounds (path: string) (c: Control<'msg>) : (ControlId * Rect) list =
+            let layoutId = c.Key |> Option.defaultValue path
+            let controlId: ControlId = c.Key |> Option.defaultValue c.Kind
+
+            let here =
+                match Map.tryFind layoutId boundsById with
+                | Some(b: FS.Skia.UI.Layout.LayoutBounds) -> [ controlId, ({ X = b.X; Y = b.Y; Width = b.Width; Height = b.Height }: Rect) ]
+                | None -> []
+
+            here
+            @ (c.Children
+               |> List.mapi (fun index child -> collectBounds (path + "." + string index) child)
+               |> List.concat)
+
+        let bounds = collectBounds "0" control
+
+        let rec paint (path: string) (c: Control<'msg>) : Scene list =
+            let id = c.Key |> Option.defaultValue path
 
             let here =
                 match Map.tryFind id boundsById with
@@ -1114,13 +1157,35 @@ module Control =
                         // are painted (below) at their own computed bounds.
                         [ Scene.rectangleWithPaint box (Paint.stroke theme.Muted 1.0) ]
 
-            here @ (c.Children |> List.collect paint)
+            here
+            @ (c.Children
+               |> List.mapi (fun index child -> paint (path + "." + string index) child)
+               |> List.concat)
 
-        { Scene = paint control |> Scene.group
+        { Scene = paint "0" control |> Scene.group
           Layout = root
+          Bounds = bounds
           Diagnostics = diagnostics control
           EventBindings = ControlInternals.recursively ControlInternals.eventBindings control
           NodeCount = count control }
+
+    // FR-012: resolve which rendered control (if any) contains the point (x, y), from the
+    // public render result alone — `None` in a gap. Layered over `Layout.hitTestComputed` by
+    // reconstructing a `LayoutResult` whose `NodeId`s ARE the `ControlId`s in `Bounds`, so the
+    // shipped topmost-wins (reverse-scan) semantics return the deepest containing control.
+    let hitTest (result: ControlRenderResult<'msg>) (x: float) (y: float) : ControlId option =
+        let computed: FS.Skia.UI.Layout.LayoutResult =
+            { Bounds =
+                result.Bounds
+                |> List.map (fun (controlId, (rect: Rect)) ->
+                    { NodeId = controlId
+                      Bounds = { X = rect.X; Y = rect.Y; Width = rect.Width; Height = rect.Height }
+                      Visibility = FS.Skia.UI.Layout.Visible }: FS.Skia.UI.Layout.ComputedBounds)
+              Diagnostics = []
+              Invalidated = []
+              Revision = 0L }
+
+        FS.Skia.UI.Layout.Layout.hitTestComputed (LayoutDefaults.pixelSnapPolicy 1.0) computed x y
 
     let dispatch (event: ControlEvent) (control: Control<'msg>) =
         let rec loop (current: Control<'msg>) =
@@ -1215,6 +1280,9 @@ module RadioGroup =
 module Stack =
     let create attrs = Control.create "stack" attrs
     let children controls = Attr.children controls
+    // FR-007: opt a stack into row layout. "horizontal" lays children along the row axis;
+    // any other value (or omission) keeps the default vertical column.
+    let orientation value = Attr.create "orientation" Layout (TextValue value)
 
 module Grid =
     let create attrs = Control.create "grid" attrs

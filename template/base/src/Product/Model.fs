@@ -31,14 +31,14 @@ open FS.Skia.UI.SkiaViewer
 type Model =
     { Name: string
       CanSave: bool
-      Screen: Screen
-      PrimaryInteractions: int
-      ActiveColumn: int
-      ActiveRow: int
-      Tally: int
-      Stage: int
+      Page: Page
+      Interactions: int
+      ContentColumn: int
+      ContentRow: int
+      ItemCount: int
+      Step: int
       TickCount: int
-      NextToken: string
+      NextLabel: string
       LastInput: ViewerKey option
       InputDiagnostics: InputFlowDiagnostic list
       Revenue: ChartSeries list
@@ -46,18 +46,18 @@ type Model =
       GridRows: DataGridRow list
       RichIntro: RichTextBlock }
 
-and Screen =
-    | Initial
-    | Options
-    | Main
-    | Paused
-    | Ended
+and Page =
+    | Home
+    | Browse
+    | Detail
+    | Settings
+    | Summary
 
 and InputFlowDiagnostic =
     { InputValue: string
       RawKey: string option
       Direction: string
-      Screen: string
+      Page: string
       ExpectedTransition: string
       Flow: string }
 
@@ -67,8 +67,8 @@ type Msg =
     | GridSelectionChanged of string
     | ViewerInput of ViewerKey * isDown: bool
     | ViewerKeyEventReceived of ViewerKeyEvent
-    | GameTick
-    | EndReached
+    | Tick
+    | Navigated of Page
     | RuntimeMsg of ControlRuntimeMsg
     | NoOp
 
@@ -121,14 +121,14 @@ let richIntro =
 let initialModel =
     { Name = "Product"
       CanSave = true
-      Screen = Initial
-      PrimaryInteractions = 0
-      ActiveColumn = 4
-      ActiveRow = 1
-      Tally = 0
-      Stage = 1
+      Page = Home
+      Interactions = 0
+      ContentColumn = 0
+      ContentRow = 0
+      ItemCount = 0
+      Step = 1
       TickCount = 0
-      NextToken = "T"
+      NextLabel = "Next"
       LastInput = None
       InputDiagnostics = []
       Revenue = revenueSeries
@@ -136,55 +136,57 @@ let initialModel =
       GridRows = gridRows
       RichIntro = richIntro }
 
-let screenName screen =
-    match screen with
-    | Initial -> "initial"
-    | Options -> "options"
-    | Main -> "main"
-    | Paused -> "paused"
-    | Ended -> "ended"
+let pageName page =
+    match page with
+    | Home -> "home"
+    | Browse -> "browse"
+    | Detail -> "detail"
+    | Settings -> "settings"
+    | Summary -> "summary"
 
 let keyName key =
     ViewerKeyboard.toKeyId key
 
-let diagnostic flow raw direction previousScreen key expected =
+let diagnostic flow raw direction previousPage key expected =
     { InputValue = keyName key
       RawKey = raw
       Direction = direction
-      Screen = screenName previousScreen
+      Page = pageName previousPage
       ExpectedTransition = expected
       Flow = flow }
 
+// Neutral, non-game navigation: keys move between application pages and a content-region
+// cursor (column/row) over the example controls. Pure transition over the model.
 let transitionViewerInput raw direction key isDown model =
     if not isDown then
         { model with LastInput = Some key }, []
     else
-        let current = model.Screen
+        let current = model.Page
 
-        let nextScreen, interactions, activeColumn, activeRow, flow, expected =
+        let nextPage, interactions, contentColumn, contentRow, flow, expected =
             match current, key with
-            | Initial, Enter -> Main, model.PrimaryInteractions, model.ActiveColumn, model.ActiveRow, "initial-start", "main"
-            | Initial, Letter 'O' -> Options, model.PrimaryInteractions, model.ActiveColumn, model.ActiveRow, "options-open", "options"
-            | Options, Enter -> Main, model.PrimaryInteractions, model.ActiveColumn, model.ActiveRow, "options-select", "main"
-            | Options, Escape
-            | Options, Backspace -> Initial, model.PrimaryInteractions, model.ActiveColumn, model.ActiveRow, "options-back", "initial"
-            | Main, Space -> Paused, model.PrimaryInteractions, model.ActiveColumn, model.ActiveRow, "pause", "paused"
-            | Main, ArrowLeft -> Main, model.PrimaryInteractions + 1, max 0 (model.ActiveColumn - 1), model.ActiveRow, "primary-interaction", "main"
-            | Main, ArrowRight -> Main, model.PrimaryInteractions + 1, min 9 (model.ActiveColumn + 1), model.ActiveRow, "primary-interaction", "main"
-            | Main, ArrowDown -> Main, model.PrimaryInteractions + 1, model.ActiveColumn, min 19 (model.ActiveRow + 1), "primary-interaction", "main"
-            | Main, ArrowUp -> Main, model.PrimaryInteractions + 1, model.ActiveColumn, model.ActiveRow, "primary-interaction", "main"
-            | Paused, Escape -> Main, model.PrimaryInteractions, model.ActiveColumn, model.ActiveRow, "resume", "main"
-            | Paused, Backspace -> Initial, model.PrimaryInteractions, model.ActiveColumn, model.ActiveRow, "pause-back", "initial"
-            | Ended, Enter -> Initial, 0, 4, 1, "restart", "initial"
-            | _ -> current, model.PrimaryInteractions, model.ActiveColumn, model.ActiveRow, "ignored", screenName current
+            | Home, Enter -> Browse, model.Interactions, model.ContentColumn, model.ContentRow, "home-open", "browse"
+            | Home, Letter 'S' -> Settings, model.Interactions, model.ContentColumn, model.ContentRow, "settings-open", "settings"
+            | Settings, Enter -> Browse, model.Interactions, model.ContentColumn, model.ContentRow, "settings-apply", "browse"
+            | Settings, Escape
+            | Settings, Backspace -> Home, model.Interactions, model.ContentColumn, model.ContentRow, "settings-back", "home"
+            | Browse, Enter -> Detail, model.Interactions, model.ContentColumn, model.ContentRow, "open-detail", "detail"
+            | Browse, ArrowLeft -> Browse, model.Interactions + 1, max 0 (model.ContentColumn - 1), model.ContentRow, "content-move", "browse"
+            | Browse, ArrowRight -> Browse, model.Interactions + 1, min 9 (model.ContentColumn + 1), model.ContentRow, "content-move", "browse"
+            | Browse, ArrowDown -> Browse, model.Interactions + 1, model.ContentColumn, min 19 (model.ContentRow + 1), "content-move", "browse"
+            | Browse, ArrowUp -> Browse, model.Interactions + 1, model.ContentColumn, max 0 (model.ContentRow - 1), "content-move", "browse"
+            | Detail, Escape
+            | Detail, Backspace -> Browse, model.Interactions, model.ContentColumn, model.ContentRow, "detail-back", "browse"
+            | Summary, Enter -> Home, 0, 0, 0, "restart", "home"
+            | _ -> current, model.Interactions, model.ContentColumn, model.ContentRow, "ignored", pageName current
 
         let entry = diagnostic flow raw direction current key expected
 
         { model with
-            Screen = nextScreen
-            PrimaryInteractions = interactions
-            ActiveColumn = activeColumn
-            ActiveRow = activeRow
+            Page = nextPage
+            Interactions = interactions
+            ContentColumn = contentColumn
+            ContentRow = contentRow
             LastInput = Some key
             InputDiagnostics = entry :: model.InputDiagnostics },
         []
@@ -204,16 +206,16 @@ let update msg model : Model * AdapterCommand<Msg> =
     | GridSelectionChanged _ -> model, []
     | ViewerInput(key, isDown) -> transitionViewerInput None (if isDown then "down" else "up") key isDown model
     | ViewerKeyEventReceived event -> dispatchViewerKey event model
-    | GameTick ->
-        if model.Screen = Main then
+    | Tick ->
+        if model.Page = Browse then
             { model with
                 TickCount = model.TickCount + 1
-                ActiveRow = if model.ActiveRow >= 19 then 1 else model.ActiveRow + 1
-                Tally = model.Tally + 10 },
+                ContentRow = if model.ContentRow >= 19 then 0 else model.ContentRow + 1
+                ItemCount = model.ItemCount + 1 },
             []
         else
             { model with TickCount = model.TickCount + 1 }, []
-    | EndReached -> { model with Screen = Ended }, []
+    | Navigated page -> { model with Page = page }, []
     | RuntimeMsg _ -> model, []
     | NoOp -> model, []
 

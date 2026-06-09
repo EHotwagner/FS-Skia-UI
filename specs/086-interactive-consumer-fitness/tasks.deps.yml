@@ -1,0 +1,207 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+#
+# Phase-checkpoint edges (every Phase N+1 task -> last task of Phase N) are
+# auto-injected by the graph compute. Only non-phase cross-edges are written
+# here. Skill ids resolve from `.agents/skills/*/SKILL.md`, `src/*/skill/SKILL.md`,
+# and `template/fragments/*/skill/SKILL.md`.
+
+tasks:
+  # --- Phase 1: Setup ---
+  T001:
+    deps: []
+    skillist: []
+    owns: []
+  T002:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+    owns: []
+  T003:
+    deps: []
+    skillist: []
+    owns: []
+  T004:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+
+  # --- Phase 2: Foundation ---
+  T005:
+    deps: []
+    skillist: ["fs-skia-scene"]
+    owns: []
+  T006:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T007:
+    deps: []
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T008:
+    deps: [T005, T006, T007]
+    skillist: []
+    owns: []
+  T009:
+    deps: [T005, T006, T007]
+    skillist: []
+    owns: []
+  T010:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+
+  # --- Phase 3: US1 — neutral controls-first scaffold ---
+  T011:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+    owns: []
+  T012:
+    deps: [T011]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T013:
+    deps: [T012]
+    skillist: ["fs-skia-scene"]
+    owns: []
+  T014:
+    deps: [T012]
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+  T015:
+    deps: [T012, T013, T014]
+    skillist: []
+    owns: []
+  T016:
+    deps: [T013]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+
+  # --- Phase 4: US3 — multi-axis layout ---
+  T017:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T018:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T019:
+    deps: [T017]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T020:
+    deps: [T017]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T021:
+    deps: [T018, T019, T020]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+
+  # --- Phase 5: US2 — pointer host governed default ---
+  T022:
+    deps: []
+    skillist: ["fs-skia-elmish"]
+    owns: []
+  T023:
+    deps: []
+    skillist: ["fs-skia-template-update"]
+    owns: []
+  T024:
+    deps: [T023]
+    skillist: ["fs-skia-template-update"]
+    owns: []
+  T025:
+    deps: [T024]
+    skillist: ["fs-skia-elmish"]
+    owns: []
+  T026:
+    deps: [T022, T025]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+
+  # --- Phase 6: US4 — per-ControlId bounds + hit-test ---
+  T027:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T028:
+    deps: [T027]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T029:
+    deps: [T028]
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T030:
+    deps: [T029]
+    skillist: []
+    owns: []
+
+  # --- Phase 7: US5 — Scene primitives ---
+  T031:
+    deps: []
+    skillist: ["fs-skia-scene"]
+    owns: []
+  T032:
+    deps: [T031]
+    skillist: ["fs-skia-scene"]
+    owns: []
+  T033:
+    deps: [T031]
+    skillist: ["fs-skia-scene"]
+    owns: []
+  T034:
+    deps: [T032, T033]
+    skillist: ["fs-skia-scene"]
+    owns: []
+
+  # --- Phase 8: US6 — viewer key warm-up ---
+  T035:
+    deps: []
+    skillist: ["fs-skia-keyboard-input"]
+    owns: []
+  T036:
+    deps: [T035]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T037:
+    deps: [T036]
+    skillist: ["fs-skia-viewer-host"]
+    owns: []
+  T038:
+    deps: [T036]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+
+  # --- Phase 9: Integration, surface baselines & evidence gates (FAKE: sequential) ---
+  T039:
+    deps: []
+    skillist: []
+    owns: []
+  T040:
+    deps: [T039]
+    skillist: []
+    owns: []
+  T041:
+    deps: [T040]
+    skillist: []
+    owns: []
+  T042:
+    deps: [T041]
+    skillist: ["fs-skia-template-update"]
+    owns: []
+  T043:
+    deps: [T042]
+    skillist: ["fs-skia-template-update"]
+    owns: []
+  T044:
+    deps: [T043]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T045:
+    deps: [T044]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]
