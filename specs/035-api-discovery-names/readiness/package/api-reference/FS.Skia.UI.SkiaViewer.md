@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 439
-xml-summary-count: 80
+symbol-count: 440
+xml-summary-count: 82
 source-fsi-paths:
 - src/SkiaViewer/SkiaViewer.fsi
 sampled-symbols:
@@ -78,6 +78,9 @@ type ViewerWindowStartupState =
     | Maximized
     | Minimized
     | Fullscreen
+    /// Borderless coverage of the monitor work area (no title bar / resize chrome,
+    /// no exclusive-mode resolution change). Distinct from exclusive `Fullscreen`.
+    | WindowedFullscreen
 
 /// Public contract type exposed by this FS.Skia.UI package.
 type ViewerWindowPosition =
