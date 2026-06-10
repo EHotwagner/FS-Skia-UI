@@ -182,6 +182,34 @@ module ControlsElmish =
         msg: TextInputMsg ->
             RetainedRender<'msg> * 'msg list
 
+    /// E4 (FR-003/FR-006/FR-007): route a delivered key to the current FocusedControl over the
+    /// RETAINED tree, generalizing the 092 `routeFocusedText` text seam to all interactive kinds.
+    /// Resolves the focused control via its stable `RetainedId` (E2 identity), reads its
+    /// `KeyboardOperation`, and applies `Focus.route`:
+    ///   - Activate  -> the focused control's authored activation `EventBindings` (the same message a
+    ///                  pointer activation dispatches), matched by (ControlId, click-equivalent kind),
+    ///                  fired ONCE (no double-dispatch);
+    ///   - Navigate  -> the focused control's authored value-change/selection bindings (a slider/
+    ///                  numeric control steps its `value` by the arrow direction and dispatches its
+    ///                  `onChanged` bindings);
+    ///   - Traverse  -> `Focus.traverse order (focused control's id) move`, emitting
+    ///                  `ControlRuntimeMsg.FocusControl next`;
+    ///   - Fallthrough -> no message (the host then consults `host.MapKey`).
+    /// A focused TEXT control's printable keys are handled by the unchanged E1 `routeFocusedText`
+    /// path BEFORE this is consulted (so text delivery is not regressed, SC-003). Returns the
+    /// (unchanged) retained structure, the focus-update `ControlRuntime` messages, and the focused
+    /// control's authored product messages. Total; never throws (an unmatched key -> no msgs).
+    /// `internal` because it takes the internal `RetainedRender` structure; the adapter tests reach
+    /// it via `InternalsVisibleTo` (it IS the production key-routing path, SC-002/SC-004, with no
+    /// hand-seeded identity map).
+    val internal routeFocusedKey:
+        retained: RetainedRender<'msg> ->
+        focused: RetainedId option ->
+        order: TabOrder ->
+        key: ViewerKey ->
+        shift: bool ->
+            RetainedRender<'msg> * ControlRuntimeMsg list * 'msg list
+
     /// Build a responds-proof verdict from a before/after frame pair (feature 090, FR-006):
     /// `Responsive` when the frames differ, `Inert` when identical. The reusable core the pointer and
     /// text responds-proof captures share.
@@ -206,9 +234,14 @@ module ControlsElmish =
     /// samples are hit-tested through `Pointer.update` (incl. the shipped 4px click/drag fold) and
     /// routed by `routeInteractivePointer` — a hit control's authored `EventBindings` are dispatched
     /// (authored binding wins; `host.MapPointer` is the fallback for unconsumed interactions, feature
-    /// 090 FR-001/FR-003), and keystrokes to a focused text control are delivered through the
-    /// focus-aware text seam (`routeFocusedText`, FR-008) before falling through to `host.MapKey`.
-    /// Reuses `Viewer.runInteractiveViewer`; the durable `Viewer.runApp` literal is untouched.
+    /// 090 FR-001/FR-003), and keystrokes are routed focus-first (feature 094 / E4): each native key
+    /// is offered to the E1 `routeFocusedText` seam (a focused TEXT control's printable keys), then
+    /// to `routeFocusedKey` (the general activation / navigation / Tab-traversal seam over the
+    /// focused control's `KeyboardOperation` and the `Focus.order` tab order), and finally falls
+    /// through to `host.MapKey` for any key no focused control and no traversal consumed. A pointer
+    /// press sets focus to the focusable control under it (FR-006), so a later key reaches it; a
+    /// press on a non-focusable region leaves focus unchanged. Reuses `Viewer.runInteractiveViewer`;
+    /// the durable `Viewer.runApp` literal is untouched.
     ///
     /// Feature 091 (E2, behavioral note — signature unchanged): the host no longer rebuilds the
     /// whole tree every frame. It holds a retained previous tree (`module internal RetainedRender`,

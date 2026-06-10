@@ -1,0 +1,32 @@
+## Symbol consistency (analyze pass G)
+- entity-record ControlRuntime — in {plan, tasks}, missing from {data-model}
+- entity-record Dev — in {tasks}, missing from {plan, data-model}
+- entity-record Fallthrough — in {tasks}, missing from {plan, data-model}
+- entity-record Focus — in {tasks}, missing from {plan, data-model}
+- entity-record FocusControl — in {plan}, missing from {data-model, tasks}
+- entity-record FocusedControl — in {plan, tasks}, missing from {data-model}
+- entity-record GeneratedGuidanceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedProductCheck — in {tasks}, missing from {plan, data-model}
+- entity-record Inert — in {tasks}, missing from {plan, data-model}
+- entity-record RecoverStaleTarget — in {tasks}, missing from {plan, data-model}
+- entity-record RetainedRender — in {plan}, missing from {data-model, tasks}
+- entity-record StaleTarget — in {tasks}, missing from {plan, data-model}
+- entity-record StateByIdentity — in {plan, tasks}, missing from {data-model}
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- fr-id FR-001 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-002 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-003 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-004 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-008 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-009 — in {plan}, missing from {data-model, tasks}
+- msg-case AccessibilityMetadata — in {plan}, missing from {data-model, tasks}
+- msg-case ControlRuntimeModel — in {plan}, missing from {data-model, tasks}
+- msg-case FocusedControl — in {plan}, missing from {data-model, tasks}
+- msg-case Model — in {plan}, missing from {data-model, tasks}
+- msg-case Msg — in {plan, tasks}, missing from {data-model}
+- msg-case RetainedId — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- sc-id SC-001 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-002 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-004 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-005 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-007 — in {plan, tasks}, missing from {data-model}

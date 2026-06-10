@@ -74,6 +74,11 @@
          Layout.hitTestComputed (host-independent; no SkiaViewer dependency). -->
     <Compile Include="Pointer.fsi" />
     <Compile Include="Pointer.fs" />
+    <!-- Feature 094 (E4): pure focus model (tab order / traversal / key routing) over the
+         lowered Control tree + AccessibilityMetadata. Depends only on already-compiled
+         Accessibility/Control types; the ControlId<->RetainedId binding lives at the host seam. -->
+    <Compile Include="Focus.fsi" />
+    <Compile Include="Focus.fs" />
     <Compile Include="Collections.fsi" />
     <Compile Include="Collections.fs" />
     <Compile Include="Charts.fsi" />

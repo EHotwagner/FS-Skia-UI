@@ -61,28 +61,80 @@ module Accessibility =
         // returns an `AccessibilityRole`.
         | _ -> AccessibilityRole.Custom
 
+    // Feature 094 (E4), Research R1: traversal keys (Tab / Shift+Tab) are ENGINE-level — derived
+    // from the computed tab order, NOT per-control `NavigationKeys`. Seeding every focusable control
+    // with `["Tab"; "Shift+Tab"]` (the prior default) made every control consume Tab under FR-007, so
+    // global traversal could never fire. `NavigationKeys` is now reserved for INTRA-control arrows
+    // (slider / radio / menu / list / tab / grid); activation-only controls (Button) carry empty
+    // navigation. Every focusable role keeps at least one operable key set so `validate` stays honest.
+    let keyboardFor role focusable =
+        if not focusable then
+            keyboard false [] []
+        else
+            let activation, navigation =
+                match role with
+                | Button -> [ "Enter"; "Space" ], []
+                | CheckBox -> [ "Enter"; "Space" ], []
+                | Slider -> [], [ "ArrowLeft"; "ArrowRight" ]
+                | RadioGroup -> [], [ "ArrowUp"; "ArrowDown"; "ArrowLeft"; "ArrowRight" ]
+                | Tab -> [], [ "ArrowLeft"; "ArrowRight" ]
+                | Menu -> [ "Enter"; "Space" ], [ "ArrowUp"; "ArrowDown" ]
+                | List -> [ "Enter"; "Space" ], [ "ArrowUp"; "ArrowDown" ]
+                | Grid -> [ "Enter"; "Space" ], [ "ArrowUp"; "ArrowDown"; "ArrowLeft"; "ArrowRight" ]
+                // Text controls: printable keys are handled by the E1 text seam BEFORE Focus.route;
+                // Enter is the commit affordance that keeps the control operable (and `validate`-valid).
+                | TextBox -> [ "Enter" ], []
+                | Dialog -> [ "Enter"; "Space" ], []
+                | Chart
+                | Graph -> [ "Enter" ], [ "ArrowLeft"; "ArrowRight" ]
+                // Custom / any other focusable role: a generic activation affordance.
+                | StaticText
+                | Image
+                | Progress
+                | AccessibilityRole.Custom -> [ "Enter"; "Space" ], []
+
+            keyboard true activation navigation
+
+    // Structural / decorative container kinds carry no role of their own (they lower to
+    // `AccessibilityRole.Custom`), but they are NOT interactive — a layout container must not be a
+    // focus stop, or `Focus.order` would treat the wrapper as a single tab stop and never reach the
+    // focusable controls inside it (feature 094). They are explicitly non-focusable.
+    let private structuralKinds =
+        [ "stack"; "grid"; "dock"; "wrap"; "panel"; "separator"; "column"; "row"; "container"; "group"; "scroll"; "spacer" ]
+
     let defaultFor kind label =
         let role = roleFor kind
         let focusable =
-            match role with
-            | StaticText
-            | Image
-            | Progress -> false
-            | _ -> true
+            if List.contains kind structuralKinds then
+                false
+            else
+                match role with
+                | StaticText
+                | Image
+                | Progress -> false
+                | _ -> true
 
         metadata
             role
             label
             [ "normal" ]
             None
-            (keyboard focusable [ "Enter"; "Space" ] [ "Tab"; "Shift+Tab" ])
+            (keyboardFor role focusable)
             (Some(contrast FS.Skia.UI.Scene.Colors.black FS.Skia.UI.Scene.Colors.white 7.0 4.5))
 
     let validate control =
         match control.Accessibility with
         | None -> [ Diagnostics.missingAccessibility control.Key control.Kind ]
         | Some metadata ->
-            [ if metadata.Keyboard.Focusable && metadata.Keyboard.NavigationKeys.IsEmpty then
+            // Feature 094 (E4), R1: relax the over-strict "focusable => non-empty NavigationKeys"
+            // rule. Traversal (Tab) is engine-level, so an activation-only control (a Button) carries
+            // NO NavigationKeys and is still valid. A focusable control is only flagged when it has
+            // NEITHER an activation NOR a navigation affordance (genuinely no operable key set).
+            [ if
+                  metadata.Keyboard.Focusable
+                  && metadata.Keyboard.ActivationKeys.IsEmpty
+                  && metadata.Keyboard.NavigationKeys.IsEmpty
+              then
                   yield FS.Skia.UI.Controls.Diagnostics.create control.Key control.Kind MissingAccessibilityMetadata ControlDiagnosticSeverity.Error "Focusable control is missing keyboard navigation metadata."
               match metadata.Contrast with
               | Some evidence when evidence.Ratio < evidence.RequiredRatio ->

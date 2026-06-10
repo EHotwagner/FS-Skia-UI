@@ -1,0 +1,118 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (feature 094).
+#
+# Phase-checkpoint edges are auto-injected by the graph script (every task in
+# Phase N+1 implicitly depends on the last foundation task of Phase N). Only
+# non-phase cross-edges are written here. Most tasks own nothing.
+
+tasks:
+  # Phase 1 — Setup
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+
+  # Phase 2 — Foundation
+  T005:
+    deps: []
+    skillist: ["fs-skia-ui-widgets", "fs-skia-keyboard-input"]
+  T006:
+    deps: [T005]
+    skillist: ["fs-skia-elmish", "fs-skia-viewer-host"]
+  T007:
+    deps: []
+    skillist: ["fs-skia-ui-widgets", "fs-skia-keyboard-input", "fs-skia-testing"]
+  T008:
+    deps: [T005]
+    skillist: ["fs-skia-ui-widgets"]
+  T009:
+    deps: [T005, T006]
+    skillist: []
+  T010:
+    deps: []
+    skillist: []
+
+  # Phase 3 — US1 (keyboard traversal)
+  T011:
+    deps: []
+    skillist: ["fs-skia-ui-widgets", "fs-skia-testing"]
+  T012:
+    deps: []
+    skillist: ["fs-skia-ui-widgets", "fs-skia-testing"]
+  T013:
+    deps: [T011]
+    skillist: ["fs-skia-ui-widgets"]
+  T014:
+    deps: [T012]
+    skillist: ["fs-skia-ui-widgets"]
+  T015:
+    deps: [T013, T014, T007]
+    skillist: ["fs-skia-elmish", "fs-skia-viewer-host"]
+
+  # Phase 4 — US2 (focused-control key delivery)
+  T016:
+    deps: []
+    skillist: ["fs-skia-ui-widgets", "fs-skia-keyboard-input", "fs-skia-testing"]
+  T017:
+    deps: []
+    skillist: ["fs-skia-elmish", "fs-skia-reconciliation", "fs-skia-testing"]
+  T018:
+    deps: []
+    skillist: ["fs-skia-elmish", "fs-skia-testing"]
+  T019:
+    deps: [T016]
+    skillist: ["fs-skia-ui-widgets", "fs-skia-keyboard-input"]
+  T020:
+    deps: [T017, T019]
+    skillist: ["fs-skia-elmish", "fs-skia-reconciliation", "fs-skia-keyboard-input"]
+  T021:
+    deps: [T020, T018, T015]
+    skillist: ["fs-skia-elmish", "fs-skia-viewer-host"]
+  T022:
+    deps: [T007]
+    skillist: ["fs-skia-typed-controls", "fs-skia-ui-widgets"]
+
+  # Phase 5 — US3 (focus stability + metadata-driven)
+  T023:
+    deps: []
+    skillist: ["fs-skia-reconciliation", "fs-skia-testing"]
+  T024:
+    deps: []
+    skillist: ["fs-skia-ui-widgets", "fs-skia-testing"]
+  T025:
+    deps: [T023, T015]
+    skillist: ["fs-skia-reconciliation", "fs-skia-elmish"]
+  T026:
+    deps: [T021]
+    skillist: ["fs-skia-ui-widgets", "fs-skia-evidence-mode"]
+  T027:
+    deps: [T021, T025]
+    skillist: ["fs-skia-elmish", "fs-skia-evidence-mode"]
+
+  # Phase 6 — Integration & Polish
+  T028:
+    deps: [T013, T014, T019]
+    skillist: ["fs-skia-ui-widgets", "fs-skia-testing"]
+  T029:
+    deps: [T005, T006, T020]
+    skillist: ["fs-skia-ui-widgets", "fs-skia-elmish"]
+  T030:
+    deps: [T029]
+    skillist: ["fs-skia-template-update"]
+  T031:
+    deps: [T030]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T032:
+    deps: [T031]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

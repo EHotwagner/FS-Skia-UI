@@ -111,6 +111,14 @@ module ControlsElmish =
         msg: TextInputMsg ->
             RetainedRender<'msg> * 'msg list
 
+    val internal routeFocusedKey:
+        retained: RetainedRender<'msg> ->
+        focused: RetainedId option ->
+        order: TabOrder ->
+        key: ViewerKey ->
+        shift: bool ->
+            RetainedRender<'msg> * ControlRuntimeMsg list * 'msg list
+
     val respondsProofOf: before: Scene -> after: Scene -> RespondsProof
 
     val captureRespondsProof:

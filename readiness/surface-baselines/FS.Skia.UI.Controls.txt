@@ -125,11 +125,18 @@ FS.Skia.UI.Controls.DesignTokens+Light
 FS.Skia.UI.Controls.Diagnostics
 FS.Skia.UI.Controls.Dialog
 FS.Skia.UI.Controls.Dock
+FS.Skia.UI.Controls.Focus
+FS.Skia.UI.Controls.FocusMove
+FS.Skia.UI.Controls.FocusMove+Tags
+FS.Skia.UI.Controls.FocusStop
 FS.Skia.UI.Controls.GraphView
 FS.Skia.UI.Controls.Grid
 FS.Skia.UI.Controls.Icon
 FS.Skia.UI.Controls.IconButton
 FS.Skia.UI.Controls.Image
+FS.Skia.UI.Controls.KeyRouting
+FS.Skia.UI.Controls.KeyRouting+Tags
+FS.Skia.UI.Controls.KeyRouting+Traverse
 FS.Skia.UI.Controls.KeyboardOperation
 FS.Skia.UI.Controls.KnownAttribute
 FS.Skia.UI.Controls.KnownAttribute+Tags
@@ -217,6 +224,7 @@ FS.Skia.UI.Controls.StyleClass+Variant
 FS.Skia.UI.Controls.StyleVariant
 FS.Skia.UI.Controls.StyleVariant+Tags
 FS.Skia.UI.Controls.Switch
+FS.Skia.UI.Controls.TabOrder
 FS.Skia.UI.Controls.Tabs
 FS.Skia.UI.Controls.TextArea
 FS.Skia.UI.Controls.TextBlock

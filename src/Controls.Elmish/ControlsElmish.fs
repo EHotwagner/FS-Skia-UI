@@ -346,6 +346,141 @@ module ControlsElmish =
             | None -> retained, []
         | None -> retained, []
 
+    // Read a control's current numeric `value` (the slider/numeric step base), defaulting to the
+    // renderer's own default (sliderGeom uses 0.5) when absent.
+    let private controlFloatValue (c: Control<'msg>) (deflt: float) : float =
+        c.Attributes
+        |> List.tryPick (fun a ->
+            if a.Name = "value" then
+                match a.Value with
+                | FloatValue v -> Some v
+                | TextValue t ->
+                    match Double.TryParse(t, Globalization.CultureInfo.InvariantCulture) with
+                    | true, v -> Some v
+                    | _ -> None
+                | _ -> None
+            else
+                None)
+        |> Option.defaultValue deflt
+
+    // E4 arrow-key value step for a navigation control (slider/numeric). Right/Up increment,
+    // Left/Down decrement, clamped to the normalized [0, 1] slider range.
+    let private navStep = 0.1
+
+    let private steppedValue (c: Control<'msg>) (key: string) : float =
+        let current = controlFloatValue c 0.5
+
+        let delta =
+            match key with
+            | "ArrowRight"
+            | "ArrowUp" -> navStep
+            | "ArrowLeft"
+            | "ArrowDown" -> -navStep
+            | _ -> 0.0
+
+        Math.Clamp(current + delta, 0.0, 1.0)
+
+    // Normalize a host `ViewerKey` (+ a leading `Shift+` on an `Unknown` raw) to the (keyName, isTab)
+    // pair `Focus.route` matches against `Activation`/`NavigationKeys`. A bare/`Shift+`-prefixed "Tab"
+    // is the traversal candidate (isTab = true); every other key is a plain name (isTab = false).
+    let private normalizeFocusKey (key: ViewerKey) : string * bool =
+        match key with
+        | Enter -> "Enter", false
+        | Space -> "Space", false
+        | ArrowLeft -> "ArrowLeft", false
+        | ArrowRight -> "ArrowRight", false
+        | ArrowUp -> "ArrowUp", false
+        | ArrowDown -> "ArrowDown", false
+        | ViewerKey.Unknown raw ->
+            let bare =
+                if raw.StartsWith("Shift+", StringComparison.OrdinalIgnoreCase) then
+                    raw.Substring 6
+                else
+                    raw
+
+            if String.Equals(bare, "Tab", StringComparison.OrdinalIgnoreCase) then
+                "Tab", true
+            else
+                raw, false
+        | other -> ViewerKeyboard.toKeyId other, false
+
+    /// E4 (FR-003/FR-006/FR-007): route a delivered key to the current `FocusedControl` over the
+    /// RETAINED tree, generalizing the 092 `routeFocusedText` text seam to all interactive kinds.
+    /// Resolves the focused control via its stable `RetainedId`, reads its `KeyboardOperation`, and
+    /// applies `Focus.route`: `Activate` fires the control's authored activation bindings (the same
+    /// message a pointer activation dispatches, once); `Navigate` steps a value control and fires its
+    /// `onChanged` bindings; `Traverse` emits a `FocusControl` for `Focus.traverse`; `Fallthrough`
+    /// emits nothing (the host then consults `host.MapKey`). The E1 text seam is consulted by the
+    /// host BEFORE this, so text delivery is unchanged (SC-003). Total; never throws.
+    let routeFocusedKey
+        (retained: RetainedRender<'msg>)
+        (focused: RetainedId option)
+        (order: TabOrder)
+        (key: ViewerKey)
+        (shift: bool)
+        : RetainedRender<'msg> * ControlRuntimeMsg list * 'msg list =
+        match focused with
+        | None -> retained, [], []
+        | Some id ->
+            match tryFindNode id retained.Root with
+            | None -> retained, [], []
+            | Some node ->
+                let nodeId = node.Control.Key |> Option.defaultValue node.Control.Kind
+
+                let keyboard =
+                    node.Control.Accessibility
+                    |> Option.map (fun m -> m.Keyboard)
+                    |> Option.defaultValue
+                        { Focusable = false
+                          ActivationKeys = []
+                          NavigationKeys = [] }
+
+                let keyName, isTab = normalizeFocusKey key
+
+                // The focused control's OWN authored bindings (a focusable composite is a single
+                // stop, so descendant bindings are excluded by the id filter).
+                let ownBindings =
+                    ControlInternals.eventBindingsOf node.Control
+                    |> List.filter (fun b -> b.ControlId = nodeId)
+
+                match Focus.route keyboard keyName isTab shift with
+                | Activate ->
+                    // The pointer-equivalent activation message(s) — the same click-equivalent
+                    // bindings the pointer path dispatches — fired ONCE each (no double-dispatch).
+                    let messages =
+                        ownBindings
+                        |> List.filter (fun b -> List.contains b.EventKind clickEquivalentKinds)
+                        |> List.map (fun b ->
+                            b.Dispatch
+                                { Kind = b.EventKind
+                                  ControlId = Some nodeId
+                                  Origin = ControlEventOrigin.Keyboard
+                                  Payload = None })
+
+                    retained, [], messages
+                | Navigate ->
+                    // A value control's arrow step: dispatch its `onChanged` bindings with the new
+                    // value, mirroring the pointer-driven value change.
+                    let payload =
+                        (steppedValue node.Control keyName)
+                            .ToString(Globalization.CultureInfo.InvariantCulture)
+
+                    let messages =
+                        ownBindings
+                        |> List.filter (fun b -> b.EventKind = "changed")
+                        |> List.map (fun b ->
+                            b.Dispatch
+                                { Kind = "changed"
+                                  ControlId = Some nodeId
+                                  Origin = ControlEventOrigin.Keyboard
+                                  Payload = Some payload })
+
+                    retained, [], messages
+                | Traverse move ->
+                    let next = Focus.traverse order (Some nodeId) move
+                    retained, [ FocusControl next ], []
+                | Fallthrough -> retained, [], []
+
     /// Build a responds-proof verdict from a before/after frame pair (feature 090, FR-006):
     /// `Responsive` when the frames differ (a real input produced a visible change), `Inert` when
     /// identical. The reusable core the pointer and text responds-proof captures share.
@@ -392,7 +527,10 @@ module ControlsElmish =
         // matched identity across the diff, focus + in-progress text + the per-control animation clock
         // survive an unrelated re-render even when the control's position shifts (FR-001/2/3). This is
         // the half 091 left unwired: 091 carried the map but the host never read/wrote it.
-        let focusedText = ref (None: RetainedId option)
+        // Feature 094 (E4): generalized from the 092 text-only `focusedText` to the host's single
+        // focus identity (still a stable `RetainedId`). The E1 text seam, `routeFocusedKey`
+        // activation/navigation, and Tab-traversal all read/write this one ref.
+        let focused = ref (None: RetainedId option)
         // The retained render structure (the wired keyed reconciler, 067), the single home of
         // per-control UI state. Mutation is confined to this closure at the interpreter edge
         // (constitution III); the consumer `view` stays pure.
@@ -429,21 +567,43 @@ module ControlsElmish =
                 retained.Value <- Some s.Retained
                 s.Render.Scene
 
+        // A focused node is a TEXT control (the E1 seam owns its printable keys); every other
+        // focusable kind routes through `routeFocusedKey`.
+        let isTextNode (node: RetainedNode<'msg>) : bool =
+            (match node.Control.Accessibility with
+             | Some m -> m.Role = AccessibilityRole.TextBox
+             | None -> false)
+            || List.contains node.Control.Kind [ "text-box"; "text-area"; "numeric-input" ]
+
+        // FR-006: a press sets focus to the focusable control under it (its accessibility metadata
+        // declares `Focusable = true`). Resolve a `FocusControl next` ControlId back to a stable
+        // `RetainedId` so traversal keeps tracking the moved focus across frames.
+        let retainedIdOfControl (r: RetainedRender<'msg>) (controlId: ControlId) : RetainedId option =
+            let rec find (n: RetainedNode<'msg>) =
+                let nId = n.Control.Key |> Option.defaultValue n.Control.Kind
+
+                if nId = controlId then
+                    Some n.Identity
+                else
+                    n.Children |> List.tryPick find
+
+            find r.Root
+
         let mapPointer (input: ViewerPointerInput) (size: Size) (model: 'model) : 'msg list =
-            // Focus-on-click (FR-004): a press resolves to the `RetainedId` under the point via the
-            // retained tree's per-node boxes (distinguishing unkeyed same-kind siblings); if that
-            // control carries an `onChanged` binding it becomes the focus target, so a later keystroke
-            // reaches it through the text seam. Resolves against the retained tree of the last
-            // rendered frame (its boxes are in the same coordinate space as the click).
+            // Focus-on-click (FR-004/FR-006): a press resolves to the `RetainedId` under the point via
+            // the retained tree's per-node boxes (distinguishing unkeyed same-kind siblings); if that
+            // control is FOCUSABLE (per its accessibility metadata) it becomes the focus target, so a
+            // later key reaches it through the text seam or `routeFocusedKey`. A press on a
+            // non-focusable region leaves the current focus UNCHANGED (it is not silently cleared).
             (match input.Phase, retained.Value with
              | ViewerPointerPhaseKind.Pressed, Some r ->
                  match resolveFocus r input.X input.Y with
                  | Some id ->
                      match tryFindNode id r.Root with
                      | Some node when
-                         ControlInternals.eventBindingsOf node.Control
-                         |> List.exists (fun b -> b.EventKind = "changed")
-                         -> focusedText.Value <- Some id
+                         node.Control.Accessibility
+                         |> Option.exists (fun m -> m.Keyboard.Focusable)
+                         -> focused.Value <- Some id
                      | _ -> ()
                  | None -> ()
              | _ -> ())
@@ -453,24 +613,54 @@ module ControlsElmish =
             messages
 
         let mapKey (key: ViewerKey) (pressed: bool) : 'msg list =
-            // Focus-aware text delivery (FR-005/FR-006): when a control is focused, deliver the
-            // keystroke to its `RetainedId`-keyed `TextInput` state in the retained structure and
-            // dispatch ALL its matched `onChanged` bindings; otherwise the host's `MapKey` path is
-            // unchanged (lifted to a list). Only key-down (`pressed`) keystrokes produce text.
-            let delivered =
-                if pressed then
-                    match textMsgOfKey key, focusedText.Value, retained.Value with
-                    | Some textMsg, Some id, Some r ->
-                        let r', msgs = routeFocusedText r (Some id) textMsg
-                        retained.Value <- Some r'
-                        Some msgs
-                    | _ -> None
-                else
-                    None
+            // Feature 094 (E4) focus-first key routing. Only key-down (`pressed`) is routed; key-up
+            // falls straight through. Precedence (R3): (1) E1 text seam for a focused TEXT control's
+            // printable keys, (2) `routeFocusedKey` for activation / navigation / Tab-traversal,
+            // (3) `host.MapKey` for anything no focused control and no traversal consumed.
+            if not pressed then
+                host.MapKey key false |> Option.toList
+            else
+                match retained.Value with
+                | None -> host.MapKey key true |> Option.toList
+                | Some r ->
+                    let focusedNode = focused.Value |> Option.bind (fun id -> tryFindNode id r.Root)
 
-            match delivered with
-            | Some msgs -> msgs
-            | None -> host.MapKey key pressed |> Option.toList
+                    // (1) E1 text seam — unchanged delivery for a focused text control's printable keys.
+                    let textHandled =
+                        match textMsgOfKey key, focused.Value, focusedNode with
+                        | Some textMsg, Some id, Some node when isTextNode node ->
+                            let r', msgs = routeFocusedText r (Some id) textMsg
+                            retained.Value <- Some r'
+                            Some msgs
+                        | _ -> None
+
+                    match textHandled with
+                    | Some msgs -> msgs
+                    | None ->
+                        // (2) routeFocusedKey — the tab order is derived from the retained tree's
+                        // root control (the lowered view), so no model/size is needed here.
+                        let order = Focus.order r.Root.Control
+
+                        let shift =
+                            match key with
+                            | ViewerKey.Unknown raw -> raw.StartsWith("Shift+", StringComparison.OrdinalIgnoreCase)
+                            | _ -> false
+
+                        let r', controlMsgs, productMsgs = routeFocusedKey r focused.Value order key shift
+                        retained.Value <- Some r'
+
+                        // Apply focus-update messages to the host's focus identity (map the next
+                        // ControlId back to its stable RetainedId).
+                        for cm in controlMsgs do
+                            match cm with
+                            | FocusControl next ->
+                                focused.Value <- next |> Option.bind (retainedIdOfControl r')
+                            | _ -> ()
+
+                        // (3) Fall through to host.MapKey only when nothing was consumed.
+                        match productMsgs, controlMsgs with
+                        | [], [] -> host.MapKey key true |> Option.toList
+                        | _ -> productMsgs
 
         let viewerHost: InteractiveViewerHost<'model, 'msg> =
             { Init = host.Init

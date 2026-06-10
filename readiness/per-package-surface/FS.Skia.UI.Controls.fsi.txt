@@ -760,6 +760,35 @@ module Diagnostics =
 
 namespace FS.Skia.UI.Controls
 
+type FocusStop =
+    { Control: ControlId
+      Role: AccessibilityRole
+      Keyboard: KeyboardOperation
+      FocusOrder: int option }
+
+type TabOrder =
+    { Stops: FocusStop list }
+
+type FocusMove =
+    | Next
+    | Previous
+
+type KeyRouting =
+    | Activate
+    | Navigate
+    | Traverse of FocusMove
+    | Fallthrough
+
+module Focus =
+
+    val order: control: Control<'msg> -> TabOrder
+
+    val traverse: order: TabOrder -> current: ControlId option -> move: FocusMove -> ControlId option
+
+    val route: keyboard: KeyboardOperation -> key: string -> isTab: bool -> shift: bool -> KeyRouting
+
+namespace FS.Skia.UI.Controls
+
 open FS.Skia.UI.Layout
 
 [<RequireQualifiedAccess>]
