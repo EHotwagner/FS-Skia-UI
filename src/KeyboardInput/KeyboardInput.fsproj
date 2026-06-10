@@ -5,7 +5,7 @@
     <IsPackable>true</IsPackable>
     <PackageId>FS.Skia.UI.KeyboardInput</PackageId>
     <AssemblyName>FS.Skia.UI.KeyboardInput</AssemblyName>
-    <Version>0.1.100-preview.1</Version>
+    <Version>0.1.101-preview.1</Version>
     <Title>FS.Skia.UI.KeyboardInput</Title>
     <Description>Package-owned keyboard input runtime, reducer, effect, diagnostics, and state display contracts for FS.Skia.UI products.</Description>
     <PackageTags>fsharp;keyboard;input;runtime;ui</PackageTags>
