@@ -1,6 +1,6 @@
 ---
 name: speckit-merge
-description: Squash-merge all feature branches into the default branch (main or master), delete them, and push. Use when the user says "land this", "ship the feature", "merge the feature branches", "squash-merge and push", or anything that means consolidating feature work onto the trunk. After a successful merge, every packable project MUST be packed with a bumped version number.
+description: Squash-merge all feature branches into the default branch (main or master), delete them, and push. Use when the user says "land this", "ship the feature", "merge the feature branches", "squash-merge and push", or anything that means consolidating feature work onto the trunk. After a successful merge, every packable library project (the `src/**` libs + `build/Governance/FS.Skia.UI.Build`, NOT the `dotnet new` template) MUST be packed with a bumped version number.
 metadata:
   short-description: Squash-merge feature branches, bump+pack, and push
 ---
@@ -9,9 +9,11 @@ metadata:
 
 Consolidate feature branches onto the trunk (`main` or `master`) via
 squash-merge, push to origin, and — after a successful merge — bump the
-patch version of every packable project and produce a local NuGet
-package. The bump-and-pack step is **mandatory** whenever any packable
-project is present; skip it only when the repo has no packable projects at all.
+patch version of every packable **library** project (NOT the `dotnet new`
+template, which is a separate version track owned by `/fs-skia-template-update`)
+and produce a local NuGet package. The bump-and-pack step is **mandatory**
+whenever any packable library project is present; skip it only when the repo has
+no packable library projects at all.
 
 ## When to use
 
@@ -85,14 +87,28 @@ git push origin "$TRUNK"
 ### 6. NuGet pack — MANDATORY after a successful merge
 
 After step 5 succeeds, this step is **required**. Skip it only when the
-repo contains zero packable projects. Detect them with:
+repo contains zero packable library projects. Detect them with:
 
 ```bash
-PACKABLE=$(grep -lE '<IsPackable>\s*true|<PackageId>' $(find . -name '*.fsproj'))
+PACKABLE=$(grep -lE '<IsPackable>\s*true|<PackageId>' $(find . -name '*.fsproj') \
+  | grep -v '/\.template\.package/')
 ```
 
-If `PACKABLE` is empty, skip. Otherwise, for **every** packable project,
-you MUST:
+**The merge bump covers the repo *library* packages ONLY — never the
+`dotnet new` template.** `.template.package/FS.Skia.UI.Template.fsproj` is a
+**separate version track** owned by the `/fs-skia-template-update` flow (it pins
+the libraries via `template/base/Directory.Packages.props`, which the merge does
+not touch). Bumping the template here would push its version ahead of its pins
+and create drift, so the `grep -v` above excludes it — and you MUST NOT bump it
+in this step even if you bump versions by hand. The authoritative library set is
+exactly the projects `PackLocal` packs (`packProjects` in
+`build/Governance/Front/Helpers.fs`): the `src/**` libraries plus
+`build/Governance/FS.Skia.UI.Build.fsproj` (which lives under `build/`, not
+`src/` — do not miss it). `FS.Skia.UI.Build` and the `src` libs share one
+version, so they all bump together.
+
+If `PACKABLE` is empty, skip. Otherwise, for **every packable library project
+(template excluded)**, you MUST:
 
 1. Read the current `<Version>` from the `.fsproj` (FS.Skia.UI projects pin
    it per-project, e.g. `0.1.37-preview.1`). If absent, insert
@@ -112,11 +128,19 @@ you MUST:
    Equivalently, pack a single project with
    `dotnet pack <proj> -c Release -o ~/.local/share/nuget-local`. If the
    pack fails, stop and surface the error — do not push a half-bumped repo.
+   If `PackLocal` (or a packing run) **stalls** — a `dotnet` build sitting at
+   ~0% CPU with no compiler child — the cause is usually concurrent builds of
+   overlapping projects deadlocking on `obj/`/`bin` locks. Recover by
+   `dotnet build-server shutdown` (and, if needed, killing stray `dotnet`
+   processes), then build the library set **sequentially** once
+   (`dotnet build <leaf> -c Release -p:UseSharedCompilation=false -nodeReuse:false`
+   for the leaf projects, which pulls the whole graph) and pack each with
+   `dotnet pack <proj> -c Release --no-build -o ~/.local/share/nuget-local`.
 5. Commit the version bumps: `Bump packable project versions`.
 6. Push the bump commit.
 
-The merge is not "done" until every packable project has been bumped,
-packed, committed, and pushed.
+The merge is not "done" until every packable **library** project (template
+excluded) has been bumped, packed, committed, and pushed.
 
 > FAKE note: `./fake.sh` / `dotnet fake` share repository `.fake` state and are
 > not safe to run concurrently. Run FAKE-backed pack/validation commands one at
