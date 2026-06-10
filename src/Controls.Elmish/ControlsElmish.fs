@@ -251,45 +251,100 @@ module ControlsElmish =
 
             state', messages
 
-    /// Focus-aware text-routing seam (feature 090, FR-008): deliver a `TextInputMsg` (a keystroke /
-    /// committed or composed text) to the CURRENTLY FOCUSED text control's existing `TextInput` model,
-    /// and fold that control's authored `onChanged` binding (if any) into product messages — so
-    /// TextBox/TextArea/NumericInput are typeable. Only the focused control's model advances (`models`,
-    /// the caller-held map keyed by `ControlId`, holds one `TextInputModel` per text control); an
-    /// unfocused control's model is returned unchanged. Reuses `ControlRuntime.FocusedControl` +
-    /// `TextInput.update` — no parallel text model (FR-008). When `focused` is `None` or names no
-    /// model, nothing is delivered (the host's unchanged `MapKey` path handles the key) and the models
-    /// are returned unchanged. Scope: routing seam only — caret/selection/IME-UX/undo and general
-    /// focus/tab-traversal across all control kinds are trajectory item E4 (FR-008a).
-    let routeFocusedText
-        (rendered: ControlRenderResult<'msg>)
-        (focused: ControlId option)
-        (models: Map<ControlId, TextInputModel>)
-        (msg: TextInputMsg)
-        : Map<ControlId, TextInputModel> * 'msg list =
-        match focused with
-        | Some id when Map.containsKey id models ->
-            let model', _effects = TextInput.update msg models.[id]
-            let models' = Map.add id model' models
+    // 092 (FR-004): resolve a click to the stable RetainedId of the control under it, via the
+    // retained tree's per-node boxes — replaces the 090 `ControlId` `hitTest |> nearestAuthored`
+    // path, which collapses unkeyed same-kind siblings onto one id and disagrees with
+    // `nearestAuthored`'s scheme. `None` for a true gap / outside the root.
+    let resolveFocus (retained: RetainedRender<'msg>) (x: float) (y: float) : RetainedId option =
+        RetainedRender.retainedHitTest x y retained
 
-            let text =
-                if String.IsNullOrEmpty model'.CommittedText then
-                    model'.DraftText
+    // Find a retained node by its stable identity (the focused control's node).
+    let rec private tryFindNode (id: RetainedId) (n: RetainedNode<'msg>) : RetainedNode<'msg> option =
+        if n.Identity = id then
+            Some n
+        else
+            n.Children |> List.tryPick (tryFindNode id)
+
+    // Read a control's current text value (the first-focus seed, FR-005): the `text`/`value`
+    // attribute, else its `Content`, else empty.
+    let private controlTextValue (c: Control<'msg>) : string =
+        let fromAttr name =
+            c.Attributes
+            |> List.tryPick (fun a ->
+                if a.Name = name then
+                    match a.Value with
+                    | TextValue v -> Some v
+                    | _ -> None
                 else
-                    model'.CommittedText
+                    None)
 
-            let productMessages =
-                rendered.EventBindings
-                |> List.filter (fun binding -> binding.ControlId = id && binding.EventKind = "changed")
-                |> List.map (fun binding ->
-                    binding.Dispatch
-                        { Kind = "changed"
-                          ControlId = Some id
-                          Origin = ControlEventOrigin.Text
-                          Payload = Some text })
+        fromAttr "text"
+        |> Option.orElseWith (fun () -> fromAttr "value")
+        |> Option.orElseWith (fun () -> c.Content)
+        |> Option.defaultValue ""
 
-            models', productMessages
-        | _ -> models, []
+    // Kind-derived line mode (FR-005): a `text-area` is multi-line; every other kind single-line.
+    // Fixes the 090 hard-coded-`SingleLine` defect that truncated multi-line fields.
+    let private lineModeOf (c: Control<'msg>) : TextInputMode =
+        if c.Kind = "text-area" then MultiLine else SingleLine
+
+    /// 092 focus-aware text routing on the RETAINED structure (FR-005/FR-006), replacing the 090
+    /// `ControlId`-keyed seam: deliver `msg` to the focused control's `RetainedId`-keyed `TextInput`
+    /// state held in `retained.StateByIdentity[id].Text`. On the FIRST keystroke after focus (no
+    /// existing `Text` entry) the model is seeded from the control's current value + kind-derived
+    /// line mode, so the keystroke APPENDS to the pre-filled value instead of discarding it (fixes
+    /// the 090 empty-seed / hard-coded-`SingleLine` defects). Returns the next retained structure
+    /// (with the advanced text state, which `step` carries across a positional shift) and ALL of the
+    /// focused control's matched `onChanged` product messages — every binding, not just the first
+    /// (FR-006). When `focused` is `None` or names no live node, nothing is delivered and the
+    /// structure is returned unchanged. Scope: routing seam only — caret/selection/IME-UX/undo and
+    /// general focus/tab-traversal are trajectory item E4.
+    let routeFocusedText
+        (retained: RetainedRender<'msg>)
+        (focused: RetainedId option)
+        (msg: TextInputMsg)
+        : RetainedRender<'msg> * 'msg list =
+        match focused with
+        | Some id ->
+            match tryFindNode id retained.Root with
+            | Some node ->
+                let priorState = retained.StateByIdentity |> Map.tryFind id
+
+                // The carried draft is authoritative while focused; the model value re-seeds the
+                // draft ONLY on the focus-acquisition transition (no existing Text entry), never on
+                // an ordinary re-render — so a same-frame model change cannot overwrite typing.
+                let model0 =
+                    match priorState |> Option.bind (fun s -> s.Text) with
+                    | Some existing -> existing
+                    | None ->
+                        let controlId = node.Control.Key |> Option.defaultValue node.Control.Kind
+                        fst (TextInput.init controlId (lineModeOf node.Control) (controlTextValue node.Control))
+
+                let model', _effects = TextInput.update msg model0
+
+                let newState =
+                    { (priorState |> Option.defaultValue { Animation = None; Text = None }) with
+                        Text = Some model' }
+
+                let retained' =
+                    { retained with
+                        StateByIdentity = Map.add id newState retained.StateByIdentity }
+
+                // FR-006: dispatch EVERY matched `onChanged` binding on the focused control (the 090
+                // path dropped all but the first via `List.tryHead`).
+                let productMessages =
+                    ControlInternals.eventBindingsOf node.Control
+                    |> List.filter (fun binding -> binding.EventKind = "changed")
+                    |> List.map (fun binding ->
+                        binding.Dispatch
+                            { Kind = "changed"
+                              ControlId = Some binding.ControlId
+                              Origin = ControlEventOrigin.Text
+                              Payload = Some model'.DraftText })
+
+                retained', productMessages
+            | None -> retained, []
+        | None -> retained, []
 
     /// Build a responds-proof verdict from a before/after frame pair (feature 090, FR-006):
     /// `Responsive` when the frames differ (a real input produced a visible change), `Inert` when
@@ -331,96 +386,91 @@ module ControlsElmish =
     let runInteractiveApp (options: ViewerOptions) (host: InteractiveAppHost<'model, 'msg>) =
         // Durable pointer coordination state (hover/press/4px-fold), threaded across samples.
         let pointerState = ref (Pointer.init ())
-        // Focus-aware text-seam state (feature 090, FR-008): the focused text control and one
-        // TextInput model per text control the user has focused, threaded across native events. The
-        // latest (size, model) seen by the pointer path lets the stateless `MapKey` seam re-render the
-        // tree to resolve the focused control's bindings.
-        let focusedText = ref (None: ControlId option)
-        let textModels = ref (Map.empty: Map<ControlId, TextInputModel>)
-        let latest = ref (None: (Size * 'model) option)
-        // Feature 091 (E2): the retained render structure (the wired keyed reconciler, 067) held
-        // alongside the existing interpreter-edge refs. Each frame the production render path diffs
-        // the next lowered tree against this retained previous tree and reuses the unchanged
-        // subtrees' cached fragments instead of rebuilding the whole tree — O(changed-subtree),
-        // byte-identical to a full rebuild (FR-004/FR-005). Per-control state re-keys to the stable
-        // diff-conferred `RetainedId` (RetainedRender.StateByIdentity), so it survives an unrelated
-        // re-render even when a control's position shifts (FR-003). Mutation is confined to this
-        // closure at the interpreter edge (constitution III); the consumer `view` stays pure.
+        // Feature 092 (E2): focus is now keyed by the STABLE `RetainedId` (was `ControlId`), and the
+        // focused control's `TextInput` state lives in `RetainedRender.StateByIdentity[id].Text` — no
+        // parallel `ControlId`-keyed text-model map. Because `step` carries `StateByIdentity` to the
+        // matched identity across the diff, focus + in-progress text + the per-control animation clock
+        // survive an unrelated re-render even when the control's position shifts (FR-001/2/3). This is
+        // the half 091 left unwired: 091 carried the map but the host never read/wrote it.
+        let focusedText = ref (None: RetainedId option)
+        // The retained render structure (the wired keyed reconciler, 067), the single home of
+        // per-control UI state. Mutation is confined to this closure at the interpreter edge
+        // (constitution III); the consumer `view` stays pure.
         let retained = ref (None: RetainedRender<'msg> option)
-        // FR-007: diff diagnostics (e.g. KeyCollision from duplicate sibling keys) surfaced through
-        // the host's diagnostics stderr channel — never silently dropped; de-duped so a standing
-        // collision is reported once, not every frame. The path stays total in their presence.
+        // Diff/first-frame diagnostics (e.g. KeyCollision from duplicate sibling keys) surfaced
+        // through the host's diagnostics stderr channel — never silently dropped; de-duped so a
+        // standing collision is reported once, not every frame. The path stays total in their presence.
         let surfacedDiagnostics = ref (Set.empty: Set<string>)
 
+        let surface (diags: ControlDiagnostic list) =
+            for d in diags do
+                let key = sprintf "%A|%A|%s" d.Code d.ControlId d.Message
+
+                if not (Set.contains key surfacedDiagnostics.Value) then
+                    surfacedDiagnostics.Value <- Set.add key surfacedDiagnostics.Value
+                    eprintfn "[ControlDiagnostic %A] %s" d.Severity d.Message
+
         // Produce the production scene for (size, model) through the retained reconciler. The first
-        // frame seeds the retained structure; later frames diff + reuse. Output is byte-identical to
-        // `Control.renderTree host.Theme size (host.View size model)` (FR-005, proven by the wired
-        // round-trip/golden-parity property suite).
+        // frame seeds the retained structure and paints ONCE (FR-009 — no second `Control.renderTree`,
+        // first-frame collisions surfaced immediately); later frames diff + reuse. Output is
+        // byte-identical to a full rebuild (FR-005, proven by the wired round-trip property suite).
         let renderRetained (size: Size) (model: 'model) : Scene =
             let next = host.View size model
 
             match retained.Value with
             | None ->
-                retained.Value <- Some(RetainedRender.init host.Theme size next)
-                (Control.renderTree host.Theme size next).Scene
+                let r0 = RetainedRender.init host.Theme size next
+                surface r0.Diagnostics
+                retained.Value <- Some r0.Retained
+                r0.Render.Scene
             | Some prev ->
                 let s = RetainedRender.step host.Theme size prev next
-
-                for d in s.Diagnostics do
-                    let key = sprintf "%A|%A|%s" d.Code d.ControlId d.Message
-
-                    if not (Set.contains key surfacedDiagnostics.Value) then
-                        surfacedDiagnostics.Value <- Set.add key surfacedDiagnostics.Value
-                        eprintfn "[ControlDiagnostic %A] %s" d.Severity d.Message
-
+                surface s.Diagnostics
                 retained.Value <- Some s.Retained
                 s.Render.Scene
 
         let mapPointer (input: ViewerPointerInput) (size: Size) (model: 'model) : 'msg list =
-            latest.Value <- Some(size, model)
-
-            // Focus-on-click (FR-008/T3): a press over an authored control that exposes an `onChanged`
-            // binding focuses it, so a subsequent keystroke reaches it through the text seam.
-            (match input.Phase with
-             | ViewerPointerPhaseKind.Pressed ->
-                 let rendered = Control.renderTree host.Theme size (host.View size model)
-
-                 match Control.hitTest rendered input.X input.Y |> Option.bind (Control.nearestAuthored rendered) with
-                 | Some authored when
-                     rendered.EventBindings
-                     |> List.exists (fun b -> b.ControlId = authored && b.EventKind = "changed")
-                     ->
-                     focusedText.Value <- Some authored
-
-                     if not (Map.containsKey authored textModels.Value) then
-                         let initial, _ = TextInput.init authored SingleLine ""
-                         textModels.Value <- Map.add authored initial textModels.Value
-                 | _ -> ()
+            // Focus-on-click (FR-004): a press resolves to the `RetainedId` under the point via the
+            // retained tree's per-node boxes (distinguishing unkeyed same-kind siblings); if that
+            // control carries an `onChanged` binding it becomes the focus target, so a later keystroke
+            // reaches it through the text seam. Resolves against the retained tree of the last
+            // rendered frame (its boxes are in the same coordinate space as the click).
+            (match input.Phase, retained.Value with
+             | ViewerPointerPhaseKind.Pressed, Some r ->
+                 match resolveFocus r input.X input.Y with
+                 | Some id ->
+                     match tryFindNode id r.Root with
+                     | Some node when
+                         ControlInternals.eventBindingsOf node.Control
+                         |> List.exists (fun b -> b.EventKind = "changed")
+                         -> focusedText.Value <- Some id
+                     | _ -> ()
+                 | None -> ()
              | _ -> ())
 
             let state', messages = routeInteractivePointer host pointerState.Value size model input
             pointerState.Value <- state'
             messages
 
-        let mapKey (key: ViewerKey) (pressed: bool) : 'msg option =
-            // Focus-aware text delivery (FR-008): when a text control is focused, deliver the keystroke
-            // to its `TextInput` model and fold its `onChanged` binding; otherwise the host's `MapKey`
-            // path is unchanged. Only key-down (`pressed`) keystrokes produce text.
+        let mapKey (key: ViewerKey) (pressed: bool) : 'msg list =
+            // Focus-aware text delivery (FR-005/FR-006): when a control is focused, deliver the
+            // keystroke to its `RetainedId`-keyed `TextInput` state in the retained structure and
+            // dispatch ALL its matched `onChanged` bindings; otherwise the host's `MapKey` path is
+            // unchanged (lifted to a list). Only key-down (`pressed`) keystrokes produce text.
             let delivered =
                 if pressed then
-                    match textMsgOfKey key, focusedText.Value, latest.Value with
-                    | Some textMsg, Some focused, Some(size, model) ->
-                        let rendered = Control.renderTree host.Theme size (host.View size model)
-                        let models', msgs = routeFocusedText rendered (Some focused) textModels.Value textMsg
-                        textModels.Value <- models'
-                        List.tryHead msgs
+                    match textMsgOfKey key, focusedText.Value, retained.Value with
+                    | Some textMsg, Some id, Some r ->
+                        let r', msgs = routeFocusedText r (Some id) textMsg
+                        retained.Value <- Some r'
+                        Some msgs
                     | _ -> None
                 else
                     None
 
             match delivered with
-            | Some _ -> delivered
-            | None -> host.MapKey key pressed
+            | Some msgs -> msgs
+            | None -> host.MapKey key pressed |> Option.toList
 
         let viewerHost: InteractiveViewerHost<'model, 'msg> =
             { Init = host.Init

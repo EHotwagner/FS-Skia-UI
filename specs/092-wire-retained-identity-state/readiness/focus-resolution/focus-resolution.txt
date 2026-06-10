@@ -1,0 +1,10 @@
+# Wired retained identity — keyed / unkeyed / keyed-container-wrapped fields focus distinctly (feature 092, SC-002)
+evidence-kind=focus-resolution
+renderer-mode=DeterministicRenderOnly
+status=pass
+driven-through=ControlsElmish.resolveFocus over RetainedRender.retainedHitTest
+fields=3
+all-distinct-ids=true
+each-resolves-to-its-own-field=true
+note=the retained tree mints a distinct RetainedId per node (incl. unkeyed siblings), so a box hit-test resolves each field to its own identity — unlike the ControlId hitTest path that collapsed unkeyed same-kind siblings.
+authoritative-test=Feature092LiveSurvivalTests/092 US2 focus resolution + value preservation

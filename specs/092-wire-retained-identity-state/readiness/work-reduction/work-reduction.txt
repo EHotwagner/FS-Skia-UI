@@ -1,0 +1,11 @@
+# Retained reconciliation — honest work reduction under a layout shift (feature 092, SC-003/FR-007)
+evidence-kind=work-reduction
+renderer-mode=DeterministicRenderOnly
+status=pass
+scenario=insert a sibling ABOVE a fixed-size leaf (the leaf is unchanged but relaid out)
+BaselineNodeCount=3
+RecomputedNodeCount=2
+ChangedSubtreeBound=1
+ShiftedNodeCount=1
+invariant=RecomputedNodeCount(2) = ChangedSubtreeBound(1) + ShiftedNodeCount(1) < BaselineNodeCount(3)
+authoritative-test=Feature092RetainedRenderTests/092 US3 work-reduction split (changed vs shifted)

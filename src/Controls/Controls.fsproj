@@ -23,6 +23,10 @@
          module stays `internal` (no public-surface entry, zero baseline delta), consistent with the
          "do not promote Reconcile to public" rule. -->
     <InternalsVisibleTo Include="FS.Skia.UI.Controls.Elmish" />
+    <!-- Feature 092 (E2): the Controls.Elmish adapter tests drive the wired focus/text seam against
+         the real internal `RetainedRender` structure (SC-001, no hand-seeded identity map), so the
+         Elmish.Tests assembly reaches `RetainedRender`/`RetainedId`/`RetainedUiState` via IVT too. -->
+    <InternalsVisibleTo Include="Elmish.Tests" />
   </ItemGroup>
 
   <ItemGroup>

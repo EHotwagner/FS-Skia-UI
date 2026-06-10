@@ -6,7 +6,7 @@ generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
 symbol-count: 82
-xml-summary-count: 104
+xml-summary-count: 112
 source-fsi-paths:
 - src/Controls.Elmish/ControlsElmish.fsi
 sampled-symbols:
@@ -179,22 +179,31 @@ module ControlsElmish =
         input: ViewerPointerInput ->
             PointerState * 'msg list
 
-    /// Focus-aware text-routing seam (feature 090, FR-008): deliver a `TextInputMsg` (a keystroke /
-    /// committed or composed text) to the currently `focused` text control's existing `TextInput`
-    /// model and fold that control's authored `onChanged` binding into product messages — so
-    /// TextBox/TextArea/NumericInput are typeable in `runInteractiveApp`. Only the focused control's
-    /// model advances (`models` holds one `TextInputModel` per text control, keyed by `ControlId`); an
-    /// unfocused control's model is returned unchanged. Reuses `ControlRuntime.FocusedControl` +
-    /// `TextInput.update` — no parallel text model. When `focused` is `None`/names no model, the models
-    /// are returned unchanged and no product message is produced (the host's unchanged `MapKey` path
-    /// handles the key). Scope: routing seam only — caret/selection/IME-UX/undo and general
-    /// focus/tab-traversal across all control kinds are trajectory item E4 (FR-008a).
-    val routeFocusedText:
-        rendered: ControlRenderResult<'msg> ->
-        focused: ControlId option ->
-        models: Map<ControlId, TextInputModel> ->
+    /// 092 (FR-004): resolve a point to the stable `RetainedId` of the control under it, via the
+    /// retained tree's per-node boxes — replacing the 090 `ControlId` `hitTest |> nearestAuthored`
+    /// path (which collapses unkeyed same-kind siblings onto one id). `None` for a true gap / outside
+    /// the root. `internal` because it takes the internal `RetainedRender` structure; the adapter
+    /// tests reach it via InternalsVisibleTo (it IS the production focus-resolution path, SC-002).
+    val internal resolveFocus: retained: RetainedRender<'msg> -> x: float -> y: float -> RetainedId option
+
+    /// 092 focus-aware text routing on the RETAINED structure (FR-005/FR-006), replacing the 090
+    /// `ControlId`-keyed seam: deliver `msg` to the focused control's `RetainedId`-keyed `TextInput`
+    /// state held in `retained.StateByIdentity[id].Text`, seeding from the control's current value +
+    /// kind-derived line mode on FIRST focus (so the first keystroke appends to a pre-filled value),
+    /// and return the next retained structure (whose carried text state survives a positional shift
+    /// via `step`) plus ALL of the focused control's matched `onChanged` product messages — every
+    /// binding, not just the first. When `focused` is `None`/names no live node, the structure is
+    /// returned unchanged and no message is produced. `internal` because it takes the internal
+    /// `RetainedRender`; the adapter tests drive it through InternalsVisibleTo (the real seam SC-001
+    /// exercises, with no hand-seeded identity map). The 090 `ControlId`-keyed `routeFocusedText` is
+    /// REPLACED (breaking within this package surface; covered by the recaptured baseline + migration
+    /// note). Scope: routing seam only — caret/selection/IME-UX/undo and general focus/tab-traversal
+    /// are trajectory item E4.
+    val internal routeFocusedText:
+        retained: RetainedRender<'msg> ->
+        focused: RetainedId option ->
         msg: TextInputMsg ->
-            Map<ControlId, TextInputModel> * 'msg list
+            RetainedRender<'msg> * 'msg list
 
     /// Build a responds-proof verdict from a before/after frame pair (feature 090, FR-006):
     /// `Responsive` when the frames differ, `Inert` when identical. The reusable core the pointer and

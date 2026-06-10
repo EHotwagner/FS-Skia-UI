@@ -558,11 +558,19 @@ type ViewerPointerInput =
 /// the next tree against a retained previous tree (`module internal RetainedRender`). So when the
 /// host is the controls adapter, this repaint is already O(changed-subtree) and byte-identical to a
 /// full rebuild (FR-004/FR-005); a generic host that supplies its own `View` is unchanged.
+///
+/// Feature 092 (FR-006): `MapKey` returns `'msg list` (was `'msg option`) so one key can dispatch
+/// SEVERAL product messages in order — e.g. a focused control with more than one `onChanged`
+/// binding. `[]` = the key is unhandled by the host seam (was `None`); a non-empty list is folded
+/// through `Update` in order. Migration is mechanical: `Some m` → `[ m ]`, `None` → `[]`. The
+/// sibling `GeneratedAppHost.MapKey` is DELIBERATELY left at `'msg option`: it backs the
+/// non-interactive `Viewer.runApp` path (generated projects, samples) where multi-message keys are
+/// not needed, and widening it would churn the template/generated host for no behavioral gain.
 type InteractiveViewerHost<'model,'msg> =
     { Init: unit -> 'model * ViewerEffect list
       Update: 'msg -> 'model -> 'model * ViewerEffect list
       View: Size -> 'model -> SceneNode
-      MapKey: ViewerKey -> bool -> 'msg option
+      MapKey: ViewerKey -> bool -> 'msg list
       MapPointer: ViewerPointerInput -> Size -> 'model -> 'msg list
       Tick: TimeSpan -> 'msg option
       Diagnostics: ViewerDiagnosticsOptions }

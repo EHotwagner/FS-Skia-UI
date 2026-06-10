@@ -1,0 +1,10 @@
+# Wired retained identity — pre-filled multi-line first keystroke appends (feature 092, SC-002/FR-005)
+evidence-kind=prefilled-append
+renderer-mode=DeterministicRenderOnly
+status=pass
+scenario=text-area pre-filled 'line1'; focus; first keystroke 'X'
+result-draft=line1X
+appends-not-resets=true
+line-mode=MultiLine
+note=fixes the 090 defects (empty seed wiped a pre-filled field on first keystroke; SingleLine hard-coded even for text-area).
+authoritative-test=Feature092LiveSurvivalTests/092 US2 focus resolution + value preservation

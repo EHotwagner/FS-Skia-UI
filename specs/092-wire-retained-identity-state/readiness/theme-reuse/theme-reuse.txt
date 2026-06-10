@@ -1,0 +1,10 @@
+# Retained reconciliation — theme in the fragment reuse key (feature 092, SC-006/FR-008)
+evidence-kind=theme-reuse
+renderer-mode=DeterministicRenderOnly
+status=pass
+parity-proof=structural-scene-equality
+scenario=identical tree, theme changes light->dark between frames
+frame1-byte-identical-to-dark-rebuild=true
+frame1-differs-from-light-rebuild=true
+readback-note=AUTHORITATIVE proof is pure structural equality of the ControlRenderResult.Scene values; SceneEvidence.renderPng is a capability-hash, not a pixel encoder ([[fs-skia-evidence-mode]]).
+authoritative-test=Feature092RetainedRenderTests/092 US4 theme in the fragment reuse key

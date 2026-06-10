@@ -103,12 +103,13 @@ module ControlsElmish =
         input: ViewerPointerInput ->
             PointerState * 'msg list
 
-    val routeFocusedText:
-        rendered: ControlRenderResult<'msg> ->
-        focused: ControlId option ->
-        models: Map<ControlId, TextInputModel> ->
+    val internal resolveFocus: retained: RetainedRender<'msg> -> x: float -> y: float -> RetainedId option
+
+    val internal routeFocusedText:
+        retained: RetainedRender<'msg> ->
+        focused: RetainedId option ->
         msg: TextInputMsg ->
-            Map<ControlId, TextInputModel> * 'msg list
+            RetainedRender<'msg> * 'msg list
 
     val respondsProofOf: before: Scene -> after: Scene -> RespondsProof
 

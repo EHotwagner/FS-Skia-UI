@@ -1,0 +1,7 @@
+# Wired retained identity — rebuild-every-frame baseline FAILS the survival proof (feature 092, SC-001)
+evidence-kind=baseline-fails
+renderer-mode=DeterministicRenderOnly
+status=pass
+baseline-loses-identity-on-shift=true
+note=rebuilding the retained structure every frame (RetainedRender.init) mints a fresh id for the editor under the shift, so id-keyed focus/text/clock state is lost — the wired step path is what preserves it.
+authoritative-test=Feature092LiveSurvivalTests/092 US1 live survival through the real adapter seam

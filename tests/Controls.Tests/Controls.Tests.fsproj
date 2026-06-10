@@ -31,6 +31,7 @@
     <Compile Include="Feature086PreviewParityTests.fs" />
     <Compile Include="Feature090RecoveryTests.fs" />
     <Compile Include="Feature091RetainedRenderTests.fs" />
+    <Compile Include="Feature092RetainedRenderTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

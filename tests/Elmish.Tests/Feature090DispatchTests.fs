@@ -173,8 +173,9 @@ let dispatchTests =
               Expect.equal inertProof.Verdict Inert "verdict is Inert — the dead-window gate fails"
           }
 
-          // T1/T3 (US4, FR-008) — a keystroke delivered through the focus-aware seam reaches the
-          // FOCUSED text control's TextInput model and not an unfocused one; focus comes from a click.
+          // T1/T3 (US4, FR-008) — a keystroke delivered through the 092 retained focus-aware seam
+          // reaches the FOCUSED control's RetainedId-keyed text state and not an unfocused one; focus
+          // resolves via the retained tree (`resolveFocus`), not the replaced ControlId path.
           test "text seam: a keystroke reaches the focused text control, not an unfocused one (T1/T3)" {
               // Two keyed text controls; both author onChanged so the seam folds the focused one's binding.
               let textView (_: Size) (model: Model) : Control<Msg> =
@@ -185,37 +186,35 @@ let dispatchTests =
 
               let host = hostOf textView (fun _ -> None)
               let model0 = fst (host.Init ())
-              let rendered = Control.renderTree host.Theme size (host.View size model0)
+              let r0 = (RetainedRender.init host.Theme size (host.View size model0)).Retained
 
-              // Focus-on-click (T3): a click over "name" resolves (hitTest → nearestAuthored) to "name".
+              // Focus-on-click (T3): a click over "name" resolves to its stable RetainedId via the
+              // retained tree's per-node boxes.
               let cx, cy = centreOf host model0 "name"
-              let focused = Control.hitTest rendered cx cy |> Option.bind (Control.nearestAuthored rendered)
-              Expect.equal focused (Some "name") "a click on the text control focuses it (focus-on-click)"
+              let focused = ControlsElmish.resolveFocus r0 cx cy
+              Expect.isSome focused "a click on the text control resolves to a RetainedId (focus-on-click)"
 
-              // Both controls start with an empty TextInput model; deliver 'a' to the focused one.
-              let models =
-                  [ "name", fst (TextInput.init "name" SingleLine "")
-                    "other", fst (TextInput.init "other" SingleLine "") ]
-                  |> Map.ofList
+              // Deliver 'a' to the focused control through the real seam (no hand-seeded state map).
+              let r1, msgs = ControlsElmish.routeFocusedText r0 focused (InsertText "a")
 
-              let models', msgs = ControlsElmish.routeFocusedText rendered focused models (InsertText "a")
-
-              Expect.equal models'.["name"].DraftText "a" "the character reached the FOCUSED control's TextInput model"
-              Expect.equal models'.["other"].DraftText "" "the UNFOCUSED control's TextInput model is unchanged"
+              let focusedState = r1.StateByIdentity |> Map.find focused.Value
+              Expect.equal focusedState.Text.Value.DraftText "a" "the character reached the FOCUSED control's RetainedId-keyed text state"
               Expect.contains msgs (SetName "a") "the focused control's onChanged binding folded the new text into a product message"
+
+              // The other (unfocused) control acquired no text state — only the focused id advances.
+              Expect.equal (Map.count r1.StateByIdentity) 1 "exactly one control (the focused one) has text state; the unfocused control is untouched"
           }
 
-          // T1 (US4) — when no text control is focused, the seam delivers nothing (the host's MapKey
-          // path is left to handle the key) and the models are returned unchanged.
-          test "text seam: with no focus, nothing is delivered and models are unchanged (T1)" {
+          // T1 (US4) — when nothing is focused, the seam delivers nothing (the host's MapKey path is
+          // left to handle the key) and the retained structure is returned unchanged.
+          test "text seam: with no focus, nothing is delivered and the structure is unchanged (T1)" {
               let textView (_: Size) (_: Model) : Control<Msg> =
                   Stack.create [ Stack.children [ TextBox.create [ TextBox.onChanged SetName ] |> Control.withKey "name" ] ]
 
               let host = hostOf textView (fun _ -> None)
               let model0 = fst (host.Init ())
-              let rendered = Control.renderTree host.Theme size (host.View size model0)
-              let models = [ "name", fst (TextInput.init "name" SingleLine "") ] |> Map.ofList
-              let models', msgs = ControlsElmish.routeFocusedText rendered None models (InsertText "a")
+              let r0 = (RetainedRender.init host.Theme size (host.View size model0)).Retained
+              let r1, msgs = ControlsElmish.routeFocusedText r0 None (InsertText "a")
               Expect.isEmpty msgs "no focus ⇒ no product message"
-              Expect.equal models'.["name"].DraftText "" "no focus ⇒ the model is unchanged"
+              Expect.isTrue (Map.isEmpty r1.StateByIdentity) "no focus ⇒ the retained structure is unchanged"
           } ]

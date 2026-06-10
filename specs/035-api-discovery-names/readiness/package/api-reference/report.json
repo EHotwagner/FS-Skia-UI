@@ -39,7 +39,7 @@
       "ViewerWindowPosition",
       "Coordinates of x: int * y: int"
     ],
-    "XmlSummaryCount": 103,
+    "XmlSummaryCount": 111,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"
@@ -157,7 +157,7 @@
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.Controls.Elmish.md",
     "SymbolCount": 82,
     "SampledSymbols": [],
-    "XmlSummaryCount": 104,
+    "XmlSummaryCount": 112,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"

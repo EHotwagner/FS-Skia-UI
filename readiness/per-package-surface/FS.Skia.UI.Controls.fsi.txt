@@ -896,12 +896,14 @@ type internal RetainedUiState =
 type internal RetainedRender<'msg> =
     { Root: RetainedNode<'msg>
       NextId: uint64
-      StateByIdentity: Map<RetainedId, RetainedUiState> }
+      StateByIdentity: Map<RetainedId, RetainedUiState>
+      Theme: Theme }
 
 type internal WorkReductionRecord =
     { BaselineNodeCount: int
       RecomputedNodeCount: int
-      ChangedSubtreeBound: int }
+      ChangedSubtreeBound: int
+      ShiftedNodeCount: int }
 
 type internal RetainedRenderStep<'msg> =
     { Retained: RetainedRender<'msg>
@@ -909,9 +911,14 @@ type internal RetainedRenderStep<'msg> =
       Diagnostics: ControlDiagnostic list
       WorkReduction: WorkReductionRecord }
 
+type internal RetainedInit<'msg> =
+    { Retained: RetainedRender<'msg>
+      Render: ControlRenderResult<'msg>
+      Diagnostics: ControlDiagnostic list }
+
 module internal RetainedRender =
 
-    val init: theme: Theme -> size: FS.Skia.UI.Scene.Size -> control: Control<'msg> -> RetainedRender<'msg>
+    val init: theme: Theme -> size: FS.Skia.UI.Scene.Size -> control: Control<'msg> -> RetainedInit<'msg>
 
     val step:
         theme: Theme ->
@@ -919,6 +926,8 @@ module internal RetainedRender =
         prev: RetainedRender<'msg> ->
         next: Control<'msg> ->
             RetainedRenderStep<'msg>
+
+    val retainedHitTest: x: float -> y: float -> retained: RetainedRender<'msg> -> RetainedId option
 
 namespace FS.Skia.UI.Controls
 

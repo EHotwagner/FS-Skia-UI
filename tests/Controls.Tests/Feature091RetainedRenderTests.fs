@@ -19,6 +19,12 @@ open FS.Skia.UI.Controls
 let private theme = Theme.light
 let private size: Size = { Width = 640; Height = 480 }
 
+// Feature 092: `RetainedRender.init` now returns a `RetainedInit` (the seeded structure + the
+// single first-frame Render + first-frame diagnostics). These 067/091 invariant tests only need
+// the retained structure, so `rinit` projects it — keeping the invariant assertions unchanged.
+let private rinit (t: Theme) (s: Size) (c: Control<'msg>) : RetainedRender<'msg> =
+    (RetainedRender.init t s c).Retained
+
 // --- helpers over the retained tree (internal, reachable via InternalsVisibleTo) -----------
 
 let rec private findByKey (key: ControlId) (n: RetainedNode<'msg>) : RetainedNode<'msg> option =
@@ -67,7 +73,7 @@ let us1 =
               let prev = stack [ leaf "a" "A"; leaf "editor" "type here" ]
               let next = stack [ leaf "a" "A-changed"; leaf "editor" "type here" ]
 
-              let r0 = RetainedRender.init theme size prev
+              let r0 = rinit theme size prev
               let s = RetainedRender.step theme size r0 next
 
               let id0 = idOfKey "editor" r0
@@ -99,7 +105,7 @@ let us1 =
               let prev = stack [ leaf "editor" "type here" ]
               let next = stack [ leaf "banner" "new!"; leaf "editor" "type here" ]
 
-              let r0 = RetainedRender.init theme size prev
+              let r0 = rinit theme size prev
               let s = RetainedRender.step theme size r0 next
 
               Expect.equal (idOfKey "editor" s.Retained) (idOfKey "editor" r0) "editor identity survives the positional shift"
@@ -117,7 +123,7 @@ let us1 =
                           Content = Some "type here"
                           Accessibility = None } ]
 
-              let r0 = RetainedRender.init theme size prev
+              let r0 = rinit theme size prev
               let s = RetainedRender.step theme size r0 next
 
               Expect.notEqual (idOfKey "editor" s.Retained) (idOfKey "editor" r0) "SC-001 negative: a Kind change mints a new identity"
@@ -143,7 +149,7 @@ let us2 =
               let prev = stack [ leaf "editor" "hi" ]
               let next = stack [ leaf "banner" "new!"; leaf "editor" "hi" ] // editor shifts down
 
-              let r0 = RetainedRender.init theme size prev
+              let r0 = rinit theme size prev
               let editorId = (idOfKey "editor" r0).Value
 
               // set focus + a started per-control clock keyed by the STABLE identity.
@@ -173,8 +179,8 @@ let us2 =
               let prev = stack [ leaf "editor" "hi" ]
               let next = stack [ leaf "banner" "new!"; leaf "editor" "hi" ]
 
-              let frame0 = RetainedRender.init theme size prev
-              let frame1 = RetainedRender.init theme size next // rebuild-every-frame baseline
+              let frame0 = rinit theme size prev
+              let frame1 = rinit theme size next // rebuild-every-frame baseline
 
               Expect.notEqual
                   (idOfKey "editor" frame1)
@@ -197,7 +203,7 @@ let us3 =
               let prev = stack (leaves "n" 12)
               let next = stack ((leaf "n1" "CHANGED") :: List.tail (leaves "n" 12))
 
-              let r0 = RetainedRender.init theme size prev
+              let r0 = rinit theme size prev
               let s = RetainedRender.step theme size r0 next
 
               let w = s.WorkReduction
@@ -211,7 +217,7 @@ let us3 =
               let prev = stack [ leaf "a" "A"; stack [ leaf "b" "B"; leaf "c" "C" ] ]
               let next = stack [ leaf "a" "A2"; stack [ leaf "b" "B"; leaf "c" "C2" ] ]
 
-              let r0 = RetainedRender.init theme size prev
+              let r0 = rinit theme size prev
               let s = RetainedRender.step theme size r0 next
               let full = Control.renderTree theme size next
 
@@ -307,7 +313,7 @@ let us4 =
         "091 US4 invariants on the wired path (FsCheck, >=1000 cases)"
         [ test "round-trip: wired Render is byte-identical to renderTree next (SC-005/FR-006)" {
               let roundTrips (prev: Control<int>, next: Control<int>) =
-                  let s = RetainedRender.step theme size (RetainedRender.init theme size prev) next
+                  let s = RetainedRender.step theme size (rinit theme size prev) next
                   let full = Control.renderTree theme size next
                   s.Render.Scene = full.Scene
                   && s.Render.Bounds = full.Bounds
@@ -320,7 +326,7 @@ let us4 =
           test "determinism: identical frame sequences produce identical Render + RetainedIds (SC-005)" {
               let deterministic (prev: Control<int>, next: Control<int>) =
                   let run () =
-                      let r0 = RetainedRender.init theme size prev
+                      let r0 = rinit theme size prev
                       let s = RetainedRender.step theme size r0 next
                       repr s.Render.Scene, allIds s.Retained.Root
 
@@ -333,7 +339,7 @@ let us4 =
           test "totality: step never throws for any (prev, next) (SC-005)" {
               let total (prev: Control<int>, next: Control<int>) =
                   try
-                      RetainedRender.step theme size (RetainedRender.init theme size prev) next |> ignore
+                      RetainedRender.step theme size (rinit theme size prev) next |> ignore
                       true
                   with _ ->
                       false
@@ -345,7 +351,7 @@ let us4 =
           test "identity-at-rest: structurally identical frames => Keep no-op, zero re-measure/id churn (SC-005)" {
               let atRest (c0: Control<int>) =
                   let c = Gen091.dedupeKeys c0
-                  let r0 = RetainedRender.init theme size c
+                  let r0 = rinit theme size c
                   let s = RetainedRender.step theme size r0 c
                   s.WorkReduction.RecomputedNodeCount = 0
                   && s.Retained.NextId = r0.NextId
@@ -364,7 +370,7 @@ let us4 =
               let prev = stack [ dup "x" "A"; dup "x" "B"; leaf "y" "Y" ] // duplicate key "x"
               let next = stack [ dup "x" "A"; leaf "y" "Y" ]
 
-              let r0 = RetainedRender.init theme size prev
+              let r0 = rinit theme size prev
               let s = RetainedRender.step theme size r0 next // must NOT throw
 
               let collisions = s.Diagnostics |> List.filter (fun d -> d.Code = KeyCollision)
@@ -423,7 +429,7 @@ let evidence =
               let prev = stack (leaves 12)
               let next = stack ((leaf "n1" "CHANGED") :: List.tail (leaves 12))
 
-              let r0 = RetainedRender.init theme size prev
+              let r0 = rinit theme size prev
               let s = RetainedRender.step theme size r0 next
               let full = Control.renderTree theme size next
 
@@ -483,7 +489,7 @@ let evidence =
               let prev = stack [ leaf "editor" "hi" ]
               let next = stack [ leaf "banner" "new!"; leaf "editor" "hi" ] // editor shifts down (unrelated insert)
 
-              let r0 = RetainedRender.init theme size prev
+              let r0 = rinit theme size prev
               let editorId = (idOfKey "editor" r0).Value
               let clock0 = startedClock ()
 
@@ -504,7 +510,7 @@ let evidence =
 
               // baseline = rebuild every frame (init); the id is not stable across the shift.
               let baselineFails =
-                  idOfKey "editor" (RetainedRender.init theme size next) <> Some editorId
+                  idOfKey "editor" (rinit theme size next) <> Some editorId
 
               let before = (Control.renderTree theme size prev).Scene
               let after = s.Render.Scene

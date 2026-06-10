@@ -127,7 +127,7 @@ let interactiveHostTests =
                 { Init = host.Init
                   Update = host.Update
                   View = fun sz m -> SceneNode.Group [ (Control.renderTree Theme.light sz (sizeAwareView sz m)).Scene ]
-                  MapKey = fun _ _ -> None
+                  MapKey = fun _ _ -> [] // 092 (FR-006): MapKey is `'msg list` ([] = unhandled)
                   MapPointer = fun _ _ _ -> []
                   Tick = fun _ -> None
                   Diagnostics = Viewer.defaultDiagnostics }

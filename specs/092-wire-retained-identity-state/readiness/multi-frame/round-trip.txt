@@ -1,0 +1,9 @@
+# Retained reconciliation — multi-frame chained byte-identity (feature 092, SC-004/SC-007)
+evidence-kind=multi-frame-round-trip
+renderer-mode=DeterministicRenderOnly
+status=pass
+parity-proof=structural-scene-equality
+frames=4 (init + 3 chained steps)
+chained-parity-holds=true
+note=each chained frame's wired Render.Scene is byte-identical to a full Control.renderTree of that frame; identity carries across the chain.
+authoritative-test=Feature092RetainedRenderTests/092 multi-frame chained reconciliation parity

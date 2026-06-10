@@ -1,0 +1,10 @@
+# Retained reconciliation — single first-frame paint + frame-0 diagnostics (feature 092, SC-005/FR-009)
+evidence-kind=first-frame
+renderer-mode=DeterministicRenderOnly
+status=pass
+first-frame-render-equals-full-rebuild=true
+first-frame-paint-count=1
+frame0-keycollision-surfaced=true
+frame0-keycollision-count=1
+note=init returns the painted scene (adapter reuses it instead of a second Control.renderTree) and reports duplicate-key collisions on frame 0 (091 surfaced them a frame late).
+authoritative-test=Feature092RetainedRenderTests/092 US4 single first-frame paint + frame-0 diagnostics

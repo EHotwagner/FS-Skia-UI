@@ -46,21 +46,32 @@ type internal RetainedUiState =
     { Animation: FS.Skia.UI.Scene.AnimationState<FS.Skia.UI.Scene.Transform> option
       Text: TextInputModel option }
 
-/// The per-frame retained root plus the monotonic identity counter and the identity-keyed UI
-/// state map. Lives in the host loop's existing mutable-ref state (the interpreter edge).
+/// The per-frame retained root plus the monotonic identity counter, the identity-keyed UI
+/// state map, and the theme this structure was painted under. Lives in the host loop's existing
+/// mutable-ref state (the interpreter edge). 092: `Theme` is the fragment-reuse key — a theme
+/// change between `step` calls invalidates all cached fragments so they repaint (FR-008), and
+/// the live host now READS/WRITES `StateByIdentity` (091 only carried it; the host ignored it).
 type internal RetainedRender<'msg> =
     { Root: RetainedNode<'msg>
       NextId: uint64
-      StateByIdentity: Map<RetainedId, RetainedUiState> }
+      StateByIdentity: Map<RetainedId, RetainedUiState>
+      Theme: Theme }
 
 /// Measured per-frame work reduction (SC-003). `BaselineNodeCount` is what a full rebuild
 /// re-measures/re-paints (== N); `RecomputedNodeCount` is what the wired path actually
-/// recomputed; `ChangedSubtreeBound` is the diff-derived size of the changed subtree. For a
-/// localized change: `RecomputedNodeCount ≤ ChangedSubtreeBound < BaselineNodeCount`.
+/// recomputed; `ChangedSubtreeBound` is the genuinely-changed work (Replace/own-change/insert);
+/// `ShiftedNodeCount` (092) is work recomputed ONLY because an upstream change relaid a
+/// structurally-unchanged subtree out (a `Keep` whose box moved, or a theme repaint). For any
+/// localized change:
+///   `RecomputedNodeCount = ChangedSubtreeBound + ShiftedNodeCount`
+///   `RecomputedNodeCount < BaselineNodeCount`
+/// (091 documented `RecomputedNodeCount ≤ ChangedSubtreeBound`, which a sibling-shifting change
+/// violates — the shifted work was recomputed but uncounted; FR-007 splits it out.)
 type internal WorkReductionRecord =
     { BaselineNodeCount: int
       RecomputedNodeCount: int
-      ChangedSubtreeBound: int }
+      ChangedSubtreeBound: int
+      ShiftedNodeCount: int }
 
 /// The result of one wired frame: the next retained structure, the render result (byte-identical
 /// to a full rebuild of `next`), the diagnostics surfaced from the diff (e.g. `KeyCollision`), and
@@ -71,12 +82,22 @@ type internal RetainedRenderStep<'msg> =
       Diagnostics: ControlDiagnostic list
       WorkReduction: WorkReductionRecord }
 
+/// The first-frame result (092, FR-009): the seeded retained structure, the render result it
+/// painted (so the adapter paints the first frame ONCE instead of also calling
+/// `Control.renderTree`), and any first-frame diagnostics (e.g. a duplicate-key `KeyCollision`
+/// present in the very first tree — 091 only diffed from frame 1, so it surfaced a frame late).
+type internal RetainedInit<'msg> =
+    { Retained: RetainedRender<'msg>
+      Render: ControlRenderResult<'msg>
+      Diagnostics: ControlDiagnostic list }
+
 module internal RetainedRender =
 
-    /// Build the initial retained structure from the first frame's lowered tree. Output is
-    /// equivalent to `Control.renderTree theme size control`, plus the retained fragments and
-    /// minted stable identities. Total; never throws.
-    val init: theme: Theme -> size: FS.Skia.UI.Scene.Size -> control: Control<'msg> -> RetainedRender<'msg>
+    /// Build the initial retained structure from the first frame's lowered tree, painting it
+    /// ONCE. The returned `Render` is byte-identical to `Control.renderTree theme size control`
+    /// (so the adapter reuses it rather than re-painting), and `Diagnostics` carries any
+    /// first-frame duplicate-key `KeyCollision` (FR-009). Total; never throws.
+    val init: theme: Theme -> size: FS.Skia.UI.Scene.Size -> control: Control<'msg> -> RetainedInit<'msg>
 
     /// Produce the next frame from the retained `prev` and the next lowered tree, by
     /// `Reconcile.diff`-ing and reusing/recomputing fragments under the patch.
@@ -92,3 +113,12 @@ module internal RetainedRender =
         prev: RetainedRender<'msg> ->
         next: Control<'msg> ->
             RetainedRenderStep<'msg>
+
+    /// Resolve a point to the stable identity of the control under it (092, FR-004): the deepest
+    /// retained node whose cached `Fragment.Box` contains `(x, y)`, else `None` (a true gap /
+    /// outside the root). Because every node — INCLUDING unkeyed same-kind siblings — carries a
+    /// distinct `RetainedId` and its own evaluated box, this returns a per-node identity with no
+    /// collision, unlike the `ControlId` `hitTest`/`nearestAuthored` path (which collapses unkeyed
+    /// same-kind siblings). Focus-on-click resolves through this. Reuses the boxes already computed
+    /// by `init`/`step`; total and deterministic.
+    val retainedHitTest: x: float -> y: float -> retained: RetainedRender<'msg> -> RetainedId option

@@ -497,7 +497,7 @@ type InteractiveViewerHost<'model,'msg> =
     { Init: unit -> 'model * ViewerEffect list
       Update: 'msg -> 'model -> 'model * ViewerEffect list
       View: Size -> 'model -> SceneNode
-      MapKey: ViewerKey -> bool -> 'msg option
+      MapKey: ViewerKey -> bool -> 'msg list
       MapPointer: ViewerPointerInput -> Size -> 'model -> 'msg list
       Tick: TimeSpan -> 'msg option
       Diagnostics: ViewerDiagnosticsOptions }

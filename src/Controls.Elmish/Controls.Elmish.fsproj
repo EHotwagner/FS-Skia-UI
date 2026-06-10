@@ -11,6 +11,13 @@
     <PackageTags>fsharp;skia;controls;elmish;adapter</PackageTags>
   </PropertyGroup>
 
+  <!-- Feature 092 (E2): the focus/text routing seam re-keyed onto the retained structure
+       (`resolveFocus`/`routeFocusedText`) takes the internal `RetainedRender` type, so it is
+       `internal` to this assembly and the adapter tests reach it via InternalsVisibleTo. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Elmish.Tests" />
+  </ItemGroup>
+
   <ItemGroup>
     <Compile Include="ControlsElmish.fsi" />
     <Compile Include="ControlsElmish.fs" />

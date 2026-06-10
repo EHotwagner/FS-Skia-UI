@@ -1,0 +1,70 @@
+{
+  "base_ref": "main",
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "specs/092-wire-retained-identity-state/plan.md",
+      "line": 82,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: The duplicate-key first-frame diagnostic test (FR-009/SC-005) uses a"
+    },
+    {
+      "file": "specs/092-wire-retained-identity-state/readiness/task-graph.json",
+      "line": 1041,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "\"design_source\": \"spec FR-009 / SC-005; plan.md \\\"Synthetic evidence\\\" (mirrors 091 KeyCollision `[SEH]`)\","
+    },
+    {
+      "file": "specs/092-wire-retained-identity-state/readiness/task-graph.md",
+      "line": 50,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "## Synthetic Error-Handling Classification"
+    },
+    {
+      "file": "specs/092-wire-retained-identity-state/readiness/task-graph.md",
+      "line": 52,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Accepted | Label | Design source | Synthetic input class | Expected error behavior | Diagnostics |"
+    },
+    {
+      "file": "specs/092-wire-retained-identity-state/readiness/task-graph.md",
+      "line": 54,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| T022 | yes | yes | spec FR-009 / SC-005; plan.md \"Synthetic evidence\" (mirrors 091 KeyCollision `[SEH]`) | Malformed d"
+    },
+    {
+      "file": "specs/092-wire-retained-identity-state/readiness/task-graph.md",
+      "line": 141,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/092-wire-retained-identity-state/tasks.md",
+      "line": 215,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    },
+    {
+      "file": "specs/092-wire-retained-identity-state/tasks.md",
+      "line": 217,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| T022 | Frame-0 duplicate-key diagnostic requires a deliberately-malformed duplicate-keyed literal tree; the diagnostic"
+    }
+  ]
+}

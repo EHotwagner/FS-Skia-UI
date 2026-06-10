@@ -511,7 +511,9 @@ type InteractiveViewerHost<'model,'msg> =
     { Init: unit -> 'model * ViewerEffect list
       Update: 'msg -> 'model -> 'model * ViewerEffect list
       View: Size -> 'model -> SceneNode
-      MapKey: ViewerKey -> bool -> 'msg option
+      // 092 (FR-006): `'msg list` (was `'msg option`) — one key can dispatch several messages in
+      // order; `[]` = unhandled. Folded through `Update` exactly like the pointer `'msg list` path.
+      MapKey: ViewerKey -> bool -> 'msg list
       MapPointer: ViewerPointerInput -> Size -> 'model -> 'msg list
       Tick: TimeSpan -> 'msg option
       Diagnostics: ViewerDiagnosticsOptions }
@@ -2488,10 +2490,10 @@ module Viewer =
                                         ViewerKeyDirection.KeyUp }
 
                         match host.MapKey key normalizedDown with
-                        | Some msg ->
+                        | [] -> false
+                        | msgs ->
                             inputDispatch <- "true"
-                            dispatchHostMsg msg
-                        | None -> false
+                            msgs |> List.fold (fun close msg -> dispatchHostMsg msg || close) false
 
                     let handlePointer (input: ViewerPointerInput) =
                         let msgs = host.MapPointer input currentSize currentModel
