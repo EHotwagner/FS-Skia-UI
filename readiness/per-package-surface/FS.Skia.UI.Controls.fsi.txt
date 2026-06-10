@@ -217,6 +217,8 @@ module Control =
 
     val hitTest: result: ControlRenderResult<'msg> -> x: float -> y: float -> ControlId option
 
+    val nearestAuthored: result: ControlRenderResult<'msg> -> hit: ControlId -> ControlId option
+
     val diagnostics: control: Control<'msg> -> ControlDiagnostic list
 
     val dispatch: event: ControlEvent -> control: Control<'msg> -> 'msg list

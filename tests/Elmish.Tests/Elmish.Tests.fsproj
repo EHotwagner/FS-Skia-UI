@@ -12,6 +12,7 @@
     <Compile Include="TypedControlsAdapterTests.fs" />
     <Compile Include="AdapterCmdTests.fs" />
     <Compile Include="AnimationTickTests.fs" />
+    <Compile Include="Feature090DispatchTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

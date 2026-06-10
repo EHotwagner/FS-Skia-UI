@@ -1187,6 +1187,43 @@ module Control =
 
         FS.Skia.UI.Layout.Layout.hitTestComputed (LayoutDefaults.pixelSnapPolicy 1.0) computed x y
 
+    // FR-004/FR-004a/FR-005 (feature 090): resolve a structural hit `ControlId` — the id a
+    // `PointerInteraction`/`hitTest` carries: a `Key` for an authored node, else the positional
+    // path `toLayout` assigns ("0", "0.1", …) — to the NEAREST ancestor (incl. self) the consumer
+    // authored with a `withKey`, returned as that ancestor's authored `ControlId` (its `Key`). A
+    // click inside a CONTAINER-KEYED composite therefore recovers the container's authored id
+    // instead of an opaque inner positional id ("0.1"), so the host can route its binding. `None`
+    // when no keyed ancestor exists anywhere on the hit node's path — the host then falls back to
+    // `MapPointer` with the raw interaction and never invents a `Kind`/root id the consumer did not
+    // author. A directly-keyed leaf's hit id IS its `Key`, so it resolves to itself (FR-005,
+    // non-regressive — a fixed point).
+    //
+    // Pure/total/deterministic: walks the already-computed `result.Layout` tree, re-deriving each
+    // node's positional path by the SAME `parent + "." + index` scheme as `toLayout`. A node is
+    // authored exactly when its layout `Id` differs from that positional path (`toLayout` sets
+    // `Id = Key |> defaultValue path`, so `Id <> path` ⇔ the node carries an explicit `Key`). No
+    // clock/randomness; resume-safe; reads existing render data only — no layout-math change.
+    let nearestAuthored (result: ControlRenderResult<'msg>) (hit: ControlId) : ControlId option =
+        let rec search (path: string) (nearestKeyed: ControlId option) (node: FS.Skia.UI.Layout.LayoutNode) : ControlId option =
+            let authoredHere = if node.Id <> path then Some node.Id else None
+
+            let nearestForChildren =
+                match authoredHere with
+                | Some _ -> authoredHere
+                | None -> nearestKeyed
+
+            if node.Id = hit then
+                // nearest authored ancestor including self
+                match authoredHere with
+                | Some id -> Some id
+                | None -> nearestKeyed
+            else
+                node.Children
+                |> List.mapi (fun index child -> index, child)
+                |> List.tryPick (fun (index, child) -> search (path + "." + string index) nearestForChildren child)
+
+        search "0" None result.Layout
+
     let dispatch (event: ControlEvent) (control: Control<'msg>) =
         let rec loop (current: Control<'msg>) =
             let own =

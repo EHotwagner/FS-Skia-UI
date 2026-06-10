@@ -1,0 +1,26 @@
+## Symbol consistency (analyze pass G)
+- entity-record Dev — in {tasks}, missing from {plan, data-model}
+- entity-record EventBindings — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record GeneratedGuidanceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedProductCheck — in {tasks}, missing from {plan, data-model}
+- entity-record Kind — in {tasks}, missing from {plan, data-model}
+- entity-record MapPointer — in {tasks}, missing from {plan, data-model}
+- entity-record None — in {tasks}, missing from {plan, data-model}
+- entity-record RefreshSurfaceBaselines — in {tasks}, missing from {plan, data-model}
+- entity-record RespondsProof — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record Route — in {tasks}, missing from {plan, data-model}
+- entity-record SkillSyncCheck — in {tasks}, missing from {plan, data-model}
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- fr-id FR-002 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-005 — in {plan, tasks}, missing from {data-model}
+- msg-case ControlId — in {tasks}, missing from {plan, data-model}
+- msg-case EventBindings — in {tasks}, missing from {plan, data-model}
+- msg-case MapKey — in {data-model, tasks}, missing from {plan}
+- msg-case MapPointer — in {plan}, missing from {data-model, tasks}
+- msg-case Msg — in {plan}, missing from {data-model, tasks}
+- msg-case None — in {tasks}, missing from {plan, data-model}
+- msg-case TextInputMsg — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- sc-id SC-001 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-002 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-004 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}

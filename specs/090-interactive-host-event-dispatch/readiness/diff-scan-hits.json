@@ -1,0 +1,3822 @@
+{
+  "base_ref": "main",
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "specs/090-interactive-host-event-dispatch/plan.md",
+      "line": 122,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: **None planned.** Dispatch/recovery/text-seam tests exercise the **real**"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/plan.md",
+      "line": 173,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-evidence-mode/SKILL.md   # +responds-vs-renders obligation (FR-007)"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/plan.md",
+      "line": 174,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-evidence-mode/SKILL.md   # REGENERATED mirror (RefreshSurfaceBaselines / SkillSyncCheck)"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 6,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-elmish/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 7,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-keyboard-input/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 8,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 9,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 10,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-skiaviewer/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 11,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-ui-widgets/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 12,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 13,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 14,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 15,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 16,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 17,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 18,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 19,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 20,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 21,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 22,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 23,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 24,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 25,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 26,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 27,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 28,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 29,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 30,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/hooks/validate-speckit-project.sh"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 31,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/settings.json"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 32,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-elmish/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 33,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-keyboard-input/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 34,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 35,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 36,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-skiaviewer/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 37,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-ui-widgets/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 38,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 39,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 40,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 41,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 42,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 43,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 44,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 45,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 46,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 47,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 48,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 49,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 50,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 51,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 52,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 53,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 54,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 55,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 107,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "CLAUDE.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 593,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"generated app Synthetic exposes window behavior flags and option diagnostics without leaving interactive launch\" {"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 958,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-elmish/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 959,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-keyboard-input/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 960,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 961,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 962,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-skiaviewer/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 963,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-ui-widgets/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 964,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 965,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 966,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 967,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 968,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 969,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 970,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 971,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 972,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 973,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 974,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 975,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 976,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 977,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 978,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 979,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 980,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 981,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 984,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-elmish/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 985,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-keyboard-input/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 986,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 987,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 988,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-skiaviewer/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 989,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-ui-widgets/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 990,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 991,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 992,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 993,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 994,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 995,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 996,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 997,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 998,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 999,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 1000,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 1001,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 1002,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 1003,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 1004,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 1005,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 1006,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-package.txt",
+      "line": 1007,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 6,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-elmish/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 7,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-keyboard-input/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 8,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 9,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 10,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-skiaviewer/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 11,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-ui-widgets/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 12,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 13,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 14,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 15,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 16,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 17,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 18,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 19,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 20,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 21,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 22,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 23,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 24,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 25,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 26,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 27,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 28,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 29,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 30,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/hooks/validate-speckit-project.sh"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 31,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/settings.json"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 32,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-elmish/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 33,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-keyboard-input/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 34,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 35,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 36,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-skiaviewer/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 37,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-ui-widgets/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 38,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 39,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 40,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 41,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 42,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 43,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 44,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 45,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 46,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 47,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 48,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 49,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 50,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 51,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 52,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 53,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 54,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 55,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 107,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "CLAUDE.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 593,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"generated app Synthetic exposes window behavior flags and option diagnostics without leaving interactive launch\" {"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 958,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-elmish/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 959,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-keyboard-input/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 960,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 961,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 962,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-skiaviewer/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 963,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-ui-widgets/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 964,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 965,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 966,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 967,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 968,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 969,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 970,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 971,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 972,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 973,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 974,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 975,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 976,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 977,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 978,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 979,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 980,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 981,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 984,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-elmish/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 985,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-keyboard-input/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 986,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 987,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 988,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-skiaviewer/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 989,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-ui-widgets/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 990,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 991,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 992,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 993,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 994,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 995,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 996,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 997,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 998,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 999,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 1000,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 1001,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 1002,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 1003,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 1004,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 1005,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 1006,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/app-source.txt",
+      "line": 1007,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 6,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 7,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 8,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-testing/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 9,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 10,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 11,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 12,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 13,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 14,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 15,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 16,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 17,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 18,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 19,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 20,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 21,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 22,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 23,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 24,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 25,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 26,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 27,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/hooks/validate-speckit-project.sh"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 28,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/settings.json"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 29,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 30,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 31,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-testing/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 32,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 33,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 34,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 35,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 36,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 37,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 38,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 39,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 40,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 41,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 42,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 43,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 44,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 45,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 46,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 47,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 48,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 49,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 101,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "CLAUDE.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 299,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 300,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 301,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-testing/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 302,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 303,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 304,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 305,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 306,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 307,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 308,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 309,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 310,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 311,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 312,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 313,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 314,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 315,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 316,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 317,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 318,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 319,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 322,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 323,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 324,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-testing/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 325,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 326,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 327,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 328,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 329,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 330,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 331,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 332,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 333,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 334,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 335,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 336,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 337,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 338,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 339,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 340,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 341,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/governed-source.txt",
+      "line": 342,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 6,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 7,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 8,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 9,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 10,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 11,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 12,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 13,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 14,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 15,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 16,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 17,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 18,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 19,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 20,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 21,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 22,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 23,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 24,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 25,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 26,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/hooks/validate-speckit-project.sh"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 27,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/settings.json"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 28,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 29,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 30,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 31,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 32,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 33,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 34,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 35,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 36,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 37,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 38,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 39,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 40,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 41,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 42,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 43,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 44,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 45,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 46,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 47,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 99,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "CLAUDE.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 296,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 297,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 298,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 299,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 300,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 301,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 302,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 303,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 304,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 305,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 306,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 307,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 308,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 309,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 310,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 311,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 312,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 313,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 314,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 315,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 318,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 319,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 320,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 321,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 322,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 323,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 324,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 325,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 326,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 327,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 328,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 329,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 330,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 331,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 332,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 333,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 334,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 335,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 336,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/headless-scene-source.txt",
+      "line": 337,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 6,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-elmish/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 7,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 8,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-samples/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 9,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 10,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-skiaviewer/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 11,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 12,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 13,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 14,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 15,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 16,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 17,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 18,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 19,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 20,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 21,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 22,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 23,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 24,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 25,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 26,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 27,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 28,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 29,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/hooks/validate-speckit-project.sh"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 30,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/settings.json"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 31,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-elmish/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 32,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 33,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-samples/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 34,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 35,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-skiaviewer/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 36,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 37,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 38,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 39,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 40,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 41,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 42,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 43,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 44,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 45,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 46,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 47,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 48,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 49,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 50,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 51,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 52,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 53,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 105,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "CLAUDE.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 306,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-elmish/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 307,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 308,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-samples/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 309,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 310,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-skiaviewer/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 311,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 312,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 313,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 314,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 315,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 316,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 317,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 318,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 319,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 320,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 321,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 322,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 323,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 324,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 325,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 326,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 327,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 328,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 331,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-elmish/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 332,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-project/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 333,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-samples/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 334,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-scene/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 335,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/fs-skia-skiaviewer/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 336,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-analyze/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 337,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-archive-readiness/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 338,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-checklist/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 339,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-clarify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 340,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-constitution/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 341,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-audit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 342,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-evidence-graph/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 343,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-commit/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 344,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-feature/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 345,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-initialize/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 346,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-remote/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 347,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-git-validate/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 348,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-implement/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 349,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-merge/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 350,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-plan/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 351,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-specify/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 352,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-tasks/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/generated-file-lists/sample-pack-source.txt",
+      "line": 353,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".claude/skills/speckit-taskstoissues/SKILL.md"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/task-graph.md",
+      "line": 130,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/template/template-package-contents.md",
+      "line": 15,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/template/base/CLAUDE.md`"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/template/template-package-contents.md",
+      "line": 16,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/template/base/.claude/settings.json`"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/template/template-package-contents.md",
+      "line": 17,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/template/base/.claude/skills/fs-skia-project/SKILL.md`"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/template/template-package-contents.md",
+      "line": 26,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/.agents/skills/speckit-specify/SKILL.md`"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/template/template-package-contents.md",
+      "line": 27,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/.claude/skills/speckit-specify/SKILL.md`"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/template/template-package-contents.md",
+      "line": 28,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/.template.config/generated/CLAUDE.md`"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/readiness/template/template-package-contents.md",
+      "line": 29,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- `content/.template.config/generated/.claude/settings.json`"
+    },
+    {
+      "file": "specs/090-interactive-host-event-dispatch/tasks.md",
+      "line": 149,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    }
+  ]
+}

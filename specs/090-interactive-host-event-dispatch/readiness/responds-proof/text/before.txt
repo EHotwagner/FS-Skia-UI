@@ -1,0 +1,2 @@
+render-only before-frame text runs:
+

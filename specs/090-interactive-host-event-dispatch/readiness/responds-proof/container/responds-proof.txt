@@ -1,0 +1,13 @@
+# Responds-proof — container (feature 090, FR-006)
+
+verdict=Responsive
+mode=render-only
+artifact-decodable=true
+proves-scene-rendering=true
+proves-desktop-visibility=false
+before-after-differ=true
+
+A click inside a container keyed 'panel' resolves via nearestAuthored to the container id and fires its onClick; the inner counter label changes 0 -> 1.
+
+before: 0
+after:  1

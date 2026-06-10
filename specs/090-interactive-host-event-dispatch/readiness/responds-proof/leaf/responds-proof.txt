@@ -1,0 +1,13 @@
+# Responds-proof — leaf (feature 090, FR-006)
+
+verdict=Responsive
+mode=render-only
+artifact-decodable=true
+proves-scene-rendering=true
+proves-desktop-visibility=false
+before-after-differ=true
+
+A leaf-keyed Button.onClick increments the counter; the rendered button label changes 0 -> 1.
+
+before: 0
+after:  1

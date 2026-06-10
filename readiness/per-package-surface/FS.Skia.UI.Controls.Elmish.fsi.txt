@@ -41,6 +41,15 @@ type InteractiveAppHost<'model, 'msg> =
       Tick: TimeSpan -> 'msg option
       Diagnostics: ViewerDiagnosticsOptions }
 
+type RespondsVerdict =
+    | Responsive
+    | Inert
+
+type RespondsProof =
+    { Before: Scene
+      After: Scene
+      Verdict: RespondsVerdict }
+
 module AdapterCmd =
 
     val none: Cmd<'msg>
@@ -93,6 +102,23 @@ module ControlsElmish =
         model: 'model ->
         input: ViewerPointerInput ->
             PointerState * 'msg list
+
+    val routeFocusedText:
+        rendered: ControlRenderResult<'msg> ->
+        focused: ControlId option ->
+        models: Map<ControlId, TextInputModel> ->
+        msg: TextInputMsg ->
+            Map<ControlId, TextInputModel> * 'msg list
+
+    val respondsProofOf: before: Scene -> after: Scene -> RespondsProof
+
+    val captureRespondsProof:
+        host: InteractiveAppHost<'model, 'msg> ->
+        state: PointerState ->
+        size: Size ->
+        model: 'model ->
+        input: ViewerPointerInput ->
+            RespondsProof
 
     val runInteractiveApp:
         options: ViewerOptions -> host: InteractiveAppHost<'model, 'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>

@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 63
-xml-summary-count: 56
+symbol-count: 82
+xml-summary-count: 93
 source-fsi-paths:
 - src/Controls.Elmish/ControlsElmish.fsi
 sampled-symbols:
@@ -62,9 +62,12 @@ type AdapterProgram<'model, 'msg> =
 /// Pointer-routing, size-aware durable host (feature 085, research D3-AMEND). Mirrors
 /// `GeneratedAppHost` field-for-field PLUS a `MapPointer` seam over `PointerInteraction` and a
 /// size-carrying `View` that returns a `Control<'msg>` tree (so `Control.renderTree` yields the
-/// `Scene` + `Layout` + `EventBindings` the host hit-tests by `ControlId`). Lives in
-/// Controls.Elmish — not SkiaViewer — because `PointerInteraction`/`interpretPointerOutcome` are
-/// Controls surface and the viewer is host-independent. `Theme` drives `renderTree`.
+/// `Scene` + `Layout` + `EventBindings` the host routes). Lives in Controls.Elmish — not SkiaViewer —
+/// because `PointerInteraction`/`interpretPointerOutcome` are Controls surface and the viewer is
+/// host-independent. `Theme` drives `renderTree`. Feature 090: a hit control's authored
+/// `EventBindings` (`onClick`/`onChanged`) are dispatched in the live window; `MapKey` gains a
+/// focus-aware text-routing seam for the focused text control (see `routeInteractivePointer`,
+/// `routeFocusedText`, and `runInteractiveApp`).
 type InteractiveAppHost<'model, 'msg> =
     { Init: unit -> 'model * ViewerEffect list
       Update: 'msg -> 'model -> 'model * ViewerEffect list
@@ -74,6 +77,24 @@ type InteractiveAppHost<'model, 'msg> =
       MapPointer: PointerInteraction -> 'msg option
       Tick: TimeSpan -> 'msg option
       Diagnostics: ViewerDiagnosticsOptions }
+
+/// Verdict of a responds-proof (feature 090, FR-006): `Responsive` when a real input applied to the
+/// running host produced a visible change in the rendered output (`Before` ≠ `After`), `Inert` when
+/// it did not. An inert host (renders but does not respond) can only yield `Inert`.
+type RespondsVerdict =
+    | Responsive
+    | Inert
+
+/// A captured input→visible-change responds-proof (feature 090, FR-006/FR-007): the `Before` frame,
+/// the `After` frame produced by applying a real dispatched interaction (route → `host.Update` fold →
+/// re-render, exactly as the live repaint loop), and the `Verdict`. A distinct evidence class from a
+/// render-only screenshot (one frame, no interaction) and from the offscreen `runInteractivePointerOnce`
+/// route probe (model layer only): an app that renders but does not respond yields identical frames and
+/// an `Inert` verdict, so "renders" cannot be passed off as "responds".
+type RespondsProof =
+    { Before: Scene
+      After: Scene
+      Verdict: RespondsVerdict }
 
 /// Pure, total bridge between the adapter's effect-list command model
 /// (`AdapterCommand<'msg>`) and Elmish `Cmd<'msg>` (068, additive).
@@ -141,10 +162,15 @@ module ControlsElmish =
     /// The single pointer-routing step the interactive host performs per native pointer sample:
     /// renders `host.View size model` via `Control.renderTree host.Theme size`, hit-tests the
     /// laid-out bounds through the shipped 075 pipeline (`Pointer.update`, incl. the 4px click/drag
-    /// fold), and routes the emitted interactions through `interpretPointerOutcome host.MapPointer`
-    /// to product messages. Returns the advanced `PointerState` (threaded across samples) plus the
-    /// product messages. `runInteractiveApp` wires exactly this; exposed so a headless test
-    /// exercises the real adapter path without opening a window (research D6). FR-004/FR-005.
+    /// fold), then routes each emitted interaction (feature 090, FR-001/FR-003): a hit control's
+    /// authored `EventBindings` (`onClick`/`onChanged`) are dispatched — the authored control id is
+    /// recovered via `Control.nearestAuthored` (so a click inside a container-keyed composite resolves
+    /// to the authored container) and joined with `rendered.EventBindings` by `(ControlId, EventKind)`.
+    /// An authored binding wins and consumes the interaction; `host.MapPointer` is the fallback,
+    /// consulted ONLY for interactions no authored binding matched (no double-dispatch). A control with
+    /// no authored binding behaves exactly as before (additive). Returns the advanced `PointerState`
+    /// (threaded across samples) plus the product messages. `runInteractiveApp` wires exactly this;
+    /// exposed so a headless test exercises the real adapter path without opening a window (research D6).
     val routeInteractivePointer:
         host: InteractiveAppHost<'model, 'msg> ->
         state: PointerState ->
@@ -153,13 +179,50 @@ module ControlsElmish =
         input: ViewerPointerInput ->
             PointerState * 'msg list
 
+    /// Focus-aware text-routing seam (feature 090, FR-008): deliver a `TextInputMsg` (a keystroke /
+    /// committed or composed text) to the currently `focused` text control's existing `TextInput`
+    /// model and fold that control's authored `onChanged` binding into product messages — so
+    /// TextBox/TextArea/NumericInput are typeable in `runInteractiveApp`. Only the focused control's
+    /// model advances (`models` holds one `TextInputModel` per text control, keyed by `ControlId`); an
+    /// unfocused control's model is returned unchanged. Reuses `ControlRuntime.FocusedControl` +
+    /// `TextInput.update` — no parallel text model. When `focused` is `None`/names no model, the models
+    /// are returned unchanged and no product message is produced (the host's unchanged `MapKey` path
+    /// handles the key). Scope: routing seam only — caret/selection/IME-UX/undo and general
+    /// focus/tab-traversal across all control kinds are trajectory item E4 (FR-008a).
+    val routeFocusedText:
+        rendered: ControlRenderResult<'msg> ->
+        focused: ControlId option ->
+        models: Map<ControlId, TextInputModel> ->
+        msg: TextInputMsg ->
+            Map<ControlId, TextInputModel> * 'msg list
+
+    /// Build a responds-proof verdict from a before/after frame pair (feature 090, FR-006):
+    /// `Responsive` when the frames differ, `Inert` when identical. The reusable core the pointer and
+    /// text responds-proof captures share.
+    val respondsProofOf: before: Scene -> after: Scene -> RespondsProof
+
+    /// Capture an input→visible-change responds-proof for a pointer interaction on the running host
+    /// (feature 090, FR-006/FR-007): render the BEFORE frame, route the interaction through the real
+    /// `routeInteractivePointer` adapter path, fold the produced messages with `host.Update`, render
+    /// the AFTER frame, and emit both frames + a verdict. A host whose live window is inert (an
+    /// authored binding dropped) yields identical frames and an `Inert` verdict — it cannot be passed
+    /// off as a responds-proof. Reuses the production render path; no live Vulkan window required.
+    val captureRespondsProof:
+        host: InteractiveAppHost<'model, 'msg> ->
+        state: PointerState ->
+        size: Size ->
+        model: 'model ->
+        input: ViewerPointerInput ->
+            RespondsProof
+
     /// Launch `host` as a durable, pointer-routing, size-aware window (feature 085). Each frame
     /// renders `host.View size model` through `Control.renderTree host.Theme size`; native pointer
-    /// samples are hit-tested (`Layout.hitTestComputed` × `EventBindings` by `ControlId`, with the
-    /// shipped 4px click/drag fold via `Pointer.update`) and routed through
-    /// `interpretPointerOutcome host.MapPointer` to product messages folded by `host.Update`.
-    /// Reuses `Viewer.runInteractiveViewer`; the durable `Viewer.runApp` literal is untouched
-    /// (FR-004/FR-005/FR-006/FR-009).
+    /// samples are hit-tested through `Pointer.update` (incl. the shipped 4px click/drag fold) and
+    /// routed by `routeInteractivePointer` — a hit control's authored `EventBindings` are dispatched
+    /// (authored binding wins; `host.MapPointer` is the fallback for unconsumed interactions, feature
+    /// 090 FR-001/FR-003), and keystrokes to a focused text control are delivered through the
+    /// focus-aware text seam (`routeFocusedText`, FR-008) before falling through to `host.MapKey`.
+    /// Reuses `Viewer.runInteractiveViewer`; the durable `Viewer.runApp` literal is untouched.
     val runInteractiveApp:
         options: ViewerOptions -> host: InteractiveAppHost<'model, 'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
 

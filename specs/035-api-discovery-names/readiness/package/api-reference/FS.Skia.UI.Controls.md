@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 693
-xml-summary-count: 315
+symbol-count: 694
+xml-summary-count: 323
 source-fsi-paths:
 - src/Controls/Accessibility.fsi
 - src/Controls/Attributes.fsi
@@ -294,6 +294,15 @@ module Control =
     /// `renderTree` result alone. `None` when the point lies in a gap. Layered over
     /// `Layout.hitTestComputed` against the evaluated `Bounds` (FR-012).
     val hitTest: result: ControlRenderResult<'msg> -> x: float -> y: float -> ControlId option
+    /// Resolve a structural hit `ControlId` (the id a `PointerInteraction`/`hitTest` carries — a
+    /// `Key` for an authored node, else the positional path `renderTree` assigns) to the nearest
+    /// ancestor (incl. self) the consumer authored with a `withKey`, as that ancestor's authored
+    /// `ControlId`. A click inside a container-keyed composite recovers the container's id (so the
+    /// interactive host can route its binding); a directly-keyed leaf resolves to itself. `None`
+    /// when no keyed ancestor exists on the hit node's path — the host then falls back to
+    /// `MapPointer` with the raw interaction, never inventing an id. Pure/total/deterministic; reads
+    /// the `renderTree` layout tree only, no layout-math change (FR-004/FR-004a/FR-005, feature 090).
+    val nearestAuthored: result: ControlRenderResult<'msg> -> hit: ControlId -> ControlId option
     /// Public contract function exposed by this FS.Skia.UI package.
     val diagnostics: control: Control<'msg> -> ControlDiagnostic list
     /// Public contract function exposed by this FS.Skia.UI package.

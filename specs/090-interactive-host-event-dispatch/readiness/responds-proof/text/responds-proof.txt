@@ -1,0 +1,13 @@
+# Responds-proof — text (feature 090, FR-006)
+
+verdict=Responsive
+mode=render-only
+artifact-decodable=true
+proves-scene-rendering=true
+proves-desktop-visibility=false
+before-after-differ=true
+
+A keystroke delivered to the focused TextBox 'name' through the focus-aware seam folds SetName 'h'; the rendered field text changes '' -> 'h'.
+
+before: 
+after:  h

@@ -1,0 +1,9 @@
+
+## template package
+$ dotnet pack .template.package/FS.Skia.UI.Template.fsproj -c Release -o "/home/developer/projects/FS-Skia-UI/artifacts/templates"
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  FS.Skia.UI.Template -> /home/developer/projects/FS-Skia-UI/.template.package/bin/Release/net10.0/FS.Skia.UI.Template.dll
+  Successfully created package '/home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.113-preview.1.nupkg'.
+
+exit-code=0

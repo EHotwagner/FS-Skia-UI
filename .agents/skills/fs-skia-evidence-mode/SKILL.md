@@ -129,6 +129,26 @@ shipped record that every consumer then appends 5–10 game-specific fields to. 
 reusable summary type only if a stable cross-game field set (beyond that thin core)
 emerges; until then, write the summary inline and follow the discipline above.
 
+## Responds-vs-renders runtime proof (feature 090, FR-006/FR-007)
+
+An **interactive-UI story** — one whose acceptance involves driving a live host with
+pointer/keyboard — is not done until it produces a **responds-proof**: a captured
+**input→visible-change** on the running host, where the rendered output **before** a real
+dispatched interaction differs from the output **after** it. This is a **distinct evidence
+class**. It is **not** satisfied by a render-only screenshot of a single frame, nor by an
+offscreen route probe (`runInteractivePointerOnce`) that exercises only the model layer. An
+app that **renders but does not respond** yields identical before/after frames and an
+`Inert` verdict — it **cannot** pass this proof, so an inert "green-everything-but-dead-window"
+build can no longer ship as done.
+
+Capture the artifact pair plus the verdict under the feature's
+`readiness/responds-proof/<case>/` (a `before` and an `after` frame, plus a
+`responds-proof.txt` carrying a bare `verdict=Responsive` token). No live Vulkan window is
+required — the before/after frames are honest render-only captures
+(`ControlsElmish.captureRespondsProof` reuses the production `Control.renderTree` path). This
+proof **extends**, not replaces, the production-render-path screenshot rule: renders-vs-responds
+is the gate that distinguishes "it draws" from "it reacts."
+
 ## Package Boundary
 
 Keep pure evidence classifiers in Scene or Testing contracts. Do not move viewer

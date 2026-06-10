@@ -1,7 +1,7 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
 <!-- SPECKIT START -->
-specs/089-typed-surface-and-workflow-followups/plan.md
+specs/090-interactive-host-event-dispatch/plan.md
 <!-- SPECKIT END -->
 
 ## Run `Route` first; run only the gates it prints

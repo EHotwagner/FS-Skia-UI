@@ -130,7 +130,7 @@
       "src/Controls/Types.fsi"
     ],
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.Controls.md",
-    "SymbolCount": 693,
+    "SymbolCount": 694,
     "SampledSymbols": [
       "type Control\u003C\u0027msg\u003E",
       "KnownControl.TextBlock",
@@ -139,7 +139,7 @@
       "LineChart.series",
       "TextBox.onChanged"
     ],
-    "XmlSummaryCount": 315,
+    "XmlSummaryCount": 323,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"
@@ -155,9 +155,9 @@
       "src/Controls.Elmish/ControlsElmish.fsi"
     ],
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.Controls.Elmish.md",
-    "SymbolCount": 63,
+    "SymbolCount": 82,
     "SampledSymbols": [],
-    "XmlSummaryCount": 56,
+    "XmlSummaryCount": 93,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"
