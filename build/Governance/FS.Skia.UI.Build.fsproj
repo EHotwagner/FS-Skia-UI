@@ -11,7 +11,7 @@
     <IsPackable>true</IsPackable>
     <PackageId>FS.Skia.UI.Build</PackageId>
     <AssemblyName>FS.Skia.UI.Build</AssemblyName>
-    <Version>0.1.95-preview.1</Version>
+    <Version>0.1.96-preview.1</Version>
     <Title>FS.Skia.UI.Build</Title>
     <Description>Compiled-F# governance engine (evidence graph + merge-gate audit) consumed in-process by FS.Skia.UI build tooling and generated products.</Description>
     <PackageTags>fsharp;governance;evidence;build-tooling</PackageTags>
