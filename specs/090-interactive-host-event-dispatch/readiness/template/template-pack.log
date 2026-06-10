@@ -7,3 +7,12 @@ $ dotnet pack .template.package/FS.Skia.UI.Template.fsproj -c Release -o "/home/
   Successfully created package '/home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.113-preview.1.nupkg'.
 
 exit-code=0
+
+## template package
+$ dotnet pack .template.package/FS.Skia.UI.Template.fsproj -c Release -o "/home/developer/projects/FS-Skia-UI/artifacts/templates"
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/.template.package/FS.Skia.UI.Template.fsproj (in 228 ms).
+  FS.Skia.UI.Template -> /home/developer/projects/FS-Skia-UI/.template.package/bin/Release/net10.0/FS.Skia.UI.Template.dll
+  Successfully created package '/home/developer/projects/FS-Skia-UI/artifacts/templates/FS.Skia.UI.Template.0.1.114-preview.1.nupkg'.
+
+exit-code=0
