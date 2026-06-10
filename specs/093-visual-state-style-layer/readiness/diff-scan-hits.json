@@ -1,0 +1,30 @@
+{
+  "base_ref": "main",
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "specs/093-visual-state-style-layer/plan.md",
+      "line": 114,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: None planned. All parity, determinism, and precedence evidence is"
+    },
+    {
+      "file": "specs/093-visual-state-style-layer/readiness/task-graph.md",
+      "line": 139,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/093-visual-state-style-layer/tasks.md",
+      "line": 170,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    }
+  ]
+}

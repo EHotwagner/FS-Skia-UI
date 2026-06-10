@@ -40,6 +40,11 @@
     <Compile Include="DesignTokens.fs" />
     <Compile Include="Theme.fsi" />
     <Compile Include="Theme.fs" />
+    <!-- Feature 093 (E3): the pure state→style resolver. Inserted after Theme (so it sees
+         Types/DesignTokens/Theme) and before Attributes/Control (which route migrated paint
+         through it). ResolvedStyle + Style.resolve are Tier-1 public surface. -->
+    <Compile Include="Style.fsi" />
+    <Compile Include="Style.fs" />
     <Compile Include="Diagnostics.fsi" />
     <Compile Include="Diagnostics.fs" />
     <Compile Include="Accessibility.fsi" />

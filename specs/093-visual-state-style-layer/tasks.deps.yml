@@ -1,0 +1,111 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (feature 093).
+# Phase-checkpoint edges are auto-injected by the graph compute script (every
+# task in Phase N+1 depends on the last task of Phase N); only non-phase
+# cross-edges are written below.
+
+tasks:
+  # Phase 1 — Setup
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+
+  # Phase 2 — Foundation
+  T005:
+    deps: []
+    skillist: []
+  T006:
+    deps: []
+    skillist: ["fs-skia-design-tokens"]
+  T007:
+    deps: [T005]
+    skillist: ["fs-skia-evidence-mode"]
+  T008:
+    deps: [T005]
+    skillist: ["fs-skia-typed-controls"]
+  T009:
+    deps: [T005]
+    skillist: []
+
+  # Phase 3 — US1 (style by intent)
+  T010:
+    deps: []
+    skillist: ["fs-skia-testing"]
+  T011:
+    deps: [T010, T006]
+    skillist: ["fs-skia-design-tokens"]
+  T012:
+    deps: [T011]
+    skillist: ["fs-skia-typed-controls"]
+  T013:
+    deps: [T011, T012]
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 4 — US2 (states distinct + survive re-render)
+  T014:
+    deps: []
+    skillist: ["fs-skia-testing"]
+  T015:
+    deps: []
+    skillist: ["fs-skia-testing"]
+  T016:
+    deps: [T014, T011]
+    skillist: ["fs-skia-design-tokens"]
+  T017:
+    deps: [T016]
+    skillist: ["fs-skia-reconciliation"]
+  T018:
+    deps: [T017]
+    skillist: ["fs-skia-reconciliation"]
+  T019:
+    deps: [T016, T017]
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 5 — US3 (one resolver replaces procedural styling)
+  T020:
+    deps: []
+    skillist: ["fs-skia-scene", "fs-skia-evidence-mode"]
+  T021:
+    deps: [T020]
+    skillist: ["fs-skia-scene", "fs-skia-testing"]
+  T022:
+    deps: []
+    skillist: ["fs-skia-testing"]
+  T023:
+    deps: [T021, T022, T016]
+    skillist: ["fs-skia-ui-widgets", "fs-skia-scene"]
+  T024:
+    deps: [T023]
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 6 — Integration & Polish
+  T025:
+    deps: [T023]
+    skillist: ["fs-skia-design-tokens"]
+  T026:
+    deps: []
+    skillist: ["fs-skia-typed-controls"]
+  T027:
+    deps: [T015, T022]
+    skillist: ["fs-skia-evidence-mode"]
+  T028:
+    deps: [T025, T026]
+    skillist: ["fs-skia-template-update"]
+  T029:
+    deps: [T028]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T030:
+    deps: [T029]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

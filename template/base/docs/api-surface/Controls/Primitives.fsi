@@ -21,18 +21,24 @@ type TextBlockProps<'msg> =
 
 /// Immutable, compiler-checked authoring surface for a button. `OnClick = None`
 /// lowers to NO event binding (FR-008 edge case), never a default message.
+/// Feature 093 (E3): `Classes` attaches an ordered list of style classes/variants; default `[]`
+/// lowers to NO style attribute — byte-identical to the pre-feature front door (A1 additive).
 type ButtonProps<'msg> =
     { Id: ControlId option
       Text: string
       Enabled: bool
       Intent: ButtonIntent
+      Classes: StyleClass list
       OnClick: 'msg option }
 
 /// Immutable, compiler-checked authoring surface for a checkbox.
+/// Feature 093 (E3): `Classes` attaches an ordered list of style classes/variants; default `[]`
+/// lowers to NO style attribute — byte-identical to the pre-feature front door (A1 additive).
 type CheckBoxProps<'msg> =
     { Id: ControlId option
       Text: string
       Checked: bool
+      Classes: StyleClass list
       OnChanged: (bool -> 'msg) option }
 
 /// Immutable, compiler-checked authoring surface for a stack container.

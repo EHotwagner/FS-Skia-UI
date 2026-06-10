@@ -178,6 +178,28 @@ type VisualState =
     | Loading
     | Validation of ValidationState
 
+[<RequireQualifiedAccess>]
+type StyleVariant =
+    | Primary
+    | Danger
+    | Ghost
+    | Neutral
+    | Success
+    | Warning
+
+type StyleClass =
+    | Variant of StyleVariant
+    | Custom of string
+
+type ResolvedStyle =
+    { Foreground: Color
+      Fill: Color
+      Stroke: Color
+      StrokeWidth: float
+      FontFamily: string option
+      FontSize: float
+      FontWeight: int option }
+
 type Theme =
     { Name: string
       Foreground: Color
@@ -237,6 +259,8 @@ and AttrValue<'msg> =
     | FloatValue of float
     | StringListValue of string list
     | ValidationValue of ValidationState
+    | StyleClassesValue of StyleClass list
+    | VisualStateValue of VisualState
     | AccessibilityValue of AccessibilityMetadata
     | ThemeValue of Theme
     | ChildValue of Control<'msg>

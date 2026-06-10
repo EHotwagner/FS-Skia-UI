@@ -63,6 +63,10 @@ module Attr =
 
     val style: name: string -> Attr<'msg>
 
+    val styleClasses: classes: StyleClass list -> Attr<'msg>
+
+    val visualState: state: VisualState -> Attr<'msg>
+
     val theme: theme: Theme -> Attr<'msg>
 
     val validation: state: ValidationState -> Attr<'msg>
@@ -220,6 +224,12 @@ module internal ControlInternals =
             (ControlId * FS.Skia.UI.Scene.Rect) list
 
     val eventBindingsOf: control: Control<'msg> -> ControlEventBinding<'msg> list
+
+    val faithfulContent: theme: Theme -> box: FS.Skia.UI.Scene.Rect -> control: Control<'msg> -> FS.Skia.UI.Scene.Scene list
+
+    val styleClassesOf: attrs: Attr<'msg> list -> StyleClass list
+
+    val visualStateOf: attrs: Attr<'msg> list -> VisualState
 
 module Control =
 
@@ -664,6 +674,10 @@ module DesignTokens =
 
         val danger : Color
 
+        val success : Color
+
+        val warning : Color
+
         val muted : Color
 
         val fontFamily : string option
@@ -685,6 +699,10 @@ module DesignTokens =
         val accent : Color
 
         val danger : Color
+
+        val success : Color
+
+        val warning : Color
 
         val muted : Color
 
@@ -979,6 +997,21 @@ module RichText =
 
 namespace FS.Skia.UI.Controls
 
+open FS.Skia.UI.Scene
+
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+
+module Style =
+
+    val resolve:
+        theme: Theme ->
+        baseStyle: ResolvedStyle ->
+        classes: StyleClass list ->
+        state: VisualState ->
+            ResolvedStyle
+
+namespace FS.Skia.UI.Controls
+
 type TextInputMode =
     | SingleLine
     | MultiLine
@@ -1226,6 +1259,29 @@ type VisualState =
     | Loading
     | Validation of ValidationState
 
+[<RequireQualifiedAccess>]
+
+type StyleVariant =
+    | Primary
+    | Danger
+    | Ghost
+    | Neutral
+    | Success
+    | Warning
+
+type StyleClass =
+    | Variant of StyleVariant
+    | Custom of string
+
+type ResolvedStyle =
+    { Foreground: Color
+      Fill: Color
+      Stroke: Color
+      StrokeWidth: float
+      FontFamily: string option
+      FontSize: float
+      FontWeight: int option }
+
 type Theme =
     { Name: string
       Foreground: Color
@@ -1286,6 +1342,10 @@ and AttrValue<'msg> =
     | FloatValue of float
     | StringListValue of string list
     | ValidationValue of ValidationState
+
+    | StyleClassesValue of StyleClass list
+
+    | VisualStateValue of VisualState
     | AccessibilityValue of AccessibilityMetadata
     | ThemeValue of Theme
     | ChildValue of Control<'msg>

@@ -32,6 +32,10 @@
     <Compile Include="Feature090RecoveryTests.fs" />
     <Compile Include="Feature091RetainedRenderTests.fs" />
     <Compile Include="Feature092RetainedRenderTests.fs" />
+    <Compile Include="Feature093StyleResolverTests.fs" />
+    <Compile Include="Feature093StylePropertyTests.fs" />
+    <Compile Include="Feature093ParityTests.fs" />
+    <Compile Include="Feature093RetainedStateTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

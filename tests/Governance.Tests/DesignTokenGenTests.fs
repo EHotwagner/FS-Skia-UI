@@ -42,7 +42,7 @@ let designTokenContractTests =
     testList "Feature 069 design-token generator contract" [
         test "DesignTokenGen exposes parse/renderValue/renderModule/splice/currency/currencyDrift" {
             let facts = DesignTokenGen.parse (tokensJson ())
-            Expect.equal (List.length facts) 20 "parse yields 10 primitives x 2 themes"
+            Expect.equal (List.length facts) 24 "parse yields 12 tokens (10 Theme primitives + success/warning) x 2 themes"
 
             let fact = facts |> List.find (fun f -> f.Theme = "light" && f.Name = "foreground")
             Expect.equal (DesignTokenGen.renderValue fact) fact.Rendered "renderValue returns the rendered literal"
@@ -54,7 +54,7 @@ let designTokenContractTests =
             Expect.equal spliced moduleText "splice = renderModule(parse(source))"
 
             let currency = DesignTokenGen.currency (tokensJson ()) (designTokensFs ())
-            Expect.equal (List.length currency) 20 "currency reports one status per token"
+            Expect.equal (List.length currency) 24 "currency reports one status per token"
             Expect.isEmpty (DesignTokenGen.currencyDrift currency) "a clean tree produces no drift diagnostics"
         }
 
@@ -127,7 +127,7 @@ let designTokenGenerationTests =
 
         test "a removed/whole-file-missing generated module is reported all-Missing (loud, never silent)" {
             let currency = DesignTokenGen.currency (tokensJson ()) ""
-            Expect.equal (List.length currency) 20 "currency still reports every required token"
+            Expect.equal (List.length currency) 24 "currency still reports every required token"
             Expect.isTrue (currency |> List.forall (fun c -> c.Status = DesignTokenGen.Missing)) "a missing module reports every token Missing"
 
             let drift = DesignTokenGen.currencyDrift currency

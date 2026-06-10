@@ -42,6 +42,16 @@ module Attr =
     val margin: value: float -> Attr<'msg>
     /// Public contract function exposed by this FS.Skia.UI package.
     val style: name: string -> Attr<'msg>
+    /// Feature 093 (E3): attach an ordered list of style classes (list order = attach order).
+    /// Lowers to a single `Style`-category attribute carrying `StyleClassesValue`. Absent ≡
+    /// `[]` ≡ the behaviour-preserving base case (FR-005). The last `styleClasses` attribute on
+    /// a control wins (the codebase's last-writer attribute convention).
+    val styleClasses: classes: StyleClass list -> Attr<'msg>
+    /// Feature 093 (E3): set the control's current `VisualState` for the resolver. A host wires
+    /// its `ControlRuntime` Hover/Press/Focus state into this each frame; it rides the control
+    /// through the keyed reconciler so a state-driven look survives a sibling shift (FR-006,
+    /// SC-005). Absent ≡ `Normal` ≡ the behaviour-preserving base case.
+    val visualState: state: VisualState -> Attr<'msg>
     /// Public contract function exposed by this FS.Skia.UI package.
     val theme: theme: Theme -> Attr<'msg>
     /// Public contract function exposed by this FS.Skia.UI package.

@@ -14,11 +14,13 @@ FS.Skia.UI.Controls.AttrValue`1+EventValue
 FS.Skia.UI.Controls.AttrValue`1+FloatValue
 FS.Skia.UI.Controls.AttrValue`1+MessageValue
 FS.Skia.UI.Controls.AttrValue`1+StringListValue
+FS.Skia.UI.Controls.AttrValue`1+StyleClassesValue
 FS.Skia.UI.Controls.AttrValue`1+Tags
 FS.Skia.UI.Controls.AttrValue`1+TextValue
 FS.Skia.UI.Controls.AttrValue`1+ThemeValue
 FS.Skia.UI.Controls.AttrValue`1+UntypedValue
 FS.Skia.UI.Controls.AttrValue`1+ValidationValue
+FS.Skia.UI.Controls.AttrValue`1+VisualStateValue
 FS.Skia.UI.Controls.Attr`1
 FS.Skia.UI.Controls.Badge
 FS.Skia.UI.Controls.BarChart
@@ -176,6 +178,7 @@ FS.Skia.UI.Controls.PointerState
 FS.Skia.UI.Controls.PressCandidate
 FS.Skia.UI.Controls.ProgressBar
 FS.Skia.UI.Controls.RadioGroup
+FS.Skia.UI.Controls.ResolvedStyle
 FS.Skia.UI.Controls.RichText
 FS.Skia.UI.Controls.RichTextBlock
 FS.Skia.UI.Controls.RichTextMeasurement
@@ -206,6 +209,13 @@ FS.Skia.UI.Controls.StandardControlKind+Tags
 FS.Skia.UI.Controls.StandardEventKind
 FS.Skia.UI.Controls.StandardEventKind+Custom
 FS.Skia.UI.Controls.StandardEventKind+Tags
+FS.Skia.UI.Controls.Style
+FS.Skia.UI.Controls.StyleClass
+FS.Skia.UI.Controls.StyleClass+Custom
+FS.Skia.UI.Controls.StyleClass+Tags
+FS.Skia.UI.Controls.StyleClass+Variant
+FS.Skia.UI.Controls.StyleVariant
+FS.Skia.UI.Controls.StyleVariant+Tags
 FS.Skia.UI.Controls.Switch
 FS.Skia.UI.Controls.Tabs
 FS.Skia.UI.Controls.TextArea

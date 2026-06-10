@@ -27,6 +27,10 @@ module DesignTokens =
         val accent : Color
         /// Light-theme danger/destructive colour for errors and destructive actions.
         val danger : Color
+        /// Light-theme success colour for the `StyleVariant.Success` style variant (feature 093).
+        val success : Color
+        /// Light-theme warning/caution colour for the `StyleVariant.Warning` style variant (feature 093).
+        val warning : Color
         /// Light-theme muted colour for secondary text and de-emphasised chrome.
         val muted : Color
         /// Optional light-theme font family; <c>None</c> falls back to the host default.
@@ -50,6 +54,10 @@ module DesignTokens =
         val accent : Color
         /// Dark-theme danger/destructive colour (aliases the light-theme danger token in the DTCG source).
         val danger : Color
+        /// Dark-theme success colour for the `StyleVariant.Success` style variant (feature 093).
+        val success : Color
+        /// Dark-theme warning/caution colour for the `StyleVariant.Warning` style variant (feature 093).
+        val warning : Color
         /// Dark-theme muted colour for secondary text and de-emphasised chrome.
         val muted : Color
         /// Optional dark-theme font family; <c>None</c> falls back to the host default.

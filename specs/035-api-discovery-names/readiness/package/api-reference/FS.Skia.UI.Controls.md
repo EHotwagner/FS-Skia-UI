@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 710
-xml-summary-count: 344
+symbol-count: 735
+xml-summary-count: 382
 source-fsi-paths:
 - src/Controls/Accessibility.fsi
 - src/Controls/Attributes.fsi
@@ -113,6 +113,16 @@ module Attr =
     val margin: value: float -> Attr<'msg>
     /// Public contract function exposed by this FS.Skia.UI package.
     val style: name: string -> Attr<'msg>
+    /// Feature 093 (E3): attach an ordered list of style classes (list order = attach order).
+    /// Lowers to a single `Style`-category attribute carrying `StyleClassesValue`. Absent ≡
+    /// `[]` ≡ the behaviour-preserving base case (FR-005). The last `styleClasses` attribute on
+    /// a control wins (the codebase's last-writer attribute convention).
+    val styleClasses: classes: StyleClass list -> Attr<'msg>
+    /// Feature 093 (E3): set the control's current `VisualState` for the resolver. A host wires
+    /// its `ControlRuntime` Hover/Press/Focus state into this each frame; it rides the control
+    /// through the keyed reconciler so a state-driven look survives a sibling shift (FR-006,
+    /// SC-005). Absent ≡ `Normal` ≡ the behaviour-preserving base case.
+    val visualState: state: VisualState -> Attr<'msg>
     /// Public contract function exposed by this FS.Skia.UI package.
     val theme: theme: Theme -> Attr<'msg>
     /// Public contract function exposed by this FS.Skia.UI package.
@@ -303,6 +313,20 @@ module internal ControlInternals =
     /// Feature 091 — the recursive `EventBindings` list `renderTree` surfaces, factored so the
     /// retained path emits the identical list.
     val eventBindingsOf: control: Control<'msg> -> ControlEventBinding<'msg> list
+
+    /// Feature 093 (E3) — dispatch a rich-family control to its faithful geometry within `box`.
+    /// Exposed (internal) so the migration parity tests assert the Button/CheckBox paint is
+    /// structurally-`Scene`-equal to the frozen pre-refactor procedural geometry (SC-003/SC-007).
+    val faithfulContent: theme: Theme -> box: FS.Skia.UI.Scene.Rect -> control: Control<'msg> -> FS.Skia.UI.Scene.Scene list
+
+    /// Feature 093 (E3) — the ordered attached style classes carried by a control's `styleClasses`
+    /// attribute (last-writer convention; absent ≡ `[]`). The resolver folds these in list order.
+    val styleClassesOf: attrs: Attr<'msg> list -> StyleClass list
+
+    /// Feature 093 (E3) — the control's current `VisualState` carried by its `visualState`
+    /// attribute (absent ≡ `Normal`). Rides the control through the keyed reconciler so a
+    /// state-driven look survives a sibling-shifting re-render (SC-005).
+    val visualStateOf: attrs: Attr<'msg> list -> VisualState
 
 /// Public contract module exposed by this FS.Skia.UI package.
 module Control =
@@ -1173,6 +1197,44 @@ type VisualState =
     | Loading
     | Validation of ValidationState
 
+[<RequireQualifiedAccess>]
+/// Public contract type exposed by this FS.Skia.UI package.
+/// Feature 093 (E3): the typed, CLOSED set of built-in semantic style variants — the
+/// compiler-checked common path for declarative styling. Closure guarantees the resolver's
+/// variant layer is a total match (FR-001, FR-002, FR-004). Free-form classes live one level
+/// up in <c>StyleClass.Custom</c>.
+type StyleVariant =
+    | Primary
+    | Danger
+    | Ghost
+    | Neutral
+    | Success
+    | Warning
+
+/// Public contract type exposed by this FS.Skia.UI package.
+/// Feature 093 (E3): one attached-class entry — either a typed <c>StyleVariant</c> or a
+/// free-form, consumer-defined class. A control carries a <c>StyleClass list</c> whose list
+/// position IS the attach order the resolver folds left-to-right (FR-001, FR-003).
+type StyleClass =
+    | Variant of StyleVariant
+    | Custom of string
+
+/// Public contract type exposed by this FS.Skia.UI package.
+/// Feature 093 (E3) — the per-control output of style resolution: the concrete paint/typography
+/// the migrated kinds apply. A FLAT record so the fixed precedence is last-writer-wins per field
+/// and the parity proof is a plain structural record comparison. Geometry is NOT here — the
+/// resolver governs paint/typography only; geometry stays computed as today (data-model R3).
+/// Declared before `Theme` so the shared field names (`Foreground`/`FontFamily`/`FontSize`)
+/// resolve to `Theme` for unannotated `theme.*` accesses; produced by `Style.resolve`.
+type ResolvedStyle =
+    { Foreground: Color
+      Fill: Color
+      Stroke: Color
+      StrokeWidth: float
+      FontFamily: string option
+      FontSize: float
+      FontWeight: int option }
+
 /// Public contract type exposed by this FS.Skia.UI package.
 type Theme =
     { Name: string
@@ -1237,6 +1299,14 @@ and AttrValue<'msg> =
     | FloatValue of float
     | StringListValue of string list
     | ValidationValue of ValidationState
+    /// Feature 093 (E3): an ordered list of attached style classes (list order = attach order).
+    /// Rides the existing `Attr` mechanism under `AttrCategory.Style`; absent ≡ `[]` ≡ base.
+    | StyleClassesValue of StyleClass list
+    /// Feature 093 (E3): the control's current `VisualState`, consumed by `Style.resolve`. Rides
+    /// the `Attr` mechanism so it travels WITH the control through the keyed reconciler diff — a
+    /// state-driven look therefore survives a sibling-shifting re-render under E2's retained
+    /// identity (FR-006, SC-005). Absent ≡ `Normal` ≡ the behaviour-preserving base case.
+    | VisualStateValue of VisualState
     | AccessibilityValue of AccessibilityMetadata
     | ThemeValue of Theme
     | ChildValue of Control<'msg>

@@ -21,12 +21,14 @@ type ButtonProps<'msg> =
       Text: string
       Enabled: bool
       Intent: ButtonIntent
+      Classes: StyleClass list
       OnClick: 'msg option }
 
 type CheckBoxProps<'msg> =
     { Id: ControlId option
       Text: string
       Checked: bool
+      Classes: StyleClass list
       OnChanged: (bool -> 'msg) option }
 
 type StackProps<'msg> =
@@ -77,6 +79,7 @@ module Button =
           Text = ""
           Enabled = true
           Intent = Primary
+          Classes = []
           OnClick = None }
 
     let view (props: ButtonProps<'msg>) : Widget<'msg> =
@@ -84,6 +87,11 @@ module Button =
             [ yield FS.Skia.UI.Controls.Button.text props.Text
               yield FS.Skia.UI.Controls.Button.enabled props.Enabled
               yield Attr.style (LegacyControls.intentStyle props.Intent)
+              // Feature 093 (E3): `Classes = []` lowers to NO style attribute (byte-identical to
+              // the pre-feature lowering, A1); a non-empty list attaches the ordered classes.
+              match props.Classes with
+              | [] -> ()
+              | classes -> yield Attr.styleClasses classes
               match props.OnClick with
               | Some msg -> yield FS.Skia.UI.Controls.Button.onClick msg
               | None -> () ]
@@ -97,12 +105,17 @@ module CheckBox =
         { Id = None
           Text = ""
           Checked = false
+          Classes = []
           OnChanged = None }
 
     let view (props: CheckBoxProps<'msg>) : Widget<'msg> =
         let attrs =
             [ yield FS.Skia.UI.Controls.CheckBox.text props.Text
               yield FS.Skia.UI.Controls.CheckBox.checked' props.Checked
+              // Feature 093 (E3): `Classes = []` lowers to NO style attribute (byte-identical, A1).
+              match props.Classes with
+              | [] -> ()
+              | classes -> yield Attr.styleClasses classes
               match props.OnChanged with
               | Some map -> yield FS.Skia.UI.Controls.CheckBox.onChanged map
               | None -> () ]

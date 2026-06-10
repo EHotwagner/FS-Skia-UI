@@ -47,6 +47,29 @@ module internal ControlInternals =
             | _ -> None)
         |> Option.defaultValue defaultValue
 
+    /// Feature 093 (E3): the ordered attached style classes carried by the last `styleClasses`
+    /// attribute (last-writer convention). Absent ≡ `[]` ≡ the behaviour-preserving base case;
+    /// `Control.renderTree`/`RetainedRender` feed these into `Style.resolve` for migrated kinds.
+    let styleClassesOf (attrs: Attr<'msg> list) : StyleClass list =
+        tryLast "styleClasses" attrs
+        |> Option.bind (fun attr ->
+            match attr.Value with
+            | StyleClassesValue classes -> Some classes
+            | _ -> None)
+        |> Option.defaultValue []
+
+    /// Feature 093 (E3): the control's current `VisualState` carried by its `visualState`
+    /// attribute (last-writer convention). Absent ≡ `Normal`. Because it rides the control's
+    /// attributes, it travels through the keyed reconciler — a state-driven look survives a
+    /// sibling-shifting re-render under E2's retained identity (FR-006, SC-005).
+    let visualStateOf (attrs: Attr<'msg> list) : VisualState =
+        tryLast "visualState" attrs
+        |> Option.bind (fun attr ->
+            match attr.Value with
+            | VisualStateValue state -> Some state
+            | _ -> None)
+        |> Option.defaultValue Normal
+
     let floatValue name defaultValue (attrs: Attr<'msg> list) =
         tryLast name attrs
         |> Option.bind (fun attr ->
@@ -515,23 +538,50 @@ module internal ControlInternals =
         [ Scene.rectangle (box.X, cy - 12.0, w, 24.0) (if on then theme.Accent else theme.Muted)
           Scene.circle { X = thumbX; Y = cy } 10.0 theme.Background ]
 
-    let private checkboxGeom theme (box: Rect) (on: bool) (label: string) : Scene list =
+    // Feature 093 (E3): CheckBox (rich-geometry migrant) — paint flows through `Style.resolve`.
+    // `on` still drives WHICH geometry is drawn (filled box + tick vs outlined box); the resolver
+    // supplies the colours. The base reproduces the prior procedural colours exactly, so
+    // `resolve theme base [] Normal = base` is byte-identical (FR-005, SC-003). Attached classes /
+    // visual state compose on top per the fixed precedence (FR-001/FR-003/FR-004).
+    let private checkboxGeom theme (box: Rect) (classes: StyleClass list) (state: VisualState) (on: bool) (label: string) : Scene list =
         let s = 28.0
         let bx = box.X
         let cy = box.Y + box.Height / 2.0
         let by = cy - s / 2.0
-        // Filled accent box + white tick when checked; outlined empty box when not.
         let boxRect = { X = bx; Y = by; Width = s; Height = s }
+
+        let baseStyle: ResolvedStyle =
+            if on then
+                // Filled accent box, theme-background tick, foreground label.
+                { Foreground = theme.Foreground
+                  Fill = theme.Accent
+                  Stroke = theme.Background
+                  StrokeWidth = 3.0
+                  FontFamily = theme.FontFamily
+                  FontSize = 13.0
+                  FontWeight = None }
+            else
+                // Outlined (foreground-stroked) empty box, foreground label.
+                { Foreground = theme.Foreground
+                  Fill = Colors.transparent
+                  Stroke = theme.Foreground
+                  StrokeWidth = 2.0
+                  FontFamily = theme.FontFamily
+                  FontSize = 13.0
+                  FontWeight = None }
+
+        let style = Style.resolve theme baseStyle classes state
+
         let fill =
-            if on then [ Scene.rectangle (bx, by, s, s) theme.Accent ]
-            else [ Scene.rectangleWithPaint boxRect (Paint.stroke theme.Foreground 2.0) ]
+            if on then [ Scene.rectangle (bx, by, s, s) style.Fill ]
+            else [ Scene.rectangleWithPaint boxRect (Paint.stroke style.Stroke 2.0) ]
         let tick =
             if on then
-                [ Scene.line { X = bx + 6.0; Y = by + 15.0 } { X = bx + 12.0; Y = by + 21.0 } (Paint.stroke theme.Background 3.0)
-                  Scene.line { X = bx + 12.0; Y = by + 21.0 } { X = bx + 23.0; Y = by + 7.0 } (Paint.stroke theme.Background 3.0) ]
+                [ Scene.line { X = bx + 6.0; Y = by + 15.0 } { X = bx + 12.0; Y = by + 21.0 } (Paint.stroke style.Stroke 3.0)
+                  Scene.line { X = bx + 12.0; Y = by + 21.0 } { X = bx + 23.0; Y = by + 7.0 } (Paint.stroke style.Stroke 3.0) ]
             else
                 []
-        let text = [ mkText theme (bx + s + 10.0) (cy + 5.0) 13.0 theme.Foreground label ]
+        let text = [ mkText theme (bx + s + 10.0) (cy + 5.0) 13.0 style.Foreground label ]
         fill @ tick @ text
 
     let private toggleGeom theme (box: Rect) (on: bool) (label: string) : Scene list =
@@ -594,18 +644,45 @@ module internal ControlInternals =
 
     /// A filled command button sized to its label, vertically centred. `primary` ⇒ accent fill
     /// with light text; otherwise an accent-outlined neutral surface.
-    let private buttonGeom theme (box: Rect) (primary: bool) (label: string) : Scene list =
+    //
+    // Feature 093 (E3): Button (box+label migrant) — paint flows through `Style.resolve`. The
+    // base reproduces the prior procedural colours exactly, so `resolve theme base [] Normal =
+    // base` is byte-identical (FR-005, SC-003); attached classes / visual state compose on top
+    // per the fixed precedence (FR-001/FR-003/FR-004). `primary` still selects the fill-vs-outline
+    // geometry; the resolver supplies the colours.
+    let private buttonGeom theme (box: Rect) (classes: StyleClass list) (state: VisualState) (primary: bool) (label: string) : Scene list =
         let h = 38.0
         let textW = (Scene.measureText label { Family = theme.FontFamily; Size = 15.0; Weight = None }).Width
         let w = min box.Width (max 70.0 (textW + 32.0))
         let by = box.Y + box.Height / 2.0 - h / 2.0
         let rect = { X = box.X; Y = by; Width = w; Height = h }
+
+        let baseStyle: ResolvedStyle =
+            if primary then
+                { Foreground = theme.Background
+                  Fill = theme.Accent
+                  Stroke = theme.Accent
+                  StrokeWidth = 0.0
+                  FontFamily = theme.FontFamily
+                  FontSize = 15.0
+                  FontWeight = None }
+            else
+                { Foreground = theme.Accent
+                  Fill = Colors.transparent
+                  Stroke = theme.Accent
+                  StrokeWidth = 2.0
+                  FontFamily = theme.FontFamily
+                  FontSize = 15.0
+                  FontWeight = None }
+
+        let style = Style.resolve theme baseStyle classes state
+
         if primary then
-            [ Scene.rectangle (box.X, by, w, h) theme.Accent
-              mkText theme (box.X + 16.0) (by + h / 2.0 + 5.0) 15.0 theme.Background label ]
+            [ Scene.rectangle (box.X, by, w, h) style.Fill
+              mkText theme (box.X + 16.0) (by + h / 2.0 + 5.0) 15.0 style.Foreground label ]
         else
-            [ Scene.rectangleWithPaint rect (Paint.stroke theme.Accent 2.0)
-              mkText theme (box.X + 16.0) (by + h / 2.0 + 5.0) 15.0 theme.Accent label ]
+            [ Scene.rectangleWithPaint rect (Paint.stroke style.Stroke 2.0)
+              mkText theme (box.X + 16.0) (by + h / 2.0 + 5.0) 15.0 style.Foreground label ]
 
     /// A compact accent pill with light text — a status badge.
     let private badgeGeom theme (box: Rect) (label: string) : Scene list =
@@ -805,6 +882,13 @@ module internal ControlInternals =
     let faithfulContent (theme: Theme) (box: Rect) (control: Control<'msg>) : Scene list =
         let label = control.Content |> Option.defaultValue ""
         let items = stringListOf "items" control
+        // Feature 093 (E3): attached style classes + current VisualState for the migrated kinds.
+        // `state` is `Normal` unless a `visualState` attribute is present, so the no-class default
+        // case stays byte-identical to the prior procedural output (FR-005). The state rides the
+        // control's attributes, so it travels through the keyed reconciler and a state-driven look
+        // survives a sibling-shifting re-render under the retained identity (FR-006, SC-005).
+        let classes = styleClassesOf control.Attributes
+        let state = visualStateOf control.Attributes
         match control.Kind with
         | "line-chart" -> lineGeom theme box (chartValues control)
         | "bar-chart" -> barGeom theme box (chartValues control)
@@ -826,10 +910,10 @@ module internal ControlInternals =
         | "progress-bar" -> progressGeom theme box (floatValue "value" 0.0 control.Attributes)
         | "numeric-input" -> numericGeom theme box (floatValue "value" 0.0 control.Attributes)
         | "switch" -> switchGeom theme box (boolValue "selected" false control.Attributes)
-        | "check-box" -> checkboxGeom theme box (boolValue "selected" false control.Attributes) label
+        | "check-box" -> checkboxGeom theme box classes state (boolValue "selected" false control.Attributes) label
         // command / button family
-        | "button" -> buttonGeom theme box true label
-        | "icon-button" -> buttonGeom theme box false label
+        | "button" -> buttonGeom theme box classes state true label
+        | "icon-button" -> buttonGeom theme box classes state false label
         | "badge" -> badgeGeom theme box label
         | "toggle-button" -> toggleGeom theme box (boolValue "selected" true control.Attributes) label
         | "split-button" -> splitGeom theme box label

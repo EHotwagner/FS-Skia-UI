@@ -1,0 +1,37 @@
+## Symbol consistency (analyze pass G)
+- entity-record ContrastCheck — in {tasks}, missing from {plan, data-model}
+- entity-record ControlInternals — in {tasks}, missing from {plan, data-model}
+- entity-record Custom — in {tasks}, missing from {plan, data-model}
+- entity-record StateByIdentity — in {plan, tasks}, missing from {data-model}
+- fr-id FR-001 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-002 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-003 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-004 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-005 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-006 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-007 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-008 — in {data-model, tasks}, missing from {plan}
+- msg-case AttrCategory — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Attributes — in {tasks}, missing from {plan, data-model}
+- msg-case Cmd — in {plan, tasks}, missing from {data-model}
+- msg-case DesignTokens — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case ResolvedStyle — in {tasks}, missing from {plan, data-model}
+- msg-case StyleClassesValue — in {tasks}, missing from {plan, data-model}
+- msg-case StyleVariant — in {tasks}, missing from {plan, data-model}
+- msg-case Theme — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case ValidationState — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case VisualState — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- sc-id SC-004 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-005 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-006 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-007 — in {plan, tasks}, missing from {data-model}
+- union-or-screen-variant AttrValue — in {plan}, missing from {data-model, tasks}
+- union-or-screen-variant Custom — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant Dark — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant DesignTokenDrift — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant DesignTokens — in {plan, tasks}, missing from {data-model}
+- union-or-screen-variant ResolvedStyle — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant StyleClass — in {plan}, missing from {data-model, tasks}
+- union-or-screen-variant Theme — in {plan}, missing from {data-model, tasks}
+- union-or-screen-variant Variant — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant VisualState — in {plan}, missing from {data-model, tasks}

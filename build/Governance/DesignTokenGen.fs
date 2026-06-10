@@ -43,10 +43,13 @@ let designTokensFsRel = "src/Controls/DesignTokens.fs"
 let private regenCommand = "./fake.sh build -t RefreshSurfaceBaselines"
 
 // ---------------------------------------------------------------------------------------
-// The canonical taxonomy. Exactly the 10 Theme fields (Types.fsi:187-198), each in both
-// themes (10 x 2 = 20 facts), iterated in a fixed order so generation is deterministic
-// (SC-006) regardless of JSON property ordering. A token the mapping requires but the DTCG
-// source omits is a loud generation failure (FR-006), never a silent skip.
+// The canonical taxonomy. The 10 Theme primitives plus (feature 093, E3) the two
+// variant-only colour tokens `success`/`warning` the style resolver reads — each in both
+// themes, iterated in a fixed order so generation is deterministic (SC-006) regardless of
+// JSON property ordering. `success`/`warning` feed `Style.resolve`'s Success/Warning variants
+// (FR-008: variant colours come from the DTCG source, never inline literals); they are NOT
+// `Theme` fields. A token the mapping requires but the DTCG source omits is a loud generation
+// failure (FR-006), never a silent skip.
 // ---------------------------------------------------------------------------------------
 let private themeOrder = [ "light"; "dark" ]
 
@@ -55,6 +58,8 @@ let private tokenOrder =
       "background"
       "accent"
       "danger"
+      "success"
+      "warning"
       "muted"
       "fontFamily"
       "fontSize"

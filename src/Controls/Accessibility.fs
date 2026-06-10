@@ -57,7 +57,9 @@ module Accessibility =
         | "pie-chart"
         | "scatter-plot" -> Chart
         | "graph-view" -> Graph
-        | _ -> Custom
+        // Qualified: `Custom` now also names `StyleClass.Custom` (feature 093). This match
+        // returns an `AccessibilityRole`.
+        | _ -> AccessibilityRole.Custom
 
     let defaultFor kind label =
         let role = roleFor kind

@@ -1,0 +1,6 @@
+
+## sample-pack/source generated Dev
+$ bash ./fake.sh build -t Dev
+Dev completed for generated product
+
+exit-code=0

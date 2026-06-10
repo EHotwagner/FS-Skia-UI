@@ -46,6 +46,20 @@ module internal ControlInternals =
     /// retained path emits the identical list.
     val eventBindingsOf: control: Control<'msg> -> ControlEventBinding<'msg> list
 
+    /// Feature 093 (E3) — dispatch a rich-family control to its faithful geometry within `box`.
+    /// Exposed (internal) so the migration parity tests assert the Button/CheckBox paint is
+    /// structurally-`Scene`-equal to the frozen pre-refactor procedural geometry (SC-003/SC-007).
+    val faithfulContent: theme: Theme -> box: FS.Skia.UI.Scene.Rect -> control: Control<'msg> -> FS.Skia.UI.Scene.Scene list
+
+    /// Feature 093 (E3) — the ordered attached style classes carried by a control's `styleClasses`
+    /// attribute (last-writer convention; absent ≡ `[]`). The resolver folds these in list order.
+    val styleClassesOf: attrs: Attr<'msg> list -> StyleClass list
+
+    /// Feature 093 (E3) — the control's current `VisualState` carried by its `visualState`
+    /// attribute (absent ≡ `Normal`). Rides the control through the keyed reconciler so a
+    /// state-driven look survives a sibling-shifting re-render (SC-005).
+    val visualStateOf: attrs: Attr<'msg> list -> VisualState
+
 /// Public contract module exposed by this FS.Skia.UI package.
 module Control =
     /// Public contract function exposed by this FS.Skia.UI package.
