@@ -12,6 +12,11 @@ open FS.Skia.UI.Build
 open FS.Skia.UI.Build.Evidence
 open GovernanceTestSupport
 
+// Feature 089 threaded a SkillRegistry into Render.taskGraphMd; these two 062
+// renders don't exercise resolution, so an empty registry keeps the prior assertions.
+let private emptyRegistry: SkillRegistry =
+    { Skills = Map.empty; DirectoryAliases = Map.empty; Warnings = [] }
+
 [<Tests>]
 let feature062GovernanceTests =
     testList "feature 062 space-invaders consumer-friction follow-ups" [
@@ -71,7 +76,7 @@ let feature062GovernanceTests =
                   Cycles = []
                   Tasks = []
                   RootCause = Map.empty }
-            let md = Render.taskGraphMd gr
+            let md = Render.taskGraphMd emptyRegistry gr
             Expect.stringContains md "skill-loading-evidence required shape (FR-005)" "schema heading present on skill-loading failure"
             Expect.stringContains md "WorkStartedAt" "the 8-column row schema is printed inline"
         }
@@ -108,7 +113,7 @@ let feature062GovernanceTests =
             let gr : GraphResult =
                 { FeatureName = "062"; Verdict = GraphVerdict.Ok; Errors = []; Warnings = []; Cycles = []
                   Tasks = [ mkResolved t1; mkResolved t2 ]; RootCause = Map.empty }
-            let md = Render.taskGraphMd gr
+            let md = Render.taskGraphMd emptyRegistry gr
             Expect.stringContains md "Injected checkpoint edges (Phase N+1 → Phase N)" "injected-edges subsection present"
             Expect.stringContains md "T001 → T002  (auto-injected Phase-checkpoint edge)" "the injected edge is listed distinctly"
             Expect.stringContains md "-. injected .->" "mermaid renders injected edges with a distinct dashed style"

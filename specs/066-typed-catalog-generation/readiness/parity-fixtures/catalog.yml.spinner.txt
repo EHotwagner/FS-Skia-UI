@@ -2,6 +2,7 @@
     displayName: Spinner
     category: feedback
     module: Spinner
+    typedModule: Spinner
     purpose: Indeterminate progress indicator.
     requiredAttributes: []
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

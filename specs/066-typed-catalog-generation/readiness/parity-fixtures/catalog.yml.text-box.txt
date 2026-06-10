@@ -2,6 +2,7 @@
     displayName: Text Box
     category: input
     module: TextBox
+    typedModule: TextBox
     purpose: Plain single-line text entry.
     requiredAttributes: [value]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

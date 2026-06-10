@@ -211,14 +211,40 @@ the format from a gate failure.
    (see the Vertical-slice rule); MVU-bearing tasks MUST include
    transition/effect assertions and interpreter evidence. A green unit test
    on the domain layer is not enough.
-7. Update the status in `tasks.md`. Before writing `[X]` on a `[US*]`
-   task, confirm the vertical-slice rule is satisfied; if not, the
+7. **Interactive-UI run-and-use gate.** For any `[US*]` task whose story
+   delivers an **interactive** user-facing surface (a host app the user
+   drives with pointer/keyboard — a GUI, TUI, or windowed app), before you
+   may write `[X]`:
+   - **Run and use it.** Launch the host application and actually interact
+     with it through the same input surface a user has (pointer clicks,
+     key presses), following the `run`/`verify` skill discipline. Capture
+     the artifact (screenshot, interaction log, response) under
+     `readiness/`. Tests, governance gates, and bespoke offscreen captures
+     alone are **not** sufficient for an interactive story.
+   - **Confirm the production render path.** The captured evidence MUST
+     exercise the **real user-reachable render path the feature ships** —
+     the production surface the host actually draws — not a parallel scene
+     an author hand-built just to produce a pretty picture. A truthful
+     screenshot of the *wrong* (non-production) path does NOT satisfy the
+     gate. (For the controls host, for example, that production path is
+     `controlsExampleView` → `Control.renderTree`; cite that only as an
+     illustration — the rule is "the surface the user actually reaches in
+     *this* feature", whatever it is.)
+   - **No-op for non-interactive stories.** A story that ships only a
+     library API, doc/governance artifact, generated file, or other
+     non-interactive surface skips this gate (record that it does not apply).
+   This gate is a precondition of `[X]` on an interactive `[US*]`: an
+   interactive story is not done until it was launched, driven, and the
+   evidence is on the production render path.
+8. Update the status in `tasks.md`. Before writing `[X]` on a `[US*]`
+   task, confirm the vertical-slice rule is satisfied (and, for an
+   interactive story, the run-and-use gate above); if not, the
    honest status is `[ ]` or `[S]`. If `[S]`, add the code-level,
    test-level, and inventory disclosures before moving on.
-8. **Re-run `speckit.evidence.graph`** after every status change. This
+9. **Re-run `speckit.evidence.graph`** after every status change. This
    refreshes `readiness/task-graph.json` and recomputes `[S*]`
    propagation. It's cheap (milliseconds).
-9. Move to the next task.
+10. Move to the next task.
 
 ## Visibility discipline (Principle II)
 

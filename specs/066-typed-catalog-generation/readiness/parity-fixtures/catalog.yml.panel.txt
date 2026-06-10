@@ -2,6 +2,7 @@
     displayName: Panel
     category: layout
     module: Panel
+    typedModule: Panel
     purpose: General-purpose child surface.
     requiredAttributes: [children]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

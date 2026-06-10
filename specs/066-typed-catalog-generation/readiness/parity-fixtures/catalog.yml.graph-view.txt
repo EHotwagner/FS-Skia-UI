@@ -2,6 +2,7 @@
     displayName: Graph View
     category: graph
     module: GraphView
+    typedModule: GraphView
     purpose: Controls-owned node and edge visualization.
     requiredAttributes: [nodes]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

@@ -2,6 +2,7 @@
     displayName: Time Picker
     category: input
     module: TimePicker
+    typedModule: TimePicker
     purpose: Typed time entry with hour and minute segments.
     requiredAttributes: []
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

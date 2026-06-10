@@ -2,6 +2,7 @@
     displayName: Color Picker
     category: selection
     module: ColorPicker
+    typedModule: ColorPicker
     purpose: Palette swatch color selection.
     requiredAttributes: [swatches]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

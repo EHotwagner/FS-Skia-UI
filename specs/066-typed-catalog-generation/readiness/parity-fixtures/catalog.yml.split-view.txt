@@ -2,6 +2,7 @@
     displayName: Split View
     category: layout
     module: Collections
+    typedModule: SplitView
     purpose: Resizable two-region layout.
     requiredAttributes: [children]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

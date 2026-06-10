@@ -16,6 +16,7 @@ type TypedCatalogFact =
       DisplayName: string
       Category: string
       Module: string
+      TypedModule: string
       Purpose: string
       RequiredAttributes: string list
       Events: string list
@@ -46,74 +47,85 @@ let private regenCommand = "./fake.sh build -t RefreshSurfaceBaselines"
 // normalized to the base evidence (the generator is the single source). Adding/removing a
 // fact is a contract change (parity + correspondence tests, currency gate), not a detail.
 // ---------------------------------------------------------------------------------------
-let private fact id displayName category moduleName purpose required events role =
+// Feature 089 (TYPED-SURFACE-1, FR-001/FR-002): `typedModule` is the
+// `FS.Skia.UI.Controls.Typed` module name that realizes the control — the
+// single-source pointer rendered into `catalog.yml` so a consumer resolves
+// control id → typed module → the module's `*Props`/`view` in the published
+// `docs/api-surface/Controls/` `.fsi` without reflecting the DLL. For most
+// controls it equals the legacy `moduleName`; the ~8 collection/menu rows whose
+// legacy builder module is shared (`Collections`/`Menu`) name their distinct
+// typed module here. It is a pointer, never a copy of Props field names (those
+// live only in the enrolled `.fsi`); every value MUST name a module declared in
+// an enrolled `src/Controls/Widgets/*.fsi` (E1⟂E2 cross-check test).
+let private fact id displayName category moduleName typedModule purpose required events role =
     { Id = id
       DisplayName = displayName
       Category = category
       Module = moduleName
+      TypedModule = typedModule
       Purpose = purpose
       RequiredAttributes = required
       Events = events
       AccessibilityRole = role }
 
 let catalogFacts : TypedCatalogFact list =
-    [ fact "text-block" "Text Block" "display" "TextBlock" "Static model-owned text display." [ "text" ] [] "StaticText"
-      fact "rich-text" "Rich Text" "display" "RichText" "Skia-specific rich text display with measurement, clipping, effects, diagnostics, and accessibility metadata." [ "runs" ] [] "StaticText"
-      fact "label" "Label" "display" "Label" "Short form label text." [ "text" ] [] "StaticText"
-      fact "image" "Image" "display" "Image" "Image placeholder or drawing-surface reference." [ "value" ] [] "Image"
-      fact "icon" "Icon" "display" "Icon" "Named icon glyph or product symbol." [ "text" ] [] "Image"
-      fact "separator" "Separator" "display" "Separator" "Visual divider between regions." [] [] "StaticText"
-      fact "badge" "Badge" "display" "Badge" "Compact status label." [ "text" ] [] "StaticText"
-      fact "button" "Button" "input" "Button" "Pointer and keyboard activatable command." [ "text" ] [ "onClick" ] "Button"
-      fact "icon-button" "Icon Button" "input" "IconButton" "Icon-only activatable command." [ "text" ] [ "onClick" ] "Button"
-      fact "text-box" "Text Box" "input" "TextBox" "Plain single-line text entry." [ "value" ] [ "onChanged" ] "TextBox"
-      fact "text-area" "Text Area" "input" "TextArea" "Plain multi-line text entry." [ "value" ] [ "onChanged" ] "TextBox"
-      fact "numeric-input" "Numeric Input" "input" "NumericInput" "Model-owned numeric value editor." [ "value" ] [ "onChanged" ] "TextBox"
-      fact "check-box" "Check Box" "selection" "CheckBox" "Boolean choice with checked state." [ "text" ] [ "onChanged" ] "CheckBox"
-      fact "radio-group" "Radio Group" "selection" "RadioGroup" "Single selection from a visible option set." [ "items" ] [ "onChanged" ] "RadioGroup"
-      fact "switch" "Switch" "selection" "Switch" "Compact Boolean setting." [] [ "onChanged" ] "CheckBox"
-      fact "slider" "Slider" "input" "Slider" "Continuous numeric value selection." [ "value" ] [ "onChanged" ] "Slider"
-      fact "list-view" "List View" "data" "Collections" "Bounded visible-range list display." [ "items" ] [ "onSelected" ] "List"
-      fact "list-box" "List Box" "selection" "Collections" "Single-selection list box." [ "items" ] [ "onSelected" ] "List"
-      fact "multi-select-list" "Multi Select List" "selection" "Collections" "Multiple-selection list with model-owned selected keys." [ "items" ] [ "onChanged" ] "List"
-      fact "combo-box" "Combo Box" "selection" "Collections" "Compact selection list." [ "items" ] [ "onChanged" ] "List"
-      fact "tree-view" "Tree View" "data" "Collections" "Hierarchical item display." [ "items" ] [ "onSelected" ] "List"
-      fact "data-grid" "Data Grid" "data" "DataGrid" "Table-like bounded visible-range data control with product-owned rows, selection, focus, sort, and filter metadata." [ "columns"; "rows" ] [ "onSelected"; "onFocusChanged"; "onSortChanged" ] "Grid"
-      fact "stack" "Stack" "layout" "Stack" "Ordered vertical or horizontal child composition." [ "children" ] [] "StaticText"
-      fact "grid" "Grid" "layout" "Grid" "Structured child composition." [ "children" ] [] "StaticText"
-      fact "dock" "Dock" "layout" "Dock" "Docked region composition." [ "children" ] [] "StaticText"
-      fact "wrap" "Wrap" "layout" "Wrap" "Wrapping child layout." [ "children" ] [] "StaticText"
-      fact "border" "Border" "layout" "Border" "Single child with border and padding." [ "child" ] [] "StaticText"
-      fact "panel" "Panel" "layout" "Panel" "General-purpose child surface." [ "children" ] [] "StaticText"
-      fact "scroll-viewer" "Scroll Viewer" "layout" "Collections" "Scrollable child viewport." [ "child" ] [ "onChanged" ] "List"
-      fact "split-view" "Split View" "layout" "Collections" "Resizable two-region layout." [ "children" ] [ "onChanged" ] "StaticText"
-      fact "tabs" "Tabs" "navigation" "Tabs" "Model-owned active page selection." [ "items" ] [ "onChanged" ] "Tab"
-      fact "menu" "Menu" "navigation" "Menu" "Command menu selection." [ "items" ] [ "onSelected" ] "Menu"
-      fact "context-menu" "Context Menu" "navigation" "Menu" "Contextual command menu." [ "items" ] [ "onSelected" ] "Menu"
-      fact "toolbar" "Toolbar" "navigation" "Toolbar" "Compact command group." [ "children" ] [ "onClick" ] "Menu"
-      fact "tooltip" "Tooltip" "overlay" "Tooltip" "Auxiliary hover/focus explanation." [ "text" ] [] "StaticText"
-      fact "dialog" "Dialog" "overlay" "Dialog" "Modal content region." [ "children" ] [ "onSelected" ] "Dialog"
-      fact "toast" "Toast" "feedback" "Toast" "Transient status message." [ "text" ] [] "StaticText"
-      fact "overlay" "Overlay" "overlay" "Overlay" "Layered child content." [ "child" ] [] "Dialog"
-      fact "progress-bar" "Progress Bar" "feedback" "ProgressBar" "Determinate progress indicator." [ "value" ] [] "Progress"
-      fact "spinner" "Spinner" "feedback" "Spinner" "Indeterminate progress indicator." [] [] "Progress"
-      fact "validation-message" "Validation Message" "feedback" "ValidationMessage" "Validation text tied to model state." [ "text" ] [] "StaticText"
-      fact "line-chart" "Line Chart" "chart" "LineChart" "Controls-owned line data visualization." [ "series" ] [ "onSelected" ] "Chart"
-      fact "bar-chart" "Bar Chart" "chart" "BarChart" "Controls-owned bar data visualization." [ "series" ] [ "onSelected" ] "Chart"
-      fact "pie-chart" "Pie Chart" "chart" "PieChart" "Controls-owned part-to-whole visualization." [ "values" ] [ "onSelected" ] "Chart"
-      fact "scatter-plot" "Scatter Plot" "chart" "ScatterPlot" "Controls-owned point cloud visualization." [ "series" ] [ "onSelected" ] "Chart"
-      fact "graph-view" "Graph View" "graph" "GraphView" "Controls-owned node and edge visualization." [ "nodes" ] [ "onSelected" ] "Graph"
+    [ fact "text-block" "Text Block" "display" "TextBlock" "TextBlock" "Static model-owned text display." [ "text" ] [] "StaticText"
+      fact "rich-text" "Rich Text" "display" "RichText" "RichText" "Skia-specific rich text display with measurement, clipping, effects, diagnostics, and accessibility metadata." [ "runs" ] [] "StaticText"
+      fact "label" "Label" "display" "Label" "Label" "Short form label text." [ "text" ] [] "StaticText"
+      fact "image" "Image" "display" "Image" "Image" "Image placeholder or drawing-surface reference." [ "value" ] [] "Image"
+      fact "icon" "Icon" "display" "Icon" "Icon" "Named icon glyph or product symbol." [ "text" ] [] "Image"
+      fact "separator" "Separator" "display" "Separator" "Separator" "Visual divider between regions." [] [] "StaticText"
+      fact "badge" "Badge" "display" "Badge" "Badge" "Compact status label." [ "text" ] [] "StaticText"
+      fact "button" "Button" "input" "Button" "Button" "Pointer and keyboard activatable command." [ "text" ] [ "onClick" ] "Button"
+      fact "icon-button" "Icon Button" "input" "IconButton" "IconButton" "Icon-only activatable command." [ "text" ] [ "onClick" ] "Button"
+      fact "text-box" "Text Box" "input" "TextBox" "TextBox" "Plain single-line text entry." [ "value" ] [ "onChanged" ] "TextBox"
+      fact "text-area" "Text Area" "input" "TextArea" "TextArea" "Plain multi-line text entry." [ "value" ] [ "onChanged" ] "TextBox"
+      fact "numeric-input" "Numeric Input" "input" "NumericInput" "NumericInput" "Model-owned numeric value editor." [ "value" ] [ "onChanged" ] "TextBox"
+      fact "check-box" "Check Box" "selection" "CheckBox" "CheckBox" "Boolean choice with checked state." [ "text" ] [ "onChanged" ] "CheckBox"
+      fact "radio-group" "Radio Group" "selection" "RadioGroup" "RadioGroup" "Single selection from a visible option set." [ "items" ] [ "onChanged" ] "RadioGroup"
+      fact "switch" "Switch" "selection" "Switch" "Switch" "Compact Boolean setting." [] [ "onChanged" ] "CheckBox"
+      fact "slider" "Slider" "input" "Slider" "Slider" "Continuous numeric value selection." [ "value" ] [ "onChanged" ] "Slider"
+      fact "list-view" "List View" "data" "Collections" "ListView" "Bounded visible-range list display." [ "items" ] [ "onSelected" ] "List"
+      fact "list-box" "List Box" "selection" "Collections" "ListBox" "Single-selection list box." [ "items" ] [ "onSelected" ] "List"
+      fact "multi-select-list" "Multi Select List" "selection" "Collections" "MultiSelectList" "Multiple-selection list with model-owned selected keys." [ "items" ] [ "onChanged" ] "List"
+      fact "combo-box" "Combo Box" "selection" "Collections" "ComboBox" "Compact selection list." [ "items" ] [ "onChanged" ] "List"
+      fact "tree-view" "Tree View" "data" "Collections" "TreeView" "Hierarchical item display." [ "items" ] [ "onSelected" ] "List"
+      fact "data-grid" "Data Grid" "data" "DataGrid" "DataGrid" "Table-like bounded visible-range data control with product-owned rows, selection, focus, sort, and filter metadata." [ "columns"; "rows" ] [ "onSelected"; "onFocusChanged"; "onSortChanged" ] "Grid"
+      fact "stack" "Stack" "layout" "Stack" "Stack" "Ordered vertical or horizontal child composition." [ "children" ] [] "StaticText"
+      fact "grid" "Grid" "layout" "Grid" "Grid" "Structured child composition." [ "children" ] [] "StaticText"
+      fact "dock" "Dock" "layout" "Dock" "Dock" "Docked region composition." [ "children" ] [] "StaticText"
+      fact "wrap" "Wrap" "layout" "Wrap" "Wrap" "Wrapping child layout." [ "children" ] [] "StaticText"
+      fact "border" "Border" "layout" "Border" "Border" "Single child with border and padding." [ "child" ] [] "StaticText"
+      fact "panel" "Panel" "layout" "Panel" "Panel" "General-purpose child surface." [ "children" ] [] "StaticText"
+      fact "scroll-viewer" "Scroll Viewer" "layout" "Collections" "ScrollViewer" "Scrollable child viewport." [ "child" ] [ "onChanged" ] "List"
+      fact "split-view" "Split View" "layout" "Collections" "SplitView" "Resizable two-region layout." [ "children" ] [ "onChanged" ] "StaticText"
+      fact "tabs" "Tabs" "navigation" "Tabs" "Tabs" "Model-owned active page selection." [ "items" ] [ "onChanged" ] "Tab"
+      fact "menu" "Menu" "navigation" "Menu" "Menu" "Command menu selection." [ "items" ] [ "onSelected" ] "Menu"
+      fact "context-menu" "Context Menu" "navigation" "Menu" "ContextMenu" "Contextual command menu." [ "items" ] [ "onSelected" ] "Menu"
+      fact "toolbar" "Toolbar" "navigation" "Toolbar" "Toolbar" "Compact command group." [ "children" ] [ "onClick" ] "Menu"
+      fact "tooltip" "Tooltip" "overlay" "Tooltip" "Tooltip" "Auxiliary hover/focus explanation." [ "text" ] [] "StaticText"
+      fact "dialog" "Dialog" "overlay" "Dialog" "Dialog" "Modal content region." [ "children" ] [ "onSelected" ] "Dialog"
+      fact "toast" "Toast" "feedback" "Toast" "Toast" "Transient status message." [ "text" ] [] "StaticText"
+      fact "overlay" "Overlay" "overlay" "Overlay" "Overlay" "Layered child content." [ "child" ] [] "Dialog"
+      fact "progress-bar" "Progress Bar" "feedback" "ProgressBar" "ProgressBar" "Determinate progress indicator." [ "value" ] [] "Progress"
+      fact "spinner" "Spinner" "feedback" "Spinner" "Spinner" "Indeterminate progress indicator." [] [] "Progress"
+      fact "validation-message" "Validation Message" "feedback" "ValidationMessage" "ValidationMessage" "Validation text tied to model state." [ "text" ] [] "StaticText"
+      fact "line-chart" "Line Chart" "chart" "LineChart" "LineChart" "Controls-owned line data visualization." [ "series" ] [ "onSelected" ] "Chart"
+      fact "bar-chart" "Bar Chart" "chart" "BarChart" "BarChart" "Controls-owned bar data visualization." [ "series" ] [ "onSelected" ] "Chart"
+      fact "pie-chart" "Pie Chart" "chart" "PieChart" "PieChart" "Controls-owned part-to-whole visualization." [ "values" ] [ "onSelected" ] "Chart"
+      fact "scatter-plot" "Scatter Plot" "chart" "ScatterPlot" "ScatterPlot" "Controls-owned point cloud visualization." [ "series" ] [ "onSelected" ] "Chart"
+      fact "graph-view" "Graph View" "graph" "GraphView" "GraphView" "Controls-owned node and edge visualization." [ "nodes" ] [ "onSelected" ] "Graph"
       // Feature 072 (FR-001) — the breadth-expansion reference slice: five genuinely new
       // controls spanning buttons / pickers / date-time, each a typed-first composition of
       // existing legacy builders (no new StandardControlKind variant, no renderer change).
-      fact "toggle-button" "Toggle Button" "input" "ToggleButton" "On/off command with product-owned pressed state." [ "text" ] [ "onToggle" ] "Button"
-      fact "split-button" "Split Button" "input" "SplitButton" "Primary action plus a popup menu of secondary commands." [ "text" ] [ "onClick"; "onSelected" ] "Menu"
-      fact "date-picker" "Date Picker" "input" "DatePicker" "Typed date entry with a popup calendar." [] [ "onChange" ] "TextBox"
-      fact "time-picker" "Time Picker" "input" "TimePicker" "Typed time entry with hour and minute segments." [] [ "onChange" ] "TextBox"
-      fact "color-picker" "Color Picker" "selection" "ColorPicker" "Palette swatch color selection." [ "swatches" ] [ "onSelected" ] "List"
+      fact "toggle-button" "Toggle Button" "input" "ToggleButton" "ToggleButton" "On/off command with product-owned pressed state." [ "text" ] [ "onToggle" ] "Button"
+      fact "split-button" "Split Button" "input" "SplitButton" "SplitButton" "Primary action plus a popup menu of secondary commands." [ "text" ] [ "onClick"; "onSelected" ] "Menu"
+      fact "date-picker" "Date Picker" "input" "DatePicker" "DatePicker" "Typed date entry with a popup calendar." [] [ "onChange" ] "TextBox"
+      fact "time-picker" "Time Picker" "input" "TimePicker" "TimePicker" "Typed time entry with hour and minute segments." [] [ "onChange" ] "TextBox"
+      fact "color-picker" "Color Picker" "selection" "ColorPicker" "ColorPicker" "Palette swatch color selection." [ "swatches" ] [ "onSelected" ] "List"
       // custom-control is bridge-typed (Widget.ofControl) — no Props schema, no fabricated
       // required attribute (FR-006/R3). The fact carries RequiredAttributes = [].
-      fact "custom-control" "Custom Control" "custom" "CustomControl" "Product-owned wrapper for custom Skia content." [] [ "onCustom" ] "Custom" ]
+      fact "custom-control" "Custom Control" "custom" "CustomControl" "CustomControl" "Product-owned wrapper for custom Skia content." [] [ "onCustom" ] "Custom" ]
 
 // ---------------------------------------------------------------------------------------
 // Renderers. Each reproduces the exact on-disk row bytes from the shared constants the
@@ -172,6 +184,7 @@ let renderYamlRow (fact: TypedCatalogFact) : string =
       sprintf "    displayName: %s" fact.DisplayName
       sprintf "    category: %s" fact.Category
       sprintf "    module: %s" fact.Module
+      sprintf "    typedModule: %s" fact.TypedModule
       sprintf "    purpose: %s" fact.Purpose
       sprintf "    requiredAttributes: %s" (ymlList fact.RequiredAttributes)
       "    commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]"

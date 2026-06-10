@@ -2,6 +2,7 @@
     displayName: Stack
     category: layout
     module: Stack
+    typedModule: Stack
     purpose: Ordered vertical or horizontal child composition.
     requiredAttributes: [children]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

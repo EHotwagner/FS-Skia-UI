@@ -262,3 +262,18 @@ T038 [X] Run `speckit.evidence.audit` — confirm verdict PASS or document every
 
 Resolved skillist-id set (8): fs-skia-elmish, fs-skia-keyboard-input, fs-skia-layout-readability, fs-skia-scene, fs-skia-skiaviewer, fs-skia-template-update, speckit-evidence-audit, speckit-evidence-graph
 
+## Skillist id → SKILL.md path
+
+fs-skia-elmish → src/Elmish/skill/SKILL.md
+fs-skia-keyboard-input → src/KeyboardInput/skill/SKILL.md
+fs-skia-layout-readability → .agents/skills/fs-skia-layout-readability/SKILL.md
+fs-skia-scene → src/Scene/skill/SKILL.md
+fs-skia-skiaviewer → src/SkiaViewer/skill/SKILL.md
+fs-skia-template-update → .agents/skills/fs-skia-template-update/SKILL.md
+speckit-evidence-audit → .agents/skills/speckit-evidence-audit/SKILL.md
+speckit-evidence-graph → .agents/skills/speckit-evidence-graph/SKILL.md
+
+## Skillist id → unresolved / flagged
+
+_(none — every declared skillist id resolves to exactly one installed skill)_
+

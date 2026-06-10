@@ -1,0 +1,23 @@
+## Symbol consistency (analyze pass G)
+- entity-record Dev — in {tasks}, missing from {plan, data-model}
+- entity-record EvidenceAudit — in {tasks}, missing from {plan, data-model}
+- entity-record EvidenceGraph — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedGuidanceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedProductCheck — in {tasks}, missing from {plan, data-model}
+- entity-record RefreshSurfaceBaselines — in {tasks}, missing from {plan, data-model}
+- entity-record SkillSyncCheck — in {data-model, tasks}, missing from {plan}
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- fr-id FR-001 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-002 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-004 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-007 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-008 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-009 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-011 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- sc-id SC-001 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-002 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-003 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-004 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-005 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant TypedModule — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]

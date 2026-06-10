@@ -2,6 +2,7 @@
     displayName: Context Menu
     category: navigation
     module: Menu
+    typedModule: ContextMenu
     purpose: Contextual command menu.
     requiredAttributes: [items]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

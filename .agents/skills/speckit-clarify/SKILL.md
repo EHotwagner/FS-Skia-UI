@@ -67,6 +67,15 @@ Execution steps:
    - If JSON parsing fails, abort and instruct user to re-run `/speckit-specify` or verify feature branch environment.
    - For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
 
+1a. **Source-spec pre-check (consult before asking).** If a `source-spec.md`
+   snapshot exists in `FEATURE_DIR`, load and read it **before forming any
+   clarification questions**. Treat it as authoritative context for what the
+   feature already resolves: do **not** ask a question whose answer the
+   snapshot already settles, and let it sharpen the remaining genuinely-open
+   questions. When no `source-spec.md` is present in `FEATURE_DIR`, this step
+   is a silent **no-op** — proceed exactly as you would otherwise (graceful
+   degradation; the absence is not an error and produces no output).
+
 2. Load the current spec file. Perform a structured ambiguity & coverage scan using this taxonomy, marking each category Clear / Partial / Missing. Produce an internal coverage map for prioritization (do not output the raw map unless no questions will be asked).
 
    Functional Scope & Behavior:

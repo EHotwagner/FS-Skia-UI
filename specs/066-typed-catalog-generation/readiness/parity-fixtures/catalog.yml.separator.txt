@@ -2,6 +2,7 @@
     displayName: Separator
     category: display
     module: Separator
+    typedModule: Separator
     purpose: Visual divider between regions.
     requiredAttributes: []
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

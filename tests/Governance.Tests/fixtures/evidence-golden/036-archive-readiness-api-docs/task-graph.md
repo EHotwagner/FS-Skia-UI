@@ -242,3 +242,14 @@ T033 [X] Review all readiness reports for small, medium, and broad risk-level cl
 
 Resolved skillist-id set (4): fs-skia-layout-readability, speckit-evidence-audit, speckit-evidence-graph, speckit-tasks
 
+## Skillist id → SKILL.md path
+
+fs-skia-layout-readability → .agents/skills/fs-skia-layout-readability/SKILL.md
+speckit-evidence-audit → .agents/skills/speckit-evidence-audit/SKILL.md
+speckit-evidence-graph → .agents/skills/speckit-evidence-graph/SKILL.md
+speckit-tasks → .agents/skills/speckit-tasks/SKILL.md
+
+## Skillist id → unresolved / flagged
+
+_(none — every declared skillist id resolves to exactly one installed skill)_
+

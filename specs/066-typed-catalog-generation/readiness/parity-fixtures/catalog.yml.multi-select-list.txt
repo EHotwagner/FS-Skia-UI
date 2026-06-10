@@ -2,6 +2,7 @@
     displayName: Multi Select List
     category: selection
     module: Collections
+    typedModule: MultiSelectList
     purpose: Multiple-selection list with model-owned selected keys.
     requiredAttributes: [items]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

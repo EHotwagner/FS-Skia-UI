@@ -2,6 +2,7 @@
     displayName: Dialog
     category: overlay
     module: Dialog
+    typedModule: Dialog
     purpose: Modal content region.
     requiredAttributes: [children]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

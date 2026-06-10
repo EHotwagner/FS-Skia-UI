@@ -13,8 +13,18 @@ module Render =
     /// Serialize the graph result to task-graph.json (FR-007).
     val taskGraphJson: GraphResult -> string
 
-    /// Serialize the graph result to task-graph.md (FR-007).
-    val taskGraphMd: GraphResult -> string
+    /// Feature 089 (EVGRAPH-ECHO-1, FR-008/FR-009): the pure `skillist id →
+    /// SKILL.md path` resolution block, reusing the SAME `SkillRegistry` the
+    /// Audit validator consults so the echo cannot disagree with the gate.
+    /// Resolved ids render first; alias / ambiguous / unresolved ids are grouped
+    /// into a distinct flagged section. Unit-tested directly (no parallel
+    /// resolver). Pure.
+    val skillistResolution: registry: SkillRegistry -> ids: string list -> string
+
+    /// Serialize the graph result to task-graph.md (FR-007). Feature 089 threads
+    /// the `SkillRegistry` so the rendered output echoes each declared skillist
+    /// id's resolution (`skillistResolution`).
+    val taskGraphMd: registry: SkillRegistry -> GraphResult -> string
 
     /// The audit-counts.txt count block for `featureName` (FR-008 oracle).
     val auditCounts:

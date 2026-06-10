@@ -2,6 +2,7 @@
     displayName: Scatter Plot
     category: chart
     module: ScatterPlot
+    typedModule: ScatterPlot
     purpose: Controls-owned point cloud visualization.
     requiredAttributes: [series]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

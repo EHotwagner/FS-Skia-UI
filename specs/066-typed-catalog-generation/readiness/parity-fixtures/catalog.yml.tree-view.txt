@@ -2,6 +2,7 @@
     displayName: Tree View
     category: data
     module: Collections
+    typedModule: TreeView
     purpose: Hierarchical item display.
     requiredAttributes: [items]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

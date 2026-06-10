@@ -2,6 +2,7 @@
     displayName: List Box
     category: selection
     module: Collections
+    typedModule: ListBox
     purpose: Single-selection list box.
     requiredAttributes: [items]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

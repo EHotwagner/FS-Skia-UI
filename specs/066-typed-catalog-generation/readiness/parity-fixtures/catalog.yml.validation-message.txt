@@ -2,6 +2,7 @@
     displayName: Validation Message
     category: feedback
     module: ValidationMessage
+    typedModule: ValidationMessage
     purpose: Validation text tied to model state.
     requiredAttributes: [text]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

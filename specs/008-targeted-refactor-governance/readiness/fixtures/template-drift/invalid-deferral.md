@@ -17,7 +17,7 @@ FAIL
 
 - Changed alignment classes: `template-drift-docs`
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/088-governance-precision-hardening`
+- Active feature evidence: `specs/089-typed-surface-and-workflow-followups`
 
 ## Controls Boundary Guidance
 

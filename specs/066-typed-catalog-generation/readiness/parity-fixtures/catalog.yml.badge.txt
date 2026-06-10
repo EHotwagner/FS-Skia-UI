@@ -2,6 +2,7 @@
     displayName: Badge
     category: display
     module: Badge
+    typedModule: Badge
     purpose: Compact status label.
     requiredAttributes: [text]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

@@ -2,6 +2,7 @@
     displayName: Icon
     category: display
     module: Icon
+    typedModule: Icon
     purpose: Named icon glyph or product symbol.
     requiredAttributes: [text]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

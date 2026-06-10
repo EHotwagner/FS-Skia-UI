@@ -2,6 +2,7 @@
     displayName: Line Chart
     category: chart
     module: LineChart
+    typedModule: LineChart
     purpose: Controls-owned line data visualization.
     requiredAttributes: [series]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

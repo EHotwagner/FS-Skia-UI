@@ -2,6 +2,7 @@
     displayName: Wrap
     category: layout
     module: Wrap
+    typedModule: Wrap
     purpose: Wrapping child layout.
     requiredAttributes: [children]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

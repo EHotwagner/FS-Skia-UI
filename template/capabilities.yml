@@ -129,6 +129,24 @@ capabilities:
       - src/Controls/Charts.fsi
       - src/Controls/DataGrid.fsi
       - src/Controls/CustomControl.fsi
+      # Feature 089 (TYPED-SURFACE-1): the typed front door (FS.Skia.UI.Controls.Typed).
+      # Enrolling the 14 Widgets/*.fsi publishes every control's Props/view straight from
+      # source into docs/api-surface/Controls/, so a whole-catalog consumer never reflects
+      # FS.Skia.UI.Controls.dll. Additive — the legacy builder .fsi above stay published.
+      - src/Controls/Widgets/Primitives.fsi
+      - src/Controls/Widgets/Buttons.fsi
+      - src/Controls/Widgets/Containers.fsi
+      - src/Controls/Widgets/Input.fsi
+      - src/Controls/Widgets/TextBoxWidget.fsi
+      - src/Controls/Widgets/TextAreaWidget.fsi
+      - src/Controls/Widgets/Display.fsi
+      - src/Controls/Widgets/CollectionsWidgets.fsi
+      - src/Controls/Widgets/DataGridWidget.fsi
+      - src/Controls/Widgets/Navigation.fsi
+      - src/Controls/Widgets/Overlay.fsi
+      - src/Controls/Widgets/ChartsWidgets.fsi
+      - src/Controls/Widgets/CustomControlWidget.fsi
+      - src/Controls/Widgets/Pickers.fsi
     tests:
       - tests/Controls.Tests/Controls.Tests.fsproj
     skill: template/product-skills/fs-skia-ui-widgets/SKILL.md

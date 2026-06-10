@@ -2,6 +2,7 @@
     displayName: Text Block
     category: display
     module: TextBlock
+    typedModule: TextBlock
     purpose: Static model-owned text display.
     requiredAttributes: [text]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

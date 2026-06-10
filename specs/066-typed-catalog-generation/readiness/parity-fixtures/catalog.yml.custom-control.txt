@@ -2,6 +2,7 @@
     displayName: Custom Control
     category: custom
     module: CustomControl
+    typedModule: CustomControl
     purpose: Product-owned wrapper for custom Skia content.
     requiredAttributes: []
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

@@ -2,6 +2,7 @@
     displayName: Combo Box
     category: selection
     module: Collections
+    typedModule: ComboBox
     purpose: Compact selection list.
     requiredAttributes: [items]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

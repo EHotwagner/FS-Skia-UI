@@ -183,7 +183,40 @@ module Render =
             | None -> ()
         String.concat "\n" lines
 
-    let taskGraphMd (g: GraphResult) : string =
+    // Feature 089 (EVGRAPH-ECHO-1, FR-008/FR-009): render the per-token
+    // `skillist id → SKILL.md path` resolution, reusing the SAME `SkillRegistry`
+    // the Audit validator consults (Audit.fs:150-162) so the echo can never
+    // disagree with the gate (no parallel resolver). Resolved ids list first;
+    // alias / ambiguous / unresolved ids are grouped into a distinct flagged
+    // section so an unresolved token never hides among the resolved lines.
+    let skillistResolution (registry: SkillRegistry) (ids: string list) : string =
+        let out = ResizeArray<string>()
+        let distinct = ids |> List.distinct |> List.sort
+        let resolved = ResizeArray<string>()
+        let flagged = ResizeArray<string>()
+        for id in distinct do
+            match defaultArg (registry.Skills.TryFind id) [] with
+            | [ path ] -> resolved.Add(sprintf "%s → %s" id path)
+            | _ :: _ as many -> flagged.Add(sprintf "%s → ambiguous: %s" id (String.concat ", " many))
+            | [] ->
+                match registry.DirectoryAliases.TryFind id with
+                | Some(acceptedId, path) ->
+                    flagged.Add(sprintf "%s → directory name for %s (accepted id: %s)" id path acceptedId)
+                | None -> flagged.Add(sprintf "%s → UNRESOLVED (not registered/readable)" id)
+        out.Add "## Skillist id → SKILL.md path"
+        out.Add ""
+        if resolved.Count = 0 then out.Add "_(none resolved)_"
+        else for line in resolved do out.Add line
+        out.Add ""
+        out.Add "## Skillist id → unresolved / flagged"
+        out.Add ""
+        if flagged.Count = 0 then
+            out.Add "_(none — every declared skillist id resolves to exactly one installed skill)_"
+        else
+            for line in flagged do out.Add line
+        String.concat "\n" out + "\n"
+
+    let taskGraphMd (registry: SkillRegistry) (g: GraphResult) : string =
         let out = ResizeArray<string>()
         let tasks = g.Tasks
         let nodes = tasks |> List.map (fun r -> r.Task.Id, r) |> Map.ofList
@@ -327,6 +360,12 @@ module Render =
             out.Add "_(none declared)_"
         else
             out.Add(sprintf "Resolved skillist-id set (%d): %s" (List.length resolvedSkillIds) (String.concat ", " resolvedSkillIds))
+        out.Add ""
+
+        // Feature 089 (EVGRAPH-ECHO-1): the per-token id → SKILL.md path echo +
+        // the distinct flagged section, resolved through the same registry the
+        // Audit validator uses — removes the manual `grep '^name:'` cross-check.
+        out.Add((skillistResolution registry resolvedSkillIds).TrimEnd('\n'))
         out.Add ""
 
         if not (Map.isEmpty g.RootCause) then

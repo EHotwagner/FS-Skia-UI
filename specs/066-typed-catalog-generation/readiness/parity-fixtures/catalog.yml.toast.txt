@@ -2,6 +2,7 @@
     displayName: Toast
     category: feedback
     module: Toast
+    typedModule: Toast
     purpose: Transient status message.
     requiredAttributes: [text]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

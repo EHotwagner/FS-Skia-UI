@@ -2,6 +2,7 @@
     displayName: List View
     category: data
     module: Collections
+    typedModule: ListView
     purpose: Bounded visible-range list display.
     requiredAttributes: [items]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

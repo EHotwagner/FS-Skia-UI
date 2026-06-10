@@ -114,7 +114,7 @@ module Engine =
         let gr = computeGraph inputs
         gr,
         { TaskGraphJson = Render.taskGraphJson gr
-          TaskGraphMd = Render.taskGraphMd gr }
+          TaskGraphMd = Render.taskGraphMd inputs.Registry gr }
 
     let runAudit (inputs: EvidenceInputs) : AuditResult * AuditArtifacts =
         let gr = computeGraph inputs
@@ -139,7 +139,7 @@ module Engine =
 
         result,
         { TaskGraphJson = Render.taskGraphJson gr
-          TaskGraphMd = Render.taskGraphMd gr
+          TaskGraphMd = Render.taskGraphMd inputs.Registry gr
           AuditCounts =
             Render.auditCounts inputs.FeatureName result.RealTasks (List.length seh.AcceptedSehTasks)
                 (List.length seh.UnacceptedSyntheticTasks) (List.length seh.AutoSyntheticTasks) (List.length seh.LateSehTasks)

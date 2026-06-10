@@ -2,6 +2,7 @@
     displayName: Button
     category: input
     module: Button
+    typedModule: Button
     purpose: Pointer and keyboard activatable command.
     requiredAttributes: [text]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

@@ -2,6 +2,7 @@
     displayName: Slider
     category: input
     module: Slider
+    typedModule: Slider
     purpose: Continuous numeric value selection.
     requiredAttributes: [value]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

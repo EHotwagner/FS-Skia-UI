@@ -2,6 +2,7 @@
     displayName: Radio Group
     category: selection
     module: RadioGroup
+    typedModule: RadioGroup
     purpose: Single selection from a visible option set.
     requiredAttributes: [items]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

@@ -2,6 +2,7 @@
     displayName: Tooltip
     category: overlay
     module: Tooltip
+    typedModule: Tooltip
     purpose: Auxiliary hover/focus explanation.
     requiredAttributes: [text]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

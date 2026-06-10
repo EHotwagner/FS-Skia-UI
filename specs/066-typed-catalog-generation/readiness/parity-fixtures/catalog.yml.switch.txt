@@ -2,6 +2,7 @@
     displayName: Switch
     category: selection
     module: Switch
+    typedModule: Switch
     purpose: Compact Boolean setting.
     requiredAttributes: []
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

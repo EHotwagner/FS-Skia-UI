@@ -2,6 +2,7 @@
     displayName: Text Area
     category: input
     module: TextArea
+    typedModule: TextArea
     purpose: Plain multi-line text entry.
     requiredAttributes: [value]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

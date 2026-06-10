@@ -2,6 +2,7 @@
     displayName: Data Grid
     category: data
     module: DataGrid
+    typedModule: DataGrid
     purpose: Table-like bounded visible-range data control with product-owned rows, selection, focus, sort, and filter metadata.
     requiredAttributes: [columns, rows]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

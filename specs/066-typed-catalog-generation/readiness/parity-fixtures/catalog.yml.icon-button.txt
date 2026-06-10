@@ -2,6 +2,7 @@
     displayName: Icon Button
     category: input
     module: IconButton
+    typedModule: IconButton
     purpose: Icon-only activatable command.
     requiredAttributes: [text]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

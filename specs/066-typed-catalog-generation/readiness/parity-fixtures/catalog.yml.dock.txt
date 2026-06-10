@@ -2,6 +2,7 @@
     displayName: Dock
     category: layout
     module: Dock
+    typedModule: Dock
     purpose: Docked region composition.
     requiredAttributes: [children]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

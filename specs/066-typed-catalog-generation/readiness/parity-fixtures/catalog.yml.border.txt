@@ -2,6 +2,7 @@
     displayName: Border
     category: layout
     module: Border
+    typedModule: Border
     purpose: Single child with border and padding.
     requiredAttributes: [child]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

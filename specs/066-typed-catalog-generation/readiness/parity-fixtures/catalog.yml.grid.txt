@@ -2,6 +2,7 @@
     displayName: Grid
     category: layout
     module: Grid
+    typedModule: Grid
     purpose: Structured child composition.
     requiredAttributes: [children]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

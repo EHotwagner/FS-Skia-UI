@@ -2,6 +2,7 @@
     displayName: Numeric Input
     category: input
     module: NumericInput
+    typedModule: NumericInput
     purpose: Model-owned numeric value editor.
     requiredAttributes: [value]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

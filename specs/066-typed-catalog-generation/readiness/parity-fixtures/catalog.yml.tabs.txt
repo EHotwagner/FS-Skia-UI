@@ -2,6 +2,7 @@
     displayName: Tabs
     category: navigation
     module: Tabs
+    typedModule: Tabs
     purpose: Model-owned active page selection.
     requiredAttributes: [items]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

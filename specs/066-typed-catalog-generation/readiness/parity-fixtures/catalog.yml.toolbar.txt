@@ -2,6 +2,7 @@
     displayName: Toolbar
     category: navigation
     module: Toolbar
+    typedModule: Toolbar
     purpose: Compact command group.
     requiredAttributes: [children]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

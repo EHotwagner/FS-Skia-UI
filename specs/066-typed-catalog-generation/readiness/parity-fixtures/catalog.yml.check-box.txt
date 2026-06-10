@@ -2,6 +2,7 @@
     displayName: Check Box
     category: selection
     module: CheckBox
+    typedModule: CheckBox
     purpose: Boolean choice with checked state.
     requiredAttributes: [text]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

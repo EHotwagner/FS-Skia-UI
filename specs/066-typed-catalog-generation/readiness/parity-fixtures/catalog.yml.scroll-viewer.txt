@@ -2,6 +2,7 @@
     displayName: Scroll Viewer
     category: layout
     module: Collections
+    typedModule: ScrollViewer
     purpose: Scrollable child viewport.
     requiredAttributes: [child]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

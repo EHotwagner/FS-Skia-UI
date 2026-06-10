@@ -2,6 +2,7 @@
     displayName: Pie Chart
     category: chart
     module: PieChart
+    typedModule: PieChart
     purpose: Controls-owned part-to-whole visualization.
     requiredAttributes: [values]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

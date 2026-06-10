@@ -2,6 +2,7 @@
     displayName: Rich Text
     category: display
     module: RichText
+    typedModule: RichText
     purpose: Skia-specific rich text display with measurement, clipping, effects, diagnostics, and accessibility metadata.
     requiredAttributes: [runs]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

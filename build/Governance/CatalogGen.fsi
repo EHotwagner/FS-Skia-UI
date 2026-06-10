@@ -17,6 +17,14 @@ type TypedCatalogFact =
       DisplayName: string
       Category: string
       Module: string
+      /// Feature 089 (TYPED-SURFACE-1): the `FS.Skia.UI.Controls.Typed` module
+      /// name that realizes this control — the single-source id → typed-module
+      /// pointer rendered into `catalog.yml` (`typedModule:`). Equals `Module`
+      /// for most controls; the shared-builder collection/menu rows name their
+      /// distinct typed module. Every value names a module declared in an
+      /// enrolled `src/Controls/Widgets/*.fsi` (published api-surface), never a
+      /// copy of the Props field names.
+      TypedModule: string
       Purpose: string
       RequiredAttributes: string list
       Events: string list

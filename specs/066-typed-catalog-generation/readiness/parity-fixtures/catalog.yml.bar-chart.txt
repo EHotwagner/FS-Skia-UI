@@ -2,6 +2,7 @@
     displayName: Bar Chart
     category: chart
     module: BarChart
+    typedModule: BarChart
     purpose: Controls-owned bar data visualization.
     requiredAttributes: [series]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

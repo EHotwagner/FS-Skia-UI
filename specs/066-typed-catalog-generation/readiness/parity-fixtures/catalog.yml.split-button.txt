@@ -2,6 +2,7 @@
     displayName: Split Button
     category: input
     module: SplitButton
+    typedModule: SplitButton
     purpose: Primary action plus a popup menu of secondary commands.
     requiredAttributes: [text]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

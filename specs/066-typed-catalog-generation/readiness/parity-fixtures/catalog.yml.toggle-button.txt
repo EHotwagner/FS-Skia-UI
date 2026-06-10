@@ -2,6 +2,7 @@
     displayName: Toggle Button
     category: input
     module: ToggleButton
+    typedModule: ToggleButton
     purpose: On/off command with product-owned pressed state.
     requiredAttributes: [text]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

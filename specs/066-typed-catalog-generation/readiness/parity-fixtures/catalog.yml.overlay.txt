@@ -2,6 +2,7 @@
     displayName: Overlay
     category: overlay
     module: Overlay
+    typedModule: Overlay
     purpose: Layered child content.
     requiredAttributes: [child]
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]

@@ -2,6 +2,7 @@
     displayName: Date Picker
     category: input
     module: DatePicker
+    typedModule: DatePicker
     purpose: Typed date entry with a popup calendar.
     requiredAttributes: []
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]
