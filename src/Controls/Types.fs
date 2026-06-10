@@ -239,6 +239,7 @@ type AttrCategory =
     | Accessibility
     | Event
     | Data
+    | Slot
 
 type Control<'msg> =
     { Kind: ControlKind
@@ -261,6 +262,7 @@ and AttrValue<'msg> =
     | ValidationValue of ValidationState
     | StyleClassesValue of StyleClass list
     | VisualStateValue of VisualState
+    | SlotFillsValue of (string * Control<'msg>) list
     | AccessibilityValue of AccessibilityMetadata
     | ThemeValue of Theme
     | ChildValue of Control<'msg>

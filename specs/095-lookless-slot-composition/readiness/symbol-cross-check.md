@@ -1,0 +1,42 @@
+## Symbol consistency (analyze pass G)
+- entity-record Children — in {data-model, tasks}, missing from {plan}
+- entity-record ContrastCheck — in {tasks}, missing from {plan, data-model}
+- entity-record ControlFidelity — in {tasks}, missing from {plan, data-model}
+- entity-record ControlInternals — in {data-model, tasks}, missing from {plan}
+- entity-record DataContext — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedGuidanceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedProductCheck — in {tasks}, missing from {plan, data-model}
+- entity-record None — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record Props — in {plan, data-model}, missing from {tasks}
+- entity-record SlotName — in {plan}, missing from {data-model, tasks}
+- entity-record StateByIdentity — in {plan, tasks}, missing from {data-model}
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- fr-id FR-002 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-007 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-009 — in {plan}, missing from {data-model, tasks}
+- fr-id FR-010 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-011 — in {plan, tasks}, missing from {data-model}
+- msg-case Cmd — in {plan, tasks}, missing from {data-model}
+- msg-case Effect — in {plan, tasks}, missing from {data-model}
+- msg-case Model — in {plan, tasks}, missing from {data-model}
+- msg-case Msg — in {plan, tasks}, missing from {data-model}
+- msg-case None — in {plan, tasks}, missing from {data-model}
+- msg-case Props — in {plan, tasks}, missing from {data-model}
+- msg-case Scene — in {plan, tasks}, missing from {data-model}
+- msg-case SceneEvidence — in {tasks}, missing from {plan, data-model}
+- msg-case Slot — in {tasks}, missing from {plan, data-model}
+- msg-case SlotFillsValue — in {data-model, tasks}, missing from {plan}
+- msg-case SlotName — in {tasks}, missing from {plan, data-model}
+- msg-case Style — in {tasks}, missing from {plan, data-model}
+- msg-case StyleClassesValue — in {tasks}, missing from {plan, data-model}
+- sc-id SC-001 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-003 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-004 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-007 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-008 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-009 — in {plan, tasks}, missing from {data-model}
+- union-or-screen-variant Footer — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant Header — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant Leading — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant SlotFillsValue — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant Trailing — in {tasks}, missing from {plan, data-model}

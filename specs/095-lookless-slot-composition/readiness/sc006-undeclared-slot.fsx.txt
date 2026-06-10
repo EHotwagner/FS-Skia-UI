@@ -1,0 +1,25 @@
+// SC-006 does-not-compile fixture (feature 095).
+//
+// Kept as a .txt so it is NOT added to a compiled project — its purpose is to demonstrate that
+// filling a region a kind does NOT declare is a COMPILE-TIME error (the typed Props surface makes
+// the slot set closed per kind, FR-001), not a silent runtime drop.
+//
+// Button declares only Leading / Trailing. Header is a Panel chrome region. Referencing
+// `ButtonProps.Header` therefore does not type-check: there is no such field.
+
+#r ".../FS.Skia.UI.Scene.dll"
+#r ".../FS.Skia.UI.Layout.dll"
+#r ".../FS.Skia.UI.KeyboardInput.dll"
+#r ".../FS.Skia.UI.Controls.dll"
+open FS.Skia.UI.Controls
+open FS.Skia.UI.Controls.Typed
+
+let bad : Widget<int> =
+    Button.view { Button.defaults with Header = Some(TextBlock.view TextBlock.defaults) }
+
+// Compiler output (verified with dotnet fsi against the built FS.Skia.UI.Controls.dll):
+//
+//   error FS1129: The record type 'ButtonProps<int>' does not contain a label 'Header'.
+//
+// There is also NO public `Attr.slot` builder and NO public `SlotName` type, so there is no
+// free-form escape hatch to fill an undeclared region either.

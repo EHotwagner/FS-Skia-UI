@@ -231,6 +231,14 @@ module internal ControlInternals =
 
     val visualStateOf: attrs: Attr<'msg> list -> VisualState
 
+    val slotFill: fills: (string * Control<'msg>) list -> Attr<'msg>
+
+    val slotFillsOf: attrs: Attr<'msg> list -> (string * Control<'msg>) list
+
+    val slotFor: name: string -> attrs: Attr<'msg> list -> Control<'msg> option
+
+    val lowerSlots: control: Control<'msg> -> Control<'msg>
+
 module Control =
 
     val create: kind: ControlKind -> attrs: Attr<'msg> list -> Control<'msg>
@@ -1352,6 +1360,8 @@ type AttrCategory =
     | Event
     | Data
 
+    | Slot
+
 type Control<'msg> =
     { Kind: ControlKind
       Key: ControlId option
@@ -1375,6 +1385,8 @@ and AttrValue<'msg> =
     | StyleClassesValue of StyleClass list
 
     | VisualStateValue of VisualState
+
+    | SlotFillsValue of (string * Control<'msg>) list
     | AccessibilityValue of AccessibilityMetadata
     | ThemeValue of Theme
     | ChildValue of Control<'msg>

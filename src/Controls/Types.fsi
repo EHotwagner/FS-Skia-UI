@@ -275,6 +275,11 @@ type AttrCategory =
     | Accessibility
     | Event
     | Data
+    /// Feature 095 (E5): the category under which named slot fills ride the `Attr` mechanism,
+    /// mirroring E3's `Style`. Closed; only the internal `ControlInternals.slotFill` builder
+    /// produces it — there is NO public free-form slot builder (the typed `Props` slot fields are
+    /// the only sanctioned authoring path, FR-001).
+    | Slot
 
 /// Public contract type exposed by this FS.Skia.UI package.
 type Control<'msg> =
@@ -304,6 +309,15 @@ and AttrValue<'msg> =
     /// state-driven look therefore survives a sibling-shifting re-render under E2's retained
     /// identity (FR-006, SC-005). Absent ≡ `Normal` ≡ the behaviour-preserving base case.
     | VisualStateValue of VisualState
+    /// Feature 095 (E5): an ordered association list from declared slot NAME to the consumer's
+    /// fill sub-tree. Rides the existing `Attr` mechanism under `AttrCategory.Slot` (the same shape
+    /// E3 used for `StyleClassesValue`); a control carries at most one `Slot`-category attribute,
+    /// last-writer-wins. The slot NAME is internal plumbing — a name ABSENT from this list is an
+    /// unfilled slot (renders default), a name PRESENT is filled (renders the sub-tree, even when
+    /// the sub-tree is empty). A slot fill is a static `Control<'msg>` value, NOT a data-bound
+    /// template (FR-008). Lowering injects the fills into the control's `Children`, so they inherit
+    /// E1–E4 + E2 retained identity by construction (FR-004, FR-005).
+    | SlotFillsValue of (string * Control<'msg>) list
     | AccessibilityValue of AccessibilityMetadata
     | ThemeValue of Theme
     | ChildValue of Control<'msg>

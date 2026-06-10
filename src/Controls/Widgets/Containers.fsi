@@ -27,8 +27,15 @@ type BorderProps<'msg> =
       Child: Widget<'msg> }
 
 /// Immutable, compiler-checked authoring surface for a general-purpose panel.
+/// Feature 095 (E5): `Header` / `Footer` are the two CLOSED, typed chrome-region slots a consumer
+/// may fill with their own `Widget<'msg>` to re-skin the container's SHAPE (a custom header band /
+/// footer bar around the content). Each defaults `None`, which lowers to NO slot attribute (so an
+/// unfilled panel is byte-identical, FR-003). A filled `Header` lands ahead of `Children`, a
+/// filled `Footer` after — both inheriting E1–E4 + E2 retained identity by construction (FR-005).
 type PanelProps<'msg> =
     { Id: ControlId option
+      Header: Widget<'msg> option
+      Footer: Widget<'msg> option
       Children: Widget<'msg> list }
 
 /// Immutable, compiler-checked authoring surface for a scrollable viewport. `child`

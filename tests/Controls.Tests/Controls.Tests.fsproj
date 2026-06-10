@@ -37,6 +37,7 @@
     <Compile Include="Feature093ParityTests.fs" />
     <Compile Include="Feature093RetainedStateTests.fs" />
     <Compile Include="Feature094FocusTests.fs" />
+    <Compile Include="Feature095SlotCompositionTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

@@ -13,6 +13,7 @@ FS.Skia.UI.Controls.AttrValue`1+ChildrenValue
 FS.Skia.UI.Controls.AttrValue`1+EventValue
 FS.Skia.UI.Controls.AttrValue`1+FloatValue
 FS.Skia.UI.Controls.AttrValue`1+MessageValue
+FS.Skia.UI.Controls.AttrValue`1+SlotFillsValue
 FS.Skia.UI.Controls.AttrValue`1+StringListValue
 FS.Skia.UI.Controls.AttrValue`1+StyleClassesValue
 FS.Skia.UI.Controls.AttrValue`1+Tags

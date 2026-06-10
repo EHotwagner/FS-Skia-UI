@@ -22,6 +22,8 @@ type ButtonProps<'msg> =
       Enabled: bool
       Intent: ButtonIntent
       Classes: StyleClass list
+      Leading: Widget<'msg> option
+      Trailing: Widget<'msg> option
       OnClick: 'msg option }
 
 type CheckBoxProps<'msg> =
@@ -80,9 +82,21 @@ module Button =
           Enabled = true
           Intent = Primary
           Classes = []
+          Leading = None
+          Trailing = None
           OnClick = None }
 
     let view (props: ButtonProps<'msg>) : Widget<'msg> =
+        // Feature 095 (E5): the ordered (region-name, fill) pairs for the slots the consumer filled.
+        // `None` everywhere ⇒ `[]` ⇒ no slot attribute ⇒ `lowerSlots` is a no-op ⇒ byte-identical.
+        let slots =
+            [ match props.Leading with
+              | Some w -> yield "leading", Widget.toControl w
+              | None -> ()
+              match props.Trailing with
+              | Some w -> yield "trailing", Widget.toControl w
+              | None -> () ]
+
         let attrs =
             [ yield FS.Skia.UI.Controls.Button.text props.Text
               yield FS.Skia.UI.Controls.Button.enabled props.Enabled
@@ -92,12 +106,18 @@ module Button =
               match props.Classes with
               | [] -> ()
               | classes -> yield Attr.styleClasses classes
+              // Feature 095 (E5): no slot filled ⇒ no slot attribute (byte-identical); otherwise
+              // the internal carrier transports the fills into `Children` via `lowerSlots` below.
+              match slots with
+              | [] -> ()
+              | fills -> yield ControlInternals.slotFill fills
               match props.OnClick with
               | Some msg -> yield FS.Skia.UI.Controls.Button.onClick msg
               | None -> () ]
 
         FS.Skia.UI.Controls.Button.create attrs
         |> LegacyControls.withKeyOpt props.Id
+        |> ControlInternals.lowerSlots
         |> Widget.ofControl
 
 module CheckBox =

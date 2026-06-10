@@ -1,7 +1,7 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
 <!-- SPECKIT START -->
-specs/094-focus-keyboard-traversal/plan.md
+specs/095-lookless-slot-composition/plan.md
 <!-- SPECKIT END -->
 
 ## Run `Route` first; run only the gates it prints

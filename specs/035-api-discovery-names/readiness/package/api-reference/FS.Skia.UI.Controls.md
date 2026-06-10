@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 735
-xml-summary-count: 382
+symbol-count: 741
+xml-summary-count: 406
 source-fsi-paths:
 - src/Controls/Accessibility.fsi
 - src/Controls/Attributes.fsi
@@ -327,6 +327,26 @@ module internal ControlInternals =
     /// attribute (absent ≡ `Normal`). Rides the control through the keyed reconciler so a
     /// state-driven look survives a sibling-shifting re-render (SC-005).
     val visualStateOf: attrs: Attr<'msg> list -> VisualState
+
+    /// Feature 095 (E5) — build the single `Slot`-category carrier attribute from an ordered
+    /// name->fill association list. `internal`: the typed `Props` views call it; there is NO public
+    /// free-form slot builder (FR-001). The slot name is internal plumbing, never a consumer string.
+    val slotFill: fills: (string * Control<'msg>) list -> Attr<'msg>
+
+    /// Feature 095 (E5) — the ordered slot fills carried by a control's last `slot` attribute
+    /// (last-writer convention). Absent ≡ `[]` ≡ no slot filled ≡ the byte-identical base case.
+    val slotFillsOf: attrs: Attr<'msg> list -> (string * Control<'msg>) list
+
+    /// Feature 095 (E5) — the fill for ONE named region, or `None` when that name is absent
+    /// (unfilled ⇒ default chrome). A name present but empty still returns `Some` (absent ≠ empty).
+    val slotFor: name: string -> attrs: Attr<'msg> list -> Control<'msg> option
+
+    /// Feature 095 (E5) — the pure, total, deterministic slot lowering. Injects the fills into the
+    /// control's `Children` ordered by region position (leading regions, intrinsic children,
+    /// trailing regions) and consumes the slot carrier; with no slot attribute the control is
+    /// returned verbatim (byte-identical, FR-003). Never throws for any (kind, fills) — totality
+    /// (SC-005). Fills land in `Children`, inheriting E1–E4 + E2 identity by construction (FR-004).
+    val lowerSlots: control: Control<'msg> -> Control<'msg>
 
 /// Public contract module exposed by this FS.Skia.UI package.
 module Control =
@@ -1278,6 +1298,11 @@ type AttrCategory =
     | Accessibility
     | Event
     | Data
+    /// Feature 095 (E5): the category under which named slot fills ride the `Attr` mechanism,
+    /// mirroring E3's `Style`. Closed; only the internal `ControlInternals.slotFill` builder
+    /// produces it — there is NO public free-form slot builder (the typed `Props` slot fields are
+    /// the only sanctioned authoring path, FR-001).
+    | Slot
 
 /// Public contract type exposed by this FS.Skia.UI package.
 type Control<'msg> =
@@ -1307,6 +1332,15 @@ and AttrValue<'msg> =
     /// state-driven look therefore survives a sibling-shifting re-render under E2's retained
     /// identity (FR-006, SC-005). Absent ≡ `Normal` ≡ the behaviour-preserving base case.
     | VisualStateValue of VisualState
+    /// Feature 095 (E5): an ordered association list from declared slot NAME to the consumer's
+    /// fill sub-tree. Rides the existing `Attr` mechanism under `AttrCategory.Slot` (the same shape
+    /// E3 used for `StyleClassesValue`); a control carries at most one `Slot`-category attribute,
+    /// last-writer-wins. The slot NAME is internal plumbing — a name ABSENT from this list is an
+    /// unfilled slot (renders default), a name PRESENT is filled (renders the sub-tree, even when
+    /// the sub-tree is empty). A slot fill is a static `Control<'msg>` value, NOT a data-bound
+    /// template (FR-008). Lowering injects the fills into the control's `Children`, so they inherit
+    /// E1–E4 + E2 retained identity by construction (FR-004, FR-005).
+    | SlotFillsValue of (string * Control<'msg>) list
     | AccessibilityValue of AccessibilityMetadata
     | ThemeValue of Theme
     | ChildValue of Control<'msg>

@@ -70,6 +70,60 @@ module internal ControlInternals =
             | _ -> None)
         |> Option.defaultValue Normal
 
+    /// Feature 095 (E5): build the single `Slot`-category carrier attribute from an ordered
+    /// name->fill association list. Lives `internal` (no public free-form slot builder, FR-001):
+    /// the typed `Props` views call this; a consumer never names a slot string. Mirrors
+    /// `Attributes.styleClasses` but kept off the public surface.
+    let slotFill (fills: (string * Control<'msg>) list) : Attr<'msg> =
+        { Name = "slot"; Category = Slot; Value = SlotFillsValue fills }
+
+    /// Feature 095 (E5): the ordered slot fills carried by the last `slot` attribute (last-writer
+    /// convention). Absent ≡ `[]` ≡ no slot filled ≡ the byte-identical base case (FR-003).
+    let slotFillsOf (attrs: Attr<'msg> list) : (string * Control<'msg>) list =
+        tryLast "slot" attrs
+        |> Option.bind (fun attr ->
+            match attr.Value with
+            | SlotFillsValue fills -> Some fills
+            | _ -> None)
+        |> Option.defaultValue []
+
+    /// Feature 095 (E5): the fill for ONE named region, or `None` when that name is absent from the
+    /// fill list (an unfilled slot ⇒ render the region's default chrome). A name PRESENT but bound
+    /// to empty content still returns `Some` (absent ≠ empty, per the spec edge case).
+    let slotFor (name: string) (attrs: Attr<'msg> list) : Control<'msg> option =
+        slotFillsOf attrs |> List.tryFind (fun (n, _) -> n = name) |> Option.map snd
+
+    /// Feature 095 (E5): the per-kind declared slot regions, partitioned into those rendered
+    /// BEFORE the kind's intrinsic content (`leading`) and those rendered AFTER (`trailing`). A
+    /// kind with no declared regions returns empty lists, so lowering is total for every kind.
+    let private slotRegions (kind: string) : string list * string list =
+        match kind with
+        | "button" -> [ "leading" ], [ "trailing" ]
+        | "panel" -> [ "header" ], [ "footer" ]
+        | _ -> [], []
+
+    /// Feature 095 (E5): the pure, total, deterministic slot lowering `(kind + slot fills) ->
+    /// Control<'msg>`. For each declared region, place the fill sub-tree if present (else nothing —
+    /// the unfilled region contributes ZERO geometry, so the byte-identity holds), injecting the
+    /// fills into the control's `Children` ordered by region position (leading regions, then the
+    /// kind's intrinsic children, then trailing regions) and CONSUMING the slot carrier attribute.
+    /// Because the fills land in `Children`, they inherit E1 dispatch, E2 retained identity, E3
+    /// style resolution, and E4 focus/key routing by construction (FR-002, FR-004, FR-005, FR-006).
+    /// With no slot attribute present the control is returned verbatim (the fast path), so an
+    /// unfilled slot-bearing control is byte-identical to its pre-slot render (FR-003, SC-002).
+    let lowerSlots (control: Control<'msg>) : Control<'msg> =
+        match slotFillsOf control.Attributes with
+        | [] -> control
+        | fills ->
+            let pick names =
+                names |> List.choose (fun n -> fills |> List.tryFind (fun (fn, _) -> fn = n) |> Option.map snd)
+
+            let leadingNames, trailingNames = slotRegions control.Kind
+
+            { control with
+                Attributes = control.Attributes |> List.filter (fun a -> a.Name <> "slot")
+                Children = pick leadingNames @ control.Children @ pick trailingNames }
+
     let floatValue name defaultValue (attrs: Attr<'msg> list) =
         tryLast name attrs
         |> Option.bind (fun attr ->

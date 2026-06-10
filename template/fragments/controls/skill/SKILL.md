@@ -73,6 +73,91 @@ When the generated product also selects Elmish program integration, use the
 `FS.Skia.UI.Controls.Elmish` adapter at the product edge for commands and
 subscriptions.
 
+## Capability surface — E1–E5 (live dispatch → lookless slot composition)
+
+The Controls runtime is a declarative-retained MVU core: your generated product
+writes a single `view : 'model -> Control<'msg>` (or builds `Widget<'msg>` through
+the typed front door `FS.Skia.UI.Controls.Typed`), and the framework supplies five
+composable, **all-shipped** capabilities. None of them is a data binding,
+`DataContext`, or lookless `ControlTemplate` — those remain permanent non-goals.
+
+### E1 — live event dispatch
+
+An authored event lowers to a binding keyed by the control's `ControlId`; the host
+loop routes a `ControlEvent` to it through `Control.dispatch`, returning the `'msg`
+your `update` folds in.
+
+```fsharp
+open FS.Skia.UI.Controls
+open FS.Skia.UI.Controls.Typed
+
+let saveButton =
+    Button.view { Button.defaults with Id = Some "save"; Text = "Save"; OnClick = Some SaveRequested }
+// host: Control.dispatch { Kind = "click"; ControlId = Some "save"; Origin = ControlEventOrigin.Pointer; Payload = None } tree => [ SaveRequested ]
+```
+
+### E2 — retained identity (why focus/text survive a re-render)
+
+Retained identity is a property of the **keyed tree**, not a binding. Give a control
+a stable `Id`; the keyed reconciler matches it key-first across a sibling-shifting
+re-render, so its focus / caret / text / animation survive even when an unrelated
+sibling is inserted above it. Omit the key and a positional shift resets that state.
+
+```fsharp
+Stack.view
+    { Stack.defaults with
+        Children =
+            [ banner
+              Button.view { Button.defaults with Id = Some "editor"; Text = "Edit" } ] }
+```
+
+### E3 — style class / variant + visual state
+
+Attach an ordered `StyleClass list` (typed `Variant` or free-form `Custom`); the
+resolver folds `base < classes-in-order < visual-state` with fixed precedence. No CSS selectors.
+
+```fsharp
+Button.view { Button.defaults with Text = "Delete"; Classes = [ Variant StyleVariant.Danger ] }
+```
+
+### E4 — focus / keyboard traversal
+
+`Focus.order` derives the deterministic tab order, `Focus.traverse` moves
+Next/Previous (wrapping), and `Focus.route` classifies a delivered key against the
+focused control. A focusable control inside a non-focusable container is its own stop.
+
+```fsharp
+let order = Focus.order tree
+let next  = Focus.traverse order (Some "save") Focus.Next
+```
+
+### E5 — lookless slot composition (typed-closed)
+
+Fill a control's declared, per-kind, **typed** slot regions with your OWN
+`Widget<'msg>` to re-skin its **shape** — an icon before a button's label, a custom
+panel header/footer. A slot fill is a static `Control<'msg>` your `view` already
+computed — **not** a data-bound template, `DataContext`, or binding. The regions are
+**closed per kind**: filling a region a kind does not declare is a compile error. An
+unfilled slot renders the kind's existing chrome (byte-identical to before).
+
+```fsharp
+let icon = TextBlock.view { TextBlock.defaults with Text = "★" }
+
+// Button declares Leading / Trailing; Panel declares Header / Footer:
+let starred = Button.view { Button.defaults with Text = "Save"; Leading = Some icon }
+
+let framed =
+    Panel.view
+        { Panel.defaults with
+            Header = Some(TextBlock.view { TextBlock.defaults with Text = "Settings" })
+            Children = [ body ] }
+// Button.view { Button.defaults with Header = ... }  // does NOT compile — Button declares no Header
+```
+
+Slotted content is a first-class sub-tree: it composes with E1 dispatch, E3 styling,
+and E4 focus, and keeps its E2 retained identity across a re-render — **free**,
+because the fill lands in the control's `Children`, not a parallel channel.
+
 ## Build Commands
 
 Run `./fake.sh build -t Dev` and `./fake.sh build -t Verify` in the generated

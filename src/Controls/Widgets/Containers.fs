@@ -24,6 +24,8 @@ type BorderProps<'msg> =
 
 type PanelProps<'msg> =
     { Id: ControlId option
+      Header: Widget<'msg> option
+      Footer: Widget<'msg> option
       Children: Widget<'msg> list }
 
 type ScrollViewerProps<'msg> =
@@ -119,13 +121,29 @@ module Border =
         |> Widget.ofControl
 
 module Panel =
-    let defaults: PanelProps<'msg> = { Id = None; Children = [] }
+    let defaults: PanelProps<'msg> = { Id = None; Header = None; Footer = None; Children = [] }
 
     let view (props: PanelProps<'msg>) : Widget<'msg> =
         let children = props.Children |> List.map Widget.toControl
+        // Feature 095 (E5): the ordered (region-name, fill) pairs for the chrome slots filled.
+        // `None` for both ⇒ `[]` ⇒ no slot attribute ⇒ `lowerSlots` is a no-op ⇒ byte-identical.
+        let slots =
+            [ match props.Header with
+              | Some w -> yield "header", Widget.toControl w
+              | None -> ()
+              match props.Footer with
+              | Some w -> yield "footer", Widget.toControl w
+              | None -> () ]
 
-        FS.Skia.UI.Controls.Panel.create [ FS.Skia.UI.Controls.Panel.children children ]
+        let attrs =
+            [ yield FS.Skia.UI.Controls.Panel.children children
+              match slots with
+              | [] -> ()
+              | fills -> yield ControlInternals.slotFill fills ]
+
+        FS.Skia.UI.Controls.Panel.create attrs
         |> ContainerLowering.withKeyOpt props.Id
+        |> ControlInternals.lowerSlots
         |> Widget.ofControl
 
 module ScrollViewer =

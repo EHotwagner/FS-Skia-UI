@@ -1,0 +1,25 @@
+
+## sample-pack/source generated Verify
+$ bash ./fake.sh build -t Verify
+Dev completed for generated product
+GeneratedGuidanceCheck completed for generated product
+TemplateDrift completed for generated product
+feature-source=SPECKIT_FEATURE_DIR override
+feature-directory=/home/developer/projects/FS-Skia-UI/artifacts/generated-products/095-lookless-slot-composition/sample-pack-source/specs/seed-087-generated-verify
+tasks=1
+feature-source=SPECKIT_FEATURE_DIR override
+feature-directory=/home/developer/projects/FS-Skia-UI/artifacts/generated-products/095-lookless-slot-composition/sample-pack-source/specs/seed-087-generated-verify
+tasks=1
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Product -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/095-lookless-slot-composition/sample-pack-source/src/Product/bin/Debug/net10.0/Product.dll
+  Product.Tests -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/095-lookless-slot-composition/sample-pack-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/artifacts/generated-products/095-lookless-slot-composition/sample-pack-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     2, Skipped:     0, Total:     2, Duration: 12 ms - Product.Tests.dll (net10.0)
+Test completed for generated product
+Verify completed for generated product
+Verify completed for generated product
+
+exit-code=0
