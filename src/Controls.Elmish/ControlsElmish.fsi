@@ -200,5 +200,16 @@ module ControlsElmish =
     /// 090 FR-001/FR-003), and keystrokes to a focused text control are delivered through the
     /// focus-aware text seam (`routeFocusedText`, FR-008) before falling through to `host.MapKey`.
     /// Reuses `Viewer.runInteractiveViewer`; the durable `Viewer.runApp` literal is untouched.
+    ///
+    /// Feature 091 (E2, behavioral note — signature unchanged): the host no longer rebuilds the
+    /// whole tree every frame. It holds a retained previous tree (`module internal RetainedRender`,
+    /// the wired 067 reconciler) and produces each frame by `Reconcile.diff`-ing the next tree
+    /// against it and reusing the unchanged subtrees' cached render fragments — O(changed-subtree),
+    /// byte-for-byte identical to a full rebuild (FR-004/FR-005). Per-control state re-keys to the
+    /// stable diff-conferred identity so it survives an unrelated re-render (FR-003); diff
+    /// diagnostics (e.g. `KeyCollision`) surface through the host diagnostics channel, never
+    /// dropped (FR-007). The consumer `Init`/`Update`/`View`/`MapKey`/`MapPointer`/`Tick`/`Theme`/
+    /// `Diagnostics` contract is unchanged — an existing consumer needs zero changes to benefit
+    /// (FR-008).
     val runInteractiveApp:
         options: ViewerOptions -> host: InteractiveAppHost<'model, 'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>

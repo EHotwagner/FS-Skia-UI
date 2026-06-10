@@ -196,6 +196,31 @@ module internal ControlInternals =
 
     val chartValues: control: Control<'msg> -> ChartPoint list
 
+    val evaluateLayout:
+        size: FS.Skia.UI.Scene.Size ->
+        control: Control<'msg> ->
+            FS.Skia.UI.Layout.LayoutNode * Map<string, FS.Skia.UI.Layout.LayoutBounds>
+
+    val paintNode:
+        theme: Theme ->
+        boundsById: Map<string, FS.Skia.UI.Layout.LayoutBounds> ->
+        path: string ->
+        c: Control<'msg> ->
+            FS.Skia.UI.Scene.Scene list
+
+    val nodeBox:
+        boundsById: Map<string, FS.Skia.UI.Layout.LayoutBounds> ->
+        path: string ->
+        c: Control<'msg> ->
+            FS.Skia.UI.Scene.Rect option
+
+    val collectBoundsWith:
+        boundsById: Map<string, FS.Skia.UI.Layout.LayoutBounds> ->
+        control: Control<'msg> ->
+            (ControlId * FS.Skia.UI.Scene.Rect) list
+
+    val eventBindingsOf: control: Control<'msg> -> ControlEventBinding<'msg> list
+
 module Control =
 
     val create: kind: ControlKind -> attrs: Attr<'msg> list -> Control<'msg>
@@ -848,6 +873,52 @@ module internal Reconcile =
     val diff: prev: Control<'msg> -> next: Control<'msg> -> ReconcileResult<'msg>
 
     val apply: prev: Control<'msg> -> patch: NodePatch<'msg> -> Control<'msg>
+
+namespace FS.Skia.UI.Controls
+
+type internal RetainedId = RetainedId of uint64
+
+type internal RenderFragment =
+    { OwnScene: FS.Skia.UI.Scene.Scene list
+      SubtreeScene: FS.Skia.UI.Scene.Scene list
+      Box: FS.Skia.UI.Scene.Rect option }
+
+type internal RetainedNode<'msg> =
+    { Identity: RetainedId
+      Control: Control<'msg>
+      Fragment: RenderFragment
+      Children: RetainedNode<'msg> list }
+
+type internal RetainedUiState =
+    { Animation: FS.Skia.UI.Scene.AnimationState<FS.Skia.UI.Scene.Transform> option
+      Text: TextInputModel option }
+
+type internal RetainedRender<'msg> =
+    { Root: RetainedNode<'msg>
+      NextId: uint64
+      StateByIdentity: Map<RetainedId, RetainedUiState> }
+
+type internal WorkReductionRecord =
+    { BaselineNodeCount: int
+      RecomputedNodeCount: int
+      ChangedSubtreeBound: int }
+
+type internal RetainedRenderStep<'msg> =
+    { Retained: RetainedRender<'msg>
+      Render: ControlRenderResult<'msg>
+      Diagnostics: ControlDiagnostic list
+      WorkReduction: WorkReductionRecord }
+
+module internal RetainedRender =
+
+    val init: theme: Theme -> size: FS.Skia.UI.Scene.Size -> control: Control<'msg> -> RetainedRender<'msg>
+
+    val step:
+        theme: Theme ->
+        size: FS.Skia.UI.Scene.Size ->
+        prev: RetainedRender<'msg> ->
+        next: Control<'msg> ->
+            RetainedRenderStep<'msg>
 
 namespace FS.Skia.UI.Controls
 

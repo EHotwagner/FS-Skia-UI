@@ -1,0 +1,9 @@
+# Retained-tree reconciliation — measured per-frame work reduction (feature 091, SC-003)
+evidence-kind=work-reduction
+status=pass
+scenario=localized single-leaf content change over a wide fixed-size tree (no geometry shift)
+baselineCount=13
+wiredCount=1
+subtreeBound=1
+invariant=RecomputedNodeCount(1) <= ChangedSubtreeBound(1) < BaselineNodeCount(13)
+authoritative-test=Feature091RetainedRenderTests/091 US3 partial update + golden parity

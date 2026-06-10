@@ -6,7 +6,7 @@ generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
 symbol-count: 467
-xml-summary-count: 95
+xml-summary-count: 103
 source-fsi-paths:
 - src/SkiaViewer/SkiaViewer.fsi
 sampled-symbols:
@@ -581,6 +581,14 @@ type ViewerPointerInput =
 /// Controls-free lower runner; the Control/PointerInteraction-aware `InteractiveAppHost`
 /// (FS.Skia.UI.Controls.Elmish) adapts onto it (research D3-AMEND). `GeneratedAppHost` and
 /// `Viewer.runApp` are left intact (FR-006).
+/// Feature 091 (E2, behavioral note — signature unchanged): the per-message repaint stores the
+/// `SceneNode` the host's `View` produces (the existing `currentScene <- host.View …` seam). The
+/// viewer is framework-neutral and does not itself diff (its `View` yields an opaque `SceneNode`,
+/// not a `Control<'msg>` tree); the keyed-reconciliation retained path lives at the controls
+/// adapter edge (`Controls.Elmish.runInteractiveApp`), whose `View` produces each frame by diffing
+/// the next tree against a retained previous tree (`module internal RetainedRender`). So when the
+/// host is the controls adapter, this repaint is already O(changed-subtree) and byte-identical to a
+/// full rebuild (FR-004/FR-005); a generic host that supplies its own `View` is unchanged.
 type InteractiveViewerHost<'model,'msg> =
     { Init: unit -> 'model * ViewerEffect list
       Update: 'msg -> 'model -> 'model * ViewerEffect list

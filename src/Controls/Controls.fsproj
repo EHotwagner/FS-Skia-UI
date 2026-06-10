@@ -17,6 +17,12 @@
        surface-area gate requires). -->
   <ItemGroup>
     <InternalsVisibleTo Include="Controls.Tests" />
+    <!-- Feature 091 (E2): the interactive controls adapter wires `module internal RetainedRender`
+         (the 067 reconciler) onto its production render path. The adapter is part of the framework,
+         not a package consumer, so it reaches the internal module via InternalsVisibleTo — the
+         module stays `internal` (no public-surface entry, zero baseline delta), consistent with the
+         "do not promote Reconcile to public" rule. -->
+    <InternalsVisibleTo Include="FS.Skia.UI.Controls.Elmish" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,6 +54,13 @@
     <Compile Include="TextInput.fs" />
     <Compile Include="ControlRuntime.fsi" />
     <Compile Include="ControlRuntime.fs" />
+    <!-- Feature 091 (E2): the retained render structure that wires the parked keyed
+         reconciler (067) onto the live render path. `module internal` (no public-surface
+         entry, mirrors Reconcile); reached by Controls.Tests via InternalsVisibleTo.
+         Depends on Control (renderTree internals), Reconcile (the diff), and
+         TextInput (TextInputModel for re-keyed text state). -->
+    <Compile Include="RetainedRender.fsi" />
+    <Compile Include="RetainedRender.fs" />
     <!-- Feature 075: pure pointer-interaction front door over ControlRuntime +
          Layout.hitTestComputed (host-independent; no SkiaViewer dependency). -->
     <Compile Include="Pointer.fsi" />

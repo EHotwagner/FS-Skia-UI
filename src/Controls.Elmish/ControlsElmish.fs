@@ -338,6 +338,43 @@ module ControlsElmish =
         let focusedText = ref (None: ControlId option)
         let textModels = ref (Map.empty: Map<ControlId, TextInputModel>)
         let latest = ref (None: (Size * 'model) option)
+        // Feature 091 (E2): the retained render structure (the wired keyed reconciler, 067) held
+        // alongside the existing interpreter-edge refs. Each frame the production render path diffs
+        // the next lowered tree against this retained previous tree and reuses the unchanged
+        // subtrees' cached fragments instead of rebuilding the whole tree — O(changed-subtree),
+        // byte-identical to a full rebuild (FR-004/FR-005). Per-control state re-keys to the stable
+        // diff-conferred `RetainedId` (RetainedRender.StateByIdentity), so it survives an unrelated
+        // re-render even when a control's position shifts (FR-003). Mutation is confined to this
+        // closure at the interpreter edge (constitution III); the consumer `view` stays pure.
+        let retained = ref (None: RetainedRender<'msg> option)
+        // FR-007: diff diagnostics (e.g. KeyCollision from duplicate sibling keys) surfaced through
+        // the host's diagnostics stderr channel — never silently dropped; de-duped so a standing
+        // collision is reported once, not every frame. The path stays total in their presence.
+        let surfacedDiagnostics = ref (Set.empty: Set<string>)
+
+        // Produce the production scene for (size, model) through the retained reconciler. The first
+        // frame seeds the retained structure; later frames diff + reuse. Output is byte-identical to
+        // `Control.renderTree host.Theme size (host.View size model)` (FR-005, proven by the wired
+        // round-trip/golden-parity property suite).
+        let renderRetained (size: Size) (model: 'model) : Scene =
+            let next = host.View size model
+
+            match retained.Value with
+            | None ->
+                retained.Value <- Some(RetainedRender.init host.Theme size next)
+                (Control.renderTree host.Theme size next).Scene
+            | Some prev ->
+                let s = RetainedRender.step host.Theme size prev next
+
+                for d in s.Diagnostics do
+                    let key = sprintf "%A|%A|%s" d.Code d.ControlId d.Message
+
+                    if not (Set.contains key surfacedDiagnostics.Value) then
+                        surfacedDiagnostics.Value <- Set.add key surfacedDiagnostics.Value
+                        eprintfn "[ControlDiagnostic %A] %s" d.Severity d.Message
+
+                retained.Value <- Some s.Retained
+                s.Render.Scene
 
         let mapPointer (input: ViewerPointerInput) (size: Size) (model: 'model) : 'msg list =
             latest.Value <- Some(size, model)
@@ -388,7 +425,7 @@ module ControlsElmish =
         let viewerHost: InteractiveViewerHost<'model, 'msg> =
             { Init = host.Init
               Update = host.Update
-              View = fun size model -> SceneNode.Group [ (Control.renderTree host.Theme size (host.View size model)).Scene ]
+              View = fun size model -> SceneNode.Group [ renderRetained size model ]
               MapKey = mapKey
               MapPointer = mapPointer
               Tick = host.Tick

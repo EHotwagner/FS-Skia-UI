@@ -1,0 +1,14 @@
+# Retained-tree reconciliation — golden-diff parity (feature 091, SC-004)
+evidence-kind=golden-diff-parity
+renderer-mode=DeterministicRenderOnly
+status=pass
+parity-proof=structural-scene-equality
+scene-identical=true
+scene-diff=zero
+artifact-decodable=false
+proves-scene-rendering=false
+proves-desktop-visibility=false
+readback-authoritative=false
+readback-note=SceneEvidence.renderPng/renderReadbackEvidence are deterministic CAPABILITY-hash functions (size + sorted scene-capability descriptors), NOT pixel encoders, so they emit no decodable PNG and equal hashes mean equal capability sets (not identical pixels) — this is independent of the GPU (the environment HAS one). The AUTHORITATIVE parity proof is the pure structural equality of the ControlRenderResult.Scene values (wired == full rebuild), asserted by the test. A real pixel PNG would require the windowed render-target path (SkiaViewer.captureScreenshotEvidence), out of scope here.
+authoritative-test=Feature091RetainedRenderTests/091 US3 partial update + golden parity
+note=wired Render.Scene is byte-identical to Control.renderTree next (zero diff); no live Vulkan window required ([[fs-skia-evidence-mode]]).

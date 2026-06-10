@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 694
-xml-summary-count: 323
+symbol-count: 710
+xml-summary-count: 344
 source-fsi-paths:
 - src/Controls/Accessibility.fsi
 - src/Controls/Attributes.fsi
@@ -266,6 +266,44 @@ module internal ControlInternals =
     /// Extract the chart data points (X/Y/Label preserved) a chart-like control carries.
     val chartValues: control: Control<'msg> -> ChartPoint list
 
+    /// Feature 091 — the per-node measure of `Control.renderTree`, factored so the wired
+    /// retained path (`module internal RetainedRender`) measures with the IDENTICAL function.
+    /// Builds + evaluates the nested Yoga layout, returning the root node and the absolute
+    /// bounds keyed by the collision-free structural id (`Key |> defaultValue path`).
+    val evaluateLayout:
+        size: FS.Skia.UI.Scene.Size ->
+        control: Control<'msg> ->
+            FS.Skia.UI.Layout.LayoutNode * Map<string, FS.Skia.UI.Layout.LayoutBounds>
+
+    /// Feature 091 — paint ONE node's own contribution (`here`) at its computed box; the
+    /// reusable unit a retained `RenderFragment` caches. Depends only on (theme, box, the
+    /// node's own Kind/Content/Attributes/has-children), never on descendants.
+    val paintNode:
+        theme: Theme ->
+        boundsById: Map<string, FS.Skia.UI.Layout.LayoutBounds> ->
+        path: string ->
+        c: Control<'msg> ->
+            FS.Skia.UI.Scene.Scene list
+
+    /// Feature 091 — the evaluated absolute box of a node, by the same structural id
+    /// `paintNode` looks up. `None` when the node was not laid out.
+    val nodeBox:
+        boundsById: Map<string, FS.Skia.UI.Layout.LayoutBounds> ->
+        path: string ->
+        c: Control<'msg> ->
+            FS.Skia.UI.Scene.Rect option
+
+    /// Feature 091 — the evaluated `Bounds` list `renderTree` surfaces, from a pre-evaluated
+    /// `boundsById`, so the retained path emits the identical list.
+    val collectBoundsWith:
+        boundsById: Map<string, FS.Skia.UI.Layout.LayoutBounds> ->
+        control: Control<'msg> ->
+            (ControlId * FS.Skia.UI.Scene.Rect) list
+
+    /// Feature 091 — the recursive `EventBindings` list `renderTree` surfaces, factored so the
+    /// retained path emits the identical list.
+    val eventBindingsOf: control: Control<'msg> -> ControlEventBinding<'msg> list
+
 /// Public contract module exposed by this FS.Skia.UI package.
 module Control =
     /// Public contract function exposed by this FS.Skia.UI package.
@@ -288,6 +326,14 @@ module Control =
     /// bounds, so two structurally different trees produce visibly different scenes. The
     /// returned `Layout`/`EventBindings` correlate by `ControlId` for host hit-testing.
     /// Additive: `render` and `Widget.render` are unchanged (FR-001/FR-002/FR-003).
+    ///
+    /// Feature 091 (behavioral note, signature unchanged): the interactive host loops no
+    /// longer call `renderTree` afresh every frame — each next frame is produced by diffing
+    /// the next lowered tree against a retained previous tree (`module internal
+    /// RetainedRender`) and reusing the unchanged subtrees' cached render fragments. The
+    /// per-node measure/paint here is factored into `ControlInternals.evaluateLayout` /
+    /// `paintNode`, which the retained path reuses, so a full `renderTree` and the retained
+    /// partial render are byte-for-byte identical (FR-005).
     val renderTree:
         theme: Theme -> size: FS.Skia.UI.Scene.Size -> control: Control<'msg> -> ControlRenderResult<'msg>
     /// Resolve which rendered control (if any) contains the point (x, y), from the public

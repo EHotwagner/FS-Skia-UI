@@ -1,0 +1,61 @@
+## Symbol consistency (analyze pass G)
+- entity-record Animation — in {tasks}, missing from {plan, data-model}
+- entity-record AnimationState — in {tasks}, missing from {plan, data-model}
+- entity-record ChildInsert — in {plan, tasks}, missing from {data-model}
+- entity-record ChildKeep — in {tasks}, missing from {plan, data-model}
+- entity-record ChildMove — in {tasks}, missing from {plan, data-model}
+- entity-record ChildRemove — in {data-model, tasks}, missing from {plan}
+- entity-record Children — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record ControlDiagnostic — in {tasks}, missing from {plan, data-model}
+- entity-record ControlId — in {tasks}, missing from {plan, data-model}
+- entity-record ControlRenderResult — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record ControlTemplate — in {plan}, missing from {data-model, tasks}
+- entity-record Dev — in {tasks}, missing from {plan, data-model}
+- entity-record Elapsed — in {tasks}, missing from {plan, data-model}
+- entity-record EvidenceAudit — in {tasks}, missing from {plan, data-model}
+- entity-record EvidenceGraph — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedGuidanceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedProductCheck — in {tasks}, missing from {plan, data-model}
+- entity-record Identity — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record Keep — in {data-model, tasks}, missing from {plan}
+- entity-record KeyCollision — in {plan, tasks}, missing from {data-model}
+- entity-record Kind — in {plan, tasks}, missing from {data-model}
+- entity-record Render — in {tasks}, missing from {plan, data-model}
+- entity-record RenderFragment — in {tasks}, missing from {plan, data-model}
+- entity-record RetainedId — in {data-model, tasks}, missing from {plan}
+- entity-record RetainedNode — in {tasks}, missing from {plan, data-model}
+- entity-record RetainedRender — in {tasks}, missing from {plan, data-model}
+- entity-record RetainedRenderStep — in {tasks}, missing from {plan, data-model}
+- entity-record Route — in {tasks}, missing from {plan, data-model}
+- entity-record SkillSyncCheck — in {tasks}, missing from {plan, data-model}
+- entity-record StateByIdentity — in {tasks}, missing from {plan, data-model}
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- entity-record Update — in {tasks}, missing from {plan, data-model}
+- entity-record WorkReductionRecord — in {tasks}, missing from {plan, data-model}
+- fr-id FR-001 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-002 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-008 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-009 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-010 — in {plan, tasks}, missing from {data-model}
+- msg-case Accessibility — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Attributes — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Bounds — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Children — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Content — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Diagnostics — in {plan, data-model}, missing from {tasks}
+- msg-case Effect — in {tasks}, missing from {plan, data-model}
+- msg-case EventBindings — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Init — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Kind — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Layout — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Model — in {tasks}, missing from {plan, data-model}
+- msg-case Msg — in {plan, tasks}, missing from {data-model}
+- msg-case NodeCount — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Scene — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case SkiaViewer — in {plan}, missing from {data-model, tasks}
+- msg-case Subscriptions — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- sc-id SC-006 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-007 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-008 — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant ControlDiagnostic — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant KeyCollision — in {tasks}, missing from {plan, data-model}

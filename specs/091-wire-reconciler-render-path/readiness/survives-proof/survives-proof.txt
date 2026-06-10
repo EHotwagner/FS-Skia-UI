@@ -1,0 +1,15 @@
+# Retained-tree reconciliation — focus/animation survives an unrelated re-render (feature 091, SC-002)
+evidence-kind=survives-proof
+renderer-mode=DeterministicRenderOnly
+status=pass
+focus-survived=true
+clock-advanced=true
+baseline-fails=true
+scenes-differ=true
+artifact-decodable=false
+proves-scene-rendering=false
+proves-desktop-visibility=false
+readback-authoritative=false
+readback-note=no decodable PNG because SceneEvidence.renderPng is a deterministic capability-hash, not a pixel encoder (independent of the GPU — the environment HAS one). The AUTHORITATIVE proof is pure: the focused control's stable RetainedId is carried across the unrelated re-render (focus-survived), its clock advances rather than resets (clock-advanced), and a rebuild-every-frame baseline mints a new id so it loses the state (baseline-fails) — all asserted by the test.
+mechanism=RetainedRender.StateByIdentity keyed by the stable RetainedId carried across the diff
+authoritative-test=Feature091RetainedRenderTests/091 US2 focus + animation survive an unrelated re-render

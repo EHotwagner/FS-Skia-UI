@@ -39,7 +39,7 @@
       "ViewerWindowPosition",
       "Coordinates of x: int * y: int"
     ],
-    "XmlSummaryCount": 95,
+    "XmlSummaryCount": 103,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"
@@ -130,7 +130,7 @@
       "src/Controls/Types.fsi"
     ],
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.Controls.md",
-    "SymbolCount": 694,
+    "SymbolCount": 710,
     "SampledSymbols": [
       "type Control\u003C\u0027msg\u003E",
       "KnownControl.TextBlock",
@@ -139,7 +139,7 @@
       "LineChart.series",
       "TextBox.onChanged"
     ],
-    "XmlSummaryCount": 323,
+    "XmlSummaryCount": 344,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"
@@ -157,7 +157,7 @@
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.Controls.Elmish.md",
     "SymbolCount": 82,
     "SampledSymbols": [],
-    "XmlSummaryCount": 93,
+    "XmlSummaryCount": 104,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"

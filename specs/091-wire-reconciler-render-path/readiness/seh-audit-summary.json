@@ -1,0 +1,14 @@
+{
+  "verdict": "Pass",
+  "acceptedSyntheticCount": 0,
+  "unacceptedSyntheticCount": 0,
+  "acceptedDeferrals": [],
+  "acceptedSyntheticTasks": [],
+  "accepted_seh_tasks": [
+    "T023"
+  ],
+  "unaccepted_synthetic_tasks": [],
+  "auto_synthetic_tasks": [],
+  "late_seh_tasks": [],
+  "diagnostics": []
+}
