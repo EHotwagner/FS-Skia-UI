@@ -14,6 +14,7 @@ module Accessibility =
         focusOrder: int option ->
         keyboard: KeyboardOperation ->
         contrast: ContrastEvidence option ->
+        navRange: NavRange option ->
             AccessibilityMetadata
 
     /// Public contract function exposed by this FS.Skia.UI package.

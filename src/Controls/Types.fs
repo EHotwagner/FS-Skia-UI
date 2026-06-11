@@ -155,13 +155,19 @@ type ContrastEvidence =
       Ratio: float
       RequiredRatio: float }
 
+type NavRange =
+    { Step: float
+      Min: float
+      Max: float }
+
 type AccessibilityMetadata =
     { Role: AccessibilityRole
       NameSource: string
       State: string list
       FocusOrder: int option
       Keyboard: KeyboardOperation
-      Contrast: ContrastEvidence option }
+      Contrast: ContrastEvidence option
+      Navigation: NavRange option }
 
 type ValidationState =
     | Valid
@@ -222,11 +228,17 @@ type ControlEventOrigin =
     | Selection
     | Clipboard
 
+type NavPayload =
+    | SteppedValue of value: float
+    | MovedSelection of index: int * item: string option
+    | MovedCell of row: int * col: int
+
 type ControlEvent =
     { Kind: string
       ControlId: ControlId option
       Origin: ControlEventOrigin
-      Payload: string option }
+      Payload: string option
+      Nav: NavPayload option }
 
 type AttrCategory =
     | Content

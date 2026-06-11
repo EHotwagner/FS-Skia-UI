@@ -18,6 +18,7 @@
     <Compile Include="Feature096LiveBridgeTests.fs" />
     <Compile Include="Feature098DispatchTests.fs" />
     <Compile Include="Feature099AnimationSeamTests.fs" />
+    <Compile Include="Feature100NavigationTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

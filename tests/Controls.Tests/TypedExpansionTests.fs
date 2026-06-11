@@ -47,7 +47,8 @@ let sampleEvent: ControlEvent =
     { Kind = "sample"
       ControlId = None
       Origin = ControlEventOrigin.Pointer
-      Payload = Some "alpha" }
+      Payload = Some "alpha"
+      Nav = None }
 
 let rec normControl (control: Control<'msg>) : Control<'msg> =
     { control with
@@ -76,6 +77,7 @@ let a11y (role: AccessibilityRole) (nameSource: string) (navigationKeys: string 
             [ "normal" ]
             None
             (Accessibility.keyboard true [ "Enter"; "Space" ] navigationKeys)
+            None
             None)
 
 let private color r g b : Color = { Red = r; Green = g; Blue = b; Alpha = 255uy }

@@ -13,6 +13,7 @@ module Accessibility =
         focusOrder: int option ->
         keyboard: KeyboardOperation ->
         contrast: ContrastEvidence option ->
+        navRange: NavRange option ->
             AccessibilityMetadata
 
     val defaultFor: kind: ControlKind -> label: string -> AccessibilityMetadata
@@ -796,9 +797,21 @@ type FocusMove =
     | Next
     | Previous
 
+[<RequireQualifiedAccess>]
+type Direction =
+    | Previous
+    | Next
+    | First
+    | Last
+
+type NavIntent =
+    | ValueStep of delta: float
+    | SelectionMove of Direction
+    | GridMove of rowDelta: int * colDelta: int
+
 type KeyRouting =
     | Activate
-    | Navigate
+    | Navigate of NavIntent
     | Traverse of FocusMove
     | Fallthrough
 
@@ -808,7 +821,14 @@ module Focus =
 
     val traverse: order: TabOrder -> current: ControlId option -> move: FocusMove -> ControlId option
 
-    val route: keyboard: KeyboardOperation -> key: string -> isTab: bool -> shift: bool -> KeyRouting
+    val route:
+        role: AccessibilityRole ->
+        keyboard: KeyboardOperation ->
+        navRange: NavRange option ->
+        key: string ->
+        isTab: bool ->
+        shift: bool ->
+            KeyRouting
 
 namespace FS.Skia.UI.Controls
 
@@ -1307,13 +1327,20 @@ type ContrastEvidence =
       Ratio: float
       RequiredRatio: float }
 
+type NavRange =
+    { Step: float
+      Min: float
+      Max: float }
+
 type AccessibilityMetadata =
     { Role: AccessibilityRole
       NameSource: string
       State: string list
       FocusOrder: int option
       Keyboard: KeyboardOperation
-      Contrast: ContrastEvidence option }
+      Contrast: ContrastEvidence option
+
+      Navigation: NavRange option }
 
 type ValidationState =
     | Valid
@@ -1376,11 +1403,18 @@ type ControlEventOrigin =
     | Selection
     | Clipboard
 
+type NavPayload =
+    | SteppedValue of value: float
+    | MovedSelection of index: int * item: string option
+    | MovedCell of row: int * col: int
+
 type ControlEvent =
     { Kind: string
       ControlId: ControlId option
       Origin: ControlEventOrigin
-      Payload: string option }
+      Payload: string option
+
+      Nav: NavPayload option }
 
 type AttrCategory =
     | Content

@@ -40,6 +40,7 @@ module private ButtonsLowering =
                 [ "normal" ]
                 None
                 (Accessibility.keyboard true [ "Enter"; "Space" ] navigationKeys)
+                None
                 None)
 
 module ToggleButton =

@@ -12,13 +12,14 @@ module Accessibility =
           Ratio = ratio
           RequiredRatio = requiredRatio }
 
-    let metadata role nameSource state focusOrder keyboard contrast =
+    let metadata role nameSource state focusOrder keyboard contrast navRange =
         { Role = role
           NameSource = nameSource
           State = state
           FocusOrder = focusOrder
           Keyboard = keyboard
-          Contrast = contrast }
+          Contrast = contrast
+          Navigation = navRange }
 
     let roleFor kind =
         match kind with
@@ -114,6 +115,16 @@ module Accessibility =
                 | Progress -> false
                 | _ -> true
 
+        // Feature 100 (R5), FR-007: a slider declares the DEFAULT-step NavRange { Step = 0.1;
+        // Min = 0.0; Max = 1.0 } so the pre-R5 hardcoded host constant (navStep = 0.1, clamp 0..1)
+        // is reproduced byte-identically. Non-range roles carry Navigation = None (they cannot
+        // value-step; FR-008) — a consumer authoring a non-default-step slider supplies its own
+        // NavRange through the typed metadata.
+        let navRange =
+            match role with
+            | Slider -> Some { Step = 0.1; Min = 0.0; Max = 1.0 }
+            | _ -> None
+
         metadata
             role
             label
@@ -121,6 +132,7 @@ module Accessibility =
             None
             (keyboardFor role focusable)
             (Some(contrast FS.Skia.UI.Scene.Colors.black FS.Skia.UI.Scene.Colors.white 7.0 4.5))
+            navRange
 
     let validate control =
         match control.Accessibility with

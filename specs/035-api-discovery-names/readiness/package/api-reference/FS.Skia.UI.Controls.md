@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 751
-xml-summary-count: 433
+symbol-count: 762
+xml-summary-count: 450
 source-fsi-paths:
 - src/Controls/Accessibility.fsi
 - src/Controls/Attributes.fsi
@@ -62,6 +62,7 @@ module Accessibility =
         focusOrder: int option ->
         keyboard: KeyboardOperation ->
         contrast: ContrastEvidence option ->
+        navRange: NavRange option ->
             AccessibilityMetadata
 
     /// Public contract function exposed by this FS.Skia.UI package.
@@ -1230,13 +1231,28 @@ type ContrastEvidence =
       RequiredRatio: float }
 
 /// Public contract type exposed by this FS.Skia.UI package.
+/// Feature 100 (R5): declared range metadata for value/range roles — the SOLE source of
+/// step/bounds, replacing the host's hardcoded 0.1 / 0..1 slider constant (FR-002). A
+/// DEFAULT-step slider declares <c>{ Step = 0.1; Min = 0.0; Max = 1.0 }</c> so the pre-R5
+/// numeric path is reproduced byte-identically (FR-007). Validation: <c>Min &lt;= Max</c>;
+/// <c>Step &gt; 0</c>.
+type NavRange =
+    { Step: float
+      Min: float
+      Max: float }
+
+/// Public contract type exposed by this FS.Skia.UI package.
 type AccessibilityMetadata =
     { Role: AccessibilityRole
       NameSource: string
       State: string list
       FocusOrder: int option
       Keyboard: KeyboardOperation
-      Contrast: ContrastEvidence option }
+      Contrast: ContrastEvidence option
+      /// Feature 100 (R5): the declared value/range step + bounds for a range role
+      /// (<c>Some</c> for Slider/Progress/numeric value roles), <c>None</c> otherwise. Read by
+      /// both <c>Focus.route</c> and the host per-intent resolver.
+      Navigation: NavRange option }
 
 /// Public contract type exposed by this FS.Skia.UI package.
 type ValidationState =
@@ -1318,11 +1334,25 @@ type ControlEventOrigin =
     | Clipboard
 
 /// Public contract type exposed by this FS.Skia.UI package.
+/// Feature 100 (R5): the closed set of navigation-outcome payload shapes (FR-005, SC-005).
+/// Mirrors <c>NavIntent</c> one-to-one; exhaustively matched at the host edge.
+type NavPayload =
+    | SteppedValue of value: float
+    | MovedSelection of index: int * item: string option
+    | MovedCell of row: int * col: int
+
+/// Public contract type exposed by this FS.Skia.UI package.
 type ControlEvent =
     { Kind: string
       ControlId: ControlId option
       Origin: ControlEventOrigin
-      Payload: string option }
+      Payload: string option
+      /// Feature 100 (R5): the closed typed navigation outcome for a focused-key navigation
+      /// dispatch. A selection move dual-sets <c>Payload</c> (the moved item id, for existing
+      /// string consumers) AND <c>Nav</c> (the closed <c>MovedSelection</c>); non-navigation
+      /// events leave it <c>None</c>. <c>Payload : string option</c> is retained for backward
+      /// compatibility (research R-3).
+      Nav: NavPayload option }
 
 /// Public contract type exposed by this FS.Skia.UI package.
 type AttrCategory =

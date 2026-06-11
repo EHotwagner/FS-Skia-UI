@@ -1,0 +1,54 @@
+## Symbol consistency (analyze pass G)
+- entity-record Accessibility — in {data-model, tasks}, missing from {plan}
+- entity-record AccessibilityMetadata — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record ControlEvent — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record ControlRuntime — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record Direction — in {data-model, tasks}, missing from {plan}
+- entity-record Focus — in {data-model, tasks}, missing from {plan}
+- entity-record InteractiveAppHost — in {tasks}, missing from {plan, data-model}
+- entity-record KeyRouting — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record NavIntent — in {data-model, tasks}, missing from {plan}
+- entity-record NavPayload — in {data-model, tasks}, missing from {plan}
+- entity-record NavRange — in {data-model, tasks}, missing from {plan}
+- entity-record NavigationKeys — in {tasks}, missing from {plan, data-model}
+- entity-record RefreshSurfaceBaselines — in {tasks}, missing from {plan, data-model}
+- entity-record Route — in {tasks}, missing from {plan, data-model}
+- entity-record Types — in {data-model, tasks}, missing from {plan}
+- fr-id FR-001 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-002 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-003 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-004 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-005 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-006 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-007 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-008 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-009 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-010 — in {tasks}, missing from {plan, data-model}
+- msg-case Accessibility — in {tasks}, missing from {plan, data-model}
+- msg-case Cmd — in {plan, tasks}, missing from {data-model}
+- msg-case ControlEvent — in {tasks}, missing from {plan, data-model}
+- msg-case ControlRuntimeMsg — in {plan}, missing from {data-model, tasks}
+- msg-case Direction — in {tasks}, missing from {plan, data-model}
+- msg-case Effect — in {plan, tasks}, missing from {data-model}
+- msg-case Focus — in {tasks}, missing from {plan, data-model}
+- msg-case FocusControl — in {plan}, missing from {data-model, tasks}
+- msg-case GridMove — in {tasks}, missing from {plan, data-model}
+- msg-case InteractiveAppHost — in {tasks}, missing from {plan, data-model}
+- msg-case Items — in {tasks}, missing from {plan, data-model}
+- msg-case Model — in {tasks}, missing from {plan, data-model}
+- msg-case Msg — in {plan, tasks}, missing from {data-model}
+- msg-case NavIntent — in {tasks}, missing from {plan, data-model}
+- msg-case NavPayload — in {plan, tasks}, missing from {data-model}
+- msg-case NavRange — in {tasks}, missing from {plan, data-model}
+- msg-case Navigate — in {tasks}, missing from {plan, data-model}
+- msg-case NavigationKeys — in {tasks}, missing from {plan, data-model}
+- msg-case RetainedId — in {tasks}, missing from {plan, data-model}
+- msg-case Types — in {tasks}, missing from {plan, data-model}
+- msg-case ValueStep — in {tasks}, missing from {plan, data-model}
+- sc-id SC-001 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-002 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-003 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-004 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-005 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-007 — in {tasks}, missing from {plan, data-model}

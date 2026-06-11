@@ -124,29 +124,32 @@ let routeTests =
     testList "094 US2 key routing (Focus.route, SC-002/FR-007)" [
         let buttonKb = Accessibility.keyboard true [ "Enter"; "Space" ] []
         let sliderKb = Accessibility.keyboard true [] [ "ArrowLeft"; "ArrowRight" ]
+        // Feature 100 (R5): `route` now takes the control's role + declared NavRange and the
+        // `Navigate` case carries a closed `NavIntent`. A default-step slider declares {0.1;0;1}.
+        let sliderRange: NavRange option = Some { Step = 0.1; Min = 0.0; Max = 1.0 }
 
         test "ActivationKeys -> Activate" {
-            Expect.equal (Focus.route buttonKb "Enter" false false) Activate "Enter activates"
-            Expect.equal (Focus.route buttonKb "Space" false false) Activate "Space activates"
+            Expect.equal (Focus.route AccessibilityRole.Button buttonKb None "Enter" false false) Activate "Enter activates"
+            Expect.equal (Focus.route AccessibilityRole.Button buttonKb None "Space" false false) Activate "Space activates"
         }
 
-        test "NavigationKeys -> Navigate" {
-            Expect.equal (Focus.route sliderKb "ArrowLeft" false false) Navigate "ArrowLeft navigates"
-            Expect.equal (Focus.route sliderKb "ArrowRight" false false) Navigate "ArrowRight navigates"
+        test "NavigationKeys -> Navigate (R5: carries a role-derived NavIntent)" {
+            Expect.equal (Focus.route AccessibilityRole.Slider sliderKb sliderRange "ArrowLeft" false false) (Navigate(ValueStep -0.1)) "ArrowLeft -> value step down"
+            Expect.equal (Focus.route AccessibilityRole.Slider sliderKb sliderRange "ArrowRight" false false) (Navigate(ValueStep 0.1)) "ArrowRight -> value step up"
         }
 
         test "an unconsumed Tab -> Traverse (Next, or Previous with shift)" {
-            Expect.equal (Focus.route buttonKb "Tab" true false) (Traverse Next) "Tab -> Traverse Next"
-            Expect.equal (Focus.route buttonKb "Tab" true true) (Traverse Previous) "Shift+Tab -> Traverse Previous"
+            Expect.equal (Focus.route AccessibilityRole.Button buttonKb None "Tab" true false) (Traverse Next) "Tab -> Traverse Next"
+            Expect.equal (Focus.route AccessibilityRole.Button buttonKb None "Tab" true true) (Traverse Previous) "Shift+Tab -> Traverse Previous"
         }
 
         test "consumption wins: a control listing a traversal key consumes it (never Traverse)" {
             let tabConsuming = Accessibility.keyboard true [ "Tab" ] []
-            Expect.equal (Focus.route tabConsuming "Tab" true false) Activate "a control whose ActivationKeys include Tab activates on Tab (not Traverse)"
+            Expect.equal (Focus.route AccessibilityRole.Button tabConsuming None "Tab" true false) Activate "a control whose ActivationKeys include Tab activates on Tab (not Traverse)"
         }
 
         test "no match -> Fallthrough (never throws)" {
-            Expect.equal (Focus.route buttonKb "Q" false false) Fallthrough "an unmatched non-Tab key falls through"
+            Expect.equal (Focus.route AccessibilityRole.Button buttonKb None "Q" false false) Fallthrough "an unmatched non-Tab key falls through"
         }
     ]
 
@@ -180,7 +183,7 @@ let r1CorrectionTests =
         test "a focusable control with NEITHER activation nor navigation keys is still flagged" {
             let broken =
                 Button.create
-                    [ Button.text "broken"; Attr.accessibility (Accessibility.metadata AccessibilityRole.Button "broken" [ "normal" ] None (Accessibility.keyboard true [] []) None) ]
+                    [ Button.text "broken"; Attr.accessibility (Accessibility.metadata AccessibilityRole.Button "broken" [ "normal" ] None (Accessibility.keyboard true [] []) None None) ]
 
             let errors = Accessibility.validate broken |> List.filter (fun d -> d.Severity = ControlDiagnosticSeverity.Error)
             Expect.isNonEmpty errors "a focusable control with no operable key set is still invalid"
@@ -266,10 +269,12 @@ module private Gen094 =
 let propertyTests =
     testList "094 properties (FsCheck, SC-006)" [
         testCase "route is deterministic and total — identical inputs, identical verdict, never throws (>=1000)" (fun () ->
+            // Feature 100 (R5): `route` gained a role + NavRange arg; determinism/totality hold for
+            // any role. A Button role forms no navigation intent, isolating the E4 precedence here.
             let prop (kb, key, isTab, shift) =
                 let safe () =
                     try
-                        Focus.route kb key isTab shift = Focus.route kb key isTab shift
+                        Focus.route AccessibilityRole.Button kb None key isTab shift = Focus.route AccessibilityRole.Button kb None key isTab shift
                     with _ ->
                         false
 
@@ -278,15 +283,18 @@ let propertyTests =
             let config = Config.QuickThrowOnFailure.WithMaxTest 1000
             Check.One(config, Prop.forAll (Arb.fromGen Gen094.routeInput) prop))
 
-        testCase "route obeys the consumption-wins oracle (>=1000)" (fun () ->
+        testCase "route obeys the consumption-wins oracle for a non-navigable role (>=1000)" (fun () ->
+            // For a Button role no navigation intent is formed, so a NavigationKey is consumed (it
+            // pre-empts the Tab test) and yields Fallthrough. Activation precedence is unchanged.
+            // The role-derived `Navigate` classification is proven by the Feature100 suites.
             let oracle (kb: KeyboardOperation, key, isTab, shift) =
                 let expected =
                     if List.contains key kb.ActivationKeys then Activate
-                    elif List.contains key kb.NavigationKeys then Navigate
+                    elif List.contains key kb.NavigationKeys then Fallthrough
                     elif isTab then Traverse(if shift then Previous else Next)
                     else Fallthrough
 
-                Focus.route kb key isTab shift = expected
+                Focus.route AccessibilityRole.Button kb None key isTab shift = expected
 
             let config = Config.QuickThrowOnFailure.WithMaxTest 1000
             Check.One(config, Prop.forAll (Arb.fromGen Gen094.routeInput) oracle))

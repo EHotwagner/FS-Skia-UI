@@ -295,7 +295,8 @@ let runContractSmoke () =
         { Kind = "click"
           ControlId = Some "save-button"
           Origin = ControlEventOrigin.Pointer
-          Payload = None }
+          Payload = None
+          Nav = None }
 
     stopwatch.Stop()
     printfn "status=ok"

@@ -23,12 +23,33 @@ type FocusMove =
     | Next
     | Previous
 
+/// Feature 100 (R5): closed selection-move direction for a linear-selection role (Home/End fold
+/// to First/Last). Exhaustive. `RequireQualifiedAccess` keeps `Previous`/`Next` distinct from the
+/// E4 `FocusMove` cases (Direction.Previous etc.).
+[<RequireQualifiedAccess>]
+type Direction =
+    | Previous
+    | Next
+    | First
+    | Last
+
+/// Feature 100 (R5): the closed, role-derived classification of a focused control's navigation
+/// key (FR-001). One role maps to exactly one case. `ValueStep` carries a SIGNED STEP DELTA
+/// (declared `NavRange.Step` x key sign; Home/End fold to a delta that clamps to Min/Max), NOT a
+/// resolved value — the host applies it to the live value and clamps. `SelectionMove`/`GridMove`
+/// carry only direction/2-D delta; the host reads the live selection/grid model.
+type NavIntent =
+    | ValueStep of delta: float
+    | SelectionMove of Direction
+    | GridMove of rowDelta: int * colDelta: int
+
 /// How a delivered key routes against the focused control's KeyboardOperation (FR-003/FR-007).
 /// Closed -> the host's match is total. Text delivery is the host's E1 seam, consulted first,
-/// so there is no text case here.
+/// so there is no text case here. Feature 100 (R5): the `Navigate` case now CARRIES a closed,
+/// role-derived `NavIntent`.
 type KeyRouting =
     | Activate
-    | Navigate
+    | Navigate of NavIntent
     | Traverse of FocusMove
     | Fallthrough
 
@@ -49,10 +70,21 @@ module Focus =
     /// Total/deterministic: identical inputs -> identical output.
     val traverse: order: TabOrder -> current: ControlId option -> move: FocusMove -> ControlId option
 
-    /// Route a normalized key against the focused control's KeyboardOperation (FR-003/FR-007).
-    /// `key` is the normalized key name matched against Activation/NavigationKeys; `isTab`/`shift`
-    /// describe a traversal candidate. The control's own consumption wins: membership in
-    /// ActivationKeys -> Activate, in NavigationKeys -> Navigate, are tested BEFORE the Tab test, so
-    /// a control that lists a traversal key consumes it. Only an unconsumed Tab/Shift+Tab ->
-    /// Traverse (Next/Previous by `shift`). Otherwise Fallthrough. Pure, total; never throws.
-    val route: keyboard: KeyboardOperation -> key: string -> isTab: bool -> shift: bool -> KeyRouting
+    /// Route a normalized key against the focused control's `role` + KeyboardOperation
+    /// (FR-003/FR-007; FR-001/FR-006 for the navigation classification). `key` is the normalized
+    /// key name matched against Activation/NavigationKeys; `isTab`/`shift` describe a traversal
+    /// candidate. The control's own consumption wins: membership in ActivationKeys -> Activate;
+    /// membership in NavigationKeys is classified by `role` (+ the declared `navRange` for a value
+    /// role) into a closed `NavIntent` -> `Navigate intent`; both are tested BEFORE the Tab test, so
+    /// a control that lists a traversal key consumes it. A navigation key whose role/range cannot
+    /// form an intent (e.g. a value role with no `navRange`) -> Fallthrough (FR-008 no-op). Only an
+    /// unconsumed Tab/Shift+Tab -> Traverse (Next/Previous by `shift`). Otherwise Fallthrough.
+    /// `route` is the SINGLE role-specific branch (FR-006); pure, total; never throws.
+    val route:
+        role: AccessibilityRole ->
+        keyboard: KeyboardOperation ->
+        navRange: NavRange option ->
+        key: string ->
+        isTab: bool ->
+        shift: bool ->
+            KeyRouting

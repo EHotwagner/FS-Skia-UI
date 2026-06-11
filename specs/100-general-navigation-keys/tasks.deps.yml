@@ -1,0 +1,99 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (feature 100, R5).
+#
+# This file begins with a `schema_version` scalar and a top-level `tasks:`
+# mapping (the wrapper). Every Tnnn id in tasks.md appears once here with
+# `deps` and `skillist`; `owns` is present only where a task owns gated
+# evidence (closed vocabulary). Phase-checkpoint edges (every task in Phase
+# N+1 depends on the last foundation task of Phase N) are auto-injected by the
+# graph compute script — only non-phase cross-edges are written here.
+
+tasks:
+  # Phase 1 — Setup
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+
+  # Phase 2 — Foundation (Tier-1 closed-type surface + pure router)
+  T005:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+  T006:
+    deps: [T005]
+    skillist: ["fs-skia-keyboard-input"]
+  T007:
+    deps: [T005]
+    skillist: ["fs-skia-ui-widgets"]
+  T008:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 3 — User Story 1 (focused selection control moves selection)
+  T009:
+    deps: []
+    skillist: ["fs-skia-elmish", "fs-skia-testing"]
+  T010:
+    deps: [T006, T009]
+    skillist: ["fs-skia-elmish", "fs-skia-keyboard-input"]
+  T011:
+    deps: [T010]
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 4 — User Story 2 (focused slider steps by declared step)
+  T012:
+    deps: []
+    skillist: ["fs-skia-elmish", "fs-skia-testing"]
+  T013:
+    deps: [T006, T012]
+    skillist: ["fs-skia-elmish", "fs-skia-keyboard-input"]
+  T014:
+    deps: [T013]
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 5 — User Story 3 (focused grid moves selection in 2-D)
+  T015:
+    deps: []
+    skillist: ["fs-skia-elmish", "fs-skia-testing"]
+  T016:
+    deps: [T006, T010, T015]
+    skillist: ["fs-skia-elmish", "fs-skia-keyboard-input"]
+  T017:
+    deps: [T016]
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 6 — User Story 4 (metadata-driven, closed model invariant)
+  T018:
+    deps: []
+    skillist: ["fs-skia-testing", "fs-skia-ui-widgets"]
+  T019:
+    deps: [T018]
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 7 — Integration & Polish
+  T020:
+    deps: [T005]
+    skillist: ["fs-skia-ui-widgets"]
+  T021:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+  T022:
+    deps: []
+    skillist: ["fs-skia-testing"]
+  T023:
+    deps: [T022]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T024:
+    deps: [T023]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

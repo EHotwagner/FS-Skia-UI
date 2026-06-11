@@ -13,9 +13,21 @@ type FocusMove =
     | Next
     | Previous
 
+[<RequireQualifiedAccess>]
+type Direction =
+    | Previous
+    | Next
+    | First
+    | Last
+
+type NavIntent =
+    | ValueStep of delta: float
+    | SelectionMove of Direction
+    | GridMove of rowDelta: int * colDelta: int
+
 type KeyRouting =
     | Activate
-    | Navigate
+    | Navigate of NavIntent
     | Traverse of FocusMove
     | Fallthrough
 
@@ -103,14 +115,73 @@ module Focus =
                     | Next -> first ()
                     | Previous -> last ()
 
-    // FR-003/FR-007: classify a normalized key against the focused control's KeyboardOperation.
+    // FR-001/FR-006 (R5): the SINGLE role-specific branch. Classify a navigation key (already
+    // confirmed to be in the role's `NavigationKeys`) into a closed `NavIntent` by role. A value
+    // role needs a declared `NavRange` to form a `ValueStep` (the delta is the declared step x key
+    // sign; Home/End fold to a delta that clamps to Min/Max at the host); without one it cannot
+    // step -> None (Fallthrough, FR-008). A role with no navigation semantics -> None. Pure, total.
+    let private navIntentFor (role: AccessibilityRole) (navRange: NavRange option) (key: string) : NavIntent option =
+        match role with
+        // Value / range roles: arrows step by the declared step; Home/End jump to Min/Max.
+        | Slider
+        | Progress
+        | Chart
+        | Graph ->
+            match navRange with
+            | Some range ->
+                match key with
+                | "ArrowRight"
+                | "ArrowUp" -> Some(ValueStep range.Step)
+                | "ArrowLeft"
+                | "ArrowDown" -> Some(ValueStep(-range.Step))
+                // A delta guaranteed to clamp to the bound from any current value in [Min, Max].
+                | "Home" -> Some(ValueStep(range.Min - range.Max))
+                | "End" -> Some(ValueStep(range.Max - range.Min))
+                | _ -> None
+            | None -> None
+        // Linear selection roles: prev/next/first/last over the existing selection model.
+        | RadioGroup
+        | Tab
+        | Menu
+        | List ->
+            match key with
+            | "ArrowUp"
+            | "ArrowLeft" -> Some(SelectionMove Direction.Previous)
+            | "ArrowDown"
+            | "ArrowRight" -> Some(SelectionMove Direction.Next)
+            | "Home" -> Some(SelectionMove Direction.First)
+            | "End" -> Some(SelectionMove Direction.Last)
+            | _ -> None
+        // Grid roles: a 2-D unit delta (row by Up/Down, column by Left/Right).
+        | Grid ->
+            match key with
+            | "ArrowUp" -> Some(GridMove(-1, 0))
+            | "ArrowDown" -> Some(GridMove(1, 0))
+            | "ArrowLeft" -> Some(GridMove(0, -1))
+            | "ArrowRight" -> Some(GridMove(0, 1))
+            | _ -> None
+        // Non-navigable roles (Button, CheckBox, TextBox, Dialog, StaticText, Image, Custom):
+        // no intra-control navigation intent.
+        | _ -> None
+
+    // FR-003/FR-007: classify a normalized key against the focused control's role + KeyboardOperation.
     // The control's own consumption (Activate/Navigate) is tested BEFORE the Tab test, so a control
-    // that lists a traversal key in its own keys consumes it (never Traverse). Pure, total.
-    let route (keyboard: KeyboardOperation) (key: string) (isTab: bool) (shift: bool) : KeyRouting =
+    // that lists a traversal key in its own keys consumes it (never Traverse). A navigation key the
+    // role/range cannot classify -> Fallthrough (FR-008 no-op). Pure, total.
+    let route
+        (role: AccessibilityRole)
+        (keyboard: KeyboardOperation)
+        (navRange: NavRange option)
+        (key: string)
+        (isTab: bool)
+        (shift: bool)
+        : KeyRouting =
         if List.contains key keyboard.ActivationKeys then
             Activate
         elif List.contains key keyboard.NavigationKeys then
-            Navigate
+            match navIntentFor role navRange key with
+            | Some intent -> Navigate intent
+            | None -> Fallthrough
         elif isTab then
             Traverse(if shift then Previous else Next)
         else

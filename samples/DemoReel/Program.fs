@@ -379,6 +379,7 @@ let diagnosticControls t =
             (Some 4)
             (Accessibility.keyboard true [ "Enter"; "Space" ] [ "Tab" ])
             (Some(Accessibility.contrast Colors.black Colors.black 1.0 4.5))
+            None
 
     Stack.create [
         Attr.width 520.0
@@ -747,13 +748,15 @@ let runContractSmoke () =
         { Kind = "click"
           ControlId = Some "save-button"
           Origin = ControlEventOrigin.Keyboard
-          Payload = Some "Enter" }
+          Payload = Some "Enter"
+          Nav = None }
 
     let textChange =
         { Kind = "changed"
           ControlId = Some "profile-name"
           Origin = ControlEventOrigin.Text
-          Payload = Some "Katherine Johnson" }
+          Payload = Some "Katherine Johnson"
+          Nav = None }
 
     let dispatches = Control.dispatch click (formControls model) @ Control.dispatch textChange (formControls model)
     let scenes = [ for slide in 0 .. slideCount - 1 -> view { afterScroll with ManualSlide = Some slide } |> Scene.describe ]

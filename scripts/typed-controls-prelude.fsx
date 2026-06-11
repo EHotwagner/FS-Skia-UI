@@ -45,7 +45,7 @@ printfn "typed-root-kind=%s" control.Kind
 printfn "typed-children-kinds=%A" (control.Children |> List.map (fun c -> c.Kind))
 printfn "typed-node-count=%d" rendered.NodeCount
 printfn "typed-diagnostics=%A" rendered.Diagnostics
-printfn "typed-button-dispatch=%A" (Control.dispatch { Kind = "click"; ControlId = Some "submit"; Origin = ControlEventOrigin.Pointer; Payload = None } control)
+printfn "typed-button-dispatch=%A" (Control.dispatch { Kind = "click"; ControlId = Some "submit"; Origin = ControlEventOrigin.Pointer; Payload = None; Nav = None } control)
 printfn "typed-textbox-init-effects=%A" textBoxEffects
 printfn "typed-textbox-draft=%s" textBoxModel'.DraftText
 printfn "typed-textbox-kind=%s" (Widget.toControl textBox).Kind

@@ -130,7 +130,7 @@
       "src/Controls/Types.fsi"
     ],
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.Controls.md",
-    "SymbolCount": 751,
+    "SymbolCount": 762,
     "SampledSymbols": [
       "type Control\u003C\u0027msg\u003E",
       "KnownControl.TextBlock",
@@ -139,7 +139,7 @@
       "LineChart.series",
       "TextBox.onChanged"
     ],
-    "XmlSummaryCount": 433,
+    "XmlSummaryCount": 450,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"

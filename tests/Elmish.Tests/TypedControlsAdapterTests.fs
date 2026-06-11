@@ -72,7 +72,7 @@ let typedAdapterTests =
             Expect.isGreaterThan rendered.NodeCount 0 "typed view renders through the adapter"
 
             let click =
-                { Kind = "click"; ControlId = Some "save"; Origin = ControlEventOrigin.Pointer; Payload = None }
+                { Kind = "click"; ControlId = Some "save"; Origin = ControlEventOrigin.Pointer; Payload = None; Nav = None }
 
             Expect.equal (Control.dispatch click control) [ Save ] "typed event dispatches through the adapter view"
         }
@@ -99,7 +99,7 @@ let typedAdapterTests =
             Expect.equal renderedWidget.NodeCount renderedLegacy.NodeCount "lowering parity: same node count as view >> Widget.toControl"
 
             let click =
-                { Kind = "click"; ControlId = Some "save"; Origin = ControlEventOrigin.Pointer; Payload = None }
+                { Kind = "click"; ControlId = Some "save"; Origin = ControlEventOrigin.Pointer; Payload = None; Nav = None }
 
             Expect.equal
                 (Control.dispatch click viaWidgetPath)
@@ -120,7 +120,7 @@ let typedAdapterTests =
             // toControl (ofControl c) = c — the bridge is identity on the lowering seam.
             let bridged = Widget.ofControl legacy |> Widget.toControl
             let click =
-                { Kind = "click"; ControlId = Some "save"; Origin = ControlEventOrigin.Pointer; Payload = None }
+                { Kind = "click"; ControlId = Some "save"; Origin = ControlEventOrigin.Pointer; Payload = None; Nav = None }
 
             Expect.equal (Control.dispatch click bridged) (Control.dispatch click legacy) "ofControl >> toControl preserves dispatch"
             Expect.equal

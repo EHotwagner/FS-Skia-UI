@@ -45,6 +45,7 @@ module private PickersLowering =
                 [ "normal" ]
                 None
                 (Accessibility.keyboard true [ "Enter"; "Space" ] navigationKeys)
+                None
                 None)
 
 module DatePicker =

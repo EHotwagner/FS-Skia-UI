@@ -57,7 +57,8 @@ let changed =
     { Kind = "changed"
       ControlId = Some "text-box"
       Origin = ControlEventOrigin.Text
-      Payload = Some "Grace" }
+      Payload = Some "Grace"
+      Nav = None }
 
 printfn "controls-node-count=%d" rendered.NodeCount
 printfn "controls-diagnostics=%A" rendered.Diagnostics

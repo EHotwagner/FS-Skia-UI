@@ -1,0 +1,1140 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm the feature directory artifacts are present and linked (`spec.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/Focus.nav.fsi`, `contracts/Types.nav.fsi`, `contracts/resolver.behavior.md`, `checklists/requirements.md`) and that `.specify/feature.json` resolves `specs/100-general-navigation-keys`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T001",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T001: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Scaffold audit-discoverable readiness placeholders under `readiness/`: `responds-vs-renders.md`, `declared-step.md`, `role-coverage.md`, `closed-model.md`, `surface-baseline.md`, `fsi-transcript.md`, `validation-log.md`, plus `governance-risk-levels.md`, `aggregate-hang-diagnostics.md`, `runtime-limitations.md`, `generated-guidance-validation.md`, `visual-evidence-honesty.md`, `window-visibility.md`, `real-image-evidence.md`, `evidence-graph.md`, `evidence-audit.md` \u2014 each naming its authoritative command, artifact path, failure class, and next action (use `key=value` lines, not bare image-filename claims; `window-visibility.md` records the not-applicable decision with honest values per T003; `real-image-evidence.md` records the **responds-vs-renders** capture through the real `runInteractiveApp` seam as the rendered-output evidence, cross-referencing `responds-vs-renders.md` \u2014 there is no persistent-launch / window obligation)",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T002",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T002: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record feature Tier 1 (contracted: public `.fsi` moves in `Focus`/`Types`/`Accessibility`), affected layers (`FS.Skia.UI.Controls` \u2014 `Focus.fsi`/`.fs` `Direction`/`NavIntent`/widened `route`; `Types.fsi`/`.fs` `NavRange`/`NavPayload`/`ControlEvent.Nav`/`AccessibilityMetadata.Navigation`; `Accessibility.fsi`/`.fs` `metadata` widening + per-role `NavigationKeys`/`NavRange`; `FS.Skia.UI.Controls.Elmish` \u2014 `ControlsElmish.fs` `Navigate`-arm resolver only, module-internal), public-API impact (the **public** `runInteractiveApp`/`InteractiveAppHost` surface is **unchanged**; only the three Controls `.fsi` files move; `Payload : string option` retained on `ControlEvent`), MVU applicability (no new consumer `Model`/`Msg`/`Effect`/`update`; `Focus.route` + resolver are pure; navigation produces `'msg list`, no I/O; the host loop is the interpreter edge reusing the landed E4 seam + E2 retained identity), and the four evidence obligations from the plan; record as a **visible decision** that the persistent-launch / viewer-launch task-generation rule does **not** newly apply (no default-exe / persistent-launch entry point added; navigation is observed through the existing `runInteractiveApp` seam; at-rest rendered output unchanged; no window-visibility / screenshot obligation)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T003",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T003: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t Route` (note: `Route` escalates only **after** the `.fsi` edits exist \u2014 T004 records the **expected** escalation, T022/T023/T024 verify it on the real diff); confirm the `src/Controls/**/*.fsi` change **escalates** to the serialized six-target maintainer-verify path (`Dev \u2192 GeneratedGuidanceCheck \u2192 TemplateCheck \u2192 GeneratedProductCheck \u2192 EvidenceGraph \u2192 EvidenceAudit`) and record the authoritative gate list plus the small/medium/broad governance risk levels into `readiness/governance-risk-levels.md`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T004",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T004: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "In `src/Controls/Types.fsi` + `Types.fs` add the closed value types and the two new optional fields (data-model \u00a7`NavRange`/`NavPayload`/`AccessibilityMetadata`/`ControlEvent`): `type NavRange = { Step: float; Min: float; Max: float }`; `type NavPayload = SteppedValue of value: float | MovedSelection of index: int * item: string option | MovedCell of row: int * col: int`; add `Navigation : NavRange option` to `AccessibilityMetadata` and `Nav : NavPayload option` to `ControlEvent`, **retaining** `Payload : string option` (research R-3 \u2014 avoid churning every existing click/changed/text/pointer event). Define the types in **both** the `.fsi` and `.fs`; update **every** framework-internal `AccessibilityMetadata`/`ControlEvent` construction site in the same change to supply the new field (`Navigation = None` / `Nav = None` defaults). Capture the current `FS.Skia.UI.Controls` api-surface + per-package `.fsi.txt` baselines as the **pre-change reference** for the Phase-7 recapture (SC-007)",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T005",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T005: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "In `src/Controls/Focus.fsi` + `Focus.fs` add `type Direction = Previous | Next | First | Last` and `type NavIntent = ValueStep of delta: float | SelectionMove of Direction | GridMove of rowDelta: int * colDelta: int`; change `KeyRouting.Navigate` from nullary to `Navigate of NavIntent`; **widen** `route` to take the control's `AccessibilityRole` + declared `NavRange option` alongside the keyboard op + key, keeping the unchanged E4 precedence (activation & navigation membership tested **before** the Tab test) (research R-1/R-5, data-model \u00a7`KeyRouting`). `route` is the **single role-specific branch** (FR-006): map role + key to the intent class per orientation \u2014 linear selection `ArrowUp`/`ArrowLeft`\u2192`Previous`, `ArrowDown`/`ArrowRight`\u2192`Next`, `Home`\u2192`First`, `End`\u2192`Last`; range `ArrowRight`/`ArrowUp`\u2192`+Step`, `ArrowLeft`/`ArrowDown`\u2192`\u2212Step`, `Home`\u2192min, `End`\u2192max (only when a `NavRange` is present); grid `ArrowUp/Down`\u2192`(\u00b11,0)`, `ArrowLeft/Right`\u2192`(0,\u00b11)`. A key **absent** from the role's `NavigationKeys` \u2192 `Fallthrough` (FR-008 no-op). `route` stays **pure & total**; `ValueStep` carries a **delta** (declared `Step` \u00d7 sign), not a resolved value \u2014 the host applies + clamps (research R-1)",
+      "skillist": [
+        "fs-skia-keyboard-input"
+      ],
+      "skillist_mirror": [
+        "fs-skia-keyboard-input"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T006",
+          "declared_skillist": [
+            "fs-skia-keyboard-input"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T006: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "In `src/Controls/Accessibility.fsi` + `Accessibility.fs` widen `metadata` to accept a `NavRange option` and thread it into the produced `AccessibilityMetadata.Navigation`; keep `keyboardFor`'s already-declared per-role `NavigationKeys` (Tab Left/Right; RadioGroup all four; Grid all four \u2014 research R-5) unchanged. Declare a **default-step slider** `NavRange` of `{ Step = 0.1; Min = 0.0; Max = 1.0 }` so the pre-R5 constant is reproduced **byte-identically** (FR-007); leave non-range roles `Navigation = None`. Confirm `validate` still accepts a range role with `Navigation = None` (it simply cannot value-step \u2014 FR-008) and continues to flag a focusable control with no operable key set",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T007",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T007: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record unsupported-scope, permanent non-goals, and failure diagnostics into `readiness/runtime-limitations.md` (Out of Scope / Assumptions): no consumer-facing custom key-binding/remapping API and no free-form per-key handler surface (would drift toward the rejected routed-event system); no authored navigation DSL; no type-ahead / incremental-search selection; no multi-select range extension (Shift-arrow) \u2014 single-selection moves only; no drag-reorder; **no** focus-traversal (Tab/Shift-Tab) or activation (Space/Enter) change \u2014 those are E4, unchanged; full-52-control navigation coverage beyond the representative value/selection/grid roles is a later fitness pass; boundary policy defaults to **clamp** (wrap is opt-in metadata, not shipped here); the honest failure modes are **no-ops with no spurious dispatch** (no `NavigationKeys`, empty group, unset index, boundary clamp), asserted as verified outcomes; this is the **final** roadmap remediation (R1\u2013R5) \u2014 no successor",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T008",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T008: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add the failing-first **selection-move** suite (`tests/Elmish.Tests/Feature100*`, fails against the un-wired slider-only `Navigate` arm; SC-001/FR-003/FR-009): focus a **radio-group** with several items authored the documented way (`\"selected\"`/`\"changed\"` binding, **no custom key handler**) through the **real** `runInteractiveApp` host seam, press Down/Up (and Home/End per role), and assert the dispatched `'msg`/`ControlEvent` carries the moved index/item \u2014 `Payload = Some itemId` **and** `Nav = Some (MovedSelection (newIndex, Some itemId))` (research R-2 dual-set) \u2014 on the role's selected-then-changed binding; assert **boundary clamp** (last + Next, first + Previous \u2192 **no dispatch**) and **empty group / unresolvable current index \u2192 no dispatch** (research R-7). Add the paired pure `tests/Controls.Tests/Feature100*` assertion that `Focus.route` for a linear selection role + arrow key yields the exact `SelectionMove Direction`. A pre-R5 build dispatches nothing and fails",
+      "skillist": [
+        "fs-skia-elmish",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-elmish",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T009",
+          "declared_skillist": [
+            "fs-skia-elmish",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T009: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T008"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Replace the slider-only `Navigate` arm of `routeFocusedKey` (`src/Controls.Elmish/ControlsElmish.fs:455\u2013478` \u2014 **line refs are indicative; locate the `Navigate` arm by name**, the working tree may have drifted) with the **uniform per-intent resolver** (a pure `(node, NavIntent) -> 'msg list`, module-internal; contracts/resolver.behavior.md) and implement the `SelectionMove dir` arm fully (makes T009 **GREEN**; FR-003/FR-006): read `Items` (count) + current index (index of current `value`/`selected` in `Items`, `src/Controls/Widgets/Input.fs:18\u201322`, `Control.fs:1616\u20131620`); empty items or unresolved index \u2192 **no dispatch**; compute `Previous=i-1`/`Next=i+1`/`First=0`/`Last=n-1`, **clamp** to `[0,n-1]`, clamped==current \u2192 **no dispatch**; dispatch the role's binding matching `EventKind = \"selected\"` then falling back to `\"changed\"` (research R-2) with `Payload = Some itemId` **and** `Nav = Some (MovedSelection ...)`. The resolver branches on the **intent** (not the kind); the `ValueStep` arm initially ports the existing `steppedValue` behavior unchanged (US2 makes it declared-step) and the `GridMove` arm is a **no-dispatch** placeholder reproducing pre-R5 grid behavior (US3 completes it) so the match is total with no stub marker. The public `ControlsElmish.fsi` surface stays unchanged",
+      "skillist": [
+        "fs-skia-elmish",
+        "fs-skia-keyboard-input"
+      ],
+      "skillist_mirror": [
+        "fs-skia-elmish",
+        "fs-skia-keyboard-input"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T010",
+          "declared_skillist": [
+            "fs-skia-elmish",
+            "fs-skia-keyboard-input"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T010: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T006",
+        "T009"
+      ],
+      "phase_deps": [
+        "T008"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US1 to `readiness/responds-vs-renders.md` (the real `runInteractiveApp` seam via the compiled self-closing host, `live-vulkan-window-x11-path`): a focused radio-group/tab arrow press moves selection and dispatches its binding with the moved item; name the items, the pressed keys, and the dispatched `MovedSelection`; an un-wired/pre-R5 build dispatches nothing and cannot produce this artifact (SC-001)",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T011",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T011: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T010"
+      ],
+      "phase_deps": [
+        "T008"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add the failing-first **declared-step** + **non-regressive golden** suite (`tests/Elmish.Tests/Feature100*` + `tests/Controls.Tests/Feature100*`; SC-002/FR-002/FR-007/FR-009): focus a slider declared with a **non-default** `NavRange` (e.g. `{ Step = 5.0; Min = 0.0; Max = 100.0 }`) through the real seam, press arrows, assert the value moves by **exactly** the declared step within bounds and the dispatched `Nav = Some (SteppedValue target)` matches (a pre-R5 build steps by the hardcoded `0.1` regardless and fails); assert **min/max clamp** (at the bound + step toward it \u2192 **no dispatch**); and pin a **byte-identical golden** for a **default-step** slider (`{ 0.1; 0.0; 1.0 }`) proving the dispatched value equals the pre-R5 `steppedValue` path exactly (non-regressive). Add the paired pure `Focus.route` assertion that a range role + arrow yields `ValueStep (\u00b1Step)`",
+      "skillist": [
+        "fs-skia-elmish",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-elmish",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T012",
+          "declared_skillist": [
+            "fs-skia-elmish",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T012: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement the `ValueStep delta` arm of the resolver (makes T012 **GREEN**; FR-002/FR-007), replacing the hardcoded `navStep = 0.1` / `Math.Clamp(.., 0.0, 1.0)` in `steppedValue` (`src/Controls.Elmish/ControlsElmish.fs:366\u2013381` \u2014 **line refs indicative; locate `steppedValue` by name**): read the current value (`controlFloatValue`) and the declared `NavRange { Step; Min; Max }` from the focused control's metadata; `target = clamp(current + delta, Min, Max)`; `target == current` (already at the bound) \u2192 **no dispatch** (clamp no-op); else dispatch the value binding (`EventKind = \"changed\"`) with `Payload = Some (string target)` **and** `Nav = Some (SteppedValue target)`. A default-step slider (`{0.1;0;1}`) produces a value byte-identical to the pre-R5 path (FR-007 / the T012 golden)",
+      "skillist": [
+        "fs-skia-elmish",
+        "fs-skia-keyboard-input"
+      ],
+      "skillist_mirror": [
+        "fs-skia-elmish",
+        "fs-skia-keyboard-input"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T013",
+          "declared_skillist": [
+            "fs-skia-elmish",
+            "fs-skia-keyboard-input"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T013: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T006",
+        "T012"
+      ],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US2 to `readiness/declared-step.md`: a non-default-step slider steps by its declared step within declared bounds (named step/min/max and the observed stepped values), and a default-step slider's dispatched value is byte-identical to the pre-R5 numeric golden (read from the T012 suite, not assumed) (SC-002)",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T014",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T014: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T013"
+      ],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add the failing-first **grid 2-D move** suite (`tests/Elmish.Tests/Feature100*` + `tests/Controls.Tests/Feature100*`; SC-003/FR-004/FR-009): focus a grid/data-grid with known dimensions and a current cell through the real seam, press Up/Down (row) and Left/Right (column), and assert the dispatched `Nav = Some (MovedCell (newRow, newCol))` (and `Payload` set to the resulting cell/item id) matches the expected neighbor; assert **edge clamp** (an edge cell + an outward arrow \u2192 **no dispatch**). Add the paired pure `Focus.route` assertion that a grid role + arrow yields the exact `GridMove (rowDelta, colDelta)`. A pre-R5 build (grid does nothing on arrows) fails",
+      "skillist": [
+        "fs-skia-elmish",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-elmish",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T015",
+          "declared_skillist": [
+            "fs-skia-elmish",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T015: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T014"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement the `GridMove (rowDelta, colDelta)` arm of the resolver, replacing the T010 no-dispatch placeholder (makes T015 **GREEN**; FR-004/FR-009): read the grid dimensions (`data-grid` `Columns`/`Rows`) + current `(row, col)` (`FocusedCell`, `src/Controls/Widgets/DataGridWidget.fs:7-8,35`); `newRow = clamp(row + rowDelta, 0, rows-1)`, `newCol = clamp(col + colDelta, 0, cols-1)`; `(newRow,newCol) == (row,col)` \u2192 **no dispatch** (edge clamp); else dispatch the selection binding (selected-then-changed, research R-2) with `Nav = Some (MovedCell (newRow,newCol))` and `Payload` set to the resulting cell/item id. Still branches on the **intent** \u2014 no per-kind branch beyond the role classification already done in `Focus.route`",
+      "skillist": [
+        "fs-skia-elmish",
+        "fs-skia-keyboard-input"
+      ],
+      "skillist_mirror": [
+        "fs-skia-elmish",
+        "fs-skia-keyboard-input"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T016",
+          "declared_skillist": [
+            "fs-skia-elmish",
+            "fs-skia-keyboard-input"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T016: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T006",
+        "T010",
+        "T015"
+      ],
+      "phase_deps": [
+        "T014"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US3 into `readiness/role-coverage.md` (the grid section): a focused grid moves selection by a 2-D delta and dispatches the resulting coordinate, with edge clamp; name the grid dims, current cell, pressed keys, and dispatched `MovedCell`, validated against `Accessibility.validate` for the grid role (SC-003)",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T017",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T017: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T016"
+      ],
+      "phase_deps": [
+        "T014"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add the **closed-model + metadata-driven** suite (`tests/Controls.Tests/Feature100*`; SC-004/SC-005/SC-006/FR-005/FR-006/FR-008/FR-010): an FsCheck `Check.One` **exhaustiveness/closed-set** proof that `NavIntent` and `NavPayload` are closed, **totally-matched** sets (a total match arm over every case, one-to-one `NavIntent`\u2194`NavPayload`; no free-form key surface \u2014 research R-8, no `testProperty` in this repo); a **metadata-driven** assertion that each covered role's navigation outcome is reproduced **purely** from its declared role + `NavigationKeys` (+ `NavRange`) metadata and the closed intent/payload model, with the resolver branching only on the intent (no per-kind host special-case); `Accessibility.validate` **passes** for the representative value (slider), linear-selection (radio-group/tab), and grid roles (FR-010); and a **non-navigable button** (no matching `NavigationKeys`) is a navigation **no-op** on arrows while Space/Enter activation (E4) is unaffected (FR-008)",
+      "skillist": [
+        "fs-skia-testing",
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-testing",
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T018",
+          "declared_skillist": [
+            "fs-skia-testing",
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T018: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture `readiness/closed-model.md` (the `NavIntent`/`NavPayload` closed, totally-matched proof \u2014 read from the T018 suite, not assumed) and complete `readiness/role-coverage.md` (the value + linear-selection + grid sections, each validated by `Accessibility.validate`, plus the non-navigable-button no-op) (SC-004/SC-005/SC-006/FR-010)",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T019",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T019: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T018"
+      ],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Recapture the `FS.Skia.UI.Controls` api-surface + per-package `.fsi.txt` baselines (`PerPackageSurface.captureCurrent`; `RefreshSurfaceBaselines` does **not** cover the per-package snapshots) vs the T005 pre-change reference and confirm the diff shows **exactly** the `Focus`/`Types`/`Accessibility` surface moves (`Direction`/`NavIntent`/widened `route`; `NavRange`/`NavPayload`/`ControlEvent.Nav`/`AccessibilityMetadata.Navigation`; widened `metadata`) with no other drift; confirm the public `ControlsElmish.fsi` `runInteractiveApp`/`InteractiveAppHost` surface is **unchanged**; record to `readiness/surface-baseline.md` (SC-007)",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T020",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T020: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Exercise navigation from FSI against the packed library per `quickstart.md` \u2014 host a focused radio-group, press an arrow, observe the selection move + dispatched binding with **zero** consumer key-handling code; host a non-default-step slider and observe declared-step movement; confirm a focused button is a no-op on arrows but activates on Space/Enter \u2014 capture the session transcript to `readiness/fsi-transcript.md`",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T021",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T021: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run exactly the gates `Route` printed (T004) \u2014 the serialized `Dev \u2192 GeneratedGuidanceCheck \u2192 TemplateCheck \u2192 GeneratedProductCheck` prefix **sequentially** (shared `.fake` state, never concurrently) \u2014 and record the aggregate results as **non-authoritative** into `readiness/generated-guidance-validation.md` and the run transcript into `readiness/validation-log.md`; rerun any race-like FAKE failure sequentially before any product-regression claim; if an aggregate hangs, record the diagnosis in `readiness/aggregate-hang-diagnostics.md` (SC-007)",
+      "skillist": [
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T022",
+          "declared_skillist": [
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T022: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceGraph` \u2014 confirm the echoed `feature-directory` + `tasks=<n>` match this feature, no cycles, no dangling refs, no `[S*]` surprises; record to `readiness/evidence-graph.md`",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T023",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "owns:graph-validation"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T023: owns graph-validation requires skill speckit-evidence-graph; trigger_group=owns; matched_trigger=owns:graph-validation"
+        }
+      ],
+      "explicit_deps": [
+        "T022"
+      ],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceAudit` \u2014 confirm verdict PASS (synthetic-propagation + diff-scan; no synthetic/stub work) or document every `--accept-synthetic` override; record to `readiness/evidence-audit.md`",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T024",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "owns:evidence-audit"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T024: owns evidence-audit requires skill speckit-evidence-audit; trigger_group=owns; matched_trigger=owns:evidence-audit"
+        }
+      ],
+      "explicit_deps": [
+        "T023"
+      ],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    }
+  ]
+}

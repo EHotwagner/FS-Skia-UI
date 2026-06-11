@@ -1,0 +1,79 @@
+
+## dotnet fsi scripts/controls-prelude.fsx
+$ dotnet fsi scripts/controls-prelude.fsx
+
+
+/home/developer/projects/FS-Skia-UI/scripts/controls-prelude.fsx(57,5): error FS0764: No assignment given for field 'Nav' of type 'FS.Skia.UI.Controls.ControlEvent'
+
+
+exit-code=1
+
+## dotnet fsi scripts/controls-prelude.fsx
+$ dotnet fsi scripts/controls-prelude.fsx
+controls-node-count=13
+controls-diagnostics=[]
+controls-scene=[GroupElement; GroupElement; ClipElement; TextRunElement; RectangleElement;
+ RectangleElement; TextRunElement; RectangleElement; RectangleElement;
+ TextRunElement; RectangleElement; RectangleElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ ClipElement; TextRunElement; RectangleElement; RectangleElement; ClipElement;
+ TextRunElement; LineElement; GroupElement; ClipElement; TextRunElement;
+ RectangleElement; TextRunElement; GroupElement; ClipElement; TextRunElement;
+ PathElement; PathElement; CircleElement; CircleElement; GroupElement;
+ ClipElement; TextRunElement; LineElement; LineElement; LineElement;
+ CircleElement; CircleElement; CircleElement; GroupElement; ClipElement;
+ TextRunElement; RectangleElement; RectangleElement; LineElement; LineElement;
+ LineElement; TextRunElement; TextRunElement; TextRunElement; TextRunElement;
+ TextRunElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement]
+controls-catalog-count=52
+controls-chart-graph-datagrid=("columns",
+ [GroupElement; GroupElement; ClipElement; TextRunElement; RectangleElement;
+  RectangleElement; TextRunElement; RectangleElement; RectangleElement;
+  TextRunElement; RectangleElement; RectangleElement; TextRunElement;
+  GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+  ClipElement; TextRunElement; RectangleElement; RectangleElement; ClipElement;
+  TextRunElement; LineElement; GroupElement; ClipElement; TextRunElement;
+  RectangleElement; TextRunElement; GroupElement; ClipElement; TextRunElement;
+  PathElement; PathElement; CircleElement; CircleElement; GroupElement;
+  ClipElement; TextRunElement; LineElement; LineElement; LineElement;
+  CircleElement; CircleElement; CircleElement; GroupElement; ClipElement;
+  TextRunElement; RectangleElement; RectangleElement; LineElement; LineElement;
+  LineElement; TextRunElement; TextRunElement; TextRunElement; TextRunElement;
+  TextRunElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+  TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+  GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+  RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+  ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+  TextRunElement])
+controls-text-dispatch=[]
+control-runtime-init-effects=[]
+control-runtime-focus-effects=[FocusChanged (Some "save-button")] focused=Some "save-button"
+control-runtime-recovery-effects=[StaleTarget "missing-button";
+ ReportControlRuntimeDiagnostic
+   { ControlId = Some "missing-button"
+     ControlKind = "control-runtime"
+     Code = StaleGeneratedReference
+     Severity = Warning
+     Message =
+      "Stale interaction target 'missing-button' was recovered by ControlRuntime."
+     EvidencePath = None }] diagnostics=1
+pointer-origin=Pointer
+pointer-effects=[HoverEnter ("buttonA", 50.0, 20.0); HoverLeave "buttonA";
+ HoverEnter ("buttonB", 150.0, 20.0);
+ PressedDown ("buttonB", Primary, 150.0, 20.0); FocusMovedByPointer "buttonB";
+ ReleasedUp ("buttonB", Primary, 150.0, 20.0);
+ Click ("buttonB", Primary, 150.0, 20.0);
+ PressedDown ("buttonA", Primary, 50.0, 20.0); FocusMovedByPointer "buttonA";
+ DragBegin ("buttonA", Primary, 50.0, 20.0);
+ DragMove ("buttonA", Primary, 50.0, 38.0);
+ DragEnd ("buttonA", Primary, 50.0, 38.0);
+ Scroll ("buttonB", 0.0, -3.0, 150.0, 20.0)]
+pointer-deterministic=true
+pointer-final-hover=Some "buttonB" presses=0
+
+exit-code=0

@@ -172,7 +172,8 @@ module ControlsElmish =
                             { Kind = binding.EventKind
                               ControlId = Some authored
                               Origin = ControlEventOrigin.Pointer
-                              Payload = None })
+                              Payload = None
+                              Nav = None })
                     |> Some
             | None -> None
         | _ -> None
@@ -340,7 +341,8 @@ module ControlsElmish =
                             { Kind = "changed"
                               ControlId = Some binding.ControlId
                               Origin = ControlEventOrigin.Text
-                              Payload = Some model'.DraftText })
+                              Payload = Some model'.DraftText
+                              Nav = None })
 
                 retained', productMessages
             | None -> retained, []
@@ -363,22 +365,163 @@ module ControlsElmish =
                 None)
         |> Option.defaultValue deflt
 
-    // E4 arrow-key value step for a navigation control (slider/numeric). Right/Up increment,
-    // Left/Down decrement, clamped to the normalized [0, 1] slider range.
-    let private navStep = 0.1
+    // Feature 100 (R5): the last value of a named attribute on the lowered control (the renderer's
+    // `tryLast` convention — the last write wins), used to read the selection/value model below.
+    let private lastAttrValue (name: string) (c: Control<'msg>) : AttrValue<'msg> option =
+        c.Attributes
+        |> List.filter (fun a -> a.Name = name)
+        |> List.tryLast
+        |> Option.map (fun a -> a.Value)
 
-    let private steppedValue (c: Control<'msg>) (key: string) : float =
+    // The linear-selection model: the authored item ids and the current selected id.
+    let private controlItems (c: Control<'msg>) : string list =
+        match lastAttrValue "items" c with
+        | Some(StringListValue values) -> values
+        | _ -> []
+
+    let private controlSelectedItem (c: Control<'msg>) : string option =
+        match lastAttrValue "value" c with
+        | Some(TextValue value) -> Some value
+        | _ -> None
+
+    // The grid model: row keys (row dimension), column keys (column dimension), and current cell.
+    let private dataGridRowKeys (c: Control<'msg>) : string list =
+        match lastAttrValue "rows" c with
+        | Some(UntypedValue o) ->
+            match o with
+            | :? (DataGridRow list) as rows -> rows |> List.map (fun r -> r.Key)
+            | :? (DataGridRow array) as rows -> rows |> Array.toList |> List.map (fun r -> r.Key)
+            | _ -> []
+        | _ -> []
+
+    let private dataGridColumnKeys (c: Control<'msg>) : string list =
+        match lastAttrValue "columns" c with
+        | Some(UntypedValue o) ->
+            match o with
+            | :? (DataGridColumn list) as cols -> cols |> List.map (fun col -> col.Key)
+            | :? (DataGridColumn array) as cols -> cols |> Array.toList |> List.map (fun col -> col.Key)
+            | _ -> []
+        | _ -> []
+
+    let private dataGridFocusedCell (c: Control<'msg>) : DataGridFocusedCell option =
+        match lastAttrValue "focusedCell" c with
+        | Some(UntypedValue o) ->
+            match o with
+            | :? (DataGridFocusedCell option) as cell -> cell
+            | :? DataGridFocusedCell as cell -> Some cell
+            | _ -> None
+        | _ -> None
+
+    // FR-003 / research R-2: the control's SELECTION binding — `EventKind = "selected"`, falling back
+    // to `"changed"` (a radio-group binds `onChanged`, so the fallback is what makes it operable).
+    let private selectionBindings (ownBindings: ControlEventBinding<'msg> list) : ControlEventBinding<'msg> list =
+        match ownBindings |> List.filter (fun b -> b.EventKind = "selected") with
+        | [] -> ownBindings |> List.filter (fun b -> b.EventKind = "changed")
+        | selected -> selected
+
+    let private dispatchNav
+        (bindings: ControlEventBinding<'msg> list)
+        (nodeId: ControlId)
+        (kind: string)
+        (payload: string option)
+        (nav: NavPayload)
+        : 'msg list =
+        bindings
+        |> List.map (fun b ->
+            b.Dispatch
+                { Kind = kind
+                  ControlId = Some nodeId
+                  Origin = ControlEventOrigin.Keyboard
+                  Payload = payload
+                  Nav = Some nav })
+
+    // FR-002/FR-007: a value/range role's step. `delta` is the signed step (or a Home/End jump) from
+    // `Focus.route`; the host reads the live value + declared `NavRange` and clamps. A default-step
+    // slider ({0.1;0;1}) produces a value byte-identical to the pre-R5 `steppedValue` path; a clamp
+    // no-op (`target = current`, already at the bound) dispatches NOTHING (FR-009).
+    let private resolveValueStep (c: Control<'msg>) (nodeId: ControlId) (ownBindings: ControlEventBinding<'msg> list) (delta: float) : 'msg list =
+        let range =
+            c.Accessibility
+            |> Option.bind (fun m -> m.Navigation)
+            |> Option.defaultValue { Step = 0.1; Min = 0.0; Max = 1.0 }
+
         let current = controlFloatValue c 0.5
+        let target = Math.Clamp(current + delta, range.Min, range.Max)
 
-        let delta =
-            match key with
-            | "ArrowRight"
-            | "ArrowUp" -> navStep
-            | "ArrowLeft"
-            | "ArrowDown" -> -navStep
-            | _ -> 0.0
+        if target = current then
+            []
+        else
+            let payload = target.ToString(Globalization.CultureInfo.InvariantCulture)
 
-        Math.Clamp(current + delta, 0.0, 1.0)
+            dispatchNav
+                (ownBindings |> List.filter (fun b -> b.EventKind = "changed"))
+                nodeId
+                "changed"
+                (Some payload)
+                (SteppedValue target)
+
+    // FR-003/FR-009: a linear-selection role's move. Reads the item count + current index; an empty
+    // group or an unresolvable current index dispatches NOTHING; the new index is clamped to
+    // [0, n-1] and a clamp no-op (clamped = current) dispatches NOTHING.
+    let private resolveSelectionMove (c: Control<'msg>) (nodeId: ControlId) (ownBindings: ControlEventBinding<'msg> list) (dir: Direction) : 'msg list =
+        let items = controlItems c
+        let n = List.length items
+
+        if n = 0 then
+            []
+        else
+            match controlSelectedItem c |> Option.bind (fun sel -> items |> List.tryFindIndex (fun item -> item = sel)) with
+            | None -> []
+            | Some i ->
+                let target =
+                    match dir with
+                    | Direction.Previous -> i - 1
+                    | Direction.Next -> i + 1
+                    | Direction.First -> 0
+                    | Direction.Last -> n - 1
+
+                let clamped = max 0 (min (n - 1) target)
+
+                if clamped = i then
+                    []
+                else
+                    let itemId = List.item clamped items
+                    dispatchNav (selectionBindings ownBindings) nodeId "selected" (Some itemId) (MovedSelection(clamped, Some itemId))
+
+    // FR-004/FR-009: a grid role's 2-D move. Reads dims (row/column counts) + current cell; an empty
+    // grid or an unresolvable current cell dispatches NOTHING; the new cell is clamped to the grid
+    // and an edge clamp no-op dispatches NOTHING.
+    let private resolveGridMove (c: Control<'msg>) (nodeId: ControlId) (ownBindings: ControlEventBinding<'msg> list) (rowDelta: int, colDelta: int) : 'msg list =
+        let rowKeys = dataGridRowKeys c
+        let colKeys = dataGridColumnKeys c
+        let rows = List.length rowKeys
+        let cols = List.length colKeys
+
+        if rows = 0 || cols = 0 then
+            []
+        else
+            match dataGridFocusedCell c with
+            | None -> []
+            | Some cell ->
+                match (rowKeys |> List.tryFindIndex (fun k -> k = cell.RowKey)), (colKeys |> List.tryFindIndex (fun k -> k = cell.ColumnKey)) with
+                | Some r, Some col ->
+                    let newRow = max 0 (min (rows - 1) (r + rowDelta))
+                    let newCol = max 0 (min (cols - 1) (col + colDelta))
+
+                    if newRow = r && newCol = col then
+                        []
+                    else
+                        let cellId = sprintf "%s:%s" (List.item newRow rowKeys) (List.item newCol colKeys)
+                        dispatchNav (selectionBindings ownBindings) nodeId "selected" (Some cellId) (MovedCell(newRow, newCol))
+                | _ -> []
+
+    // FR-006: the uniform per-intent resolver. Branches on the INTENT (not the control kind) — the
+    // only role-specific logic is `Focus.route`'s role -> `NavIntent` classification. Pure.
+    let private resolveNavIntent (node: RetainedNode<'msg>) (nodeId: ControlId) (ownBindings: ControlEventBinding<'msg> list) (intent: NavIntent) : 'msg list =
+        match intent with
+        | ValueStep delta -> resolveValueStep node.Control nodeId ownBindings delta
+        | SelectionMove dir -> resolveSelectionMove node.Control nodeId ownBindings dir
+        | GridMove(rowDelta, colDelta) -> resolveGridMove node.Control nodeId ownBindings (rowDelta, colDelta)
 
     // Normalize a host `ViewerKey` (+ a leading `Shift+` on an `Unknown` raw) to the (keyName, isTab)
     // pair `Focus.route` matches against `Activation`/`NavigationKeys`. A bare/`Shift+`-prefixed "Tab"
@@ -443,7 +586,16 @@ module ControlsElmish =
                     ControlInternals.eventBindingsOf node.Control
                     |> List.filter (fun b -> b.ControlId = nodeId)
 
-                match Focus.route keyboard keyName isTab shift with
+                // Feature 100 (R5): the focused control's role + declared NavRange drive the
+                // role-derived NavIntent classification in `Focus.route` (FR-001/FR-006).
+                let role =
+                    node.Control.Accessibility
+                    |> Option.map (fun m -> m.Role)
+                    |> Option.defaultValue AccessibilityRole.Custom
+
+                let navRange = node.Control.Accessibility |> Option.bind (fun m -> m.Navigation)
+
+                match Focus.route role keyboard navRange keyName isTab shift with
                 | Activate ->
                     // The pointer-equivalent activation message(s) — the same click-equivalent
                     // bindings the pointer path dispatches — fired ONCE each (no double-dispatch).
@@ -455,26 +607,16 @@ module ControlsElmish =
                                 { Kind = b.EventKind
                                   ControlId = Some nodeId
                                   Origin = ControlEventOrigin.Keyboard
-                                  Payload = None })
+                                  Payload = None
+                                  Nav = None })
 
                     retained, [], messages
-                | Navigate ->
-                    // A value control's arrow step: dispatch its `onChanged` bindings with the new
-                    // value, mirroring the pointer-driven value change.
-                    let payload =
-                        (steppedValue node.Control keyName)
-                            .ToString(Globalization.CultureInfo.InvariantCulture)
-
-                    let messages =
-                        ownBindings
-                        |> List.filter (fun b -> b.EventKind = "changed")
-                        |> List.map (fun b ->
-                            b.Dispatch
-                                { Kind = "changed"
-                                  ControlId = Some nodeId
-                                  Origin = ControlEventOrigin.Keyboard
-                                  Payload = Some payload })
-
+                | Navigate intent ->
+                    // FR-001/FR-006: dispatch through the uniform per-intent resolver (value step /
+                    // selection move / grid move). The resolver reads the live value/selection/grid
+                    // model and dual-sets `Payload` + the closed `Nav`; a boundary/empty/unset case
+                    // is a designed no-op with no spurious dispatch (FR-009).
+                    let messages = resolveNavIntent node nodeId ownBindings intent
                     retained, [], messages
                 | Traverse move ->
                     let next = Focus.traverse order (Some nodeId) move

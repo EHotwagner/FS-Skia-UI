@@ -70,7 +70,8 @@ let sampleEvent: ControlEvent =
     { Kind = "sample"
       ControlId = None
       Origin = ControlEventOrigin.Pointer
-      Payload = Some "alpha" }
+      Payload = Some "alpha"
+      Nav = None }
 
 let rec normControl (control: Control<'msg>) : Control<'msg> =
     { control with
