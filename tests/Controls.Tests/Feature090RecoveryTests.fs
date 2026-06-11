@@ -22,13 +22,16 @@ let recoveryTests =
     testList
         "Feature 090 nearest-keyed-ancestor recovery (US2)"
         [
-          // R1 — a click on an inner positional node inside a CONTAINER-KEYED composite resolves to
-          // the authored container id, not the opaque inner positional id.
-          test "container-keyed composite: an inner hit resolves to the container key (R1)" {
-              // A container keyed "picker" whose children are unkeyed — the inner button lays out at
-              // a positional id ("0.0"), which matches no binding; recovery must recover "picker".
+          // R1 — a click on an inner UNKEYED, UNBOUND positional node inside a CONTAINER-KEYED
+          // composite resolves to the authored container id, not the opaque inner positional id.
+          // (Feature 098: an inner node carrying its OWN binding now recovers itself — the
+          // binding-aware fixed point — so this container-climb scenario uses an unbound inner node,
+          // matching the FR-005 non-regression fixed point in the data model.)
+          test "container-keyed composite: an inner unbound hit resolves to the container key (R1)" {
+              // A container keyed "picker" whose unkeyed, UNBOUND child lays out at a positional id
+              // ("0.0"); with no binding of its own, recovery must climb to recover "picker".
               let composite =
-                  Stack.create [ Stack.children [ Button.create [ Button.text "ok"; Button.onClick Changed ] ] ]
+                  Stack.create [ Stack.children [ Button.create [ Button.text "ok" ] ] ]
                   |> Control.withKey "picker"
 
               let result = render composite

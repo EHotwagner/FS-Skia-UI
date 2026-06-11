@@ -290,4 +290,5 @@ type ControlRenderResult<'msg> =
       Bounds: (ControlId * Rect) list
       Diagnostics: ControlDiagnostic list
       EventBindings: ControlEventBinding<'msg> list
+      BoundIds: Set<ControlId>
       NodeCount: int }

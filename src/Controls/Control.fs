@@ -190,8 +190,12 @@ module internal ControlInternals =
             value.Substring(2).ToLowerInvariant()
         | value -> value
 
-    let eventBindings (control: Control<'msg>) =
-        let id = control.Key |> Option.defaultValue control.Kind
+    // FR-001 (feature 098): bindings key by the unified canonical `ControlId` — `Key ?? path`,
+    // the SAME positional structural path `collectBoundsWith`/`toLayout` mint (root "0") — not the
+    // old collision-prone `Key ?? Kind`. The keyed branch is byte-identical (`Key` still wins); only
+    // the unkeyed fallback shifts `Kind → path`, so same-kind siblings get distinct ids.
+    let eventBindings (path: string) (control: Control<'msg>) =
+        let id = control.Key |> Option.defaultValue path
 
         control.Attributes
         |> List.choose (fun attr ->
@@ -1328,8 +1332,11 @@ module internal ControlInternals =
         (control: Control<'msg>)
         : (ControlId * Rect) list =
         let rec go (path: string) (c: Control<'msg>) : (ControlId * Rect) list =
+            // FR-001/FR-007 (feature 098): the emitted `ControlId` is the unified `Key ?? path`
+            // (`layoutId`) — the same id `EventBindings`/`BoundIds`/recovery use — replacing the old
+            // divergent `Key ?? Kind`. Keyed nodes are unchanged; unkeyed ids shift `Kind → path`.
             let layoutId = c.Key |> Option.defaultValue path
-            let controlId: ControlId = c.Key |> Option.defaultValue c.Kind
+            let controlId: ControlId = layoutId
 
             let here =
                 match Map.tryFind layoutId boundsById with
@@ -1344,9 +1351,34 @@ module internal ControlInternals =
         go "0" control
 
     /// The recursive `EventBindings` list `renderTree` surfaces, factored so the retained path
-    /// emits the identical list.
+    /// emits the identical list. Path-aware (FR-001): re-derives each node's `parent + "." + index`
+    /// path (root "0") so an unkeyed node's binding keys by its `path`, not its `Kind`.
     let eventBindingsOf (control: Control<'msg>) : ControlEventBinding<'msg> list =
-        recursively eventBindings control
+        let rec go (path: string) (c: Control<'msg>) : ControlEventBinding<'msg> list =
+            eventBindings path c
+            @ (c.Children
+               |> List.mapi (fun index child -> go (path + "." + string index) child)
+               |> List.concat)
+
+        go "0" control
+
+    /// Feature 098 (FR-002) — the canonical ids (`Key ?? path`) of every node carrying ≥1 event
+    /// binding, collected over the same positional path scheme as `eventBindingsOf`/`collectBoundsWith`.
+    /// The single source for `ControlRenderResult.BoundIds` at every construction site (the full
+    /// rebuild AND the retained frames), so the retained path is byte-identical by construction.
+    let boundIdsOf (control: Control<'msg>) : Set<ControlId> =
+        let rec go (path: string) (c: Control<'msg>) (acc: Set<ControlId>) : Set<ControlId> =
+            let acc =
+                if List.isEmpty (eventBindings path c) then
+                    acc
+                else
+                    Set.add (c.Key |> Option.defaultValue path) acc
+
+            c.Children
+            |> List.mapi (fun index child -> index, child)
+            |> List.fold (fun acc (index, child) -> go (path + "." + string index) child acc) acc
+
+        go "0" control Set.empty
 
 module Control =
     let create kind (attrs: Attr<'msg> list) =
@@ -1390,7 +1422,10 @@ module Control =
           // preview Scene stays byte-identical (FR-010).
           Bounds = []
           Diagnostics = diagnostics control
-          EventBindings = ControlInternals.recursively ControlInternals.eventBindings control
+          EventBindings = ControlInternals.eventBindingsOf control
+          // FR-002 (feature 098): the preview keeps `Bounds = []` but DOES populate `BoundIds`
+          // (mirroring its populated `EventBindings`) in the unified `Key ?? path` scheme.
+          BoundIds = ControlInternals.boundIdsOf control
           NodeCount = count control }
 
     // Feature 085 (FR-001/FR-002/FR-003) — faithful NESTED-tree renderer.
@@ -1420,6 +1455,7 @@ module Control =
           Bounds = ControlInternals.collectBoundsWith boundsById control
           Diagnostics = diagnostics control
           EventBindings = ControlInternals.eventBindingsOf control
+          BoundIds = ControlInternals.boundIdsOf control
           NodeCount = count control }
 
     // FR-012: resolve which rendered control (if any) contains the point (x, y), from the
@@ -1458,7 +1494,16 @@ module Control =
     // clock/randomness; resume-safe; reads existing render data only — no layout-math change.
     let nearestAuthored (result: ControlRenderResult<'msg>) (hit: ControlId) : ControlId option =
         let rec search (path: string) (nearestKeyed: ControlId option) (node: FS.Skia.UI.Layout.LayoutNode) : ControlId option =
-            let authoredHere = if node.Id <> path then Some node.Id else None
+            // FR-003 (feature 098): a node is *authored* when it is KEYED (`node.Id <> path`) OR its
+            // canonical id is BOUND (`node.Id ∈ result.BoundIds`). `node.Id` is already `Key ?? path`,
+            // so it IS the canonical id: a directly-keyed leaf stays a fixed point, and an unkeyed-bound
+            // node now returns `Some node.Id` (its path) where it returned `None` before — a single
+            // one-predicate widening, no control-flow restructure.
+            let authoredHere =
+                if node.Id <> path || Set.contains node.Id result.BoundIds then
+                    Some node.Id
+                else
+                    None
 
             let nearestForChildren =
                 match authoredHere with
@@ -1478,20 +1523,27 @@ module Control =
         search "0" None result.Layout
 
     let dispatch (event: ControlEvent) (control: Control<'msg>) =
-        let rec loop (current: Control<'msg>) =
+        // FR-001/D5 (feature 098): thread the positional path so the unkeyed `binding.ControlId`
+        // matched here uses the unified `Key ?? path` scheme. Keyed callers (the whole
+        // `InteractionTests.fs` suite) and the `event.ControlId = None` wildcard are byte-identical;
+        // only the unkeyed `Kind`-id match (unused by any current consumer) shifts to the path scheme.
+        let rec loop (path: string) (current: Control<'msg>) =
             let own =
                 if ControlInternals.disabledOrReadOnly current then
                     []
                 else
-                    ControlInternals.eventBindings current
+                    ControlInternals.eventBindings path current
                     |> List.filter (fun binding ->
                         binding.EventKind = event.Kind
                         && (event.ControlId.IsNone || event.ControlId = Some binding.ControlId))
                     |> List.map (fun binding -> binding.Dispatch event)
 
-            own @ (current.Children |> List.collect loop)
+            own
+            @ (current.Children
+               |> List.mapi (fun index child -> index, child)
+               |> List.collect (fun (index, child) -> loop (path + "." + string index) child))
 
-        loop control |> List.truncate 1
+        loop "0" control |> List.truncate 1
 
 module TextBlock =
     let create attrs = Control.create "text-block" attrs

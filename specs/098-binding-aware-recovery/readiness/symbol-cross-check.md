@@ -1,0 +1,33 @@
+## Symbol consistency (analyze pass G)
+- entity-record BoundIds — in {tasks}, missing from {plan, data-model}
+- entity-record MapPointer — in {tasks}, missing from {plan, data-model}
+- entity-record None — in {tasks}, missing from {plan, data-model}
+- entity-record RetainedId — in {tasks}, missing from {plan, data-model}
+- entity-record Route — in {tasks}, missing from {plan, data-model}
+- fr-id FR-001 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-002 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-003 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-004 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-005 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-006 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-007 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-008 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-009 — in {tasks}, missing from {plan, data-model}
+- msg-case BoundIds — in {tasks}, missing from {plan, data-model}
+- msg-case Bounds — in {tasks}, missing from {plan, data-model}
+- msg-case Cmd — in {tasks}, missing from {plan, data-model}
+- msg-case ControlInternals — in {plan, tasks}, missing from {data-model}
+- msg-case ControlRenderResult — in {data-model, tasks}, missing from {plan}
+- msg-case EventBindings — in {tasks}, missing from {plan, data-model}
+- msg-case Layout — in {tasks}, missing from {plan, data-model}
+- msg-case Scene — in {tasks}, missing from {plan, data-model}
+- sc-id SC-001 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-002 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-003 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-004 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-005 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-007 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-008 — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant Bounds — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant EventBindings — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]

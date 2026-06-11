@@ -234,6 +234,8 @@ module internal ControlInternals =
 
     val eventBindingsOf: control: Control<'msg> -> ControlEventBinding<'msg> list
 
+    val boundIdsOf: control: Control<'msg> -> Set<ControlId>
+
     val faithfulContent: theme: Theme -> box: FS.Skia.UI.Scene.Rect -> control: Control<'msg> -> FS.Skia.UI.Scene.Scene list
 
     val styleClassesOf: attrs: Attr<'msg> list -> StyleClass list
@@ -1432,6 +1434,8 @@ type ControlRenderResult<'msg> =
       Bounds: (ControlId * Rect) list
       Diagnostics: ControlDiagnostic list
       EventBindings: ControlEventBinding<'msg> list
+
+      BoundIds: Set<ControlId>
       NodeCount: int }
 
 namespace FS.Skia.UI.Controls

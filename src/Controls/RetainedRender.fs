@@ -121,6 +121,7 @@ module internal RetainedRender =
               Bounds = ControlInternals.collectBoundsWith boundsById control
               Diagnostics = Control.diagnostics control
               EventBindings = ControlInternals.eventBindingsOf control
+              BoundIds = ControlInternals.boundIdsOf control
               NodeCount = Control.count control }
 
         { Retained =
@@ -377,6 +378,7 @@ module internal RetainedRender =
               Bounds = ControlInternals.collectBoundsWith boundsById next
               Diagnostics = Control.diagnostics next
               EventBindings = ControlInternals.eventBindingsOf next
+              BoundIds = ControlInternals.boundIdsOf next
               NodeCount = Control.count next }
 
         { Retained =

@@ -35,8 +35,10 @@ let feature086LayoutBoundsTests =
                             TextBlock.create [ TextBlock.text "right" ] ] ]
 
             let rendered = Control.renderTree theme size horizontal
-            let kids = boundsOf "text-block" rendered
-            Expect.equal kids.Length 2 "both unkeyed text-block children are laid out"
+            // Feature 098 (FR-007): unkeyed siblings are keyed in `Bounds` by their structural path
+            // ("0.0", "0.1"), not the shared `Kind` "text-block".
+            let kids = [ "0.0"; "0.1" ] |> List.collect (fun id -> boundsOf id rendered)
+            Expect.equal kids.Length 2 "both unkeyed text-block children are laid out (keyed by structural path)"
 
             match kids with
             | [ a; b ] ->
@@ -55,8 +57,10 @@ let feature086LayoutBoundsTests =
                           [ TextBlock.create [ TextBlock.text "one" ]
                             TextBlock.create [ TextBlock.text "two" ] ] ]
 
-            let kids = boundsOf "text-block" (Control.renderTree theme size vertical)
-            Expect.equal kids.Length 2 "both unkeyed siblings appear in Bounds"
+            // Feature 098 (FR-007/SC-004): the two same-kind siblings now carry DISTINCT structural
+            // path ids ("0.0", "0.1") in `Bounds`, replacing the old shared `Kind` collision.
+            let kids = [ "0.0"; "0.1" ] |> List.collect (fun id -> boundsOf id (Control.renderTree theme size vertical))
+            Expect.equal kids.Length 2 "both unkeyed siblings appear in Bounds with distinct path ids"
 
             match kids with
             | [ a; b ] ->
@@ -76,7 +80,9 @@ let feature086LayoutBoundsTests =
                                   Stack.children [ TextBlock.create [ TextBlock.text "boxed" ] ] ] ] ]
 
             let rendered = Control.renderTree theme size sized
-            let inner = boundsOf "stack" rendered |> List.filter (fun r -> r.Width < 400.0)
+            // Feature 098 (FR-007): the explicitly-sized inner stack is keyed by its structural path
+            // "0.0" (the root stack is "0"), not the shared `Kind` "stack".
+            let inner = boundsOf "0.0" rendered |> List.filter (fun r -> r.Width < 400.0)
             Expect.isNonEmpty inner "the explicitly-sized inner stack appears in Bounds"
             let box = List.head inner
             Expect.floatClose Accuracy.medium box.Width 200.0 "explicit width is honored"
@@ -94,11 +100,12 @@ let feature086LayoutBoundsTests =
             let rendered = Control.renderTree theme size tree
             Expect.isNonEmpty rendered.Bounds "Bounds is populated"
             let ids = rendered.Bounds |> List.map fst
-            Expect.contains ids "text-block" "the text-block control has an evaluated box"
-            Expect.contains ids "button" "the button control has an evaluated box"
-            // The bound button must join with its EventBinding by ControlId.
+            // Feature 098 (FR-007): unkeyed controls carry their structural path id in `Bounds`.
+            Expect.contains ids "0.0" "the text-block control has an evaluated box (structural path id)"
+            Expect.contains ids "0.1" "the button control has an evaluated box (structural path id)"
+            // The bound button must join with its EventBinding by ControlId (now the unified path id).
             let buttonId = rendered.EventBindings |> List.map (fun b -> b.ControlId) |> List.head
-            Expect.contains ids buttonId "EventBindings join Bounds by ControlId"
+            Expect.contains ids buttonId "EventBindings join Bounds by the unified ControlId"
         }
 
         // FR-012 — a point inside a control resolves to it; a gap point resolves to None.
@@ -109,9 +116,10 @@ let feature086LayoutBoundsTests =
                           [ Button.create [ Button.text "Go"; Button.onClick Clicked ] ] ]
 
             let rendered = Control.renderTree theme size tree
-            let buttonBox = boundsOf "button" rendered |> List.head
+            // Feature 098 (FR-007): the sole unkeyed button is keyed by its structural path "0.0".
+            let buttonBox = boundsOf "0.0" rendered |> List.head
             let cx, cy = center buttonBox
-            Expect.equal (Control.hitTest rendered cx cy) (Some "button") "inside point hits the button"
+            Expect.equal (Control.hitTest rendered cx cy) (Some "0.0") "inside point hits the button (structural path id)"
             Expect.equal (Control.hitTest rendered -50.0 -50.0) None "a point outside every control is a gap"
         }
     ]

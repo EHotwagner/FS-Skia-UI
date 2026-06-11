@@ -61,6 +61,12 @@ module internal ControlInternals =
     /// retained path emits the identical list.
     val eventBindingsOf: control: Control<'msg> -> ControlEventBinding<'msg> list
 
+    /// Feature 098 (FR-002) — the canonical ids (`Key ?? path`) of every node carrying ≥1 event
+    /// binding. The single source for `ControlRenderResult.BoundIds` at the full rebuild AND the
+    /// retained frames, so the retained path is byte-identical by construction; read by
+    /// `nearestAuthored` to recover an unkeyed-bound ancestor.
+    val boundIdsOf: control: Control<'msg> -> Set<ControlId>
+
     /// Feature 093 (E3) — dispatch a rich-family control to its faithful geometry within `box`.
     /// Exposed (internal) so the migration parity tests assert the Button/CheckBox paint is
     /// structurally-`Scene`-equal to the frozen pre-refactor procedural geometry (SC-003/SC-007).

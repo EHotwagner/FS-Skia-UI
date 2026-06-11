@@ -16,6 +16,7 @@
     <Compile Include="Feature092LiveSurvivalTests.fs" />
     <Compile Include="Feature094FocusRoutingTests.fs" />
     <Compile Include="Feature096LiveBridgeTests.fs" />
+    <Compile Include="Feature098DispatchTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

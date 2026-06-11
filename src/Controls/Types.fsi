@@ -352,4 +352,9 @@ type ControlRenderResult<'msg> =
       Bounds: (ControlId * Rect) list
       Diagnostics: ControlDiagnostic list
       EventBindings: ControlEventBinding<'msg> list
+      /// Canonical ids (the unified `Key ?? structural-path` scheme) of every node
+      /// carrying at least one event binding. The same scheme as `EventBindings` and
+      /// `Bounds`, so a recovered id is a direct membership/lookup key. Populated by
+      /// `renderTree` and `render` (and the retained path); read by `nearestAuthored`.
+      BoundIds: Set<ControlId>
       NodeCount: int }

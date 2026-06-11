@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 749
-xml-summary-count: 425
+symbol-count: 751
+xml-summary-count: 433
 source-fsi-paths:
 - src/Controls/Accessibility.fsi
 - src/Controls/Attributes.fsi
@@ -328,6 +328,12 @@ module internal ControlInternals =
     /// Feature 091 — the recursive `EventBindings` list `renderTree` surfaces, factored so the
     /// retained path emits the identical list.
     val eventBindingsOf: control: Control<'msg> -> ControlEventBinding<'msg> list
+
+    /// Feature 098 (FR-002) — the canonical ids (`Key ?? path`) of every node carrying ≥1 event
+    /// binding. The single source for `ControlRenderResult.BoundIds` at the full rebuild AND the
+    /// retained frames, so the retained path is byte-identical by construction; read by
+    /// `nearestAuthored` to recover an unkeyed-bound ancestor.
+    val boundIdsOf: control: Control<'msg> -> Set<ControlId>
 
     /// Feature 093 (E3) — dispatch a rich-family control to its faithful geometry within `box`.
     /// Exposed (internal) so the migration parity tests assert the Button/CheckBox paint is
@@ -1407,6 +1413,11 @@ type ControlRenderResult<'msg> =
       Bounds: (ControlId * Rect) list
       Diagnostics: ControlDiagnostic list
       EventBindings: ControlEventBinding<'msg> list
+      /// Canonical ids (the unified `Key ?? structural-path` scheme) of every node
+      /// carrying at least one event binding. The same scheme as `EventBindings` and
+      /// `Bounds`, so a recovered id is a direct membership/lookup key. Populated by
+      /// `renderTree` and `render` (and the retained path); read by `nearestAuthored`.
+      BoundIds: Set<ControlId>
       NodeCount: int }
 
 ```
