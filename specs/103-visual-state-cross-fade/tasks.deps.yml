@@ -1,0 +1,88 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (feature 103, R6).
+#
+# R6 is a Tier-1 behavior-changing change to the FS.Skia.UI.Controls
+# RetainedRender internals: the live visual-state transition becomes a genuine
+# snapshot-composite cross-fade. The internal AnimationClock gains a `From`
+# prior-snapshot field and its doc is reconciled (FR-009); the public
+# runInteractiveApp/consumer surface is unchanged. No synthetic evidence.
+#
+# Phase-checkpoint edges are auto-injected (every task in Phase N+1 depends on
+# the last foundation task of Phase N); only non-phase cross-edges are written
+# here.
+
+tasks:
+  # Phase 1 — Setup
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+  T003:
+    deps: []
+    skillist: []
+
+  # Phase 2 — Foundation (internal .fsi contract + resolved design fork)
+  T004:
+    deps: []
+    skillist: ["fs-skia-reconciliation"]
+  T005:
+    deps: []
+    skillist: ["fs-skia-reconciliation", "fs-skia-scene"]
+
+  # Phase 3 — User Story 1 (a transition visibly cross-fades its colors)
+  T006:
+    deps: []
+    skillist: ["fs-skia-reconciliation", "fs-skia-testing"]
+  T007:
+    deps: [T006]
+    skillist: ["fs-skia-reconciliation"]
+  T008:
+    deps: [T007]
+    skillist: ["fs-skia-scene", "fs-skia-reconciliation"]
+  T009:
+    deps: [T008]
+    skillist: ["fs-skia-reconciliation"]
+  T010:
+    deps: [T009]
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 4 — User Story 2 (at-rest + settled byte-identity, determinism)
+  T011:
+    deps: []
+    skillist: ["fs-skia-reconciliation", "fs-skia-testing"]
+  T012:
+    deps: []
+    skillist: ["fs-skia-testing"]
+  T013:
+    deps: [T011, T012]
+    skillist: ["fs-skia-evidence-mode"]
+  T014:
+    deps: [T011]
+    skillist: ["fs-skia-reconciliation", "fs-skia-testing"]
+
+  # Phase 5 — User Story 3 (doc <-> behavior agreement)
+  T015:
+    deps: [T004]
+    skillist: ["fs-skia-reconciliation"]
+
+  # Phase 6 — Integration & Polish
+  T016:
+    deps: []
+    skillist: []
+  T017:
+    deps: []
+    skillist: []
+  T018:
+    deps: [T017]
+    skillist: []
+  T019:
+    deps: [T018]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T020:
+    deps: [T019]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

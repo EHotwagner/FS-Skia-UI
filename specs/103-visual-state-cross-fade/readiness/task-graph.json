@@ -1,0 +1,933 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Confirm the feature directory links spec + plan, then confirm the four root-cause sites are present at the cited lines: `fadeAnimation` (fixed opacity-only `Animation`, `src/Controls/RetainedRender.fs:~94`), `updateClockForState` (state-change detector with no endpoint knowledge, `:~123`), `sampleOnPaint` (opacity-only overlay, `:~153`), and the `AnimationClock` type doc that over-advertises a color channel (`src/Controls/RetainedRender.fsi:~40-51`)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T001",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T001: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T1",
+      "parallel": true,
+      "title": "Scaffold `specs/103-visual-state-cross-fade/readiness/` audit-enforced placeholders discoverable before implementation \u2014 `governance-risk-levels.md`, `aggregate-hang-diagnostics.md`, `runtime-limitations.md`, `generated-validation.md`, `visual-evidence-honesty.md`, `window-visibility.md` (not-applicable \u2014 assembly is GPU-free byte-identity/interpolation evidence, no persistent window or screenshots), `real-image-evidence.md` (not-applicable \u2014 deterministic scene assembly, no captured images), `at-rest-byte-identity.md`, `final-frame-identity.md`, `mid-flight-interpolation.md`, `determinism.md`, `evidence-graph.md`, `evidence-audit.md` \u2014 each naming its authoritative command, artifact path, failure class, and next action",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T002",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T002: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Record feature classification: **Tier 1** (contracted), affected layer `FS.Skia.UI.Controls` (`RetainedRender` internals), public-API impact = **none** (public `runInteractiveApp`/consumer surface unchanged; only the internal `AnimationClock` `.fsi` field + doc), **Principle IV (MVU/effect) not applicable** (no `Model`/`Msg`/`Effect`/`update` added \u2014 reuses the feature-099 host-tick \u2192 `advance` \u2192 assemble seam), and the five evidence obligations (at-rest, final-frame, mid-flight, determinism, graph+audit with 0 synthetic)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T003",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T003: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Draft the internal `.fsi` change in `src/Controls/RetainedRender.fsi`: the **internal** `AnimationClock` type gains a `From : FS.Skia.UI.Scene.Scene list` prior-snapshot field, and its doc-comment is reconciled to describe the **snapshot-composite** cross-fade and drop the unfulfilled standalone Scene-`Color`-tween claim (FR-009). The **public** surface stays byte-identical",
+      "skillist": [
+        "fs-skia-reconciliation"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T004",
+          "declared_skillist": [
+            "fs-skia-reconciliation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T004: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T003"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": "T1",
+      "parallel": true,
+      "title": "Confirm the Phase-0 design fork in `research.md`: `Animation.applyAt` **never applies the `Color` tween** (samples opacity/transform only) and a single Scene `Color` tween cannot represent the multi-channel `Foreground`/`Fill`/`Stroke` paint `Style.resolve` produces \u2014 so the cross-fade is realized by **compositing the two cached static own-scene snapshots** via the public opacity tween, and record the retarget-on-second-change and doc-reconciliation (FR-009) decisions",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-scene"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-scene"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T005",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-scene"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T005: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T003"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Add the **failing-first** semantic test via the internal `RetainedRender.step` surface (`<InternalsVisibleTo>`): drive a control whose `Style.resolve` output differs between `Normal` and `Hover`/`Focused` in a token-derived color channel through `Normal \u2192 Hover` with a fixed injected-delta sequence, sample an intermediate frame, and assert a color channel value lies **strictly between** the prior and next resolved-style endpoints. Red initially (the new appearance only fades in from transparent) (SC-001 / INV-3)",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T006",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T006: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Extend `updateClockForState` to capture `From` from the **matched prior retained node's `Fragment.OwnScene`** at transition start, and on a **mid-flight retarget** seed `From` from the previous target's own snapshot with `Elapsed = 0` (FR-001, FR-007)",
+      "skillist": [
+        "fs-skia-reconciliation"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T007",
+          "declared_skillist": [
+            "fs-skia-reconciliation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T007: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T006"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Rebuild `sampleOnPaint` to composite two opacity-driven layers via the **public** `Animation.applyAt`: the `From` prior layer fades out (`1 \u2192 0`) **under** the next own-scene fading in (`0 \u2192 1`); `From = []` degenerates to today's fade-in (a safe degenerate case, not a special path) (FR-002)",
+      "skillist": [
+        "fs-skia-scene",
+        "fs-skia-reconciliation"
+      ],
+      "skillist_mirror": [
+        "fs-skia-scene",
+        "fs-skia-reconciliation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T008",
+          "declared_skillist": [
+            "fs-skia-scene",
+            "fs-skia-reconciliation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T008: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T007"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Thread the prior own-scene snapshot by `RetainedId` through the assemble walk; the composite branch is entered **only** when `clockActive clock` is true (a settled clock paints `ownStatic` verbatim) (FR-002, preserves the settle path for INV-2)",
+      "skillist": [
+        "fs-skia-reconciliation"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T009",
+          "declared_skillist": [
+            "fs-skia-reconciliation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T009: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T008"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": "T1",
+      "parallel": false,
+      "title": "US1 independent test green; write `readiness/mid-flight-interpolation.md` \u2014 an intermediate composited color of a both-states-painted region strictly between the `Normal` and `Hover` endpoints (with `Animation.lerpColor` endpoints as the strictly-between reference; mid-flight is animation, not golden) (SC-001 / INV-3)",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T010",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T010: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T009"
+      ],
+      "phase_deps": [
+        "T005"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Add the byte-identity tests via `RetainedRender.step`: (a) **at-rest** \u2014 with no clock in flight the assembled scene equals the cached `SubtreeScene` and **no** animation attribute is emitted (SC-002 / INV-1); (b) **final-frame** \u2014 advance a transition past its duration with a large injected delta and assert the frame is byte-identical to the statically snapped render of the new state for **every** animated channel (SC-003 / INV-2)",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T011",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T011: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": true,
+      "title": "Add the **determinism** test: replay a fixed injected-delta sequence (repo has no `testProperty` \u2014 use `Check.One`, `[[feature-099-live-animation-clock]]`) and assert an identical sampled-frame sequence; a non-positive delta is a no-op (never rewinds) and a past-duration delta settles canonically with no overshoot in any channel (SC-004 / INV-4)",
+      "skillist": [
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T012",
+          "declared_skillist": [
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T012: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Confirm the settle / fast path is **unchanged** so FR-004/FR-005 hold by construction (the cross-fade is an assembly-time overlay gated to mid-flight frames only); write `readiness/at-rest-byte-identity.md`, `readiness/final-frame-identity.md`, and `readiness/determinism.md`",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T013",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T013: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T011",
+        "T012"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Edge-case tests: **no channel differs** collapses the tween to a no-op with no spurious repaint; a **held** state stays a `Keep` after settle (the `Reconcile.attrValueEqual` `VisualStateValue` equality case from feature 099 stays intact \u2014 single scoped repaint, not per-frame); a settled **return-to-`Normal`** clock is still **dropped** so the identity returns to byte-identical at-rest output, now also discarding `From` (FR-008, INV-5/INV-6, SC-006)",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T014",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T014: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T011"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": "T1",
+      "parallel": false,
+      "title": "Read `src/Controls/RetainedRender.fsi`; confirm the reconciled `AnimationClock` doc names **exactly** the channels the implementation drives (the opacity tween + the snapshot composite), that every advertised channel is exercised by a test in this feature, and that the dropped standalone color-tween claim is gone \u2014 no doc-advertised channel left undriven (FR-009 / SC-005 / INV-7)",
+      "skillist": [
+        "fs-skia-reconciliation"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T015",
+          "declared_skillist": [
+            "fs-skia-reconciliation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T015: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T004"
+      ],
+      "phase_deps": [
+        "T014"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Recapture the **per-package** surface baseline via `PerPackageSurface.captureCurrent` for the moved internal `AnimationClock` `.fsi` field/doc (`RefreshSurfaceBaselines` does **not** regenerate per-package snapshots \u2014 `[[per-package-baseline-not-in-refresh-target]]`)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T016",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T016: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T015"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Run `./fake.sh build -t Route` and record the printed tier + minimal gate list in `readiness/generated-validation.md` (expect escalation to `controls-public-surface` per feature 101); run only the gates it prints",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T017",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T017: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T015"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Run the routed gate set **sequentially** (deterministic order, no concurrent FAKE); confirm rendering output, the Controls + Elmish suites, and the 099/101 property + unit suites are green and unchanged, the held-state single-repaint invariant holds, and no **public** `.fsi`/surface baseline moved; record the governance risk level, focused validation run, whether broad validation was required, and any non-authoritative aggregate result in `readiness/governance-risk-levels.md` + `readiness/aggregate-hang-diagnostics.md` (SC-006)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T018",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T018: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T017"
+      ],
+      "phase_deps": [
+        "T015"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceGraph` \u2014 confirm the echoed `feature-directory`/`tasks=<n>` match this feature, no cycles, no dangling refs, no `[S*]` surprises; write `readiness/evidence-graph.md`",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T019",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "owns:graph-validation"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T019: owns graph-validation requires skill speckit-evidence-graph; trigger_group=owns; matched_trigger=owns:graph-validation"
+        }
+      ],
+      "explicit_deps": [
+        "T018"
+      ],
+      "phase_deps": [
+        "T015"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": "T1",
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceAudit` \u2014 confirm verdict PASS with **0 synthetic**; write `readiness/evidence-audit.md` with a verdict token and ensure `readiness/generated-validation.md` records `package-resolution=resolved` / `package-mismatch=false`",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T020",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "owns:evidence-audit"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T020: owns evidence-audit requires skill speckit-evidence-audit; trigger_group=owns; matched_trigger=owns:evidence-audit"
+        }
+      ],
+      "explicit_deps": [
+        "T019"
+      ],
+      "phase_deps": [
+        "T015"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    }
+  ]
+}

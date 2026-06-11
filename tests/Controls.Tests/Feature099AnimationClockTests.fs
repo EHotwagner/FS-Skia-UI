@@ -28,7 +28,10 @@ let private freshClock (target: VisualState) : AnimationClock =
         { Animation.empty with
             Opacity = Some { Start = 0.0; End = 1.0; Duration = RetainedRender.defaultTransitionDuration; Easing = Easing.EaseOut } }
       Elapsed = TimeSpan.Zero
-      Target = target }
+      Target = target
+      // Feature 103 (R6): no prior snapshot for these pure-core clock tests — a `[]` `From` is the
+      // plain fade-in degenerate case, leaving the advance/retarget/drop semantics under test unchanged.
+      From = [] }
 
 let private sampledOpacity (clock: AnimationClock) : float =
     match clock.Anim.Opacity with
@@ -102,7 +105,7 @@ let determinism =
             let currentBeforeFlip = sampledOpacity mid
             Expect.isGreaterThan currentBeforeFlip 0.0 "the mid-flight clock is partway open"
 
-            let retargeted = (RetainedRender.updateClockForState Pressed (Some mid)).Value
+            let retargeted = (RetainedRender.updateClockForState Pressed [] (Some mid)).Value
             Expect.equal retargeted.Target Pressed "the retarget re-aims toward the new state"
             Expect.equal retargeted.Elapsed TimeSpan.Zero "the retarget restarts the eased segment"
             // sampling the retargeted clock at Elapsed 0 yields the value it was displaying, not 0 (no snap).
@@ -112,17 +115,17 @@ let determinism =
         test "a settled return-to-Normal clock is DROPPED to None (at-rest restored)" {
             let settledNormal = RetainedRender.advance (ms 200.0) (freshClock Normal)
             Expect.isFalse (RetainedRender.clockActive settledNormal) "precondition: the return-to-Normal clock has settled"
-            Expect.isNone (RetainedRender.updateClockForState Normal (Some settledNormal)) "a settled Normal-targeted clock drops to None"
+            Expect.isNone (RetainedRender.updateClockForState Normal [] (Some settledNormal)) "a settled Normal-targeted clock drops to None"
         }
 
         test "a held non-Normal state does NOT re-fire: a settled clock at the same state advances-only (kept)" {
             let settledHover = RetainedRender.advance (ms 200.0) (freshClock Hover)
-            let kept = RetainedRender.updateClockForState Hover (Some settledHover)
+            let kept = RetainedRender.updateClockForState Hover [] (Some settledHover)
             Expect.equal kept (Some settledHover) "a settled clock at its own state is kept unchanged (no spurious re-start)"
         }
 
         test "entering a non-Normal state from rest STARTS a fresh fade (Elapsed 0, opacity from 0)" {
-            let started = (RetainedRender.updateClockForState Hover None).Value
+            let started = (RetainedRender.updateClockForState Hover [] None).Value
             Expect.equal started.Target Hover "the started clock targets the entered state"
             Expect.equal started.Elapsed TimeSpan.Zero "a fresh start begins at Elapsed 0"
             Expect.equal (sampledOpacity started) 0.0 "a fresh fade begins fully transparent"
@@ -208,7 +211,7 @@ let identityAtRest =
         test "a settled-and-dropped clock returns the identity to byte-identical at-rest output" {
             // updateClockForState drops a settled Normal-targeted clock to None, so the next paint is static.
             let settledNormal = RetainedRender.advance (ms 200.0) (freshClock Normal)
-            let dropped = RetainedRender.updateClockForState Normal (Some settledNormal)
+            let dropped = RetainedRender.updateClockForState Normal [] (Some settledNormal)
             Expect.isNone dropped "the settled return-to-Normal clock is dropped (no lingering animation output)"
 
             Evidence.write "us3-identity-at-rest.md"

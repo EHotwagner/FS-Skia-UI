@@ -37,18 +37,26 @@ type internal RetainedNode<'msg> =
       Fragment: RenderFragment
       Children: RetainedNode<'msg> list }
 
-/// Feature 099 (R4) — the per-identity animation clock. Generalizes the feature-091 carried slot
-/// (which was `AnimationState<Transform> option`, transform-only and never written by the host) to
-/// the feature-073 multi-channel paint carrier so a focus-ring fade (opacity) / press tint (color)
-/// can be expressed, not just a transform. `Anim` is the reused feature-073 `Animation` shape
-/// (opacity/transform/color tweens, sampled by `Animation.applyAt`); `Elapsed` is the accumulated
-/// INJECTED delta (the sole time coordinate — no wall-clock); `Target` is the `VisualState` this
-/// clock is animating toward (used to detect a retarget when the stamped state flips). `None` on the
-/// slot ⇒ the identity is at rest and paints byte-identically to the pre-R4 static render (FR-005).
+/// Feature 099 (R4) / Feature 103 (R6) — the per-identity animation clock. Generalizes the
+/// feature-091 carried slot (transform-only, never written) to the feature-073 paint carrier.
+/// `Anim` is the reused feature-073 `Animation`, but the LIVE channel is the OPACITY tween only: the
+/// next layer's fade-in (`0→1`). `Animation.applyAt` samples opacity/transform and NEVER recolors by
+/// the `Color` tween, so R6 does **not** realize the visual-state cross-fade with a standalone
+/// `Color` tween (which `applyAt` would never honor, and which a single tween could not express
+/// against the multi-channel `Foreground`/`Fill`/`Stroke` paint `Style.resolve` produces anyway).
+/// Instead the paint cross-fade is the two-snapshot composite (`sampleOnPaint`): the prior state's
+/// `From` snapshot fading OUT (`1→0`) under the next state's own-scene fading in, both driven by the
+/// public opacity sampler. `Elapsed` is the accumulated INJECTED delta (sole time coordinate — no
+/// wall-clock); `Target` is the `VisualState` this clock animates toward (used to detect a retarget
+/// when the stamped state flips); `From` is the prior state's static own-scene snapshot captured at
+/// transition start (a `Scene list` to match `RenderFragment.OwnScene` verbatim; empty ⇒ nothing to
+/// fade from ⇒ a plain fade-in). `None` on the slot ⇒ the identity is at rest and paints
+/// byte-identically to the static render (FR-004/FR-005).
 type internal AnimationClock =
     { Anim: FS.Skia.UI.Scene.Animation
       Elapsed: System.TimeSpan
-      Target: VisualState }
+      Target: VisualState
+      From: FS.Skia.UI.Scene.Scene list }
 
 /// Per-control UI state keyed by the STABLE `RetainedId` rather than the path-derived `ControlId`,
 /// so it survives a positional shift (FR-003). `Animation` is the per-control clock proving
@@ -134,18 +142,24 @@ module internal RetainedRender =
     /// static render (FR-005), so only active clocks contribute a per-frame change.
     val internal clockActive: clock: AnimationClock -> bool
 
-    /// Feature 099 (R4): the pure transition trigger (contract C2). Given the `desired` VisualState
-    /// stamped by `ControlRuntime.applyRuntimeVisualState` (R1) and the carried (already-advanced)
-    /// clock, decide the frame's clock: START a fade-in for a fresh state change (from a settled/no
-    /// clock), RETARGET from the current sampled value for a mid-flight change (no snap to start),
-    /// advance-only when the state is unchanged, and DROP a settled return-to-`Normal` clock so the
-    /// identity is byte-identical at rest (FR-003/FR-005).
-    val internal updateClockForState: desired: VisualState -> carried: AnimationClock option -> AnimationClock option
+    /// Feature 099 (R4) / 103 (R6): the pure transition trigger (contract C2). Given the `desired`
+    /// VisualState stamped by `ControlRuntime.applyRuntimeVisualState` (R1), the matched prior node's
+    /// own-scene snapshot `priorOwn`, and the carried (already-advanced) clock, decide the frame's
+    /// clock: START a fade-in for a fresh state change (from a settled/no clock), RETARGET from the
+    /// current sampled value for a mid-flight change (no snap to start), advance-only when the state is
+    /// unchanged, and DROP a settled return-to-`Normal` clock so the identity is byte-identical at rest
+    /// (FR-003/FR-005). On a fresh transition or a mid-flight retarget the new clock's `From = priorOwn`
+    /// (the snapshot it cross-fades from); an advance-only/kept clock retains its existing `From`.
+    val internal updateClockForState: desired: VisualState -> priorOwn: FS.Skia.UI.Scene.Scene list -> carried: AnimationClock option -> AnimationClock option
 
-    /// Feature 099 (R4): sample an ACTIVE clock onto an identity's own painted scene (paint-level
-    /// only — opacity/transform/color, never layout), reusing feature-073 `Animation.applyAt`. The
-    /// static `ownScene` is the cached fragment paint; the result wraps it at the clock's current
-    /// `Elapsed`. Used only for active clocks — a settled/absent clock paints `ownScene` unchanged.
+    /// Feature 099 (R4) / 103 (R6): composite an ACTIVE clock onto an identity's own painted scene
+    /// (paint-level only — opacity, never layout). A genuine cross-fade of two opacity-driven layers
+    /// via the public feature-073 `Animation.applyAt`: the clock's `From` prior snapshot fading OUT
+    /// (`1→0`) UNDER `ownScene` (this frame's cached static own paint) fading IN (the clock's opacity
+    /// tween). For a region painted in both states the composite displays a colour strictly between the
+    /// endpoints (SC-001). `From = []` degenerates to the plain fade-in. Used only for active clocks —
+    /// a settled/absent clock paints `ownScene` unchanged (the settle path is untouched, so the final
+    /// frame stays byte-identical, FR-005).
     val internal sampleOnPaint: clock: AnimationClock -> ownScene: FS.Skia.UI.Scene.Scene list -> FS.Skia.UI.Scene.Scene list
 
     /// Build the initial retained structure from the first frame's lowered tree, painting it

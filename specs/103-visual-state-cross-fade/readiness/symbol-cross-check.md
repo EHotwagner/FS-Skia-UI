@@ -1,0 +1,28 @@
+## Symbol consistency (analyze pass G)
+- entity-record Color — in {tasks}, missing from {plan, data-model}
+- entity-record Fill — in {tasks}, missing from {plan, data-model}
+- entity-record Foreground — in {tasks}, missing from {plan, data-model}
+- entity-record From — in {tasks}, missing from {plan, data-model}
+- entity-record Keep — in {tasks}, missing from {plan, data-model}
+- entity-record Normal — in {tasks}, missing from {plan, data-model}
+- entity-record Stroke — in {tasks}, missing from {plan, data-model}
+- entity-record SubtreeScene — in {data-model, tasks}, missing from {plan}
+- entity-record VisualStateValue — in {tasks}, missing from {plan, data-model}
+- fr-id FR-001 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-002 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-003 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-006 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-007 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-008 — in {data-model, tasks}, missing from {plan}
+- msg-case AnimationClock — in {tasks}, missing from {plan, data-model}
+- msg-case Effect — in {plan, tasks}, missing from {data-model}
+- msg-case Model — in {plan, tasks}, missing from {data-model}
+- msg-case Msg — in {plan, tasks}, missing from {data-model}
+- msg-case RetainedRender — in {tasks}, missing from {plan, data-model}
+- sc-id SC-002 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-003 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-004 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-005 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-006 — in {data-model, tasks}, missing from {plan}
+- union-or-screen-variant Keep — in {plan}, missing from {data-model, tasks}
+- union-or-screen-variant VisualStateValue — in {plan}, missing from {data-model, tasks}

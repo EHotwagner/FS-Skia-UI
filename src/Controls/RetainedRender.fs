@@ -23,13 +23,19 @@ type internal RetainedNode<'msg> =
       Fragment: RenderFragment
       Children: RetainedNode<'msg> list }
 
-// Feature 099 (R4): the per-identity animation clock — the feature-073 multi-channel paint carrier
-// (opacity/transform/color) plus the accumulated injected `Elapsed` and the `VisualState` the clock
-// is animating toward. Generalizes the 091 transform-only carried slot.
+// Feature 099 (R4) / 103 (R6): the per-identity animation clock. `Anim` is the feature-073
+// `Animation` shape, but the LIVE channel is the opacity tween only — `applyAt` samples
+// opacity/transform and never recolors by the `Color` tween, so the visual-state cross-fade is NOT a
+// standalone color tween. It is the two-snapshot composite (`From` fading out under the next
+// own-scene fading in) realized in `sampleOnPaint`. `Elapsed` is the accumulated injected delta;
+// `Target` is the `VisualState` the clock animates toward; `From` is the prior state's static
+// own-scene snapshot, captured at transition start, composited under the next own-scene (empty ⇒ a
+// plain fade-in). Generalizes the 091 transform-only carried slot.
 type internal AnimationClock =
     { Anim: FS.Skia.UI.Scene.Animation
       Elapsed: System.TimeSpan
-      Target: VisualState }
+      Target: VisualState
+      From: FS.Skia.UI.Scene.Scene list }
 
 type internal RetainedUiState =
     { Animation: AnimationClock option
@@ -100,6 +106,19 @@ module internal RetainedRender =
                       Duration = defaultTransitionDuration
                       Easing = FS.Skia.UI.Scene.EaseOut } }
 
+    // Feature 103 (R6): the prior-snapshot fade-OUT — opacity travels 1.0 → 0.0 over the same
+    // framework default + easing as the fade-in, so the two layers cross at the eased midpoint. Drives
+    // the `From` snapshot UNDER the next own-scene in `sampleOnPaint`. Because both layers share the
+    // eased curve and lerp is linear, the fade-out is exactly the complement of the fade-in.
+    let private fadeOutAnimation: FS.Skia.UI.Scene.Animation =
+        { FS.Skia.UI.Scene.Animation.empty with
+            Opacity =
+                Some
+                    { Start = 1.0
+                      End = 0.0
+                      Duration = defaultTransitionDuration
+                      Easing = FS.Skia.UI.Scene.EaseOut } }
+
     // The clock's current sampled opacity (the displayed value a mid-flight retarget continues from).
     let private currentOpacity (clock: AnimationClock) : float =
         match clock.Anim.Opacity with
@@ -120,17 +139,22 @@ module internal RetainedRender =
             let e = clock.Elapsed + delta
             { clock with Elapsed = (if e > dur then dur else e) }
 
-    let updateClockForState (desired: VisualState) (carried: AnimationClock option) : AnimationClock option =
+    let updateClockForState (desired: VisualState) (priorOwn: FS.Skia.UI.Scene.Scene list) (carried: AnimationClock option) : AnimationClock option =
         // Compare the desired (stamped) VisualState against the carried clock's Target (contract C2).
         let triggered =
             match carried, desired with
             // At rest and staying at rest: no clock.
             | None, Normal -> None
             // Same state as the clock is already animating toward: advance-only (no retarget). A
-            // settled same-state clock is KEPT (Target ≠ Normal) so a held state does not re-fire.
+            // settled same-state clock is KEPT (Target ≠ Normal) so a held state does not re-fire. The
+            // existing `From` snapshot is retained (the layer the next own-scene is still crossing from).
             | Some c, d when d = c.Target -> Some c
             // The state changed (or first entry into a non-Normal state). Mid-flight ⇒ retarget from
             // the current sampled value (no snap to start); a settled/absent clock ⇒ a fresh fade-in.
+            // Feature 103 (R6): `From = priorOwn` — the matched prior node's own-scene snapshot. On a
+            // fresh transition this is the prior state's static paint; on a mid-flight retarget it is
+            // the previous target's static paint (the layer that was fading in becomes the one fading
+            // out), so the cross-fade never snaps to a stale at-rest endpoint (FR-001/FR-007).
             | _ ->
                 let startOpacity =
                     match carried with
@@ -140,7 +164,8 @@ module internal RetainedRender =
                 Some
                     { Anim = fadeAnimation startOpacity
                       Elapsed = System.TimeSpan.Zero
-                      Target = desired }
+                      Target = desired
+                      From = priorOwn }
 
         // A settled return-to-Normal clock is DROPPED so the identity returns to byte-identical
         // at-rest output (resolves the FR-003 vs FR-005 interaction); a settled non-Normal clock is
@@ -151,13 +176,26 @@ module internal RetainedRender =
         | other -> other
 
     let sampleOnPaint (clock: AnimationClock) (ownScene: FS.Skia.UI.Scene.Scene list) : FS.Skia.UI.Scene.Scene list =
-        // Paint-level only: wrap the identity's STATIC own paint through the feature-073 sampler at
-        // the clock's current Elapsed. A node with no own paint (no box) contributes nothing.
-        match ownScene with
+        // Feature 103 (R6): a genuine cross-fade — composite two opacity-driven layers via the public
+        // feature-073 `Animation.applyAt` (paint-level only; opacity, never layout). The prior state's
+        // static `From` snapshot fades OUT (1→0) UNDER this frame's static `ownScene` fading IN (via
+        // the clock's own opacity tween). For a region painted in both states the source-over composite
+        // displays a colour STRICTLY BETWEEN the two endpoints (SC-001) — not the old fade-in from
+        // transparent (which can only grow paint). `From = []` (first entry / no prior paint)
+        // degenerates to the plain next-fades-in case — a safe degenerate, not a special path.
+        let priorLayer =
+            match clock.From with
+            | [] -> []
+            | nodes -> [ FS.Skia.UI.Scene.Animation.applyAt clock.Elapsed fadeOutAnimation (FS.Skia.UI.Scene.Scene.group nodes) ]
+
+        let nextLayer =
+            match ownScene with
+            | [] -> []
+            | nodes -> [ FS.Skia.UI.Scene.Animation.applyAt clock.Elapsed clock.Anim (FS.Skia.UI.Scene.Scene.group nodes) ]
+
+        match priorLayer @ nextLayer with
         | [] -> []
-        | _ ->
-            [ { Nodes =
-                  [ FS.Skia.UI.Scene.Animation.applyAt clock.Elapsed clock.Anim (FS.Skia.UI.Scene.Scene.group ownScene) ] } ]
+        | layers -> [ { Nodes = layers } ]
 
     // FR-009: detect duplicate sibling keys present in the FIRST tree, mirroring the collision the
     // 067 `Reconcile.diff` reports from frame 1 (same shape/message), so a malformed first frame is
@@ -469,12 +507,30 @@ module internal RetainedRender =
         // code). For each live identity, the carried clock (already advanced by the host Tick wrapper)
         // is started/retargeted/dropped from the stamped `VisualState` via `updateClockForState`
         // (R1 → R4 trigger); carried text is preserved unchanged.
+        // Feature 103 (R6): index the PREVIOUS frame's own-scene snapshot by stable identity, so a
+        // fresh transition / retarget can capture the prior state's static paint as the clock's `From`
+        // (the layer it cross-fades FROM). A node minted fresh this frame has no prior identity ⇒ no
+        // `From` ⇒ a plain fade-in.
+        let priorOwnById = System.Collections.Generic.Dictionary<RetainedId, Scene list>()
+
+        let rec indexPriorOwn (n: RetainedNode<'msg>) =
+            priorOwnById.[n.Identity] <- n.Fragment.OwnScene
+            n.Children |> List.iter indexPriorOwn
+
+        indexPriorOwn prev.Root
+
         let rec collect (n: RetainedNode<'msg>) (acc: Map<RetainedId, RetainedUiState>) : Map<RetainedId, RetainedUiState> =
             let carried = Map.tryFind n.Identity prev.StateByIdentity
             let carriedClock = carried |> Option.bind (fun s -> s.Animation)
             let carriedText = carried |> Option.bind (fun s -> s.Text)
+
+            let priorOwn =
+                match priorOwnById.TryGetValue n.Identity with
+                | true, own -> own
+                | _ -> []
+
             let desired = ControlInternals.visualStateOf n.Control.Attributes
-            let clock = updateClockForState desired carriedClock
+            let clock = updateClockForState desired priorOwn carriedClock
 
             let acc =
                 match clock, carriedText with

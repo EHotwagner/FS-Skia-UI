@@ -147,7 +147,10 @@ let private startedClock () : AnimationClock =
                       Duration = TimeSpan.FromSeconds 1.0
                       Easing = Easing.EaseOut } }
       Elapsed = TimeSpan.FromMilliseconds 250.0
-      Target = Normal }
+      Target = Normal
+      // Feature 103 (R6): the carried slot gains a prior-snapshot field; `[]` here (091 proves the
+      // clock's survival across a positional shift, not the cross-fade) is the plain fade-in case.
+      From = [] }
 
 [<Tests>]
 let us2 =

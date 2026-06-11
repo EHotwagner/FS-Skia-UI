@@ -1,7 +1,7 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
 <!-- SPECKIT START -->
-specs/102-doc-narrowing-reconciliation/plan.md
+specs/103-visual-state-cross-fade/plan.md
 <!-- SPECKIT END -->
 
 ## Run `Route` first; run only the gates it prints
