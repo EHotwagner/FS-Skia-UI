@@ -37,13 +37,27 @@ type internal RetainedNode<'msg> =
       Fragment: RenderFragment
       Children: RetainedNode<'msg> list }
 
+/// Feature 099 (R4) — the per-identity animation clock. Generalizes the feature-091 carried slot
+/// (which was `AnimationState<Transform> option`, transform-only and never written by the host) to
+/// the feature-073 multi-channel paint carrier so a focus-ring fade (opacity) / press tint (color)
+/// can be expressed, not just a transform. `Anim` is the reused feature-073 `Animation` shape
+/// (opacity/transform/color tweens, sampled by `Animation.applyAt`); `Elapsed` is the accumulated
+/// INJECTED delta (the sole time coordinate — no wall-clock); `Target` is the `VisualState` this
+/// clock is animating toward (used to detect a retarget when the stamped state flips). `None` on the
+/// slot ⇒ the identity is at rest and paints byte-identically to the pre-R4 static render (FR-005).
+type internal AnimationClock =
+    { Anim: FS.Skia.UI.Scene.Animation
+      Elapsed: System.TimeSpan
+      Target: VisualState }
+
 /// Per-control UI state keyed by the STABLE `RetainedId` rather than the path-derived `ControlId`,
 /// so it survives a positional shift (FR-003). `Animation` is the per-control clock proving
-/// FR-003 survival (Scene `Animation`, feature 073); `Text` is re-keyed text-input state. Focus
-/// itself stays in the consumer model's `ControlRuntime.FocusedControl`; 091 only remaps the
-/// lookup to `RetainedId`.
+/// FR-003 survival; under feature 099 (R4) it is the live `AnimationClock` advanced by the host
+/// tick and sampled on paint (091 only carried it; nothing wrote it). `Text` is re-keyed text-input
+/// state. Focus itself stays in the consumer model's `ControlRuntime.FocusedControl`; 091 only
+/// remaps the lookup to `RetainedId`.
 type internal RetainedUiState =
-    { Animation: FS.Skia.UI.Scene.AnimationState<FS.Skia.UI.Scene.Transform> option
+    { Animation: AnimationClock option
       Text: TextInputModel option }
 
 /// The per-frame retained root plus the monotonic identity counter, the identity-keyed UI
@@ -102,6 +116,37 @@ type internal RetainedInit<'msg> =
       Diagnostics: ControlDiagnostic list }
 
 module internal RetainedRender =
+
+    /// Feature 099 (R4): the single pinned framework default transition — exactly 150 ms, `EaseOut`,
+    /// on the opacity channel — applied when a tween is started/retargeted. A fixed constant (not a
+    /// per-control consumer knob) so the determinism goldens reach the settled end after the same
+    /// fixed frame count for the same injected-delta sequence. Reached by the test assemblies.
+    val internal defaultTransitionDuration: System.TimeSpan
+
+    /// Feature 099 (R4): advance a clock by an INJECTED delta. Total + pure (no wall-clock): a
+    /// non-positive delta is a no-op (never rewinds); a positive delta accumulates `Elapsed`,
+    /// CLAMPED to the animation's duration (so a very-large delta settles at the end with no
+    /// overshoot, and replaying an identical delta sequence reproduces identical state — FR-006).
+    val internal advance: delta: System.TimeSpan -> clock: AnimationClock -> AnimationClock
+
+    /// Feature 099 (R4): true while the clock is still in flight (not every present tween has
+    /// reached its `Duration`). A settled clock is NOT sampled — it paints byte-identically to the
+    /// static render (FR-005), so only active clocks contribute a per-frame change.
+    val internal clockActive: clock: AnimationClock -> bool
+
+    /// Feature 099 (R4): the pure transition trigger (contract C2). Given the `desired` VisualState
+    /// stamped by `ControlRuntime.applyRuntimeVisualState` (R1) and the carried (already-advanced)
+    /// clock, decide the frame's clock: START a fade-in for a fresh state change (from a settled/no
+    /// clock), RETARGET from the current sampled value for a mid-flight change (no snap to start),
+    /// advance-only when the state is unchanged, and DROP a settled return-to-`Normal` clock so the
+    /// identity is byte-identical at rest (FR-003/FR-005).
+    val internal updateClockForState: desired: VisualState -> carried: AnimationClock option -> AnimationClock option
+
+    /// Feature 099 (R4): sample an ACTIVE clock onto an identity's own painted scene (paint-level
+    /// only — opacity/transform/color, never layout), reusing feature-073 `Animation.applyAt`. The
+    /// static `ownScene` is the cached fragment paint; the result wraps it at the clock's current
+    /// `Elapsed`. Used only for active clocks — a settled/absent clock paints `ownScene` unchanged.
+    val internal sampleOnPaint: clock: AnimationClock -> ownScene: FS.Skia.UI.Scene.Scene list -> FS.Skia.UI.Scene.Scene list
 
     /// Build the initial retained structure from the first frame's lowered tree, painting it
     /// ONCE. The returned `Render` is byte-identical to `Control.renderTree theme size control`

@@ -23,8 +23,16 @@ type internal RetainedNode<'msg> =
       Fragment: RenderFragment
       Children: RetainedNode<'msg> list }
 
+// Feature 099 (R4): the per-identity animation clock — the feature-073 multi-channel paint carrier
+// (opacity/transform/color) plus the accumulated injected `Elapsed` and the `VisualState` the clock
+// is animating toward. Generalizes the 091 transform-only carried slot.
+type internal AnimationClock =
+    { Anim: FS.Skia.UI.Scene.Animation
+      Elapsed: System.TimeSpan
+      Target: VisualState }
+
 type internal RetainedUiState =
-    { Animation: FS.Skia.UI.Scene.AnimationState<FS.Skia.UI.Scene.Transform> option
+    { Animation: AnimationClock option
       Text: TextInputModel option }
 
 type internal RetainedRender<'msg> =
@@ -57,6 +65,99 @@ type internal RetainedInit<'msg> =
 module internal RetainedRender =
 
     let private childPath (path: string) (index: int) = path + "." + string index
+
+    // ---------------------------------------------------------------------------------------------
+    // Feature 099 (R4) — the per-identity animation clock core. Pure + total + deterministic: every
+    // function below depends ONLY on its arguments (no `Date.now`, no randomness, resume-safe). The
+    // feature-073 `Animation`/`applyAt`/`isSettled` primitives are REUSED, not re-implemented.
+    // ---------------------------------------------------------------------------------------------
+
+    /// The single pinned framework default transition (research §R4 / data-model constant): a short
+    /// 150 ms `EaseOut` settle on the opacity channel. A fixed value, not a per-control knob, so the
+    /// determinism goldens reach the settled end after the same fixed frame count.
+    let defaultTransitionDuration = System.TimeSpan.FromMilliseconds 150.0
+
+    // The longest tween duration carried by an animation (the point past which it is settled).
+    let private clockDuration (anim: FS.Skia.UI.Scene.Animation) : System.TimeSpan =
+        [ anim.Opacity |> Option.map (fun t -> t.Duration)
+          anim.Transform |> Option.map (fun t -> t.Duration)
+          anim.Color |> Option.map (fun t -> t.Duration) ]
+        |> List.choose id
+        |> function
+            | [] -> System.TimeSpan.Zero
+            | ds -> List.max ds
+
+    // The default fade-in animation: opacity travels from `startOpacity` to fully-shown (1.0) over
+    // the framework default, eased out. End = 1.0 means a settled clock samples to opacity 1.0, so
+    // `applyAt`'s identity-at-rest lowering makes the converged frame byte-identical to the static
+    // render of the (now-stamped) state — FR-005 holds by construction.
+    let private fadeAnimation (startOpacity: float) : FS.Skia.UI.Scene.Animation =
+        { FS.Skia.UI.Scene.Animation.empty with
+            Opacity =
+                Some
+                    { Start = startOpacity
+                      End = 1.0
+                      Duration = defaultTransitionDuration
+                      Easing = FS.Skia.UI.Scene.EaseOut } }
+
+    // The clock's current sampled opacity (the displayed value a mid-flight retarget continues from).
+    let private currentOpacity (clock: AnimationClock) : float =
+        match clock.Anim.Opacity with
+        | Some tween -> FS.Skia.UI.Scene.Tween.sample FS.Skia.UI.Scene.Animation.lerpFloat clock.Elapsed tween
+        | None -> 1.0
+
+    let clockActive (clock: AnimationClock) : bool =
+        not (FS.Skia.UI.Scene.Animation.isSettled clock.Elapsed clock.Anim)
+
+    let advance (delta: System.TimeSpan) (clock: AnimationClock) : AnimationClock =
+        // Non-positive delta is a designed no-op — never rewinds (the host never emits these). A
+        // positive delta accumulates Elapsed CLAMPED to the duration, so a very-large delta settles
+        // at the end (no overshoot) and the settled state is canonical (determinism of state, FR-006).
+        if delta <= System.TimeSpan.Zero then
+            clock
+        else
+            let dur = clockDuration clock.Anim
+            let e = clock.Elapsed + delta
+            { clock with Elapsed = (if e > dur then dur else e) }
+
+    let updateClockForState (desired: VisualState) (carried: AnimationClock option) : AnimationClock option =
+        // Compare the desired (stamped) VisualState against the carried clock's Target (contract C2).
+        let triggered =
+            match carried, desired with
+            // At rest and staying at rest: no clock.
+            | None, Normal -> None
+            // Same state as the clock is already animating toward: advance-only (no retarget). A
+            // settled same-state clock is KEPT (Target ≠ Normal) so a held state does not re-fire.
+            | Some c, d when d = c.Target -> Some c
+            // The state changed (or first entry into a non-Normal state). Mid-flight ⇒ retarget from
+            // the current sampled value (no snap to start); a settled/absent clock ⇒ a fresh fade-in.
+            | _ ->
+                let startOpacity =
+                    match carried with
+                    | Some c when clockActive c -> currentOpacity c
+                    | _ -> 0.0
+
+                Some
+                    { Anim = fadeAnimation startOpacity
+                      Elapsed = System.TimeSpan.Zero
+                      Target = desired }
+
+        // A settled return-to-Normal clock is DROPPED so the identity returns to byte-identical
+        // at-rest output (resolves the FR-003 vs FR-005 interaction); a settled non-Normal clock is
+        // kept (its sampled opacity 1.0 lowers byte-identically via `applyAt`, and keeping it
+        // suppresses a spurious re-fire while the state is held).
+        match triggered with
+        | Some c when (not (clockActive c)) && c.Target = Normal -> None
+        | other -> other
+
+    let sampleOnPaint (clock: AnimationClock) (ownScene: FS.Skia.UI.Scene.Scene list) : FS.Skia.UI.Scene.Scene list =
+        // Paint-level only: wrap the identity's STATIC own paint through the feature-073 sampler at
+        // the clock's current Elapsed. A node with no own paint (no box) contributes nothing.
+        match ownScene with
+        | [] -> []
+        | _ ->
+            [ { Nodes =
+                  [ FS.Skia.UI.Scene.Animation.applyAt clock.Elapsed clock.Anim (FS.Skia.UI.Scene.Scene.group ownScene) ] } ]
 
     // FR-009: detect duplicate sibling keys present in the FIRST tree, mirroring the collision the
     // 067 `Reconcile.diff` reports from frame 1 (same shape/message), so a malformed first frame is
@@ -358,22 +459,58 @@ module internal RetainedRender =
 
         let newRoot = build "0" prev.Root result.Patch next
 
-        // Re-key UI state to the STABLE identities still live this frame: carried identities keep
-        // their state (focus/animation/text survive a positional shift); dropped identities lose it.
-        let rec liveIds (n: RetainedNode<'msg>) : RetainedId seq =
-            seq {
-                yield n.Identity
-                for c in n.Children do
-                    yield! liveIds c
-            }
+        // Re-key UI state to the STABLE identities still live this frame AND compute this frame's
+        // animation clocks (R4). Walking `newRoot` is the GC: only live identities carry state, so a
+        // removed identity's clock/text is dropped with the rest of its state (FR-007, no new GC
+        // code). For each live identity, the carried clock (already advanced by the host Tick wrapper)
+        // is started/retargeted/dropped from the stamped `VisualState` via `updateClockForState`
+        // (R1 → R4 trigger); carried text is preserved unchanged.
+        let rec collect (n: RetainedNode<'msg>) (acc: Map<RetainedId, RetainedUiState>) : Map<RetainedId, RetainedUiState> =
+            let carried = Map.tryFind n.Identity prev.StateByIdentity
+            let carriedClock = carried |> Option.bind (fun s -> s.Animation)
+            let carriedText = carried |> Option.bind (fun s -> s.Text)
+            let desired = ControlInternals.visualStateOf n.Control.Attributes
+            let clock = updateClockForState desired carriedClock
 
-        let live = liveIds newRoot |> Set.ofSeq
-        let stateById = prev.StateByIdentity |> Map.filter (fun id _ -> Set.contains id live)
+            let acc =
+                match clock, carriedText with
+                | None, None -> acc
+                | _ -> Map.add n.Identity { Animation = clock; Text = carriedText } acc
 
-        // Byte-identical to `Control.renderTree theme size next`: SubtreeScene is the pre-order
-        // concatenation of `paintNode` over every node — the same list `renderTree`'s paint builds.
+            n.Children |> List.fold (fun a c -> collect c a) acc
+
+        let stateById = collect newRoot Map.empty
+
+        // Assemble the painted scene, overlaying any ACTIVE animation clock onto its identity's own
+        // (static) paint — paint-level only, scoped to that subtree (FR-002/FR-010). When NO clock is
+        // active the fast path returns the cached `SubtreeScene` verbatim, so an at-rest frame is
+        // byte-identical to the pre-R4 golden and costs nothing extra (FR-005, identity-at-rest). The
+        // overlay always wraps the cached STATIC `OwnScene` (fragments never store animated paint), so
+        // the reuse/caching invariants are untouched and a settled/absent clock paints unchanged.
+        let anyActive =
+            stateById |> Map.exists (fun _ s -> s.Animation |> Option.exists clockActive)
+
+        let sceneList =
+            if not anyActive then
+                newRoot.Fragment.SubtreeScene
+            else
+                let rec assemble (n: RetainedNode<'msg>) : Scene list =
+                    let ownStatic = n.Fragment.OwnScene
+
+                    let own =
+                        match Map.tryFind n.Identity stateById |> Option.bind (fun s -> s.Animation) with
+                        | Some c when clockActive c -> sampleOnPaint c ownStatic
+                        | _ -> ownStatic
+
+                    own @ (n.Children |> List.collect assemble)
+
+                assemble newRoot
+
+        // Byte-identical to `Control.renderTree theme size next` AT REST: `SubtreeScene` is the
+        // pre-order concatenation of `paintNode` over every node — the same list `renderTree`'s paint
+        // builds. An active clock contributes a paint-level overlay scoped to its own identity.
         let render: ControlRenderResult<'msg> =
-            { Scene = newRoot.Fragment.SubtreeScene |> Scene.group
+            { Scene = sceneList |> Scene.group
               Layout = root
               Bounds = ControlInternals.collectBoundsWith boundsById next
               Diagnostics = Control.diagnostics next

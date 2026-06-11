@@ -959,8 +959,13 @@ type internal RetainedNode<'msg> =
       Fragment: RenderFragment
       Children: RetainedNode<'msg> list }
 
+type internal AnimationClock =
+    { Anim: FS.Skia.UI.Scene.Animation
+      Elapsed: System.TimeSpan
+      Target: VisualState }
+
 type internal RetainedUiState =
-    { Animation: FS.Skia.UI.Scene.AnimationState<FS.Skia.UI.Scene.Transform> option
+    { Animation: AnimationClock option
       Text: TextInputModel option }
 
 type internal RetainedRender<'msg> =
@@ -991,6 +996,16 @@ type internal RetainedInit<'msg> =
       Diagnostics: ControlDiagnostic list }
 
 module internal RetainedRender =
+
+    val internal defaultTransitionDuration: System.TimeSpan
+
+    val internal advance: delta: System.TimeSpan -> clock: AnimationClock -> AnimationClock
+
+    val internal clockActive: clock: AnimationClock -> bool
+
+    val internal updateClockForState: desired: VisualState -> carried: AnimationClock option -> AnimationClock option
+
+    val internal sampleOnPaint: clock: AnimationClock -> ownScene: FS.Skia.UI.Scene.Scene list -> FS.Skia.UI.Scene.Scene list
 
     val init: theme: Theme -> size: FS.Skia.UI.Scene.Size -> control: Control<'msg> -> RetainedInit<'msg>
 

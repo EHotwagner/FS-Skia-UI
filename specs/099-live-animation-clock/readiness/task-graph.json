@@ -1,0 +1,1145 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm the feature directory artifacts are present and linked (`spec.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/host-animation-seam.md`, `contracts/sample-on-paint.md`, `checklists/`) and that `.specify/feature.json` resolves `specs/099-live-animation-clock`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T001",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T001: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Scaffold audit-discoverable readiness placeholders under `readiness/`: `us1-animates-vs-snaps.md`, `us2-survival.md`, `us3-identity-at-rest.md`, `us3-determinism.md`, `us4-gc.md`, `scoped-repaint.md`, `surface-baseline.md`, `fsi-transcript.md`, `validation-log.md`, plus `governance-risk-levels.md`, `aggregate-hang-diagnostics.md`, `runtime-limitations.md`, `generated-guidance-validation.md`, `real-image-evidence.md`, `evidence-graph.md`, `evidence-audit.md` \u2014 each naming its authoritative command, artifact path, failure class, and next action (use `key=value` lines, not bare image-filename claims; `real-image-evidence.md` records the **animates-vs-snaps frame-sequence** captured through the deterministic `runInteractiveApp` seam as the rendered-output evidence, cross-referencing `us1-animates-vs-snaps.md` \u2014 there is no persistent-launch / window obligation)",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T002",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T002: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record feature Tier 1 (contracted: the internal `RetainedUiState.Animation` carried-slot type generalized to the feature-073 multi-channel clock in `RetainedRender.fsi`/`.fs`), affected layers (`FS.Skia.UI.Controls` \u2014 `RetainedRender.fsi`/`RetainedRender.fs` slot type + `advance`/`sampleOnPaint`/retarget core + carry/GC reuse; `FS.Skia.UI.Controls.Elmish` \u2014 `ControlsElmish.fs` host-seam wiring only; `FS.Skia.UI.Scene` feature-073 animation **consumed, not modified**; `ControlRuntime` R1 bridge **consumed, not modified**), public-API impact (the **public** `runInteractiveApp`/`InteractiveAppHost` surface is **unchanged**; only the internal `RetainedRender.fsi` slot type moves), MVU applicability (no new consumer `Model`/`Msg`/`Effect`/`update`; clock advance/sample are pure functions of the injected delta; the host loop is the interpreter edge), and the evidence obligations from the plan; record as a **visible decision** that the persistent-launch / viewer-launch task-generation rule does **not** newly apply (no default-exe / persistent-launch entry point added; animation is observed through the existing `runInteractiveApp` seam; at-rest frames byte-identical; no window-visibility / screenshot obligation)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T003",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T003: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t Route`; confirm the internal `src/Controls/**/*.fsi` slot-type change **escalates** to the serialized six-target maintainer-verify path (`Dev \u2192 GeneratedGuidanceCheck \u2192 TemplateCheck \u2192 GeneratedProductCheck \u2192 EvidenceGraph \u2192 EvidenceAudit`) and record the authoritative gate list plus the small/medium/broad governance risk levels into `readiness/governance-risk-levels.md` (note: `Route` escalates only **after** the `.fsi` edit exists; T004 records the **expected** escalation, T022/T023/T024 verify it on the real diff)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T004",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T004: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Generalize the **internal** carried-slot type: in `src/Controls/RetainedRender.fsi` change `RetainedUiState.Animation` from `AnimationState<Transform> option` to a feature-073 multi-channel clock `option` (per-identity record carrying `Anim : FS.Skia.UI.Scene.Animation`, `Elapsed : System.TimeSpan`, `Target : VisualState`), mirror it in `src/Controls/RetainedRender.fs` (`:26\u201328`), and declare the internal `advance` / `sampleOnPaint` / retarget helper signatures `internal` in the `.fsi` for the test assembly; record the current `FS.Skia.UI.Controls` api-surface + per-package `.fsi.txt` baselines as the **pre-change reference** for the Phase-7 recapture (this internal slot type moves the baseline; SC-007/FR-008). The existing `Feature092LiveSurvivalTests` hand-seed no longer compiles against the new type and is **rewritten** in US2 (T011)",
+      "skillist": [
+        "fs-skia-reconciliation"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T005",
+          "declared_skillist": [
+            "fs-skia-reconciliation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T005: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Implement the pure core in `src/Controls/RetainedRender.fs`, **reusing** feature-073 `Animation.applyAt`/`AnimationState.advance`/`retarget`/`isSettled` (no new engine; FR-009): `advance (delta : TimeSpan) clock` accumulates `Elapsed` (basic path); `sampleOnPaint` derives the painted node through `Animation.applyAt clock.Elapsed clock.Anim` (opacity/transform/color, paint-level only \u2014 never layout); the retarget helper **starts** a tween (no clock + desired \u2260 `Normal`) or **retargets** from the **current sampled value** (clock + desired \u2260 `Target`) when the stamped `VisualState` differs from `clock.Target`, using the single pinned framework default `defaultTransitionDuration = 150 ms` + `EaseOut`, opacity/tint channel (research \u00a7R4 / data-model constant \u2014 a fixed value, not a per-control knob, so the determinism goldens reach the settled end after the same fixed frame count); carry + GC are **unchanged** (the existing `liveIds` filter already drops the slot with its identity). The host seam is **not** yet wired (`ControlsElmish.fs` still passes `Tick` through), so the **live host still snaps** and the US1 failing-first test (T008) goes **RED**",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-scene"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-scene"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T006",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-scene"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T006: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record unsupported-scope, permanent non-goals, and failure diagnostics into `readiness/runtime-limitations.md` (Out of Scope / Assumptions): no consumer-facing animation authoring API (keyframes, timelines, per-control DSL); no spring/physics or easing models beyond the feature-073 set; **no layout geometry animation** (size/position reflow) \u2014 paint-level only, so R2 incremental measure + scoped-repaint are preserved; no general animation scheduler beyond the per-frame tick advance; no full-52-control animation coverage (tracked with E3/R1); the clock is driven by **injected deltas only** (no `Date.now`/wall-clock); a **non-positive** delta is a designed **no-op** (never rewinds), a **very-large** delta **clamps** to the settled end (no overshoot); a reduced-motion / opt-out policy is **not required** but the design must **not preclude** one (snap = the pre-R4 path); CSS selectors, attached/dependency properties, lookless templates, and data binding remain permanent roadmap non-goals",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T007",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T007: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add the failing-first **animates-vs-snaps** suite (`tests/Elmish.Tests`, fails against the un-wired seam from T006; SC-001/FR-002/FR-003): drive a hover/focus interaction on a **`Button`** (the representative R1-migrated interactive kind \u2014 feature 096's migrated set is `Button`, `CheckBox`, `Slider`, `TextBox`, `RadioGroup`, `Switch`; `Button` exercises hover/press/focus-ring fade on the opacity/tint channel) through the **real** `runInteractiveApp` host seam with a fixed sequence of injected per-frame deltas, capture the sampled appearance across consecutive frames, and assert at least one **intermediate** sampled value is present **before** the target is reached (a gradual transition), then that the target is reached and converges to exactly the snapped appearance; a build without the seam snaps in one step and fails the assertion",
+      "skillist": [
+        "fs-skia-elmish",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-elmish",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T008",
+          "declared_skillist": [
+            "fs-skia-elmish",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T008: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Wire the host animation seam inside `runInteractiveApp` (`src/Controls.Elmish/ControlsElmish.fs`, `renderRetained` `:583`, `viewerHost` `:695\u2013702`; contract C1/C2): **wrap** `host.Tick` so the injected per-frame `delta` **advances** every live per-identity clock in `retained.Value.StateByIdentity` (via T006 `advance`) **before** the next `renderRetained`, then **delegates** to `host.Tick delta` for the consumer message (total delegation \u2014 no swallowed consumer tick, no double-dispatch); the **retarget** reads the per-identity `VisualState` already stamped by `applyRuntimeVisualState` (`:587`,`:594`, R1) and starts/retargets the tween (T006 retarget helper); **sample on paint** feeds each active clock's `sampleOnPaint` value into that identity's painted node, scoped to its subtree \u2014 making the live transition **animate**; this makes T008 **GREEN**. The public `ControlsElmish.fsi` surface stays unchanged (internal wiring); if a host-internal value must reach the test assembly declare it `internal` and recapture only that package baseline",
+      "skillist": [
+        "fs-skia-elmish",
+        "fs-skia-reconciliation"
+      ],
+      "skillist_mirror": [
+        "fs-skia-elmish",
+        "fs-skia-reconciliation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T009",
+          "declared_skillist": [
+            "fs-skia-elmish",
+            "fs-skia-reconciliation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T009: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T006",
+        "T008"
+      ],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US1 to `readiness/us1-animates-vs-snaps.md` (the real `runInteractiveApp` seam, injected deltas, the captured frame sequence for the **`Button`** representative kind showing \u22651 intermediate sampled appearance before the target, converging to the snapped target; name the kind and the `defaultTransitionDuration = 150 ms` so the frame count is reproducible; an un-wired/no-seam build snaps and cannot produce this artifact) (SC-001)",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T010",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T010: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T009"
+      ],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "**Rewrite** `tests/Elmish.Tests/Feature092LiveSurvivalTests.fs` to drive survival entirely through the **real** seam (delete the hand-seeded `startedClock ()` PRECONDITION `:54\u201358,98\u2013105`; SC-002/FR-004): start a tween via a real interaction through `runInteractiveApp`, advance a few frames with injected deltas, apply an **unrelated, sibling-shifting** re-render (a model change that reorders siblings), then continue ticking \u2014 assert the **same** `RetainedId`'s clock continues from its **prior** `Elapsed` (not reset, not dropped) and **completes** with the **same final result** as an un-shifted run. This is failing-first against the un-wired build and against any parallel-identity regression",
+      "skillist": [
+        "fs-skia-elmish",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-elmish",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T011",
+          "declared_skillist": [
+            "fs-skia-elmish",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T011: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm survival holds via the **existing** `RetainedId`-keyed `StateByIdentity` carry (the clock rides the same identity map E2 established \u2014 **no parallel identity scheme**, FR-008); demonstrate the sibling-shift keeps the identity stable and the clock continues from its prior `Elapsed` to completion; capture `readiness/us2-survival.md` (seam-driven, replacing the prior hand-seeded precondition) (SC-002)",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T012",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T012: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T011"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add the FsCheck **determinism + edge** suite (`tests/Controls.Tests`, **\u22651000** generated cases; SC-004/FR-006): two runs over an **identical** generated injected-delta sequence produce **identical** sampled output, and the clock consults **no** wall-clock source (pure function of accumulated deltas); plus edge cases (failing-first for the hardening in T015) \u2014 **zero / non-positive** delta is a **no-op** (clock unchanged, never rewinds), a **very-large** delta **clamps** to the settled end (no overshoot past target), a transition **retargeted mid-flight** re-aims from the **current sampled value** (no snap to start), a **return-to-`Normal`** clock that has settled **drops** to no output, and **multiple controls animating simultaneously** advance **independent** clocks \u2014 given two identities with active clocks at different `Elapsed`, advancing one frame moves each by its own injected delta and **one clock completing/dropping does not perturb the other's `Elapsed` or sampled output** (spec edge case \"Multiple controls animating simultaneously\"; SC-006/FR-010 independence)",
+      "skillist": [
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T013",
+          "declared_skillist": [
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T013: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add the failing-first **identity-at-rest** test (`tests/Controls.Tests`; SC-003/FR-005): a frame for an identity with **no active clock** (`Animation = None`, including a settled-and-dropped clock) emits **no** animation attribute and is **byte-identical** to the pre-R4 static render, and the at-rest recompute / animation-output count for that frame is **zero** (E2 `RecomputedNodeCount = 0` preserved)",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T014",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T014: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Harden the `advance`/`sampleOnPaint` core (T006) for totality, determinism, and the at-rest fast path (makes T013/T014 **GREEN**; FR-005/FR-006/FR-009): non-positive delta \u21d2 no-op (`Elapsed` unchanged); `Elapsed` past the tween `Duration` \u21d2 **clamp** to the settled end value via `Animation.isSettled` (no overshoot); a settled clock whose `Target = Normal` is **dropped** to `None` so the identity returns to byte-identical at-rest output (resolving the FR-003 vs FR-005 interaction \u2014 the converged frame reaches **exactly** the snapped target); advance/sample remain **pure** (no `Date.now`, no randomness, resume-safe); the no-active-clock paint path emits **no** attribute (byte-identical fast path retained)",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-scene"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-scene"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T015",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-scene"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T015: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T013",
+        "T014"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture `readiness/us3-determinism.md` (two runs over an identical injected-delta sequence \u2192 identical sampled output, \u22651000 cases, no wall-clock consulted) and `readiness/us3-identity-at-rest.md` (a no-active-clock frame is byte-identical to the pre-R4 golden with a zero at-rest recompute/output count) \u2014 read from the real suites, not assumed (SC-003/SC-004)",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T016",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T016: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T015"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": true,
+      "title": "Add the failing-first **removed-identity GC** test (`tests/Elmish.Tests`; SC-005/FR-007): animate a control through the real seam (its `RetainedId` has an active clock), then apply a re-render in which that control is **removed** from the tree (its identity no longer appears); assert the retained state for that identity \u2014 **including its animation clock** \u2014 is **absent** on the next frame, matching the existing focus/text GC behavior, with no leaked or dangling animation state",
+      "skillist": [
+        "fs-skia-elmish",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-elmish",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T017",
+          "declared_skillist": [
+            "fs-skia-elmish",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T017: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": "US4",
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm the clock GC reuses the **existing** `liveIds` filter (`RetainedRender.fs:363\u2013371`) that already drops focus/text state for removed identities \u2014 **no new GC code** (the generalized slot is dropped with the rest of its `RetainedUiState`); capture `readiness/us4-gc.md` (a removed identity's animation clock is gone the following frame, via the live-identity filter) (SC-005)",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T018",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T018: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T017"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Write `readiness/scoped-repaint.md` (SC-006/FR-010): advancing and sampling an animating identity's clock keeps the per-frame repaint **scoped to that identity's own subtree** \u2014 the work-reduction metric shows animation does **not** force a whole-tree repaint or re-measure, and the presence of one active animation does **not** invalidate the at-rest fast path for other identities (R2 incremental measure preserved); demonstrate via the `Elmish.Tests` work-reduction assertion",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T019",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T019: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T009"
+      ],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Exercise the animation seam from FSI against the packed library per `quickstart.md` \u2014 host a migrated control, drive a hover/focus transition with injected deltas, observe a **gradual** (non-snapping) transition with **zero** consumer animation code, and confirm an at-rest frame emits no animation attribute \u2014 capture the session transcript to `readiness/fsi-transcript.md`",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T020",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T020: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Recapture the `FS.Skia.UI.Controls` api-surface + per-package `.fsi.txt` baselines vs the T005 pre-change reference and confirm the diff shows **exactly** the internal `RetainedUiState.Animation` slot-type generalization (and any `internal` helper declarations) with no other surface drift; confirm the public `ControlsElmish.fsi` `runInteractiveApp`/`InteractiveAppHost` surface is **unchanged**; record to `readiness/surface-baseline.md` (SC-007/FR-008)",
+      "skillist": [
+        "fs-skia-reconciliation"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T021",
+          "declared_skillist": [
+            "fs-skia-reconciliation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T021: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run exactly the gates `Route` printed (T004) \u2014 the serialized `Dev \u2192 GeneratedGuidanceCheck \u2192 TemplateCheck \u2192 GeneratedProductCheck` prefix **sequentially** (shared `.fake` state, never concurrently) \u2014 and record the aggregate results as **non-authoritative** into `readiness/generated-guidance-validation.md` and the run transcript into `readiness/validation-log.md`; rerun any race-like FAKE failure sequentially before any product-regression claim; if an aggregate hangs, record the diagnosis in `readiness/aggregate-hang-diagnostics.md` (SC-007)",
+      "skillist": [
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T022",
+          "declared_skillist": [
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T022: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceGraph` \u2014 confirm the echoed `feature-directory` + `tasks=<n>` match this feature, no cycles, no dangling refs, no `[S*]` surprises; record to `readiness/evidence-graph.md`",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T023",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "owns:graph-validation"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T023: owns graph-validation requires skill speckit-evidence-graph; trigger_group=owns; matched_trigger=owns:graph-validation"
+        }
+      ],
+      "explicit_deps": [
+        "T022"
+      ],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 7,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceAudit` \u2014 confirm verdict PASS (synthetic-propagation + diff-scan; no synthetic/stub work) or document every `--accept-synthetic` override; record to `readiness/evidence-audit.md`",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T024",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "owns:evidence-audit"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T024: owns evidence-audit requires skill speckit-evidence-audit; trigger_group=owns; matched_trigger=owns:evidence-audit"
+        }
+      ],
+      "explicit_deps": [
+        "T023"
+      ],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    }
+  ]
+}

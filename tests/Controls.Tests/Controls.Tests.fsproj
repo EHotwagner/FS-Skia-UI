@@ -41,6 +41,7 @@
     <Compile Include="Feature096RuntimeBridgeTests.fs" />
     <Compile Include="Feature097WiringTests.fs" />
     <Compile Include="Feature098UnifiedSchemeTests.fs" />
+    <Compile Include="Feature099AnimationClockTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

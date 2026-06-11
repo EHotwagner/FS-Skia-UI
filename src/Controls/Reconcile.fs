@@ -52,6 +52,11 @@ module internal Reconcile =
         | ValidationValue a, ValidationValue b -> a = b
         | AccessibilityValue a, AccessibilityValue b -> a = b
         | ThemeValue a, ThemeValue b -> a = b
+        // Feature 099 (R4): a held VisualState must compare equal so a steadily hovered/focused
+        // control does NOT re-diff (and thus re-paint) every frame — otherwise R1's per-frame stamp
+        // would defeat the at-rest fast path and the scoped-repaint guarantee (SC-006/FR-010).
+        // VisualState is an equatable DU, so this is a value comparison, not a reference one.
+        | VisualStateValue a, VisualStateValue b -> a = b
         | ChildValue a, ChildValue b -> obj.ReferenceEquals(a, b)
         | ChildrenValue a, ChildrenValue b -> obj.ReferenceEquals(a, b)
         | MessageValue a, MessageValue b -> obj.Equals(box a, box b)

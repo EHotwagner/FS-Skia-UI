@@ -692,13 +692,35 @@ module ControlsElmish =
                         | [], [] -> host.MapKey key true |> Option.toList
                         | _ -> productMsgs
 
+        // Feature 099 (R4): the host animation seam (contract C1). Each frame the viewer hands us the
+        // injected per-frame `delta`; we ADVANCE every live per-identity clock in
+        // `retained.Value.StateByIdentity` by it BEFORE the next `renderRetained` (which then paints
+        // the already-advanced clocks and applies the stamped-VisualState retarget via
+        // `RetainedRender.step`). The advance is the ONLY writer of the carried clock from the host
+        // loop — a pure function of the injected delta (no `Date.now`/wall-clock). We then DELEGATE to
+        // `host.Tick delta` so the consumer's own tick message is unaffected (no swallow, no
+        // double-dispatch). When no identity has an active clock this is observably a pass-through.
+        let wrappedTick (delta: TimeSpan) : 'msg option =
+            match retained.Value with
+            | Some r ->
+                retained.Value <-
+                    Some
+                        { r with
+                            StateByIdentity =
+                                r.StateByIdentity
+                                |> Map.map (fun _ s ->
+                                    { s with Animation = s.Animation |> Option.map (RetainedRender.advance delta) }) }
+            | None -> ()
+
+            host.Tick delta
+
         let viewerHost: InteractiveViewerHost<'model, 'msg> =
             { Init = host.Init
               Update = host.Update
               View = fun size model -> SceneNode.Group [ renderRetained size model ]
               MapKey = mapKey
               MapPointer = mapPointer
-              Tick = host.Tick
+              Tick = wrappedTick
               Diagnostics = host.Diagnostics }
 
         Viewer.runInteractiveViewer options viewerHost

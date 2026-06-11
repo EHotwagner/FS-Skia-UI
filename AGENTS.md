@@ -1,7 +1,7 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
 <!-- SPECKIT START -->
-specs/098-binding-aware-recovery/plan.md
+specs/099-live-animation-clock/plan.md
 <!-- SPECKIT END -->
 
 ## Run `Route` first; run only the gates it prints

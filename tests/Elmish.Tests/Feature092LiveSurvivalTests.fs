@@ -50,12 +50,10 @@ let rec private collectKind (kind: ControlKind) (n: RetainedNode<'msg>) : (Retai
 
     here @ (n.Children |> List.collect (collectKind kind))
 
-// Stable, started per-control clock (no animation seam exists yet — E-series — so the clock is a
-// documented PRECONDITION; the focus/text survival below is driven entirely through the real seam).
-let private startedClock () : AnimationState<Transform> =
-    AnimationState.create Transform.lerp Transform.identity (TimeSpan.FromSeconds 1.0) Easing.Linear
-    |> AnimationState.retarget { Transform.identity with TranslateX = 100.0 }
-    |> AnimationState.advance (TimeSpan.FromMilliseconds 250.0)
+// NOTE (feature 099, R4): the per-control ANIMATION clock survival that 092 documented as a
+// hand-seeded PRECONDITION (no animation seam existed at E2) now has a real host seam and is proven
+// through it in `Feature099AnimationClockTests` (`us2-survival`). The hand-seed is removed here; this
+// file keeps proving 092's focus + in-progress text survival through the real adapter seam.
 
 // --- views -----------------------------------------------------------------------------------
 
@@ -80,7 +78,7 @@ let private editorViewShifted (name: string) : Control<Msg> =
 let liveSurvival =
     testList
         "092 US1 live survival through the real adapter seam"
-        [ test "focus → type x → unrelated shift → type y ⇒ draft is 'hixy' (continued, not reset) and the clock is carried" {
+        [ test "focus → type x → unrelated shift → type y ⇒ draft is 'hixy' (continued, not reset)" {
               // frame 0: the editor pre-filled with "hi" (the model value).
               let r0 = rinit theme size (editorView "hi")
 
@@ -95,18 +93,9 @@ let liveSurvival =
               let r1, _ = ControlsElmish.routeFocusedText r0 focused (InsertText "x")
               Expect.equal (Map.find editorId r1.StateByIdentity).Text.Value.DraftText "hix" "first keystroke appends to the pre-filled value (FR-005)"
 
-              // PRECONDITION (no animation seam yet): attach a started clock to the focused identity.
-              let clock0 = startedClock ()
-
-              let r1c =
-                  { r1 with
-                      StateByIdentity =
-                          r1.StateByIdentity
-                          |> Map.add editorId { (Map.find editorId r1.StateByIdentity) with Animation = Some clock0 } }
-
               // the UNRELATED shift: re-render with a banner inserted above the editor (model value
               // still "hi"). `step` carries the editor's RetainedId-keyed state across the diff.
-              let s = RetainedRender.step theme size r1c (editorViewShifted "hi")
+              let s = RetainedRender.step theme size r1 (editorViewShifted "hi")
               Expect.equal (idOfKey "editor" s.Retained) (Some editorId) "the editor keeps its identity across the positional shift"
 
               // type 'y' on the SAME focused id — the carried draft is authoritative, the model value
@@ -115,11 +104,6 @@ let liveSurvival =
               let st = Map.find editorId r2.StateByIdentity
 
               Expect.equal st.Text.Value.DraftText "hixy" "SC-001: in-progress text survived the shift (continued, not reset)"
-              Expect.isSome st.Animation "the per-control animation clock survived the shift"
-
-              // the carried clock advances from where it was — it is NOT a freshly-reset clock.
-              let advanced = AnimationState.advance (TimeSpan.FromMilliseconds 250.0) st.Animation.Value
-              Expect.isGreaterThan advanced.Elapsed clock0.Elapsed "the carried clock advanced (did not reset to start)"
           }
 
           test "baseline (rebuild every frame, no retained identity) FAILS the same proof" {
@@ -269,25 +253,13 @@ let evidence =
               let focused = ControlsElmish.resolveFocus r0 ex ey
               let editorId = focused.Value
               let r1, _ = ControlsElmish.routeFocusedText r0 focused (InsertText "x")
-              let clock0 = startedClock ()
 
-              let r1c =
-                  { r1 with
-                      StateByIdentity =
-                          r1.StateByIdentity
-                          |> Map.add editorId { (Map.find editorId r1.StateByIdentity) with Animation = Some clock0 } }
-
-              let s = RetainedRender.step theme size r1c (editorViewShifted "hi")
+              let s = RetainedRender.step theme size r1 (editorViewShifted "hi")
               let r2, _ = ControlsElmish.routeFocusedText s.Retained focused (InsertText "y")
               let st = Map.find editorId r2.StateByIdentity
 
               let draftSurvived = st.Text.Value.DraftText = "hixy"
               let focusSurvived = idOfKey "editor" s.Retained = Some editorId
-
-              let clockSurvived =
-                  match st.Animation with
-                  | Some clk -> (AnimationState.advance (TimeSpan.FromMilliseconds 250.0) clk).Elapsed > clock0.Elapsed
-                  | None -> false
 
               let baselineFails =
                   idOfKey "editor" (rinit theme size (editorViewShifted "hi")) <> Some editorId
@@ -306,9 +278,8 @@ let evidence =
                         "sequence=focus editor -> type 'x' (draft 'hix') -> insert banner above (shift) -> type 'y'"
                         sprintf "focus-survived=%b" focusSurvived
                         sprintf "draft-survived(hixy)=%b" draftSurvived
-                        sprintf "clock-survived=%b" clockSurvived
-                        "clock-note=the per-control animation clock is a documented precondition (no animation seam exists yet, E-series); its CARRY across the shift is what is proven here."
-                        "readback-note=AUTHORITATIVE proof is the carried RetainedId-keyed state (draft text continued not reset, clock advanced not reset); structural/identity equality, no pixel encoder needed ([[fs-skia-evidence-mode]])."
+                        "clock-note=the per-control animation clock survival now has a real host seam (feature 099, R4) and is proven through it in Feature099AnimationClockTests/us2-survival; 092 keeps proving focus + in-progress text survival."
+                        "readback-note=AUTHORITATIVE proof is the carried RetainedId-keyed state (draft text continued not reset); structural/identity equality, no pixel encoder needed ([[fs-skia-evidence-mode]])."
                         "authoritative-test=Feature092LiveSurvivalTests/092 US1 live survival through the real adapter seam"
                         "" ]
               )
@@ -396,7 +367,7 @@ let evidence =
                         "" ]
               )
 
-              Expect.isTrue (focusSurvived && draftSurvived && clockSurvived) "live survival holds through the real seam"
+              Expect.isTrue (focusSurvived && draftSurvived) "live survival holds through the real seam"
               Expect.isTrue baselineFails "the rebuild-every-frame baseline fails the same proof"
               Expect.isTrue (distinct && resolvesToField) "focus resolves each field distinctly"
               Expect.isTrue appended "pre-filled multi-line first keystroke appends in MultiLine mode"

@@ -134,10 +134,20 @@ let us1 =
 // and a rebuild-every-frame baseline FAILS the same proof.
 // =============================================================================================
 
-let private startedClock () : AnimationState<Transform> =
-    AnimationState.create Transform.lerp Transform.identity (TimeSpan.FromSeconds 1.0) Easing.Linear
-    |> AnimationState.retarget { Transform.identity with TranslateX = 100.0 }
-    |> AnimationState.advance (TimeSpan.FromMilliseconds 250.0)
+// An in-flight per-control clock (feature 099 R4 `AnimationClock`): an opacity fade still mid-flight
+// (Elapsed 0.25s of a 1s tween) targeting `Normal`, so a Normal-stamped re-render advances it rather
+// than retargeting/dropping it — the survival of the carried value across the shift is what 091 proves.
+let private startedClock () : AnimationClock =
+    { Anim =
+        { Animation.empty with
+            Opacity =
+                Some
+                    { Start = 0.0
+                      End = 1.0
+                      Duration = TimeSpan.FromSeconds 1.0
+                      Easing = Easing.EaseOut } }
+      Elapsed = TimeSpan.FromMilliseconds 250.0
+      Target = Normal }
 
 [<Tests>]
 let us2 =
@@ -168,7 +178,7 @@ let us2 =
               | Some st ->
                   Expect.isSome st.Animation "the per-control clock survived the unrelated re-render"
                   // advancing the carried clock continues from where it was (did NOT reset to start).
-                  let advanced = AnimationState.advance (TimeSpan.FromMilliseconds 250.0) st.Animation.Value
+                  let advanced = RetainedRender.advance (TimeSpan.FromMilliseconds 250.0) st.Animation.Value
                   Expect.isGreaterThan advanced.Elapsed clock0.Elapsed "the clock advanced; it did not reset"
               | None -> failtest "SC-002: focus/clock state was lost across the unrelated re-render"
           }
@@ -505,7 +515,7 @@ let evidence =
               let clockAdvanced =
                   match Map.tryFind editorId1 s.Retained.StateByIdentity with
                   | Some st when st.Animation.IsSome ->
-                      (AnimationState.advance (TimeSpan.FromMilliseconds 250.0) st.Animation.Value).Elapsed > clock0.Elapsed
+                      (RetainedRender.advance (TimeSpan.FromMilliseconds 250.0) st.Animation.Value).Elapsed > clock0.Elapsed
                   | _ -> false
 
               // baseline = rebuild every frame (init); the id is not stable across the shift.
