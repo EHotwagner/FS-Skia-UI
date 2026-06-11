@@ -1,0 +1,845 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm the feature directory artifacts are present and linked (`spec.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/layout-drift-guard.md`, `checklists/`) and that `.specify/feature.json` resolves `specs/101-layout-dirty-set-guard`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T001",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T001: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Scaffold audit-discoverable readiness placeholders under `readiness/`: the feature-specific `drift-guard.md`, `category-honoring.md`, `single-source.md`, `r2-preservation.md`, `surface-baseline.md`, `validation-log.md`, plus the audit-enforced `governance-risk-levels.md`, `aggregate-hang-diagnostics.md`, `runtime-limitations.md`, `evidence-graph.md`, `evidence-audit.md`, and the not-applicable `window-visibility.md`, `real-image-evidence.md`, `visual-evidence-honesty.md` \u2014 each naming its authoritative command, artifact path, failure class, and next action using `key=value` lines (not bare image-filename claims); `window-visibility.md` / `real-image-evidence.md` / `visual-evidence-honesty.md` record the **not-applicable** decision with honest values per T003 (no window, no screenshot, byte-identical rendering output \u2014 R7 changes no rendering)",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T002",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T002: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record feature **Tier 2 (internal)**, affected layers (`FS.Skia.UI.Controls` \u2014 `src/Controls/Control.fs` `toLayout` \u2194 `layoutAffectingAttrNames` coupling + the US2 name-token constants; `src/Controls/RetainedRender.fs` `layoutDirtySet` comment correction only; `tests/Controls.Tests/**`; `tests/Layout.Tests/**` re-run), public-API impact (**none** \u2014 no public/internal `.fsi` signature change; all new symbols private/test-local), MVU applicability (**N/A** \u2014 not stateful/IO; `layoutDriftReport`/probe are pure; Principle IV does not apply), and the evidence obligations from the plan; record as a **visible decision** that the persistent-launch / viewer-launch task-generation rule does **not** apply (no default-exe / persistent-launch entry point; rendering output byte-identical; `window-visibility.md` / `real-image-evidence.md` / `visual-evidence-honesty.md` are not-applicable with honest values) and that FR-009's permanent non-goals are preserved (no data binding, dependency properties, CSS selectors, or template engine)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T003",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T003: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t Route` against the working-tree diff and confirm it routes **inner-loop \u2192 `Dev` only** (a framework-internal `src/Controls/**` + `tests/**` change with no `.fsi`/template/governance surface move, no new FAKE gate); record the authoritative gate list plus the small/medium/broad governance risk levels into `readiness/governance-risk-levels.md`; note that the feature's evidence obligations additionally run `EvidenceGraph` then `EvidenceAudit` sequentially",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T004",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T004: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record unsupported-scope, permanent non-goals, and the **FR-008 intrinsic-size-memo deferral** into `readiness/runtime-limitations.md` (research D6 / SC-006): R2 shipped a computed-`Bounds` cache only; the optional intrinsic-size memo named in roadmap \u00a710.4 is **deferred** (no profiled workload shows the fixed-size-ancestor boundary re-measure is hot; adding an un-profiled cache would widen scope and risk the zero-delta guarantee), and the \u00a710.4 wording reconciliation (R2 cached `Bounds` only, memo optional/deferred) is **delegated to R8**; also out of scope \u2014 R6 visual-state cross-fade, the R8 doc-narrowing reconciliations (Yoga point-scale rationale, R1/R5 surface notes), collection virtualization, and any expansion of the layout-driving attribute set (R7 guards un-guarded additions, it does not make them)",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T005",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T005: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Capture the current `FS.Skia.UI.Controls` per-package internal `.fsi.txt` baseline (`PerPackageSurface.captureCurrent`) as the **pre-change reference** for the Phase-6 zero-surface-drift confirmation (SC-005), and confirm `tests/Controls.Tests` already reaches `ControlInternals.layoutAffectingAttrNames` / `evaluateLayout` / `layoutDirtySet` via the existing `InternalsVisibleTo \"Controls.Tests\"` (no new visibility grant needed)",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T006",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T006: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add the failing-first **drift-report** + **probe-gate** suite (`tests/Controls.Tests/Feature101LayoutDriftGuardTests.fs`; fails to compile/red until T009 adds the helpers; SC-001/FR-002/FR-003/FR-007). Negative directions over the pure `layoutDriftReport` with **simulated** sets: `({width;height;padding},{width;height})` \u2192 `[Uncovered \"padding\"]`; `({width},{width;orientation})` \u2192 `[OverBroad \"orientation\"]`; `({a;b},{b;c})` \u2192 `[Uncovered \"a\"; OverBroad \"c\"]` (both directions, sorted/order-stable); `({width;height;orientation},{width;height;orientation})` \u2192 `[]` (shipping state passes); and assert `formatDrift` names **each** attribute **and** its direction in human-legible text (FR-007), empty list \u2192 an explicit \"no drift\" string. Plus the load-bearing **positive gate**: `layoutDriftReport (discoverLayoutDrivingNames size) ControlInternals.layoutAffectingAttrNames = []` exercising the **real** `evaluateLayout` over the representative fixtures + corpus (data-model + research D2). Deterministic, in-process (`Check.One`-style, no repo-absent `testProperty`)",
+      "skillist": [
+        "fs-skia-testing",
+        "fs-skia-layout"
+      ],
+      "skillist_mirror": [
+        "fs-skia-testing",
+        "fs-skia-layout"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T007",
+          "declared_skillist": [
+            "fs-skia-testing",
+            "fs-skia-layout"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T007: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add the **FR-004 category-honoring** units asserted directly on the **real** `internal layoutDirtySet prev patch next` (`tests/Controls.Tests/Feature101LayoutDriftGuardTests.fs`; contracts C3): (a) an `Update` whose `AttrChanges` set an `AttrSet { Category = AttrCategory.Layout }` with a name **absent** from `layoutAffectingAttrNames` puts the node id in the dirty set (category channel dirties); (b) an `AttrRemoved` of a name that was `Category = Layout` on the **prev** node dirties (the category-recovered-from-prev edge case); (c) an `AttrSet { Category = Visual }` content/style change does **not** dirty the node (SC-004 \u2014 no extra re-measure); and assert the name-set equality gate (T007) operates on **names only** and does **not** demand a category-only attribute appear in `layoutAffectingAttrNames` (the FR-003\u2194FR-004 independence resolution). These assert existing `layoutDirtySet` behavior (it already reads `attr.Category` independently) so they pin forward-compatibility without changing it",
+      "skillist": [
+        "fs-skia-testing",
+        "fs-skia-reconciliation"
+      ],
+      "skillist_mirror": [
+        "fs-skia-testing",
+        "fs-skia-reconciliation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T008",
+          "declared_skillist": [
+            "fs-skia-testing",
+            "fs-skia-reconciliation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T008: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Add, **test-local** in `Feature101LayoutDriftGuardTests.fs`, the pure `layoutDriftReport (discovered: Set<string>) (covered: Set<string>) : DriftFinding list` (`DriftFinding = Uncovered of string | OverBroad of string`; exact set-difference both directions, sorted/total/never-throws) and `formatDrift` (human-legible, names attribute + direction; empty \u2192 \"no drift\"), plus the probe seam (`ProbeFixture`, `probeCorpus`, `nameDrivesLayout`, `discoverLayoutDrivingNames`) that toggles each corpus name on representative fixtures and compares the **real** `ControlInternals.evaluateLayout` root `LayoutNode` by structural equality (data-model \u00a7probe). `probeCorpus` MUST be built from the **concrete, traceable** source named in research D2 \u2014 the `Attr` builder vocabulary + attribute-name literals in `src/Controls/Control.fs`, unioned with `ControlInternals.layoutAffectingAttrNames` and the explicit non-layout names (`background`/`foreground`/`text`/a visual-state class) \u2014 **not** a hand-curated free list, so the under-coverage guarantee tracks the real control vocabulary. This makes T007 GREEN (and keeps T008 green; FR-001/FR-002/FR-003/FR-007). Correct the **false single-sourcing comment** at `src/Controls/Control.fs:1207` (and the mirroring note near `layoutDirtySet` in `src/Controls/RetainedRender.fs`) to stop claiming the literal and `toLayout` are single-sourced and instead point at the gate \u2014 **no behavior change** to `toLayout`/`layoutDirtySet`/the literal. Document the corpus-bounded coverage boundary at the test site (FR-007 observability)",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T009",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T009: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T007",
+        "T008"
+      ],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US1 to `readiness/drift-guard.md` and `readiness/category-honoring.md`: the two negative directions named by `formatDrift` (under-coverage `padding`, over-coverage `orientation`); the positive probe gate passing today (discovered = `{width;height;orientation}` = covered) and the named failure it would produce the instant `toLayout` reads an un-covered corpus name; the FR-004 category channel proven independent of the name set; and the documented corpus/fixture discipline that bounds the guarantee (read from the T007/T008 suite, not assumed) (SC-001)",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T010",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T010: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T009"
+      ],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Add the **name-token single-sourcing** in `src/Controls/Control.fs` (data-model \u00a7shared name-token constants): `let [<Literal>] private AttrWidth = \"width\"`, `AttrHeight = \"height\"`, `AttrOrientation = \"orientation\"`, referenced by `nodeWidth`/`nodeHeight` (`hasAttr`), `orientationOf`, **and** `layoutAffectingAttrNames`, so no string literal of a layout-driving name is duplicated \u2014 one authoritative token per name (SC-002). These are `private` to the `.fs`: **no `Control.fsi` change**, **no behavior change** (the same three strings, byte-identically), **no** per-package internal surface move expected",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T011",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T011: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture US2 to `readiness/single-source.md` (SC-002): record that after R7 exactly **one** authoritative definition of each layout-driving attribute name exists (the `[<Literal>]` token), that `nodeWidth`/`nodeHeight`/`orientationOf` and `layoutAffectingAttrNames` all resolve to it with **zero** independent hand-maintained second list, and that the T009 behavioral-probe gate enforces **membership** equality so adding a name to the lowering without the classifier is now impossible to ship \u2014 by inspection plus the gate, the \"make the comment's claim actually true\" outcome",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T012",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T012: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T011"
+      ],
+      "phase_deps": [
+        "T010"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Re-run, **unchanged**, the existing `tests/Layout.Tests/Feature097IncrementalTests.fs` incremental-\u2261-full **byte-identity** property over \u22651000 randomized edit sequences and confirm it stays GREEN (R2 INV-1 / SC-004 / FR-005). R7 adds no code on the lowering/classifier path, so this is cited as the preservation proof, not re-implemented; record the result into `readiness/r2-preservation.md`",
+      "skillist": [
+        "fs-skia-testing",
+        "fs-skia-layout"
+      ],
+      "skillist_mirror": [
+        "fs-skia-testing",
+        "fs-skia-layout"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T013",
+          "declared_skillist": [
+            "fs-skia-testing",
+            "fs-skia-layout"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T013: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Re-run, **unchanged**, the existing `tests/Controls.Tests/Feature097WiringTests.fs` `WorkReductionRecord.RemeasuredNodeCount` assertions for a content-only / style / state / visual-state edit and confirm the re-measure count is **identical** to the pre-R7 baseline (no extra re-measure introduced; SC-003 / FR-006); record the result into `readiness/r2-preservation.md` alongside the T013 incremental-property outcome",
+      "skillist": [
+        "fs-skia-testing",
+        "fs-skia-reconciliation"
+      ],
+      "skillist_mirror": [
+        "fs-skia-testing",
+        "fs-skia-reconciliation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T014",
+          "declared_skillist": [
+            "fs-skia-testing",
+            "fs-skia-reconciliation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T014: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T013"
+      ],
+      "phase_deps": [
+        "T012"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Confirm **zero** surface drift: recapture the `FS.Skia.UI.Controls` per-package internal `.fsi.txt` baseline (`PerPackageSurface.captureCurrent`) and diff vs the T006 pre-change reference \u2014 confirm **no** public/internal `.fsi` signature change (the name-token constants are `private`, the report/probe are test-local); if an unintended internal-surface move is detected, recapture and note it explicitly; record to `readiness/surface-baseline.md` (SC-005)",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T015",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T015: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T014"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run exactly the gate `Route` printed (T004) \u2014 `./fake.sh build -t Dev` \u2014 and confirm the full Controls + Layout Expecto suites are green (the new `Feature101LayoutDriftGuardTests` drift-report + probe-gate + category units, plus the re-run unchanged `Feature097IncrementalTests` and `Feature097WiringTests`); record the aggregate as **non-authoritative** into `readiness/validation-log.md`; rerun any race-like FAKE failure **sequentially** before any product-regression claim; if an aggregate hangs, record the diagnosis in `readiness/aggregate-hang-diagnostics.md` (SC-005)",
+      "skillist": [
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T016",
+          "declared_skillist": [
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T016: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T015"
+      ],
+      "phase_deps": [
+        "T014"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceGraph` \u2014 confirm the echoed `feature-directory` + `tasks=<n>` match this feature, no cycles, no dangling refs, no `[S*]` surprises; record to `readiness/evidence-graph.md`",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T017",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "owns:graph-validation"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T017: owns graph-validation requires skill speckit-evidence-graph; trigger_group=owns; matched_trigger=owns:graph-validation"
+        }
+      ],
+      "explicit_deps": [
+        "T016"
+      ],
+      "phase_deps": [
+        "T014"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceAudit` \u2014 confirm verdict PASS (synthetic-propagation + diff-scan; **no** synthetic/stub work, no `[S]`/`[S*]`) or document every `--accept-synthetic` override; record to `readiness/evidence-audit.md` with the verdict token",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T018",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "owns:evidence-audit"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T018: owns evidence-audit requires skill speckit-evidence-audit; trigger_group=owns; matched_trigger=owns:evidence-audit"
+        }
+      ],
+      "explicit_deps": [
+        "T017"
+      ],
+      "phase_deps": [
+        "T014"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    }
+  ]
+}

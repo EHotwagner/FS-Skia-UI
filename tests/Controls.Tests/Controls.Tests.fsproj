@@ -43,6 +43,7 @@
     <Compile Include="Feature098UnifiedSchemeTests.fs" />
     <Compile Include="Feature099AnimationClockTests.fs" />
     <Compile Include="Feature100NavigationTests.fs" />
+    <Compile Include="Feature101LayoutDriftGuardTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

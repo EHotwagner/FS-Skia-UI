@@ -1,0 +1,26 @@
+## Symbol consistency (analyze pass G)
+- entity-record Bounds — in {tasks}, missing from {plan, data-model}
+- entity-record Dev — in {plan, tasks}, missing from {data-model}
+- entity-record EvidenceAudit — in {tasks}, missing from {plan, data-model}
+- entity-record EvidenceGraph — in {tasks}, missing from {plan, data-model}
+- entity-record Feature097IncrementalTests — in {tasks}, missing from {plan, data-model}
+- entity-record Feature097WiringTests — in {tasks}, missing from {plan, data-model}
+- entity-record Feature101LayoutDriftGuardTests — in {tasks}, missing from {plan, data-model}
+- entity-record LayoutNode — in {plan}, missing from {data-model, tasks}
+- entity-record Route — in {tasks}, missing from {plan, data-model}
+- entity-record Set — in {plan}, missing from {data-model, tasks}
+- entity-record WorkReductionRecord — in {plan}, missing from {data-model, tasks}
+- fr-id FR-001 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-004 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-005 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-006 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-009 — in {tasks}, missing from {plan, data-model}
+- msg-case Cmd — in {tasks}, missing from {plan, data-model}
+- msg-case Effect — in {data-model, tasks}, missing from {plan}
+- sc-id SC-001 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-002 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-003 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-004 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-005 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant LayoutNode — in {tasks}, missing from {plan, data-model}

@@ -324,16 +324,25 @@ module internal ControlInternals =
             let cap (w: string) = if w.Length = 0 then w else string (System.Char.ToUpper w[0]) + w.Substring 1
             cap head :: tail |> String.concat " "
 
+    // Feature 101 (R7, US2 / SC-002): the ONE authoritative token per layout-driving attribute name.
+    // `nodeWidth`/`nodeHeight` (`hasAttr`/`floatValue`), `orientationOf`, and `layoutAffectingAttrNames`
+    // below all reference these, so no string literal of a layout-driving name is hand-duplicated.
+    // `private` to this internal module (reached only via `InternalsVisibleTo`); NOT in `Control.fsi`
+    // and NO behavior change (byte-identically the same three strings).
+    let [<Literal>] private AttrWidth = "width"
+    let [<Literal>] private AttrHeight = "height"
+    let [<Literal>] private AttrOrientation = "orientation"
+
     /// Preview node width: explicit `width` wins; rich families fill the preview canvas.
     let nodeWidth (control: Control<'msg>) =
-        if hasAttr "width" control.Attributes then floatValue "width" 240.0 control.Attributes
+        if hasAttr AttrWidth control.Attributes then floatValue AttrWidth 240.0 control.Attributes
         elif Set.contains control.Kind richFamilies then 304.0
         else 240.0
 
     /// Preview node height: explicit `height` wins; rich families get a tall box so geometry
     /// sits below the title band (a 24-px box would put everything inside the band).
     let nodeHeight (control: Control<'msg>) =
-        if hasAttr "height" control.Attributes then max 20.0 (floatValue "height" 24.0 control.Attributes)
+        if hasAttr AttrHeight control.Attributes then max 20.0 (floatValue AttrHeight 24.0 control.Attributes)
         elif Set.contains control.Kind richFamilies then 132.0
         else 24.0
 
@@ -1120,8 +1129,8 @@ module internal ControlInternals =
 
     let rec layoutNode (theme: Theme) (control: Control<'msg>) : FS.Skia.UI.Layout.LayoutNode =
         let id = control.Key |> Option.defaultValue control.Kind
-        let width = floatValue "width" 240.0 control.Attributes
-        let height = floatValue "height" 28.0 control.Attributes
+        let width = floatValue AttrWidth 240.0 control.Attributes
+        let height = floatValue AttrHeight 28.0 control.Attributes
         let content = renderScene theme control
         let children = control.Children |> List.map (layoutNode theme)
 
@@ -1171,7 +1180,7 @@ module internal ControlInternals =
     // wired retained path is byte-for-byte identical to a full rebuild BY CONSTRUCTION
     // (FR-005, contract C2) — the only divergence point removed entirely.
     let private orientationOf (c: Control<'msg>) =
-        tryLast "orientation" c.Attributes
+        tryLast AttrOrientation c.Attributes
         |> Option.bind (fun attr ->
             match attr.Value with
             | TextValue value -> Some value
@@ -1195,16 +1204,22 @@ module internal ControlInternals =
         | "grid" -> FS.Skia.UI.Layout.Wrap
         | _ -> FS.Skia.UI.Layout.NoWrap
 
-    /// Feature 097 (R2): the attribute NAMES `toLayout` reads to derive geometry — `Size` from
-    /// `width`/`height`, `Direction` from `orientation`. The incremental dirty-set classifier
-    /// (`layoutDirtySet`) keys on THIS set, so a change to a geometry-driving attribute re-measures,
-    /// while a content/style/state/visual-state change does not (SC-004). It is single-sourced HERE,
-    /// the same ground truth `toLayout` consumes below, so the classifier cannot drift from what
-    /// actually affects layout — the anti-drift requirement of FR-003. (No attribute in this codebase
-    /// is tagged `AttrCategory.Layout`; geometry is name-driven, so classification is name-driven from
-    /// one source rather than from an unused category. A change tagged `AttrCategory.Layout` is also
-    /// honoured, so a future categorised attr needs no change here.)
-    let layoutAffectingAttrNames: Set<string> = Set.ofList [ "width"; "height"; "orientation" ]
+    /// Feature 097 (R2): the attribute NAMES the incremental dirty-set classifier (`layoutDirtySet`)
+    /// keys on, so a change to a geometry-driving attribute re-measures while a content/style/state/
+    /// visual-state change does not (SC-004). These are the same names `toLayout` (below) reads to
+    /// derive geometry — `Size` from `width`/`height`, `Direction` from `orientation`.
+    ///
+    /// Feature 101 (R7): this literal is a SEPARATE, hot-path `Set` from `toLayout`'s reads — it is NOT
+    /// auto-derived from them, so the two agree by maintenance discipline alone. That agreement is now
+    /// *gated*, not merely asserted: the behavioral-probe equality gate in
+    /// `tests/Controls.Tests/Feature101LayoutDriftGuardTests.fs` toggles each candidate attribute on
+    /// representative fixtures, observes which names actually change the real `evaluateLayout` output,
+    /// and fails the build the instant this set drifts from what `toLayout` reads (either direction).
+    /// The shared `[<Literal>]` name tokens above remove typo drift; the gate makes membership drift
+    /// impossible to ship. (A change tagged `AttrCategory.Layout` is honoured by `layoutDirtySet`
+    /// independently of this name set, so a future categorised attr needs no edit here — that
+    /// independence is pinned by the same test file.)
+    let layoutAffectingAttrNames: Set<string> = Set.ofList [ AttrWidth; AttrHeight; AttrOrientation ]
 
     let rec private toLayout (path: string) (c: Control<'msg>) : FS.Skia.UI.Layout.LayoutNode =
         let id = c.Key |> Option.defaultValue path
@@ -1215,8 +1230,8 @@ module internal ControlInternals =
                 { Width = Some(nodeWidth c)
                   Height = Some(nodeHeight c) }
             else
-                { Width = (if hasAttr "width" c.Attributes then Some(nodeWidth c) else None)
-                  Height = (if hasAttr "height" c.Attributes then Some(nodeHeight c) else None) }
+                { Width = (if hasAttr AttrWidth c.Attributes then Some(nodeWidth c) else None)
+                  Height = (if hasAttr AttrHeight c.Attributes then Some(nodeHeight c) else None) }
 
         { LayoutDefaults.layoutNode id with
             Intent =

@@ -236,11 +236,15 @@ module internal RetainedRender =
 
     /// Feature 097 (R2, contract C2/C3): derive the layout-dirty set from the reconcile patch, in the
     /// `LayoutNodeId` (`Key |> defaultValue path`) domain `toLayout`/`evaluateIncremental` use. A node
-    /// is self-dirty iff its `Update` sets/removes an `AttrCategory.Layout` attribute OR carries a
-    /// non-`Keep` child op (`ChildInsert`/`ChildRemove`/`ChildMove`); a `Replace` re-measures fresh.
-    /// Classification reads `attr.Category` — never a hand-maintained name list (FR-003). Pure walk over
-    /// (prev, patch, next) in parallel; conservative flex-line / fixed-size-ancestor propagation then
-    /// happens inside `Layout.evaluateIncremental` (FR-004).
+    /// is self-dirty iff its `Update` sets/removes an `AttrCategory.Layout` attribute, sets/removes a
+    /// geometry-driving NAME in `ControlInternals.layoutAffectingAttrNames`, OR carries a non-`Keep`
+    /// child op (`ChildInsert`/`ChildRemove`/`ChildMove`); a `Replace` re-measures fresh. That name set
+    /// is a SEPARATE hot-path `Set` from the names `toLayout` actually reads — not auto-derived from
+    /// them (feature 101 / R7): the two are kept in lock-step by the behavioral-probe equality gate in
+    /// `tests/Controls.Tests/Feature101LayoutDriftGuardTests.fs`, which fails the build the instant they
+    /// drift in either direction. The `AttrCategory.Layout` channel here is honoured independently of
+    /// the name set. Pure walk over (prev, patch, next) in parallel; conservative flex-line /
+    /// fixed-size-ancestor propagation then happens inside `Layout.evaluateIncremental` (FR-004).
     let internal layoutDirtySet (prev: Control<'msg>) (patch: Reconcile.NodePatch<'msg>) (next: Control<'msg>) : Set<string> =
         let acc = System.Collections.Generic.HashSet<string>()
 
