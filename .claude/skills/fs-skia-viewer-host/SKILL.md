@@ -107,6 +107,9 @@ rather than hard-failing the phase.
 
 ## Related
 
+- [[fs-skia-controls-host]] — the **maintainer-facing** counterpart: what `runInteractiveApp` does
+  internally each frame (the retained structure, per-identity animation clocks, visual-state stamping,
+  focus-first key routing). This skill is the consumer view; that one is the host-internals view.
 - [[fs-skia-skiaviewer]] — the package-owned viewer host contracts this builds on.
 - [[fs-skia-ui-widgets]] — building the `Control<'msg>` tree the host renders.
 - [[fs-skia-elmish]] — the MVU wiring the interactive host follows.

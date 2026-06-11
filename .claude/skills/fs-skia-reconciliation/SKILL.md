@@ -1,6 +1,6 @@
 ---
 name: fs-skia-reconciliation
-description: Understand and work with the internal keyed VDOM diff over the lowered Control<'msg> IR (feature 067) — its key-first-then-positional matching, the NodePatch/ChildOp operation set, the totality/determinism/identity-at-rest/round-trip invariants, and the module's disposition (internal, property-tested, wired onto the live render path via RetainedRender in feature 091). Use when reading the diff invariants, extending the property tests, or working on the wired retained render path.
+description: Understand and work with the internal keyed VDOM diff over the lowered Control<'msg> IR (feature 067) — its key-first-then-positional matching, the NodePatch/ChildOp operation set, the totality/determinism/identity-at-rest/round-trip invariants, and the module's disposition (internal, property-tested, wired onto the live render path via RetainedRender in feature 091 and current through feature 103: layout/bounds cache, injected-delta animation clock, visual-state cross-fade). Use when reading the diff invariants, extending the property tests, or working on the wired retained render path.
 compatibility: F# net10.0; FS.Skia.UI.Controls package, `module internal Reconcile` — assembly-internal, no public-surface entry (zero baseline delta). Wired onto the live render path via `module internal RetainedRender` (feature 091).
 metadata:
   author: fs-skia-ui
@@ -15,7 +15,9 @@ place instead of rebuilding. This skill teaches the diff's invariants, key handl
 `NodePatch`/`ChildOp` operation set, **and** records the module's disposition — because the
 single most important fact about `Reconcile` is its disposition: as of feature **091** it is
 **wired onto the live render path** through `module internal RetainedRender` — the host loops no
-longer rebuild the whole tree every frame. It remains `module internal` (no public-surface entry).
+longer rebuild the whole tree every frame — and that wired path has since carried the whole R1–R6
+live-path roadmap (096–103). It remains `module internal` (no public-surface entry). This skill is
+**current through feature 103**, not frozen at 091.
 
 ## Scope / when to use
 
@@ -30,9 +32,12 @@ Use this skill when:
 
 Do **not** promote the module to public to "document it via the surface baseline" — both
 `Reconcile` and `RetainedRender` stay `module internal` by design (zero public-surface delta,
-SC-005 of 067; the adapter reaches them via `InternalsVisibleTo`). Further keyed-reconciliation
-work (E3 style layer, E4 focus/traversal, collection virtualization) builds atop the wired path,
-not by re-wiring it.
+SC-005 of 067; the adapter reaches them via `InternalsVisibleTo`). The keyed-reconciliation
+follow-ups once framed as future work have **shipped**: the E3 visual-state style layer (093) and
+E4 focus/traversal (094) landed, and the R1–R6 live-path roadmap (096–103) built the runtime
+visual-state bridge, incremental re-layout, the live animation clock, and the visual-state
+cross-fade **on top of** this wired path. The "## Live retained render path (096–103)" section
+below is the current account; nothing in 096–103 re-wired the diff — they consume it.
 
 ## Disposition (the single source for the module's status)
 
@@ -46,15 +51,19 @@ not by re-wiring it.
   `[<assembly: InternalsVisibleTo("Controls.Tests")>]`, **now on the wired path** as well
   (`tests/Controls.Tests/Feature091RetainedRenderTests.fs`: round-trip/determinism/totality/
   identity-at-rest over `RetainedRender.step`, ≥1,000 cases).
-- **Wired on the render path (feature 091)** — `diff` (and the `NodePatch`/`ChildOp` set) is
+- **Wired on the render path (features 091–103)** — `diff` (and the `NodePatch`/`ChildOp` set) is
   consumed by `module internal RetainedRender`, which the interactive controls adapter
   (`Controls.Elmish.runInteractiveApp`) drives every frame: it holds the previous lowered tree,
   computes `Reconcile.diff prev next`, reuses the unchanged subtrees' cached render fragments
   (O(changed-subtree)), carries each matched node's stable identity so per-control state survives
   an unrelated re-render, and surfaces `Diagnostics` (e.g. `KeyCollision`) through the host
-  channel. Output is byte-for-byte identical to a full rebuild (golden parity).
+  channel. Output is byte-for-byte identical to a full rebuild (golden parity). The R1–R6 roadmap
+  (096–103) layered the bounds cache, the injected-delta animation clock, and the visual-state
+  cross-fade onto this same `step` — see "Live retained render path (096–103)" above.
 - **The durable foundation** — the 067 invariants and tests still hold; 091 preserved every one
-  of them **on the live path** rather than only in isolation.
+  of them **on the live path** rather than only in isolation, and 096–103 kept them invariant while
+  building atop `RetainedRender.step` (the promoted 067 suite still asserts totality / determinism /
+  identity-at-rest / round-trip on the wired path).
 
 **Where the wiring lives:** `module internal RetainedRender` (`src/Controls/RetainedRender.fs(i)`)
 is the retained structure; `Controls.Elmish.runInteractiveApp` (`src/Controls.Elmish/
@@ -63,6 +72,48 @@ The generic `SkiaViewer` does not diff (its `View` yields an opaque `SceneNode`)
 diff lives at the controls adapter edge whose `View` the viewer repaint already calls. Both
 `Reconcile` and `RetainedRender` reach the adapter via `InternalsVisibleTo` and stay
 `module internal`. This Disposition is the **single source of truth** for the module's status.
+
+## Live retained render path (096–103)
+
+091 wired the diff onto the render path; the R1–R6 live-path roadmap (features 096–103) then grew
+the retained structure that rides it. The disposition above is **current through 103**, not frozen
+at 091. What `module internal RetainedRender` (`src/Controls/RetainedRender.fsi`) carries today:
+
+- **Per-frame layout/bounds cache (097, R2).** `RetainedRender<'msg>` carries a `Layout:
+  LayoutResult` — the previous frame's full measure/bounds result. `RetainedRender.step` threads it
+  into `Layout.evaluateIncremental`, so an **unchanged subtree's bounds survive across frames and
+  are reused without re-measuring** (`init` seeds it with a full `evaluate`; each `step` advances it
+  to the incremental result). The `RenderFragment.Box` is the reuse key.
+- **Measured re-measure work (097/101).** `WorkReductionRecord.RemeasuredNodeCount` reports the
+  **post-propagation re-measure dirty set** (`Invalidated` from `Layout.evaluateIncremental`):
+  strictly below `BaselineNodeCount` for a localized update, equal to it for a genuine whole-tree
+  relayout, `0` for an empty patch. It measures partial MEASURE work, distinct from the partial
+  PAINT counters (`RecomputedNodeCount = ChangedSubtreeBound + ShiftedNodeCount`).
+- **Per-identity animation clock (099, R4).** `RetainedUiState.Animation` is an `AnimationClock
+  {Anim; Elapsed; Target; From}` keyed by the stable `RetainedId`. It is advanced by an **injected**
+  host delta — `RetainedRender.advance delta clock` accumulates `Elapsed` (the sole time coordinate,
+  clamped to the duration; **no wall-clock**) — and **sampled on paint**. The live channel is the
+  opacity tween only; the single pinned default transition is 150 ms `EaseOut`
+  (`defaultTransitionDuration`). A settled (`clockActive = false`) or absent (`None`) clock is **not
+  sampled** ⇒ the identity paints **byte-identically to the static render at rest** (FR-004/FR-005).
+- **Paint cross-fade is a two-snapshot composite (103, R6).** The visual-state cross-fade is **not**
+  a standalone `Color` tween (`Animation.applyAt` never recolors). `RetainedRender.sampleOnPaint
+  clock ownScene` composites the prior state's `From` snapshot fading OUT (`1→0`) **under** this
+  frame's own-scene fading IN (the clock's opacity tween) — two opacity-driven layers via the public
+  feature-073 `Animation.applyAt`. A region painted in both states shows a colour strictly between
+  the endpoints; `From = []` degenerates to a plain fade-in.
+- **Visual state stamped pre-reconcile (096, R1).** `ControlRuntime.applyRuntimeVisualState model
+  control` stamps each control's derived `VisualState` onto the lowered `Control<'msg>` tree
+  **before** the diff runs (preserving a consumer-set non-`Normal` attribute, emitting nothing at
+  `Normal`). The per-frame transition trigger `RetainedRender.updateClockForState desired priorOwn
+  carried` then decides the clock: **START** a fade-in on a fresh change, **RETARGET** from the
+  current sampled value mid-flight (no snap), **advance-only** when unchanged, and **DROP** a settled
+  return-to-`Normal` clock so a resting identity stays byte-identical.
+
+None of these re-wired the diff: every one consumes `Reconcile.diff` through `RetainedRender.step`
+and preserves the 067 invariants on the live path (see below). The live host that drives this —
+holding the `RetainedRender` in interpreter-edge ref state, advancing clocks on `Tick`, and stamping
+visual state each frame — is documented by [[fs-skia-controls-host]].
 
 ## Driven-library API and the diff contract
 
@@ -152,6 +203,9 @@ rather than hard-failing the phase.
 
 ## Related
 
+- [[fs-skia-controls-host]] — the maintainer-facing `Controls.Elmish` interactive host that drives
+  this retained structure each frame (holds it in interpreter-edge ref state, advances the animation
+  clocks on `Tick`, stamps visual state pre-reconcile).
 - [[fsharp-graph-algorithms]] — the keyed matching and ordered child-op emission lean on the
   same DAG/topological reasoning that skill teaches.
 - [[fs-skia-typed-controls]] authors the typed front door that lowers to the `Control<'msg>`

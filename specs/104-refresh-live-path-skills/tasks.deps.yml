@@ -1,0 +1,89 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (feature 104).
+#
+# Feature 104 is a Tier-2 documentation-currency (skill-honesty) pass: no tests,
+# no synthetic evidence, no public/internal .fsi delta, no behavior change. The
+# product surface is three skill files (.agents fs-skia-reconciliation refresh,
+# src/Controls/skill fs-skia-ui-widgets E3/E4 edit, NEW .agents
+# fs-skia-controls-host) plus the generated .claude mirror + skillist-reference.
+#
+# Phase-checkpoint edges are auto-injected (every task in Phase N+1 depends on
+# the last foundation task of Phase N); only non-phase cross-edges are written
+# here.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: []
+  T006:
+    deps: []
+    skillist: []
+  T007:
+    deps: [T004]
+    skillist: ["fs-skia-reconciliation"]
+  T008:
+    deps: [T004]
+    skillist: ["fs-skia-reconciliation"]
+  T009:
+    deps: [T007, T008]
+    skillist: ["fs-skia-reconciliation"]
+  T010:
+    deps: [T007, T008, T009]
+    skillist: ["fs-skia-reconciliation"]
+  T011:
+    deps: [T004]
+    skillist: ["fs-skia-ui-widgets"]
+  T012:
+    deps: [T004]
+    skillist: ["fs-skia-ui-widgets"]
+  T013:
+    deps: [T011, T012]
+    skillist: ["fs-skia-ui-widgets"]
+  T014:
+    deps: [T011, T012, T013]
+    skillist: ["fs-skia-ui-widgets"]
+  T015:
+    deps: [T004, T005]
+    skillist: ["fs-skia-reconciliation", "fs-skia-viewer-host"]
+  T016:
+    deps: [T015]
+    skillist: ["fs-skia-viewer-host"]
+  T017:
+    deps: [T015]
+    skillist: ["fs-skia-viewer-host"]
+  T018:
+    deps: [T015, T016, T017]
+    skillist: ["fs-skia-viewer-host"]
+  T019:
+    deps: []
+    skillist: []
+  T020:
+    deps: [T019]
+    skillist: []
+  T021:
+    deps: [T020]
+    skillist: []
+  T022:
+    deps: [T021]
+    skillist: []
+  T023:
+    deps: [T022]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T024:
+    deps: [T023]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

@@ -114,21 +114,45 @@ Attach an ordered `StyleClass list` (typed `Variant` or free-form `Custom`); the
 resolver folds `base < classes-in-order < visual-state` with fixed precedence. No
 CSS selectors.
 
+The **runtime visual state** has a public entry point (feature 096): `deriveVisualState
+model controlId : VisualState` is the pure, total projection from live interaction state
+to a single `VisualState` under the fixed closed precedence tail `Pressed > Selected >
+Focused > Hover > Normal` (a control named by no interaction state yields `Normal`). That is
+the state the resolver folds in. The host stamps it onto the lowered tree **pre-reconcile**
+via the internal `applyRuntimeVisualState model control` (it preserves a consumer-set
+non-`Normal` attribute and emits nothing at `Normal`, so a resting control is byte-identical);
+consumers read state through the public `deriveVisualState`, not the internal bridge.
+
 ```fsharp
 Button.view { Button.defaults with Text = "Delete"; Classes = [ Variant StyleVariant.Danger ] }
-// the current visual state rides the control through the reconciler: Attr.visualState Pressed
+// the current visual state rides the control through the reconciler:
+//   ControlRuntime.deriveVisualState model "delete"  // => Pressed when the pointer is down on it
 ```
 
 ### E4 — focus / keyboard traversal
 
-`Focus.order` derives the deterministic tab order from accessibility metadata,
-`Focus.traverse` moves Next/Previous (wrapping), and `Focus.route` classifies a
-delivered key against the focused control. A focusable control inside a
+`Focus.order` derives the deterministic tab order from accessibility metadata and
+`Focus.traverse` moves Next/Previous (wrapping). A focusable control inside a
 non-focusable container is its own tab stop.
+
+`Focus.route` (as it ships after feature 100) takes `role`, `keyboard`, `navRange`,
+`key`, `isTab`, `shift` and returns a closed `KeyRouting` = `Activate` | `Navigate of
+NavIntent` | `Traverse of FocusMove` | `Fallthrough`. A focused **navigation** key is
+classified by `role` (and the declared `navRange` for a value role) into a closed
+`NavIntent` = `ValueStep of delta` (a signed step the host applies to the live value and
+clamps) | `SelectionMove of Direction` | `GridMove of rowDelta * colDelta`, carried by
+`KeyRouting.Navigate`. Activation and navigation are tested **before** the Tab test, so a
+control that lists a traversal key consumes it; only an unconsumed Tab/Shift+Tab yields
+`Traverse`.
 
 ```fsharp
 let order = Focus.order tree
-let next  = Focus.traverse order (Some "save") Focus.Next
+let next  = Focus.traverse order (Some "save") Next   // FocusMove.Next
+
+// route the focused control's key; a slider's Right-arrow becomes a Navigate (ValueStep):
+match Focus.route role keyboard navRange "ArrowRight" false false with
+| Navigate (ValueStep delta) -> ()   // host adds delta to the live value, clamps
+| _ -> ()
 ```
 
 ### E5 — lookless slot composition (typed-closed)
