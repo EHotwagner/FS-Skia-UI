@@ -1,0 +1,78 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (feature 102, R8).
+#
+# R8 is a Tier-2 documentation/internal-comment honesty pass: no tests, no
+# synthetic evidence, no public .fsi delta, no behavior change. Phase-checkpoint
+# edges are auto-injected (every task in Phase N+1 depends on the last
+# foundation task of Phase N); only non-phase cross-edges are written here.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: []
+  T006:
+    deps: []
+    skillist: []
+  T007:
+    deps: []
+    skillist: []
+  T008:
+    deps: []
+    skillist: []
+  T009:
+    deps: []
+    skillist: []
+  T010:
+    deps: [T007, T008, T009]
+    skillist: []
+  T011:
+    deps: [T004]
+    skillist: []
+  T012:
+    deps: []
+    skillist: []
+  T013:
+    deps: [T005]
+    skillist: []
+  T014:
+    deps: []
+    skillist: []
+  T015:
+    deps: [T011, T012, T013, T014]
+    skillist: []
+  T016:
+    deps: [T011, T012, T013, T014]
+    skillist: []
+  T017:
+    deps: []
+    skillist: []
+  T018:
+    deps: [T017]
+    skillist: []
+  T019:
+    deps: [T018]
+    skillist: []
+  T020:
+    deps: [T018]
+    skillist: []
+  T021:
+    deps: [T020]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T022:
+    deps: [T021]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

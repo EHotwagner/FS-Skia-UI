@@ -11,6 +11,9 @@ module Layout =
     // incremental==full equivalence invariant (INV-1). Disabling Yoga's internal rounding makes layout
     // exact-float and position-independent, so a re-rooted subtree is byte-identical to the full tree.
     // Explicit pixel snapping remains available, unchanged, via the separate `snapBounds`/PixelSnapPolicy.
+    // Maintainer-approved (rationale recorded by feature 102, R8): the blast-radius is nil — the Controls
+    // layer uses integer geometry, so disabling Yoga's sub-pixel rounding leaves Controls bounds unaffected;
+    // the change buys the INV-1 equivalence above at no observable cost.
     let private yogaConfig =
         let c = YGConfigAPI.YGConfigNew()
         YGConfigAPI.YGConfigSetPointScaleFactor(c, 0.0f)

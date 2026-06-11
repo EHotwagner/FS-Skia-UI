@@ -203,6 +203,10 @@ module ControlRuntime =
     let deriveVisualState (model: ControlRuntimeModel) (controlId: ControlId) : VisualState =
         if model.PressedControls.Contains controlId then
             Pressed
+        // Feature 102 (R8): forward-looking branch. The live host (`ControlsElmish`) never populates
+        // `model.Selection` (the text-range selection model), so on the real render path this branch does
+        // not fire today — only a consumer-set `Selected` reaches a control. Kept (not removed) so a future
+        // host that tracks a text-range selection derives `Selected` here without a code change.
         elif model.Selection |> Option.exists (fun s -> s.ControlId = controlId) then
             Selected
         elif model.FocusedControl = Some controlId then

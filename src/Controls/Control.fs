@@ -1128,6 +1128,10 @@ module internal ControlInternals =
         |> Scene.group
 
     let rec layoutNode (theme: Theme) (control: Control<'msg>) : FS.Skia.UI.Layout.LayoutNode =
+        // Feature 102 (R8): this `Key ?? Kind` is the legacy 080 single-control *preview*/layout id, local
+        // to this offscreen `layoutNode` path. It is intentionally NOT the R3-unified `Key ?? path`
+        // dispatch/recovery id (feature 098) — the divergence R3 removed was on the live dispatch path, not
+        // here. Left as-is so a future reader does not "fix" it into the path-based scheme.
         let id = control.Key |> Option.defaultValue control.Kind
         let width = floatValue AttrWidth 240.0 control.Attributes
         let height = floatValue AttrHeight 28.0 control.Attributes

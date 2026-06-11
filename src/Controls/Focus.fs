@@ -123,6 +123,11 @@ module Focus =
     let private navIntentFor (role: AccessibilityRole) (navRange: NavRange option) (key: string) : NavIntent option =
         match role with
         // Value / range roles: arrows step by the declared step; Home/End jump to Min/Max.
+        // Feature 102 (R8): of these, only `Slider` routes by default. `Accessibility.defaultFor` gives
+        // `Progress`/`Chart`/`Graph` no `NavRange` (and `Progress` is non-focusable), so for them `navRange`
+        // is `None` and this arm falls through to `None` — they are classed-but-not-routed by default. They
+        // share the arm so a consumer that supplies a `NavRange` opts them into the same value-step
+        // semantics; enabling default routing for them is out of scope (it would be a behavior change).
         | Slider
         | Progress
         | Chart

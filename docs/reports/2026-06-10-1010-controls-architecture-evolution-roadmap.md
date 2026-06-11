@@ -701,14 +701,18 @@ distinctly", E4 "focus is visibly indicated") and is the precondition for R4
 
 **Scope & key deliverables.**
 
-- **Pure projection.** `ControlRuntime.deriveVisualState : ControlRuntime ->
-  ControlId -> VisualState`, a total pure function selecting a control's interaction
-  state from `Hovered`/`Pressed`/`Focused`/`Selection`. Precedence is a **closed,
-  ordered model** (highest wins): `Disabled` > `Validation` > `Loading` > `Pressed` >
-  `Selected` > `Focused` > `Hover` > `Normal`. Consumer-supplied semantic states
-  (`Disabled`/`Validation`/`Loading`/`Selected` set from `'model`) are preserved and
-  out-rank derived interaction states per that order; derived interaction states only
-  fill the slot the consumer left at `Normal`.
+- **Pure projection + host arbitration — two functions (R8 reconciliation).**
+  `ControlRuntime.deriveVisualState : ControlRuntimeModel -> ControlId -> VisualState` is a
+  total pure function selecting a control's interaction state from
+  `Pressed`/`Selection`/`Focused`/`Hovered`. It realizes only the **5-level runtime tail** of
+  the full order (highest wins): `Pressed` > `Selected` > `Focused` > `Hover` > `Normal`. The
+  **head** semantic states (`Disabled` > `Validation` > `Loading`) are consumer-set and never
+  derived, so the projection never returns one. The consumer-out-ranks-derived **arbitration**
+  — preserving a consumer-supplied non-`Normal` state and letting a derived state fill only the
+  slot the consumer left at `Normal` — lives in the host bridge `applyRuntimeVisualState`, not
+  in `deriveVisualState`. Together the two functions realize the full closed precedence model
+  (`Disabled` > `Validation` > `Loading` > `Pressed` > `Selected` > `Focused` > `Hover` >
+  `Normal`); the `.fsi` documents this split.
 - **Host bridge.** `applyRuntimeVisualState : ControlRuntime -> Control<'msg> ->
   Control<'msg>`, applied in `renderRetained` (`src/Controls.Elmish/ControlsElmish.fs:555`)
   **before** `RetainedRender.step`, in the **`ControlId` domain** (pre-reconcile,
@@ -764,8 +768,12 @@ O(whole-tree); `WorkReductionRecord` counts paint-node recomputes only. E2's FR-
 
 **Scope & key deliverables.**
 
-- **Layout cache on the retained node.** Extend the retained fragment to memoize each
-  node's computed `Bounds` and measured intrinsic size, keyed by retained identity.
+- **Layout cache on the retained node (R8 reconciliation — what shipped).** Memoize each
+  node's computed `Bounds` in the carried `LayoutResult`, keyed by structural `LayoutNodeId`
+  (not by `RetainedId`/retained identity). The *measured intrinsic-size memo* this bullet
+  originally proposed did **not** ship in R2: feature 097 shipped the computed-`Bounds` cache
+  only. The intrinsic-size memo is the recorded deferral of feature 101 (R7, FR-008) — see
+  §11.4 and §11.5.
 - **Dirty-tracking from the reconcile patch.** Derive a `dirtyRoots` set directly from
   `ReconcileResult.Patch`: a node is layout-dirty if its `UpdatePatch` touches a
   **layout-affecting attribute** (size/min/max, padding/margin/gap, flex grow/shrink/
@@ -935,7 +943,7 @@ spec's own clarification (composite arrows fire the selection binding) is unreal
   - *Range/value roles* (slider, numeric, interactive progress): `ValueStep` →
     step the value, with the **step sourced from the control's declared step metadata**,
     not a hardcoded `0.1`.
-  - *Selection roles* (radio-group, tab, menu, list, segmented): `SelectionMove` →
+  - *Selection roles* (radio-group, tab, menu, list): `SelectionMove` →
     move the selection index (prev/next/home/end) within the group and dispatch the
     `"selected"` binding with a **selection payload** (index or item id), reading the
     item count/current index from the control's existing selection model.
@@ -1038,7 +1046,7 @@ implementation rests on an **unguarded invariant** that can silently rot.
 | R2 incremental layout | 097 | Real & wired; 1000-case incremental≡full invariant | Dirty classifier keys on a hand-maintained 3-name set, correct only because no other layout input is attribute-driven — **unguarded against drift**; no intrinsic-size memo; bounds keyed by `LayoutNodeId` not `RetainedId` → **R7** (+ doc in R8) |
 | R3 binding-aware recovery | 098 | **Clean** — `Key ?? Kind` divergence genuinely unified | Only the legacy 080 *preview* path retains `Key ?? Kind` (out of scope) → annotate in **R8** |
 | R4 animation clock | 099 | Real seam; trigger fires through R1; survives shift | Transition is a uniform 150 ms **opacity fade-in of the target**, not a per-state style cross-fade; the color channel the `AnimationClock` type advertises is unused → **R6** |
-| R5 navigation keys | 100 | **Clean** — metadata-driven step, real selection/grid dispatch | `Chart`/`Graph`/`Progress` are classed value-roles in `navIntentFor` but get `Navigation = None`/non-focusable in `defaultFor` (never route by default); "segmented" named but no `Segmented` role → **R8** (doc/surface) |
+| R5 navigation keys | 100 | **Clean** — metadata-driven step, real selection/grid dispatch | `Chart`/`Graph`/`Progress` are classed value-roles in `navIntentFor` but get `Navigation = None`/non-focusable in `defaultFor` (never route by default); the §10.7 R5 prose listed "segmented" among selection roles although no `Segmented` `AccessibilityRole` exists → **R8** (doc/surface) |
 
 ### 11.2 The recurring observation: prose ahead of behavior
 
