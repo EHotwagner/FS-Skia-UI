@@ -77,6 +77,20 @@ than the capability prose implies. **§10** records the audit and adds five deta
 independently shippable remediation features (**R1–R5**) that close those gaps
 without touching the architecture or the non-goals.
 
+**Update (2026-06-11, second-pass audit):** R1–R5 have now also shipped and landed on
+`main` as features 096–100. A source-level faithfulness audit of those five
+remediations (recorded in **§11**) confirms each was implemented and wired onto the
+live path with its determinism budget intact, and that the permanent non-goals were
+held throughout. It found **no feature-level omissions** — every roadmap rung,
+including the optional E5, is built — but surfaced a smaller residual class where the
+*deliverable prose overstates the shipped behavior*: most materially, R4's "animated
+transition" is a uniform opacity fade-in rather than a true per-state style cross-fade,
+and R2's incremental-layout dirty classifier keys on a hand-maintained 3-attribute set
+that is correct today but unguarded against future drift. **§11** records that audit and
+adds three architecture- and non-goal-preserving follow-ups (**R6–R8**) that close the
+behavior gap (R6), harden the latent drift risk (R7), and reconcile the remaining
+documented narrowings (R8).
+
 ---
 
 ## 1. The Question and the Verdict
@@ -994,3 +1008,250 @@ The remediation reaches the same destination §3 named — declarative-retained
 capability parity that *behaves* live — and holds every permanent non-goal: R1–R5 add
 no observable property graph, no dependency properties, no selector engine, and no
 template engine. They are wiring, not architecture.
+
+---
+
+## 11. Second-Pass Audit (R1–R5) & Behavior-Honesty Remediation
+
+> Added 2026-06-11 after R1–R5 landed on `main` as features 096–100. This section
+> records a source-level faithfulness audit of the five remediations against their own
+> §10 deliverables and exit criteria, then specifies three follow-ups (**R6–R8**) that
+> close the residual gaps it found. Like R1–R5, R6–R8 are
+> **architecture-preserving and non-goal-preserving** — they finish or correct wiring
+> the remediations already built; they add no data binding, dependency properties, CSS
+> selectors, or template engine.
+
+### 11.1 Audit summary
+
+All five remediations shipped as independently gated Spec Kit features, all tasks
+`[X]`, `EvidenceAudit` green, no synthetic work. Each is genuinely wired onto the live
+path (not mechanism-only — the §10 defect class did not recur), and R3 and R5 are
+**clean** against their deliverables. The audit found **no feature-level omission** —
+every roadmap rung, including the optional E5, is built. It did find a residual,
+narrower class: in three of the five remediations the **deliverable prose describes a
+capability slightly broader than the code delivers**, and in one case (R2) a correct
+implementation rests on an **unguarded invariant** that can silently rot.
+
+| Remediation | Feature | Live-path verdict | Residual gap → fix |
+|-------------|---------|-------------------|--------------------|
+| R1 visual-state bridge | 096 | Real & wired; closed order holds end-to-end | `deriveVisualState` realizes only the 5-level runtime tail (head semantic states live in `applyRuntimeVisualState`); derived `Selected` (text-range) never fires on the live host → **R8** (doc/surface) |
+| R2 incremental layout | 097 | Real & wired; 1000-case incremental≡full invariant | Dirty classifier keys on a hand-maintained 3-name set, correct only because no other layout input is attribute-driven — **unguarded against drift**; no intrinsic-size memo; bounds keyed by `LayoutNodeId` not `RetainedId` → **R7** (+ doc in R8) |
+| R3 binding-aware recovery | 098 | **Clean** — `Key ?? Kind` divergence genuinely unified | Only the legacy 080 *preview* path retains `Key ?? Kind` (out of scope) → annotate in **R8** |
+| R4 animation clock | 099 | Real seam; trigger fires through R1; survives shift | Transition is a uniform 150 ms **opacity fade-in of the target**, not a per-state style cross-fade; the color channel the `AnimationClock` type advertises is unused → **R6** |
+| R5 navigation keys | 100 | **Clean** — metadata-driven step, real selection/grid dispatch | `Chart`/`Graph`/`Progress` are classed value-roles in `navIntentFor` but get `Navigation = None`/non-focusable in `defaultFor` (never route by default); "segmented" named but no `Segmented` role → **R8** (doc/surface) |
+
+### 11.2 The recurring observation: prose ahead of behavior
+
+Where §10's defect was *mechanism-without-wiring*, this pass's defect is *prose-ahead-
+of-behavior*: the capability is wired and live, but the deliverable wording (or a type
+doc-comment) promises a slightly richer behavior than ships. The two that matter are
+**R4** (a fade-in is delivered where a style cross-fade is described, and an advertised
+color channel is dead) and **R2** (a broad CSS-flexbox attribute list is described
+where a justified 3-name set ships, with nothing preventing future drift). The rest are
+documented narrowings already noted honestly in the `.fsi`/source — **R8** reconciles
+the report and the surface so a future reader is not misled.
+
+**R6** closes the one genuine behavior gap (cross-fade), **R7** converts R2's
+correct-but-fragile invariant into an enforced one, and **R8** is a pure
+doc/surface-alignment pass with no behavioral change. Each follows the R1–R5 template
+and is independently shippable through the standard gates.
+
+### 11.3 R6 — True visual-state cross-fade *(completes R4)*
+
+**Goal.** Make a live visual-state transition **interpolate the resolved style
+channels** (token-derived paint + opacity) between the prior and new state, so a
+`Normal → Hover`/`Focused` change animates as a genuine cross-fade — realizing the
+multi-channel transition R4's own `AnimationClock` type already advertises, rather than
+fading the target appearance in from transparent.
+
+**Root cause.** `updateClockForState` (`src/Controls/RetainedRender.fs:123`–`151`)
+constructs a single fixed `fadeAnimation` (`:94`–`102`) on every transition — a uniform
+150 ms `EaseOut` from `startOpacity = 0.0` — and `sampleOnPaint` (`:153`–`160`) overlays
+only the **opacity** channel of feature-073's `applyAt`. A fresh `Normal → Hover` fades
+the *new* (Hover-styled) appearance in from transparent; it does not interpolate
+foreground/background/accent between the old and new resolved styles. The color/press-
+tint channel the `AnimationClock` doc advertises (`src/Controls/RetainedRender.fsi:40`–
+`51`) is never driven. So R4's exit criterion ("animates rather than snapping") is met
+only in the literal opacity sense.
+
+**Scope & key deliverables.**
+
+- **Resolve both endpoints at transition start.** When `updateClockForState` detects a
+  state change, resolve the *prior* and *next* styles via `Style.resolve` and build a
+  tween over the **differing channels** (foreground, background, accent, opacity), not a
+  fixed opacity ramp from 0.
+- **Drive the color channel.** Feed the style delta into feature-073's existing color-
+  capable `applyAt` so paint channels interpolate; either light up the advertised press-
+  tint/focus-ring color channel or, if a channel is intentionally out of scope, trim the
+  `AnimationClock` doc to match — close the doc↔behavior gap explicitly.
+- **Closed channel set.** Animate only the closed set of channels `Style.resolve`
+  already produces (token-derived paint + opacity) — **no** general per-property
+  animation surface, which would drift toward an open animation/property system.
+- **Preserve R4's invariants.** Identity-at-rest emits no animation attribute (byte-
+  identical at rest); the **final** transition frame is byte-identical to the static
+  snapped render; the clock stays deterministic under injected frame deltas; a held
+  state remains a `Keep` (scoped-repaint invariant from the `VisualStateValue` equality
+  case intact).
+
+**Touchpoints.** `src/Controls/RetainedRender.fs` (`updateClockForState`,
+`fadeAnimation` → a style-delta tween builder, `sampleOnPaint` color overlay),
+`src/Controls/Style.fs` (endpoint resolution), feature-073 Scene animation modules
+(reuse the color-capable `applyAt`), `src/Controls/RetainedRender.fsi` (reconcile the
+`AnimationClock` doc with the driven channels).
+
+**Dependencies.** R1 (the state-change trigger) and R4 (the live clock/seam). **Sequence
+R6 after R4.**
+
+**Risks & mitigations.** *Golden churn on mid-transition frames* → gate the two stable
+points only — at-rest byte-identity and final-frame == snapped-static — and treat
+mid-flight frames as animation, not golden. *Scope creep into open property animation* →
+hold the closed token-channel set. *Nondeterminism* → drive from injected deltas;
+property-test with a fixed delta sequence as R4 does.
+
+**Exit criteria.** A `Normal → Hover`/`Focused` transition shows an interpolated **color**
+change mid-flight (not only an opacity fade-in); the final frame is byte-identical to the
+static snapped render; identity-at-rest byte-identity holds; the clock is deterministic
+under injected deltas; the `AnimationClock` type doc and the driven channels agree.
+
+### 11.4 R7 — Layout dirty-set anti-drift guard *(hardens R2)*
+
+**Goal.** Make it **impossible** for R2's incremental-layout dirty classifier to
+silently diverge from the set of attributes that actually drive layout, removing the
+latent missed-re-measure risk without changing current behavior.
+
+**Root cause.** `layoutAffectingAttrNames` is a hand-maintained
+`Set.ofList [ "width"; "height"; "orientation" ]` (`src/Controls/Control.fs:1207`). It is
+correct *today* only because `toLayout` (`:1209`–`1229`) derives layout intent from
+exactly those three names — gap/padding are hardcoded constants, `Wrap` is `Kind`-driven
+(a `Kind` change is a `Replace`, already dirty), and min/max/flex/align are never read
+from attributes. Nothing enforces that coupling. If a future feature exposes an
+attribute-driven padding/flex/align surface, `layoutDirtySet`
+(`src/Controls/RetainedRender.fs:244`–`303`) will classify a real layout change as
+content-only and **reuse stale cached bounds** unless the author remembers to extend the
+set or tag `AttrCategory.Layout` (honored but currently unused by any attribute). The
+§10.4 prose listed ~13 CSS-flexbox attributes; the shipped 3-name set is the justified
+truth, but it is unguarded.
+
+**Scope & key deliverables.**
+
+- **Single-source the set from `toLayout`'s real inputs.** Derive
+  `layoutAffectingAttrNames` from — or centralize it behind one table shared with —
+  the attribute reads in `toLayout`, so adding a layout-driving attribute updates the
+  classifier and the lowering together by construction.
+- **Enforcement gate.** A test asserting every attribute name `toLayout` consumes is in
+  `layoutAffectingAttrNames`, and that any `AttrCategory.Layout`-tagged attribute is
+  honored by `layoutDirtySet` — the build **fails** if a layout input is added without
+  updating the dirty-set. This is the anti-drift counterpart to the existing
+  incremental≡full equivalence property.
+- **(Optional) intrinsic-size memo.** Add the measured-intrinsic-size cache the §10.4
+  deliverable named (R2 shipped a computed-`Bounds` cache only), memoized on the retained
+  fragment, if a measured workload shows the boundary re-measure is hot; otherwise record
+  the decision and reconcile the wording in R8.
+
+**Touchpoints.** `src/Controls/Control.fs` (`layoutAffectingAttrNames` ↔ `toLayout`
+coupling), `src/Controls/RetainedRender.fs` (`layoutDirtySet`), `src/Layout/**` (optional
+intrinsic-size memo), a Governance or Controls test for the enforcement gate.
+
+**Dependencies.** R2 (the classifier and cache it hardens). Independent of R6/R8.
+
+**Risks & mitigations.** *Over-broad dirtying if the derived set becomes too eager* →
+gate that `WorkReductionRecord` for a content-only edit is unchanged (still O(0)
+re-measure); the incremental≡full property already guards correctness. *Churn* → the
+change is internal; no surface or consumer impact.
+
+**Exit criteria.** `layoutAffectingAttrNames` is derived from / gated against `toLayout`'s
+actual attribute reads; a test fails when a layout-driving attribute is added without
+updating the dirty-set; `WorkReductionRecord` for content-only edits is unchanged; the
+1000-case incremental≡full equivalence property still holds.
+
+### 11.5 R8 — Documented-narrowing reconciliation *(doc/surface; no behavior change)*
+
+**Goal.** Reconcile the remaining places where a roadmap deliverable or a type doc-
+comment describes a capability slightly broader than what ships, so the report and the
+surface agree. **No behavioral change** — each item is either a wording correction or a
+small surface tidy.
+
+**Root cause.** Several R1/R2/R3/R5 deliverables were written to the intended capability
+and the implementation honestly narrowed them (and said so in the `.fsi`/source); the
+roadmap prose was not updated to match.
+
+**Scope & key deliverables.**
+
+- **R1 — `deriveVisualState` order.** §10.3 describes `deriveVisualState` as the full
+  8-level arbiter (`Disabled > … > Normal`); the function implements only the 5-level
+  runtime tail (`Pressed > Selected > Focused > Hover > Normal`,
+  `src/Controls/ControlRuntime.fs:204`–`213`), with the head semantic states and the
+  consumer-out-ranks-derived arbitration in `applyRuntimeVisualState` (`:238`–`243`).
+  Re-word §10.3 to describe the two-function split (the `.fsi` already documents it),
+  **or** fold the full order behind one documented entry point.
+- **R1 — dead derived `Selected`.** `deriveVisualState` derives `Selected` from a
+  text-range `Selection` the live host never populates (`ControlsElmish.fs` derives
+  none), so on the real path only consumer-set `Selected` fires. Either remove the dead
+  derivation or document it as forward-looking.
+- **R2 — cache wording.** §10.4 names a "measured intrinsic size … keyed by retained
+  identity"; R2 ships a computed-`Bounds` cache only, keyed by structural `LayoutNodeId`.
+  Reconcile the wording (or land the memo via R7).
+- **R2 — Yoga rationale.** The point-scale-rounding disable (`src/Layout/Layout.fs:14`–
+  `17`) documents the *correctness* motive but not the maintainer's "blast-radius nil,
+  Controls integer geometry unaffected" approval; add that rationale to the source
+  comment (`:8`–`13`).
+- **R5 — value-role surface.** `navIntentFor` (`src/Controls/Focus.fs:123`–`165`) classes
+  `Chart`/`Graph`/`Progress` as value roles, but `Accessibility.defaultFor` gives them
+  `Navigation = None`/non-focusable, so they never route on arrows by default; and
+  "segmented" is named as a selection role with no `Segmented` `AccessibilityRole`. Either
+  give those roles default `NavRange`s or drop them from the value branch with a note, and
+  correct the "segmented" mention.
+- **R3 — preview-path annotation.** The lone residual `Key ?? Kind`
+  (`src/Controls/Control.fs:1122`) is the legacy 080 single-control *preview* path, not
+  the dispatch/recovery surface R3 unified. Annotate it so a future reader does not
+  mistake it for the divergence R3 removed.
+
+**Touchpoints.** This report (§10.3/§10.4 wording), `src/Layout/Layout.fs` (comment),
+`src/Controls/ControlRuntime.fs` (dead-derivation decision), `src/Controls/Focus.fs`
++ `src/Controls/Accessibility.fs` (value-role surface), `src/Controls/Control.fs:1122`
+(annotation). No published-surface signature changes beyond the optional dead-derivation
+removal.
+
+**Dependencies.** None (doc/surface only). Can run in parallel with R6/R7.
+
+**Risks & mitigations.** *Accidental behavior change* → keep R8 strictly to wording,
+comments, and the one optional dead-code removal; any surface signature change recaptures
+baselines and routes Tier-1 as usual.
+
+**Exit criteria.** Each listed item is reconciled in code or corrected in this report;
+no determinism, parity, or non-goal impact; the standard gates stay green.
+
+### 11.6 R6–R8 sequencing & dependencies
+
+```mermaid
+graph LR
+  R6["R6 True style cross-fade<br/>(completes R4)"]
+  R7["R7 Layout dirty-set guard<br/>(hardens R2)"]
+  R8["R8 Doc/surface reconciliation<br/>(no behavior change)"]
+  R4ref["R4 (shipped)"] --> R6
+  R2ref["R2 (shipped)"] --> R7
+```
+
+- **R6 after R4** — it animates the channels R4's clock samples.
+- **R7 after R2** — it guards R2's classifier and cache.
+- **R8 anytime, parallel** — doc/surface only.
+
+Recommended order: **{R7, R8} first (low-risk hardening + honesty), then R6** (the one
+behavior change, carrying a golden-evidence budget for the mid-transition frames). R6 is
+the only rung with new visible behavior; R7 and R8 are zero- and near-zero-risk.
+
+### 11.7 Updated parity-matrix delta
+
+R6 is the only follow-up that moves a parity row; R7 and R8 harden and document without
+changing the matrix. No non-goal row is added or removed.
+
+| Capability | After R1–R5 (shipped) | After R6–R8 | Closed by |
+|------------|------------------------|-------------|-----------|
+| Per-control animation | ✔ live clock; ✲ transition = opacity fade-in only | ✔ live clock **+ multi-channel style cross-fade** | R6 |
+| Efficient partial updates | ✔ incremental measure + paint (3-name dirty-set, unguarded) | ✔ unchanged behavior, **drift-guarded** | R7 |
+| Data binding · dependency props · CSS selectors | ✗ **(rejected non-goal)** | ✗ **(unchanged — still rejected)** | — |
+
+R6–R8 hold every permanent non-goal: they add no observable property graph, no
+dependency properties, no selector engine, and no template engine. R6 animates a
+**closed, token-derived channel set**, not an open property-animation surface; R7 and R8
+are hardening and documentation. They are wiring and honesty, not architecture.
