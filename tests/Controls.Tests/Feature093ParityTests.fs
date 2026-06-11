@@ -106,9 +106,10 @@ let feature093ParityTests =
 
         // ---- SC-007 — unmigrated kinds are unchanged --------------------------------------
         test "an unmigrated kind ignores attached style classes — no render delta (SC-007)" {
-            // `switch` is NOT migrated; attaching a class must not change its render.
-            let plain = Switch.create [ Switch.checked' true ]
-            let classed = Switch.create [ Switch.checked' true; Attr.styleClasses [ Variant StyleVariant.Danger ] ]
+            // `progress-bar` is NOT migrated (096 widened slider/text-box/radio-group/switch, not
+            // progress-bar); attaching a class must not change its render.
+            let plain = ProgressBar.create [ ProgressBar.value 0.5 ]
+            let classed = ProgressBar.create [ ProgressBar.value 0.5; Attr.styleClasses [ Variant StyleVariant.Danger ] ]
             Expect.equal
                 (ControlInternals.faithfulContent Theme.light box classed)
                 (ControlInternals.faithfulContent Theme.light box plain)

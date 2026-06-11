@@ -559,6 +559,10 @@ module ControlRuntime =
 
     val diagnostics: model: ControlRuntimeModel -> ControlDiagnostic list
 
+    val deriveVisualState: model: ControlRuntimeModel -> controlId: ControlId -> VisualState
+
+    val internal applyRuntimeVisualState: model: ControlRuntimeModel -> control: Control<'msg> -> Control<'msg>
+
 namespace FS.Skia.UI.Controls
 
 open FS.Skia.UI.Scene

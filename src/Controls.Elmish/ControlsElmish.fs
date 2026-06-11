@@ -548,20 +548,50 @@ module ControlsElmish =
                     surfacedDiagnostics.Value <- Set.add key surfacedDiagnostics.Value
                     eprintfn "[ControlDiagnostic %A] %s" d.Severity d.Message
 
+        // Feature 096 (R1): assemble a READ-ONLY `ControlRuntimeModel` from the host's live pointer +
+        // focus state so `ControlRuntime.applyRuntimeVisualState` can stamp the derived VisualState onto
+        // the freshly-produced tree BEFORE the reconciler diffs it (pre-reconcile, in the `ControlId`
+        // domain). Hover/press are already `ControlId`-keyed on `pointerState`; `focused` is a stable
+        // `RetainedId` resolved back to its `ControlId` via the PRIOR retained tree. On the first frame
+        // there is no prior tree, so `focused` resolves to `None` (research §D5) and focus indication
+        // begins only once focus is established by post-render interaction. Selection is a consumer
+        // (text-range) concern — the host derives none, so the bridge fills only the runtime tail.
+        let assembleRuntimeModel (prior: RetainedRender<'msg> option) : ControlRuntimeModel =
+            let focusedControlId =
+                match focused.Value, prior with
+                | Some rid, Some r ->
+                    tryFindNode rid r.Root
+                    |> Option.map (fun node -> node.Control.Key |> Option.defaultValue node.Control.Kind)
+                | _ -> None
+
+            { fst (ControlRuntime.init ()) with
+                HoveredControl = pointerState.Value.Hover
+                PressedControls =
+                    pointerState.Value.Presses
+                    |> Map.toList
+                    |> List.map (fun (_, candidate) -> candidate.Control)
+                    |> Set.ofList
+                FocusedControl = focusedControlId }
+
         // Produce the production scene for (size, model) through the retained reconciler. The first
         // frame seeds the retained structure and paints ONCE (FR-009 — no second `Control.renderTree`,
         // first-frame collisions surfaced immediately); later frames diff + reuse. Output is
         // byte-identical to a full rebuild (FR-005, proven by the wired round-trip property suite).
+        // Feature 096 (R1): the runtime visual-state bridge is applied to `host.View size model` before
+        // `init`/`step`, so a hover/press/focus change becomes a scoped reconciler `Update` patch on
+        // exactly that subtree, and a `Normal`-and-unset tree stamps nothing (byte-identity at rest).
         let renderRetained (size: Size) (model: 'model) : Scene =
-            let next = host.View size model
-
             match retained.Value with
             | None ->
+                let runtimeModel = assembleRuntimeModel None
+                let next = ControlRuntime.applyRuntimeVisualState runtimeModel (host.View size model)
                 let r0 = RetainedRender.init host.Theme size next
                 surface r0.Diagnostics
                 retained.Value <- Some r0.Retained
                 r0.Render.Scene
             | Some prev ->
+                let runtimeModel = assembleRuntimeModel (Some prev)
+                let next = ControlRuntime.applyRuntimeVisualState runtimeModel (host.View size model)
                 let s = RetainedRender.step host.Theme size prev next
                 surface s.Diagnostics
                 retained.Value <- Some s.Retained

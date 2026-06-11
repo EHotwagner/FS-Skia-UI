@@ -193,3 +193,51 @@ module ControlRuntime =
 
     let diagnostics model =
         model.Diagnostics
+
+    // Feature 096 (R1): the pure, total, deterministic projection from live interaction state to a
+    // single VisualState. The runtime-derivable precedence is the tail of FR-002's full closed order
+    // (`Disabled > Validation > Loading > Pressed > Selected > Focused > Hover > Normal`); the head
+    // states (`Disabled`/`Validation`/`Loading`) are consumer-set, never derived, so the projection
+    // never returns one. No per-kind branching — a plain ordered cascade over the runtime model; an
+    // id named by no interaction state resolves to `Normal`, never an exception (FR-002, SC-004).
+    let deriveVisualState (model: ControlRuntimeModel) (controlId: ControlId) : VisualState =
+        if model.PressedControls.Contains controlId then
+            Pressed
+        elif model.Selection |> Option.exists (fun s -> s.ControlId = controlId) then
+            Selected
+        elif model.FocusedControl = Some controlId then
+            Focused
+        elif model.HoveredControl = Some controlId then
+            Hover
+        else
+            Normal
+
+    // Feature 096 (R1): replace-or-append the last-writer `visualState` attribute that
+    // `ControlInternals.visualStateOf` reads. Pure; the prior attribute (if any) is dropped so the
+    // single carrier channel never accumulates stale state (FR-003).
+    let setVisualState (state: VisualState) (control: Control<'msg>) : Control<'msg> =
+        { control with
+            Attributes =
+                (control.Attributes |> List.filter (fun a -> a.Name <> "visualState"))
+                @ [ Attr.visualState state ] }
+
+    // Feature 096 (R1): internal host bridge. Stamps each control's derived VisualState onto the
+    // lowered Control<'msg> tree in the ControlId domain (pre-reconcile), preserving a consumer-set
+    // non-Normal attribute and emitting NOTHING at Normal (byte-identity at rest). Reached by
+    // Controls.Tests / Elmish.Tests / the Controls.Elmish host via InternalsVisibleTo. NOT in the
+    // .fsi → automatically internal.
+    let rec applyRuntimeVisualState (model: ControlRuntimeModel) (control: Control<'msg>) : Control<'msg> =
+        let id = control.Key |> Option.defaultValue control.Kind
+        // Recurse the structural Children channel first; the bridge is a pure tree walk.
+        let withChildren =
+            { control with Children = control.Children |> List.map (applyRuntimeVisualState model) }
+
+        // Consumer-set non-Normal state wins and is returned unchanged (FR-003). A consumer Normal /
+        // absent attribute lets the derived interaction state fill the slot; a derived Normal emits
+        // NOTHING, so a Normal-and-unset node is byte-identical to the un-bridged build (FR-005).
+        if ControlInternals.visualStateOf control.Attributes <> Normal then
+            withChildren
+        else
+            match deriveVisualState model id with
+            | Normal -> withChildren
+            | derived -> setVisualState derived withChildren

@@ -1,0 +1,1398 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm the feature directory artifacts are present and linked (spec, plan, research, data-model, quickstart, `contracts/control-runtime-bridge.md`, `checklists/requirements.md`) and that `.specify/feature.json` resolves `specs/096-runtime-visual-state-bridge`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T001",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T001: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Scaffold audit-discoverable readiness placeholders under `readiness/`: `derive-precedence.md`, `live-restyle.md`, `focus-survives-reshuffle.md`, `byte-identity-at-rest.md`, `partial-repaint.md`, `widened-kinds.md`, `responds-proof.md`, `contrast.md`, `fsi-transcript.md`, `surface-baselines.md`, plus `governance-risk-levels.md`, `aggregate-hang-diagnostics.md`, `runtime-limitations.md`, `generated-guidance-validation.md`, `real-image-evidence.md`, `evidence-graph.md`, `evidence-audit.md` \u2014 each naming its authoritative command, artifact path, failure class, and next action",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T002",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T002: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Record feature Tier 1 (public surface moves: `ControlRuntime.fsi` gains `deriveVisualState`), affected layers (`FS.Skia.UI.Controls` projection + internal bridge + widened geometry; `FS.Skia.UI.Controls.Elmish` host call site), public-API impact (single additive `val`; `applyRuntimeVisualState` internal), MVU applicability (reads the existing `ControlRuntimeModel`; no new `Msg`/`Effect`/`update`; pure bridge at the interpreter edge), and the evidence obligations from the plan; record as a **visible decision** that this is **not** a persistent graphical viewer feature (deterministic render-step + structural `Scene`/resolved-style equality; the responds-proof is the live retained render-step path), so no persistent-launch obligation applies",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T003",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T003: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Run `./fake.sh build -t Route`; confirm the controls-public-surface escalation (the serialized six-target path **plus `ContrastCheck`**) and record the authoritative gate list plus the small/medium/broad governance risk levels for this Tier-1 surface move into `readiness/governance-risk-levels.md`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T004",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T004: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Draft the public surface \u2014 `val deriveVisualState : model:ControlRuntimeModel -> controlId:ControlId -> VisualState` on `src/Controls/ControlRuntime.fsi` with the doc comment per `contracts/control-runtime-bridge.md` (purely additive; no existing signature changes; `RetainedId` stays out of the surface \u2014 the bridge binds in the `ControlId` domain)",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T005",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T005: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Add the internal bridge seam in `src/Controls/ControlRuntime.fs` (NOT declared in the `.fsi` \u2192 automatically internal): the `applyRuntimeVisualState` signature + a `setVisualState` helper (replace-or-append the last-writer `visualState` attribute that `ControlInternals.visualStateOf` reads), reachable from `Controls.Tests` / `Elmish.Tests` via the existing `InternalsVisibleTo` (`Controls.fsproj`); reuse `ControlInternals.visualStateOf` directly (`ControlRuntime.fs` compiles after `Control.fs`)",
+      "skillist": [
+        "fs-skia-reconciliation"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T006",
+          "declared_skillist": [
+            "fs-skia-reconciliation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T006: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Exercise the draft `deriveVisualState` from FSI against the packed library \u2014 `Hover` for a hovered id, `Pressed` out-ranking `Hover`, `Normal` for an unknown id \u2014 per the contract FSI block; capture the session transcript to `readiness/fsi-transcript.md`",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T007",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T007: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record the initial surface-area baseline expectations for the changed public module (`ControlRuntime.fsi`: controls-public-surface / per-package / cross-package) as the pre-change reference for the Phase 6 recapture",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T008",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T008: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record unsupported-scope handling, the permanent non-goals, and failure diagnostics into `readiness/runtime-limitations.md`: a single carrier channel (the pre-existing `Attr.visualState` \u2014 no second/parallel consumer-state channel, FR-003), no new `VisualState` case, no new token literal or second contrast policy (FR-008), the bridge is total and silent (a `Normal`-and-unset node is a no-op, FR-005), it operates only in the `ControlId` domain (never `RetainedId`), a non-migrated kind derives state but produces no visible change, and no data-binding/observable/dependency-property/selector/template surface is introduced (FR-009)",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T009",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T009: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add a failing-first `deriveVisualState` runtime-precedence test: the runtime-derivable order `Pressed > Selected > Focused > Hover > Normal` holds (the runtime tail of FR-002), an id named by no interaction state resolves to `Normal`, and identical `(model, id)` inputs always yield an identical result (totality + determinism underpinning SC-001/SC-004)",
+      "skillist": [
+        "fs-skia-ui-widgets",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T010",
+          "declared_skillist": [
+            "fs-skia-ui-widgets",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T010: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add a failing-first bridged-restyle test: a migrated control whose id is the `HoveredControl` / in `PressedControls` / the `Selection.ControlId` of a `ControlRuntimeModel` resolves to the matching `Hover`/`Pressed`/`Selected` style with a **no-attribute** consumer `view` (via `applyRuntimeVisualState` + `Style.resolve`, never a hand-authored attribute), and a non-interacted sibling resolves `Normal` (SC-001)",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T011",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T011: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add a failing-first byte-identity-at-rest test: a `Normal`-and-unset control is returned from `applyRuntimeVisualState` **unchanged** (no attribute added) and is structurally-`Scene`-equal to the un-bridged build, with `RecomputedNodeCount` unchanged at rest (FR-005, SC-003, SC-008)",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing",
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing",
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T012",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-testing",
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T012: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `deriveVisualState` in `src/Controls/ControlRuntime.fs` \u2014 the closed runtime-derivable precedence (`PressedControls.Contains id` \u2192 `Pressed`; `Selection` is `Some s` and `s.ControlId = id` \u2192 `Selected`; `FocusedControl = Some id` \u2192 `Focused`; `HoveredControl = Some id` \u2192 `Hover`; else `Normal`); pure, total, deterministic, with no per-kind branching",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T013",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T013: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T010"
+      ],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement `applyRuntimeVisualState` in `src/Controls/ControlRuntime.fs` \u2014 per node `id = Key |> Option.defaultValue Kind`; if `ControlInternals.visualStateOf` is `<> Normal` return the node unchanged (consumer wins, FR-003); else match `deriveVisualState model id`: `Normal` \u2192 node unchanged (emit nothing, FR-005), `derived` \u2192 `setVisualState derived`; recurse the structural `Children`; pure (no `model` mutation), stamping in the `ControlId` domain so a change becomes a scoped reconciler `Update` patch (FR-004)",
+      "skillist": [
+        "fs-skia-reconciliation"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T014",
+          "declared_skillist": [
+            "fs-skia-reconciliation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T014: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T006",
+        "T011",
+        "T012",
+        "T013"
+      ],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Widen the migrated geometry \u2014 add `(classes, state)` params to `sliderGeom` / `textFieldGeom` / `radioGeom` / `switchGeom` in `src/Controls/Control.fs` and route their paint through `Style.resolve theme baseStyle classes state` (matching `buttonGeom` / `checkboxGeom`); at `classes = []`, `state = Normal` the output is **byte-identical** to today (FR-006; the widened half of SC-006)",
+      "skillist": [
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T015",
+          "declared_skillist": [
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T015: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Wire the bridge into the host: in `renderRetained` (`src/Controls.Elmish/ControlsElmish.fs:555`) assemble a read-only `ControlRuntimeModel` from the live `pointerState` (`Hover`/`Presses`, already `ControlId`-keyed) + `focused` (`RetainedId` resolved back to `ControlId` via the prior retained tree) and apply `applyRuntimeVisualState` to `host.View size model` **before** `RetainedRender.init`/`step` (pre-reconcile, `ControlId` domain); capture US1 to `readiness/live-restyle.md` (SC-001) and the at-rest result to `readiness/byte-identity-at-rest.md` (FR-005, SC-003)",
+      "skillist": [
+        "fs-skia-elmish"
+      ],
+      "skillist_mirror": [
+        "fs-skia-elmish"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T016",
+          "declared_skillist": [
+            "fs-skia-elmish"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T016: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T013",
+        "T014",
+        "T015"
+      ],
+      "phase_deps": [
+        "T009"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add a failing-first focus-indicator test: a `ControlRuntimeModel` whose `FocusedControl` is a migrated focusable control resolves that control with its `Focused` indicator via the bridge + E3 resolver and **no consumer focus attribute**; when focus moves to a different control, the previously-focused one returns to its non-focused resolution and the newly-focused one gains the indicator (SC-002, US2.1/US2.3)",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T017",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T017: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add a failing-first focus-survives-reshuffle test over the **live** retained path: across a sibling-shifting unrelated re-render the `Focused` indicator stays on the same control via E2 retained identity \u2014 demonstrated through the live-path identity, **not** a hand-seeded `StateByIdentity` map (SC-002, FR-007)",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T018",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T018: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm the host's `focused` (`RetainedId`) \u2192 `ControlId` resolution feeds `deriveVisualState`'s `Focused` rank so the indicator attaches to the E2 stable retained identity and survives the reshuffle; R1 **consumes** \u2014 never re-derives \u2014 the 067/091/092 identity scheme (FR-007); capture to `readiness/focus-survives-reshuffle.md` (SC-002)",
+      "skillist": [
+        "fs-skia-elmish",
+        "fs-skia-reconciliation"
+      ],
+      "skillist_mirror": [
+        "fs-skia-elmish",
+        "fs-skia-reconciliation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T019",
+          "declared_skillist": [
+            "fs-skia-elmish",
+            "fs-skia-reconciliation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T019: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T016",
+        "T017",
+        "T018"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture an input\u2192visible-restyle responds-proof on the live retained path (a hover/press/focus change \u2192 a reconciler `Update` patch \u2192 a restyle) that an inert/un-bridged build fails (identical frames / `Inert`); record to `readiness/responds-proof.md`",
+      "skillist": [
+        "fs-skia-elmish",
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-elmish",
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T020",
+          "declared_skillist": [
+            "fs-skia-elmish",
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T020: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T019"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add a failing-first consumer-vs-derived arbitration test: a consumer-`Disabled` control the runtime also reports hovered/pressed/focused resolves `Disabled` (consumer state out-ranks derived, FR-003); a consumer-`Selected` control the runtime reports `Pressed` resolves `Selected`; a control the consumer left at `Normal` that the runtime reports focused resolves `Focused` (derived fills the `Normal` slot) \u2014 the single-carrier rule, no second channel (US3.1/US3.2/US3.3, SC-004 preservation half)",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T021",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T021: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T014"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Add the FsCheck property over `deriveVisualState` + `applyRuntimeVisualState`: purity / totality / determinism over **\u22651000** generated `(ControlRuntimeModel, ControlId, consumer-state)` combinations, the fixed order (`Disabled > Validation > Loading > Pressed > Selected > Focused > Hover > Normal`) holds for every combination, and a consumer-set non-`Normal` state is preserved over any derived interaction state in **100%** of cases; record to `readiness/derive-precedence.md` (SC-004)",
+      "skillist": [
+        "fs-skia-ui-widgets",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T022",
+          "declared_skillist": [
+            "fs-skia-ui-widgets",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T022: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T013",
+        "T014",
+        "T021"
+      ],
+      "phase_deps": [
+        "T020"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Write `readiness/widened-kinds.md`: each of `button` / `check-box` / `slider` / `text-box` / `radio-group` / `switch` restyles on interaction and shows a focus indicator on the live path; the unmigrated kinds (incl. `toggle-button` / `list-box` / `multi-select-list` / `combo-box`) show **no render-output delta** (SC-006)",
+      "skillist": [
+        "fs-skia-ui-widgets",
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets",
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T023",
+          "declared_skillist": [
+            "fs-skia-ui-widgets",
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T023: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T015",
+        "T016",
+        "T019"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Write `readiness/partial-repaint.md`: a single hover entering one control surfaces a single reconciler `Update` patch and the repaint is O(hovered-subtree) measured via the existing `WorkReduction` metric \u2014 not a whole-tree repaint (SC-005, FR-004)",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T024",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T024: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T016"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t ContrastCheck` and write `readiness/contrast.md`: no migrated control's bridged styling regresses its contrast result, and the bridge adds no second contrast policy and no new token literal (any styling flows through E3's `Style.resolve` over DTCG-sourced tokens) (SC-007, FR-008)",
+      "skillist": [
+        "fs-skia-design-tokens"
+      ],
+      "skillist_mirror": [
+        "fs-skia-design-tokens"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T025",
+          "declared_skillist": [
+            "fs-skia-design-tokens"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T025: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T015"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Recapture Tier-1 surface baselines after the `.fsi` change via `./fake.sh build -t RefreshSurfaceBaselines` (controls-public-surface + cross-package) and `PerPackageSurface.captureCurrent` (per-package snapshots are **not** covered by `RefreshSurfaceBaselines`); record the diffs to `readiness/surface-baselines.md`",
+      "skillist": [
+        "fs-skia-ui-widgets",
+        "fs-skia-elmish"
+      ],
+      "skillist_mirror": [
+        "fs-skia-ui-widgets",
+        "fs-skia-elmish"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T026",
+          "declared_skillist": [
+            "fs-skia-ui-widgets",
+            "fs-skia-elmish"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T026: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T005",
+        "T016"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T027",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run the serialized escalated non-concurrent gate prefix **sequentially** (shared `.fake` state) \u2014 `./fake.sh build -t Dev` \u2192 `GeneratedGuidanceCheck` \u2192 `TemplateCheck` \u2192 `GeneratedProductCheck` \u2014 recording the aggregate results as **non-authoritative** into `readiness/generated-guidance-validation.md`",
+      "skillist": [
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T027",
+          "declared_skillist": [
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T027: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T026"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T028",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceGraph` \u2014 confirm the echoed `feature-directory` + `tasks=<n>` match, no cycles, no dangling refs, no `[S*]` surprises; record to `readiness/evidence-graph.md`",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T028",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "owns:graph-validation"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T028: owns graph-validation requires skill speckit-evidence-graph; trigger_group=owns; matched_trigger=owns:graph-validation"
+        }
+      ],
+      "explicit_deps": [
+        "T027"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T029",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceAudit` \u2014 confirm verdict PASS (synthetic-propagation + diff-scan) or document every `--accept-synthetic` override; record to `readiness/evidence-audit.md`",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T029",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "owns:evidence-audit"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T029: owns evidence-audit requires skill speckit-evidence-audit; trigger_group=owns; matched_trigger=owns:evidence-audit"
+        }
+      ],
+      "explicit_deps": [
+        "T028"
+      ],
+      "phase_deps": [
+        "T022"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    }
+  ]
+}

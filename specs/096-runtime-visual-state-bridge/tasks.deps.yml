@@ -1,0 +1,112 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (feature 096).
+#
+# This file begins with a `schema_version` scalar and a top-level `tasks:`
+# mapping (the wrapper). Every Tnnn id in tasks.md appears once here with
+# `deps` and `skillist`; `owns` is present only where a task owns gated
+# evidence (closed vocabulary). Phase-checkpoint edges (every task in Phase
+# N+1 depends on the last foundation task of Phase N) are auto-injected by the
+# graph compute script — only non-phase cross-edges are written here.
+
+tasks:
+  # Phase 1 — Setup
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+
+  # Phase 2 — Foundation
+  T005:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+  T006:
+    deps: []
+    skillist: ["fs-skia-reconciliation"]
+  T007:
+    deps: [T005]
+    skillist: ["fs-skia-ui-widgets"]
+  T008:
+    deps: [T005]
+    skillist: []
+  T009:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 3 — User Story 1 (live restyle, zero consumer code)
+  T010:
+    deps: []
+    skillist: ["fs-skia-ui-widgets", "fs-skia-testing"]
+  T011:
+    deps: []
+    skillist: ["fs-skia-reconciliation", "fs-skia-testing"]
+  T012:
+    deps: []
+    skillist: ["fs-skia-reconciliation", "fs-skia-testing", "fs-skia-evidence-mode"]
+  T013:
+    deps: [T010]
+    skillist: ["fs-skia-ui-widgets"]
+  T014:
+    deps: [T006, T011, T012, T013]
+    skillist: ["fs-skia-reconciliation"]
+  T015:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+  T016:
+    deps: [T013, T014, T015]
+    skillist: ["fs-skia-elmish"]
+
+  # Phase 4 — User Story 2 (focus indicator survives re-renders)
+  T017:
+    deps: []
+    skillist: ["fs-skia-reconciliation", "fs-skia-testing"]
+  T018:
+    deps: []
+    skillist: ["fs-skia-reconciliation", "fs-skia-testing"]
+  T019:
+    deps: [T016, T017, T018]
+    skillist: ["fs-skia-elmish", "fs-skia-reconciliation"]
+  T020:
+    deps: [T019]
+    skillist: ["fs-skia-elmish", "fs-skia-evidence-mode"]
+
+  # Phase 5 — User Story 3 (consumer-vs-derived closed order)
+  T021:
+    deps: [T014]
+    skillist: ["fs-skia-reconciliation", "fs-skia-testing"]
+  T022:
+    deps: [T013, T014, T021]
+    skillist: ["fs-skia-ui-widgets", "fs-skia-testing"]
+
+  # Phase 6 — Integration & Polish
+  T023:
+    deps: [T015, T016, T019]
+    skillist: ["fs-skia-ui-widgets", "fs-skia-evidence-mode"]
+  T024:
+    deps: [T016]
+    skillist: ["fs-skia-reconciliation", "fs-skia-evidence-mode"]
+  T025:
+    deps: [T015]
+    skillist: ["fs-skia-design-tokens"]
+  T026:
+    deps: [T005, T016]
+    skillist: ["fs-skia-ui-widgets", "fs-skia-elmish"]
+  T027:
+    deps: [T026]
+    skillist: ["fs-skia-template-update"]
+  T028:
+    deps: [T027]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T029:
+    deps: [T028]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

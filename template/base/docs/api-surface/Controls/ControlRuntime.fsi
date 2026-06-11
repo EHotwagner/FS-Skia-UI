@@ -76,3 +76,20 @@ module ControlRuntime =
     val update: msg: ControlRuntimeMsg -> model: ControlRuntimeModel -> ControlRuntimeModel * ControlRuntimeEffect list
     /// Public contract function exposed by this FS.Skia.UI package.
     val diagnostics: model: ControlRuntimeModel -> ControlDiagnostic list
+
+    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Feature 096 (R1): the pure, total, deterministic projection from live
+    /// interaction state to a single VisualState. Selects the highest-ranked
+    /// runtime-derivable state for `controlId` under the fixed closed order
+    /// Pressed > Selected > Focused > Hover > Normal (the runtime-derivable tail of
+    /// FR-002's Disabled > Validation > Loading > Pressed > Selected > Focused > Hover
+    /// > Normal). A control named by no interaction state yields `Normal`. No per-kind
+    /// branching; identical inputs always yield an identical result.
+    val deriveVisualState: model: ControlRuntimeModel -> controlId: ControlId -> VisualState
+
+    /// Feature 096 (R1): internal host bridge — NOT public surface. Stamps each control's derived
+    /// VisualState onto the lowered Control<'msg> tree in the ControlId domain (pre-reconcile),
+    /// preserving a consumer-set non-Normal attribute and emitting NOTHING at Normal (byte-identity
+    /// at rest). Declared `internal` so the Controls.Elmish host and Controls.Tests / Elmish.Tests
+    /// reach it via InternalsVisibleTo without enlarging the package's public contract.
+    val internal applyRuntimeVisualState: model: ControlRuntimeModel -> control: Control<'msg> -> Control<'msg>

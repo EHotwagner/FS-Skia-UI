@@ -536,7 +536,11 @@ module internal ControlInternals =
                 mkText theme (box.X + float c * cw + 6.0) (box.Y + float r * rh + rh * 0.66) 11.0 theme.Foreground s)
         frame :: header :: (rowLines @ colLines @ texts)
 
-    let private radioGeom theme (box: Rect) (items: string list) (selected: string option) : Scene list =
+    // Feature 096 (R1): RadioGroup joins the migrated kinds — each item's ring + label paint flow
+    // through `Style.resolve`. The per-item base reproduces the prior procedural colours (accent ring
+    // when selected, muted otherwise; foreground label), so `resolve theme base [] Normal = base` is
+    // byte-identical (FR-006); the control's runtime visual state composes on top of every item.
+    let private radioGeom theme (box: Rect) (classes: StyleClass list) (state: VisualState) (items: string list) (selected: string option) : Scene list =
         match items with
         | [] -> emptyState theme box "(empty)"
         | _ ->
@@ -546,9 +550,20 @@ module internal ControlInternals =
                 let cy = box.Y + float i * rowH + rowH / 2.0
                 let cx = box.X + 9.0
                 let isSel = selected = Some it
-                let outer = Scene.circle { X = cx; Y = cy } 7.0 (if isSel then theme.Accent else theme.Muted)
+
+                let baseStyle: ResolvedStyle =
+                    { Foreground = theme.Foreground
+                      Fill = (if isSel then theme.Accent else theme.Muted)
+                      Stroke = theme.Accent
+                      StrokeWidth = 0.0
+                      FontFamily = theme.FontFamily
+                      FontSize = 12.0
+                      FontWeight = None }
+
+                let style = Style.resolve theme baseStyle classes state
+                let outer = Scene.circle { X = cx; Y = cy } 7.0 style.Fill
                 let inner = if isSel then [ Scene.circle { X = cx; Y = cy } 3.0 theme.Background ] else []
-                Scene.group (outer :: inner @ [ mkText theme (cx + 16.0) (cy + 4.0) 12.0 theme.Foreground it ]))
+                Scene.group (outer :: inner @ [ mkText theme (cx + 16.0) (cy + 4.0) 12.0 style.Foreground it ]))
 
     let private tabsGeom theme (box: Rect) (items: string list) (selected: string option) : Scene list =
         match items with
@@ -565,12 +580,28 @@ module internal ControlInternals =
                     [ Scene.rectangle (tx, box.Y, tw - 2.0, stripH) (if active then theme.Accent else theme.Muted)
                       mkText theme (tx + 6.0) (box.Y + stripH * 0.62) 11.0 theme.Foreground it ])
 
-    let private sliderGeom theme (box: Rect) (value: float) : Scene list =
+    // Feature 096 (R1): Slider joins the migrated kinds — its filled track + thumb paint flow through
+    // `Style.resolve`. The base reproduces the prior procedural `theme.Accent`, so
+    // `resolve theme base [] Normal = base` is byte-identical (FR-006); attached classes / runtime
+    // visual state compose on top (a hover/press/selected restyle of the accent fill).
+    let private sliderGeom theme (box: Rect) (classes: StyleClass list) (state: VisualState) (value: float) : Scene list =
         let v = max 0.0 (min 1.0 value)
         let cy = box.Y + box.Height / 2.0
+
+        let baseStyle: ResolvedStyle =
+            { Foreground = theme.Foreground
+              Fill = theme.Accent
+              Stroke = theme.Accent
+              StrokeWidth = 0.0
+              FontFamily = theme.FontFamily
+              FontSize = 13.0
+              FontWeight = None }
+
+        let style = Style.resolve theme baseStyle classes state
+
         [ Scene.rectangle (box.X, cy - 2.0, box.Width, 4.0) theme.Muted
-          Scene.rectangle (box.X, cy - 2.0, box.Width * v, 4.0) theme.Accent
-          Scene.circle { X = box.X + box.Width * v; Y = cy } 8.0 theme.Accent ]
+          Scene.rectangle (box.X, cy - 2.0, box.Width * v, 4.0) style.Fill
+          Scene.circle { X = box.X + box.Width * v; Y = cy } 8.0 style.Fill ]
 
     let private progressGeom theme (box: Rect) (value: float) : Scene list =
         let v = max 0.0 (min 1.0 value)
@@ -585,11 +616,26 @@ module internal ControlInternals =
           mkText theme (box.X + 10.0) (cy + 5.0) 16.0 theme.Foreground (sprintf "%g" value)
           Scene.line { X = box.X + box.Width - 16.0; Y = cy } { X = box.X + box.Width - 6.0; Y = cy } (Paint.stroke theme.Muted 2.0) ]
 
-    let private switchGeom theme (box: Rect) (on: bool) : Scene list =
+    // Feature 096 (R1): Switch joins the migrated kinds — its track paint flows through `Style.resolve`.
+    // `on` still selects the base track colour (accent vs muted) so `resolve theme base [] Normal = base`
+    // is byte-identical (FR-006); attached classes / runtime visual state compose on top.
+    let private switchGeom theme (box: Rect) (classes: StyleClass list) (state: VisualState) (on: bool) : Scene list =
         let cy = box.Y + box.Height / 2.0
         let w = 52.0
         let thumbX = if on then box.X + w - 12.0 else box.X + 12.0
-        [ Scene.rectangle (box.X, cy - 12.0, w, 24.0) (if on then theme.Accent else theme.Muted)
+
+        let baseStyle: ResolvedStyle =
+            { Foreground = theme.Foreground
+              Fill = (if on then theme.Accent else theme.Muted)
+              Stroke = theme.Accent
+              StrokeWidth = 0.0
+              FontFamily = theme.FontFamily
+              FontSize = 13.0
+              FontWeight = None }
+
+        let style = Style.resolve theme baseStyle classes state
+
+        [ Scene.rectangle (box.X, cy - 12.0, w, 24.0) style.Fill
           Scene.circle { X = thumbX; Y = cy } 10.0 theme.Background ]
 
     // Feature 093 (E3): CheckBox (rich-geometry migrant) — paint flows through `Style.resolve`.
@@ -875,7 +921,12 @@ module internal ControlInternals =
 
     /// A bordered single-line input field showing its value text and a caret — `text-box`. The
     /// frame + caret are what distinguish an editable field from a static label.
-    let private textFieldGeom theme (box: Rect) (value: string) : Scene list =
+    // Feature 096 (R1): TextBox joins the migrated kinds — its border + label paint flow through
+    // `Style.resolve`. The base reproduces the prior procedural foreground stroke/label, so
+    // `resolve theme base [] Normal = base` is byte-identical (FR-006); the `Focused` runtime state
+    // turns the border accent — a natural focus indicator — and other states compose on top. The
+    // field background + caret stay literal (they are not state-driven chrome).
+    let private textFieldGeom theme (box: Rect) (classes: StyleClass list) (state: VisualState) (value: string) : Scene list =
         let h = min box.Height 40.0
         let by = box.Y + box.Height / 2.0 - h / 2.0
         let field: Rect = { X = box.X; Y = by; Width = box.Width; Height = h }
@@ -883,11 +934,23 @@ module internal ControlInternals =
         let baseline = by + h / 2.0 + 5.0
         let textW = (Scene.measureText value { Family = theme.FontFamily; Size = 15.0; Weight = None }).Width
         let caretX = min (box.X + box.Width - 8.0) (textX + textW + 3.0)
+
+        let baseStyle: ResolvedStyle =
+            { Foreground = theme.Foreground
+              Fill = theme.Background
+              Stroke = theme.Foreground
+              StrokeWidth = 2.0
+              FontFamily = theme.FontFamily
+              FontSize = 15.0
+              FontWeight = None }
+
+        let style = Style.resolve theme baseStyle classes state
+
         [ Scene.rectangle (box.X, by, box.Width, h) theme.Background
-          Scene.rectangleWithPaint field (Paint.stroke theme.Foreground 2.0)
+          Scene.rectangleWithPaint field (Paint.stroke style.Stroke 2.0)
           Scene.clipped
               (RectClip field)
-              (mkText theme textX baseline 15.0 theme.Foreground value)
+              (mkText theme textX baseline 15.0 style.Foreground value)
           Scene.line { X = caretX; Y = by + 7.0 } { X = caretX; Y = by + h - 7.0 } (Paint.stroke theme.Accent 2.0) ]
 
     /// A bordered multi-line input field showing each value line plus a caret — `text-area`.
@@ -958,12 +1021,12 @@ module internal ControlInternals =
         | "context-menu" ->
             rowsGeom theme box (stringListOf "items" control) (stringListOf "selectedKeys" control |> Set.ofList)
         | "data-grid" -> gridGeom theme box (itemsOr [ "Name"; "Qty"; "Widget"; "12"; "Gadget"; "7" ] items)
-        | "radio-group" -> radioGeom theme box (stringListOf "items" control) (textValueOf "value" control)
+        | "radio-group" -> radioGeom theme box classes state (stringListOf "items" control) (textValueOf "value" control)
         | "tabs" -> tabsGeom theme box (stringListOf "items" control) (textValueOf "value" control)
-        | "slider" -> sliderGeom theme box (floatValue "value" 0.5 control.Attributes)
+        | "slider" -> sliderGeom theme box classes state (floatValue "value" 0.5 control.Attributes)
         | "progress-bar" -> progressGeom theme box (floatValue "value" 0.0 control.Attributes)
         | "numeric-input" -> numericGeom theme box (floatValue "value" 0.0 control.Attributes)
-        | "switch" -> switchGeom theme box (boolValue "selected" false control.Attributes)
+        | "switch" -> switchGeom theme box classes state (boolValue "selected" false control.Attributes)
         | "check-box" -> checkboxGeom theme box classes state (boolValue "selected" false control.Attributes) label
         // command / button family
         | "button" -> buttonGeom theme box classes state true label
@@ -988,7 +1051,7 @@ module internal ControlInternals =
         | "spinner" -> spinnerGeom theme box
         | "image" -> imageGeom theme box (textValueOf "value" control |> Option.defaultValue "image")
         // text-input / rich-text / divider family (feature 082)
-        | "text-box" -> textFieldGeom theme box (textValueOf "value" control |> Option.defaultValue "")
+        | "text-box" -> textFieldGeom theme box classes state (textValueOf "value" control |> Option.defaultValue "")
         | "text-area" -> textAreaFieldGeom theme box (textValueOf "value" control |> Option.defaultValue "")
         | "rich-text" -> richTextGeom theme box (richTextRuns control)
         | "separator" -> separatorGeom theme box

@@ -1,0 +1,35 @@
+## Symbol consistency (analyze pass G)
+- entity-record ContrastCheck — in {tasks}, missing from {plan, data-model}
+- entity-record ControlId — in {tasks}, missing from {plan, data-model}
+- entity-record ControlRuntimeModel — in {tasks}, missing from {plan, data-model}
+- entity-record Focused — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedGuidanceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedProductCheck — in {tasks}, missing from {plan, data-model}
+- entity-record Hover — in {tasks}, missing from {plan, data-model}
+- entity-record Inert — in {tasks}, missing from {plan, data-model}
+- entity-record Presses — in {tasks}, missing from {plan, data-model}
+- entity-record RecomputedNodeCount — in {tasks}, missing from {plan, data-model}
+- entity-record RefreshSurfaceBaselines — in {tasks}, missing from {plan, data-model}
+- entity-record RetainedId — in {tasks}, missing from {plan, data-model}
+- entity-record Scene — in {plan, tasks}, missing from {data-model}
+- entity-record StateByIdentity — in {tasks}, missing from {plan, data-model}
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- entity-record Update — in {tasks}, missing from {plan, data-model}
+- entity-record VisualState — in {tasks}, missing from {plan, data-model}
+- fr-id FR-002 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-003 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-004 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-006 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-007 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-008 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-009 — in {tasks}, missing from {plan, data-model}
+- msg-case Attributes — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Children — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case ControlRuntimeModel — in {tasks}, missing from {plan, data-model}
+- msg-case Effect — in {plan, tasks}, missing from {data-model}
+- msg-case Msg — in {plan, tasks}, missing from {data-model}
+- msg-case Scene — in {tasks}, missing from {plan, data-model}
+- sc-id SC-001 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-002 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-007 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-008 — in {tasks}, missing from {plan, data-model}

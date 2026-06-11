@@ -1,0 +1,38 @@
+{
+  "base_ref": "main",
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "specs/096-runtime-visual-state-bridge/plan.md",
+      "line": 110,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **V (Synthetic disclosure)**: None planned. The live responds-proof drives the"
+    },
+    {
+      "file": "specs/096-runtime-visual-state-bridge/plan.md",
+      "line": 182,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: None planned. Real retained host drives the responds-proof;"
+    },
+    {
+      "file": "specs/096-runtime-visual-state-bridge/readiness/task-graph.md",
+      "line": 137,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/096-runtime-visual-state-bridge/tasks.md",
+      "line": 215,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    }
+  ]
+}
