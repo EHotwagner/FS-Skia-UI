@@ -1,0 +1,62 @@
+
+## ChartsGallery contract smoke
+$ dotnet run --project samples/ChartsGallery/ChartsGallery.fsproj --no-build --no-restore -- --contract-smoke
+status=ok
+sample=ChartsGallery
+selection-owned-by-model=true
+control-count=6
+kinds=[GroupElement; RectangleElement; GroupElement; GroupElement; ClipElement;
+ TextRunElement; RectangleElement; RectangleElement; TextRunElement;
+ RectangleElement; RectangleElement; TextRunElement; RectangleElement;
+ RectangleElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; ClipElement; TextRunElement; PathElement;
+ PathElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; ...]
+elapsed-ms=75
+
+exit-code=0
+
+## ChartsGallery contract smoke
+$ dotnet run --project samples/ChartsGallery/ChartsGallery.fsproj --no-build --no-restore -- --contract-smoke
+status=ok
+sample=ChartsGallery
+selection-owned-by-model=true
+control-count=6
+kinds=[GroupElement; RectangleElement; GroupElement; GroupElement; ClipElement;
+ TextRunElement; RectangleElement; RectangleElement; TextRunElement;
+ RectangleElement; RectangleElement; TextRunElement; RectangleElement;
+ RectangleElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; ClipElement; TextRunElement; PathElement;
+ PathElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; CircleElement; CircleElement; CircleElement;
+ CircleElement; CircleElement; ...]
+elapsed-ms=93
+
+exit-code=0

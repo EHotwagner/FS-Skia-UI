@@ -1,0 +1,46 @@
+## Symbol consistency (analyze pass G)
+- entity-record BaselineNodeCount — in {tasks}, missing from {plan, data-model}
+- entity-record Bounds — in {plan, tasks}, missing from {data-model}
+- entity-record ChildOp — in {plan, tasks}, missing from {data-model}
+- entity-record Dev — in {tasks}, missing from {plan, data-model}
+- entity-record Invalidated — in {plan, tasks}, missing from {data-model}
+- entity-record Keep — in {plan, tasks}, missing from {data-model}
+- entity-record LayoutNodeId — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record LayoutResult — in {tasks}, missing from {plan, data-model}
+- entity-record RemeasuredNodeCount — in {tasks}, missing from {plan, data-model}
+- entity-record RenderFragment — in {plan, tasks}, missing from {data-model}
+- entity-record RetainedId — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record RetainedNode — in {plan, tasks}, missing from {data-model}
+- entity-record RetainedRender — in {plan}, missing from {data-model, tasks}
+- entity-record Revision — in {plan, tasks}, missing from {data-model}
+- entity-record Route — in {tasks}, missing from {plan, data-model}
+- entity-record Scene — in {plan, tasks}, missing from {data-model}
+- fr-id FR-005 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-007 — in {plan, tasks}, missing from {data-model}
+- msg-case AttrRemoved — in {tasks}, missing from {plan, data-model}
+- msg-case AttrSet — in {tasks}, missing from {plan, data-model}
+- msg-case Bounds — in {tasks}, missing from {plan, data-model}
+- msg-case ChildInsert — in {tasks}, missing from {plan, data-model}
+- msg-case ChildMove — in {tasks}, missing from {plan, data-model}
+- msg-case ChildRemove — in {tasks}, missing from {plan, data-model}
+- msg-case Cmd — in {tasks}, missing from {plan, data-model}
+- msg-case ComputedBounds — in {tasks}, missing from {plan, data-model}
+- msg-case Effect — in {plan, tasks}, missing from {data-model}
+- msg-case InternalsVisibleTo — in {tasks}, missing from {plan, data-model}
+- msg-case Invalidated — in {tasks}, missing from {plan, data-model}
+- msg-case Keep — in {tasks}, missing from {plan, data-model}
+- msg-case LayoutNodeId — in {tasks}, missing from {plan, data-model}
+- msg-case LayoutResult — in {data-model, tasks}, missing from {plan}
+- msg-case LayoutWorkflowModel — in {plan, tasks}, missing from {data-model}
+- msg-case Model — in {plan, tasks}, missing from {data-model}
+- msg-case Msg — in {plan, tasks}, missing from {data-model}
+- msg-case RenderFragment — in {tasks}, missing from {plan, data-model}
+- msg-case Replace — in {tasks}, missing from {plan, data-model}
+- msg-case RetainedId — in {tasks}, missing from {plan, data-model}
+- msg-case RetainedNode — in {tasks}, missing from {plan, data-model}
+- msg-case Scene — in {tasks}, missing from {plan, data-model}
+- msg-case Update — in {tasks}, missing from {plan, data-model}
+- msg-case WorkReductionRecord — in {tasks}, missing from {plan, data-model}
+- sc-id SC-001 — in {plan, tasks}, missing from {data-model}
+- union-or-screen-variant KeyCollision — in {data-model, tasks}, missing from {plan}
+- union-or-screen-variant LayoutResult — in {plan}, missing from {data-model, tasks}

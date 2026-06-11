@@ -14,7 +14,7 @@ FAIL
 
 - Changed alignment classes: ``
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/089-typed-surface-and-workflow-followups`
+- Active feature evidence: `specs/097-incremental-partial-relayout`
 
 ## Controls Boundary Guidance
 

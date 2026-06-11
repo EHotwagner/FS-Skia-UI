@@ -9,6 +9,7 @@
   <ItemGroup>
     <Compile Include="Tests.fs" />
     <Compile Include="YogaFallbackDiagnosticsTests.fs" />
+    <Compile Include="Feature097IncrementalTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -19,6 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="Expecto" />
+    <PackageReference Include="FsCheck" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" />
   </ItemGroup>

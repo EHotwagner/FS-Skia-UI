@@ -373,7 +373,7 @@ let contractTests =
             Expect.contains result.Diagnostics measurementDiagnostic "measurement diagnostics are propagated"
         }
 
-        test "automatic layout incremental evaluation reports changed ids and keeps unchanged sibling bounds stable" {
+        test "automatic layout incremental evaluation reports the actual re-measured set (FR-001a) and keeps bounds byte-identical to full evaluate" {
             let root size =
                 { Defaults.layoutNode "root" with
                     Children =
@@ -382,10 +382,16 @@ let contractTests =
 
             let first = Layout.evaluate (Defaults.availableSpace 180.0 40.0) (root 40.0)
             let second = Layout.evaluateIncremental first [ "changed" ] (Defaults.availableSpace 180.0 40.0) (root 80.0)
+            let full = Layout.evaluate (Defaults.availableSpace 180.0 40.0) (root 80.0)
 
-            Expect.equal second.Invalidated [ "changed" ] "incremental result reports requested changed node"
+            // FR-001a: `Invalidated` reports the ACTUAL re-measured set (post propagation), not the
+            // verbatim requested input. Here "root" is content-sized with no fixed-size ancestor, so the
+            // change legitimately propagates to the root — the honest re-measured set is the whole tree.
+            Expect.equal (Set.ofList second.Invalidated) (Set.ofList [ "root"; "stable"; "changed" ]) "incremental reports the actual re-measured set"
             Expect.equal second.Revision (first.Revision + 1L) "incremental revision advances"
-            Expect.equal (boundsOf "stable" first) (boundsOf "stable" second) "unchanged sibling bounds are stable"
+            // INV-1: incremental Bounds are byte-identical to a full evaluate.
+            Expect.equal (boundsOf "stable" second) (boundsOf "stable" full) "incremental == full (stable)"
+            Expect.equal (boundsOf "changed" second) (boundsOf "changed" full) "incremental == full (changed)"
         }
 
         test "automatic layout render and hit-test consume computed bounds with shared pixel snapping" {

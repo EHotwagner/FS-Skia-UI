@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 743
-xml-summary-count: 419
+symbol-count: 749
+xml-summary-count: 425
 source-fsi-paths:
 - src/Controls/Accessibility.fsi
 - src/Controls/Attributes.fsi
@@ -276,6 +276,10 @@ module internal ControlInternals =
     /// Extract the chart data points (X/Y/Label preserved) a chart-like control carries.
     val chartValues: control: Control<'msg> -> ChartPoint list
 
+    /// Feature 097 (R2): attribute names `toLayout` reads to derive geometry (single source for the
+    /// incremental dirty-set classifier; FR-003 anti-drift). See the implementation comment.
+    val layoutAffectingAttrNames: Set<string>
+
     /// Feature 091 — the per-node measure of `Control.renderTree`, factored so the wired
     /// retained path (`module internal RetainedRender`) measures with the IDENTICAL function.
     /// Builds + evaluates the nested Yoga layout, returning the root node and the absolute
@@ -283,7 +287,18 @@ module internal ControlInternals =
     val evaluateLayout:
         size: FS.Skia.UI.Scene.Size ->
         control: Control<'msg> ->
-            FS.Skia.UI.Layout.LayoutNode * Map<string, FS.Skia.UI.Layout.LayoutBounds>
+            FS.Skia.UI.Layout.LayoutNode * Map<string, FS.Skia.UI.Layout.LayoutBounds> * FS.Skia.UI.Layout.LayoutResult
+
+    /// Feature 097 (R2): incremental layout seam — re-measures only the `dirty` set (conservatively
+    /// propagated inside `Layout.evaluateIncremental`) against the previous frame's `LayoutResult`,
+    /// returning the same `root, boundsById` shape plus the new result to carry forward. `Bounds` are
+    /// byte-identical to `evaluateLayout`.
+    val evaluateLayoutIncremental:
+        size: FS.Skia.UI.Scene.Size ->
+        control: Control<'msg> ->
+        previous: FS.Skia.UI.Layout.LayoutResult ->
+        dirty: Set<FS.Skia.UI.Layout.LayoutNodeId> ->
+            FS.Skia.UI.Layout.LayoutNode * Map<string, FS.Skia.UI.Layout.LayoutBounds> * FS.Skia.UI.Layout.LayoutResult
 
     /// Feature 091 — paint ONE node's own contribution (`here`) at its computed box; the
     /// reusable unit a retained `RenderFragment` caches. Depends only on (theme, box, the

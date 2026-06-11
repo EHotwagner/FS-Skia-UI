@@ -5,6 +5,17 @@ open Facebook.Yoga
 open FS.Skia.UI.Scene
 
 module Layout =
+    // R2: Yoga's internal pixel-grid rounding snaps each node using its UNROUNDED absolute position
+    // as context. A partial subtree relayout only knows the boundary's ROUNDED cached origin, so a
+    // flex-distributed fractional size rounds a pixel differently than a full evaluate — breaking the
+    // incremental==full equivalence invariant (INV-1). Disabling Yoga's internal rounding makes layout
+    // exact-float and position-independent, so a re-rooted subtree is byte-identical to the full tree.
+    // Explicit pixel snapping remains available, unchanged, via the separate `snapBounds`/PixelSnapPolicy.
+    let private yogaConfig =
+        let c = YGConfigAPI.YGConfigNew()
+        YGConfigAPI.YGConfigSetPointScaleFactor(c, 0.0f)
+        c
+
     let finite value = Double.IsFinite value
 
     let nonNegative value = finite value && value >= 0.0
@@ -403,12 +414,12 @@ module Layout =
         let mutable enabled = false
         AppContext.TryGetSwitch("FS.Skia.UI.Layout.ForceYogaFailure", &enabled) && enabled
 
-    let tryYogaLayout (available: AvailableSpace) (root: LayoutNode) =
+    let tryYogaLayout (available: AvailableSpace) (pin: LayoutBounds option) (root: LayoutNode) =
         let measurementDiagnostics = ResizeArray<LayoutDiagnostic>()
         let nodePairs = ResizeArray<LayoutNode * Node>()
 
         let rec createNode (node: LayoutNode) =
-            let yogaNode = YGNodeAPI.YGNodeNew()
+            let yogaNode = YGNodeAPI.YGNodeNewWithConfig(yogaConfig)
             nodePairs.Add(node, yogaNode)
             applyYogaStyle yogaNode node
 
@@ -460,9 +471,21 @@ module Layout =
 
             rootYoga <- createNode root
             rootCreated <- true
-            YGNodeStyleAPI.YGNodeStyleSetWidth(rootYoga, single available.Width)
-            YGNodeStyleAPI.YGNodeStyleSetHeight(rootYoga, single available.Height)
-            YGNodeAPI.YGNodeCalculateLayout(rootYoga, single available.Width, single available.Height, YGDirection.LTR)
+
+            match pin with
+            | None ->
+                YGNodeStyleAPI.YGNodeStyleSetWidth(rootYoga, single available.Width)
+                YGNodeStyleAPI.YGNodeStyleSetHeight(rootYoga, single available.Height)
+                YGNodeAPI.YGNodeCalculateLayout(rootYoga, single available.Width, single available.Height, YGDirection.LTR)
+            | Some(cached: LayoutBounds) ->
+                // Incremental subtree relayout (R2): pin the boundary to its cached (content-independent)
+                // size and lay its descendants out within it. With Yoga's internal pixel rounding
+                // disabled (see `yogaConfig`), flex distribution is exact-float and position-independent,
+                // so a re-rooted subtree's relative geometry is byte-identical to the full tree's — the
+                // cached size round-trips through float32 exactly, giving identical child layout (INV-1).
+                YGNodeStyleAPI.YGNodeStyleSetWidth(rootYoga, single cached.Width)
+                YGNodeStyleAPI.YGNodeStyleSetHeight(rootYoga, single cached.Height)
+                YGNodeAPI.YGNodeCalculateLayout(rootYoga, single cached.Width, single cached.Height, YGDirection.LTR)
 
             let rec read absoluteX absoluteY (node: LayoutNode) (yogaNode: Node) =
                 let x = absoluteX + float (YGNodeLayoutAPI.YGNodeLayoutGetLeft yogaNode)
@@ -486,7 +509,27 @@ module Layout =
 
                 own :: children
 
-            let bounds = read 0.0 0.0 root rootYoga
+            let bounds =
+                match pin with
+                | None -> read 0.0 0.0 root rootYoga
+                | Some(cached: LayoutBounds) ->
+                    // Incremental subtree relayout (R2): the boundary's own box is PINNED to its
+                    // cached value (its size is content-independent, so an interior change cannot move
+                    // it) and its descendants are read at the boundary's cached border-box origin —
+                    // the SAME left-associated position accumulation `evaluate` performs from the true
+                    // root — so every computed bound is byte-identical to a full `evaluate` (INV-1).
+                    let own =
+                        { NodeId = root.Id
+                          Bounds = cached
+                          Visibility = root.Visibility }
+                    let children =
+                        root.Children
+                        |> List.mapi (fun index child ->
+                            match YGNodeAPI.YGNodeGetChild(rootYoga, unativeint index) with
+                            | null -> invalidOp $"Yoga did not return layout child {index} for node '{root.Id}'."
+                            | childYoga -> read cached.X cached.Y child childYoga)
+                        |> List.concat
+                    own :: children
             YGNodeAPI.YGNodeFreeRecursive(rootYoga)
             rootCreated <- false
             Ok(bounds, List.ofSeq measurementDiagnostics)
@@ -510,7 +553,7 @@ module Layout =
         let _, pureValidationDiagnostics = layoutNode rootBounds root
 
         let bounds, diagnostics =
-            match tryYogaLayout available root with
+            match tryYogaLayout available None root with
             | Ok(bounds, yogaDiagnostics) -> bounds, yogaDiagnostics @ pureValidationDiagnostics
             | Result.Error ex ->
                 let bounds, pureDiagnostics = layoutNode rootBounds root
@@ -537,11 +580,140 @@ module Layout =
           Invalidated = [ root.Id ]
           Revision = 1L }
 
-    let evaluateIncremental previous changedNodeIds available root =
-        let result = evaluate available root
-        { result with
-            Revision = previous.Revision + 1L
-            Invalidated = changedNodeIds |> List.distinct }
+    let evaluateIncremental (previous: LayoutResult) (changedNodeIds: LayoutNodeId list) available (root: LayoutNode) =
+        // R2 — genuine incremental evaluator (FR-001). Re-measures ONLY the dirty nodes and their
+        // conservatively-propagated flex containers; reuses `previous.Bounds` (the per-frame measure
+        // cache, FR-002) for everything else. The returned `Bounds` are byte-identical to a full
+        // `evaluate available root` (INV-1). `changedNodeIds` is a performance hint, never a
+        // correctness input (contract C1): every uncertainty falls back to a full `evaluate`, which
+        // is byte-identical by definition, so a wrong dirty set can only cost extra re-measure work.
+        let preorder = ResizeArray<LayoutNodeId * LayoutNode * LayoutNodeId option>()
+        let rec walk parent (n: LayoutNode) =
+            preorder.Add(n.Id, n, parent)
+            for c in n.Children do
+                walk (Some n.Id) c
+        walk None root
+
+        let nodeById = System.Collections.Generic.Dictionary<LayoutNodeId, LayoutNode>()
+        let parentById = System.Collections.Generic.Dictionary<LayoutNodeId, LayoutNodeId option>()
+        for (nid, n, p) in preorder do
+            nodeById.[nid] <- n
+            parentById.[nid] <- p
+
+        let prevBounds =
+            previous.Bounds
+            |> List.map (fun (b: ComputedBounds) -> b.NodeId, b)
+            |> Map.ofList
+
+        // A node whose Size is concrete on BOTH axes has a content-independent border box: an interior
+        // content change cannot resize it, so it is a safe re-measure boundary (FR-004).
+        let isFixed (n: LayoutNode) = n.Intent.Size.Width.IsSome && n.Intent.Size.Height.IsSome
+
+        let fullEvaluate () : LayoutResult =
+            // Whole-tree re-measure: the correct, honest result when the change reaches the root or any
+            // precondition for partial reuse is unmet. `Invalidated` honestly reports every node.
+            let full: LayoutResult = evaluate available root
+            { previous with
+                Bounds = full.Bounds
+                Diagnostics = full.Diagnostics
+                Invalidated = full.Bounds |> List.map (fun b -> b.NodeId)
+                Revision = previous.Revision + 1L }
+
+        let changed =
+            changedNodeIds |> List.filter nodeById.ContainsKey |> List.distinct
+
+        if nodeById.Count <> preorder.Count then
+            // Duplicate LayoutNodeIds (e.g. Key collisions) make the positional parent map and the
+            // bounds cache ambiguous — and could cycle the ancestor walk. The reuse scheme is unsound,
+            // so fall back to a full evaluate: total and conservative (contract C1, totality).
+            fullEvaluate ()
+        elif List.isEmpty changed then
+            // Identity at rest (spec edge): re-measure nothing, reuse every cached bound. Falls back to
+            // full evaluate if the cache lacks a current id (a structural change the empty dirty set
+            // failed to flag — correctness dominates the metric).
+            let reused =
+                preorder |> Seq.map (fun (nid, _, _) -> Map.tryFind nid prevBounds) |> List.ofSeq
+            if reused |> List.exists Option.isNone then
+                fullEvaluate ()
+            else
+                { previous with
+                    Bounds = reused |> List.choose id
+                    Invalidated = []
+                    Revision = previous.Revision + 1L }
+        else
+            // The re-measure boundary of a changed node is its first fixed-size ancestor (strictly
+            // above it); a fully content-sized chain reaches the root (FR-004).
+            let rec boundaryOf (nid: LayoutNodeId) : LayoutNodeId =
+                match parentById.TryGetValue nid with
+                | true, Some pid ->
+                    match nodeById.TryGetValue pid with
+                    | true, pn -> if isFixed pn then pid else boundaryOf pid
+                    | _ -> root.Id
+                | _ -> root.Id
+
+            let boundaries = changed |> List.map boundaryOf |> List.distinct
+
+            if boundaries |> List.contains root.Id then
+                fullEvaluate ()
+            else
+                let rec ancestorsOf (nid: LayoutNodeId) =
+                    seq {
+                        match parentById.TryGetValue nid with
+                        | true, Some p ->
+                            yield p
+                            yield! ancestorsOf p
+                        | _ -> ()
+                    }
+
+                // Drop any boundary nested inside another boundary's subtree (the outer one re-measures
+                // it, including a fixed-size node that is itself dirty).
+                let topmost =
+                    boundaries
+                    |> List.filter (fun b ->
+                        not (boundaries |> List.exists (fun o -> o <> b && (ancestorsOf b |> Seq.contains o))))
+
+                let relayout (b: LayoutNodeId) : Map<LayoutNodeId, ComputedBounds> option =
+                    match Map.tryFind b prevBounds with
+                    | Some cb ->
+                        let cached = cb.Bounds
+                        let bnode = nodeById.[b]
+                        let av =
+                            { Width = max 0.0 cached.Width
+                              WidthMode = Exactly
+                              Height = max 0.0 cached.Height
+                              HeightMode = Exactly }
+                        match tryYogaLayout av (Some cached) bnode with
+                        | Ok(bounds, _) -> bounds |> List.map (fun x -> x.NodeId, x) |> Map.ofList |> Some
+                        | Result.Error _ -> None
+                    | None -> None
+
+                let relayouts = topmost |> List.map relayout
+
+                if relayouts |> List.exists Option.isNone then
+                    fullEvaluate ()
+                else
+                    let remeasured =
+                        relayouts
+                        |> List.choose id
+                        |> List.fold (fun acc m -> Map.fold (fun a k v -> Map.add k v a) acc m) Map.empty
+
+                    let resolved =
+                        preorder
+                        |> Seq.map (fun (nid, _, _) ->
+                            match Map.tryFind nid remeasured with
+                            | Some cb -> Some cb
+                            | None -> Map.tryFind nid prevBounds)
+                        |> List.ofSeq
+
+                    if resolved |> List.exists Option.isNone then
+                        fullEvaluate ()
+                    else
+                        { previous with
+                            Bounds = resolved |> List.choose id
+                            // FR-001a: the actual re-measured set (post flex-line / fixed-size-ancestor
+                            // propagation), not the verbatim requested input.
+                            Invalidated = remeasured |> Map.toList |> List.map fst
+                            Revision = previous.Revision + 1L }
 
     let rec contentById (node: LayoutNode) =
         seq {

@@ -4,9 +4,14 @@ open System
 open Expecto
 open FS.Skia.UI.Layout
 
+// This test mutates a PROCESS-GLOBAL AppContext switch (`ForceYogaFailure`). Expecto runs tests in
+// parallel by default, so without sequencing a concurrent test (e.g. the feature 097 incremental
+// suite, which depends on the real Yoga path) would observe the forced failure and diverge. Run it
+// in the sequenced (non-parallel) phase so the global mutation is isolated.
 [<Tests>]
 let yogaFallbackDiagnosticsTests =
-    testList "Yoga fallback diagnostics" [
+    testSequenced
+    <| testList "Yoga fallback diagnostics" [
         test "recoverable Yoga execution failure returns safe bounds and emits fallback diagnostic" {
             let root =
                 { Defaults.layoutNode "root" with

@@ -1191,6 +1191,17 @@ module internal ControlInternals =
         | "grid" -> FS.Skia.UI.Layout.Wrap
         | _ -> FS.Skia.UI.Layout.NoWrap
 
+    /// Feature 097 (R2): the attribute NAMES `toLayout` reads to derive geometry — `Size` from
+    /// `width`/`height`, `Direction` from `orientation`. The incremental dirty-set classifier
+    /// (`layoutDirtySet`) keys on THIS set, so a change to a geometry-driving attribute re-measures,
+    /// while a content/style/state/visual-state change does not (SC-004). It is single-sourced HERE,
+    /// the same ground truth `toLayout` consumes below, so the classifier cannot drift from what
+    /// actually affects layout — the anti-drift requirement of FR-003. (No attribute in this codebase
+    /// is tagged `AttrCategory.Layout`; geometry is name-driven, so classification is name-driven from
+    /// one source rather than from an unused category. A change tagged `AttrCategory.Layout` is also
+    /// honoured, so a future categorised attr needs no change here.)
+    let layoutAffectingAttrNames: Set<string> = Set.ofList [ "width"; "height"; "orientation" ]
+
     let rec private toLayout (path: string) (c: Control<'msg>) : FS.Skia.UI.Layout.LayoutNode =
         let id = c.Key |> Option.defaultValue path
         let isLeaf = List.isEmpty c.Children
@@ -1216,23 +1227,36 @@ module internal ControlInternals =
     /// Build the nested Yoga layout tree for `control` at `size`, evaluate it, and return the
     /// root `LayoutNode` plus the evaluated absolute bounds keyed by the SAME collision-free
     /// structural id (`Key |> defaultValue path`) the paint/bounds passes look up.
+    let private availableOf (size: FS.Skia.UI.Scene.Size) : FS.Skia.UI.Layout.AvailableSpace =
+        { Width = float size.Width
+          WidthMode = FS.Skia.UI.Layout.Exactly
+          Height = float size.Height
+          HeightMode = FS.Skia.UI.Layout.Exactly }
+
+    let private boundsByIdOf (result: FS.Skia.UI.Layout.LayoutResult) =
+        result.Bounds
+        |> List.map (fun (b: FS.Skia.UI.Layout.ComputedBounds) -> b.NodeId, b.Bounds)
+        |> Map.ofList
+
     let evaluateLayout (size: FS.Skia.UI.Scene.Size) (control: Control<'msg>) =
         let root = toLayout "0" control
+        let result = FS.Skia.UI.Layout.Layout.evaluate (availableOf size) root
+        root, boundsByIdOf result, result
 
-        let available: FS.Skia.UI.Layout.AvailableSpace =
-            { Width = float size.Width
-              WidthMode = FS.Skia.UI.Layout.Exactly
-              Height = float size.Height
-              HeightMode = FS.Skia.UI.Layout.Exactly }
-
-        let result = FS.Skia.UI.Layout.Layout.evaluate available root
-
-        let boundsById =
-            result.Bounds
-            |> List.map (fun (b: FS.Skia.UI.Layout.ComputedBounds) -> b.NodeId, b.Bounds)
-            |> Map.ofList
-
-        root, boundsById
+    /// Feature 097 (R2): the incremental render-path seam (contract C4). Drives layout through
+    /// `Layout.evaluateIncremental`, threading the previous frame's `LayoutResult` (the bounds cache)
+    /// and the patch-derived `dirty` set. Returns the same `root, boundsById` shape `evaluateLayout`
+    /// returns (so the reuse-driven paint walk is unchanged) plus the new `LayoutResult` to carry
+    /// forward. `Bounds` are byte-identical to a full `evaluateLayout` (INV-1).
+    let evaluateLayoutIncremental
+        (size: FS.Skia.UI.Scene.Size)
+        (control: Control<'msg>)
+        (previous: FS.Skia.UI.Layout.LayoutResult)
+        (dirty: Set<FS.Skia.UI.Layout.LayoutNodeId>)
+        =
+        let root = toLayout "0" control
+        let result = FS.Skia.UI.Layout.Layout.evaluateIncremental previous (Set.toList dirty) (availableOf size) root
+        root, boundsByIdOf result, result
 
     let private paintLeaf (theme: Theme) (box: Rect) (c: Control<'msg>) : Scene list =
         if Set.contains c.Kind richFamilies then
@@ -1383,7 +1407,7 @@ module Control =
     // identical to this full rebuild by construction (the only divergence point removed).
     // `next frame is produced by diffing against the retained previous tree` (FR-005, C2).
     let renderTree (theme: Theme) (size: FS.Skia.UI.Scene.Size) (control: Control<'msg>) =
-        let root, boundsById = ControlInternals.evaluateLayout size control
+        let root, boundsById, _ = ControlInternals.evaluateLayout size control
 
         let rec paint (path: string) (c: Control<'msg>) : Scene list =
             ControlInternals.paintNode theme boundsById path c

@@ -1,0 +1,1259 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm the feature directory artifacts are present and linked (spec, plan, research, data-model, quickstart, `contracts/incremental-layout.md`, `checklists/requirements.md`) and that `.specify/feature.json` resolves `specs/097-incremental-partial-relayout`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T001",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T001: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Scaffold audit-discoverable readiness placeholders under `readiness/`: `partial-remeasure.md`, `equivalence-property.md`, `remeasure-metric.md`, `dirty-derivation.md`, `invalidated-honest.md`, `byte-identity-at-rest.md`, `e2-invariants.md`, `fsi-transcript.md`, `surface-baselines.md`, plus `governance-risk-levels.md`, `aggregate-hang-diagnostics.md`, `runtime-limitations.md`, `generated-guidance-validation.md`, `real-image-evidence.md`, `evidence-graph.md`, `evidence-audit.md` \u2014 each naming its authoritative command, artifact path, failure class, and next action (use `key=value` lines, not bare image-filename claims)",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T002",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T002: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record feature Tier 2 (internal change; public-behavior nuance only \u2014 `evaluateIncremental` body + `Invalidated` value), affected layers (`FS.Skia.UI.Layout` evaluator body + propagation helper; `FS.Skia.UI.Controls` dirty-set derivation, retained measure cache, `RetainedRender.step` swap, extended `WorkReductionRecord`), public-API impact (signature/shape unchanged; cache + metric internal), MVU applicability (untouched \u2014 pure functions; no new `Msg`/`Effect`/`update`), and the evidence obligations from the plan; record as a **visible decision** that this is **not** a persistent graphical viewer feature (performance-and-metric-only; structural `Bounds`/`Scene` equality; no persistent-launch / screenshot / real-image obligation)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T003",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T003: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t Route`; confirm the routed tier (inner-loop `Dev` + Layout/Controls determinism tests if no `.fsi` moves; the serialized six-target escalation only if an `.fsi` is forced to change) and record the authoritative gate list plus the small/medium/broad governance risk levels into `readiness/governance-risk-levels.md`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T004",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T004: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm the existing public `Layout.evaluateIncremental` signature (`previous -> changedNodeIds -> available -> root -> LayoutResult`, `src/Layout/Layout.fsi:10`) is the correct shape for genuine incremental layout (it already takes the dirty set) and `LayoutResult` already carries `Revision`/`Invalidated` \u2014 so this is a **body-only** change with no `.fsi` symbol added or moved; record the current `FS.Skia.UI.Layout` / per-package / cross-package surface-area baselines as the **unchanged** pre-change reference for the Phase 6 confirmation (SC-006)",
+      "skillist": [
+        "fs-skia-layout"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T005",
+          "declared_skillist": [
+            "fs-skia-layout"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T005: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Define the internal seams (no public `.fsi` move): extend the internal `WorkReductionRecord` with `RemeasuredNodeCount: int` (`src/Controls/RetainedRender.fsi`); extend the internal `RenderFragment`/`RetainedNode` to cache the per-node intrinsic measure + computed `ComputedBounds` keyed by `RetainedId`; carry the previous frame's `LayoutResult` on the internal `RetainedRender<'msg>`; declare the internal incremental `ControlInternals.evaluateLayoutIncremental` seam (`size -> control -> previous -> cache -> dirty -> LayoutNode * Map<LayoutNodeId, Rect> * LayoutResult`, contract C4) in `src/Controls/Control.fs` (NOT in any `.fsi` \u2192 automatically internal) \u2014 all reachable from `Controls.Tests` via the existing `InternalsVisibleTo`",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-ui-widgets"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-ui-widgets"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T006",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-ui-widgets"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T006: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Record unsupported-scope handling, permanent non-goals, and failure diagnostics into `readiness/runtime-limitations.md`: no virtualization/windowing (\u00a76.2 deferred), no new layout algorithm, no new public layout type, no change to computed geometry; the evaluator is **total** (a cache miss / unrecognized dirty id degrades to a full re-measure of that subtree \u2014 conservative, never silent divergence, contract C1); `dirty` is a performance hint, never a correctness input; theme-only changes do **not** dirty measure (geometry is theme-independent, INV-7); no data-binding/observable/dependency-property/selector/lookless-template surface (permanent non-goals, FR-009)",
+      "skillist": [
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T007",
+          "declared_skillist": [
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T007: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": true,
+      "title": "Add a failing-first localized-re-measure test on the wired path: a next frame whose patch touches a single leaf (content-only \u2014 no `AttrCategory.Layout` attr, no `ChildOp`) yields `WorkReductionRecord.RemeasuredNodeCount` **strictly below** `BaselineNodeCount` and equal to the changed leaf's enclosing flex-line subtree, and the resolved `Scene` is byte-identical to a full-rebuild frame (fails against today's always-full-measure stub; SC-001)",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T008",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T008: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement the pure `layoutDirtySet : prev:Control<'msg> -> patch:Reconcile.NodePatch<'msg> -> Set<LayoutNodeId>` derivation (Controls-side, `LayoutNodeId` layout-path domain, contract C2): a node is self-dirty iff its `Update u` has an `AttrSet` whose `attr.Category = AttrCategory.Layout`, or an `AttrRemoved` whose **prev** attr had `Category = AttrCategory.Layout`, or any `ChildInsert`/`ChildRemove`/`ChildMove`; `Keep`/`Replace`/non-layout `Update` contribute no self-dirt; classification reads `attr.Category` \u2014 never a hand-maintained name list (FR-003, INV-2)",
+      "skillist": [
+        "fs-skia-reconciliation"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T009",
+          "declared_skillist": [
+            "fs-skia-reconciliation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T009: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T006",
+        "T008"
+      ],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Implement the conservative propagation (contract C3, FR-004) over the `LayoutNode` tree: for each self-dirty node add its whole nearest flex container/line, then climb adding ancestors until (and including) the first ancestor whose `LayoutIntent.Size` is `Some` on the constraining axis and **stop**; a fully content-sized chain reaches the root; when a fixed-size determination is ambiguous, treat the ancestor as **not** fixed (keep climbing \u2014 never under-dirty) (INV-3)",
+      "skillist": [
+        "fs-skia-layout",
+        "fs-skia-reconciliation"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout",
+        "fs-skia-reconciliation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T010",
+          "declared_skillist": [
+            "fs-skia-layout",
+            "fs-skia-reconciliation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T010: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T005",
+        "T008"
+      ],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Replace the stub body of `Layout.evaluateIncremental` (`src/Layout/Layout.fs`) with the genuine evaluator: propagate `changedNodeIds` (T010), re-measure **only** the propagated set, reuse `previous.Bounds` for everything else (translating when an ancestor moved), and return a `LayoutResult` whose `Bounds` are **byte-identical** to `evaluate available root` (INV-1); set `Invalidated` = the actual re-measured set (post-propagation, not the verbatim input, FR-001a) and `Revision = previous.Revision + 1L`; preserve `Diagnostics` verbatim; total \u2014 never throws (FR-001, contract C1)",
+      "skillist": [
+        "fs-skia-layout"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T011",
+          "declared_skillist": [
+            "fs-skia-layout"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T011: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T005",
+        "T008",
+        "T010"
+      ],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Maintain the per-node measure/bounds cache keyed by `RetainedId` on the internal `RenderFragment`/`RetainedNode` (FR-002, INV-6): an unchanged subtree's intrinsic measure + computed bounds survive across frames and are reused (or **translated** by the ancestor delta when an ancestor moved, never re-measured); the cache is **pure** \u2014 keyed on the node's content / layout-relevant attrs / available-axis only, no clock/randomness/escaping mutation (confined to the `RetainedRender.step` mutable-ref retained state, constitution III)",
+      "skillist": [
+        "fs-skia-reconciliation"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T012",
+          "declared_skillist": [
+            "fs-skia-reconciliation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T012: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T006"
+      ],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Wire `RetainedRender.step` (`src/Controls/RetainedRender.fs:141`) to drive layout through the internal `ControlInternals.evaluateLayoutIncremental` seam instead of the unconditional full `evaluateLayout`: thread the carried previous `LayoutResult` + measure cache + the `layoutDirtySet`-derived dirty set, seed the cache with a full `evaluate` on the first frame / when no previous exists, preserve the reuse-driven paint walk (`box = pr.Fragment.Box`) and the `themeChanged` full-repaint (measure stays clean), and count re-measured nodes into `RemeasuredNodeCount` (interpreter-edge mutable); capture US1 to `readiness/partial-remeasure.md` (SC-001)",
+      "skillist": [
+        "fs-skia-elmish",
+        "fs-skia-reconciliation"
+      ],
+      "skillist_mirror": [
+        "fs-skia-elmish",
+        "fs-skia-reconciliation"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T013",
+          "declared_skillist": [
+            "fs-skia-elmish",
+            "fs-skia-reconciliation"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T013: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T006",
+        "T009",
+        "T011",
+        "T012"
+      ],
+      "phase_deps": [
+        "T007"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add the failing-first equivalence property suite (`tests/Layout.Tests`, FsCheck, contract C6 / FR-007): over **\u22651000** generated `(tree, edit-sequence)` cases \u2014 attribute changes, inserts, removes, moves, in any order \u2014 apply each edit through both `evaluateIncremental` (carrying the cache forward) and full `evaluate`, and assert their computed `Bounds` are **byte-identical** at **every** step, including long cumulative sequences that stress cache staleness; any divergence fails the gate with no tolerance (SC-002)",
+      "skillist": [
+        "fs-skia-layout",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T014",
+          "declared_skillist": [
+            "fs-skia-layout",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T014: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add the failing-first `Invalidated`-honesty test (fails against the verbatim-echo stub): after a localized incremental call, `Invalidated` is the **actual re-measured set** (\u228b the single requested node, bounded by the fixed-size-ancestor subtree, post-propagation) and `Revision = previous.Revision + 1L`; for an empty (all-`Keep`) patch `Invalidated` is empty; only `Bounds` are constrained to byte-identity \u2014 `Invalidated`/`Revision` are incremental metadata (FR-001a, INV-4, SC-008)",
+      "skillist": [
+        "fs-skia-layout",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T015",
+          "declared_skillist": [
+            "fs-skia-layout",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T015: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Add the dirty-derivation unit cases (contract C2/C3, SC-004): an `AttrCategory.Layout` attr dirties the nearest flex line and climbs to/including the first fixed-`Size` ancestor and **stops** (a subtree under a fixed-`Size` container does not dirty that container's ancestors); a fully content-sized chain dirties up to the root; each `ChildInsert`/`ChildRemove`/`ChildMove` dirties its parent container; a non-layout attr (content/style/state/`visualState`) and a `Keep`/`Replace` dirty **no** measure. **Failing-first**: authored against the `layoutDirtySet`/propagation **signatures before their bodies land** (fails against the stub derivation), so this test does **not** depend on the T009/T010 implementations",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T016",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T016: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Capture the equivalence + honesty evidence: `readiness/equivalence-property.md` (\u22651000 cases, zero divergences incl. cumulative cache-staleness, SC-002/FR-007), `readiness/invalidated-honest.md` (post-incremental `Invalidated` = actual re-measured set, empty for empty patch, SC-008), and `readiness/dirty-derivation.md` (flex-line / fixed-size-ancestor stop, content-chain-to-root, each `ChildOp`, non-layout no-dirt, SC-004)",
+      "skillist": [
+        "fs-skia-layout",
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout",
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T017",
+          "declared_skillist": [
+            "fs-skia-layout",
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T017: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T014",
+        "T015",
+        "T016"
+      ],
+      "phase_deps": [
+        "T013"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": true,
+      "title": "Add the failing-first re-measure-metric test on the wired path (contract C5, FR-006): a localized leaf edit shows `RemeasuredNodeCount < BaselineNodeCount` (consistent with the dirty flex-line subtree) **and** a re-paint reduction (`RecomputedNodeCount < BaselineNodeCount`); a genuine whole-tree relayout (a root-level `AttrCategory.Layout` change) shows `RemeasuredNodeCount = BaselineNodeCount` (never under-reports); an empty (all-`Keep`) patch shows `RemeasuredNodeCount = 0` (SC-003)",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T018",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T018: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Write `readiness/remeasure-metric.md`: the extended `WorkReductionRecord` reports both a re-measure reduction and a re-paint reduction for a localized update, a re-measure count **equal to baseline** for a genuine whole-tree relayout, and **zero** for an empty patch \u2014 read from the real wired `step`, not assumed (SC-003, US3)",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T019",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T019: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T018"
+      ],
+      "phase_deps": [
+        "T017"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Write `readiness/byte-identity-at-rest.md` (FR-008/SC-005): an at-rest frame (all-`Keep` patch) re-measures nothing (`RemeasuredNodeCount = 0`) and renders a `Scene` byte-identical to the un-incremental build; every tested frame (localized + whole-tree) is byte-identical to the pre-R2 full-re-measure build \u2014 R2 changes work and metrics, never geometry or pixels",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T020",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T020: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T013"
+      ],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Write `readiness/e2-invariants.md` (SC-007): on the incremental-layout-wired path all E2 determinism invariants still hold \u2014 `RecomputedNodeCount = ChangedSubtreeBound + ShiftedNodeCount`, `Keep \u2192 reuse`, first-frame full paint, and `KeyCollision` diagnostics \u2014 demonstrated on the live render seam",
+      "skillist": [
+        "fs-skia-reconciliation",
+        "fs-skia-evidence-mode"
+      ],
+      "skillist_mirror": [
+        "fs-skia-reconciliation",
+        "fs-skia-evidence-mode"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T021",
+          "declared_skillist": [
+            "fs-skia-reconciliation",
+            "fs-skia-evidence-mode"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T021: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T013"
+      ],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Exercise the real (no-longer-stub) public `Layout.evaluateIncremental` from FSI against the packed library per quickstart \u00a71 \u2014 `Bounds` byte-identical to a full re-evaluate, `Invalidated` reporting the propagated set (not the verbatim input), `Revision` advancing \u2014 and capture the session transcript to `readiness/fsi-transcript.md`",
+      "skillist": [
+        "fs-skia-layout"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T022",
+          "declared_skillist": [
+            "fs-skia-layout"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T022: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T011"
+      ],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T023",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Confirm the `FS.Skia.UI.Layout` / per-package / cross-package surface-area baselines are committed **unchanged** vs the T005 reference (the `evaluateIncremental` signature and `LayoutResult` shape are preserved; the measure cache and `RemeasuredNodeCount` remain internal); record to `readiness/surface-baselines.md` (SC-006)",
+      "skillist": [
+        "fs-skia-layout"
+      ],
+      "skillist_mirror": [
+        "fs-skia-layout"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T023",
+          "declared_skillist": [
+            "fs-skia-layout"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T023: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T005"
+      ],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T024",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run exactly the gates `Route` printed (T004) \u2014 the inner-loop `Dev` plus the Layout/Controls determinism suites if no `.fsi` moved; only the serialized `Dev \u2192 GeneratedGuidanceCheck \u2192 TemplateCheck \u2192 GeneratedProductCheck` prefix **sequentially** (shared `.fake` state) if an `.fsi` was forced to change \u2014 recording the aggregate results as **non-authoritative** into `readiness/generated-guidance-validation.md`",
+      "skillist": [
+        "fs-skia-testing"
+      ],
+      "skillist_mirror": [
+        "fs-skia-testing"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T024",
+          "declared_skillist": [
+            "fs-skia-testing"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T024: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T020",
+        "T021",
+        "T022",
+        "T023"
+      ],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T025",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceGraph` \u2014 confirm the echoed `feature-directory` + `tasks=<n>` match this feature, no cycles, no dangling refs, no `[S*]` surprises; record to `readiness/evidence-graph.md`",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T025",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "owns:graph-validation"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T025: owns graph-validation requires skill speckit-evidence-graph; trigger_group=owns; matched_trigger=owns:graph-validation"
+        }
+      ],
+      "explicit_deps": [
+        "T024"
+      ],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T026",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceAudit` \u2014 confirm verdict PASS (synthetic-propagation + diff-scan) or document every `--accept-synthetic` override; record to `readiness/evidence-audit.md`",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T026",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "owns:evidence-audit"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T026: owns evidence-audit requires skill speckit-evidence-audit; trigger_group=owns; matched_trigger=owns:evidence-audit"
+        }
+      ],
+      "explicit_deps": [
+        "T025"
+      ],
+      "phase_deps": [
+        "T019"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    }
+  ]
+}

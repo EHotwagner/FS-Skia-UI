@@ -31,13 +31,17 @@ type internal RetainedRender<'msg> =
     { Root: RetainedNode<'msg>
       NextId: uint64
       StateByIdentity: Map<RetainedId, RetainedUiState>
-      Theme: Theme }
+      Theme: Theme
+      // Feature 097 (R2): previous frame's full LayoutResult — the measure/bounds cache (FR-002).
+      Layout: FS.Skia.UI.Layout.LayoutResult }
 
 type internal WorkReductionRecord =
     { BaselineNodeCount: int
       RecomputedNodeCount: int
       ChangedSubtreeBound: int
-      ShiftedNodeCount: int }
+      ShiftedNodeCount: int
+      // Feature 097 (R2, FR-006): nodes actually re-measured this frame (post-propagation dirty set).
+      RemeasuredNodeCount: int }
 
 type internal RetainedRenderStep<'msg> =
     { Retained: RetainedRender<'msg>
@@ -84,7 +88,7 @@ module internal RetainedRender =
         List.ofSeq diags
 
     let init (theme: Theme) (size: FS.Skia.UI.Scene.Size) (control: Control<'msg>) : RetainedInit<'msg> =
-        let layoutRoot, boundsById = ControlInternals.evaluateLayout size control
+        let layoutRoot, boundsById, layoutResult = ControlInternals.evaluateLayout size control
 
         let mutable nextId = 0UL
 
@@ -123,9 +127,78 @@ module internal RetainedRender =
             { Root = root
               NextId = nextId
               StateByIdentity = Map.empty
-              Theme = theme }
+              Theme = theme
+              Layout = layoutResult }
           Render = render
           Diagnostics = firstFrameCollisions control }
+
+    /// Feature 097 (R2, contract C2/C3): derive the layout-dirty set from the reconcile patch, in the
+    /// `LayoutNodeId` (`Key |> defaultValue path`) domain `toLayout`/`evaluateIncremental` use. A node
+    /// is self-dirty iff its `Update` sets/removes an `AttrCategory.Layout` attribute OR carries a
+    /// non-`Keep` child op (`ChildInsert`/`ChildRemove`/`ChildMove`); a `Replace` re-measures fresh.
+    /// Classification reads `attr.Category` — never a hand-maintained name list (FR-003). Pure walk over
+    /// (prev, patch, next) in parallel; conservative flex-line / fixed-size-ancestor propagation then
+    /// happens inside `Layout.evaluateIncremental` (FR-004).
+    let internal layoutDirtySet (prev: Control<'msg>) (patch: Reconcile.NodePatch<'msg>) (next: Control<'msg>) : Set<string> =
+        let acc = System.Collections.Generic.HashSet<string>()
+
+        let isLayout (c: AttrCategory) = c = AttrCategory.Layout
+
+        let rec walk (path: string) (p: Control<'msg>) (patch: Reconcile.NodePatch<'msg>) (n: Control<'msg>) =
+            let id = n.Key |> Option.defaultValue path
+
+            match patch with
+            | Reconcile.NodePatch.Keep -> ()
+            | Reconcile.NodePatch.Replace _ ->
+                // A Kind/Key change replaces the subtree: re-measure it fresh under its boundary.
+                acc.Add id |> ignore
+            | Reconcile.NodePatch.Update u ->
+                let isGeometry (name: string) =
+                    Set.contains name ControlInternals.layoutAffectingAttrNames
+
+                let attrDirty =
+                    u.AttrChanges
+                    |> List.exists (fun ch ->
+                        match ch with
+                        // Geometry-driving NAME (the single source `toLayout` reads) OR a Layout-tagged
+                        // category (future-proof). A content/style/state/visual-state change is neither,
+                        // so it does not dirty measure (SC-004).
+                        | Reconcile.AttrSet attr -> isLayout attr.Category || isGeometry attr.Name
+                        | Reconcile.AttrRemoved name ->
+                            isGeometry name
+                            // Category recovered from the PREV node's attribute (the removed one).
+                            || (p.Attributes |> List.exists (fun a -> a.Name = name && isLayout a.Category)))
+
+                let childOpDirty =
+                    u.Children
+                    |> List.exists (fun op ->
+                        match op with
+                        | Reconcile.ChildKeep _ -> false
+                        | _ -> true)
+
+                if attrDirty || childOpDirty then
+                    acc.Add id |> ignore
+
+                // Recurse into the producing ops (every op except ChildRemove), zipped with next order.
+                let producing =
+                    u.Children
+                    |> List.filter (fun op ->
+                        match op with
+                        | Reconcile.ChildRemove _ -> false
+                        | _ -> true)
+
+                List.map2 (fun op c -> op, c) producing n.Children
+                |> List.iteri (fun i (op, c) ->
+                    let cp = childPath path i
+
+                    match op with
+                    | Reconcile.ChildKeep(j, cpatch) -> walk cp p.Children.[j] cpatch c
+                    | Reconcile.ChildMove(f, _, cpatch) -> walk cp p.Children.[f] cpatch c
+                    | Reconcile.ChildInsert(_, _) -> acc.Add(n.Key |> Option.defaultValue path) |> ignore
+                    | Reconcile.ChildRemove _ -> ())
+
+        walk "0" prev patch next
+        Set.ofSeq acc
 
     let step
         (theme: Theme)
@@ -136,9 +209,15 @@ module internal RetainedRender =
         // (1) the diff — total; never throws; duplicate keys -> KeyCollision diagnostic (C1/C4).
         let result = Reconcile.diff prev.Root.Control next
 
-        // (2) the global layout of `next` (required for byte-identity: a node's box depends on the
-        //     whole tree). Reused for both the Scene assembly and the surfaced Bounds.
-        let root, boundsById = ControlInternals.evaluateLayout size next
+        // (2) layout of `next` via the INCREMENTAL evaluator (R2, FR-005): re-measure only the
+        //     patch-derived dirty set (conservatively propagated to its flex line / fixed-size
+        //     ancestor) and reuse the previous frame's cached bounds for everything else. The result
+        //     `Bounds` are byte-identical to a full `evaluateLayout` (INV-1), so the reuse-driven paint
+        //     walk below (`box = pr.Fragment.Box`) and the surfaced Bounds are unchanged.
+        let dirty = layoutDirtySet prev.Root.Control result.Patch next
+        let root, boundsById, layoutResult = ControlInternals.evaluateLayoutIncremental size next prev.Layout dirty
+        // FR-006: nodes actually re-measured this frame = the honest post-propagation set.
+        let remeasured = layoutResult.Invalidated |> List.length
 
         // FR-008: a fragment caches paint produced under a specific theme. When the per-loop theme
         // changes between frames, NO cached fragment may be reused (it would show stale-theme
@@ -304,14 +383,16 @@ module internal RetainedRender =
             { Root = newRoot
               NextId = nextId
               StateByIdentity = stateById
-              Theme = theme }
+              Theme = theme
+              Layout = layoutResult }
           Render = render
           Diagnostics = result.Diagnostics
           WorkReduction =
             { BaselineNodeCount = Control.count next
               RecomputedNodeCount = recomputed
               ChangedSubtreeBound = changedBound
-              ShiftedNodeCount = shifted } }
+              ShiftedNodeCount = shifted
+              RemeasuredNodeCount = remeasured } }
 
     let retainedHitTest (x: float) (y: float) (retained: RetainedRender<'msg>) : RetainedId option =
         // The deepest node whose cached box contains the point. Each node — including unkeyed

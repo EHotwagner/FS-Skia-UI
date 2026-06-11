@@ -200,10 +200,19 @@ module internal ControlInternals =
 
     val chartValues: control: Control<'msg> -> ChartPoint list
 
+    val layoutAffectingAttrNames: Set<string>
+
     val evaluateLayout:
         size: FS.Skia.UI.Scene.Size ->
         control: Control<'msg> ->
-            FS.Skia.UI.Layout.LayoutNode * Map<string, FS.Skia.UI.Layout.LayoutBounds>
+            FS.Skia.UI.Layout.LayoutNode * Map<string, FS.Skia.UI.Layout.LayoutBounds> * FS.Skia.UI.Layout.LayoutResult
+
+    val evaluateLayoutIncremental:
+        size: FS.Skia.UI.Scene.Size ->
+        control: Control<'msg> ->
+        previous: FS.Skia.UI.Layout.LayoutResult ->
+        dirty: Set<FS.Skia.UI.Layout.LayoutNodeId> ->
+            FS.Skia.UI.Layout.LayoutNode * Map<string, FS.Skia.UI.Layout.LayoutBounds> * FS.Skia.UI.Layout.LayoutResult
 
     val paintNode:
         theme: Theme ->
@@ -956,13 +965,17 @@ type internal RetainedRender<'msg> =
     { Root: RetainedNode<'msg>
       NextId: uint64
       StateByIdentity: Map<RetainedId, RetainedUiState>
-      Theme: Theme }
+      Theme: Theme
+
+      Layout: FS.Skia.UI.Layout.LayoutResult }
 
 type internal WorkReductionRecord =
     { BaselineNodeCount: int
       RecomputedNodeCount: int
       ChangedSubtreeBound: int
-      ShiftedNodeCount: int }
+      ShiftedNodeCount: int
+
+      RemeasuredNodeCount: int }
 
 type internal RetainedRenderStep<'msg> =
     { Retained: RetainedRender<'msg>

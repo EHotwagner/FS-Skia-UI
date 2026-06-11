@@ -55,7 +55,12 @@ type internal RetainedRender<'msg> =
     { Root: RetainedNode<'msg>
       NextId: uint64
       StateByIdentity: Map<RetainedId, RetainedUiState>
-      Theme: Theme }
+      Theme: Theme
+      /// Feature 097 (R2): the previous frame's full `LayoutResult` — the per-frame measure/bounds
+      /// cache (FR-002). `step` threads it into `Layout.evaluateIncremental` so an unchanged subtree's
+      /// bounds survive across frames and are reused without re-measuring. Seeded by `init` with a full
+      /// `evaluate`; advanced each `step` to the incremental result.
+      Layout: FS.Skia.UI.Layout.LayoutResult }
 
 /// Measured per-frame work reduction (SC-003). `BaselineNodeCount` is what a full rebuild
 /// re-measures/re-paints (== N); `RecomputedNodeCount` is what the wired path actually
@@ -71,7 +76,12 @@ type internal WorkReductionRecord =
     { BaselineNodeCount: int
       RecomputedNodeCount: int
       ChangedSubtreeBound: int
-      ShiftedNodeCount: int }
+      ShiftedNodeCount: int
+      /// Feature 097 (R2, FR-006): nodes actually RE-MEASURED this frame (the post-propagation dirty
+      /// set `Layout.evaluateIncremental` reports in `Invalidated`). For a localized update this is
+      /// strictly below `BaselineNodeCount`; for a genuine whole-tree relayout it equals it; for an
+      /// empty patch it is 0. Measures partial MEASURE work, distinct from partial PAINT above.
+      RemeasuredNodeCount: int }
 
 /// The result of one wired frame: the next retained structure, the render result (byte-identical
 /// to a full rebuild of `next`), the diagnostics surfaced from the diff (e.g. `KeyCollision`), and
