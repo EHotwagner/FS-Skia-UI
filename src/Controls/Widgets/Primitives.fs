@@ -43,12 +43,7 @@ type StackProps<'msg> =
 // legacy string-keyed builders, so the lowered IR is structurally equal to the
 // legacy authoring call by construction (FR-004, SC-002). Hidden from the public
 // surface by absence from Primitives.fsi (Principle II).
-module private LegacyControls =
-    let withKeyOpt id control =
-        match id with
-        | Some key -> FS.Skia.UI.Controls.Control.withKey key control
-        | None -> control
-
+module LegacyControls =
     let intentStyle intent =
         match intent with
         | Primary -> "primary"
@@ -72,7 +67,7 @@ module TextBlock =
 
     let view (props: TextBlockProps<'msg>) : Widget<'msg> =
         FS.Skia.UI.Controls.TextBlock.create [ FS.Skia.UI.Controls.TextBlock.text props.Text ]
-        |> LegacyControls.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Button =
@@ -116,7 +111,7 @@ module Button =
               | None -> () ]
 
         FS.Skia.UI.Controls.Button.create attrs
-        |> LegacyControls.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> ControlInternals.lowerSlots
         |> Widget.ofControl
 
@@ -141,7 +136,7 @@ module CheckBox =
               | None -> () ]
 
         FS.Skia.UI.Controls.CheckBox.create attrs
-        |> LegacyControls.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Stack =
@@ -160,5 +155,5 @@ module Stack =
               FS.Skia.UI.Controls.Stack.children children ]
 
         FS.Skia.UI.Controls.Stack.create attrs
-        |> LegacyControls.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl

@@ -2010,102 +2010,136 @@ module Viewer =
     let private sceneFromNode node =
         { Nodes = [ node ] }
 
+    // Feature 105 (US3, FR-009): the closed set of renderer-mode dispatch values, parsed ONCE at
+    // the edge so the case-insensitive comparison is an exhaustive DU match instead of a chain of
+    // string equalities. Every public `RendererMode` output/serialized field stays an unchanged
+    // string; this DU types only the internal dispatch. An unrecognized mode parses to `Default`
+    // (the prior string-comparison fallthrough), preserving behaviour exactly. Hidden from
+    // consumers by absence from SkiaViewer.fsi.
+    [<RequireQualifiedAccess>]
+    type private RendererModeKind =
+        | Default
+        | Skia
+        | DeterministicScene
+        | UnsupportedHost
+        | MetadataHash
+        | PixelReadback
+
+    let private parseRendererMode (mode: string) : RendererModeKind =
+        if String.Equals(mode, "unsupported-host", StringComparison.OrdinalIgnoreCase) then
+            RendererModeKind.UnsupportedHost
+        elif String.Equals(mode, "metadata-hash", StringComparison.OrdinalIgnoreCase) then
+            RendererModeKind.MetadataHash
+        elif String.Equals(mode, "pixel-readback", StringComparison.OrdinalIgnoreCase) then
+            RendererModeKind.PixelReadback
+        elif String.Equals(mode, "skia", StringComparison.OrdinalIgnoreCase) then
+            RendererModeKind.Skia
+        elif String.Equals(mode, "deterministic-scene", StringComparison.OrdinalIgnoreCase) then
+            RendererModeKind.DeterministicScene
+        else
+            RendererModeKind.Default
+
     let private visualEvidenceArtifacts (request: ViewerRunRequest) (options: ViewerOptions) (scene: SceneNode) =
         match request.EvidencePath with
         | None -> []
-        | Some path when String.Equals(request.RendererMode, "unsupported-host", StringComparison.OrdinalIgnoreCase) ->
-            [ { Kind = UnsupportedHost
-                Path = None
-                ImageDecodable = None
-                ProvesSceneRendering = false
-                ProvesDesktopVisibility = false
-                Message = "Visual evidence is unsupported on this host." } ]
-        | Some path when String.Equals(request.RendererMode, "metadata-hash", StringComparison.OrdinalIgnoreCase) ->
-            match SceneEvidence.renderHash options.InitialSize (sceneFromNode scene) with
-            | Result.Ok evidence ->
-                writeTextEvidence
-                    path
-                    [ "evidence-kind=metadata-hash"
-                      $"path={path}"
-                      $"hash={evidence.Value}"
-                      "proves-scene-rendering=false"
-                      "proves-desktop-visibility=false" ]
-
-                [ { Kind = MetadataHash
-                    Path = Some path
-                    ImageDecodable = None
-                    ProvesSceneRendering = false
-                    ProvesDesktopVisibility = false
-                    Message = "Metadata/hash evidence is labeled separately from image evidence." } ]
-            | Result.Error failure ->
-                [ { Kind = UnsupportedHost
-                    Path = None
-                    ImageDecodable = None
-                    ProvesSceneRendering = false
-                    ProvesDesktopVisibility = false
-                    Message = failure.Message } ]
-        | Some path when String.Equals(request.RendererMode, "pixel-readback", StringComparison.OrdinalIgnoreCase) ->
-            match SceneEvidence.renderHash options.InitialSize (sceneFromNode scene) with
-            | Result.Ok evidence ->
-                writeTextEvidence
-                    path
-                    [ "evidence-kind=pixel-readback"
-                      $"path={path}"
-                      "fallback-reason=screenshot-unavailable"
-                      $"hash={evidence.Value}"
-                      "proves-scene-rendering=true"
-                      "proves-desktop-visibility=false" ]
-
-                [ { Kind = PixelReadback
-                    Path = Some path
-                    ImageDecodable = None
-                    ProvesSceneRendering = true
-                    ProvesDesktopVisibility = false
-                    Message = "Pixel-readback fallback proves scene rendering but not desktop visibility." } ]
-            | Result.Error failure ->
-                [ { Kind = UnsupportedHost
-                    Path = None
-                    ImageDecodable = None
-                    ProvesSceneRendering = false
-                    ProvesDesktopVisibility = false
-                    Message = failure.Message } ]
-        | Some path when isPngPath path ->
-            let decodable = writeSceneImageEvidence path options.InitialSize scene
-
-            [ { Kind = Image
-                Path = Some path
-                ImageDecodable = Some decodable
-                ProvesSceneRendering = decodable
-                ProvesDesktopVisibility = false
-                Message =
-                    if decodable then
-                        "Image evidence is a decodable scene-rendering artifact; desktop visibility remains a separate claim."
-                    else
-                        "Image evidence was requested but SkiaSharp could not write a decodable PNG artifact." } ]
         | Some path ->
-            match SceneEvidence.renderHash options.InitialSize (sceneFromNode scene) with
-            | Result.Ok evidence ->
-                writeTextEvidence
-                    path
-                    [ "evidence-kind=metadata-hash"
-                      $"path={path}"
-                      $"hash={evidence.Value}"
-                      "proves-scene-rendering=false"
-                      "proves-desktop-visibility=false" ]
-
-                [ { Kind = MetadataHash
-                    Path = Some path
-                    ImageDecodable = None
-                    ProvesSceneRendering = false
-                    ProvesDesktopVisibility = false
-                    Message = "Non-image evidence path is recorded as metadata/hash evidence." } ]
-            | Result.Error failure ->
+            match parseRendererMode request.RendererMode with
+            | RendererModeKind.UnsupportedHost ->
                 [ { Kind = UnsupportedHost
                     Path = None
                     ImageDecodable = None
                     ProvesSceneRendering = false
                     ProvesDesktopVisibility = false
-                    Message = failure.Message } ]
+                    Message = "Visual evidence is unsupported on this host." } ]
+            | RendererModeKind.MetadataHash ->
+                match SceneEvidence.renderHash options.InitialSize (sceneFromNode scene) with
+                | Result.Ok evidence ->
+                    writeTextEvidence
+                        path
+                        [ "evidence-kind=metadata-hash"
+                          $"path={path}"
+                          $"hash={evidence.Value}"
+                          "proves-scene-rendering=false"
+                          "proves-desktop-visibility=false" ]
+
+                    [ { Kind = MetadataHash
+                        Path = Some path
+                        ImageDecodable = None
+                        ProvesSceneRendering = false
+                        ProvesDesktopVisibility = false
+                        Message = "Metadata/hash evidence is labeled separately from image evidence." } ]
+                | Result.Error failure ->
+                    [ { Kind = UnsupportedHost
+                        Path = None
+                        ImageDecodable = None
+                        ProvesSceneRendering = false
+                        ProvesDesktopVisibility = false
+                        Message = failure.Message } ]
+            | RendererModeKind.PixelReadback ->
+                match SceneEvidence.renderHash options.InitialSize (sceneFromNode scene) with
+                | Result.Ok evidence ->
+                    writeTextEvidence
+                        path
+                        [ "evidence-kind=pixel-readback"
+                          $"path={path}"
+                          "fallback-reason=screenshot-unavailable"
+                          $"hash={evidence.Value}"
+                          "proves-scene-rendering=true"
+                          "proves-desktop-visibility=false" ]
+
+                    [ { Kind = PixelReadback
+                        Path = Some path
+                        ImageDecodable = None
+                        ProvesSceneRendering = true
+                        ProvesDesktopVisibility = false
+                        Message = "Pixel-readback fallback proves scene rendering but not desktop visibility." } ]
+                | Result.Error failure ->
+                    [ { Kind = UnsupportedHost
+                        Path = None
+                        ImageDecodable = None
+                        ProvesSceneRendering = false
+                        ProvesDesktopVisibility = false
+                        Message = failure.Message } ]
+            | RendererModeKind.Default
+            | RendererModeKind.Skia
+            | RendererModeKind.DeterministicScene ->
+                if isPngPath path then
+                    let decodable = writeSceneImageEvidence path options.InitialSize scene
+
+                    [ { Kind = Image
+                        Path = Some path
+                        ImageDecodable = Some decodable
+                        ProvesSceneRendering = decodable
+                        ProvesDesktopVisibility = false
+                        Message =
+                            if decodable then
+                                "Image evidence is a decodable scene-rendering artifact; desktop visibility remains a separate claim."
+                            else
+                                "Image evidence was requested but SkiaSharp could not write a decodable PNG artifact." } ]
+                else
+                    match SceneEvidence.renderHash options.InitialSize (sceneFromNode scene) with
+                    | Result.Ok evidence ->
+                        writeTextEvidence
+                            path
+                            [ "evidence-kind=metadata-hash"
+                              $"path={path}"
+                              $"hash={evidence.Value}"
+                              "proves-scene-rendering=false"
+                              "proves-desktop-visibility=false" ]
+
+                        [ { Kind = MetadataHash
+                            Path = Some path
+                            ImageDecodable = None
+                            ProvesSceneRendering = false
+                            ProvesDesktopVisibility = false
+                            Message = "Non-image evidence path is recorded as metadata/hash evidence." } ]
+                    | Result.Error failure ->
+                        [ { Kind = UnsupportedHost
+                            Path = None
+                            ImageDecodable = None
+                            ProvesSceneRendering = false
+                            ProvesDesktopVisibility = false
+                            Message = failure.Message } ]
 
     module VisualEvidenceHandling =
         let artifacts request options scene =
@@ -2570,7 +2604,7 @@ module Viewer =
 
             request.EvidencePath
             |> Option.iter (fun path ->
-                if not (isPngPath path) && not (String.Equals(request.RendererMode, "metadata-hash", StringComparison.OrdinalIgnoreCase)) then
+                if not (isPngPath path) && parseRendererMode request.RendererMode <> RendererModeKind.MetadataHash then
                     writeLaunchOutcome path outcome)
 
             Result.Ok outcome

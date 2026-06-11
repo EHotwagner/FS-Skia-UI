@@ -41,12 +41,7 @@ type SplitViewProps<'msg> =
 
 // File-private lowering helpers — children/content lower through `Widget.toControl`
 // with order preserved (the 065 Stack pattern). Hidden by absence from Containers.fsi.
-module private ContainerLowering =
-    let withKeyOpt id control =
-        match id with
-        | Some key -> FS.Skia.UI.Controls.Control.withKey key control
-        | None -> control
-
+module ContainerLowering =
     let orientationName orientation =
         match orientation with
         | Vertical -> "vertical"
@@ -77,7 +72,7 @@ module Grid =
         let children = props.Children |> List.map Widget.toControl
 
         FS.Skia.UI.Controls.Grid.create [ FS.Skia.UI.Controls.Grid.children children ]
-        |> ContainerLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Dock =
@@ -87,7 +82,7 @@ module Dock =
         let children = props.Children |> List.map Widget.toControl
 
         FS.Skia.UI.Controls.Dock.create [ FS.Skia.UI.Controls.Dock.children children ]
-        |> ContainerLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Wrap =
@@ -103,7 +98,7 @@ module Wrap =
               FS.Skia.UI.Controls.Wrap.children children ]
 
         FS.Skia.UI.Controls.Wrap.create attrs
-        |> ContainerLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Border =
@@ -117,7 +112,7 @@ module Border =
               Attr.padding props.Padding ]
 
         FS.Skia.UI.Controls.Border.create attrs
-        |> ContainerLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Panel =
@@ -142,7 +137,7 @@ module Panel =
               | fills -> yield ControlInternals.slotFill fills ]
 
         FS.Skia.UI.Controls.Panel.create attrs
-        |> ContainerLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> ControlInternals.lowerSlots
         |> Widget.ofControl
 
@@ -176,5 +171,5 @@ module SplitView =
               | None -> () ]
 
         Control.standard (StandardControlKind.Custom "split-view") attrs
-        |> ContainerLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl

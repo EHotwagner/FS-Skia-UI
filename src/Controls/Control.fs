@@ -26,8 +26,8 @@ module internal ControlInternals =
         |> List.tryFind (fun attr -> attr.Name = name)
 
     let textFrom (attrs: Attr<'msg> list) =
-        tryLast "text" attrs
-        |> Option.orElseWith (fun () -> tryLast "value" attrs)
+        AttrKeys.tryKey AttrKeys.Text attrs
+        |> Option.orElseWith (fun () -> AttrKeys.tryKey AttrKeys.Value attrs)
         |> Option.bind (fun attr ->
             match attr.Value with
             | TextValue value -> Some value
@@ -51,7 +51,7 @@ module internal ControlInternals =
     /// attribute (last-writer convention). Absent ≡ `[]` ≡ the behaviour-preserving base case;
     /// `Control.renderTree`/`RetainedRender` feed these into `Style.resolve` for migrated kinds.
     let styleClassesOf (attrs: Attr<'msg> list) : StyleClass list =
-        tryLast "styleClasses" attrs
+        AttrKeys.tryKey AttrKeys.StyleClasses attrs
         |> Option.bind (fun attr ->
             match attr.Value with
             | StyleClassesValue classes -> Some classes
@@ -63,7 +63,7 @@ module internal ControlInternals =
     /// attributes, it travels through the keyed reconciler — a state-driven look survives a
     /// sibling-shifting re-render under E2's retained identity (FR-006, SC-005).
     let visualStateOf (attrs: Attr<'msg> list) : VisualState =
-        tryLast "visualState" attrs
+        AttrKeys.tryKey AttrKeys.VisualState attrs
         |> Option.bind (fun attr ->
             match attr.Value with
             | VisualStateValue state -> Some state
@@ -75,12 +75,12 @@ module internal ControlInternals =
     /// the typed `Props` views call this; a consumer never names a slot string. Mirrors
     /// `Attributes.styleClasses` but kept off the public surface.
     let slotFill (fills: (string * Control<'msg>) list) : Attr<'msg> =
-        { Name = "slot"; Category = Slot; Value = SlotFillsValue fills }
+        { Name = AttrKeys.nameOf AttrKeys.Slot; Category = Slot; Value = SlotFillsValue fills }
 
     /// Feature 095 (E5): the ordered slot fills carried by the last `slot` attribute (last-writer
     /// convention). Absent ≡ `[]` ≡ no slot filled ≡ the byte-identical base case (FR-003).
     let slotFillsOf (attrs: Attr<'msg> list) : (string * Control<'msg>) list =
-        tryLast "slot" attrs
+        AttrKeys.tryKey AttrKeys.Slot attrs
         |> Option.bind (fun attr ->
             match attr.Value with
             | SlotFillsValue fills -> Some fills
@@ -93,13 +93,31 @@ module internal ControlInternals =
     let slotFor (name: string) (attrs: Attr<'msg> list) : Control<'msg> option =
         slotFillsOf attrs |> List.tryFind (fun (n, _) -> n = name) |> Option.map snd
 
+    /// Feature 105 (US3, FR-008): the closed set of declared slot regions, as an INTERNAL DU so a
+    /// mistyped region is a compile error. No public `SlotName` surface is introduced (feature 095's
+    /// deliberate omission is preserved): the public `AttrValue.SlotFillsValue : (string * Control)
+    /// list` carrier is unchanged; the region name is projected to its string at the single
+    /// consumption edge in `lowerSlots`.
+    type SlotName =
+        | Leading
+        | Trailing
+        | Header
+        | Footer
+
+    let slotName (slot: SlotName) : string =
+        match slot with
+        | Leading -> "leading"
+        | Trailing -> "trailing"
+        | Header -> "header"
+        | Footer -> "footer"
+
     /// Feature 095 (E5): the per-kind declared slot regions, partitioned into those rendered
     /// BEFORE the kind's intrinsic content (`leading`) and those rendered AFTER (`trailing`). A
     /// kind with no declared regions returns empty lists, so lowering is total for every kind.
-    let private slotRegions (kind: string) : string list * string list =
+    let private slotRegions (kind: string) : SlotName list * SlotName list =
         match kind with
-        | "button" -> [ "leading" ], [ "trailing" ]
-        | "panel" -> [ "header" ], [ "footer" ]
+        | "button" -> [ Leading ], [ Trailing ]
+        | "panel" -> [ Header ], [ Footer ]
         | _ -> [], []
 
     /// Feature 095 (E5): the pure, total, deterministic slot lowering `(kind + slot fills) ->
@@ -116,12 +134,12 @@ module internal ControlInternals =
         | [] -> control
         | fills ->
             let pick names =
-                names |> List.choose (fun n -> fills |> List.tryFind (fun (fn, _) -> fn = n) |> Option.map snd)
+                names |> List.choose (fun n -> fills |> List.tryFind (fun (fn, _) -> fn = slotName n) |> Option.map snd)
 
             let leadingNames, trailingNames = slotRegions control.Kind
 
             { control with
-                Attributes = control.Attributes |> List.filter (fun a -> a.Name <> "slot")
+                Attributes = control.Attributes |> List.filter (fun a -> a.Name <> AttrKeys.nameOf AttrKeys.Slot)
                 Children = pick leadingNames @ control.Children @ pick trailingNames }
 
     let floatValue name defaultValue (attrs: Attr<'msg> list) =
@@ -133,7 +151,7 @@ module internal ControlInternals =
         |> Option.defaultValue defaultValue
 
     let accessibility kind (attrs: Attr<'msg> list) text =
-        tryLast "accessibility" attrs
+        AttrKeys.tryKey AttrKeys.Accessibility attrs
         |> Option.bind (fun attr ->
             match attr.Value with
             | AccessibilityValue value -> Some value
@@ -266,7 +284,7 @@ module internal ControlInternals =
         | "pie-chart" ->
             points "values" |> Option.defaultValue []
         | "graph-view" ->
-            tryLast "nodes" control.Attributes
+            AttrKeys.tryKey AttrKeys.Nodes control.Attributes
             |> Option.bind (fun attr ->
                 match attr.Value with
                 | StringListValue values ->
@@ -280,7 +298,7 @@ module internal ControlInternals =
     /// rather than the kind id. (Control.fs compiles before RichText.fs, so the typed
     /// `RichTextBlock` is intentionally not in scope here.)
     let richTextRuns (control: Control<'msg>) : (string * Color * float * int) list =
-        tryLast "richTextRuns" control.Attributes
+        AttrKeys.tryKey AttrKeys.RichTextRuns control.Attributes
         |> Option.bind (fun attr ->
             match attr.Value with
             | UntypedValue(:? (list<string * Color * float * int>) as runs) -> Some runs
@@ -1599,44 +1617,64 @@ module IconButton =
     let icon value = Attr.text value
     let onClick msg = Attr.on "onClick" msg
 
+// Feature 105 (US1, FR-003): the per-kind `onChanged` builders below inlined three
+// payload-parse shapes (bool / float / string), the float shape duplicating a nested
+// number-parse lambda. They are single-sourced here over one named `tryParseFloat`.
+// Hidden from consumers by absence from Control.fsi.
+module ChangeAdapters =
+    let tryParseFloat (value: string) : float option =
+        match Double.TryParse value with
+        | true, parsed -> Some parsed
+        | _ -> None
+
+    let onChangedBool (map: bool -> 'msg) : Attr<'msg> =
+        Attr.onWith "onChanged" (fun event -> event.Payload |> Option.exists ((=) "true") |> map)
+
+    let onChangedFloat (map: float -> 'msg) : Attr<'msg> =
+        Attr.onWith "onChanged" (fun event ->
+            event.Payload |> Option.bind tryParseFloat |> Option.defaultValue 0.0 |> map)
+
+    let onChangedString (map: string -> 'msg) : Attr<'msg> =
+        Attr.onWith "onChanged" (fun event -> event.Payload |> Option.defaultValue "" |> map)
+
 module CheckBox =
     let create attrs = Control.create "check-box" attrs
     let text value = Attr.text value
     let checked' value = Attr.selected value
-    let onChanged map = Attr.onWith "onChanged" (fun event -> event.Payload |> Option.exists ((=) "true") |> map)
+    let onChanged map = ChangeAdapters.onChangedBool map
 
 module Switch =
     let create attrs = Control.create "switch" attrs
     let checked' value = Attr.selected value
-    let onChanged map = Attr.onWith "onChanged" (fun event -> event.Payload |> Option.exists ((=) "true") |> map)
+    let onChanged map = ChangeAdapters.onChangedBool map
 
 module Slider =
     let create attrs = Control.create "slider" attrs
     let value value = Attr.create "value" Content (FloatValue value)
-    let onChanged map = Attr.onWith "onChanged" (fun event -> event.Payload |> Option.bind (fun value -> match Double.TryParse value with true, parsed -> Some parsed | _ -> None) |> Option.defaultValue 0.0 |> map)
+    let onChanged map = ChangeAdapters.onChangedFloat map
 
 module NumericInput =
     let create attrs = Control.create "numeric-input" attrs
     let value value = Attr.create "value" Content (FloatValue value)
-    let onChanged map = Attr.onWith "onChanged" (fun event -> event.Payload |> Option.bind (fun value -> match Double.TryParse value with true, parsed -> Some parsed | _ -> None) |> Option.defaultValue 0.0 |> map)
+    let onChanged map = ChangeAdapters.onChangedFloat map
 
 module TextBox =
     let create attrs = Control.create "text-box" attrs
     let value value = Attr.value value
     let readOnly value = Attr.readOnly value
     let validation state = Attr.validation state
-    let onChanged map = Attr.onWith "onChanged" (fun event -> event.Payload |> Option.defaultValue "" |> map)
+    let onChanged map = ChangeAdapters.onChangedString map
 
 module TextArea =
     let create attrs = Control.create "text-area" attrs
     let value value = Attr.value value
-    let onChanged map = Attr.onWith "onChanged" (fun event -> event.Payload |> Option.defaultValue "" |> map)
+    let onChanged map = ChangeAdapters.onChangedString map
 
 module RadioGroup =
     let create attrs = Control.create "radio-group" attrs
     let items values = Attr.items values
     let selected value = Attr.value value
-    let onChanged map = Attr.onWith "onChanged" (fun event -> event.Payload |> Option.defaultValue "" |> map)
+    let onChanged map = ChangeAdapters.onChangedString map
 
 module Stack =
     let create attrs = Control.create "stack" attrs
@@ -1680,7 +1718,7 @@ module Tabs =
     let create attrs = Control.create "tabs" attrs
     let items values = Attr.items values
     let selected value = Attr.value value
-    let onChanged map = Attr.onWith "onChanged" (fun event -> event.Payload |> Option.defaultValue "" |> map)
+    let onChanged map = ChangeAdapters.onChangedString map
 
 module Menu =
     let create attrs = Control.create "menu" attrs

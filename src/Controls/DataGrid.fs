@@ -158,7 +158,7 @@ module DataGrid =
         |> List.tryFind (fun attr -> attr.Name = name)
 
     let rowsFrom (attrs: Attr<'msg> list) : DataGridRow list =
-        tryLast "rows" attrs
+        AttrKeys.tryKey AttrKeys.Rows attrs
         |> Option.bind (fun attr ->
             match attr.Value with
             | UntypedValue(:? (DataGridRow list) as rows) -> Some rows
@@ -167,7 +167,7 @@ module DataGrid =
         |> Option.defaultValue []
 
     let visibleRangeFrom (rows: DataGridRow list) (attrs: Attr<'msg> list) =
-        tryLast "visibleRange" attrs
+        AttrKeys.tryKey AttrKeys.VisibleRange attrs
         |> Option.bind (fun attr ->
             match attr.Value with
             | UntypedValue(:? VisibleRange as visibleRange) -> Some visibleRange
@@ -218,22 +218,22 @@ module DataGrid =
 
         let attrs =
             attrs
-            |> fun attrs -> if hasAttr "columns" attrs then attrs else Attr.create "columns" Data (UntypedValue columns) :: attrs
-            |> fun attrs -> if hasAttr "visibleRange" attrs then attrs else Attr.create "visibleRange" State (UntypedValue visibleRange) :: attrs
+            |> fun attrs -> if AttrKeys.hasKey AttrKeys.Columns attrs then attrs else Attr.create (AttrKeys.nameOf AttrKeys.Columns) Data (UntypedValue columns) :: attrs
+            |> fun attrs -> if AttrKeys.hasKey AttrKeys.VisibleRange attrs then attrs else Attr.create (AttrKeys.nameOf AttrKeys.VisibleRange) State (UntypedValue visibleRange) :: attrs
 
         Control.create "data-grid" (Attr.children children :: attrs)
 
     let columns (columns: DataGridColumn list) =
-        Attr.create "columns" Data (UntypedValue columns)
+        Attr.create (AttrKeys.nameOf AttrKeys.Columns) Data (UntypedValue columns)
 
     let rows (rows: DataGridRow list) =
-        Attr.create "rows" Data (UntypedValue rows)
+        Attr.create (AttrKeys.nameOf AttrKeys.Rows) Data (UntypedValue rows)
 
     let visibleRange (visibleRange: VisibleRange) =
-        Attr.create "visibleRange" State (UntypedValue visibleRange)
+        Attr.create (AttrKeys.nameOf AttrKeys.VisibleRange) State (UntypedValue visibleRange)
 
     let selectedRows (selectedRows: Set<string>) =
-        Attr.create "selectedRows" State (UntypedValue selectedRows)
+        Attr.create (AttrKeys.nameOf AttrKeys.SelectedRows) State (UntypedValue selectedRows)
 
     let focusedCell (focusedCell: DataGridFocusedCell option) =
         let payload =
@@ -241,4 +241,4 @@ module DataGrid =
             | Some cell -> Some cell :> obj
             | None -> "" :> obj
 
-        Attr.create "focusedCell" State (UntypedValue payload)
+        Attr.create (AttrKeys.nameOf AttrKeys.FocusedCell) State (UntypedValue payload)

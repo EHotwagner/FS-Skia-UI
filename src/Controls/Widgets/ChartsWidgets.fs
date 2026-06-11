@@ -30,18 +30,10 @@ type GraphViewProps<'msg> =
 // File-private lowering helpers. Charts/graph reuse the existing `ChartSeries`/
 // `ChartPoint` data types and lower to the dedicated legacy `*.create` in
 // Charts.fsi. Hidden by absence from ChartsWidgets.fsi.
-module private ChartLowering =
-    let withKeyOpt id control =
-        match id with
-        | Some key -> FS.Skia.UI.Controls.Control.withKey key control
-        | None -> control
-
-    let onString (eventKind: string) (map: string -> 'msg) : Attr<'msg> =
-        Attr.onWith eventKind (fun event -> event.Payload |> Option.defaultValue "" |> map)
-
+module ChartLowering =
     let eventAttrs (onSelected: (string -> 'msg) option) : Attr<'msg> list =
         match onSelected with
-        | Some map -> [ onString "onSelected" map ]
+        | Some map -> [ WidgetLowering.onString "onSelected" map ]
         | None -> []
 
 module LineChart =
@@ -51,7 +43,7 @@ module LineChart =
         FS.Skia.UI.Controls.LineChart.create
             (FS.Skia.UI.Controls.LineChart.series props.Series
              :: ChartLowering.eventAttrs props.OnSelected)
-        |> ChartLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module BarChart =
@@ -61,7 +53,7 @@ module BarChart =
         FS.Skia.UI.Controls.BarChart.create
             (FS.Skia.UI.Controls.BarChart.series props.Series
              :: ChartLowering.eventAttrs props.OnSelected)
-        |> ChartLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module PieChart =
@@ -71,7 +63,7 @@ module PieChart =
         FS.Skia.UI.Controls.PieChart.create
             (FS.Skia.UI.Controls.PieChart.values props.Values
              :: ChartLowering.eventAttrs props.OnSelected)
-        |> ChartLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module ScatterPlot =
@@ -81,7 +73,7 @@ module ScatterPlot =
         FS.Skia.UI.Controls.ScatterPlot.create
             (FS.Skia.UI.Controls.ScatterPlot.series props.Series
              :: ChartLowering.eventAttrs props.OnSelected)
-        |> ChartLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module GraphView =
@@ -91,5 +83,5 @@ module GraphView =
         FS.Skia.UI.Controls.GraphView.create
             (FS.Skia.UI.Controls.GraphView.nodes props.Nodes
              :: ChartLowering.eventAttrs props.OnSelected)
-        |> ChartLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl

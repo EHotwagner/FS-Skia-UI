@@ -1,0 +1,81 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (feature 105).
+#
+# Phase-checkpoint edges are auto-injected (every task in Phase N+1 implicitly
+# depends on the last task of Phase N). Only non-phase cross-edges are written
+# below. US4 (zero-change banner) is not its own phase — it is carried by the
+# parity guard (T007) and the evidence chain (T021-T023).
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: []
+  T005:
+    deps: []
+    skillist: ["fs-skia-typed-controls"]
+  T006:
+    deps: []
+    skillist: ["fs-skia-typed-controls"]
+  T007:
+    deps: [T006]
+    skillist: ["fs-skia-typed-controls"]
+  T008:
+    deps: []
+    skillist: ["fs-skia-typed-controls"]
+  T009:
+    deps: [T005, T008]
+    skillist: ["fs-skia-typed-controls"]
+  T010:
+    deps: [T008]
+    skillist: ["fs-skia-typed-controls"]
+  T011:
+    deps: [T009, T010]
+    skillist: ["fs-skia-typed-controls"]
+  T012:
+    deps: []
+    skillist: ["fs-skia-reconciliation"]
+  T013:
+    deps: [T012]
+    skillist: ["fs-skia-reconciliation"]
+  T014:
+    deps: []
+    skillist: ["fs-skia-typed-controls"]
+  T015:
+    deps: [T014]
+    skillist: ["fs-skia-typed-controls"]
+  T016:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+  T017:
+    deps: []
+    skillist: ["fs-skia-viewer-host", "fs-skia-evidence-mode"]
+  T018:
+    deps: [T014, T015, T016, T017]
+    skillist: ["fs-skia-evidence-mode", "fs-skia-viewer-host"]
+  T019:
+    deps: []
+    skillist: []
+  T020:
+    deps: []
+    skillist: []
+  T021:
+    deps: []
+    skillist: ["fs-skia-typed-controls"]
+  T022:
+    deps: [T021]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T023:
+    deps: [T022]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

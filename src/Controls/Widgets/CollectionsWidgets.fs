@@ -31,7 +31,7 @@ type TreeViewProps<'msg> =
 // the SAME existing `Collections` model (FR-004/SC-003) and lower to
 // `Control.standard (Custom <id>)` carrying the live model selection + visible
 // range. Default row/viewport metrics mirror the 065 DataGrid façade.
-module private CollectionLowering =
+module CollectionLowering =
     let rowHeight = 24.0
     let viewportHeight = 240.0
 
@@ -42,16 +42,6 @@ module private CollectionLowering =
     let stateAttrs (model: CollectionModel) : Attr<'msg> list =
         [ Attr.create "selectedKeys" State (StringListValue(model.SelectedKeys |> Set.toList))
           Attr.create "visibleRange" Data (UntypedValue model.VisibleRange) ]
-
-    let onString (eventKind: string) (map: string -> 'msg) : Attr<'msg> =
-        Attr.onWith eventKind (fun event -> event.Payload |> Option.defaultValue "" |> map)
-
-    let onStringList (eventKind: string) (map: string list -> 'msg) : Attr<'msg> =
-        Attr.onWith eventKind (fun event ->
-            event.Payload
-            |> Option.map (fun value -> [ value ])
-            |> Option.defaultValue []
-            |> map)
 
 module ListView =
     let defaults (controlId: ControlId) : ListViewProps<'msg> =
@@ -68,7 +58,7 @@ module ListView =
             [ yield Attr.items props.Items
               yield! CollectionLowering.stateAttrs model
               match props.OnSelected with
-              | Some map -> yield CollectionLowering.onString "onSelected" map
+              | Some map -> yield WidgetLowering.onString "onSelected" map
               | None -> () ]
 
         Control.standard (StandardControlKind.Custom "list-view") attrs
@@ -90,7 +80,7 @@ module ListBox =
             [ yield Attr.items props.Items
               yield! CollectionLowering.stateAttrs model
               match props.OnSelected with
-              | Some map -> yield CollectionLowering.onString "onSelected" map
+              | Some map -> yield WidgetLowering.onString "onSelected" map
               | None -> () ]
 
         Control.standard (StandardControlKind.Custom "list-box") attrs
@@ -112,7 +102,7 @@ module MultiSelectList =
             [ yield Attr.items props.Items
               yield! CollectionLowering.stateAttrs model
               match props.OnChanged with
-              | Some map -> yield CollectionLowering.onStringList "onChanged" map
+              | Some map -> yield WidgetLowering.onStringList "onChanged" map
               | None -> () ]
 
         Control.standard (StandardControlKind.Custom "multi-select-list") attrs
@@ -134,7 +124,7 @@ module ComboBox =
             [ yield Attr.items props.Items
               yield! CollectionLowering.stateAttrs model
               match props.OnChanged with
-              | Some map -> yield CollectionLowering.onString "onChanged" map
+              | Some map -> yield WidgetLowering.onString "onChanged" map
               | None -> () ]
 
         Control.standard (StandardControlKind.Custom "combo-box") attrs
@@ -156,7 +146,7 @@ module TreeView =
             [ yield Attr.items props.Items
               yield! CollectionLowering.stateAttrs model
               match props.OnSelected with
-              | Some map -> yield CollectionLowering.onString "onSelected" map
+              | Some map -> yield WidgetLowering.onString "onSelected" map
               | None -> () ]
 
         Control.standard (StandardControlKind.Custom "tree-view") attrs

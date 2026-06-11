@@ -20,28 +20,9 @@ type SplitButtonProps<'msg> =
       OnClick: 'msg option
       OnSelected: (string -> 'msg) option }
 
-// File-private lowering helpers. The new button-family controls are typed-first
-// COMPOSITIONS of existing legacy builders — no new StandardControlKind variant
-// (FR-004). Hidden from the public surface by absence from Buttons.fsi (Principle II).
-module private ButtonsLowering =
-    let withKeyOpt id control =
-        match id with
-        | Some key -> FS.Skia.UI.Controls.Control.withKey key control
-        | None -> control
-
-    // FR-009: every new control's lowered tree carries an explicit accessibility role,
-    // an accessible name, and a focusable keyboard affordance (activation + navigation
-    // keys). The role matches the catalog fact; popup-bearing controls add arrow keys.
-    let a11y (role: AccessibilityRole) (nameSource: string) (navigationKeys: string list) : Attr<'msg> =
-        Attr.accessibility (
-            Accessibility.metadata
-                role
-                nameSource
-                [ "normal" ]
-                None
-                (Accessibility.keyboard true [ "Enter"; "Space" ] navigationKeys)
-                None
-                None)
+// The button-family controls are typed-first COMPOSITIONS of existing legacy builders
+// (no new StandardControlKind variant, FR-004). Key application and the shared
+// accessibility-metadata builder live once in the internal WidgetLowering module.
 
 module ToggleButton =
     let defaults: ToggleButtonProps<'msg> =
@@ -59,10 +40,10 @@ module ToggleButton =
               match props.OnToggle with
               | Some map -> yield FS.Skia.UI.Controls.Button.onClick (map (not props.IsOn))
               | None -> ()
-              yield ButtonsLowering.a11y AccessibilityRole.Button "Toggle button" [ "Tab"; "Shift+Tab" ] ]
+              yield WidgetLowering.a11y AccessibilityRole.Button "Toggle button" [ "Tab"; "Shift+Tab" ] ]
 
         FS.Skia.UI.Controls.Button.create attrs
-        |> ButtonsLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module SplitButton =
@@ -105,6 +86,6 @@ module SplitButton =
 
         FS.Skia.UI.Controls.Toolbar.create
             [ FS.Skia.UI.Controls.Toolbar.children [ primary; trigger; overlay ]
-              ButtonsLowering.a11y AccessibilityRole.Menu "Split button" [ "ArrowDown"; "ArrowUp"; "Tab" ] ]
-        |> ButtonsLowering.withKeyOpt props.Id
+              WidgetLowering.a11y AccessibilityRole.Menu "Split button" [ "ArrowDown"; "ArrowUp"; "Tab" ] ]
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl

@@ -70,7 +70,7 @@ type internal RetainedInit<'msg> =
 
 module internal RetainedRender =
 
-    let private childPath (path: string) (index: int) = path + "." + string index
+    let childPath (path: string) (index: int) = path + "." + string index
 
     // ---------------------------------------------------------------------------------------------
     // Feature 099 (R4) — the per-identity animation clock core. Pure + total + deterministic: every
@@ -84,7 +84,7 @@ module internal RetainedRender =
     let defaultTransitionDuration = System.TimeSpan.FromMilliseconds 150.0
 
     // The longest tween duration carried by an animation (the point past which it is settled).
-    let private clockDuration (anim: FS.Skia.UI.Scene.Animation) : System.TimeSpan =
+    let clockDuration (anim: FS.Skia.UI.Scene.Animation) : System.TimeSpan =
         [ anim.Opacity |> Option.map (fun t -> t.Duration)
           anim.Transform |> Option.map (fun t -> t.Duration)
           anim.Color |> Option.map (fun t -> t.Duration) ]
@@ -97,7 +97,7 @@ module internal RetainedRender =
     // the framework default, eased out. End = 1.0 means a settled clock samples to opacity 1.0, so
     // `applyAt`'s identity-at-rest lowering makes the converged frame byte-identical to the static
     // render of the (now-stamped) state — FR-005 holds by construction.
-    let private fadeAnimation (startOpacity: float) : FS.Skia.UI.Scene.Animation =
+    let fadeAnimation (startOpacity: float) : FS.Skia.UI.Scene.Animation =
         { FS.Skia.UI.Scene.Animation.empty with
             Opacity =
                 Some
@@ -120,7 +120,7 @@ module internal RetainedRender =
                       Easing = FS.Skia.UI.Scene.EaseOut } }
 
     // The clock's current sampled opacity (the displayed value a mid-flight retarget continues from).
-    let private currentOpacity (clock: AnimationClock) : float =
+    let currentOpacity (clock: AnimationClock) : float =
         match clock.Anim.Opacity with
         | Some tween -> FS.Skia.UI.Scene.Tween.sample FS.Skia.UI.Scene.Animation.lerpFloat clock.Elapsed tween
         | None -> 1.0

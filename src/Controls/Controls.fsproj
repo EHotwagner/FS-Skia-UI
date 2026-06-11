@@ -51,6 +51,7 @@
     <Compile Include="Accessibility.fs" />
     <Compile Include="Attributes.fsi" />
     <Compile Include="Attributes.fs" />
+    <Compile Include="Internal/AttrKeys.fs" />
     <Compile Include="Control.fsi" />
     <Compile Include="Control.fs" />
     <Compile Include="Reconcile.fsi" />
@@ -89,6 +90,7 @@
     <Compile Include="DataGrid.fs" />
     <Compile Include="CustomControl.fsi" />
     <Compile Include="CustomControl.fs" />
+    <Compile Include="Widgets/WidgetLowering.fs" />
     <Compile Include="Widgets/Primitives.fsi" />
     <Compile Include="Widgets/Primitives.fs" />
     <Compile Include="Widgets/TextBoxWidget.fsi" />

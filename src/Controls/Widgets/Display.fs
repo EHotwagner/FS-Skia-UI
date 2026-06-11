@@ -37,22 +37,16 @@ type ValidationMessageProps<'msg> =
       Text: string
       Severity: ValidationState }
 
-// File-private lowering helper. The typed `view` calls the exact same legacy
-// string-keyed builders, so the lowered IR is structurally equal to the legacy
-// authoring call by construction (FR-002, SC-002). Hidden from the public surface
-// by absence from Display.fsi (Principle II).
-module private DisplayLowering =
-    let withKeyOpt id control =
-        match id with
-        | Some key -> FS.Skia.UI.Controls.Control.withKey key control
-        | None -> control
+// The typed `view` calls the exact same legacy string-keyed builders, so the lowered IR is
+// structurally equal to the legacy authoring call by construction (FR-002, SC-002). Key
+// application lives once in the internal WidgetLowering module.
 
 module RichText =
     let defaults: RichTextProps<'msg> = { Id = None; Runs = [] }
 
     let view (props: RichTextProps<'msg>) : Widget<'msg> =
         FS.Skia.UI.Controls.RichText.create (FS.Skia.UI.Controls.RichText.block props.Runs) []
-        |> DisplayLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Label =
@@ -60,7 +54,7 @@ module Label =
 
     let view (props: LabelProps<'msg>) : Widget<'msg> =
         FS.Skia.UI.Controls.Label.create [ FS.Skia.UI.Controls.Label.text props.Text ]
-        |> DisplayLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Image =
@@ -68,7 +62,7 @@ module Image =
 
     let view (props: ImageProps<'msg>) : Widget<'msg> =
         FS.Skia.UI.Controls.Image.create [ FS.Skia.UI.Controls.Image.source props.Value ]
-        |> DisplayLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Icon =
@@ -76,7 +70,7 @@ module Icon =
 
     let view (props: IconProps<'msg>) : Widget<'msg> =
         FS.Skia.UI.Controls.Icon.create [ FS.Skia.UI.Controls.Icon.name props.Text ]
-        |> DisplayLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Separator =
@@ -84,7 +78,7 @@ module Separator =
 
     let view (props: SeparatorProps<'msg>) : Widget<'msg> =
         FS.Skia.UI.Controls.Separator.create []
-        |> DisplayLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Badge =
@@ -92,7 +86,7 @@ module Badge =
 
     let view (props: BadgeProps<'msg>) : Widget<'msg> =
         FS.Skia.UI.Controls.Badge.create [ FS.Skia.UI.Controls.Badge.text props.Text ]
-        |> DisplayLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module ProgressBar =
@@ -100,7 +94,7 @@ module ProgressBar =
 
     let view (props: ProgressBarProps<'msg>) : Widget<'msg> =
         FS.Skia.UI.Controls.ProgressBar.create [ FS.Skia.UI.Controls.ProgressBar.value props.Value ]
-        |> DisplayLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Spinner =
@@ -108,7 +102,7 @@ module Spinner =
 
     let view (props: SpinnerProps<'msg>) : Widget<'msg> =
         FS.Skia.UI.Controls.Spinner.create []
-        |> DisplayLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module ValidationMessage =
@@ -119,5 +113,5 @@ module ValidationMessage =
         FS.Skia.UI.Controls.ValidationMessage.create
             [ FS.Skia.UI.Controls.ValidationMessage.text props.Text
               Attr.validation props.Severity ]
-        |> DisplayLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl

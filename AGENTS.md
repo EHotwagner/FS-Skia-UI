@@ -1,7 +1,7 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
 <!-- SPECKIT START -->
-specs/104-refresh-live-path-skills/plan.md
+specs/105-housekeeping-code-quality/plan.md
 <!-- SPECKIT END -->
 
 ## Run `Route` first; run only the gates it prints

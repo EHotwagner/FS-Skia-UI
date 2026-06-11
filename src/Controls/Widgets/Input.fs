@@ -33,12 +33,7 @@ type SliderProps<'msg> =
 
 // File-private lowering helpers — see Display.fs for the construction-by-parity
 // rationale. Hidden from the public surface by absence from Input.fsi.
-module private InputLowering =
-    let withKeyOpt id control =
-        match id with
-        | Some key -> FS.Skia.UI.Controls.Control.withKey key control
-        | None -> control
-
+module InputLowering =
     let intentStyle intent =
         match intent with
         | Primary -> "primary"
@@ -64,7 +59,7 @@ module IconButton =
               | None -> () ]
 
         FS.Skia.UI.Controls.IconButton.create attrs
-        |> InputLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module NumericInput =
@@ -83,7 +78,7 @@ module NumericInput =
               | None -> () ]
 
         FS.Skia.UI.Controls.NumericInput.create attrs
-        |> InputLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module RadioGroup =
@@ -104,7 +99,7 @@ module RadioGroup =
               | None -> () ]
 
         FS.Skia.UI.Controls.RadioGroup.create attrs
-        |> InputLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Switch =
@@ -119,7 +114,7 @@ module Switch =
               | None -> () ]
 
         FS.Skia.UI.Controls.Switch.create attrs
-        |> InputLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Slider =
@@ -134,5 +129,5 @@ module Slider =
               | None -> () ]
 
         FS.Skia.UI.Controls.Slider.create attrs
-        |> InputLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl

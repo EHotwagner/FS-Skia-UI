@@ -27,26 +27,9 @@ type ColorPickerProps<'msg> =
       OnSelected: (ColorSwatch -> 'msg) option }
 
 // File-private lowering helpers. The new picker / date-time controls are typed-first
-// COMPOSITIONS of existing legacy builders — no new StandardControlKind variant and no
-// renderer change (FR-004). Hidden from the public surface by absence from Pickers.fsi.
-module private PickersLowering =
-    let withKeyOpt id control =
-        match id with
-        | Some key -> FS.Skia.UI.Controls.Control.withKey key control
-        | None -> control
-
-    // FR-009: carry an explicit accessibility role, accessible name, and focusable
-    // keyboard affordance (activation + popup arrow navigation) on the lowered root.
-    let a11y (role: AccessibilityRole) (nameSource: string) (navigationKeys: string list) : Attr<'msg> =
-        Attr.accessibility (
-            Accessibility.metadata
-                role
-                nameSource
-                [ "normal" ]
-                None
-                (Accessibility.keyboard true [ "Enter"; "Space" ] navigationKeys)
-                None
-                None)
+// The picker / date-time controls are typed-first COMPOSITIONS of existing legacy builders
+// (no new StandardControlKind variant and no renderer change, FR-004). Key application and the
+// shared accessibility-metadata builder live once in the internal WidgetLowering module.
 
 module DatePicker =
     let defaults: DatePickerProps<'msg> =
@@ -99,11 +82,11 @@ module DatePicker =
 
         FS.Skia.UI.Controls.Stack.create
             [ FS.Skia.UI.Controls.Stack.children [ field; trigger; overlay ]
-              PickersLowering.a11y
+              WidgetLowering.a11y
                   AccessibilityRole.TextBox
                   "Date picker"
                   [ "ArrowLeft"; "ArrowRight"; "ArrowUp"; "ArrowDown" ] ]
-        |> PickersLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module TimePicker =
@@ -139,8 +122,8 @@ module TimePicker =
 
         FS.Skia.UI.Controls.Stack.create
             [ FS.Skia.UI.Controls.Stack.children [ hourSegment; separator; minuteSegment ]
-              PickersLowering.a11y AccessibilityRole.TextBox "Time picker" [ "ArrowUp"; "ArrowDown" ] ]
-        |> PickersLowering.withKeyOpt props.Id
+              WidgetLowering.a11y AccessibilityRole.TextBox "Time picker" [ "ArrowUp"; "ArrowDown" ] ]
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module ColorPicker =
@@ -163,9 +146,9 @@ module ColorPicker =
 
         FS.Skia.UI.Controls.Wrap.create
             [ FS.Skia.UI.Controls.Wrap.children (props.Swatches |> List.map cell)
-              PickersLowering.a11y
+              WidgetLowering.a11y
                   AccessibilityRole.List
                   "Color picker"
                   [ "ArrowLeft"; "ArrowRight"; "ArrowUp"; "ArrowDown" ] ]
-        |> PickersLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl

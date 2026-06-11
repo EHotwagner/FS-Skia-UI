@@ -43,7 +43,7 @@ module internal Reconcile =
     // equal opaque values, the diff merely emits a redundant `AttrSet` carrying
     // the next value, which `apply` writes verbatim — the round-trip invariant
     // (FR-008) still holds. It never throws (SC-007).
-    let private attrValueEqual (x: AttrValue<'msg>) (y: AttrValue<'msg>) : bool =
+    let attrValueEqual (x: AttrValue<'msg>) (y: AttrValue<'msg>) : bool =
         match x, y with
         | TextValue a, TextValue b -> a = b
         | BoolValue a, BoolValue b -> a = b
@@ -66,7 +66,7 @@ module internal Reconcile =
 
     /// Attribute diff by `Name` (FR-007), independent of list order; the emitted
     /// list is sorted by `Name` for deterministic output (FR-009).
-    let private diffAttrs (prevAttrs: Attr<'msg> list) (nextAttrs: Attr<'msg> list) : AttrChange<'msg> list =
+    let diffAttrs (prevAttrs: Attr<'msg> list) (nextAttrs: Attr<'msg> list) : AttrChange<'msg> list =
         let prevMap = Dictionary<string, Attr<'msg>>()
         for a in prevAttrs do
             prevMap.[a.Name] <- a
@@ -87,7 +87,7 @@ module internal Reconcile =
             | (true, _), (false, _) -> yield AttrRemoved name
             | (false, _), (false, _) -> () ]
 
-    let private isKeepOp (op: ChildOp<'msg>) : bool =
+    let isKeepOp (op: ChildOp<'msg>) : bool =
         match op with
         | ChildKeep (_, NodePatch.Keep) -> true
         | _ -> false

@@ -23,22 +23,14 @@ type OverlayProps<'msg> =
       IsOpen: bool
       Child: Widget<'msg> }
 
-// File-private lowering helpers — hidden by absence from Overlay.fsi.
-module private OverlayLowering =
-    let withKeyOpt id control =
-        match id with
-        | Some key -> FS.Skia.UI.Controls.Control.withKey key control
-        | None -> control
-
-    let onString (eventKind: string) (map: string -> 'msg) : Attr<'msg> =
-        Attr.onWith eventKind (fun event -> event.Payload |> Option.defaultValue "" |> map)
+// Key application and the string-event adapter live once in the internal WidgetLowering module.
 
 module Tooltip =
     let defaults: TooltipProps<'msg> = { Id = None; Text = "" }
 
     let view (props: TooltipProps<'msg>) : Widget<'msg> =
         FS.Skia.UI.Controls.Tooltip.create [ FS.Skia.UI.Controls.Tooltip.text props.Text ]
-        |> OverlayLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Dialog =
@@ -59,11 +51,11 @@ module Dialog =
               | None -> ()
               yield Attr.selected props.IsOpen
               match props.OnSelected with
-              | Some map -> yield OverlayLowering.onString "onSelected" map
+              | Some map -> yield WidgetLowering.onString "onSelected" map
               | None -> () ]
 
         FS.Skia.UI.Controls.Dialog.create attrs
-        |> OverlayLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Toast =
@@ -74,7 +66,7 @@ module Toast =
         FS.Skia.UI.Controls.Toast.create
             [ FS.Skia.UI.Controls.Toast.text props.Text
               Attr.validation props.Severity ]
-        |> OverlayLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Overlay =
@@ -87,5 +79,5 @@ module Overlay =
               Attr.selected props.IsOpen ]
 
         FS.Skia.UI.Controls.Overlay.create attrs
-        |> OverlayLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl

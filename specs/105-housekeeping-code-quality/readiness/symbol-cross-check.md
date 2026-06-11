@@ -1,0 +1,35 @@
+## Symbol consistency (analyze pass G)
+- entity-record BlockedStage — in {data-model, tasks}, missing from {plan}
+- entity-record DiagnosticCategory — in {data-model, tasks}, missing from {plan}
+- entity-record EvidenceAudit — in {tasks}, missing from {plan, data-model}
+- entity-record EvidenceGraph — in {tasks}, missing from {plan, data-model}
+- entity-record EvidenceStage — in {data-model, tasks}, missing from {plan}
+- fr-id FR-001 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-002 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-003 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-004 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-005 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-007 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-008 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-009 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-010 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-011 — in {plan}, missing from {data-model, tasks}
+- fr-id FR-012 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-013 — in {plan, tasks}, missing from {data-model}
+- msg-case CollectionsWidgets — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case ControlEvent — in {plan}, missing from {data-model, tasks}
+- msg-case Effect — in {plan}, missing from {data-model, tasks}
+- msg-case Model — in {plan}, missing from {data-model, tasks}
+- msg-case Msg — in {plan}, missing from {data-model, tasks}
+- msg-case RendererMode — in {tasks}, missing from {plan, data-model}
+- msg-case SlotName — in {tasks}, missing from {plan, data-model}
+- sc-id SC-001 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-002 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-003 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-004 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-005 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-006 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-007 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-008 — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant EvidenceStage — in {plan}, missing from {data-model, tasks}
+- union-or-screen-variant StyleVariant — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]

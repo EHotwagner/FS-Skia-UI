@@ -717,7 +717,22 @@ type SceneEvidence =
       EvidencePath: string option
       Value: string }
 
+// Feature 105 (US3, FR-009): the closed set of scene-evidence failure stages, typed so the
+// internal classification is a compile-checked DU instead of a bare string. The public
+// `SceneEvidenceFailure.BlockedStage`/`DiagnosticCategory` fields stay `string`, written via the
+// single `EvidenceStage.name` projection at construction, so the evidence text is byte-identical
+// "scene"/"renderer". Hidden from consumers by absence from Scene.fsi.
+[<RequireQualifiedAccess>]
+type EvidenceStage =
+    | Scene
+    | Renderer
+
 module SceneEvidence =
+    let stageName (stage: EvidenceStage) : string =
+        match stage with
+        | EvidenceStage.Scene -> "scene"
+        | EvidenceStage.Renderer -> "renderer"
+
     let supportedRendererMode mode =
         String.IsNullOrWhiteSpace mode
         || String.Equals(mode, "deterministic-scene", StringComparison.Ordinal)
@@ -733,15 +748,15 @@ module SceneEvidence =
     let render (request: SceneEvidenceRequest) =
         if request.OutputSize.Width <= 0 || request.OutputSize.Height <= 0 then
             Result.Error
-                { BlockedStage = "scene"
+                { BlockedStage = stageName EvidenceStage.Scene
                   Classification = ProductDefect
-                  DiagnosticCategory = "scene"
+                  DiagnosticCategory = stageName EvidenceStage.Scene
                   Message = "Scene evidence output size must be positive." }
         elif not (supportedRendererMode request.RendererMode) then
             Result.Error
-                { BlockedStage = "renderer"
+                { BlockedStage = stageName EvidenceStage.Renderer
                   Classification = UnsupportedEnvironment
-                  DiagnosticCategory = "renderer"
+                  DiagnosticCategory = stageName EvidenceStage.Renderer
                   Message = $"Scene evidence renderer mode '{request.RendererMode}' is not available for non-window deterministic evidence." }
         else
             let readback = Scene.renderReadbackEvidence request.OutputSize request.Scene

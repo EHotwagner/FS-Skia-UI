@@ -23,18 +23,9 @@ type ToolbarProps<'msg> =
       Children: Widget<'msg> list
       OnClick: 'msg option }
 
-// File-private lowering helpers. `menu` and `context-menu` are distinct per-id
-// modules over the same legacy menu mechanic; `context-menu` lowers to its own
-// kind via `Control.standard (Custom "context-menu")`. Hidden by absence from
-// Navigation.fsi.
-module private NavigationLowering =
-    let withKeyOpt id control =
-        match id with
-        | Some key -> FS.Skia.UI.Controls.Control.withKey key control
-        | None -> control
-
-    let onString (eventKind: string) (map: string -> 'msg) : Attr<'msg> =
-        Attr.onWith eventKind (fun event -> event.Payload |> Option.defaultValue "" |> map)
+// `menu` and `context-menu` are distinct per-id modules over the same legacy menu
+// mechanic; `context-menu` lowers via `Control.standard (Custom "context-menu")`. Key
+// application and the string-event adapter live once in the internal WidgetLowering module.
 
 module Tabs =
     let defaults: TabsProps<'msg> =
@@ -51,7 +42,7 @@ module Tabs =
               | None -> () ]
 
         FS.Skia.UI.Controls.Tabs.create attrs
-        |> NavigationLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Menu =
@@ -65,7 +56,7 @@ module Menu =
               | None -> () ]
 
         FS.Skia.UI.Controls.Menu.create attrs
-        |> NavigationLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module ContextMenu =
@@ -75,11 +66,11 @@ module ContextMenu =
         let attrs =
             [ yield Attr.items props.Items
               match props.OnSelected with
-              | Some map -> yield NavigationLowering.onString "onSelected" map
+              | Some map -> yield WidgetLowering.onString "onSelected" map
               | None -> () ]
 
         Control.standard (StandardControlKind.Custom "context-menu") attrs
-        |> NavigationLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
 
 module Toolbar =
@@ -95,5 +86,5 @@ module Toolbar =
               | None -> () ]
 
         FS.Skia.UI.Controls.Toolbar.create attrs
-        |> NavigationLowering.withKeyOpt props.Id
+        |> WidgetLowering.withKeyOpt props.Id
         |> Widget.ofControl
