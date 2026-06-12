@@ -565,6 +565,10 @@ type ControlRuntimeMsg =
     | CancelInteraction of ControlId option
     | Reset
 
+type internal RuntimeStampResult<'msg> =
+    { Stamped: Control<'msg>
+      RuntimeStateTouchedNodeCount: int }
+
 module ControlRuntime =
 
     val init: unit -> ControlRuntimeModel * ControlRuntimeEffect list
@@ -576,6 +580,19 @@ module ControlRuntime =
     val deriveVisualState: model: ControlRuntimeModel -> controlId: ControlId -> VisualState
 
     val internal applyRuntimeVisualState: model: ControlRuntimeModel -> control: Control<'msg> -> Control<'msg>
+
+    val internal applyRuntimeVisualStateTargeted:
+        prev: ControlRuntimeModel ->
+        cur: ControlRuntimeModel ->
+        prevStamped: Control<'msg> ->
+        fresh: Control<'msg> ->
+            RuntimeStampResult<'msg>
+
+    val internal runtimeStampFor:
+        prior: (ControlRuntimeModel * Control<'msg>) option ->
+        cur: ControlRuntimeModel ->
+        fresh: Control<'msg> ->
+            RuntimeStampResult<'msg>
 
 namespace FS.Skia.UI.Controls
 

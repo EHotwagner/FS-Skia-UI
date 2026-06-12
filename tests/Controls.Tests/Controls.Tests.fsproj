@@ -49,6 +49,9 @@
     <Compile Include="Feature108FocusTests.fs" />
     <Compile Include="Feature108CompositionTests.fs" />
     <Compile Include="Feature108ThemingTests.fs" />
+    <Compile Include="Feature112TouchedCountTests.fs" />
+    <Compile Include="Feature112TargetedStampParityTests.fs" />
+    <Compile Include="Feature112PrecedenceTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

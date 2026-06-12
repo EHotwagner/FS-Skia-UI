@@ -1,0 +1,12 @@
+
+## package/app instantiate
+$ dotnet new fs-skia-ui --name V3DotnetAppPackage --output "/home/developer/projects/FS-Skia-UI/artifacts/template-check/112-narrow-visual-state-stamping/package-app" --allow-scripts yes --profile app --rootNamespace V3DotnetAppPackage --packagePrefix V3DotnetAppPackage --authors TemplateValidation --repositoryUrl "https://example.invalid/package/app/V3DotnetAppPackage" --targetFramework net10.0 --skipGitInit true
+The template "FS Skia UI Governed Project" was created successfully.
+
+Processing post-creation actions...
+Running command 'bash -c "find . -type f \( -name '*.sh' -o -name 'fake.sh' \) -exec chmod +x {} +"'...
+Command succeeded.
+
+
+
+exit-code=0

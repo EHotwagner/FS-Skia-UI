@@ -1,0 +1,14 @@
+{
+  "base_ref": "main",
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "docs/reports/miscTasks.md",
+      "line": 6,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": "- [ ] \u26a0 /home/developer/projects/FS-Skia-UI/.agents/skills/fs-skia-reconciliation/SKILL.md: invalid YAML:"
+    }
+  ]
+}

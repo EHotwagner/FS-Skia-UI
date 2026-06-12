@@ -830,6 +830,14 @@ module ControlsElmish =
         // did not change is the same instance (reuse); a value-type model is never `ReferenceEquals` so it
         // re-views (a safe, byte-identical fallback — the deterministic view-skip surface is `Perf.runScript`).
         let lastView = ref (None: (Size * 'model * Control<'msg>) option) // mutable: hot path / per frame
+        // Feature 112 (FR-001/FR-002): the previous frame's runtime model, so a model-unchanged repaint
+        // can compute which identities left a hover/focus/press state and re-stamp only those (the
+        // targeted stamp). Updated each paint; `None` until the first stamp.
+        let lastRuntimeModel = ref (None: ControlRuntimeModel option) // mutable: hot path / per frame
+        // Feature 112 (FR-007): best-effort observability — the nodes the runtime stamp rebuilt last
+        // frame (the authoritative, deterministic surface is `ControlRuntime` + Controls.Tests; this is
+        // the live interpreter-edge slot a diagnostic can read, like `lastWorkReduction`).
+        let lastRuntimeStateTouched = ref 0 // mutable: hot path / per frame
         // Diff/first-frame diagnostics (e.g. KeyCollision from duplicate sibling keys) surfaced
         // through the host's diagnostics stderr channel — never silently dropped; de-duped so a
         // standing collision is reported once, not every frame. The path stays total in their presence.
@@ -904,16 +912,38 @@ module ControlsElmish =
             match retained.Value with
             | None ->
                 let runtimeModel = assembleRuntimeModel None
-                let next = ControlRuntime.applyRuntimeVisualState runtimeModel (viewFor size model)
-                let r0 = RetainedRender.init host.Theme size next
+                // First frame: no prior stamped tree to narrow against → full-tree oracle (FR-006).
+                let stamp = ControlRuntime.runtimeStampFor None runtimeModel (viewFor size model)
+                lastRuntimeModel.Value <- Some runtimeModel
+                lastRuntimeStateTouched.Value <- stamp.RuntimeStateTouchedNodeCount
+                let r0 = RetainedRender.init host.Theme size stamp.Stamped
                 surface r0.Diagnostics
                 retained.Value <- Some r0.Retained
                 lastRender.Value <- Some r0.Render
                 r0.Render.Scene
             | Some prev ->
                 let runtimeModel = assembleRuntimeModel (Some prev)
-                let next = ControlRuntime.applyRuntimeVisualState runtimeModel (viewFor size model)
-                let s = RetainedRender.step host.Theme size prev next
+                // Feature 112 (FR-001/FR-002): on a model-unchanged repaint (the view cache would hit),
+                // narrow the runtime-state stamp to only the changed identities via the TARGETED stamp,
+                // reusing `prev.Root.Control` (the previous stamped tree). On a model-changing frame the
+                // whole view is rebuilt anyway, so use the full-tree oracle (`prior = None`).
+                let modelUnchanged =
+                    match lastView.Value with
+                    | Some(cachedSize, cachedModel, _) -> cachedSize = size && obj.ReferenceEquals(model, cachedModel)
+                    | None -> false
+
+                let fresh = viewFor size model
+
+                let prior =
+                    if modelUnchanged then
+                        lastRuntimeModel.Value |> Option.map (fun pm -> pm, prev.Root.Control)
+                    else
+                        None
+
+                let stamp = ControlRuntime.runtimeStampFor prior runtimeModel fresh
+                lastRuntimeModel.Value <- Some runtimeModel
+                lastRuntimeStateTouched.Value <- stamp.RuntimeStateTouchedNodeCount
+                let s = RetainedRender.step host.Theme size prev stamp.Stamped
                 surface s.Diagnostics
                 lastWorkReduction.Value <- Some s.WorkReduction
                 retained.Value <- Some s.Retained

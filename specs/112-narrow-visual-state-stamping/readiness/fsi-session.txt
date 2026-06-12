@@ -1,0 +1,15 @@
+# FSI session — feature 112 deriveVisualState / targeted-stamp surface (T005)
+#
+# Captured via: dotnet fsi against the built FS.Skia.UI.Controls.dll (Debug, full dep closure).
+# deriveVisualState is the PUBLIC runtime-state projection the targeted stamp builds on; the new
+# internal applyRuntimeVisualStateTargeted / runtimeStampFor seam is reached via InternalsVisibleTo
+# from Controls.Tests (not callable from a plain fsi script), where the touched-node counts below are
+# asserted (Feature112TouchedCountTests):
+#   - hover move A->B over a 21-node tree  -> RuntimeStateTouchedNodeCount = 3 (two leaves + shared root)
+#   - persistent hover / at-rest frame     -> RuntimeStateTouchedNodeCount = 0 (whole tree reused)
+#   - full-tree oracle route (prior=None)  -> RuntimeStateTouchedNodeCount = node count (regression guard)
+#
+deriveVisualState(hover, b3)   = Hover
+deriveVisualState(hover, other)= Normal
+deriveVisualState(focus, b3)   = Focused
+deriveVisualState(empty, b3)   = Normal
