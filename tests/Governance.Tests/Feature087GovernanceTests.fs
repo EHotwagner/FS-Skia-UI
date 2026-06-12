@@ -522,6 +522,84 @@ let feature087Us2Tests =
         }
     ]
 
+// --- feature 107 (US1, FR-001/002/003): package-skew hardening ---------------
+// The recommended typed authoring path must pass governance with zero false findings:
+// comment-only tokens contribute nothing, the typed front door resolves against the
+// broadened captured surface, and genuinely-absent symbols are still caught.
+
+[<Tests>]
+let feature107SkewHardeningTests =
+    testList "feature 107 US1 — package-skew hardening (FR-001/002/003)" [
+
+        // FR-001 / SC-001: an `FS.Skia.UI.…` token that appears ONLY inside a comment (line,
+        // doc, or block) is not a referenced symbol — prose/doc-comments naming a framework
+        // namespace no longer produce a false skew finding.
+        test "FR-001 a token only inside comments is not a referenced symbol" {
+            let tracked = Set.ofList FS.Skia.UI.Build.PerPackageSurface.packagesInScope
+            let source =
+                "// see FS.Skia.UI.Controls.Typed for the typed front door\n"
+                + "/// Authored through FS.Skia.UI.Controls.Typed.Label.view.\n"
+                + "(* FS.Skia.UI.Scene.Color.rgb is documented here *)\n"
+                + "let x = 1\n"
+            Expect.isEmpty
+                (Skew.referencedSymbols tracked "src/View.fs" source)
+                "no reference is extracted from comment-only FS.Skia.UI tokens"
+        }
+
+        // FR-001 edge: a symbol appearing in BOTH a comment and live code is still found via its
+        // live-code occurrence (comment-stripping must not blind the check to real references).
+        test "FR-001 a symbol in both a comment and live code is still found via live code" {
+            let tracked = Set.ofList FS.Skia.UI.Build.PerPackageSurface.packagesInScope
+            let source =
+                "// mentions FS.Skia.UI.Scene.Color.rgb in prose\n"
+                + "let c = FS.Skia.UI.Scene.Color.rgb 1 2 3\n"
+            let names =
+                Skew.referencedSymbols tracked "src/View.fs" source |> List.map fst |> Set.ofList
+            Expect.isTrue (Set.contains "rgb" names) "the live-code reference is still extracted"
+        }
+
+        // FR-002 / SC-005: captureCurrent now recurses into Controls/Widgets, so the typed front
+        // door `FS.Skia.UI.Controls.Typed` and its members are known symbols — `open …Typed` and a
+        // qualified typed-member reference are skew-clean (no per-control alias work-around needed).
+        test "FR-002 the typed front door resolves against the broadened captured surface" {
+            let controlsSurface =
+                FS.Skia.UI.Build.PerPackageSurface.captureCurrent [ "FS.Skia.UI.Controls" ]
+                |> List.head
+                |> fun s -> Skew.surfaceSymbols s.NormalizedText
+            Expect.isTrue (Set.contains "Typed" controlsSurface) "the Typed namespace segment is captured"
+            Expect.isTrue (Set.contains "Label" controlsSurface) "a typed-front-door module is captured"
+            Expect.isTrue (Set.contains "view" controlsSurface) "a typed-front-door member is captured"
+            let tracked = Set.ofList FS.Skia.UI.Build.PerPackageSurface.packagesInScope
+            let referenced =
+                Skew.referencedSymbols
+                    tracked
+                    "src/View.fs"
+                    "open FS.Skia.UI.Controls.Typed\nlet v = FS.Skia.UI.Controls.Typed.Label.view\n"
+            Expect.isEmpty
+                (Skew.detectSkew "v" "v" controlsSurface referenced)
+                "open Typed + a qualified typed member resolve clean against the broadened surface"
+        }
+
+        // FR-003: the narrowing must not blind real detection — a typed-front-door reference to a
+        // member that exists in NO captured surface is still a finding against the broadened surface.
+        test "FR-003 an absent typed-front-door member is still a skew finding" {
+            let controlsSurface =
+                FS.Skia.UI.Build.PerPackageSurface.captureCurrent [ "FS.Skia.UI.Controls" ]
+                |> List.head
+                |> fun s -> Skew.surfaceSymbols s.NormalizedText
+            let tracked = Set.ofList FS.Skia.UI.Build.PerPackageSurface.packagesInScope
+            let referenced =
+                Skew.referencedSymbols
+                    tracked
+                    "src/View.fs"
+                    "let v = FS.Skia.UI.Controls.Typed.Label.unreleasedTypedMemberV107\n"
+            Expect.isTrue
+                (Skew.detectSkew "p" "l" controlsSurface referenced
+                 |> List.exists (fun f -> f.Symbol = "unreleasedTypedMemberV107"))
+                "a typo'd/unreleased typed member is still caught (capture broadening did not blanket-pass)"
+        }
+    ]
+
 // --- US3 (T016, FR-005/006): per-package baseline byte-idempotence ----------
 
 module PPS = FS.Skia.UI.Build.PerPackageSurface

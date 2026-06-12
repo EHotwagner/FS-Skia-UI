@@ -62,7 +62,8 @@ val serializeBaseline: surface: Surface -> string
 val captureBaselines: directory: string -> packages: PackageId list -> PackageId list
 
 /// Edge: read each in-scope package's `.fsi` file(s) from the source tree and normalize,
-/// aggregating a package's multiple `.fsi` files in filename order. Discovers the
+/// aggregating a package's multiple `.fsi` files (recursively, including public typed-front-door
+/// subdirectories such as `Controls/Widgets`) in package-relative-path order. Discovers the
 /// repository root by walking up for the `src` + `.specify/feature.json` markers.
 val captureCurrent: packages: PackageId list -> Surface list
 

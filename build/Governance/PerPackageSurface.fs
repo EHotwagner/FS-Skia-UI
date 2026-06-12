@@ -203,8 +203,15 @@ let captureCurrent (packages: PackageId list) =
 
         let raw =
             if Directory.Exists dir then
-                Directory.GetFiles(dir, "*.fsi")
-                |> Array.sortBy Path.GetFileName
+                // FR-002 (feature 107): enumerate `*.fsi` RECURSIVELY so a package's genuinely-public
+                // typed front door in a subdirectory (notably `src/Controls/Widgets/*.fsi`, the
+                // `FS.Skia.UI.Controls.Typed` surface) is captured — otherwise `open
+                // FS.Skia.UI.Controls.Typed` reads as an unknown symbol to the skew check. Order by
+                // the package-relative path (separator-normalized) so the aggregated surface is
+                // deterministic across platforms. Internal modules live in subdirs WITHOUT a paired
+                // `.fsi` (feature 105 convention), so a recursive `*.fsi` sweep stays public-only.
+                Directory.GetFiles(dir, "*.fsi", SearchOption.AllDirectories)
+                |> Array.sortBy (fun f -> Path.GetRelativePath(dir, f).Replace('\\', '/'))
                 |> Array.map File.ReadAllText
                 |> String.concat "\n"
             else

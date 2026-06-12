@@ -1500,3 +1500,696 @@ module Widget =
     val toControl: widget: Widget<'msg> -> Control<'msg>
 
     val render: theme: Theme -> widget: Widget<'msg> -> ControlRenderResult<'msg>
+
+namespace FS.Skia.UI.Controls.Typed
+
+open FS.Skia.UI.Controls
+
+type SplitButtonItem = { Key: string; Label: string }
+
+type ToggleButtonProps<'msg> =
+    { Id: ControlId option
+      Text: string
+      IsOn: bool
+      Enabled: bool
+      OnToggle: (bool -> 'msg) option }
+
+type SplitButtonProps<'msg> =
+    { Id: ControlId option
+      Text: string
+      Enabled: bool
+      IsOpen: bool
+      Items: SplitButtonItem list
+      OnClick: 'msg option
+      OnSelected: (string -> 'msg) option }
+
+module ToggleButton =
+
+    val defaults: ToggleButtonProps<'msg>
+
+    val view: props: ToggleButtonProps<'msg> -> Widget<'msg>
+
+module SplitButton =
+
+    val defaults: SplitButtonProps<'msg>
+
+    val view: props: SplitButtonProps<'msg> -> Widget<'msg>
+
+namespace FS.Skia.UI.Controls.Typed
+
+open FS.Skia.UI.Controls
+
+type LineChartProps<'msg> =
+    { Id: ControlId option
+      Series: ChartSeries list
+      OnSelected: (string -> 'msg) option }
+
+type BarChartProps<'msg> =
+    { Id: ControlId option
+      Series: ChartSeries list
+      OnSelected: (string -> 'msg) option }
+
+type PieChartProps<'msg> =
+    { Id: ControlId option
+      Values: ChartPoint list
+      OnSelected: (string -> 'msg) option }
+
+type ScatterPlotProps<'msg> =
+    { Id: ControlId option
+      Series: ChartSeries list
+      OnSelected: (string -> 'msg) option }
+
+type GraphViewProps<'msg> =
+    { Id: ControlId option
+      Nodes: string list
+      OnSelected: (string -> 'msg) option }
+
+module LineChart =
+
+    val defaults: LineChartProps<'msg>
+
+    val view: props: LineChartProps<'msg> -> Widget<'msg>
+
+module BarChart =
+
+    val defaults: BarChartProps<'msg>
+
+    val view: props: BarChartProps<'msg> -> Widget<'msg>
+
+module PieChart =
+
+    val defaults: PieChartProps<'msg>
+
+    val view: props: PieChartProps<'msg> -> Widget<'msg>
+
+module ScatterPlot =
+
+    val defaults: ScatterPlotProps<'msg>
+
+    val view: props: ScatterPlotProps<'msg> -> Widget<'msg>
+
+module GraphView =
+
+    val defaults: GraphViewProps<'msg>
+
+    val view: props: GraphViewProps<'msg> -> Widget<'msg>
+
+namespace FS.Skia.UI.Controls.Typed
+
+open FS.Skia.UI.Controls
+
+type ListViewProps<'msg> =
+    { Id: ControlId
+      Items: string list
+      OnSelected: (string -> 'msg) option }
+
+type ListBoxProps<'msg> =
+    { Id: ControlId
+      Items: string list
+      OnSelected: (string -> 'msg) option }
+
+type MultiSelectListProps<'msg> =
+    { Id: ControlId
+      Items: string list
+      OnChanged: (string list -> 'msg) option }
+
+type ComboBoxProps<'msg> =
+    { Id: ControlId
+      Items: string list
+      OnChanged: (string -> 'msg) option }
+
+type TreeViewProps<'msg> =
+    { Id: ControlId
+      Items: string list
+      OnSelected: (string -> 'msg) option }
+
+module ListView =
+
+    val defaults: controlId: ControlId -> ListViewProps<'msg>
+
+    val init: props: ListViewProps<'msg> -> CollectionModel * CollectionEffect list
+
+    val update: msg: CollectionMsg -> model: CollectionModel -> CollectionModel * CollectionEffect list
+
+    val view: props: ListViewProps<'msg> -> model: CollectionModel -> Widget<'msg>
+
+module ListBox =
+
+    val defaults: controlId: ControlId -> ListBoxProps<'msg>
+
+    val init: props: ListBoxProps<'msg> -> CollectionModel * CollectionEffect list
+
+    val update: msg: CollectionMsg -> model: CollectionModel -> CollectionModel * CollectionEffect list
+
+    val view: props: ListBoxProps<'msg> -> model: CollectionModel -> Widget<'msg>
+
+module MultiSelectList =
+
+    val defaults: controlId: ControlId -> MultiSelectListProps<'msg>
+
+    val init: props: MultiSelectListProps<'msg> -> CollectionModel * CollectionEffect list
+
+    val update: msg: CollectionMsg -> model: CollectionModel -> CollectionModel * CollectionEffect list
+
+    val view: props: MultiSelectListProps<'msg> -> model: CollectionModel -> Widget<'msg>
+
+module ComboBox =
+
+    val defaults: controlId: ControlId -> ComboBoxProps<'msg>
+
+    val init: props: ComboBoxProps<'msg> -> CollectionModel * CollectionEffect list
+
+    val update: msg: CollectionMsg -> model: CollectionModel -> CollectionModel * CollectionEffect list
+
+    val view: props: ComboBoxProps<'msg> -> model: CollectionModel -> Widget<'msg>
+
+module TreeView =
+
+    val defaults: controlId: ControlId -> TreeViewProps<'msg>
+
+    val init: props: TreeViewProps<'msg> -> CollectionModel * CollectionEffect list
+
+    val update: msg: CollectionMsg -> model: CollectionModel -> CollectionModel * CollectionEffect list
+
+    val view: props: TreeViewProps<'msg> -> model: CollectionModel -> Widget<'msg>
+
+namespace FS.Skia.UI.Controls.Typed
+
+open FS.Skia.UI.Controls
+
+type GridProps<'msg> =
+    { Id: ControlId option
+      Children: Widget<'msg> list }
+
+type DockProps<'msg> =
+    { Id: ControlId option
+      Children: Widget<'msg> list }
+
+type WrapProps<'msg> =
+    { Id: ControlId option
+      Orientation: StackOrientation
+      Spacing: float
+      Children: Widget<'msg> list }
+
+type BorderProps<'msg> =
+    { Id: ControlId option
+      Thickness: float
+      Padding: float
+      Child: Widget<'msg> }
+
+type PanelProps<'msg> =
+    { Id: ControlId option
+      Header: Widget<'msg> option
+      Footer: Widget<'msg> option
+      Children: Widget<'msg> list }
+
+type ScrollViewerProps<'msg> =
+    { Id: ControlId
+      Child: Widget<'msg>
+      OnChanged: (float -> 'msg) option }
+
+type SplitViewProps<'msg> =
+    { Id: ControlId option
+      Orientation: StackOrientation
+      Children: Widget<'msg> list
+      OnChanged: (float -> 'msg) option }
+
+module Grid =
+
+    val defaults: GridProps<'msg>
+
+    val view: props: GridProps<'msg> -> Widget<'msg>
+
+module Dock =
+
+    val defaults: DockProps<'msg>
+
+    val view: props: DockProps<'msg> -> Widget<'msg>
+
+module Wrap =
+
+    val defaults: WrapProps<'msg>
+
+    val view: props: WrapProps<'msg> -> Widget<'msg>
+
+module Border =
+
+    val defaults: child: Widget<'msg> -> BorderProps<'msg>
+
+    val view: props: BorderProps<'msg> -> Widget<'msg>
+
+module Panel =
+
+    val defaults: PanelProps<'msg>
+
+    val view: props: PanelProps<'msg> -> Widget<'msg>
+
+module ScrollViewer =
+
+    val defaults: controlId: ControlId -> child: Widget<'msg> -> ScrollViewerProps<'msg>
+
+    val view: props: ScrollViewerProps<'msg> -> Widget<'msg>
+
+module SplitView =
+
+    val defaults: SplitViewProps<'msg>
+
+    val view: props: SplitViewProps<'msg> -> Widget<'msg>
+
+namespace FS.Skia.UI.Controls.Typed
+
+open FS.Skia.UI.Controls
+
+module CustomControl =
+
+    val ofControl: control: Control<'msg> -> Widget<'msg>
+
+namespace FS.Skia.UI.Controls.Typed
+
+open FS.Skia.UI.Controls
+
+type DataGridProps<'msg> =
+    { Id: ControlId
+      Columns: DataGridColumn list
+      Rows: DataGridRow list
+      RowHeight: float
+      ViewportHeight: float
+      SelectedRows: Set<string>
+      OnSelectionChanged: (string list -> 'msg) option }
+
+module DataGrid =
+
+    val defaults: controlId: ControlId -> DataGridProps<'msg>
+
+    val init: props: DataGridProps<'msg> -> DataGridModel * DataGridEffect list
+
+    val update: msg: DataGridMsg -> model: DataGridModel -> DataGridModel * DataGridEffect list
+
+    val view: props: DataGridProps<'msg> -> model: DataGridModel -> Widget<'msg>
+
+namespace FS.Skia.UI.Controls.Typed
+
+open FS.Skia.UI.Controls
+
+type RichTextProps<'msg> =
+    { Id: ControlId option
+      Runs: RichTextRun list }
+
+type LabelProps<'msg> =
+    { Id: ControlId option
+      Text: string }
+
+type ImageProps<'msg> =
+    { Id: ControlId option
+      Value: string }
+
+type IconProps<'msg> =
+    { Id: ControlId option
+      Text: string }
+
+type SeparatorProps<'msg> =
+    { Id: ControlId option }
+
+type BadgeProps<'msg> =
+    { Id: ControlId option
+      Text: string }
+
+type ProgressBarProps<'msg> =
+    { Id: ControlId option
+      Value: float }
+
+type SpinnerProps<'msg> =
+    { Id: ControlId option }
+
+type ValidationMessageProps<'msg> =
+    { Id: ControlId option
+      Text: string
+      Severity: ValidationState }
+
+module RichText =
+
+    val defaults: RichTextProps<'msg>
+
+    val view: props: RichTextProps<'msg> -> Widget<'msg>
+
+module Label =
+
+    val defaults: LabelProps<'msg>
+
+    val view: props: LabelProps<'msg> -> Widget<'msg>
+
+module Image =
+
+    val defaults: ImageProps<'msg>
+
+    val view: props: ImageProps<'msg> -> Widget<'msg>
+
+module Icon =
+
+    val defaults: IconProps<'msg>
+
+    val view: props: IconProps<'msg> -> Widget<'msg>
+
+module Separator =
+
+    val defaults: SeparatorProps<'msg>
+
+    val view: props: SeparatorProps<'msg> -> Widget<'msg>
+
+module Badge =
+
+    val defaults: BadgeProps<'msg>
+
+    val view: props: BadgeProps<'msg> -> Widget<'msg>
+
+module ProgressBar =
+
+    val defaults: ProgressBarProps<'msg>
+
+    val view: props: ProgressBarProps<'msg> -> Widget<'msg>
+
+module Spinner =
+
+    val defaults: SpinnerProps<'msg>
+
+    val view: props: SpinnerProps<'msg> -> Widget<'msg>
+
+module ValidationMessage =
+
+    val defaults: ValidationMessageProps<'msg>
+
+    val view: props: ValidationMessageProps<'msg> -> Widget<'msg>
+
+namespace FS.Skia.UI.Controls.Typed
+
+open FS.Skia.UI.Controls
+
+type IconButtonProps<'msg> =
+    { Id: ControlId option
+      Text: string
+      Enabled: bool
+      Intent: ButtonIntent
+      OnClick: 'msg option }
+
+type NumericInputProps<'msg> =
+    { Id: ControlId option
+      Value: float
+      ReadOnly: bool
+      OnChanged: (float -> 'msg) option }
+
+type RadioGroupProps<'msg> =
+    { Id: ControlId option
+      Items: string list
+      SelectedKey: string option
+      OnChanged: (string -> 'msg) option }
+
+type SwitchProps<'msg> =
+    { Id: ControlId option
+      Checked: bool
+      OnChanged: (bool -> 'msg) option }
+
+type SliderProps<'msg> =
+    { Id: ControlId option
+      Value: float
+      OnChanged: (float -> 'msg) option }
+
+module IconButton =
+
+    val defaults: IconButtonProps<'msg>
+
+    val view: props: IconButtonProps<'msg> -> Widget<'msg>
+
+module NumericInput =
+
+    val defaults: NumericInputProps<'msg>
+
+    val view: props: NumericInputProps<'msg> -> Widget<'msg>
+
+module RadioGroup =
+
+    val defaults: RadioGroupProps<'msg>
+
+    val view: props: RadioGroupProps<'msg> -> Widget<'msg>
+
+module Switch =
+
+    val defaults: SwitchProps<'msg>
+
+    val view: props: SwitchProps<'msg> -> Widget<'msg>
+
+module Slider =
+
+    val defaults: SliderProps<'msg>
+
+    val view: props: SliderProps<'msg> -> Widget<'msg>
+
+namespace FS.Skia.UI.Controls.Typed
+
+open FS.Skia.UI.Controls
+
+type TabsProps<'msg> =
+    { Id: ControlId option
+      Items: string list
+      SelectedKey: string option
+      OnChanged: (string -> 'msg) option }
+
+type MenuProps<'msg> =
+    { Id: ControlId option
+      Items: string list
+      OnSelected: (string -> 'msg) option }
+
+type ContextMenuProps<'msg> =
+    { Id: ControlId option
+      Items: string list
+      OnSelected: (string -> 'msg) option }
+
+type ToolbarProps<'msg> =
+    { Id: ControlId option
+      Children: Widget<'msg> list
+      OnClick: 'msg option }
+
+module Tabs =
+
+    val defaults: TabsProps<'msg>
+
+    val view: props: TabsProps<'msg> -> Widget<'msg>
+
+module Menu =
+
+    val defaults: MenuProps<'msg>
+
+    val view: props: MenuProps<'msg> -> Widget<'msg>
+
+module ContextMenu =
+
+    val defaults: ContextMenuProps<'msg>
+
+    val view: props: ContextMenuProps<'msg> -> Widget<'msg>
+
+module Toolbar =
+
+    val defaults: ToolbarProps<'msg>
+
+    val view: props: ToolbarProps<'msg> -> Widget<'msg>
+
+namespace FS.Skia.UI.Controls.Typed
+
+open FS.Skia.UI.Controls
+
+type TooltipProps<'msg> =
+    { Id: ControlId option
+      Text: string }
+
+type DialogProps<'msg> =
+    { Id: ControlId option
+      Title: string option
+      IsOpen: bool
+      Children: Widget<'msg> list
+      OnSelected: (string -> 'msg) option }
+
+type ToastProps<'msg> =
+    { Id: ControlId option
+      Text: string
+      Severity: ValidationState }
+
+type OverlayProps<'msg> =
+    { Id: ControlId option
+      IsOpen: bool
+      Child: Widget<'msg> }
+
+module Tooltip =
+
+    val defaults: TooltipProps<'msg>
+
+    val view: props: TooltipProps<'msg> -> Widget<'msg>
+
+module Dialog =
+
+    val defaults: DialogProps<'msg>
+
+    val view: props: DialogProps<'msg> -> Widget<'msg>
+
+module Toast =
+
+    val defaults: ToastProps<'msg>
+
+    val view: props: ToastProps<'msg> -> Widget<'msg>
+
+module Overlay =
+
+    val defaults: child: Widget<'msg> -> OverlayProps<'msg>
+
+    val view: props: OverlayProps<'msg> -> Widget<'msg>
+
+namespace FS.Skia.UI.Controls.Typed
+
+open System
+open FS.Skia.UI.Controls
+open FS.Skia.UI.Scene
+
+type ColorSwatch = { Name: string; Color: Color }
+
+type DatePickerProps<'msg> =
+    { Id: ControlId option
+      Value: DateOnly option
+      Enabled: bool
+      IsOpen: bool
+      OnChange: (DateOnly -> 'msg) option }
+
+type TimePickerProps<'msg> =
+    { Id: ControlId option
+      Value: TimeOnly option
+      Enabled: bool
+      OnChange: (TimeOnly -> 'msg) option }
+
+type ColorPickerProps<'msg> =
+    { Id: ControlId option
+      Swatches: ColorSwatch list
+      Selected: ColorSwatch option
+      OnSelected: (ColorSwatch -> 'msg) option }
+
+module DatePicker =
+
+    val defaults: DatePickerProps<'msg>
+
+    val view: props: DatePickerProps<'msg> -> Widget<'msg>
+
+module TimePicker =
+
+    val defaults: TimePickerProps<'msg>
+
+    val view: props: TimePickerProps<'msg> -> Widget<'msg>
+
+module ColorPicker =
+
+    val defaults: ColorPickerProps<'msg>
+
+    val view: props: ColorPickerProps<'msg> -> Widget<'msg>
+
+namespace FS.Skia.UI.Controls.Typed
+
+open FS.Skia.UI.Controls
+
+type ButtonIntent =
+    | Primary
+    | Secondary
+    | Danger
+    | Ghost
+
+type StackOrientation =
+    | Vertical
+    | Horizontal
+
+type TextBlockProps<'msg> =
+    { Id: ControlId option
+      Text: string }
+
+type ButtonProps<'msg> =
+    { Id: ControlId option
+      Text: string
+      Enabled: bool
+      Intent: ButtonIntent
+      Classes: StyleClass list
+      Leading: Widget<'msg> option
+      Trailing: Widget<'msg> option
+      OnClick: 'msg option }
+
+type CheckBoxProps<'msg> =
+    { Id: ControlId option
+      Text: string
+      Checked: bool
+      Classes: StyleClass list
+      OnChanged: (bool -> 'msg) option }
+
+type StackProps<'msg> =
+    { Id: ControlId option
+      Orientation: StackOrientation
+      Spacing: float
+      Children: Widget<'msg> list }
+
+module TextBlock =
+
+    val defaults: TextBlockProps<'msg>
+
+    val view: props: TextBlockProps<'msg> -> Widget<'msg>
+
+module Button =
+
+    val defaults: ButtonProps<'msg>
+
+    val view: props: ButtonProps<'msg> -> Widget<'msg>
+
+module CheckBox =
+
+    val defaults: CheckBoxProps<'msg>
+
+    val view: props: CheckBoxProps<'msg> -> Widget<'msg>
+
+module Stack =
+
+    val defaults: StackProps<'msg>
+
+    val view: props: StackProps<'msg> -> Widget<'msg>
+
+namespace FS.Skia.UI.Controls.Typed
+
+open FS.Skia.UI.Controls
+
+type TextAreaProps<'msg> =
+    { Id: ControlId
+      Value: string
+      ReadOnly: bool
+      Validation: ValidationState
+      OnChanged: (string -> 'msg) option }
+
+module TextArea =
+
+    val defaults: controlId: ControlId -> TextAreaProps<'msg>
+
+    val init: props: TextAreaProps<'msg> -> TextInputModel * TextInputEffect list
+
+    val update: msg: TextInputMsg -> model: TextInputModel -> TextInputModel * TextInputEffect list
+
+    val view: props: TextAreaProps<'msg> -> model: TextInputModel -> Widget<'msg>
+
+namespace FS.Skia.UI.Controls.Typed
+
+open FS.Skia.UI.Controls
+
+type TextBoxProps<'msg> =
+    { Id: ControlId
+      Mode: TextInputMode
+      Value: string
+      ReadOnly: bool
+      Validation: ValidationState
+      OnChanged: (string -> 'msg) option }
+
+module TextBox =
+
+    val defaults: controlId: ControlId -> TextBoxProps<'msg>
+
+    val init: props: TextBoxProps<'msg> -> TextInputModel * TextInputEffect list
+
+    val update: msg: TextInputMsg -> model: TextInputModel -> TextInputModel * TextInputEffect list
+
+    val view: props: TextBoxProps<'msg> -> model: TextInputModel -> Widget<'msg>

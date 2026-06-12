@@ -1,7 +1,7 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
 <!-- SPECKIT START -->
-specs/106-controls-api-discoverability/plan.md
+specs/107-governance-skew-doc-hardening/plan.md
 <!-- SPECKIT END -->
 
 ## Run `Route` first; run only the gates it prints

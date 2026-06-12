@@ -31,6 +31,16 @@ let readReference packageId =
     Expect.isTrue (File.Exists path) $"{packageId} source-shaped package API reference exists at {path}"
     File.ReadAllText path
 
+/// FR-004 (feature 107): the PACKAGE-AGNOSTIC doc-preservation signal. A generated reference
+/// "carries XML summaries" iff its embedded curated-signature body preserved at least one `///`
+/// summary line. This holds whether those summaries are still placeholder boilerplate (today's
+/// Scene/Testing) or substantive (post documentation cleanup), so documenting any package's
+/// surface never breaks the check — replacing feature 106's brittle dependence on the placeholder
+/// boilerplate sentence. It FAILS (FR-005) when the generator drops `///` summaries entirely.
+let preservesXmlSummaries (reference: string) =
+    reference.Replace("\r\n", "\n").Split('\n')
+    |> Array.exists (fun line -> line.TrimStart().StartsWith("///", StringComparison.Ordinal))
+
 let requiredPackages =
     [ "FS.Skia.UI.Scene", [ "src/Scene/Scene.fsi" ]
       "FS.Skia.UI.SkiaViewer", [ "src/SkiaViewer/SkiaViewer.fsi" ]
@@ -107,26 +117,60 @@ let packageApiReferenceTests =
             let controls = readReference "FS.Skia.UI.Controls"
             let testing = readReference "FS.Skia.UI.Testing"
 
-            // Scene and Testing are out of scope of the Controls documentation pass (feature
-            // 106), so they still carry the placeholder summary — its survival through reference
-            // generation proves the generator preserves XML summary text verbatim.
-            [ scene; testing ]
-            |> List.iter (fun reference ->
-                Expect.stringContains reference "Public contract type exposed by this FS.Skia.UI package." "XML summary text is preserved")
+            // FR-004 (feature 107): preservation is proven by a PACKAGE-AGNOSTIC signal — every
+            // tracked package's reference preserved at least one `///` summary line — not by
+            // asserting the placeholder boilerplate sentence is present in any particular package.
+            // So the deferred non-Controls documentation cleanup (which removes that boilerplate
+            // from Scene/Testing) cannot re-break this check the way feature 106 had to
+            // special-case Controls.
+            requiredPackages
+            |> List.iter (fun (packageId, _) ->
+                Expect.isTrue
+                    (preservesXmlSummaries (readReference packageId))
+                    $"{packageId} reference preserves at least one /// summary (FR-004)")
 
-            // Controls is fully documented (feature 106): the reference carries substantive,
-            // member-specific summaries (the doc standard cross-references the typed `Props`
-            // front door) and NO placeholder boilerplate — which equally proves XML summary text
-            // is preserved, and additionally guards SC-002 at the reference-generation layer.
+            // The substantive-summary state is equally accepted: Controls (feature 106) carries
+            // member-specific summaries (cross-referencing the typed `Props` front door) and NO
+            // placeholder boilerplate, and still satisfies the same package-agnostic signal (SC-002).
             Expect.stringContains controls "typed `Props`" "Controls reference preserves substantive XML summaries (typed Props cross-reference)"
-            Expect.isFalse
-                (controls.Contains "Public contract function exposed by this FS.Skia.UI package.")
-                "Controls reference carries no placeholder boilerplate (feature 106 SC-002)"
+            Expect.isTrue
+                (preservesXmlSummaries controls
+                 && not (controls.Contains "Public contract function exposed by this FS.Skia.UI package."))
+                "a fully-documented package (no placeholder boilerplate) still satisfies the preservation signal (SC-002)"
 
             [ scene; controls; testing ]
             |> List.iter (fun reference ->
                 Expect.stringContains reference "omitted-symbol-reasons:" "omitted symbols are reported even when the list is empty"
                 Expect.stringContains reference "unsupported-symbols:" "unsupported signatures are diagnostic instead of silently dropped")
+        }
+
+        // FR-004 / SC-002: documenting a package (removing the placeholder boilerplate, leaving
+        // substantive summaries) keeps the package-agnostic check green — the failure mode feature
+        // 106 hit is gone. Driven by a simulated post-cleanup reference so the guarantee is proven
+        // without waiting for the deferred non-Controls documentation pass to land.
+        test "FR-004 a placeholder-free reference still satisfies the preservation signal" {
+            let documented =
+                "package-id: FS.Skia.UI.Scene\nxml-summary-count: 2\n## Curated Signatures\n```fsharp\n"
+                + "/// The drawing surface a scene paints onto.\ntype Surface = { Width: int }\n"
+                + "/// Begins a new frame on the surface.\nval beginFrame: surface: Surface -> unit\n```\n"
+            Expect.isTrue
+                (preservesXmlSummaries documented)
+                "documenting a package (placeholder removed) keeps the preservation check green"
+            Expect.isFalse
+                (documented.Contains "Public contract type exposed by this FS.Skia.UI package.")
+                "the documented reference carries no placeholder boilerplate"
+        }
+
+        // FR-005 / SC-002: the guarantee is RETAINED — if reference generation drops `///`
+        // summaries, the package-agnostic check still fails. Only the brittle placeholder-sentence
+        // sample was replaced, not the guarantee itself.
+        test "FR-005 the preservation check still fails when /// summaries are dropped" {
+            let dropped =
+                "package-id: FS.Skia.UI.Scene\nxml-summary-count: 0\n## Curated Signatures\n```fsharp\n"
+                + "type Surface = { Width: int }\nval beginFrame: surface: Surface -> unit\n```\n"
+            Expect.isFalse
+                (preservesXmlSummaries dropped)
+                "a reference whose body carries no /// summaries fails preservation (guarantee retained)"
         }
 
         test "reference generation declares no reflection or repository-source authoring fallback" {

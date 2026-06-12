@@ -56,6 +56,15 @@ let private rootedInTracked (trackedPackages: Set<string>) (segs: string[]) : bo
 let referencedSymbols (trackedPackages: Set<string>) (file: string) (sourceText: string) : (string * string) list =
     let acc = System.Collections.Generic.List<string>()
 
+    // FR-001 (feature 107): only LIVE-CODE references carry a skew signal. Strip `//`/`///`
+    // line and `(* *)` block comments first, so an `FS.Skia.UI.…` token that merely appears
+    // in prose or a doc-comment (e.g. naming the typed front door `FS.Skia.UI.Controls.Typed`)
+    // is not treated as a referenced symbol. We reuse `PerPackageSurface.normalize` — the same
+    // comment-stripper the surface capture already trusts (newline-preserving, so the `(?m)^`
+    // open-line anchor still matches) — rather than a second parser. A token that appears in
+    // BOTH a comment and live code survives via its live-code occurrence.
+    let liveCode = PerPackageSurface.normalize sourceText
+
     let consider (segs: string[]) =
         // Only references rooted at a surface-tracked consumer package, with a symbol leaf
         // beyond the package id, carry a skew signal.
@@ -63,12 +72,12 @@ let referencedSymbols (trackedPackages: Set<string>) (file: string) (sourceText:
             acc.Add segs.[segs.Length - 1]
 
     // (a) `open FS.Skia.UI.<...>` — the opened namespace's leaf must resolve.
-    for m in Regex.Matches(sourceText, @"(?m)^\s*open\s+(FS\.Skia\.UI(?:\." + ident + @")*)") do
+    for m in Regex.Matches(liveCode, @"(?m)^\s*open\s+(FS\.Skia\.UI(?:\." + ident + @")*)") do
         consider (m.Groups.[1].Value.Split('.'))
 
     // (b) fully-qualified `FS.Skia.UI.<...>.<Symbol>` value/type references — the trailing
     //     symbol must resolve in the pinned surface.
-    for m in Regex.Matches(sourceText, @"\bFS\.Skia\.UI(?:\." + ident + @")+") do
+    for m in Regex.Matches(liveCode, @"\bFS\.Skia\.UI(?:\." + ident + @")+") do
         consider (m.Value.Split('.'))
 
     acc |> Seq.map (fun s -> s, file) |> Seq.distinct |> List.ofSeq
