@@ -52,49 +52,49 @@ type SplitViewProps<'msg> =
       Children: Widget<'msg> list
       OnChanged: (float -> 'msg) option }
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Grid` control.
 module Grid =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: GridProps<'msg>
     /// Lowers children via `Widget.toControl` into `Grid.children`, order preserved.
     val view: props: GridProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Dock` control.
 module Dock =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: DockProps<'msg>
     /// Lowers children via `Widget.toControl` into `Dock.children`, order preserved.
     val view: props: DockProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Wrap` control.
 module Wrap =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: WrapProps<'msg>
     /// Lowers children via `Widget.toControl` into `Wrap.children`, order preserved.
     val view: props: WrapProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Border` control.
 module Border =
     /// Authoring defaults for the given required child; optional fields take their value from here.
     val defaults: child: Widget<'msg> -> BorderProps<'msg>
     /// Lowers its single child via `Widget.toControl` into `Border.child`.
     val view: props: BorderProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Panel` control.
 module Panel =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: PanelProps<'msg>
     /// Lowers children via `Widget.toControl` into `Panel.children`, order preserved.
     val view: props: PanelProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `ScrollViewer` control.
 module ScrollViewer =
     /// Authoring defaults for the given required `Id` and child.
     val defaults: controlId: ControlId -> child: Widget<'msg> -> ScrollViewerProps<'msg>
     /// Lowers structurally equal to `Control.standard (Custom "scroll-viewer")`.
     val view: props: ScrollViewerProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `SplitView` control.
 module SplitView =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: SplitViewProps<'msg>

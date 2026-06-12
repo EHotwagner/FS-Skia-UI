@@ -34,7 +34,7 @@ type TreeViewProps<'msg> =
       Items: string list
       OnSelected: (string -> 'msg) option }
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `ListView` control.
 module ListView =
     /// Authoring defaults for the given required `Id`.
     val defaults: controlId: ControlId -> ListViewProps<'msg>
@@ -45,7 +45,7 @@ module ListView =
     /// Lowers structurally equal to `Control.standard (Custom "list-view")` for the current model state.
     val view: props: ListViewProps<'msg> -> model: CollectionModel -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `ListBox` control.
 module ListBox =
     /// Authoring defaults for the given required `Id`.
     val defaults: controlId: ControlId -> ListBoxProps<'msg>
@@ -56,7 +56,7 @@ module ListBox =
     /// Lowers structurally equal to `Control.standard (Custom "list-box")` for the current model state.
     val view: props: ListBoxProps<'msg> -> model: CollectionModel -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `MultiSelectList` control.
 module MultiSelectList =
     /// Authoring defaults for the given required `Id`.
     val defaults: controlId: ControlId -> MultiSelectListProps<'msg>
@@ -67,7 +67,7 @@ module MultiSelectList =
     /// Lowers structurally equal to `Control.standard (Custom "multi-select-list")` for the current model state.
     val view: props: MultiSelectListProps<'msg> -> model: CollectionModel -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `ComboBox` control.
 module ComboBox =
     /// Authoring defaults for the given required `Id`.
     val defaults: controlId: ControlId -> ComboBoxProps<'msg>
@@ -78,7 +78,7 @@ module ComboBox =
     /// Lowers structurally equal to `Control.standard (Custom "combo-box")` for the current model state.
     val view: props: ComboBoxProps<'msg> -> model: CollectionModel -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `TreeView` control.
 module TreeView =
     /// Authoring defaults for the given required `Id`.
     val defaults: controlId: ControlId -> TreeViewProps<'msg>

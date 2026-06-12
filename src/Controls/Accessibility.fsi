@@ -1,12 +1,12 @@
 namespace FS.Skia.UI.Controls
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Build and validate a control's accessibility contract: `metadata`/`defaultFor` plus `keyboard`/`contrast` evidence.
 module Accessibility =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Describe a control's keyboard contract: whether it is `focusable` and its activation/navigation keys.
     val keyboard: focusable: bool -> activationKeys: string list -> navigationKeys: string list -> KeyboardOperation
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Record `ContrastEvidence` for a foreground/background pair against the `requiredRatio`.
     val contrast: foreground: FS.Skia.UI.Scene.Color -> background: FS.Skia.UI.Scene.Color -> ratio: float -> requiredRatio: float -> ContrastEvidence
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Assemble full `AccessibilityMetadata` from role, name source, state, focus order, keyboard, contrast, and nav range.
     val metadata:
         role: AccessibilityRole ->
         nameSource: string ->
@@ -17,7 +17,7 @@ module Accessibility =
         navRange: NavRange option ->
             AccessibilityMetadata
 
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build default `AccessibilityMetadata` for a `ControlKind` with the given accessible `label`.
     val defaultFor: kind: ControlKind -> label: string -> AccessibilityMetadata
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Check a `control`'s accessibility contract and return any `ControlDiagnostic` violations.
     val validate: control: Control<'msg> -> ControlDiagnostic list

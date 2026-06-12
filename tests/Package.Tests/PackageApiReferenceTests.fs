@@ -107,9 +107,24 @@ let packageApiReferenceTests =
             let controls = readReference "FS.Skia.UI.Controls"
             let testing = readReference "FS.Skia.UI.Testing"
 
+            // Scene and Testing are out of scope of the Controls documentation pass (feature
+            // 106), so they still carry the placeholder summary — its survival through reference
+            // generation proves the generator preserves XML summary text verbatim.
+            [ scene; testing ]
+            |> List.iter (fun reference ->
+                Expect.stringContains reference "Public contract type exposed by this FS.Skia.UI package." "XML summary text is preserved")
+
+            // Controls is fully documented (feature 106): the reference carries substantive,
+            // member-specific summaries (the doc standard cross-references the typed `Props`
+            // front door) and NO placeholder boilerplate — which equally proves XML summary text
+            // is preserved, and additionally guards SC-002 at the reference-generation layer.
+            Expect.stringContains controls "typed `Props`" "Controls reference preserves substantive XML summaries (typed Props cross-reference)"
+            Expect.isFalse
+                (controls.Contains "Public contract function exposed by this FS.Skia.UI package.")
+                "Controls reference carries no placeholder boilerplate (feature 106 SC-002)"
+
             [ scene; controls; testing ]
             |> List.iter (fun reference ->
-                Expect.stringContains reference "Public contract type exposed by this FS.Skia.UI package." "XML summary text is preserved"
                 Expect.stringContains reference "omitted-symbol-reasons:" "omitted symbols are reported even when the list is empty"
                 Expect.stringContains reference "unsupported-symbols:" "unsupported signatures are diagnostic instead of silently dropped")
         }

@@ -12,7 +12,7 @@ type TextBoxProps<'msg> =
       Validation: ValidationState
       OnChanged: (string -> 'msg) option }
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `TextBox` control.
 module TextBox =
     /// Authoring defaults for the given required `Id`.
     val defaults: controlId: ControlId -> TextBoxProps<'msg>

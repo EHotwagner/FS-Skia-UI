@@ -4,13 +4,8 @@ open System
 open Expecto
 open GovernanceTestSupport
 
-let expectControlsOnlyComposition relativePath =
-    let source =
-        if relativePath = "template/base/src/Product/View.fs" then
-            read relativePath + "\n" + read "template/base/src/Product/Model.fs"
-        else
-            read relativePath
-
+// The legacy builder composition tokens (the ControlsGallery sample still authors this way).
+let legacyCompositionTokens =
     [ "open FS.Skia.UI.Controls"
       "TextBox.create"
       "Button.create"
@@ -18,6 +13,26 @@ let expectControlsOnlyComposition relativePath =
       "DataGrid.create"
       "DataGrid.columns"
       "DataGrid.rows" ]
+
+// Feature 106 (US1, SC-003): the generated starter composes through the TYPED Props front door
+// (`FS.Skia.UI.Controls.Typed`, `Module.view`), not the legacy stringly builders.
+let typedCompositionTokens =
+    [ "open FS.Skia.UI.Controls"
+      "FS.Skia.UI.Controls.Typed"
+      "TextBox.view"
+      "Button.view"
+      "LineChart.view"
+      "DataGrid.view"
+      "DataGrid.columns" ]
+
+let expectControlsOnlyComposition relativePath requiredTokens =
+    let source =
+        if relativePath = "template/base/src/Product/View.fs" then
+            read relativePath + "\n" + read "template/base/src/Product/Model.fs"
+        else
+            read relativePath
+
+    requiredTokens
     |> List.iter (fun required ->
         Expect.stringContains source required $"{relativePath} composes form, chart, and DataGrid through Controls using {required}")
 
@@ -79,17 +94,17 @@ let expectProductOwnedControlsTests relativePath =
 let controlsBoundaryCompositionTests =
     testList "Controls boundary composition" [
         test "ControlsGallery sample composes form chart and DataGrid through Controls only" {
-            expectControlsOnlyComposition "samples/ControlsGallery/Program.fs"
+            expectControlsOnlyComposition "samples/ControlsGallery/Program.fs" legacyCompositionTokens
             expectProjectUsesControlsOnly "samples/ControlsGallery/ControlsGallery.fsproj"
         }
 
         test "generated product template composes form chart and DataGrid through Controls only" {
-            expectControlsOnlyComposition "template/base/src/Product/View.fs"
+            expectControlsOnlyComposition "template/base/src/Product/View.fs" typedCompositionTokens
             expectProjectUsesControlsOnly "template/base/src/Product/Product.fsproj"
         }
 
         test "generated product template keeps Controls package references and source product-owned" {
-            expectControlsOnlyComposition "template/base/src/Product/View.fs"
+            expectControlsOnlyComposition "template/base/src/Product/View.fs" typedCompositionTokens
             expectProjectUsesControlsOnly "template/base/src/Product/Product.fsproj"
             expectNoCopiedFrameworkAssets "template/base"
         }

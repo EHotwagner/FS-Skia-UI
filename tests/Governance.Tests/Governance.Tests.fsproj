@@ -93,6 +93,7 @@
     <Compile Include="Feature088GovernanceTests.fs" />
     <Compile Include="Feature089GovernanceTests.fs" />
     <Compile Include="Feature090GovernanceTests.fs" />
+    <Compile Include="Feature106GovernanceTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

@@ -33,35 +33,35 @@ type GraphViewProps<'msg> =
       Nodes: string list
       OnSelected: (string -> 'msg) option }
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `LineChart` control.
 module LineChart =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: LineChartProps<'msg>
     /// Lowers structurally equal to `LineChart.create [ LineChart.series props.Series ]`.
     val view: props: LineChartProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `BarChart` control.
 module BarChart =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: BarChartProps<'msg>
     /// Lowers structurally equal to `BarChart.create [ BarChart.series props.Series ]`.
     val view: props: BarChartProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `PieChart` control.
 module PieChart =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: PieChartProps<'msg>
     /// Lowers structurally equal to `PieChart.create [ PieChart.values props.Values ]`.
     val view: props: PieChartProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `ScatterPlot` control.
 module ScatterPlot =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: ScatterPlotProps<'msg>
     /// Lowers structurally equal to `ScatterPlot.create [ ScatterPlot.series props.Series ]`.
     val view: props: ScatterPlotProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `GraphView` control.
 module GraphView =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: GraphViewProps<'msg>

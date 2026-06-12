@@ -33,6 +33,8 @@ type Target =
     | ContrastCheck
     // Feature 078 (US1, FR-005): the controls-catalog docs currency/completeness/preview gate.
     | ControlsCatalogDocsCheck
+    // Feature 106 (US2, FR-007): the Controls public-surface documentation-coverage gate.
+    | ControlsDocCoverageCheck
     // Feature 080 (US2, FR-007/FR-012): the render-capable decoded-content fidelity gate.
     | ControlFidelityCheck
     | ControlsInteractionCheck
@@ -106,6 +108,7 @@ let allTargets =
       DesignTokenDrift
       ContrastCheck
       ControlsCatalogDocsCheck
+      ControlsDocCoverageCheck
       ControlFidelityCheck
       ControlsInteractionCheck
       ControlsRenderingCheck
@@ -164,6 +167,7 @@ let name target =
     | DesignTokenDrift -> "DesignTokenDrift"
     | ContrastCheck -> "ContrastCheck"
     | ControlsCatalogDocsCheck -> "ControlsCatalogDocsCheck"
+    | ControlsDocCoverageCheck -> "ControlsDocCoverageCheck"
     | ControlFidelityCheck -> "ControlFidelityCheck"
     | ControlsInteractionCheck -> "ControlsInteractionCheck"
     | ControlsRenderingCheck -> "ControlsRenderingCheck"
@@ -230,6 +234,7 @@ let directPrerequisites target =
     | DesignTokenDrift -> []
     | ContrastCheck -> []
     | ControlsCatalogDocsCheck -> []
+    | ControlsDocCoverageCheck -> []
     | ControlFidelityCheck -> []
     | ControlsInteractionCheck -> []
     | ControlsRenderingCheck -> []
@@ -352,6 +357,7 @@ let routableGates =
         | DesignTokenDrift
         | ContrastCheck
         | ControlsCatalogDocsCheck
+        | ControlsDocCoverageCheck
         | ControlFidelityCheck
         | ControlsInteractionCheck
         | ControlsRenderingCheck

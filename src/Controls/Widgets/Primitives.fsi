@@ -56,14 +56,14 @@ type StackProps<'msg> =
       Spacing: float
       Children: Widget<'msg> list }
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `TextBlock` control.
 module TextBlock =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: TextBlockProps<'msg>
     /// Lowers structurally equal to `TextBlock.create [ TextBlock.text props.Text ]`.
     val view: props: TextBlockProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Button` control.
 module Button =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: ButtonProps<'msg>
@@ -71,7 +71,7 @@ module Button =
     /// `OnClick = None` lowers to no event binding.
     val view: props: ButtonProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `CheckBox` control.
 module CheckBox =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: CheckBoxProps<'msg>
@@ -79,7 +79,7 @@ module CheckBox =
     /// `OnChanged = None` lowers to no event binding.
     val view: props: CheckBoxProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Stack` control.
 module Stack =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: StackProps<'msg>

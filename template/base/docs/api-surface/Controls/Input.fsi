@@ -37,7 +37,7 @@ type SliderProps<'msg> =
       Value: float
       OnChanged: (float -> 'msg) option }
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `IconButton` control.
 module IconButton =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: IconButtonProps<'msg>
@@ -45,7 +45,7 @@ module IconButton =
     /// `OnClick = None` lowers to no event binding.
     val view: props: IconButtonProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `NumericInput` control.
 module NumericInput =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: NumericInputProps<'msg>
@@ -53,21 +53,21 @@ module NumericInput =
     /// `OnChanged = None` lowers to no event binding.
     val view: props: NumericInputProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `RadioGroup` control.
 module RadioGroup =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: RadioGroupProps<'msg>
     /// Lowers structurally equal to the legacy `RadioGroup.create` attrs.
     val view: props: RadioGroupProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Switch` control.
 module Switch =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: SwitchProps<'msg>
     /// Lowers structurally equal to the legacy `Switch.create` attrs.
     val view: props: SwitchProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Slider` control.
 module Slider =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: SliderProps<'msg>

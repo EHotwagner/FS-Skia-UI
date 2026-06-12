@@ -1,22 +1,22 @@
 namespace FS.Skia.UI.Controls
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The text caret position (`Index`) within a focused control identified by `ControlId`.
 type ControlCaret =
     { ControlId: ControlId
       Index: int }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A text selection range (`Start`..`End`) within the control identified by `ControlId`.
 type ControlSelection =
     { ControlId: ControlId
       Start: int
       End: int }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// In-flight IME composition `Text` being entered into the control identified by `ControlId`.
 type ControlComposition =
     { ControlId: ControlId
       Text: string }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// An active pointer drag on `ControlId`, tracking start (`StartX`/`StartY`) and current (`CurrentX`/`CurrentY`) coordinates.
 type ControlDrag =
     { ControlId: ControlId
       StartX: float
@@ -24,7 +24,7 @@ type ControlDrag =
       CurrentX: float
       CurrentY: float }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// An observable side effect emitted by `ControlRuntime.update` when interaction state changes (focus, hover, caret, selection, drag, diagnostics).
 type ControlRuntimeEffect =
     | FocusChanged of ControlId option
     | HoverChanged of ControlId option
@@ -37,7 +37,7 @@ type ControlRuntimeEffect =
     | CancelledInteraction of ControlId option
     | ReportControlRuntimeDiagnostic of ControlDiagnostic
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The aggregate runtime interaction state: focused/hovered/pressed controls, `Caret`, `Selection`, `Composition`, `ActiveDrag`, and accumulated `Diagnostics`.
 type ControlRuntimeModel =
     { FocusedControl: ControlId option
       HoveredControl: ControlId option
@@ -49,7 +49,7 @@ type ControlRuntimeModel =
       Diagnostics: ControlDiagnostic list
       RecentEffects: ControlRuntimeEffect list }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// An input message driving the runtime transition, e.g. `FocusControl`, `HoverControl`, `PressControl`, `SetCaret`, `StartDrag`, or `Reset`.
 type ControlRuntimeMsg =
     | FocusControl of ControlId option
     | HoverControl of ControlId option
@@ -68,16 +68,15 @@ type ControlRuntimeMsg =
     | CancelInteraction of ControlId option
     | Reset
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// MVU runtime tracking control focus, hover, press, caret/selection, composition, drag, and derived visual state.
 module ControlRuntime =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Seeds an empty `ControlRuntimeModel` with no focus or interaction and its initial effects.
     val init: unit -> ControlRuntimeModel * ControlRuntimeEffect list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Pure transition applying `msg` to `model`, returning the next model and the `ControlRuntimeEffect` list it raises.
     val update: msg: ControlRuntimeMsg -> model: ControlRuntimeModel -> ControlRuntimeModel * ControlRuntimeEffect list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Returns the `ControlDiagnostic` list currently accumulated in `model`.
     val diagnostics: model: ControlRuntimeModel -> ControlDiagnostic list
 
-    /// Public contract function exposed by this FS.Skia.UI package.
     /// Feature 096 (R1): the pure, total, deterministic projection from live
     /// interaction state to a single VisualState. Selects the highest-ranked
     /// runtime-derivable state for `controlId` under the fixed closed order

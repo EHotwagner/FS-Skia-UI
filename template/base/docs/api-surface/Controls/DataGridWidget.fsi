@@ -13,7 +13,7 @@ type DataGridProps<'msg> =
       SelectedRows: Set<string>
       OnSelectionChanged: (string list -> 'msg) option }
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `DataGrid` control.
 module DataGrid =
     /// Authoring defaults for the given required `Id`.
     val defaults: controlId: ControlId -> DataGridProps<'msg>

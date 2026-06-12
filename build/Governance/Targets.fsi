@@ -48,6 +48,8 @@ type Target =
     | ContrastCheck
     // Feature 078 (US1, FR-005): the controls-catalog docs currency/completeness/preview gate.
     | ControlsCatalogDocsCheck
+    // Feature 106 (US2, FR-007): the Controls public-surface documentation-coverage gate.
+    | ControlsDocCoverageCheck
     // Feature 080 (US2, FR-007/FR-012): the render-capable decoded-content fidelity gate.
     | ControlFidelityCheck
     | ControlsInteractionCheck

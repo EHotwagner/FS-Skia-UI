@@ -2,37 +2,42 @@ namespace FS.Skia.UI.Controls
 
 // `ChartPoint` / `ChartSeries` are declared in Types.fsi (feature 080, surface-neutral move).
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Line-chart control plotting one or more `ChartSeries` as connected lines;
+/// author it through the typed `Props` front door.
 module LineChart =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Builds a `LineChart` `Control` from the given attributes.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute supplying the line-chart's `series` data to plot.
     val series: ChartSeries list -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Bar-chart control rendering each `ChartSeries` as grouped bars; author it
+/// through the typed `Props` front door.
 module BarChart =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Builds a `BarChart` `Control` from the given attributes.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute supplying the bar-chart's `series` data to render as bars.
     val series: ChartSeries list -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Pie-chart control rendering `ChartPoint` values as proportional slices;
+/// author it through the typed `Props` front door.
 module PieChart =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Builds a `PieChart` `Control` from the given attributes.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute supplying the pie-chart's `values`, each a slice of the whole.
     val values: ChartPoint list -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Scatter-plot control rendering each `ChartSeries` as discrete points;
+/// author it through the typed `Props` front door.
 module ScatterPlot =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Builds a `ScatterPlot` `Control` from the given attributes.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute supplying the scatter-plot's `series` of points to plot.
     val series: ChartSeries list -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Graph-view control rendering a set of named nodes and their relationships;
+/// author it through the typed `Props` front door.
 module GraphView =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Builds a `GraphView` `Control` from the given attributes.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute supplying the graph's `nodes` by name.
     val nodes: string list -> Attr<'msg>

@@ -20,6 +20,8 @@ let private priorKnownGates =
       "ControlsCatalogCheck"
       "ControlsCatalogGenerationCheck"
       "ControlsCatalogDocsCheck"
+      // Feature 106 (US2, FR-007): the Controls documentation-coverage gate joins the routable set.
+      "ControlsDocCoverageCheck"
       "ControlFidelityCheck"
       "DesignTokenDrift"
       "ContrastCheck"

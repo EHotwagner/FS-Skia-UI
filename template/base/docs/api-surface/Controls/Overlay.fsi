@@ -28,28 +28,28 @@ type OverlayProps<'msg> =
       IsOpen: bool
       Child: Widget<'msg> }
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Tooltip` control.
 module Tooltip =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: TooltipProps<'msg>
     /// Lowers structurally equal to `Tooltip.create [ Tooltip.text props.Text ]`.
     val view: props: TooltipProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Dialog` control.
 module Dialog =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: DialogProps<'msg>
     /// Lowers children via `Widget.toControl` into `Dialog.children`, order preserved.
     val view: props: DialogProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Toast` control.
 module Toast =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: ToastProps<'msg>
     /// Lowers structurally equal to `Toast.create` with the validation severity.
     val view: props: ToastProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Overlay` control.
 module Overlay =
     /// Authoring defaults for the given required child.
     val defaults: child: Widget<'msg> -> OverlayProps<'msg>

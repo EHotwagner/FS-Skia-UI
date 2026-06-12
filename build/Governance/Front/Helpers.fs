@@ -351,6 +351,7 @@ let focusedGateContract model (target: Targets.Target) =
     | Targets.DesignTokenDrift
     | Targets.ContrastCheck
     | Targets.ControlsCatalogDocsCheck
+    | Targets.ControlsDocCoverageCheck
     | Targets.ControlFidelityCheck
     | Targets.SkillQualityCheck
     | Targets.PhaseHookParityCheck

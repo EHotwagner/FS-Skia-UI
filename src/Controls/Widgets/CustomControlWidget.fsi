@@ -2,7 +2,7 @@ namespace FS.Skia.UI.Controls.Typed
 
 open FS.Skia.UI.Controls
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `CustomControl` control.
 ///
 /// `custom-control` is the escape hatch (FR-006): it has **no fabricated `Props`
 /// schema**. An author builds the `Control<'msg>` with the legacy

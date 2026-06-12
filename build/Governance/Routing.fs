@@ -197,10 +197,14 @@ let rules =
           // Feature 083 (US1, FR-011): the WCAG color-contrast gate routes with the
           // controls-surface checks so any design-token / theme value edit selects it and
           // `Route --enforce` blocks a sub-threshold shipped token.
+          // Feature 106 (US2, FR-007): the documentation-coverage gate routes with the
+          // controls-surface checks so any `src/Controls/**/*.fsi` edit selects it and
+          // `Route --enforce` blocks a placeholder/empty/duplicate-only summary regression.
           [ Targets.ControlsCatalogCheck
             Targets.ControlsCatalogGenerationCheck
             Targets.DesignTokenDrift
             Targets.ContrastCheck
+            Targets.ControlsDocCoverageCheck
             Targets.ControlsInteractionCheck
             Targets.ControlsRenderingCheck
             Targets.PackageSurfaceCheck

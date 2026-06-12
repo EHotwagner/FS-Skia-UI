@@ -28,28 +28,28 @@ type ToolbarProps<'msg> =
       Children: Widget<'msg> list
       OnClick: 'msg option }
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Tabs` control.
 module Tabs =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: TabsProps<'msg>
     /// Lowers structurally equal to the legacy `Tabs.create` attrs.
     val view: props: TabsProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Menu` control.
 module Menu =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: MenuProps<'msg>
     /// Lowers structurally equal to the legacy `Menu.create` attrs.
     val view: props: MenuProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `ContextMenu` control.
 module ContextMenu =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: ContextMenuProps<'msg>
     /// Lowers structurally equal to `Control.standard (Custom "context-menu")`.
     val view: props: ContextMenuProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Toolbar` control.
 module Toolbar =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: ToolbarProps<'msg>

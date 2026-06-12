@@ -46,65 +46,65 @@ type ValidationMessageProps<'msg> =
       Text: string
       Severity: ValidationState }
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `RichText` control.
 module RichText =
-    /// Authoring defaults; optional fields take their value from here.
+    /// Authoring defaults for `RichTextProps` — optional fields take their value from here.
     val defaults: RichTextProps<'msg>
     /// Lowers structurally equal to `RichText.create (RichText.block props.Runs) []`.
     val view: props: RichTextProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Label` control.
 module Label =
-    /// Authoring defaults; optional fields take their value from here.
+    /// Authoring defaults for `LabelProps` — optional fields take their value from here.
     val defaults: LabelProps<'msg>
     /// Lowers structurally equal to `Label.create [ Label.text props.Text ]`.
     val view: props: LabelProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Image` control.
 module Image =
-    /// Authoring defaults; optional fields take their value from here.
+    /// Authoring defaults for `ImageProps` — optional fields take their value from here.
     val defaults: ImageProps<'msg>
     /// Lowers structurally equal to `Image.create [ Image.source props.Value ]`.
     val view: props: ImageProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Icon` control.
 module Icon =
-    /// Authoring defaults; optional fields take their value from here.
+    /// Authoring defaults for `IconProps` — optional fields take their value from here.
     val defaults: IconProps<'msg>
     /// Lowers structurally equal to `Icon.create [ Icon.name props.Text ]`.
     val view: props: IconProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Separator` control.
 module Separator =
-    /// Authoring defaults; optional fields take their value from here.
+    /// Authoring defaults for `SeparatorProps` — optional fields take their value from here.
     val defaults: SeparatorProps<'msg>
     /// Lowers structurally equal to `Separator.create []`.
     val view: props: SeparatorProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Badge` control.
 module Badge =
-    /// Authoring defaults; optional fields take their value from here.
+    /// Authoring defaults for `BadgeProps` — optional fields take their value from here.
     val defaults: BadgeProps<'msg>
     /// Lowers structurally equal to `Badge.create [ Badge.text props.Text ]`.
     val view: props: BadgeProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `ProgressBar` control.
 module ProgressBar =
-    /// Authoring defaults; optional fields take their value from here.
+    /// Authoring defaults for `ProgressBarProps` — optional fields take their value from here.
     val defaults: ProgressBarProps<'msg>
     /// Lowers structurally equal to `ProgressBar.create [ ProgressBar.value props.Value ]`.
     val view: props: ProgressBarProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `Spinner` control.
 module Spinner =
-    /// Authoring defaults; optional fields take their value from here.
+    /// Authoring defaults for `SpinnerProps` — optional fields take their value from here.
     val defaults: SpinnerProps<'msg>
     /// Lowers structurally equal to `Spinner.create []`.
     val view: props: SpinnerProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `ValidationMessage` control.
 module ValidationMessage =
-    /// Authoring defaults; optional fields take their value from here.
+    /// Authoring defaults for `ValidationMessageProps` — optional fields take their value from here.
     val defaults: ValidationMessageProps<'msg>
     /// Lowers structurally equal to `ValidationMessage.create` with the validation severity.
     val view: props: ValidationMessageProps<'msg> -> Widget<'msg>

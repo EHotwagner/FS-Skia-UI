@@ -17,7 +17,7 @@ FAIL
 
 - Changed alignment classes: `template-drift-docs`
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/097-incremental-partial-relayout`
+- Active feature evidence: `specs/106-controls-api-discoverability`
 
 ## Controls Boundary Guidance
 

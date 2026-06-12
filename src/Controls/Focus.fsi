@@ -53,7 +53,7 @@ type KeyRouting =
     | Traverse of FocusMove
     | Fallthrough
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// The pure focus model: derive tab `order`, `traverse` it, and `route` a delivered key against the focused control.
 module Focus =
 
     /// Derive the deterministic tab order from a lowered Control tree (FR-001): a pre-order walk

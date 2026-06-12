@@ -3,7 +3,8 @@ namespace FS.Skia.UI.Controls
 open FS.Skia.UI.Scene
 open FS.Skia.UI.Layout
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The author-supplied definition of a custom control: measure/render/layout/hit-test/event callbacks
+/// plus optional `Accessibility` and `Diagnostics`, keyed by `Id`.
 type CustomControlDefinition<'msg> =
     { Id: ControlId
       Measure: unit -> float * float
@@ -17,9 +18,9 @@ type CustomControlDefinition<'msg> =
       Accessibility: AccessibilityMetadata option
       Diagnostics: ControlDiagnostic list }
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Author a bespoke control from a `CustomControlDefinition`: `create` it as a `Control<'msg>` and `validate` it.
 module CustomControl =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Control<'msg>` from a `CustomControlDefinition` and the supplied `attrs`.
     val create: definition: CustomControlDefinition<'msg> -> attrs: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Check a `CustomControlDefinition` for authoring errors, returning any `ControlDiagnostic` list.
     val validate: definition: CustomControlDefinition<'msg> -> ControlDiagnostic list

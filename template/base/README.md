@@ -118,6 +118,32 @@ adapter for commands, subscriptions, and program wiring. Users moving from the
 legacy Charts package should use Controls chart and DataGrid declarations
 directly; there is no compatibility shim.
 
+## Authoring controls — discover the API, never reflect
+
+Everything you need to author controls is discoverable from this generated project.
+**Do not reflect over the assembly or read framework source** — each discovery path below
+resolves to a concrete, populated reference you can open:
+
+- **Typed Props front door (recommended, compiler-guided).** `src/Product/View.fs` is the
+  worked starter: every control is `{ Module.defaults with Field = ... } |> Module.view`
+  through `FS.Skia.UI.Controls.Typed`. To add a control kind not shown, type
+  `SomeControl.defaults` and let IntelliSense enumerate its `Props` fields — no
+  attribute-name guessing.
+- **Source-shaped API reference on disk.** `docs/api-surface/Controls/*.fsi` carries the
+  typed `Props`/`view` and legacy builder signatures, each with substantive `///`
+  documentation (the same text IntelliSense shows).
+- **Per-control catalog facts.** `docs/controls-catalog.md` answers "which attributes/events
+  does control *X* support?" for the demonstrated controls and explains how to enumerate the
+  rest.
+- **Programmatic discovery API.** `FS.Skia.UI.Controls.Catalog` —
+  `knownControlKinds`, `requiredAttributes`, `supportedAttributes`, `supportedEvents`, and
+  `markdownSummary` — reports any control's complete contract as data, from IntelliSense or at
+  runtime. A control authored through the legacy builder rather than the typed front door is
+  still fully supported; the catalog reports its contract either way.
+- **Interactive host seam.** `FS.Skia.UI.Controls.Elmish.ControlsElmish.runInteractiveApp`
+  (wired in `src/Product/Program.fs`) runs an interactive controls app; `programOfWidget` /
+  `widgetView` wire a typed `Widget<'msg>` view directly.
+
 ## Archive And API Reference Guidance
 
 For generated product governance, current feature readiness paths are authoritative for current gates. historical feature readiness is audit context only unless a current evidence map explicitly marks it as supporting evidence.

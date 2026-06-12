@@ -1,12 +1,13 @@
 namespace FS.Skia.UI.Controls
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The slice of a virtualized list currently realized: `FirstIndex`/`Count` within `Total`.
 type VisibleRange =
     { FirstIndex: int
       Count: int
       Total: int }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// State of a virtualizing collection: scroll offset, viewport/row geometry, `SelectedKeys`,
+/// and the derived `VisibleRange` keyed by `ControlId`.
 type CollectionModel =
     { ControlId: ControlId
       ItemCount: int
@@ -17,22 +18,22 @@ type CollectionModel =
       VisibleRange: VisibleRange
       RecalculationThresholdMs: int }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Messages that drive a `CollectionModel`: `ScrollTo`, `SelectKey`/`ToggleKey`, `ReplaceItemCount`.
 type CollectionMsg =
     | ScrollTo of float
     | SelectKey of string
     | ToggleKey of string
     | ReplaceItemCount of int
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Side effect emitted when a collection update shifts the realized window (`VisibleRangeChanged`).
 type CollectionEffect =
     | VisibleRangeChanged of VisibleRange
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Virtualization model for large scrolling lists: `visibleRange`/`init`/`update` over `CollectionModel`.
 module Collections =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Compute the realized `VisibleRange` from row height, viewport height, scroll offset, and item total.
     val visibleRange: rowHeight: float -> viewportHeight: float -> scrollOffset: float -> totalItems: int -> VisibleRange
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build the initial `CollectionModel` for a `controlId` and emit its first `CollectionEffect` list.
     val init: controlId: ControlId -> itemCount: int -> rowHeight: float -> viewportHeight: float -> CollectionModel * CollectionEffect list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Apply a `CollectionMsg` to the `CollectionModel`, returning the next model and any effects.
     val update: msg: CollectionMsg -> model: CollectionModel -> CollectionModel * CollectionEffect list

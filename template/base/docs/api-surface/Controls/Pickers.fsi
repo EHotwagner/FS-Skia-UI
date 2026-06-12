@@ -38,7 +38,7 @@ type ColorPickerProps<'msg> =
       Selected: ColorSwatch option
       OnSelected: (ColorSwatch -> 'msg) option }
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `DatePicker` control.
 module DatePicker =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: DatePickerProps<'msg>
@@ -48,7 +48,7 @@ module DatePicker =
     /// None` ⇒ no binding.
     val view: props: DatePickerProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `TimePicker` control.
 module TimePicker =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: TimePickerProps<'msg>
@@ -56,7 +56,7 @@ module TimePicker =
     /// or a placeholder; `OnChange = None`/`Value = None` ⇒ no binding.
     val view: props: TimePickerProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `ColorPicker` control.
 module ColorPicker =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: ColorPickerProps<'msg>

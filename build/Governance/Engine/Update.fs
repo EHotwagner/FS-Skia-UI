@@ -398,6 +398,43 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
           if not (List.isEmpty drift) then
               FailWith(String.Join(Environment.NewLine, drift))
           focusedGateSummary model Targets.DesignTokenDrift ]
+    | StartTarget Targets.ControlsDocCoverageCheck ->
+        // Feature 106 (US2, FR-007): the Controls documentation-coverage gate. Enumerate the
+        // Controls public `.fsi` surface at this interpreter edge (DesignTokenDrift precedent),
+        // run the pure analyzer, write a PASS/FAIL readiness report, and FailWith the per-member
+        // findings when any placeholder / empty / duplicate-only summary remains.
+        // ControlsDocCoverage.analyze is pure over in-memory text (Principle IV).
+        let controlsRoot = path [ model.RepositoryRoot; "src"; "Controls" ]
+
+        let files =
+            if Directory.Exists controlsRoot then
+                Directory.GetFiles(controlsRoot, "*.fsi", SearchOption.AllDirectories)
+                |> Array.sort
+                |> Array.toList
+                |> List.map (fun full ->
+                    let rel =
+                        full
+                            .Substring(model.RepositoryRoot.Length)
+                            .TrimStart([| '/'; '\\' |])
+                            .Replace("\\", "/")
+
+                    rel, File.ReadAllText full)
+            else
+                []
+
+        let findings = ControlsDocCoverage.analyze files
+        let report = ControlsDocCoverage.renderReport files findings
+
+        model,
+        [ focusedGateAssumptionCheck model Targets.ControlsDocCoverageCheck
+          WriteStructuredReport(
+              "controls documentation coverage",
+              path [ model.ReadinessDir; "doc-coverage.md" ],
+              report
+          )
+          if not (List.isEmpty findings) then
+              FailWith(String.Join(Environment.NewLine, ControlsDocCoverage.failureDiagnostics findings))
+          focusedGateSummary model Targets.ControlsDocCoverageCheck ]
     | StartTarget Targets.ContrastCheck ->
         // Feature 083 (US1, FR-007/FR-008): the WCAG color-contrast gate. Read the DTCG token
         // source at this interpreter edge (DesignTokenDrift precedent), parse it into the

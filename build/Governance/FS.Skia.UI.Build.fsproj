@@ -94,6 +94,11 @@
          interpreter edge. Build-tooling .fsi (CatalogGen.fsi precedent). -->
     <Compile Include="CatalogDocsGen.fsi" />
     <Compile Include="CatalogDocsGen.fs" />
+    <!-- Feature 106 (US2, FR-007): the Controls documentation-coverage gate. Pure `.fsi`-text
+         analysis; file reads + report write happen at the Engine/Interpret.fs edge
+         (DesignTokenGen precedent). Build-tooling .fsi. -->
+    <Compile Include="ControlsDocCoverage.fsi" />
+    <Compile Include="ControlsDocCoverage.fs" />
     <Compile Include="Evidence/EvidenceFormatSchema.fsi" />
     <Compile Include="Evidence/EvidenceFormatSchema.fs" />
     <Compile Include="Evidence/TaskParser.fsi" />

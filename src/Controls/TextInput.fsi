@@ -1,16 +1,16 @@
 namespace FS.Skia.UI.Controls
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Whether a `TextInputModel` accepts a `SingleLine` or `MultiLine` of text.
 type TextInputMode =
     | SingleLine
     | MultiLine
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A selected character range (`Start`..`End`) within a `TextInputModel`.
 type TextSelection =
     { Start: int
       End: int }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The MVU state of a text field: committed vs. draft text, `CaretIndex`, `Selection`, in-flight `Composition`, `Validation`, and focus.
 type TextInputModel =
     { ControlId: ControlId
       Mode: TextInputMode
@@ -22,7 +22,7 @@ type TextInputModel =
       Validation: ValidationState
       Focused: bool }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// An input message driving `TextInput.update`, e.g. `Focus`, `InsertText`, `MoveCaret`, `Commit`, `Cancel`, or composition events.
 type TextInputMsg =
     | Focus
     | Blur
@@ -37,19 +37,19 @@ type TextInputMsg =
     | CompositionCommitted of string
     | ApplyValidation of ValidationState
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A side effect raised by `TextInput.update`: a clipboard read request, a committed-text notification, or a reported diagnostic.
 type TextInputEffect =
     | RequestClipboardText of ControlId
     | CommitText of ControlId * string
     | ReportTextInputDiagnostic of ControlDiagnostic
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// MVU text-field component covering caret, selection, IME composition, clipboard, and validation.
 module TextInput =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Seeds a `TextInputModel` for `controlId` in the given `mode` with an initial `value`, plus any startup effects.
     val init: controlId: ControlId -> mode: TextInputMode -> value: string -> TextInputModel * TextInputEffect list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Pure transition applying `msg` to `model`, returning the next model and the `TextInputEffect` list it raises.
     val update: msg: TextInputMsg -> model: TextInputModel -> TextInputModel * TextInputEffect list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Maps a host-fulfilled `effect` back into the `TextInputMsg` that feeds it into `update`, if any.
     val interpretEffect: effect: TextInputEffect -> TextInputMsg option
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Returns the `ControlDiagnostic` list implied by the current `model` state.
     val diagnostics: model: TextInputModel -> ControlDiagnostic list

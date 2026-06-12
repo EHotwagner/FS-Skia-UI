@@ -1,15 +1,15 @@
 namespace FS.Skia.UI.Controls
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Palette and density tokens for controls: built-in `light`/`dark` themes plus `withDensity`/`withAccent`/`resolve`.
 module Theme =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// The built-in light `Theme` (DTCG `DesignTokens.Light` palette).
     val light: Theme
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// The built-in dark `Theme` (DTCG `DesignTokens.Dark` palette).
     val dark: Theme
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Return `theme` scaled by `density` (spacing/size multiplier) for compact or comfortable layouts.
     val withDensity: density: float -> theme: Theme -> Theme
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Return `theme` with its accent colour replaced by `accent`.
     val withAccent: accent: FS.Skia.UI.Scene.Color -> theme: Theme -> Theme
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Resolve the effective `Theme`: the caller's `overrides` if present, otherwise the `light` default.
     val resolve: overrides: Theme option -> Theme

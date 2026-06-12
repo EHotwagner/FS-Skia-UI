@@ -7,7 +7,7 @@ namespace FS.Skia.UI.Controls
 [<Sealed>]
 type Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// The typed-tree lowering bridge: `ofControl`/`toControl` convert to and from the legacy IR, and `render` paints a `Widget<'msg>`.
 module Widget =
     /// Migration bridge: lift a legacy `Control<'msg>` into the typed tree
     /// (e.g. to drop it into a typed `Stack.Children`). FR-002.

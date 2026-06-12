@@ -30,7 +30,7 @@ type SplitButtonProps<'msg> =
       OnClick: 'msg option
       OnSelected: (string -> 'msg) option }
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `ToggleButton` control.
 module ToggleButton =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: ToggleButtonProps<'msg>
@@ -39,7 +39,7 @@ module ToggleButton =
     /// no event binding.
     val view: props: ToggleButtonProps<'msg> -> Widget<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Typed Props front door for the `SplitButton` control.
 module SplitButton =
     /// Authoring defaults; optional fields take their value from here.
     val defaults: SplitButtonProps<'msg>

@@ -6,7 +6,7 @@ generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
 symbol-count: 762
-xml-summary-count: 450
+xml-summary-count: 643
 source-fsi-paths:
 - src/Controls/Accessibility.fsi
 - src/Controls/Attributes.fsi
@@ -48,13 +48,13 @@ diagnostics:
 ```fsharp
 namespace FS.Skia.UI.Controls
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Build and validate a control's accessibility contract: `metadata`/`defaultFor` plus `keyboard`/`contrast` evidence.
 module Accessibility =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Describe a control's keyboard contract: whether it is `focusable` and its activation/navigation keys.
     val keyboard: focusable: bool -> activationKeys: string list -> navigationKeys: string list -> KeyboardOperation
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Record `ContrastEvidence` for a foreground/background pair against the `requiredRatio`.
     val contrast: foreground: FS.Skia.UI.Scene.Color -> background: FS.Skia.UI.Scene.Color -> ratio: float -> requiredRatio: float -> ContrastEvidence
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Assemble full `AccessibilityMetadata` from role, name source, state, focus order, keyboard, contrast, and nav range.
     val metadata:
         role: AccessibilityRole ->
         nameSource: string ->
@@ -65,54 +65,75 @@ module Accessibility =
         navRange: NavRange option ->
             AccessibilityMetadata
 
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build default `AccessibilityMetadata` for a `ControlKind` with the given accessible `label`.
     val defaultFor: kind: ControlKind -> label: string -> AccessibilityMetadata
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Check a `control`'s accessibility contract and return any `ControlDiagnostic` violations.
     val validate: control: Control<'msg> -> ControlDiagnostic list
 
 namespace FS.Skia.UI.Controls
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builder functions (`Attr`) for constructing the typed `Attr<'msg>` values that
+/// configure a control — covering content, layout, state, style, theme, and event attributes.
 module Attr =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Low-level escape hatch (`create`) building an `Attr<'msg>` from an explicit `name`,
+    /// `AttrCategory`, and `AttrValue<'msg>`; the foundation the typed builders below wrap.
     val create: name: string -> category: AttrCategory -> value: AttrValue<'msg> -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Schema-checked builder (`standardAttribute`) producing an `Attr<'msg>` from a typed
+    /// `StandardAttributeName` and `StandardAttributeValue<'msg>`, keeping the attribute within
+    /// the recognised contract surface.
     val standardAttribute: name: StandardAttributeName -> value: StandardAttributeValue<'msg> -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Builder (`customAttribute`) for a consumer-defined attribute outside the standard set:
+    /// a free-form `name` carrying an untyped `obj` value, lowered under the `Data` category.
     val customAttribute: name: string -> value: obj -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Event builder (`standardEvent`) wiring a typed `StandardEventKind` to dispatch a fixed
+    /// `msg` when that built-in event fires on the control.
     val standardEvent: eventKind: StandardEventKind -> msg: 'msg -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Event builder (`customEvent`) wiring a free-form `eventKind` string to dispatch a fixed
+    /// `msg`, for events outside the `StandardEventKind` set.
     val customEvent: eventKind: string -> msg: 'msg -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Content builder (`text`) setting the control's display text — the label of a button or
+    /// text-block, or the caption shown by content-bearing kinds.
     val text: value: string -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Content builder (`value`) setting the current value of an input control such as a
+    /// text-box, carried as the `Value` attribute.
     val value: value: string -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Data builder (`items`) supplying the ordered string entries of a list-like control as
+    /// the `Items` attribute.
     val items: values: string list -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Children builder (`child`) attaching a single nested `Control<'msg>` to a container.
     val child: control: Control<'msg> -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Children builder (`children`) attaching an ordered list of nested `Control<'msg>` to a
+    /// container such as a stack, grid, or panel.
     val children: controls: Control<'msg> list -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// State builder (`enabled`): when `false` the control is disabled (non-interactive,
+    /// rendered in its `Disabled` visual state); omitted defaults to enabled.
     val enabled: value: bool -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// State builder (`visible`): when `false` the control is hidden from layout and paint;
+    /// omitted defaults to visible.
     val visible: value: bool -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// State builder (`readOnly`): when `true` an input control such as a text-box displays
+    /// its value but rejects edits; omitted defaults to editable.
     val readOnly: value: bool -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// State builder (`loading`): when `true` the control shows its busy/`Loading` visual
+    /// state; omitted defaults to not loading.
     val loading: value: bool -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// State builder (`selected`): when `true` marks the control as selected (e.g. a toggle,
+    /// radio, or list item in its `Selected` visual state); omitted defaults to unselected.
     val selected: value: bool -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Layout builder (`width`) requesting a fixed control width in device-independent pixels;
+    /// omitted lets the control size to its content/container.
     val width: value: float -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Layout builder (`height`) requesting a fixed control height in device-independent
+    /// pixels; omitted lets the control size to its content/container.
     val height: value: float -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Layout builder (`padding`) setting uniform inner spacing in pixels between the control's
+    /// edge and its content; omitted defaults to no padding.
     val padding: value: float -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Layout builder (`margin`) setting uniform outer spacing in pixels around the control
+    /// within its parent; omitted defaults to no margin.
     val margin: value: float -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Style builder (`style`) attaching a single named style class by string — the free-form
+    /// counterpart to the typed `styleClasses` builder.
     val style: name: string -> Attr<'msg>
     /// Feature 093 (E3): attach an ordered list of style classes (list order = attach order).
     /// Lowers to a single `Style`-category attribute carrying `StyleClassesValue`. Absent ≡
@@ -124,20 +145,28 @@ module Attr =
     /// through the keyed reconciler so a state-driven look survives a sibling shift (FR-006,
     /// SC-005). Absent ≡ `Normal` ≡ the behaviour-preserving base case.
     val visualState: state: VisualState -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Theme builder (`theme`) attaching a `Theme` palette/metrics to the control subtree,
+    /// overriding the inherited theme for it and its descendants.
     val theme: theme: Theme -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Validation builder (`validation`) attaching a `ValidationState` (`Valid`/`Invalid`/`Pending`)
+    /// to an input control, surfacing its validity in the resolved visual state.
     val validation: state: ValidationState -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Accessibility builder (`accessibility`) attaching explicit `AccessibilityMetadata`
+    /// (role, name source, keyboard contract, contrast/navigation data) to override the
+    /// control's inferred semantics.
     val accessibility: metadata: AccessibilityMetadata -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Event builder (`on`) subscribing to an event by `eventKind` string and dispatching a
+    /// fixed `msg` when it fires, ignoring the event payload.
     val on: eventKind: string -> msg: 'msg -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Event builder (`onWith`) subscribing to an event by `eventKind` string and computing the
+    /// dispatched message from the `ControlEvent` via `map`, giving access to the payload.
     val onWith: eventKind: string -> map: (ControlEvent -> 'msg) -> Attr<'msg>
 
 namespace FS.Skia.UI.Controls
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Accessibility facts a catalog entry advertises for a control: its `Role`,
+/// where the accessible name comes from (`NameSource`), reported `StateMetadata`,
+/// `FocusBehavior`, `KeyboardOperation`, and the `ContrastEvidence` backing it.
 type CatalogAccessibility =
     { Role: string
       NameSource: string
@@ -146,7 +175,10 @@ type CatalogAccessibility =
       KeyboardOperation: string
       ContrastEvidence: string }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// One control's full authoring contract as published by `Catalog`: identity
+/// (`Id`/`DisplayName`/`Category`/`Module`), `Purpose`, its `RequiredAttributes`
+/// and `CommonAttributes`, bindable `Events`, `VisualStates`, `Accessibility`,
+/// plus `Examples`/`Tests`/`Evidence` and `SupportStatus`/`Owner` provenance.
 type ControlDefinition =
     { Id: string
       DisplayName: string
@@ -164,79 +196,98 @@ type ControlDefinition =
       SupportStatus: string
       Owner: string }
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Discovery surface for the standard control library: enumerate every control's
+/// authoring contract (required/supported attributes, events) and validate
+/// authored `Control` values against the published schema.
 module Catalog =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// The full list of `ControlDefinition` entries — one per supported control —
+    /// to enumerate the whole authoring catalog.
     val supportedControls: ControlDefinition list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// The machine-readable `ControlSchema` per standard control, pairing each
+    /// kind with its accepted attributes and events for validation.
     val standardSchema: ControlSchema list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Every `StandardControlKind` the catalog knows about — the entry point for
+    /// enumerating which controls can be authored and queried.
     val knownControlKinds: unit -> StandardControlKind list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// The `StandardAttributeName`s a control of `kind` must carry to be valid —
+    /// the mandatory subset of its authoring contract.
     val requiredAttributes: kind: StandardControlKind -> StandardAttributeName list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Every `StandardAttributeName` a control of `kind` accepts (required plus
+    /// optional), to discover the full attribute surface for that control.
     val supportedAttributes: kind: StandardControlKind -> StandardAttributeName list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// The `StandardEventKind`s a control of `kind` can raise — the bindable
+    /// events a consumer may wire handlers to.
     val supportedEvents: kind: StandardControlKind -> StandardEventKind list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Checks an authored `control` against the catalog schema, returning a
+    /// `ControlDiagnostic` for each missing required or unsupported attribute.
     val validateStandardControl: control: Control<'msg> -> ControlDiagnostic list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// The number of entries in `supportedControls` — how many distinct controls
+    /// the catalog documents.
     val supportedCount: unit -> int
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// The distinct `Category` values across the catalog, to group controls when
+    /// presenting a discovery index.
     val categories: unit -> string list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Self-checks the catalog itself, returning any `ControlDiagnostic` for
+    /// internal inconsistencies between definitions and the schema.
     val validate: unit -> ControlDiagnostic list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Renders the whole catalog as a Markdown reference table — a ready-to-read
+    /// summary of every control's authoring contract.
     val markdownSummary: unit -> string
 
 namespace FS.Skia.UI.Controls
 
 // `ChartPoint` / `ChartSeries` are declared in Types.fsi (feature 080, surface-neutral move).
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Line-chart control plotting one or more `ChartSeries` as connected lines;
+/// author it through the typed `Props` front door.
 module LineChart =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Builds a `LineChart` `Control` from the given attributes.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute supplying the line-chart's `series` data to plot.
     val series: ChartSeries list -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Bar-chart control rendering each `ChartSeries` as grouped bars; author it
+/// through the typed `Props` front door.
 module BarChart =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Builds a `BarChart` `Control` from the given attributes.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute supplying the bar-chart's `series` data to render as bars.
     val series: ChartSeries list -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Pie-chart control rendering `ChartPoint` values as proportional slices;
+/// author it through the typed `Props` front door.
 module PieChart =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Builds a `PieChart` `Control` from the given attributes.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute supplying the pie-chart's `values`, each a slice of the whole.
     val values: ChartPoint list -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Scatter-plot control rendering each `ChartSeries` as discrete points;
+/// author it through the typed `Props` front door.
 module ScatterPlot =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Builds a `ScatterPlot` `Control` from the given attributes.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute supplying the scatter-plot's `series` of points to plot.
     val series: ChartSeries list -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Graph-view control rendering a set of named nodes and their relationships;
+/// author it through the typed `Props` front door.
 module GraphView =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Builds a `GraphView` `Control` from the given attributes.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute supplying the graph's `nodes` by name.
     val nodes: string list -> Attr<'msg>
 
 namespace FS.Skia.UI.Controls
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The slice of a virtualized list currently realized: `FirstIndex`/`Count` within `Total`.
 type VisibleRange =
     { FirstIndex: int
       Count: int
       Total: int }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// State of a virtualizing collection: scroll offset, viewport/row geometry, `SelectedKeys`,
+/// and the derived `VisibleRange` keyed by `ControlId`.
 type CollectionModel =
     { ControlId: ControlId
       ItemCount: int
@@ -247,24 +298,24 @@ type CollectionModel =
       VisibleRange: VisibleRange
       RecalculationThresholdMs: int }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Messages that drive a `CollectionModel`: `ScrollTo`, `SelectKey`/`ToggleKey`, `ReplaceItemCount`.
 type CollectionMsg =
     | ScrollTo of float
     | SelectKey of string
     | ToggleKey of string
     | ReplaceItemCount of int
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Side effect emitted when a collection update shifts the realized window (`VisibleRangeChanged`).
 type CollectionEffect =
     | VisibleRangeChanged of VisibleRange
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Virtualization model for large scrolling lists: `visibleRange`/`init`/`update` over `CollectionModel`.
 module Collections =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Compute the realized `VisibleRange` from row height, viewport height, scroll offset, and item total.
     val visibleRange: rowHeight: float -> viewportHeight: float -> scrollOffset: float -> totalItems: int -> VisibleRange
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build the initial `CollectionModel` for a `controlId` and emit its first `CollectionEffect` list.
     val init: controlId: ControlId -> itemCount: int -> rowHeight: float -> viewportHeight: float -> CollectionModel * CollectionEffect list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Apply a `CollectionMsg` to the `CollectionModel`, returning the next model and any effects.
     val update: msg: CollectionMsg -> model: CollectionModel -> CollectionModel * CollectionEffect list
 
 namespace FS.Skia.UI.Controls
@@ -370,21 +421,29 @@ module internal ControlInternals =
     /// (SC-005). Fills land in `Children`, inheriting E1–E4 + E2 identity by construction (FR-004).
     val lowerSlots: control: Control<'msg> -> Control<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Core authoring and rendering verbs for `Control<'msg>` — construction, standard/custom
+/// lowering, keying, single-control preview `render` and nested `renderTree`.
 module Control =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Control<'msg>` from an arbitrary `ControlKind` and its attribute list — the
+    /// general constructor the per-kind `*.create` builders are sugar over.
     val create: kind: ControlKind -> attrs: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a control from a `StandardControlKind` (the framework's built-in catalog kinds),
+    /// keeping the kind on the typed enum rather than a free-form string.
     val standard: kind: StandardControlKind -> attrs: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a consumer-defined control whose kind is a free-form `kind` string, for control
+    /// families outside the built-in `StandardControlKind` catalog.
     val customControl: kind: string -> attrs: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Lower a `standard`-kind control into its primitive composition (the expansion the renderer
+    /// consumes); a control whose kind needs no expansion is returned unchanged.
     val lowerStandard: control: Control<'msg> -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Lower a `customControl` into its primitive composition; the custom-kind counterpart to
+    /// `lowerStandard`.
     val lowerCustom: control: Control<'msg> -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Stamp a stable identity `key` onto a control so the keyed reconciler tracks it across
+    /// sibling-shifting re-renders (the `withKey` anchor read by `nearestAuthored`).
     val withKey: key: ControlId -> control: Control<'msg> -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Render a SINGLE control to a `ControlRenderResult<'msg>` preview at intrinsic size
+    /// (Feature 080); use `renderTree` to lay out and paint nested children.
     val render: theme: Theme -> control: Control<'msg> -> ControlRenderResult<'msg>
     /// Faithfully rasterize a NESTED control tree to a Scene using real Yoga layout and paint
     /// at the given output size (distinct from `render`, the Feature-080 single-control
@@ -415,284 +474,357 @@ module Control =
     /// `MapPointer` with the raw interaction, never inventing an id. Pure/total/deterministic; reads
     /// the `renderTree` layout tree only, no layout-math change (FR-004/FR-004a/FR-005, feature 090).
     val nearestAuthored: result: ControlRenderResult<'msg> -> hit: ControlId -> ControlId option
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Collect the `ControlDiagnostic` list a control's tree reports (e.g. authoring issues),
+    /// for surfacing in tooling without rendering.
     val diagnostics: control: Control<'msg> -> ControlDiagnostic list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Translate an incoming `ControlEvent` into the `'msg` list a control's bindings emit — the
+    /// dispatch step the interactive host runs to feed the MVU update loop.
     val dispatch: event: ControlEvent -> control: Control<'msg> -> 'msg list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Count the total nodes in a control's tree (self plus all descendants); a structural metric
+    /// used by tests and tooling.
     val count: control: Control<'msg> -> int
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `TextBlock` control — a multi-line, wrapping run of body text.
 module TextBlock =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `TextBlock` from its attributes; pair with `TextBlock.text` for the content. The
+    /// typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the displayed text of a `TextBlock` (`Attr` carrying the run of characters to lay out
+    /// and wrap).
     val text: string -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Label` control — a short, single-line caption, typically naming an
+/// adjacent field.
 module Label =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Label` from its attributes; pair with `Label.text` for the caption. The typed
+    /// `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the caption text of a `Label` (`Attr` carrying the single-line string to display).
     val text: string -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Image` control — a bitmap displayed from a source reference.
 module Image =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build an `Image` from its attributes; pair with `Image.source` for the bitmap. The typed
+    /// `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the `Image` source (`Attr` carrying the path/URI string the renderer loads the bitmap
+    /// from).
     val source: string -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Icon` control — a glyph chosen from the icon set by name.
 module Icon =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build an `Icon` from its attributes; pair with `Icon.name` to choose the glyph. The typed
+    /// `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Select which glyph an `Icon` shows (`Attr` carrying the icon-set name to look up).
     val name: string -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Separator` control — a thin divider rule between adjacent content.
 module Separator =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Separator` divider from its attributes (takes no content of its own). The typed
+    /// `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Badge` control — a small count/status pill overlaid on or beside content.
 module Badge =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Badge` pill from its attributes; pair with `Badge.text` for its label. The typed
+    /// `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the label shown inside a `Badge` (`Attr` carrying the short count/status string).
     val text: string -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Button` control — a clickable command surface with a text label.
 module Button =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Button` from its attributes; pair with `Button.text` and `Button.onClick`. The
+    /// typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the `Button` label (`Attr` carrying the caption rendered on the command surface).
     val text: string -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set whether a `Button` is interactive (`Attr`; `false` greys it out and suppresses click
+    /// dispatch). Omitted ≡ enabled.
     val enabled: bool -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Emit a fixed `'msg` when the `Button` is clicked (`Attr.onClick`); use `onClickWith` when
+    /// the message depends on the event.
     val onClick: 'msg -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Emit a `'msg` derived from the `ControlEvent` when the `Button` is clicked — the
+    /// event-aware counterpart to `Button.onClick`.
     val onClickWith: (ControlEvent -> 'msg) -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `IconButton` control — a compact, glyph-only clickable command.
 module IconButton =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build an `IconButton` from its attributes; pair with `IconButton.icon` and `onClick`. The
+    /// typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Choose the glyph an `IconButton` shows (`Attr` carrying the icon-set name; the visual
+    /// stand-in for a text label).
     val icon: string -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Emit a fixed `'msg` when the `IconButton` is clicked (`Attr.onClick`).
     val onClick: 'msg -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `CheckBox` control — a labelled boolean toggle with a tick box.
 module CheckBox =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `CheckBox` from its attributes; pair with `CheckBox.checked'` and `onChanged`. The
+    /// typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the label beside a `CheckBox` (`Attr` carrying the descriptive caption text).
     val text: string -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the checked state of a `CheckBox` (`Attr.checked'`; `true` ticks the box). This is a
+    /// controlled value — drive it from model state and reconcile via `onChanged`.
     val checked': bool -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Emit a `'msg` carrying the new `bool` when a `CheckBox` is toggled (`Attr.onChanged`).
     val onChanged: (bool -> 'msg) -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Switch` control — a sliding on/off toggle (the track-and-thumb form of a
+/// boolean).
 module Switch =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Switch` from its attributes; pair with `Switch.checked'` and `onChanged`. The
+    /// typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the on/off position of a `Switch` (`Attr.checked'`; `true` slides the thumb on). A
+    /// controlled value driven from model state and reconciled via `onChanged`.
     val checked': bool -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Emit a `'msg` carrying the new `bool` when a `Switch` is flipped (`Attr.onChanged`).
     val onChanged: (bool -> 'msg) -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Slider` control — a draggable thumb selecting a continuous value along a
+/// track.
 module Slider =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Slider` from its attributes; pair with `Slider.value` and `onChanged`. The typed
+    /// `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the `Slider` position (`Attr.value`; a `float` over the control's range, default 0–1).
+    /// A controlled value driven from model state and reconciled via `onChanged`.
     val value: float -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Emit a `'msg` carrying the new `float` as a `Slider` is dragged (`Attr.onChanged`).
     val onChanged: (float -> 'msg) -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `NumericInput` control — a typed numeric field, typically with stepper
+/// affordances.
 module NumericInput =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `NumericInput` from its attributes; pair with `NumericInput.value` and `onChanged`.
+    /// The typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the current number in a `NumericInput` (`Attr.value`; a controlled `float` driven from
+    /// model state and reconciled via `onChanged`).
     val value: float -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Emit a `'msg` carrying the edited `float` when a `NumericInput` value changes
+    /// (`Attr.onChanged`).
     val onChanged: (float -> 'msg) -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `TextBox` control — a single-line editable text field.
 module TextBox =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `TextBox` from its attributes; pair with `TextBox.value` and `onChanged`. The
+    /// typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the current text in a `TextBox` (`Attr.value`; a controlled `string` driven from model
+    /// state and reconciled via `onChanged`).
     val value: string -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Make a `TextBox` display-only (`Attr.readOnly`; `true` shows the value but blocks editing).
+    /// Omitted ≡ editable.
     val readOnly: bool -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attach a `ValidationState` to a `TextBox` so it renders the matching valid/invalid styling
+    /// (`Attr.validation`).
     val validation: ValidationState -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Emit a `'msg` carrying the edited `string` on each `TextBox` change (`Attr.onChanged`).
     val onChanged: (string -> 'msg) -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `TextArea` control — a multi-line editable text field (the wrapping
+/// counterpart to `TextBox`).
 module TextArea =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `TextArea` from its attributes; pair with `TextArea.value` and `onChanged`. The
+    /// typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the current multi-line text in a `TextArea` (`Attr.value`; a controlled `string`
+    /// reconciled via `onChanged`).
     val value: string -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Emit a `'msg` carrying the edited `string` on each `TextArea` change (`Attr.onChanged`).
     val onChanged: (string -> 'msg) -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `RadioGroup` control — a set of mutually-exclusive options, one selected at
+/// a time.
 module RadioGroup =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `RadioGroup` from its attributes; pair with `RadioGroup.items`, `selected` and
+    /// `onChanged`. The typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is recommended.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Supply the option labels of a `RadioGroup` (`Attr.items`; one radio button per `string` in
+    /// the list, in order).
     val items: string list -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Mark which option of a `RadioGroup` is chosen (`Attr.selected`; the `string` must match one
+    /// of `items`). A controlled value reconciled via `onChanged`.
     val selected: string -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Emit a `'msg` carrying the newly-chosen option `string` when a `RadioGroup` selection
+    /// changes (`Attr.onChanged`).
     val onChanged: (string -> 'msg) -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Stack` container — lays its children single-file along one axis (vertical
+/// by default; see `Stack.orientation`).
 module Stack =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Stack` container from its attributes; pair with `Stack.children` for content. The
+    /// typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Supply the ordered child controls a `Stack` arranges (`Attr.children`).
     val children: Control<'msg> list -> Attr<'msg>
     /// Lay the stack's children along the row axis when value = "horizontal"; any other
     /// value (or omission) keeps the default vertical column (FR-007).
     val orientation: string -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Grid` container — arranges its children in a two-dimensional row/column
+/// matrix.
 module Grid =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Grid` container from its attributes; pair with `Grid.children` for content. The
+    /// typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Supply the child controls a `Grid` places into its cells (`Attr.children`).
     val children: Control<'msg> list -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Dock` container — pins its children to the edges, the last filling the
+/// remaining centre.
 module Dock =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Dock` container from its attributes; pair with `Dock.children` for content. The
+    /// typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Supply the child controls a `Dock` arranges against its edges (`Attr.children`).
     val children: Control<'msg> list -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Wrap` container — flows its children along an axis, wrapping to the next
+/// line when they overflow.
 module Wrap =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Wrap` container from its attributes; pair with `Wrap.children` for content. The
+    /// typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Supply the child controls a `Wrap` flows and line-wraps (`Attr.children`).
     val children: Control<'msg> list -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Border` container — wraps a single child in a stroked/padded frame.
 module Border =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Border` from its attributes; pair with `Border.child` for the wrapped content. The
+    /// typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the single control a `Border` frames (`Attr.child`; a `Border` holds exactly one
+    /// child, unlike the multi-child containers).
     val child: Control<'msg> -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Panel` container — a surface grouping child controls, with optional
+/// Header/Footer slots (Feature 095).
 module Panel =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Panel` from its attributes; pair with `Panel.children` for content. The typed
+    /// `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Supply the child controls a `Panel` groups on its surface (`Attr.children`).
     val children: Control<'msg> list -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `ProgressBar` control — a horizontal fill showing completion of a task.
 module ProgressBar =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `ProgressBar` from its attributes; pair with `ProgressBar.value` for the fill. The
+    /// typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the completion of a `ProgressBar` (`Attr.value`; a `float` fraction, 0 = empty through
+    /// 1 = full).
     val value: float -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Spinner` control — an indeterminate busy/loading indicator.
 module Spinner =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Spinner` busy indicator from its attributes (no progress value; it animates
+    /// indeterminately). The typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is recommended.
     val create: Attr<'msg> list -> Control<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `ValidationMessage` control — inline error/hint text shown beneath a field.
 module ValidationMessage =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `ValidationMessage` from its attributes; pair with `ValidationMessage.text` for the
+    /// message. The typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is recommended.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the validation text shown to the user (`Attr` carrying the error/hint `string`).
     val text: string -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Tabs` control — a row of tab headers selecting one active page.
 module Tabs =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Tabs` strip from its attributes; pair with `Tabs.items`, `selected` and
+    /// `onChanged`. The typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is recommended.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Supply the tab header labels of a `Tabs` strip (`Attr.items`; one tab per `string`, in
+    /// order).
     val items: string list -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Mark which tab of a `Tabs` strip is active (`Attr.selected`; the `string` must match one of
+    /// `items`). A controlled value reconciled via `onChanged`.
     val selected: string -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Emit a `'msg` carrying the newly-activated tab `string` when the `Tabs` selection changes
+    /// (`Attr.onChanged`).
     val onChanged: (string -> 'msg) -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Menu` control — a list of selectable command entries.
 module Menu =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Menu` from its attributes; pair with `Menu.items` and `onSelected`. The typed
+    /// `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Supply the entry labels of a `Menu` (`Attr.items`; one selectable row per `string`, in
+    /// order).
     val items: string list -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Emit a `'msg` carrying the chosen entry `string` when a `Menu` item is selected
+    /// (`Attr.onSelected`).
     val onSelected: (string -> 'msg) -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Toolbar` container — a horizontal band of command controls (buttons,
+/// icons, separators).
 module Toolbar =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Toolbar` from its attributes; pair with `Toolbar.children` for content. The typed
+    /// `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Supply the command controls a `Toolbar` lays out left-to-right (`Attr.children`).
     val children: Control<'msg> list -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Tooltip` control — a transient hover hint floating over content.
 module Tooltip =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Tooltip` from its attributes; pair with `Tooltip.text` for the hint. The typed
+    /// `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the hint text a `Tooltip` shows on hover (`Attr` carrying the `string` to float).
     val text: string -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Dialog` container — a modal surface holding a focused task's content.
 module Dialog =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Dialog` from its attributes; pair with `Dialog.children` for content. The typed
+    /// `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended authoring path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Supply the child controls a `Dialog` hosts in its modal body (`Attr.children`).
     val children: Control<'msg> list -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Toast` control — a brief, auto-dismissing notification banner.
 module Toast =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Toast` notification from its attributes; pair with `Toast.text` for the message.
+    /// The typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the message a `Toast` displays (`Attr` carrying the short notification `string`).
     val text: string -> Attr<'msg>
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for the `Overlay` container — a layer drawn above the rest of the UI to host a
+/// single child (scrims, popovers).
 module Overlay =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build an `Overlay` from its attributes; pair with `Overlay.child` for the layered content.
+    /// The typed `Props` front door (`FS.Skia.UI.Controls.Typed`) is the recommended path.
     val create: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Set the single control an `Overlay` floats above the UI (`Attr.child`; an `Overlay` holds
+    /// exactly one child).
     val child: Control<'msg> -> Attr<'msg>
 
 namespace FS.Skia.UI.Controls
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The text caret position (`Index`) within a focused control identified by `ControlId`.
 type ControlCaret =
     { ControlId: ControlId
       Index: int }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A text selection range (`Start`..`End`) within the control identified by `ControlId`.
 type ControlSelection =
     { ControlId: ControlId
       Start: int
       End: int }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// In-flight IME composition `Text` being entered into the control identified by `ControlId`.
 type ControlComposition =
     { ControlId: ControlId
       Text: string }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// An active pointer drag on `ControlId`, tracking start (`StartX`/`StartY`) and current (`CurrentX`/`CurrentY`) coordinates.
 type ControlDrag =
     { ControlId: ControlId
       StartX: float
@@ -700,7 +832,7 @@ type ControlDrag =
       CurrentX: float
       CurrentY: float }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// An observable side effect emitted by `ControlRuntime.update` when interaction state changes (focus, hover, caret, selection, drag, diagnostics).
 type ControlRuntimeEffect =
     | FocusChanged of ControlId option
     | HoverChanged of ControlId option
@@ -713,7 +845,7 @@ type ControlRuntimeEffect =
     | CancelledInteraction of ControlId option
     | ReportControlRuntimeDiagnostic of ControlDiagnostic
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The aggregate runtime interaction state: focused/hovered/pressed controls, `Caret`, `Selection`, `Composition`, `ActiveDrag`, and accumulated `Diagnostics`.
 type ControlRuntimeModel =
     { FocusedControl: ControlId option
       HoveredControl: ControlId option
@@ -725,7 +857,7 @@ type ControlRuntimeModel =
       Diagnostics: ControlDiagnostic list
       RecentEffects: ControlRuntimeEffect list }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// An input message driving the runtime transition, e.g. `FocusControl`, `HoverControl`, `PressControl`, `SetCaret`, `StartDrag`, or `Reset`.
 type ControlRuntimeMsg =
     | FocusControl of ControlId option
     | HoverControl of ControlId option
@@ -744,16 +876,15 @@ type ControlRuntimeMsg =
     | CancelInteraction of ControlId option
     | Reset
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// MVU runtime tracking control focus, hover, press, caret/selection, composition, drag, and derived visual state.
 module ControlRuntime =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Seeds an empty `ControlRuntimeModel` with no focus or interaction and its initial effects.
     val init: unit -> ControlRuntimeModel * ControlRuntimeEffect list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Pure transition applying `msg` to `model`, returning the next model and the `ControlRuntimeEffect` list it raises.
     val update: msg: ControlRuntimeMsg -> model: ControlRuntimeModel -> ControlRuntimeModel * ControlRuntimeEffect list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Returns the `ControlDiagnostic` list currently accumulated in `model`.
     val diagnostics: model: ControlRuntimeModel -> ControlDiagnostic list
 
-    /// Public contract function exposed by this FS.Skia.UI package.
     /// Feature 096 (R1): the pure, total, deterministic projection from live
     /// interaction state to a single VisualState. Selects the highest-ranked
     /// runtime-derivable state for `controlId` under the fixed closed order
@@ -775,7 +906,8 @@ namespace FS.Skia.UI.Controls
 open FS.Skia.UI.Scene
 open FS.Skia.UI.Layout
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The author-supplied definition of a custom control: measure/render/layout/hit-test/event callbacks
+/// plus optional `Accessibility` and `Diagnostics`, keyed by `Id`.
 type CustomControlDefinition<'msg> =
     { Id: ControlId
       Measure: unit -> float * float
@@ -789,56 +921,63 @@ type CustomControlDefinition<'msg> =
       Accessibility: AccessibilityMetadata option
       Diagnostics: ControlDiagnostic list }
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Author a bespoke control from a `CustomControlDefinition`: `create` it as a `Control<'msg>` and `validate` it.
 module CustomControl =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Build a `Control<'msg>` from a `CustomControlDefinition` and the supplied `attrs`.
     val create: definition: CustomControlDefinition<'msg> -> attrs: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Check a `CustomControlDefinition` for authoring errors, returning any `ControlDiagnostic` list.
     val validate: definition: CustomControlDefinition<'msg> -> ControlDiagnostic list
 
 namespace FS.Skia.UI.Controls
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// How a `DataGridColumn` renders and interprets its cells — `TextColumn`,
+/// `NumericColumn`, `BooleanColumn`, or a `CustomColumn` named by its tag.
 type DataGridColumnType =
     | TextColumn
     | NumericColumn
     | BooleanColumn
     | CustomColumn of string
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A grid column definition: its stable `Key`, displayed `Header`, pixel
+/// `Width`, and `ColumnType` controlling cell rendering.
 type DataGridColumn =
     { Key: string
       Header: string
       Width: float
       ColumnType: DataGridColumnType }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A single grid cell addressed by `RowKey` and `ColumnKey`, carrying its
+/// rendered string `Value`.
 type DataGridCell =
     { RowKey: string
       ColumnKey: string
       Value: string }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A grid row identified by `Key`, holding its `Cells` in column order.
 type DataGridRow =
     { Key: string
       Cells: DataGridCell list }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Direction of a column sort — `Ascending` or `Descending`.
 type DataGridSortDirection =
     | Ascending
     | Descending
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The active sort: which column (`ColumnKey`) is ordered and in which
+/// `Direction`.
 type DataGridSort =
     { ColumnKey: string
       Direction: DataGridSortDirection }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The currently focused cell, located by `RowKey` and `ColumnKey` for
+/// keyboard navigation.
 type DataGridFocusedCell =
     { RowKey: string
       ColumnKey: string }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The full virtualized data-grid state: identity, `Columns`, `RowCount`,
+/// row/viewport metrics, the visible window, selection, focus, sort, filter,
+/// and accumulated `Diagnostics`.
 type DataGridModel =
     { ControlId: ControlId
       Columns: DataGridColumn list
@@ -852,7 +991,8 @@ type DataGridModel =
       FilterText: string option
       Diagnostics: ControlDiagnostic list }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Messages driving a `DataGridModel` through `update`: scroll, row
+/// select/toggle, cell focus, sort, filter, and row-count replacement.
 type DataGridMsg =
     | ScrollRowsTo of int
     | SelectRow of string
@@ -862,7 +1002,8 @@ type DataGridMsg =
     | ApplyFilter of string option
     | ReplaceRowCount of int
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Outbound notifications a `DataGridModel` emits when its visible range,
+/// selection, focus, sort, or filter changes, plus diagnostic reports.
 type DataGridEffect =
     | DataGridVisibleRangeChanged of VisibleRange
     | DataGridSelectionChanged of string list
@@ -871,30 +1012,37 @@ type DataGridEffect =
     | DataGridFilterChanged of string option
     | ReportDataGridDiagnostic of ControlDiagnostic
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Virtualized data-grid control: an MVU `init`/`update` core plus attribute
+/// builders for authoring a grid against the typed `Props` front door.
 module DataGrid =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Builds the initial `DataGridModel` for `controlId` from its columns and
+    /// row/viewport metrics, with the first visible-range effects.
     val init: controlId: ControlId -> columns: DataGridColumn list -> rowCount: int -> rowHeight: float -> viewportHeight: float -> DataGridModel * DataGridEffect list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Applies a `DataGridMsg` to `model`, returning the next state and any
+    /// `DataGridEffect`s the change produces.
     val update: msg: DataGridMsg -> model: DataGridModel -> DataGridModel * DataGridEffect list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Authors a data-grid `Control` over the given `columns` and `attrs` — the
+    /// legacy builder behind the typed `Props` front door.
     val create: columns: DataGridColumn list -> attrs: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute setting the grid's `columns` definition on a data-grid control.
     val columns: columns: DataGridColumn list -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute supplying the grid's `rows` of cell data to a data-grid control.
     val rows: rows: DataGridRow list -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute pinning the grid's `visibleRange` — the virtualized window of
+    /// rows currently rendered.
     val visibleRange: visibleRange: VisibleRange -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute marking the set of `selectedRows` (by row key) on a data-grid
+    /// control.
     val selectedRows: selectedRows: Set<string> -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute setting the grid's `focusedCell` for keyboard navigation, or
+    /// `None` to clear focus.
     val focusedCell: focusedCell: DataGridFocusedCell option -> Attr<'msg>
 
 namespace FS.Skia.UI.Controls
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Constructors for `ControlDiagnostic` values reported by the controls runtime and validation passes.
 module Diagnostics =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Builds a `ControlDiagnostic` from an explicit `code`, `severity`, and `message`, optionally scoped to a `controlId` and `kind`.
     val create:
         controlId: ControlId option ->
         kind: ControlKind ->
@@ -903,48 +1051,48 @@ module Diagnostics =
         message: string ->
             ControlDiagnostic
 
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Reports that a control of `kind` is missing a required attribute `name`.
     val missingRequired: controlId: ControlId option -> kind: ControlKind -> name: string -> ControlDiagnostic
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Reports that attribute `name` was supplied more than once on a control of `kind`.
     val duplicateAttribute: controlId: ControlId option -> kind: ControlKind -> name: string -> ControlDiagnostic
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Reports that a control of `kind` lacks the accessibility metadata it requires.
     val missingAccessibility: controlId: ControlId option -> kind: ControlKind -> ControlDiagnostic
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Reports that the same `key` identifies two sibling controls, a `ControlId` collision.
     val keyCollision: key: ControlId -> kind: ControlKind -> ControlDiagnostic
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Reports that a control of `kind` requested a `capability` the host environment does not support.
     val unsupportedEnvironment: kind: ControlKind -> capability: string -> ControlDiagnostic
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Reports that standard control `kind` does not support the standard attribute `name`.
     val unsupportedStandardAttribute: kind: StandardControlKind -> name: StandardAttributeName -> ControlDiagnostic
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Reports that standard control `kind` does not raise the standard event `eventKind`.
     val unsupportedStandardEvent: kind: StandardControlKind -> eventKind: StandardEventKind -> ControlDiagnostic
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Reports that standard control `kind` omits a required standard attribute `name`.
     val missingStandardAttribute: kind: StandardControlKind -> name: StandardAttributeName -> ControlDiagnostic
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Reports that a control `kind` declares a non-standard `extensionName` outside the standard contract.
     val customExtension: kind: string -> extensionName: string -> ControlDiagnostic
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Reports a `packageId` reference at `path` that no longer resolves to a current package.
     val stalePackageReference: packageId: string -> path: string -> ControlDiagnostic
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Reports that `packageId` exposes a transitive `dependencyPath` that should not leak across the package boundary.
     val dependencyLeak: packageId: string -> dependencyPath: string -> ControlDiagnostic
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Reports that the catalog entry for `controlId` omits a `requiredField`.
     val catalogOmission: controlId: string -> requiredField: string -> ControlDiagnostic
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Reports that `runtimeName` is defined more than once, the duplicate residing at `path`.
     val duplicateRuntimeDefinition: runtimeName: string -> path: string -> ControlDiagnostic
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Reports that an `eventKind` binding targets a `controlId` that no longer exists in the tree.
     val staleEventTarget: controlId: ControlId -> eventKind: string -> ControlDiagnostic
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Reports that `scopeName` owned by `owner` cannot be expanded as requested.
     val unsupportedScopeExpansion: scopeName: string -> owner: string -> ControlDiagnostic
 
 namespace FS.Skia.UI.Controls
 
 open FS.Skia.UI.Scene
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The font weight applied to a `RichTextRun`: `Regular`, `Medium`, or `Bold`.
 type RichTextWeight =
     | Regular
     | Medium
     | Bold
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The visual styling of a `RichTextRun`: font family/size, `Weight`, foreground/background colors, underline, and italic.
 type RichTextStyle =
     { FontFamily: string option
       FontSize: float
@@ -954,13 +1102,13 @@ type RichTextStyle =
       Underline: bool
       Italic: bool }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A single span of `Text` carrying one `RichTextStyle`, the atomic unit composed into a `RichTextBlock`.
 type RichTextRun =
     { Text: string
       Style: RichTextStyle
       Diagnostics: ControlDiagnostic list }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// An ordered sequence of `Runs` with optional `MaxWidth`, clipping, effects, and accessibility metadata, forming a layout unit.
 type RichTextBlock =
     { Runs: RichTextRun list
       MaxWidth: float option
@@ -968,39 +1116,39 @@ type RichTextBlock =
       Effects: string list
       Accessibility: AccessibilityMetadata option }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The measured layout of a `RichTextBlock`: `Width`, `Height`, `LineCount`, and any measurement diagnostics.
 type RichTextMeasurement =
     { Width: float
       Height: float
       LineCount: int
       Diagnostics: ControlDiagnostic list }
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Builders for styled rich-text `RichTextRun`/`RichTextBlock` values and their lowering to a `Control`.
 module RichText =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Returns the baseline `RichTextStyle` derived from the supplied `Theme`.
     val defaultStyle: Theme -> RichTextStyle
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Builds a `RichTextRun` pairing `text` with a `style`.
     val run: text: string -> style: RichTextStyle -> RichTextRun
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Assembles a `RichTextBlock` from an ordered list of `runs`.
     val block: runs: RichTextRun list -> RichTextBlock
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Computes the `RichTextMeasurement` (width, height, line count) for `block`.
     val measure: block: RichTextBlock -> RichTextMeasurement
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Lowers a `RichTextBlock` and its `Attr` list into a renderable `Control`.
     val create: block: RichTextBlock -> Attr<'msg> list -> Control<'msg>
 
 namespace FS.Skia.UI.Controls
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Whether a `TextInputModel` accepts a `SingleLine` or `MultiLine` of text.
 type TextInputMode =
     | SingleLine
     | MultiLine
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A selected character range (`Start`..`End`) within a `TextInputModel`.
 type TextSelection =
     { Start: int
       End: int }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The MVU state of a text field: committed vs. draft text, `CaretIndex`, `Selection`, in-flight `Composition`, `Validation`, and focus.
 type TextInputModel =
     { ControlId: ControlId
       Mode: TextInputMode
@@ -1012,7 +1160,7 @@ type TextInputModel =
       Validation: ValidationState
       Focused: bool }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// An input message driving `TextInput.update`, e.g. `Focus`, `InsertText`, `MoveCaret`, `Commit`, `Cancel`, or composition events.
 type TextInputMsg =
     | Focus
     | Blur
@@ -1027,37 +1175,37 @@ type TextInputMsg =
     | CompositionCommitted of string
     | ApplyValidation of ValidationState
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A side effect raised by `TextInput.update`: a clipboard read request, a committed-text notification, or a reported diagnostic.
 type TextInputEffect =
     | RequestClipboardText of ControlId
     | CommitText of ControlId * string
     | ReportTextInputDiagnostic of ControlDiagnostic
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// MVU text-field component covering caret, selection, IME composition, clipboard, and validation.
 module TextInput =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Seeds a `TextInputModel` for `controlId` in the given `mode` with an initial `value`, plus any startup effects.
     val init: controlId: ControlId -> mode: TextInputMode -> value: string -> TextInputModel * TextInputEffect list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Pure transition applying `msg` to `model`, returning the next model and the `TextInputEffect` list it raises.
     val update: msg: TextInputMsg -> model: TextInputModel -> TextInputModel * TextInputEffect list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Maps a host-fulfilled `effect` back into the `TextInputMsg` that feeds it into `update`, if any.
     val interpretEffect: effect: TextInputEffect -> TextInputMsg option
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Returns the `ControlDiagnostic` list implied by the current `model` state.
     val diagnostics: model: TextInputModel -> ControlDiagnostic list
 
 namespace FS.Skia.UI.Controls
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Palette and density tokens for controls: built-in `light`/`dark` themes plus `withDensity`/`withAccent`/`resolve`.
 module Theme =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// The built-in light `Theme` (DTCG `DesignTokens.Light` palette).
     val light: Theme
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// The built-in dark `Theme` (DTCG `DesignTokens.Dark` palette).
     val dark: Theme
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Return `theme` scaled by `density` (spacing/size multiplier) for compact or comfortable layouts.
     val withDensity: density: float -> theme: Theme -> Theme
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Return `theme` with its accent colour replaced by `accent`.
     val withAccent: accent: FS.Skia.UI.Scene.Color -> theme: Theme -> Theme
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Resolve the effective `Theme`: the caller's `overrides` if present, otherwise the `light` default.
     val resolve: overrides: Theme option -> Theme
 
 namespace FS.Skia.UI.Controls
@@ -1065,24 +1213,29 @@ namespace FS.Skia.UI.Controls
 open FS.Skia.UI.Scene
 open FS.Skia.UI.Layout
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Stable string identity of a control instance (`ControlId`), used as the join key
+/// across `Bounds`, `EventBindings`, and `BoundIds` for hit-testing and event dispatch.
 type ControlId = string
-/// Public contract type exposed by this FS.Skia.UI package.
+/// String tag naming a control's kind (`ControlKind`), e.g. the lowered form of a
+/// `StandardControlKind` such as `"button"` or `"line-chart"`.
 type ControlKind = string
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A single plotted datum (`ChartPoint`): `X`/`Y` coordinates plus an optional `Label`
+/// for line, bar, pie, and scatter chart kinds.
 type ChartPoint =
     { X: float
       Y: float
       Label: string option }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A named collection of points (`ChartSeries`): a display `Name` and the ordered
+/// `Points` it contributes to a chart control.
 type ChartSeries =
     { Name: string
       Points: ChartPoint list }
 
 [<RequireQualifiedAccess>]
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Closed enumeration (`KnownControl`) of the built-in control kinds the package
+/// recognises by name, from `TextBlock` through the chart family to `DataGrid`.
 type KnownControl =
     | TextBlock
     | Button
@@ -1095,7 +1248,8 @@ type KnownControl =
     | DataGrid
 
 [<RequireQualifiedAccess>]
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Closed enumeration (`KnownEvent`) of the built-in event kinds controls raise,
+/// e.g. `Click`, `Changed`, `Selected`, `FocusChanged`, and `SortChanged`.
 type KnownEvent =
     | Click
     | Changed
@@ -1104,7 +1258,9 @@ type KnownEvent =
     | SortChanged
 
 [<RequireQualifiedAccess>]
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Closed enumeration (`KnownAttribute`) of the built-in attribute names controls
+/// accept, spanning content (`Text`/`Value`), data (`Series`/`Items`/`Nodes`), and
+/// grid state (`SelectedRows`/`FocusedCell`).
 type KnownAttribute =
     | Text
     | Value
@@ -1120,7 +1276,8 @@ type KnownAttribute =
     | FocusedCell
 
 [<RequireQualifiedAccess>]
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The schema-facing control kind (`StandardControlKind`): the built-in kinds plus a
+/// `Custom of string` escape hatch for consumer-defined controls.
 type StandardControlKind =
     | TextBlock
     | Button
@@ -1134,7 +1291,8 @@ type StandardControlKind =
     | Custom of string
 
 [<RequireQualifiedAccess>]
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The schema-facing event kind (`StandardEventKind`): the built-in events plus a
+/// `Custom of string` case for consumer-defined event names.
 type StandardEventKind =
     | Click
     | Changed
@@ -1144,7 +1302,8 @@ type StandardEventKind =
     | Custom of string
 
 [<RequireQualifiedAccess>]
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The schema-facing attribute name (`StandardAttributeName`): the built-in attribute
+/// names plus a `Custom of string` case for consumer-defined attributes.
 type StandardAttributeName =
     | Text
     | Value
@@ -1160,7 +1319,9 @@ type StandardAttributeName =
     | FocusedCell
     | Custom of string
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Schema-facing attribute value (`StandardAttributeValue`): a typed union over the
+/// primitive shapes an attribute may carry — `StandardText`/`StandardBool`/`StandardFloat`,
+/// a `StandardStringList`, a `StandardMessage`/`StandardEvent` payload, or `StandardUntyped`.
 type StandardAttributeValue<'msg> =
     | StandardText of string
     | StandardBool of bool
@@ -1170,7 +1331,9 @@ type StandardAttributeValue<'msg> =
     | StandardEvent of (string -> 'msg)
     | StandardUntyped of obj
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Per-kind authoring contract (`ControlSchema`): the control `Kind`, its
+/// `RequiredAttributes` and `SupportedAttributes`, the `SupportedEvents` it raises, and
+/// whether `CustomAllowed` extension attributes are permitted.
 type ControlSchema =
     { Kind: StandardControlKind
       RequiredAttributes: StandardAttributeName list
@@ -1178,13 +1341,16 @@ type ControlSchema =
       SupportedEvents: StandardEventKind list
       CustomAllowed: bool }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Severity level of a `ControlDiagnostic` (`ControlDiagnosticSeverity`): `Info`,
+/// `Warning`, or `Error`, ordered from advisory to authoring-blocking.
 type ControlDiagnosticSeverity =
     | Info
     | Warning
     | Error
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Closed classification (`ControlDiagnosticCode`) of an authoring or runtime defect,
+/// from `MissingRequiredAttribute` and `MissingStableKey` to `ContrastFailure`,
+/// `KeyCollision`, and `StaleGeneratedReference`.
 type ControlDiagnosticCode =
     | MissingRequiredAttribute
     | DuplicateAttribute
@@ -1198,7 +1364,9 @@ type ControlDiagnosticCode =
     | KeyCollision
     | StaleGeneratedReference
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Accessibility/semantic role of a control (`AccessibilityRole`), e.g. `Button`,
+/// `Slider`, `Grid`, or `Chart`; drives keyboard routing and assistive-tech naming,
+/// with `Custom` for roles outside the built-in set.
 type AccessibilityRole =
     | StaticText
     | Button
@@ -1217,20 +1385,23 @@ type AccessibilityRole =
     | Graph
     | Custom
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Keyboard contract of a control (`KeyboardOperation`): whether it is `Focusable`,
+/// the `ActivationKeys` that trigger it, and the `NavigationKeys` it consumes for
+/// internal movement.
 type KeyboardOperation =
     { Focusable: bool
       ActivationKeys: string list
       NavigationKeys: string list }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Recorded contrast measurement (`ContrastEvidence`): the `Foreground`/`Background`
+/// colors, the measured `Ratio`, and the `RequiredRatio` it is checked against.
 type ContrastEvidence =
     { Foreground: Color
       Background: Color
       Ratio: float
       RequiredRatio: float }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Declared value/range metadata (`NavRange`) for slider/progress/numeric roles.
 /// Feature 100 (R5): declared range metadata for value/range roles — the SOLE source of
 /// step/bounds, replacing the host's hardcoded 0.1 / 0..1 slider constant (FR-002). A
 /// DEFAULT-step slider declares <c>{ Step = 0.1; Min = 0.0; Max = 1.0 }</c> so the pre-R5
@@ -1241,7 +1412,9 @@ type NavRange =
       Min: float
       Max: float }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Per-control accessibility record (`AccessibilityMetadata`): the semantic `Role`,
+/// `NameSource`, current `State` flags, optional `FocusOrder`, the `Keyboard` contract,
+/// optional `Contrast` evidence, and optional value-range `Navigation` metadata.
 type AccessibilityMetadata =
     { Role: AccessibilityRole
       NameSource: string
@@ -1254,13 +1427,16 @@ type AccessibilityMetadata =
       /// both <c>Focus.route</c> and the host per-intent resolver.
       Navigation: NavRange option }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Validation status of an input control (`ValidationState`): `Valid`, `Invalid` with
+/// an error message, or `Pending` with an in-progress message.
 type ValidationState =
     | Valid
     | Invalid of string
     | Pending of string
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Interaction/render state of a control (`VisualState`) consumed by the style resolver:
+/// `Normal`, `Disabled`, `Hover`, `Pressed`, `Focused`, `Selected`, `Loading`, or a
+/// `Validation`-wrapped `ValidationState`.
 type VisualState =
     | Normal
     | Disabled
@@ -1272,7 +1448,8 @@ type VisualState =
     | Validation of ValidationState
 
 [<RequireQualifiedAccess>]
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Built-in semantic style variant (`StyleVariant`): `Primary`, `Danger`, `Ghost`,
+/// `Neutral`, `Success`, or `Warning`.
 /// Feature 093 (E3): the typed, CLOSED set of built-in semantic style variants — the
 /// compiler-checked common path for declarative styling. Closure guarantees the resolver's
 /// variant layer is a total match (FR-001, FR-002, FR-004). Free-form classes live one level
@@ -1285,7 +1462,8 @@ type StyleVariant =
     | Success
     | Warning
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// One attached style class (`StyleClass`): a typed `Variant` wrapping a `StyleVariant`,
+/// or a free-form `Custom` consumer-defined class name.
 /// Feature 093 (E3): one attached-class entry — either a typed <c>StyleVariant</c> or a
 /// free-form, consumer-defined class. A control carries a <c>StyleClass list</c> whose list
 /// position IS the attach order the resolver folds left-to-right (FR-001, FR-003).
@@ -1293,7 +1471,8 @@ type StyleClass =
     | Variant of StyleVariant
     | Custom of string
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Resolved paint and typography for a control (`ResolvedStyle`): `Foreground`, `Fill`,
+/// `Stroke`/`StrokeWidth`, and `FontFamily`/`FontSize`/`FontWeight`, produced by `Style.resolve`.
 /// Feature 093 (E3) — the per-control output of style resolution: the concrete paint/typography
 /// the migrated kinds apply. A FLAT record so the fixed precedence is last-writer-wins per field
 /// and the parity proof is a plain structural record comparison. Geometry is NOT here — the
@@ -1309,7 +1488,9 @@ type ResolvedStyle =
       FontSize: float
       FontWeight: int option }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Design-token palette and metrics (`Theme`): the named color roles
+/// (`Foreground`/`Background`/`Accent`/`Danger`/`Muted`), typography
+/// (`FontFamily`/`FontSize`), and layout metrics (`Density`/`CornerRadius`/`ContrastRequiredRatio`).
 type Theme =
     { Name: string
       Foreground: Color
@@ -1324,7 +1505,8 @@ type Theme =
       ContrastRequiredRatio: float }
 
 [<RequireQualifiedAccess>]
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Input source that produced a `ControlEvent` (`ControlEventOrigin`): `Pointer`,
+/// `Keyboard`, `Text`, `Focus`, `Selection`, or `Clipboard`.
 type ControlEventOrigin =
     | Pointer
     | Keyboard
@@ -1333,7 +1515,8 @@ type ControlEventOrigin =
     | Selection
     | Clipboard
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Typed navigation outcome (`NavPayload`): `SteppedValue` for a value change,
+/// `MovedSelection` for a selection move, or `MovedCell` for grid cell movement.
 /// Feature 100 (R5): the closed set of navigation-outcome payload shapes (FR-005, SC-005).
 /// Mirrors <c>NavIntent</c> one-to-one; exhaustively matched at the host edge.
 type NavPayload =
@@ -1341,7 +1524,8 @@ type NavPayload =
     | MovedSelection of index: int * item: string option
     | MovedCell of row: int * col: int
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A dispatched control event (`ControlEvent`): its `Kind`, the source `ControlId`, the
+/// `Origin` input source, an optional string `Payload`, and an optional typed `Nav` outcome.
 type ControlEvent =
     { Kind: string
       ControlId: ControlId option
@@ -1354,7 +1538,9 @@ type ControlEvent =
       /// compatibility (research R-3).
       Nav: NavPayload option }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Classification (`AttrCategory`) of what an attribute affects — `Content`, `Children`,
+/// `Layout`, `Style`, `Theme`, `State`, `Validation`, `Accessibility`, `Event`, `Data`, or
+/// `Slot` — used to route the attribute during lowering.
 type AttrCategory =
     | Content
     | Children
@@ -1372,7 +1558,9 @@ type AttrCategory =
     /// the only sanctioned authoring path, FR-001).
     | Slot
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The core declarative control node (`Control<'msg>`): its `Kind`, optional stable `Key`
+/// identity, its `Attributes` and `Children`, optional text `Content`, and optional
+/// `Accessibility` metadata. The unit of the authoring tree and the reconciler diff.
 type Control<'msg> =
     { Kind: ControlKind
       Key: ControlId option
@@ -1417,7 +1605,9 @@ and AttrValue<'msg> =
     | EventValue of (ControlEvent -> 'msg)
     | UntypedValue of obj
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A reported authoring/runtime issue (`ControlDiagnostic`): the offending `ControlId`
+/// and `ControlKind`, the diagnostic `Code` and `Severity`, a human-readable `Message`,
+/// and an optional `EvidencePath`.
 type ControlDiagnostic =
     { ControlId: ControlId option
       ControlKind: ControlKind
@@ -1426,13 +1616,16 @@ type ControlDiagnostic =
       Message: string
       EvidencePath: string option }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A wired event handler (`ControlEventBinding<'msg>`): binds a `ControlId` and
+/// `EventKind` to a `Dispatch` function turning a `ControlEvent` into a host message.
 type ControlEventBinding<'msg> =
     { ControlId: ControlId
       EventKind: string
       Dispatch: ControlEvent -> 'msg }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Output of rendering a control tree (`ControlRenderResult<'msg>`): the painted `Scene`,
+/// the `Layout` root, the per-control `Bounds`, any `Diagnostics`, the `EventBindings` and
+/// their `BoundIds`, and the total `NodeCount`.
 type ControlRenderResult<'msg> =
     { Scene: Scene
       Layout: LayoutNode

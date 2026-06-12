@@ -1,46 +1,53 @@
 namespace FS.Skia.UI.Controls
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// How a `DataGridColumn` renders and interprets its cells — `TextColumn`,
+/// `NumericColumn`, `BooleanColumn`, or a `CustomColumn` named by its tag.
 type DataGridColumnType =
     | TextColumn
     | NumericColumn
     | BooleanColumn
     | CustomColumn of string
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A grid column definition: its stable `Key`, displayed `Header`, pixel
+/// `Width`, and `ColumnType` controlling cell rendering.
 type DataGridColumn =
     { Key: string
       Header: string
       Width: float
       ColumnType: DataGridColumnType }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A single grid cell addressed by `RowKey` and `ColumnKey`, carrying its
+/// rendered string `Value`.
 type DataGridCell =
     { RowKey: string
       ColumnKey: string
       Value: string }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// A grid row identified by `Key`, holding its `Cells` in column order.
 type DataGridRow =
     { Key: string
       Cells: DataGridCell list }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Direction of a column sort — `Ascending` or `Descending`.
 type DataGridSortDirection =
     | Ascending
     | Descending
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The active sort: which column (`ColumnKey`) is ordered and in which
+/// `Direction`.
 type DataGridSort =
     { ColumnKey: string
       Direction: DataGridSortDirection }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The currently focused cell, located by `RowKey` and `ColumnKey` for
+/// keyboard navigation.
 type DataGridFocusedCell =
     { RowKey: string
       ColumnKey: string }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// The full virtualized data-grid state: identity, `Columns`, `RowCount`,
+/// row/viewport metrics, the visible window, selection, focus, sort, filter,
+/// and accumulated `Diagnostics`.
 type DataGridModel =
     { ControlId: ControlId
       Columns: DataGridColumn list
@@ -54,7 +61,8 @@ type DataGridModel =
       FilterText: string option
       Diagnostics: ControlDiagnostic list }
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Messages driving a `DataGridModel` through `update`: scroll, row
+/// select/toggle, cell focus, sort, filter, and row-count replacement.
 type DataGridMsg =
     | ScrollRowsTo of int
     | SelectRow of string
@@ -64,7 +72,8 @@ type DataGridMsg =
     | ApplyFilter of string option
     | ReplaceRowCount of int
 
-/// Public contract type exposed by this FS.Skia.UI package.
+/// Outbound notifications a `DataGridModel` emits when its visible range,
+/// selection, focus, sort, or filter changes, plus diagnostic reports.
 type DataGridEffect =
     | DataGridVisibleRangeChanged of VisibleRange
     | DataGridSelectionChanged of string list
@@ -73,21 +82,28 @@ type DataGridEffect =
     | DataGridFilterChanged of string option
     | ReportDataGridDiagnostic of ControlDiagnostic
 
-/// Public contract module exposed by this FS.Skia.UI package.
+/// Virtualized data-grid control: an MVU `init`/`update` core plus attribute
+/// builders for authoring a grid against the typed `Props` front door.
 module DataGrid =
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Builds the initial `DataGridModel` for `controlId` from its columns and
+    /// row/viewport metrics, with the first visible-range effects.
     val init: controlId: ControlId -> columns: DataGridColumn list -> rowCount: int -> rowHeight: float -> viewportHeight: float -> DataGridModel * DataGridEffect list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Applies a `DataGridMsg` to `model`, returning the next state and any
+    /// `DataGridEffect`s the change produces.
     val update: msg: DataGridMsg -> model: DataGridModel -> DataGridModel * DataGridEffect list
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Authors a data-grid `Control` over the given `columns` and `attrs` — the
+    /// legacy builder behind the typed `Props` front door.
     val create: columns: DataGridColumn list -> attrs: Attr<'msg> list -> Control<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute setting the grid's `columns` definition on a data-grid control.
     val columns: columns: DataGridColumn list -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute supplying the grid's `rows` of cell data to a data-grid control.
     val rows: rows: DataGridRow list -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute pinning the grid's `visibleRange` — the virtualized window of
+    /// rows currently rendered.
     val visibleRange: visibleRange: VisibleRange -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute marking the set of `selectedRows` (by row key) on a data-grid
+    /// control.
     val selectedRows: selectedRows: Set<string> -> Attr<'msg>
-    /// Public contract function exposed by this FS.Skia.UI package.
+    /// Attribute setting the grid's `focusedCell` for keyboard navigation, or
+    /// `None` to clear focus.
     val focusedCell: focusedCell: DataGridFocusedCell option -> Attr<'msg>

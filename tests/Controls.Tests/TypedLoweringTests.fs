@@ -17,6 +17,10 @@ module LTextInput = FS.Skia.UI.Controls.TextInput
 module LDataGrid = FS.Skia.UI.Controls.DataGrid
 module LControl = FS.Skia.UI.Controls.Control
 module LBadge = FS.Skia.UI.Controls.Badge
+// Feature 106 (T008): the additional starter-demonstrated typed controls.
+module LRichText = FS.Skia.UI.Controls.RichText
+module LLineChart = FS.Skia.UI.Controls.LineChart
+module LGraphView = FS.Skia.UI.Controls.GraphView
 
 // Msg used to bind the typed authoring surface; needs equality for parity.
 type Msg =
@@ -230,5 +234,28 @@ let typedLoweringTests =
                 |> LControl.withKey "grid"
 
             parityEqual typed legacy "DataGrid view lowers to legacy IR for current model"
+        }
+
+        // --- Feature 106 (T008): the remaining starter-demonstrated typed controls ----------
+        test "RichText view lowers to legacy RichText.create for its runs" {
+            let style = LRichText.defaultStyle Theme.light
+            let runs = [ LRichText.run "Hello " style; LRichText.run "world" style ]
+            let typed = RichText.view { RichText.defaults with Runs = runs }
+            let legacy = LRichText.create (LRichText.block runs) []
+            parityEqual typed legacy "RichText view lowers to legacy IR"
+        }
+
+        test "LineChart view lowers to legacy LineChart.create for its series" {
+            let series = [ { Name = "Revenue"; Points = [ { X = 0.0; Y = 1.0; Label = None } ] } ]
+            let typed = LineChart.view { LineChart.defaults with Series = series }
+            let legacy = LLineChart.create [ LLineChart.series series ]
+            parityEqual typed legacy "LineChart view lowers to legacy IR"
+        }
+
+        test "GraphView view lowers to legacy GraphView.create for its nodes" {
+            let nodes = [ "form"; "chart"; "grid" ]
+            let typed = GraphView.view { GraphView.defaults with Nodes = nodes }
+            let legacy = LGraphView.create [ LGraphView.nodes nodes ]
+            parityEqual typed legacy "GraphView view lowers to legacy IR"
         }
     ]

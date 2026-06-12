@@ -12,7 +12,7 @@ open FS.Skia.UI.Scene
 /// procedural per-kind styling for the migrated controls. No selector matching, no specificity
 /// algebra, no cross-control cascade (permanent roadmap non-goals).
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-/// Public contract module exposed by this FS.Skia.UI package.
+/// The state-to-style resolver surface: `resolve` folds theme, base style, classes, and visual state into a `ResolvedStyle`.
 module Style =
     /// Pure, total, deterministic. Precedence (FR-003), last-writer-wins per `ResolvedStyle`
     /// field:
