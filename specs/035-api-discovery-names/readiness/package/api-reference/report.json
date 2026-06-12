@@ -155,9 +155,9 @@
       "src/Controls.Elmish/ControlsElmish.fsi"
     ],
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.Controls.Elmish.md",
-    "SymbolCount": 106,
+    "SymbolCount": 108,
     "SampledSymbols": [],
-    "XmlSummaryCount": 171,
+    "XmlSummaryCount": 183,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"

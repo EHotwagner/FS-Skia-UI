@@ -1,7 +1,7 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
 <!-- SPECKIT START -->
-specs/108-focus-and-perf-feedback/plan.md
+specs/109-perf-metrics-baseline/plan.md
 <!-- SPECKIT END -->
 
 ## Run `Route` first; run only the gates it prints

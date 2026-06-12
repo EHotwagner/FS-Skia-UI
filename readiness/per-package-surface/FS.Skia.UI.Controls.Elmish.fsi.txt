@@ -34,13 +34,17 @@ type AdapterProgram<'model, 'msg> =
 type FrameMetrics =
     {
 
+      ProductModelChanged: bool
+
+      ViewCalled: bool
+
+      FullRenderCount: int
+
       RemeasuredNodeCount: int
 
       PointerSamplesReceived: int
 
       PointerMovesProcessed: int
-
-      ViewRebuilt: bool
 
       FrameDuration: TimeSpan }
 

@@ -1,0 +1,116 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (feature 109).
+# Phase-checkpoint edges (every task in Phase N+1 -> last foundation task of
+# Phase N) are auto-injected by the graph script; only non-phase cross-edges
+# are written here.
+
+tasks:
+  # Phase 1 — Setup
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 2 — Foundation: the FrameMetrics contract change
+  T004:
+    deps: []
+    skillist: ["fs-skia-controls-host"]
+  T005:
+    deps: [T004]
+    skillist: ["fs-skia-controls-host", "fs-skia-reconciliation"]
+  T006:
+    deps: [T005]
+    skillist: ["fs-skia-controls-host"]
+  T007:
+    deps: [T005]
+    skillist: ["fs-skia-template-update"]
+  T008:
+    deps: [T004, T007]
+    skillist: ["fs-skia-template-update"]
+  T009:
+    deps: [T005]
+    skillist: []
+
+  # Phase 3 — US1: metrics tell the truth
+  T010:
+    deps: []
+    skillist: ["fs-skia-controls-host"]
+  T011:
+    deps: []
+    skillist: ["fs-skia-controls-host"]
+  T012:
+    deps: []
+    skillist: ["fs-skia-controls-host"]
+  T013:
+    deps: []
+    skillist: ["fs-skia-controls-host"]
+  T014:
+    deps: [T010, T011, T012]
+    skillist: ["fs-skia-controls-host", "fs-skia-reconciliation"]
+  T015:
+    deps: [T013, T014]
+    skillist: ["fs-skia-controls-host"]
+  T016:
+    deps: [T014]
+    skillist: []
+
+  # Phase 4 — US2: scenario corpus + deterministic goldens
+  T017:
+    deps: []
+    skillist: ["fs-skia-evidence-mode", "fs-skia-testing"]
+  T018:
+    deps: [T017]
+    skillist: ["fs-skia-ui-widgets", "fs-skia-testing"]
+  T019:
+    deps: [T018]
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 5 — US3: coalescing fidelity
+  T020:
+    deps: []
+    skillist: ["fs-skia-controls-host"]
+  T021:
+    deps: []
+    skillist: ["fs-skia-controls-host"]
+  T022:
+    deps: [T020, T021]
+    skillist: ["fs-skia-controls-host"]
+
+  # Phase 6 — US4: non-golden baselines + timing report
+  T023:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+  T024:
+    deps: [T023]
+    skillist: ["fs-skia-evidence-mode", "fs-skia-testing"]
+  T025:
+    deps: [T024]
+    skillist: ["fs-skia-evidence-mode"]
+  T026:
+    deps: [T024]
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 7 — Integration & Polish
+  T027:
+    deps: []
+    skillist: ["fs-skia-controls-host"]
+  T028:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+  T029:
+    deps: [T027, T028]
+    skillist: ["fsharp-build-orchestration"]
+  T030:
+    deps: [T029]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T031:
+    deps: [T030]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

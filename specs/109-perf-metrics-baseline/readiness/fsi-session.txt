@@ -1,0 +1,13 @@
+# FSI session — feature 109 reshaped FrameMetrics / Perf.runScript surface (T009)
+#
+# Captured via: dotnet fsi against the built FS.Skia.UI.Controls.Elmish.dll (Debug, full dep closure).
+# Shows the NEW fields (ProductModelChanged / ViewCalled / FullRenderCount) populated per frame;
+# the animation-only Tick frame proves the SC-011 divergence (ProductModelChanged != ViewCalled).
+# FrameDuration is TimeSpan.Zero on the deterministic Perf.runScript path (FR-012).
+
+frame 0 Idle                                   -> PMC=false VC=false FullRenderCount=0 RemeasuredNodeCount=0 PointerSamplesReceived=0 PointerMovesProcessed=0 FrameDuration=00:00:00
+frame 1 Hover (no product msg)                 -> PMC=false VC=true  FullRenderCount=1 RemeasuredNodeCount=0 PointerSamplesReceived=1 PointerMovesProcessed=1 FrameDuration=00:00:00
+frame 2 Key Enter 0->1 (Normal)                -> PMC=true  VC=true  FullRenderCount=1 RemeasuredNodeCount=0 PointerSamplesReceived=0 PointerMovesProcessed=0 FrameDuration=00:00:00
+frame 3 Key Enter 1->2 (Hover: starts clock)   -> PMC=true  VC=true  FullRenderCount=1 RemeasuredNodeCount=0 PointerSamplesReceived=0 PointerMovesProcessed=0 FrameDuration=00:00:00
+frame 4 Tick (animation-only)                  -> PMC=false VC=true  FullRenderCount=1 RemeasuredNodeCount=0 PointerSamplesReceived=0 PointerMovesProcessed=0 FrameDuration=00:00:00
+SC-011 divergence: animation-only Tick frame has ProductModelChanged=false, ViewCalled=true (the two facts differ)

@@ -36,22 +36,36 @@ type AdapterProgram<'model, 'msg> =
       View: 'model -> Control<'msg>
       Subscriptions: 'model -> AdapterSubscription<'msg> list }
 
-/// Feature 108 (US2, FR-006): the per-frame structured work/timing signal the host loop and the
-/// deterministic `Perf.runScript` driver both produce. The four count/bool fields are the
-/// byte-stable determinism surface (FR-007/SC-003); `FrameDuration` is reported for real perf
-/// observation but EXCLUDED from golden assertions (it varies run to run).
+/// Feature 108/109 (US1, FR-001/002): the per-frame structured work/timing signal the host loop and
+/// the deterministic `Perf.runScript` driver both produce. The six count/bool fields are the
+/// byte-stable determinism surface (FR-007/SC-005); `FrameDuration` is reported for real perf
+/// observation but EXCLUDED from golden assertions (it varies run to run, FR-012). Feature 109
+/// replaced the conflating `ViewRebuilt` with the two precise booleans `ProductModelChanged` +
+/// `ViewCalled` and added the integer `FullRenderCount`, so "the model changed" and "the view ran"
+/// are reported as separate facts (SC-011).
 type FrameMetrics =
-    { /// Nodes re-measured this frame (from `WorkReductionRecord.RemeasuredNodeCount`); 0 on an idle
+    { /// A product message actually changed the model this frame (the reference identity of the folded
+      /// model changed across `host.Update`). `false` for a no-message frame, a pure hover/focus
+      /// frame, and an animation-only tick (FR-001/003/005).
+      ProductModelChanged: bool
+      /// `host.View size model` ran this frame to (re)produce a tree (FR-001). Equals
+      /// `FullRenderCount > 0` — an animation-only tick that re-renders an overlay reports `true` here
+      /// while `ProductModelChanged` stays `false`.
+      ViewCalled: bool
+      /// Number of full `host.View` + `Control.renderTree` materializations this frame performed — the
+      /// routing render and the retained-step render where they occur (FR-015). The baseline answer to
+      /// "how many full renders for this interaction"; Phase 2 drives the hot-path value toward 0.
+      FullRenderCount: int
+      /// Nodes re-measured this frame (from `WorkReductionRecord.RemeasuredNodeCount`); 0 on an idle
       /// frame, bounded (overlay-assembly, not whole-tree) on an animation-only frame.
       RemeasuredNodeCount: int
-      /// Raw pointer samples that arrived this frame (K before coalescing).
+      /// Raw pointer samples that arrived this frame, including deferred/queued moves carried from a
+      /// prior boundary (K before coalescing) (FR-008).
       PointerSamplesReceived: int
-      /// Pointer MOVES actually applied after coalescing — at most one per frame (FR-011/SC-004).
+      /// Pointer MOVES actually applied after coalescing — at most one per frame (FR-009/SC-002).
       PointerMovesProcessed: int
-      /// Did this frame meaningfully rebuild the view (a product message changed the model)? An
-      /// idle frame, a pure-hover frame, and an animation-only tick all report `false` (SC-005/012).
-      ViewRebuilt: bool
-      /// Wall-clock duration of the frame's work — reported, EXCLUDED from the golden/determinism.
+      /// Wall-clock duration of the frame's work — reported, EXCLUDED from the golden/determinism
+      /// surface (FR-012).
       FrameDuration: TimeSpan }
 
 [<RequireQualifiedAccess>]

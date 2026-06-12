@@ -31,12 +31,14 @@ type AdapterProgram<'model, 'msg> =
       View: 'model -> Control<'msg>
       Subscriptions: 'model -> AdapterSubscription<'msg> list }
 
-/// Feature 108 (US2, FR-006): per-frame structured work/timing signal (see ControlsElmish.fsi).
+/// Feature 108/109 (US1, FR-001/002): per-frame structured work/timing signal (see ControlsElmish.fsi).
 type FrameMetrics =
-    { RemeasuredNodeCount: int
+    { ProductModelChanged: bool
+      ViewCalled: bool
+      FullRenderCount: int
+      RemeasuredNodeCount: int
       PointerSamplesReceived: int
       PointerMovesProcessed: int
-      ViewRebuilt: bool
       FrameDuration: TimeSpan }
 
 /// Feature 108 (US3, FR-009): one ordered step of the deterministic perf driver.
@@ -792,14 +794,22 @@ module ControlsElmish =
 
             find r.Root
 
-        // Feature 108 (US2, FR-006): emit one `OnFrameMetrics` for a processed pointer frame.
-        let emitFrameMetrics (samples: int) (movesProcessed: int) (viewRebuilt: bool) =
+        // Feature 108/109 (US1, FR-001/007): emit one `OnFrameMetrics` for a processed pointer frame.
+        // This is the live, BEST-EFFORT observability sink (the authoritative byte-stable surface is
+        // `Perf.runScript`): `productModelChanged` is the proxy "a product message was produced this
+        // frame" available at this seam (the viewer applies the fold downstream); `fullRenderCount` is
+        // the count of synchronous routing renders the frame performed (each `processInput` →
+        // `routeInteractivePointer` materializes `host.View` + `Control.renderTree`); `duration` is the
+        // real wall-clock of that work (FR-012, EXCLUDED from goldens — the golden surface reports 0).
+        let emitFrameMetrics (samples: int) (movesProcessed: int) (productModelChanged: bool) (fullRenderCount: int) (duration: TimeSpan) =
             host.OnFrameMetrics
-                { RemeasuredNodeCount = lastWorkReduction.Value |> Option.map (fun w -> w.RemeasuredNodeCount) |> Option.defaultValue 0
+                { ProductModelChanged = productModelChanged
+                  ViewCalled = fullRenderCount > 0
+                  FullRenderCount = fullRenderCount
+                  RemeasuredNodeCount = lastWorkReduction.Value |> Option.map (fun w -> w.RemeasuredNodeCount) |> Option.defaultValue 0
                   PointerSamplesReceived = samples
                   PointerMovesProcessed = movesProcessed
-                  ViewRebuilt = viewRebuilt
-                  FrameDuration = TimeSpan.Zero }
+                  FrameDuration = duration }
 
         // The single pointer-routing step (the pre-108 `mapPointer` body): focus-on-click + the real
         // `routeInteractivePointer` adapter path. Shared by the discrete and coalesced-move paths.
@@ -838,14 +848,19 @@ module ControlsElmish =
 
             match input.Phase with
             | ViewerPointerPhaseKind.Moved ->
-                // Process the previously-deferred move (≤1 per boundary), then defer this one.
-                let flushedMsgs =
+                // Process the previously-deferred move (≤1 per boundary), then defer this one. A flushed
+                // move performs exactly one routing render (FullRenderCount = 1); the first move of a
+                // burst defers without flushing (no render, no emit).
+                let sw = System.Diagnostics.Stopwatch.StartNew()
+
+                let flushedAny, flushedMsgs =
                     match pendingMove.Value with
                     | Some prev ->
                         pendingMove.Value <- None
-                        processInput prev size model
-                    | None -> []
+                        true, processInput prev size model
+                    | None -> false, []
 
+                sw.Stop()
                 pendingMove.Value <- Some input
 
                 // This Moved sample carries into the next frame's count; report the flushed move now.
@@ -853,12 +868,15 @@ module ControlsElmish =
                 pointerSampleCount.Value <- 1
 
                 if samples > 0 then
-                    emitFrameMetrics samples 1 (not (List.isEmpty flushedMsgs))
+                    emitFrameMetrics samples 1 (not (List.isEmpty flushedMsgs)) (if flushedAny then 1 else 0) sw.Elapsed
 
                 flushedMsgs
             | _ ->
                 // Discrete interaction: flush any pending move first (arrival order preserved), then
                 // process the discrete event in the same frame it arrived (a click is never dropped).
+                // FullRenderCount = the discrete routing render plus the flushed-move routing render.
+                let sw = System.Diagnostics.Stopwatch.StartNew()
+
                 let moveFlushed, moveMsgs =
                     match pendingMove.Value with
                     | Some prev ->
@@ -867,10 +885,12 @@ module ControlsElmish =
                     | None -> false, []
 
                 let discreteMsgs = processInput input size model
+                sw.Stop()
                 let samples = pointerSampleCount.Value
                 pointerSampleCount.Value <- 0
                 let msgs = moveMsgs @ discreteMsgs
-                emitFrameMetrics samples (if moveFlushed then 1 else 0) (not (List.isEmpty msgs))
+                let fullRenderCount = (if moveFlushed then 1 else 0) + 1
+                emitFrameMetrics samples (if moveFlushed then 1 else 0) (not (List.isEmpty msgs)) fullRenderCount sw.Elapsed
                 msgs
 
         // Feature 108 (US5, FR-016): the unconsumed-key fallthrough. The modifier-aware `MapKeyChord`
@@ -1045,11 +1065,21 @@ module ControlsElmish =
                 | Some ms -> ms
                 | None -> interpretPointerEffect host.MapPointer interaction |> AdapterCmd.productMessages
 
+            // Feature 109 (US1): did a product message actually change the model across the fold? An
+            // empty message list never changes it; a non-empty list changed it iff the folded model's
+            // reference identity moved (`obj.ReferenceEquals` — honest for both reference-type models,
+            // where an idempotent `update` returns the same instance → `false`, and value-type models,
+            // where the guard keeps a no-message frame `false`). No `'model` equality constraint added.
+            let productModelChanged (before: 'model) (after: 'model) (msgs: 'msg list) : bool =
+                not (List.isEmpty msgs) && not (obj.ReferenceEquals(before, after))
+
             let zero =
-                { RemeasuredNodeCount = 0
+                { ProductModelChanged = false
+                  ViewCalled = false
+                  FullRenderCount = 0
+                  RemeasuredNodeCount = 0
                   PointerSamplesReceived = 0
                   PointerMovesProcessed = 0
-                  ViewRebuilt = false
                   FrameDuration = TimeSpan.Zero }
 
             toFrames script
@@ -1058,28 +1088,35 @@ module ControlsElmish =
                 | FrameInput.Pointer _ :: _ when frame |> List.forall (function
                                                                        | FrameInput.Pointer p -> isMoveInteraction p
                                                                        | _ -> false) ->
-                    // Coalesced move frame: K samples, ONE processed move (the latest), one render.
+                    // Coalesced move frame: K samples, ONE processed move (the latest), one routing
+                    // render (FullRenderCount counts it even when no product message results — pointer
+                    // routing materializes `host.View` + `Control.renderTree` today, FR-015).
                     let k = List.length frame
+                    let before = model
 
                     let msgs =
                         match List.last frame with
-                        | FrameInput.Pointer interaction -> routeInteraction interaction
+                        | FrameInput.Pointer interaction -> routeInteraction interaction // 1 routing render
                         | _ -> []
 
-                    let rebuilt = not (List.isEmpty msgs)
+                    let hasMsgs = not (List.isEmpty msgs)
                     applyMessages msgs
-                    let remeasured = if rebuilt then renderStep () else 0
+                    let remeasured = if hasMsgs then renderStep () else 0 // step render iff a message rebuilt
+                    let fullRenderCount = 1 + (if hasMsgs then 1 else 0)
 
                     { zero with
+                        ProductModelChanged = productModelChanged before model msgs
+                        ViewCalled = fullRenderCount > 0
+                        FullRenderCount = fullRenderCount
                         RemeasuredNodeCount = remeasured
                         PointerSamplesReceived = k
-                        PointerMovesProcessed = 1
-                        ViewRebuilt = rebuilt }
+                        PointerMovesProcessed = 1 }
                 | [ FrameInput.Idle ] -> zero
                 | [ FrameInput.Tick delta ] ->
                     // Advance every live clock by the injected delta; if an animation is live, render
-                    // the overlay step (bounded remeasure, NOT a whole-tree rebuild) with no model
-                    // rebuild (ViewRebuilt = false). A consumer `Tick` message rebuilds as usual.
+                    // the overlay step (bounded remeasure, NOT a whole-tree rebuild) with no product
+                    // message — so `ProductModelChanged = false` while `ViewCalled = true` (the view ran
+                    // to assemble the overlay, SC-011). A consumer `Tick` message rebuilds as usual.
                     let hadAnimation =
                         match retained with
                         | Some r -> r.StateByIdentity |> Map.exists (fun _ s -> s.Animation.IsSome)
@@ -1096,36 +1133,52 @@ module ControlsElmish =
                                             { s with Animation = s.Animation |> Option.map (RetainedRender.advance delta) }) }
                     | None -> ()
 
+                    let before = model
                     let tickMsgs = host.Tick delta |> Option.toList
-                    let rebuilt = not (List.isEmpty tickMsgs)
+                    let hasMsgs = not (List.isEmpty tickMsgs)
                     applyMessages tickMsgs
-                    let remeasured = if rebuilt || hadAnimation then renderStep () else 0
+                    let rendered = hasMsgs || hadAnimation
+                    let remeasured = if rendered then renderStep () else 0
+                    let fullRenderCount = if rendered then 1 else 0
 
                     { zero with
-                        RemeasuredNodeCount = remeasured
-                        ViewRebuilt = rebuilt }
+                        ProductModelChanged = productModelChanged before model tickMsgs
+                        ViewCalled = fullRenderCount > 0
+                        FullRenderCount = fullRenderCount
+                        RemeasuredNodeCount = remeasured }
                 | [ FrameInput.Key(k, mods) ] ->
+                    let before = model
+
                     let msgs =
                         match host.MapKeyChord k mods with
                         | Some m -> [ m ]
                         | None -> host.MapKey k true |> Option.toList
 
-                    let rebuilt = not (List.isEmpty msgs)
+                    let hasMsgs = not (List.isEmpty msgs)
                     applyMessages msgs
-                    let remeasured = if rebuilt then renderStep () else 0
+                    let remeasured = if hasMsgs then renderStep () else 0
+                    let fullRenderCount = if hasMsgs then 1 else 0
 
                     { zero with
-                        RemeasuredNodeCount = remeasured
-                        ViewRebuilt = rebuilt }
+                        ProductModelChanged = productModelChanged before model msgs
+                        ViewCalled = fullRenderCount > 0
+                        FullRenderCount = fullRenderCount
+                        RemeasuredNodeCount = remeasured }
                 | [ FrameInput.Pointer interaction ] ->
-                    // A discrete pointer interaction: one sample, never a coalesced move.
-                    let msgs = routeInteraction interaction
-                    let rebuilt = not (List.isEmpty msgs)
+                    // A discrete pointer interaction: one sample, never a coalesced move. The routing
+                    // render always materializes a tree (FullRenderCount >= 1, ViewCalled = true) even
+                    // when it resolves to no product message.
+                    let before = model
+                    let msgs = routeInteraction interaction // 1 routing render
+                    let hasMsgs = not (List.isEmpty msgs)
                     applyMessages msgs
-                    let remeasured = if rebuilt then renderStep () else 0
+                    let remeasured = if hasMsgs then renderStep () else 0
+                    let fullRenderCount = 1 + (if hasMsgs then 1 else 0)
 
                     { zero with
+                        ProductModelChanged = productModelChanged before model msgs
+                        ViewCalled = fullRenderCount > 0
+                        FullRenderCount = fullRenderCount
                         RemeasuredNodeCount = remeasured
-                        PointerSamplesReceived = 1
-                        ViewRebuilt = rebuilt }
+                        PointerSamplesReceived = 1 }
                 | _ -> zero)

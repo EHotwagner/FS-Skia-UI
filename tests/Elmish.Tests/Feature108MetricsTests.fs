@@ -53,9 +53,12 @@ let private keyHost =
                 | Enter -> Some Inc
                 | _ -> None }
 
+// Feature 109: `ViewRebuilt` was split into `ProductModelChanged` (a product message changed the
+// model) + `ViewCalled`/`FullRenderCount` (the view ran). These 108 assertions are about the
+// model-change fact, so they read `ProductModelChanged`.
 let private counts (frames: FrameMetrics list) =
     frames
-    |> List.map (fun f -> f.RemeasuredNodeCount, f.PointerSamplesReceived, f.PointerMovesProcessed, f.ViewRebuilt)
+    |> List.map (fun f -> f.RemeasuredNodeCount, f.PointerSamplesReceived, f.PointerMovesProcessed, f.ProductModelChanged)
 
 [<Tests>]
 let tests =
@@ -65,7 +68,7 @@ let tests =
             Expect.equal frames.Length 1 "one frame per idle step"
             Expect.equal frames.[0].RemeasuredNodeCount 0 "idle re-measures nothing"
             Expect.equal frames.[0].PointerSamplesReceived 0 "no pointer samples"
-            Expect.isFalse frames.[0].ViewRebuilt "idle does not rebuild the view"
+            Expect.isFalse frames.[0].ProductModelChanged "idle changes no model"
         }
 
         test "K pointer moves in one frame coalesce: samples = K, moves processed <= 1 (SC-004)" {
@@ -78,15 +81,15 @@ let tests =
 
         test "a pure-hover frame does not rebuild the view (SC-005)" {
             let frames = ControlsElmish.Perf.runScript host size [ FrameInput.Pointer(HoverEnter("btn", 5.0, 5.0)) ]
-            Expect.isFalse frames.[0].ViewRebuilt "hover that dispatches no product message does not rebuild"
+            Expect.isFalse frames.[0].ProductModelChanged "hover dispatches no product message, so the model does not change"
         }
 
         test "a key that changes the model rebuilds; a following idle does not (SC-003/005)" {
             let frames = ControlsElmish.Perf.runScript keyHost size [ FrameInput.Key(Enter, ViewerKeyboard.noModifiers); FrameInput.Key(Enter, ViewerKeyboard.noModifiers); FrameInput.Idle ]
             Expect.equal frames.Length 3 "three frames"
-            Expect.isTrue frames.[0].ViewRebuilt "first Enter rebuilds (model 0->1)"
-            Expect.isTrue frames.[1].ViewRebuilt "second Enter rebuilds (model 1->2)"
-            Expect.isFalse frames.[2].ViewRebuilt "the trailing idle does not rebuild"
+            Expect.isTrue frames.[0].ProductModelChanged "first Enter changes the model (0->1)"
+            Expect.isTrue frames.[1].ProductModelChanged "second Enter changes the model (1->2)"
+            Expect.isFalse frames.[2].ProductModelChanged "the trailing idle changes no model"
             Expect.equal frames.[2].RemeasuredNodeCount 0 "idle re-measures nothing"
         }
 
@@ -99,13 +102,13 @@ let tests =
             let frames = ControlsElmish.Perf.runScript host size script
             Expect.equal frames.Length 2 "the two moves coalesce; the click is its own frame"
             Expect.equal frames.[0].PointerMovesProcessed 1 "the move burst coalesces to one processed move"
-            Expect.isTrue frames.[1].ViewRebuilt "the click is processed in its frame (onClick -> Inc rebuilt the model)"
+            Expect.isTrue frames.[1].ProductModelChanged "the click is processed in its frame (onClick -> Inc changed the model)"
             Expect.equal frames.[1].PointerSamplesReceived 1 "the discrete click is a single sample"
         }
 
         test "a Tick frame advancing clocks reports no whole-tree rebuild (SC-005, animation edge)" {
             let frames = ControlsElmish.Perf.runScript host size [ FrameInput.Tick(TimeSpan.FromMilliseconds 16.0) ]
-            Expect.isFalse frames.[0].ViewRebuilt "an event-driven Tick (no consumer message) does not rebuild"
+            Expect.isFalse frames.[0].ProductModelChanged "an event-driven Tick (no consumer message) changes no model"
             Expect.isTrue (frames.[0].RemeasuredNodeCount >= 0) "remeasure is a bounded count, never a false full rebuild"
         }
 
