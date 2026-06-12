@@ -5,7 +5,7 @@
     <IsPackable>true</IsPackable>
     <PackageId>FS.Skia.UI.Layout</PackageId>
     <AssemblyName>FS.Skia.UI.Layout</AssemblyName>
-    <Version>0.1.111-preview.1</Version>
+    <Version>0.1.112-preview.1</Version>
     <Title>FS.Skia.UI.Layout</Title>
     <Description>Pure layout and graph scene builders for FS.Skia.UI.</Description>
     <PackageTags>fsharp;skia;layout;graph;elmish</PackageTags>
