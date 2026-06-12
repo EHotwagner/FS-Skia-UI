@@ -1,5 +1,5 @@
-ProductModelChanged=true ViewCalled=true FullRenderCount=1 RemeasuredNodeCount=0 PointerSamplesReceived=0 PointerMovesProcessed=0
-ProductModelChanged=true ViewCalled=true FullRenderCount=1 RemeasuredNodeCount=0 PointerSamplesReceived=0 PointerMovesProcessed=0
-ProductModelChanged=false ViewCalled=true FullRenderCount=1 RemeasuredNodeCount=0 PointerSamplesReceived=0 PointerMovesProcessed=0
-ProductModelChanged=true ViewCalled=true FullRenderCount=1 RemeasuredNodeCount=0 PointerSamplesReceived=0 PointerMovesProcessed=0
-ProductModelChanged=false ViewCalled=true FullRenderCount=1 RemeasuredNodeCount=0 PointerSamplesReceived=0 PointerMovesProcessed=0
+ProductModelChanged=true ViewCalled=true FullRenderCount=1 RemeasuredNodeCount=0 PointerSamplesReceived=0 PointerMovesProcessed=0 FullRenderFallbackCount=0
+ProductModelChanged=true ViewCalled=true FullRenderCount=1 RemeasuredNodeCount=0 PointerSamplesReceived=0 PointerMovesProcessed=0 FullRenderFallbackCount=0
+ProductModelChanged=false ViewCalled=true FullRenderCount=1 RemeasuredNodeCount=0 PointerSamplesReceived=0 PointerMovesProcessed=0 FullRenderFallbackCount=0
+ProductModelChanged=true ViewCalled=true FullRenderCount=1 RemeasuredNodeCount=0 PointerSamplesReceived=0 PointerMovesProcessed=0 FullRenderFallbackCount=0
+ProductModelChanged=false ViewCalled=true FullRenderCount=1 RemeasuredNodeCount=0 PointerSamplesReceived=0 PointerMovesProcessed=0 FullRenderFallbackCount=0

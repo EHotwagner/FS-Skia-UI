@@ -46,6 +46,8 @@ type FrameMetrics =
 
       PointerMovesProcessed: int
 
+      FullRenderFallbackCount: int
+
       FrameDuration: TimeSpan }
 
 [<RequireQualifiedAccess>]
@@ -131,6 +133,25 @@ module ControlsElmish =
         model: 'model ->
         input: ViewerPointerInput ->
             PointerState * 'msg list
+
+    val internal routeRetainedInteraction:
+        host: InteractiveAppHost<'model, 'msg> ->
+        size: Size ->
+        model: 'model ->
+        retained: RetainedRender<'msg> ->
+        render: ControlRenderResult<'msg> ->
+        interaction: PointerInteraction ->
+            'msg list * int
+
+    val internal routeRetainedPointer:
+        host: InteractiveAppHost<'model, 'msg> ->
+        retained: RetainedRender<'msg> ->
+        render: ControlRenderResult<'msg> ->
+        state: PointerState ->
+        size: Size ->
+        model: 'model ->
+        input: ViewerPointerInput ->
+            PointerState * 'msg list * int
 
     val internal resolveFocus: retained: RetainedRender<'msg> -> x: float -> y: float -> RetainedId option
 

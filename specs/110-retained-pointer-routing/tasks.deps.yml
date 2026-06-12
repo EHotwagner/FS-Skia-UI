@@ -1,0 +1,96 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md.
+# Phase-checkpoint edges (every Phase N+1 task -> last task of Phase N) are
+# auto-injected by the graph compute; only non-phase cross-edges are written here.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: []
+  T003:
+    deps: []
+    skillist: []
+  T004:
+    deps: []
+    skillist: ["fs-skia-controls-host"]
+  T005:
+    deps: []
+    skillist: ["fs-skia-reconciliation", "fs-skia-ui-widgets"]
+  T006:
+    deps: []
+    skillist: ["fs-skia-controls-host"]
+  T007:
+    deps: [T004, T005, T006]
+    skillist: ["fs-skia-controls-host"]
+  T008:
+    deps: [T004]
+    skillist: ["fs-skia-controls-host"]
+  T009:
+    deps: []
+    skillist: []
+  T010:
+    deps: []
+    skillist: ["fs-skia-controls-host", "fs-skia-evidence-mode"]
+  T011:
+    deps: []
+    skillist: ["fs-skia-controls-host"]
+  T012:
+    deps: [T010, T011, T005, T006]
+    skillist: ["fs-skia-controls-host", "fs-skia-reconciliation"]
+  T013:
+    deps: [T012]
+    skillist: ["fs-skia-controls-host"]
+  T014:
+    deps: [T012]
+    skillist: ["fs-skia-controls-host"]
+  T015:
+    deps: [T012, T004]
+    skillist: ["fs-skia-controls-host"]
+  T016:
+    deps: [T013, T014]
+    skillist: []
+  T017:
+    deps: []
+    skillist: ["fs-skia-controls-host", "fs-skia-reconciliation"]
+  T018:
+    deps: []
+    skillist: ["fs-skia-controls-host"]
+  T019:
+    deps: [T017, T018, T012]
+    skillist: ["fs-skia-reconciliation", "fs-skia-ui-widgets"]
+  T020:
+    deps: [T019]
+    skillist: ["fs-skia-controls-host"]
+  T021:
+    deps: []
+    skillist: ["fs-skia-controls-host", "fs-skia-evidence-mode"]
+  T022:
+    deps: []
+    skillist: ["fs-skia-controls-host"]
+  T023:
+    deps: [T021, T022, T012]
+    skillist: ["fs-skia-controls-host"]
+  T024:
+    deps: [T023]
+    skillist: ["fs-skia-controls-host", "fs-skia-evidence-mode"]
+  T025:
+    deps: [T004]
+    skillist: ["fs-skia-controls-host"]
+  T026:
+    deps: [T025]
+    skillist: ["fs-skia-controls-host"]
+  T027:
+    deps: [T025]
+    skillist: ["fs-skia-template-update", "fs-skia-controls-host"]
+  T028:
+    deps: [T027]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T029:
+    deps: [T028]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

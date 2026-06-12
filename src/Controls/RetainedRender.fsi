@@ -191,3 +191,15 @@ module internal RetainedRender =
     /// same-kind siblings). Focus-on-click resolves through this. Reuses the boxes already computed
     /// by `init`/`step`; total and deterministic.
     val retainedHitTest: x: float -> y: float -> retained: RetainedRender<'msg> -> RetainedId option
+
+    /// Feature 110 (FR-003): the retained-id → authored-control-id lookup. For every node in the
+    /// retained tree, maps its stable `RetainedId` to the authored `ControlId` whose binding must
+    /// fire for a hit on it — the nearest ancestor (including self) that is KEYED (`Key ?? path <>
+    /// path`) OR whose canonical id (`Key ?? path`) is in `boundIds`. Built from the retained node
+    /// tree + the frame's `BoundIds`, re-deriving each node's `parent + "." + index` path (root
+    /// "0") so it reproduces, from retained identity, exactly the climb `Control.nearestAuthored`
+    /// performs over a freshly rendered tree (feature 098 keyed-OR-in-`BoundIds` scheme). Lets the
+    /// retained pointer route (feature 110) dispatch the SAME authored binding as the full-render
+    /// oracle — including composite controls whose binding is authored above the hit node — without
+    /// re-rendering. A node with no authored ancestor has no entry. Pure / total / deterministic.
+    val authoredControlIds: boundIds: Set<ControlId> -> retained: RetainedRender<'msg> -> Map<RetainedId, ControlId>

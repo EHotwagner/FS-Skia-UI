@@ -88,11 +88,14 @@ let tests =
             Expect.equal frames.[0].FullRenderCount 0 "idle performs no full render"
         }
 
-        test "a pure-hover frame changes no model yet the view ran for pointer routing (SC-001a / FR-005)" {
+        test "a pure-hover frame routes from the retained frame: zero routing full renders (feature 110, SC-001/FR-004)" {
+            // Feature 110 narrowed routing: a hover is resolved from the retained frame (here directly to
+            // `MapPointer`, the oracle's non-Click path), performing NO `host.View` + `Control.renderTree`.
             let frames = ControlsElmish.Perf.runScript textHost size [ hover "btn" 5.0 5.0 ]
             Expect.isFalse frames.[0].ProductModelChanged "hover dispatched no product message"
-            Expect.isTrue frames.[0].ViewCalled "pointer routing materialized host.View + Control.renderTree"
-            Expect.equal frames.[0].FullRenderCount 1 "exactly the routing render; no model rebuild"
+            Expect.isFalse frames.[0].ViewCalled "routing performs no full render (the routing render is gone)"
+            Expect.equal frames.[0].FullRenderCount 0 "zero routing full renders (SC-001)"
+            Expect.equal frames.[0].FullRenderFallbackCount 0 "the retained route did not fall back (SC-005)"
             Expect.equal frames.[0].RemeasuredNodeCount 0 "no product message → renderStep did not run → no remeasure"
         }
 

@@ -1,0 +1,14 @@
+# FSI session — feature 110 retained pointer routing / FrameMetrics.FullRenderFallbackCount (T007)
+#
+# Captured via: dotnet fsi against the built FS.Skia.UI.Controls.Elmish.dll (Debug, full dep closure).
+# Shows the NEW field FullRenderFallbackCount and the narrowed routing counts on the deterministic
+# Perf.runScript path: a routed move and a coalesced 250-move burst each perform ZERO routing full
+# renders (FullRenderCount=0, ViewCalled=false) and never fall back (FullRenderFallbackCount=0), while
+# coalescing still collapses the burst to one processed move. FrameDuration=TimeSpan.Zero (FR-012).
+#
+# (Bound-click resolution from the retained frame and the forced-fallback counter run under the test
+# host where the Yoga layout native is loaded — see Feature110RetainedRoutingTests / Feature110FallbackTests;
+# fsi cannot evaluate layout here because the Yoga native binding is not loaded in the script host.)
+#
+frame 0 Hover (retained route)             -> PMC=false VC=false FullRenderCount=0 FullRenderFallbackCount=0 RemeasuredNodeCount=0 PointerSamplesReceived=1 PointerMovesProcessed=1 FrameDuration=00:00:00
+frame 0 250-move burst                     -> PMC=false VC=false FullRenderCount=0 FullRenderFallbackCount=0 RemeasuredNodeCount=0 PointerSamplesReceived=250 PointerMovesProcessed=1 FrameDuration=00:00:00

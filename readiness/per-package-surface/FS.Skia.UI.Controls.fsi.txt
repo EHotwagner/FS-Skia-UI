@@ -1043,6 +1043,8 @@ module internal RetainedRender =
 
     val retainedHitTest: x: float -> y: float -> retained: RetainedRender<'msg> -> RetainedId option
 
+    val authoredControlIds: boundIds: Set<ControlId> -> retained: RetainedRender<'msg> -> Map<RetainedId, ControlId>
+
 namespace FS.Skia.UI.Controls
 
 open FS.Skia.UI.Scene

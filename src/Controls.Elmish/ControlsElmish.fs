@@ -39,6 +39,7 @@ type FrameMetrics =
       RemeasuredNodeCount: int
       PointerSamplesReceived: int
       PointerMovesProcessed: int
+      FullRenderFallbackCount: int
       FrameDuration: TimeSpan }
 
 /// Feature 108 (US3, FR-009): one ordered step of the deterministic perf driver.
@@ -198,12 +199,41 @@ module ControlsElmish =
             | None -> None
         | _ -> None
 
+    // Translate a native viewer pointer input into the neutral 075 `PointerSample` the gesture fold
+    // consumes. Pure/total; shared by the preserved full-render oracle and the feature-110 retained
+    // route so both feed `Pointer.update` the identical sample (a precondition of dispatch parity).
+    let private pointerSampleOf (input: ViewerPointerInput) : PointerSample =
+        let phase =
+            match input.Phase with
+            | ViewerPointerPhaseKind.Moved -> PointerPhase.Moved
+            | ViewerPointerPhaseKind.Pressed -> PointerPhase.Pressed
+            | ViewerPointerPhaseKind.Released -> PointerPhase.Released
+            | ViewerPointerPhaseKind.Wheel -> PointerPhase.Wheel
+            | ViewerPointerPhaseKind.Exited -> PointerPhase.Exited
+
+        let button =
+            input.Button
+            |> Option.map (fun b ->
+                match b with
+                | ViewerPointerButtonKind.Primary -> PointerButton.Primary
+                | ViewerPointerButtonKind.Secondary -> PointerButton.Secondary
+                | ViewerPointerButtonKind.Middle -> PointerButton.Middle)
+
+        { Phase = phase
+          X = input.X
+          Y = input.Y
+          Button = button
+          DeltaX = input.DeltaX
+          DeltaY = input.DeltaY }
+
     // The single pointer-routing step the interactive host performs per native sample: render the
     // current Control tree at the live extent, hit-test the laid-out bounds via the shipped 075
     // pipeline (Pointer.update over the LayoutResult, incl. the 4px click/drag fold), then route the
     // emitted interactions through interpretPointerOutcome host.MapPointer to product messages.
     // Returns the advanced PointerState (threaded across samples) + the product messages. Exposed so
     // a headless test exercises the EXACT routing runInteractiveApp wires (research D6 honest bar).
+    // Feature 110: PRESERVED unchanged as the parity oracle and the counted full-render fallback
+    // (FR-007); the normal live route is now `routeRetainedPointer` (no per-sample full render).
     let routeInteractivePointer
         (host: InteractiveAppHost<'model, 'msg>)
         (state: PointerState)
@@ -211,31 +241,7 @@ module ControlsElmish =
         (model: 'model)
         (input: ViewerPointerInput)
         : PointerState * 'msg list =
-        let toSample (input: ViewerPointerInput) : PointerSample =
-            let phase =
-                match input.Phase with
-                | ViewerPointerPhaseKind.Moved -> PointerPhase.Moved
-                | ViewerPointerPhaseKind.Pressed -> PointerPhase.Pressed
-                | ViewerPointerPhaseKind.Released -> PointerPhase.Released
-                | ViewerPointerPhaseKind.Wheel -> PointerPhase.Wheel
-                | ViewerPointerPhaseKind.Exited -> PointerPhase.Exited
-
-            let button =
-                input.Button
-                |> Option.map (fun b ->
-                    match b with
-                    | ViewerPointerButtonKind.Primary -> PointerButton.Primary
-                    | ViewerPointerButtonKind.Secondary -> PointerButton.Secondary
-                    | ViewerPointerButtonKind.Middle -> PointerButton.Middle)
-
-            { Phase = phase
-              X = input.X
-              Y = input.Y
-              Button = button
-              DeltaX = input.DeltaX
-              DeltaY = input.DeltaY }
-
-        match Pointer.toMsg (toSample input) with
+        match Pointer.toMsg (pointerSampleOf input) with
         | None -> state, []
         | Some pointerMsg ->
             let rendered = Control.renderTree host.Theme size (host.View size model)
@@ -271,6 +277,105 @@ module ControlsElmish =
                         |> AdapterCmd.productMessages)
 
             state', messages
+
+    // Feature 110 (FR-002/FR-003): resolve a single interaction's authored bindings from the RETAINED
+    // frame — the mirror of `bindingMessagesFor`, reading the retained frame's `EventBindings` instead
+    // of a freshly rendered tree. `Some msgs` = an authored binding consumed the interaction (MapPointer
+    // is NOT consulted); `None, false` = no authored binding matched (the host falls back to MapPointer,
+    // exactly as the oracle's `None`); `None, true` = the retained frame could NOT resolve a bindable
+    // `Click` hit (`retainedHitTest` returned `None` over a point the `Click` named), so the caller must
+    // fall back to the full-render oracle and count it (FR-007/FR-009). Byte-identical to the oracle:
+    // `retainedHitTest x y` lands on the same node `Pointer.update` hit (same cached geometry) and the
+    // `authoredControlIds` lookup climbs to the same authored id `nearestAuthored` would.
+    let private retainedBindingMessages
+        (retained: RetainedRender<'msg>)
+        (render: ControlRenderResult<'msg>)
+        (interaction: PointerInteraction)
+        : 'msg list option * bool =
+        match interaction with
+        | Click(_, _, x, y) ->
+            match RetainedRender.retainedHitTest x y retained with
+            | None -> None, true
+            | Some rid ->
+                match Map.tryFind rid (RetainedRender.authoredControlIds render.BoundIds retained) with
+                | None -> None, false
+                | Some authored ->
+                    let matched =
+                        render.EventBindings
+                        |> List.filter (fun binding ->
+                            binding.ControlId = authored
+                            && List.contains binding.EventKind clickEquivalentKinds)
+
+                    match matched with
+                    | [] -> None, false
+                    | bindings ->
+                        bindings
+                        |> List.map (fun binding ->
+                            binding.Dispatch
+                                { Kind = binding.EventKind
+                                  ControlId = Some authored
+                                  Origin = ControlEventOrigin.Pointer
+                                  Payload = None
+                                  Nav = None })
+                        |> Some,
+                        false
+        | _ -> None, false
+
+    // Feature 110 (FR-001/FR-002/FR-003): route ONE already-resolved interaction from the retained frame.
+    // No `host.View`/`Control.renderTree` for routing on the normal path. Returns (messages, fallback
+    // count): a resolvable interaction returns 0; an unresolvable bindable hit runs the preserved
+    // full-render oracle (`Control.renderTree` + `bindingMessagesFor`) ONCE and returns 1, dispatching
+    // identically to the oracle (the fallback IS the oracle).
+    let routeRetainedInteraction
+        (host: InteractiveAppHost<'model, 'msg>)
+        (size: Size)
+        (model: 'model)
+        (retained: RetainedRender<'msg>)
+        (render: ControlRenderResult<'msg>)
+        (interaction: PointerInteraction)
+        : 'msg list * int =
+        match retainedBindingMessages retained render interaction with
+        | Some msgs, _ -> msgs, 0
+        | None, false -> interpretPointerEffect host.MapPointer interaction |> AdapterCmd.productMessages, 0
+        | None, true ->
+            // Counted full-render fallback (FR-007/FR-009): a fresh render + the oracle's resolution.
+            let rendered = Control.renderTree host.Theme size (host.View size model)
+
+            match bindingMessagesFor rendered interaction with
+            | Some msgs -> msgs, 1
+            | None -> interpretPointerEffect host.MapPointer interaction |> AdapterCmd.productMessages, 1
+
+    // Feature 110 (FR-001/FR-004/FR-006): the live retained pointer route. Same gesture fold as the
+    // oracle, but over the retained frame's CACHED `LayoutResult` (no fresh layout eval) and resolving
+    // each interaction from the retained frame (no fresh render). Returns the advanced PointerState, the
+    // product messages, and the summed `FullRenderFallbackCount`.
+    let routeRetainedPointer
+        (host: InteractiveAppHost<'model, 'msg>)
+        (retained: RetainedRender<'msg>)
+        (render: ControlRenderResult<'msg>)
+        (state: PointerState)
+        (size: Size)
+        (model: 'model)
+        (input: ViewerPointerInput)
+        : PointerState * 'msg list * int =
+        match Pointer.toMsg (pointerSampleOf input) with
+        | None -> state, [], 0
+        | Some pointerMsg ->
+            let policy = FS.Skia.UI.Layout.Defaults.pixelSnapPolicy 1.0
+
+            let state', interactions, _runtimeMessages =
+                Pointer.update policy retained.Layout pointerMsg state
+
+            let mutable fallbacks = 0
+
+            let messages =
+                interactions
+                |> List.collect (fun interaction ->
+                    let msgs, fb = routeRetainedInteraction host size model retained render interaction
+                    fallbacks <- fallbacks + fb
+                    msgs)
+
+            state', messages, fallbacks
 
     // 092 (FR-004): resolve a click to the stable RetainedId of the control under it, via the
     // retained tree's per-node boxes — replaces the 090 `ControlId` `hitTest |> nearestAuthored`
@@ -697,6 +802,11 @@ module ControlsElmish =
         // per-control UI state. Mutation is confined to this closure at the interpreter edge
         // (constitution III); the consumer `view` stays pure.
         let retained = ref (None: RetainedRender<'msg> option)
+        // Feature 110 (FR-002): the most recent retained frame's `ControlRenderResult`
+        // (`EventBindings`/`BoundIds`/`Bounds`), retained so pointer routing reads the frame's bindings
+        // WITHOUT a fresh `Control.renderTree`. Seeded from `r0.Render` on the first paint and updated to
+        // `s.Render` each step; only `s.Render.Scene` was consumed before — `s.Render` itself was dropped.
+        let lastRender = ref (None: ControlRenderResult<'msg> option)
         // Diff/first-frame diagnostics (e.g. KeyCollision from duplicate sibling keys) surfaced
         // through the host's diagnostics stderr channel — never silently dropped; de-duped so a
         // standing collision is reported once, not every frame. The path stays total in their presence.
@@ -762,6 +872,7 @@ module ControlsElmish =
                 let r0 = RetainedRender.init host.Theme size next
                 surface r0.Diagnostics
                 retained.Value <- Some r0.Retained
+                lastRender.Value <- Some r0.Render
                 r0.Render.Scene
             | Some prev ->
                 let runtimeModel = assembleRuntimeModel (Some prev)
@@ -770,6 +881,7 @@ module ControlsElmish =
                 surface s.Diagnostics
                 lastWorkReduction.Value <- Some s.WorkReduction
                 retained.Value <- Some s.Retained
+                lastRender.Value <- Some s.Render
                 s.Render.Scene
 
         // A focused node is a TEXT control (the E1 seam owns its printable keys); every other
@@ -794,26 +906,32 @@ module ControlsElmish =
 
             find r.Root
 
-        // Feature 108/109 (US1, FR-001/007): emit one `OnFrameMetrics` for a processed pointer frame.
-        // This is the live, BEST-EFFORT observability sink (the authoritative byte-stable surface is
-        // `Perf.runScript`): `productModelChanged` is the proxy "a product message was produced this
-        // frame" available at this seam (the viewer applies the fold downstream); `fullRenderCount` is
-        // the count of synchronous routing renders the frame performed (each `processInput` →
-        // `routeInteractivePointer` materializes `host.View` + `Control.renderTree`); `duration` is the
-        // real wall-clock of that work (FR-012, EXCLUDED from goldens — the golden surface reports 0).
-        let emitFrameMetrics (samples: int) (movesProcessed: int) (productModelChanged: bool) (fullRenderCount: int) (duration: TimeSpan) =
+        // Feature 108/109/110 (US1, FR-001/007): emit one `OnFrameMetrics` for a processed pointer
+        // frame. This is the live, BEST-EFFORT observability sink (the authoritative byte-stable surface
+        // is `Perf.runScript`): `productModelChanged` is the proxy "a product message was produced this
+        // frame" available at this seam (the viewer applies the fold downstream). Feature 110: routing
+        // now reads the RETAINED frame, so the only full render `processInput` can perform is the counted
+        // oracle FALLBACK — `fullRenderFallbackCount` IS the frame's routing full-render count, so it is
+        // both `FullRenderCount` and `FullRenderFallbackCount` here (the model-driven repaint is the
+        // viewer's separate paint cycle, not this sink). `duration` is the real wall-clock of that work
+        // (FR-012, EXCLUDED from goldens — the golden surface reports 0).
+        let emitFrameMetrics (samples: int) (movesProcessed: int) (productModelChanged: bool) (fullRenderFallbackCount: int) (duration: TimeSpan) =
             host.OnFrameMetrics
                 { ProductModelChanged = productModelChanged
-                  ViewCalled = fullRenderCount > 0
-                  FullRenderCount = fullRenderCount
+                  ViewCalled = fullRenderFallbackCount > 0
+                  FullRenderCount = fullRenderFallbackCount
                   RemeasuredNodeCount = lastWorkReduction.Value |> Option.map (fun w -> w.RemeasuredNodeCount) |> Option.defaultValue 0
                   PointerSamplesReceived = samples
                   PointerMovesProcessed = movesProcessed
+                  FullRenderFallbackCount = fullRenderFallbackCount
                   FrameDuration = duration }
 
-        // The single pointer-routing step (the pre-108 `mapPointer` body): focus-on-click + the real
-        // `routeInteractivePointer` adapter path. Shared by the discrete and coalesced-move paths.
-        let processInput (input: ViewerPointerInput) (size: Size) (model: 'model) : 'msg list =
+        // The single pointer-routing step (the pre-108 `mapPointer` body): focus-on-click + the feature-
+        // 110 RETAINED route (`routeRetainedPointer`) — no per-sample `host.View` + `Control.renderTree`.
+        // Returns the product messages and the route's `FullRenderFallbackCount` (0 on the normal path;
+        // each unresolvable bindable hit runs one preserved oracle render and counts +1). Shared by the
+        // discrete and coalesced-move paths.
+        let processInput (input: ViewerPointerInput) (size: Size) (model: 'model) : 'msg list * int =
             // Focus-on-click (FR-004/FR-006): a press resolves to the `RetainedId` under the point via
             // the retained tree's per-node boxes (distinguishing unkeyed same-kind siblings); if that
             // control is FOCUSABLE (per its accessibility metadata) it becomes the focus target, so a
@@ -832,9 +950,18 @@ module ControlsElmish =
                  | None -> ()
              | _ -> ())
 
-            let state', messages = routeInteractivePointer host pointerState.Value size model input
-            pointerState.Value <- state'
-            messages
+            match retained.Value, lastRender.Value with
+            | Some r, Some render ->
+                let state', messages, fallbacks = routeRetainedPointer host r render pointerState.Value size model input
+                pointerState.Value <- state'
+                messages, fallbacks
+            | _ ->
+                // No retained frame yet (a pointer sample before the first paint seeded the frame, not
+                // expected in the live loop where paint precedes input): fall back to the preserved
+                // oracle so routing is still correct, counting the full render it performs.
+                let state', messages = routeInteractivePointer host pointerState.Value size model input
+                pointerState.Value <- state'
+                messages, 1
 
         // Feature 108 (US4, FR-011/012): pointer-move coalescing on the live loop. A MOVE sample is
         // buffered (latest position wins) and the PREVIOUSLY-buffered move is processed at the next
@@ -848,17 +975,18 @@ module ControlsElmish =
 
             match input.Phase with
             | ViewerPointerPhaseKind.Moved ->
-                // Process the previously-deferred move (≤1 per boundary), then defer this one. A flushed
-                // move performs exactly one routing render (FullRenderCount = 1); the first move of a
-                // burst defers without flushing (no render, no emit).
+                // Process the previously-deferred move (≤1 per boundary), then defer this one. Feature
+                // 110: a flushed move routes from the retained frame and performs ZERO routing renders
+                // (FullRenderCount = 0) unless it must fall back; the first move of a burst defers
+                // without processing (no emit).
                 let sw = System.Diagnostics.Stopwatch.StartNew()
 
-                let flushedAny, flushedMsgs =
+                let flushedMsgs, flushedFallbacks =
                     match pendingMove.Value with
                     | Some prev ->
                         pendingMove.Value <- None
-                        true, processInput prev size model
-                    | None -> false, []
+                        processInput prev size model
+                    | None -> [], 0
 
                 sw.Stop()
                 pendingMove.Value <- Some input
@@ -868,29 +996,30 @@ module ControlsElmish =
                 pointerSampleCount.Value <- 1
 
                 if samples > 0 then
-                    emitFrameMetrics samples 1 (not (List.isEmpty flushedMsgs)) (if flushedAny then 1 else 0) sw.Elapsed
+                    emitFrameMetrics samples 1 (not (List.isEmpty flushedMsgs)) flushedFallbacks sw.Elapsed
 
                 flushedMsgs
             | _ ->
                 // Discrete interaction: flush any pending move first (arrival order preserved), then
                 // process the discrete event in the same frame it arrived (a click is never dropped).
-                // FullRenderCount = the discrete routing render plus the flushed-move routing render.
+                // Feature 110: routing performs ZERO full renders; the frame's full-render count is the
+                // summed oracle-fallback count (normally 0).
                 let sw = System.Diagnostics.Stopwatch.StartNew()
 
-                let moveFlushed, moveMsgs =
+                let moveFlushed, (moveMsgs, moveFallbacks) =
                     match pendingMove.Value with
                     | Some prev ->
                         pendingMove.Value <- None
                         true, processInput prev size model
-                    | None -> false, []
+                    | None -> false, ([], 0)
 
-                let discreteMsgs = processInput input size model
+                let discreteMsgs, discreteFallbacks = processInput input size model
                 sw.Stop()
                 let samples = pointerSampleCount.Value
                 pointerSampleCount.Value <- 0
                 let msgs = moveMsgs @ discreteMsgs
-                let fullRenderCount = (if moveFlushed then 1 else 0) + 1
-                emitFrameMetrics samples (if moveFlushed then 1 else 0) (not (List.isEmpty msgs)) fullRenderCount sw.Elapsed
+                let fallbackCount = moveFallbacks + discreteFallbacks
+                emitFrameMetrics samples (if moveFlushed then 1 else 0) (not (List.isEmpty msgs)) fallbackCount sw.Elapsed
                 msgs
 
         // Feature 108 (US5, FR-016): the unconsumed-key fallthrough. The modifier-aware `MapKeyChord`
@@ -1036,6 +1165,10 @@ module ControlsElmish =
             : FrameMetrics list =
             let mutable model = fst (host.Init())
             let mutable retained: RetainedRender<'msg> option = None
+            // Feature 110 (FR-002): carry the retained frame's `ControlRenderResult` alongside the
+            // threaded retained value, so a routed interaction reads `EventBindings`/`BoundIds` without a
+            // fresh render. Kept in lock-step with `retained` by `renderStep`/`ensureRetained`.
+            let mutable lastRender: ControlRenderResult<'msg> option = None
 
             // Render the retained step for the current model, returning the frame's
             // RemeasuredNodeCount (the first frame seeds via `init`, which has no work record -> 0).
@@ -1046,24 +1179,46 @@ module ControlsElmish =
                 | None ->
                     let r0 = RetainedRender.init host.Theme size next
                     retained <- Some r0.Retained
+                    lastRender <- Some r0.Render
                     0
                 | Some prev ->
                     let s = RetainedRender.step host.Theme size prev next
                     retained <- Some s.Retained
+                    lastRender <- Some s.Render
                     s.WorkReduction.RemeasuredNodeCount
+
+            // Feature 110: seed the retained frame for the CURRENT model if none exists yet — the
+            // "initial render" precondition the retained route needs to hit-test a `Click`. This is NOT a
+            // routing full render (it is the initial frame the live host paints before any input), so it
+            // is uncounted; a move/hover interaction never needs it (it resolves to `MapPointer` with no
+            // hit-test), so the move-only corpus scenarios seed nothing and route with zero full renders.
+            let ensureRetained () =
+                match retained with
+                | Some _ -> ()
+                | None ->
+                    let next = host.View size model
+                    let r0 = RetainedRender.init host.Theme size next
+                    retained <- Some r0.Retained
+                    lastRender <- Some r0.Render
 
             let applyMessages (msgs: 'msg list) =
                 model <- msgs |> List.fold (fun acc msg -> fst (host.Update msg acc)) model
 
-            // Route a single pointer interaction to product messages (authored bindings else
-            // MapPointer) over the current model's rendered tree — the resolution
-            // `routeInteractivePointer` uses.
-            let routeInteraction (interaction: PointerInteraction) : 'msg list =
-                let rendered = Control.renderTree host.Theme size (host.View size model)
+            // Feature 110: route a single pointer interaction to product messages from the RETAINED
+            // frame — NO `host.View` + `Control.renderTree` for routing. Returns (messages, fallback
+            // count). A binding-eligible `Click` is resolved via `routeRetainedInteraction` (which seeds
+            // the retained frame if needed and counts a real oracle fallback); every other interaction
+            // resolves directly to `host.MapPointer` (the oracle's non-`Click` path) with no hit-test and
+            // no render, so a hover/drag burst performs zero routing full renders.
+            let routeInteraction (interaction: PointerInteraction) : 'msg list * int =
+                match interaction with
+                | Click _ ->
+                    ensureRetained ()
 
-                match bindingMessagesFor rendered interaction with
-                | Some ms -> ms
-                | None -> interpretPointerEffect host.MapPointer interaction |> AdapterCmd.productMessages
+                    match retained, lastRender with
+                    | Some r, Some render -> routeRetainedInteraction host size model r render interaction
+                    | _ -> interpretPointerEffect host.MapPointer interaction |> AdapterCmd.productMessages, 0
+                | _ -> interpretPointerEffect host.MapPointer interaction |> AdapterCmd.productMessages, 0
 
             // Feature 109 (US1): did a product message actually change the model across the fold? An
             // empty message list never changes it; a non-empty list changed it iff the folded model's
@@ -1080,6 +1235,7 @@ module ControlsElmish =
                   RemeasuredNodeCount = 0
                   PointerSamplesReceived = 0
                   PointerMovesProcessed = 0
+                  FullRenderFallbackCount = 0
                   FrameDuration = TimeSpan.Zero }
 
             toFrames script
@@ -1088,21 +1244,22 @@ module ControlsElmish =
                 | FrameInput.Pointer _ :: _ when frame |> List.forall (function
                                                                        | FrameInput.Pointer p -> isMoveInteraction p
                                                                        | _ -> false) ->
-                    // Coalesced move frame: K samples, ONE processed move (the latest), one routing
-                    // render (FullRenderCount counts it even when no product message results — pointer
-                    // routing materializes `host.View` + `Control.renderTree` today, FR-015).
+                    // Coalesced move frame: K samples, ONE processed move (the latest). Feature 110: the
+                    // move routes from the retained frame and performs ZERO routing full renders
+                    // (`FullRenderCount` no longer counts a routing render); only a model-driven re-render
+                    // (`hasMsgs`) or a counted oracle fallback adds to it.
                     let k = List.length frame
                     let before = model
 
-                    let msgs =
+                    let msgs, fallbacks =
                         match List.last frame with
-                        | FrameInput.Pointer interaction -> routeInteraction interaction // 1 routing render
-                        | _ -> []
+                        | FrameInput.Pointer interaction -> routeInteraction interaction // 0 routing renders
+                        | _ -> [], 0
 
                     let hasMsgs = not (List.isEmpty msgs)
                     applyMessages msgs
                     let remeasured = if hasMsgs then renderStep () else 0 // step render iff a message rebuilt
-                    let fullRenderCount = 1 + (if hasMsgs then 1 else 0)
+                    let fullRenderCount = fallbacks + (if hasMsgs then 1 else 0)
 
                     { zero with
                         ProductModelChanged = productModelChanged before model msgs
@@ -1110,7 +1267,8 @@ module ControlsElmish =
                         FullRenderCount = fullRenderCount
                         RemeasuredNodeCount = remeasured
                         PointerSamplesReceived = k
-                        PointerMovesProcessed = 1 }
+                        PointerMovesProcessed = 1
+                        FullRenderFallbackCount = fallbacks }
                 | [ FrameInput.Idle ] -> zero
                 | [ FrameInput.Tick delta ] ->
                     // Advance every live clock by the injected delta; if an animation is live, render
@@ -1165,20 +1323,22 @@ module ControlsElmish =
                         FullRenderCount = fullRenderCount
                         RemeasuredNodeCount = remeasured }
                 | [ FrameInput.Pointer interaction ] ->
-                    // A discrete pointer interaction: one sample, never a coalesced move. The routing
-                    // render always materializes a tree (FullRenderCount >= 1, ViewCalled = true) even
-                    // when it resolves to no product message.
+                    // A discrete pointer interaction: one sample, never a coalesced move. Feature 110:
+                    // routing resolves from the retained frame and performs ZERO routing full renders;
+                    // `FullRenderCount` counts only a model-driven re-render (`hasMsgs`) and any counted
+                    // oracle fallback.
                     let before = model
-                    let msgs = routeInteraction interaction // 1 routing render
+                    let msgs, fallbacks = routeInteraction interaction // 0 routing renders
                     let hasMsgs = not (List.isEmpty msgs)
                     applyMessages msgs
                     let remeasured = if hasMsgs then renderStep () else 0
-                    let fullRenderCount = 1 + (if hasMsgs then 1 else 0)
+                    let fullRenderCount = fallbacks + (if hasMsgs then 1 else 0)
 
                     { zero with
                         ProductModelChanged = productModelChanged before model msgs
                         ViewCalled = fullRenderCount > 0
                         FullRenderCount = fullRenderCount
                         RemeasuredNodeCount = remeasured
-                        PointerSamplesReceived = 1 }
+                        PointerSamplesReceived = 1
+                        FullRenderFallbackCount = fallbacks }
                 | _ -> zero)

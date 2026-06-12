@@ -152,13 +152,14 @@ let private corpus: Scenario list =
 
 let private serializeFrame (f: FrameMetrics) : string =
     sprintf
-        "ProductModelChanged=%b ViewCalled=%b FullRenderCount=%d RemeasuredNodeCount=%d PointerSamplesReceived=%d PointerMovesProcessed=%d"
+        "ProductModelChanged=%b ViewCalled=%b FullRenderCount=%d RemeasuredNodeCount=%d PointerSamplesReceived=%d PointerMovesProcessed=%d FullRenderFallbackCount=%d"
         f.ProductModelChanged
         f.ViewCalled
         f.FullRenderCount
         f.RemeasuredNodeCount
         f.PointerSamplesReceived
         f.PointerMovesProcessed
+        f.FullRenderFallbackCount
 
 let private serialize (frames: FrameMetrics list) : string =
     (frames |> List.map serializeFrame |> String.concat "\n") + "\n"

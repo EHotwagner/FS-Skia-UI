@@ -23,6 +23,9 @@
     <Compile Include="Feature109MetricsHonestyTests.fs" />
     <Compile Include="Feature109CorpusTests.fs" />
     <Compile Include="Feature109BaselineReportTests.fs" />
+    <Compile Include="Feature110RetainedRoutingTests.fs" />
+    <Compile Include="Feature110RetainedRoutingParityTests.fs" />
+    <Compile Include="Feature110FallbackTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

@@ -53,6 +53,22 @@ let private keyHost =
                 | Enter -> Some Inc
                 | _ -> None }
 
+// Feature 110: retained routing resolves a click from the retained frame by its COORDINATES
+// (`retainedHitTest`), not by the interaction's carried id, so a synthetic click must name the point
+// actually over the control. Centre of a node's computed bounds at `size`.
+let private centreOf (model: int) (nodeId: ControlId) =
+    let rendered = Control.renderTree host.Theme size (view model)
+
+    let available: FS.Skia.UI.Layout.AvailableSpace =
+        { Width = float size.Width
+          WidthMode = FS.Skia.UI.Layout.Exactly
+          Height = float size.Height
+          HeightMode = FS.Skia.UI.Layout.Exactly }
+
+    let result = FS.Skia.UI.Layout.Layout.evaluate available rendered.Layout
+    let b = result.Bounds |> List.find (fun b -> b.NodeId = nodeId)
+    b.Bounds.X + b.Bounds.Width / 2.0, b.Bounds.Y + b.Bounds.Height / 2.0
+
 // Feature 109: `ViewRebuilt` was split into `ProductModelChanged` (a product message changed the
 // model) + `ViewCalled`/`FullRenderCount` (the view ran). These 108 assertions are about the
 // model-change fact, so they read `ProductModelChanged`.
@@ -94,10 +110,13 @@ let tests =
         }
 
         test "a click interleaved with moves is processed within one frame (SC-006)" {
+            // Feature 110: the click point must be over the button (retained routing hit-tests by coords).
+            let bx, by = centreOf 0 "btn"
+
             let script =
                 [ FrameInput.Pointer(HoverEnter("btn", 4.0, 4.0))
                   FrameInput.Pointer(HoverEnter("btn", 6.0, 6.0))
-                  FrameInput.Pointer(Click("btn", PointerButton.Primary, 6.0, 6.0)) ]
+                  FrameInput.Pointer(Click("btn", PointerButton.Primary, bx, by)) ]
 
             let frames = ControlsElmish.Perf.runScript host size script
             Expect.equal frames.Length 2 "the two moves coalesce; the click is its own frame"

@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 108
-xml-summary-count: 183
+symbol-count: 124
+xml-summary-count: 216
 source-fsi-paths:
 - src/Controls.Elmish/ControlsElmish.fsi
 sampled-symbols:
@@ -59,13 +59,15 @@ type AdapterProgram<'model, 'msg> =
       View: 'model -> Control<'msg>
       Subscriptions: 'model -> AdapterSubscription<'msg> list }
 
-/// Feature 108/109 (US1, FR-001/002): the per-frame structured work/timing signal the host loop and
-/// the deterministic `Perf.runScript` driver both produce. The six count/bool fields are the
+/// Feature 108/109/110 (US1, FR-001/002): the per-frame structured work/timing signal the host loop
+/// and the deterministic `Perf.runScript` driver both produce. The seven count/bool fields are the
 /// byte-stable determinism surface (FR-007/SC-005); `FrameDuration` is reported for real perf
 /// observation but EXCLUDED from golden assertions (it varies run to run, FR-012). Feature 109
 /// replaced the conflating `ViewRebuilt` with the two precise booleans `ProductModelChanged` +
 /// `ViewCalled` and added the integer `FullRenderCount`, so "the model changed" and "the view ran"
-/// are reported as separate facts (SC-011).
+/// are reported as separate facts (SC-011). Feature 110 added `FullRenderFallbackCount` and narrowed
+/// `FullRenderCount`/`ViewCalled` so routing a pointer event via the retained frame increments
+/// NEITHER (the hot-path full render for routing is gone, FR-004/FR-008).
 type FrameMetrics =
     { /// A product message actually changed the model this frame (the reference identity of the folded
       /// model changed across `host.Update`). `false` for a no-message frame, a pure hover/focus
@@ -73,11 +75,14 @@ type FrameMetrics =
       ProductModelChanged: bool
       /// `host.View size model` ran this frame to (re)produce a tree (FR-001). Equals
       /// `FullRenderCount > 0` — an animation-only tick that re-renders an overlay reports `true` here
-      /// while `ProductModelChanged` stays `false`.
+      /// while `ProductModelChanged` stays `false`. Feature 110: routing a pointer event via the
+      /// retained frame does NOT set this true (routing performs no full render).
       ViewCalled: bool
       /// Number of full `host.View` + `Control.renderTree` materializations this frame performed — the
-      /// routing render and the retained-step render where they occur (FR-015). The baseline answer to
-      /// "how many full renders for this interaction"; Phase 2 drives the hot-path value toward 0.
+      /// retained-step render where it occurs, plus any oracle fallback render. Feature 110 narrowed
+      /// this: routing a pointer event via the retained path increments NEITHER this nor `ViewCalled`
+      /// (the per-sample routing full render is removed from the hot path, FR-008); a model-driven
+      /// re-render after a dispatched message still counts.
       FullRenderCount: int
       /// Nodes re-measured this frame (from `WorkReductionRecord.RemeasuredNodeCount`); 0 on an idle
       /// frame, bounded (overlay-assembly, not whole-tree) on an animation-only frame.
@@ -87,6 +92,12 @@ type FrameMetrics =
       PointerSamplesReceived: int
       /// Pointer MOVES actually applied after coalescing — at most one per frame (FR-009/SC-002).
       PointerMovesProcessed: int
+      /// Feature 110 (FR-009): how many times retained pointer routing fell back to a full render to
+      /// route an event this frame. `0` for every normal scripted pointer scenario (SC-005); non-zero
+      /// only when the retained frame could not resolve a bindable hit and the preserved full-render
+      /// oracle had to run (a counted correctness escape hatch, never the normal path). Deterministic,
+      /// golden-asserted.
+      FullRenderFallbackCount: int
       /// Wall-clock duration of the frame's work — reported, EXCLUDED from the golden/determinism
       /// surface (FR-012).
       FrameDuration: TimeSpan }
@@ -232,6 +243,48 @@ module ControlsElmish =
         model: 'model ->
         input: ViewerPointerInput ->
             PointerState * 'msg list
+
+    /// Feature 110 (FR-001/FR-002/FR-003): resolve a single already-resolved `PointerInteraction` from
+    /// the RETAINED frame, performing NO `host.View` + `Control.renderTree` for routing. A binding-
+    /// eligible `Click` hit-tests via `RetainedRender.retainedHitTest` over the retained frame's cached
+    /// boxes, bridges that `RetainedId` to the authored `ControlId` via
+    /// `RetainedRender.authoredControlIds`, and dispatches the retained frame's matching `EventBindings`
+    /// (the same authored binding the full-render path fires, including a composite whose binding is
+    /// authored above the hit node); every other interaction, and a `Click` with no matching binding,
+    /// falls back to `host.MapPointer` exactly as the oracle does. Returns the product messages and a
+    /// FALLBACK COUNT: when the retained frame cannot resolve a bindable hit (`retainedHitTest` `None`
+    /// over a point a `Click` named) it falls back to one preserved full-render oracle resolution
+    /// (`Control.renderTree` + `nearestAuthored`) and returns `1` (FR-007/FR-009); the normal path
+    /// returns `0`. `internal` because it consumes the internal `RetainedRender`; the adapter tests
+    /// reach it via `InternalsVisibleTo` (it IS the production routing path, SC-001/SC-002/SC-005).
+    val internal routeRetainedInteraction:
+        host: InteractiveAppHost<'model, 'msg> ->
+        size: Size ->
+        model: 'model ->
+        retained: RetainedRender<'msg> ->
+        render: ControlRenderResult<'msg> ->
+        interaction: PointerInteraction ->
+            'msg list * int
+
+    /// Feature 110 (FR-001/FR-004/FR-006): the live retained pointer route. Maps the native sample with
+    /// `Pointer.toMsg` and runs `Pointer.update` over the retained frame's already-evaluated CACHED
+    /// `LayoutResult` (`retained.Layout`) — NOT a freshly evaluated layout — then resolves every emitted
+    /// interaction through `routeRetainedInteraction`, summing the per-interaction fallback counts.
+    /// Returns the advanced `PointerState` (threaded across samples), the product messages, and the
+    /// frame's `FullRenderFallbackCount` (0 on every normal scenario). Dispatch-identical to the
+    /// preserved `routeInteractivePointer` oracle by construction — same gesture fold over the same
+    /// `LayoutResult`, same authored binding resolution, same `MapPointer` fallback (FR-006/FR-011).
+    /// `internal` because it consumes the internal `RetainedRender`; tests reach it via
+    /// `InternalsVisibleTo` and compare it directly against the oracle (SC-003).
+    val internal routeRetainedPointer:
+        host: InteractiveAppHost<'model, 'msg> ->
+        retained: RetainedRender<'msg> ->
+        render: ControlRenderResult<'msg> ->
+        state: PointerState ->
+        size: Size ->
+        model: 'model ->
+        input: ViewerPointerInput ->
+            PointerState * 'msg list * int
 
     /// 092 (FR-004): resolve a point to the stable `RetainedId` of the control under it, via the
     /// retained tree's per-node boxes — replacing the 090 `ControlId` `hitTest |> nearestAuthored`

@@ -610,3 +610,36 @@ module internal RetainedRender =
             | None -> if contains n.Fragment.Box then Some n.Identity else None
 
         go retained.Root
+
+    let authoredControlIds (boundIds: Set<ControlId>) (retained: RetainedRender<'msg>) : Map<RetainedId, ControlId> =
+        // Feature 110 (FR-003): reproduce `Control.nearestAuthored`'s climb from retained identity.
+        // A node is AUTHORED when it is keyed (`canonical <> path`, since `canonical = Key ?? path`)
+        // OR its canonical id is bound (`canonical ∈ boundIds`) — the exact predicate feature 098 uses
+        // (`node.Id <> path || node.Id ∈ BoundIds`). Each node maps to the nearest authored ancestor
+        // INCLUDING itself; a node with no authored ancestor gets no entry (the oracle's `None` →
+        // `MapPointer` case). The `parent + "." + index` path (root "0") matches `nearestAuthored`/
+        // `collectBoundsWith`/`eventBindingsOf`, so the resolved id is byte-identical.
+        let rec go (path: string) (nearest: ControlId option) (n: RetainedNode<'msg>) (acc: Map<RetainedId, ControlId>) : Map<RetainedId, ControlId> =
+            let canonical = n.Control.Key |> Option.defaultValue path
+
+            let authoredHere =
+                if canonical <> path || Set.contains canonical boundIds then
+                    Some canonical
+                else
+                    None
+
+            let effective =
+                match authoredHere with
+                | Some _ -> authoredHere
+                | None -> nearest
+
+            let acc =
+                match effective with
+                | Some authored -> Map.add n.Identity authored acc
+                | None -> acc
+
+            n.Children
+            |> List.mapi (fun i c -> i, c)
+            |> List.fold (fun a (i, c) -> go (childPath path i) effective c a) acc
+
+        go "0" None retained.Root Map.empty

@@ -1,0 +1,12 @@
+
+## package/headless-scene instantiate
+$ dotnet new fs-skia-ui --name V3DotnetHeadlessScenePackage --output "/home/developer/projects/FS-Skia-UI/artifacts/template-check/110-retained-pointer-routing/package-headless-scene" --allow-scripts yes --profile headless-scene --rootNamespace V3DotnetHeadlessScenePackage --packagePrefix V3DotnetHeadlessScenePackage --authors TemplateValidation --repositoryUrl "https://example.invalid/package/headless-scene/V3DotnetHeadlessScenePackage" --targetFramework net10.0 --skipGitInit true
+The template "FS Skia UI Governed Project" was created successfully.
+
+Processing post-creation actions...
+Running command 'bash -c "find . -type f \( -name '*.sh' -o -name 'fake.sh' \) -exec chmod +x {} +"'...
+Command succeeded.
+
+
+
+exit-code=0
