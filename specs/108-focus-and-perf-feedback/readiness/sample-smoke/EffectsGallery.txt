@@ -24,3 +24,29 @@ capability-count=11
 hash=dbc2c24b9d42528a6d0dc372875f871685350d9b469c244e5c85ab8e2372b806
 
 exit-code=0
+
+## EffectsGallery contract smoke
+$ dotnet run --project samples/EffectsGallery/EffectsGallery.fsproj --no-build --no-restore -- --contract-smoke
+status=ok
+sample=EffectsGallery
+kinds=[GroupElement; RectangleElement; TextElement; PathElement; EllipseElement;
+ LineElement; ArcElement; ClipElement; GroupElement; RectangleElement;
+ TextRunElement; PerspectiveElement; RectangleElement; ColorSpaceElement;
+ RectangleElement]
+capability-count=11
+hash=dbc2c24b9d42528a6d0dc372875f871685350d9b469c244e5c85ab8e2372b806
+
+exit-code=0
+
+## EffectsGallery contract smoke
+$ dotnet run --project samples/EffectsGallery/EffectsGallery.fsproj --no-build --no-restore -- --contract-smoke
+status=ok
+sample=EffectsGallery
+kinds=[GroupElement; RectangleElement; TextElement; PathElement; EllipseElement;
+ LineElement; ArcElement; ClipElement; GroupElement; RectangleElement;
+ TextRunElement; PerspectiveElement; RectangleElement; ColorSpaceElement;
+ RectangleElement]
+capability-count=11
+hash=dbc2c24b9d42528a6d0dc372875f871685350d9b469c244e5c85ab8e2372b806
+
+exit-code=0

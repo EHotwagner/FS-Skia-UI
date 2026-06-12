@@ -40,6 +40,7 @@ type FrameMetrics =
       FrameDuration: TimeSpan }
 
 /// Feature 108 (US3, FR-009): one ordered step of the deterministic perf driver.
+[<RequireQualifiedAccess>]
 type FrameInput<'msg> =
     | Key of ViewerKey * KeyModifiers
     | Pointer of PointerInteraction
@@ -1000,7 +1001,7 @@ module ControlsElmish =
 
             for input in script do
                 match input with
-                | Pointer interaction when isMoveInteraction interaction -> current.Add input
+                | FrameInput.Pointer interaction when isMoveInteraction interaction -> current.Add input
                 | other ->
                     flush ()
                     frames.Add [ other ]
@@ -1054,15 +1055,15 @@ module ControlsElmish =
             toFrames script
             |> List.map (fun frame ->
                 match frame with
-                | Pointer _ :: _ when frame |> List.forall (function
-                                                            | Pointer p -> isMoveInteraction p
-                                                            | _ -> false) ->
+                | FrameInput.Pointer _ :: _ when frame |> List.forall (function
+                                                                       | FrameInput.Pointer p -> isMoveInteraction p
+                                                                       | _ -> false) ->
                     // Coalesced move frame: K samples, ONE processed move (the latest), one render.
                     let k = List.length frame
 
                     let msgs =
                         match List.last frame with
-                        | Pointer interaction -> routeInteraction interaction
+                        | FrameInput.Pointer interaction -> routeInteraction interaction
                         | _ -> []
 
                     let rebuilt = not (List.isEmpty msgs)
@@ -1074,8 +1075,8 @@ module ControlsElmish =
                         PointerSamplesReceived = k
                         PointerMovesProcessed = 1
                         ViewRebuilt = rebuilt }
-                | [ Idle ] -> zero
-                | [ Tick delta ] ->
+                | [ FrameInput.Idle ] -> zero
+                | [ FrameInput.Tick delta ] ->
                     // Advance every live clock by the injected delta; if an animation is live, render
                     // the overlay step (bounded remeasure, NOT a whole-tree rebuild) with no model
                     // rebuild (ViewRebuilt = false). A consumer `Tick` message rebuilds as usual.
@@ -1103,7 +1104,7 @@ module ControlsElmish =
                     { zero with
                         RemeasuredNodeCount = remeasured
                         ViewRebuilt = rebuilt }
-                | [ Key(k, mods) ] ->
+                | [ FrameInput.Key(k, mods) ] ->
                     let msgs =
                         match host.MapKeyChord k mods with
                         | Some m -> [ m ]
@@ -1116,7 +1117,7 @@ module ControlsElmish =
                     { zero with
                         RemeasuredNodeCount = remeasured
                         ViewRebuilt = rebuilt }
-                | [ Pointer interaction ] ->
+                | [ FrameInput.Pointer interaction ] ->
                     // A discrete pointer interaction: one sample, never a coalesced move.
                     let msgs = routeInteraction interaction
                     let rebuilt = not (List.isEmpty msgs)

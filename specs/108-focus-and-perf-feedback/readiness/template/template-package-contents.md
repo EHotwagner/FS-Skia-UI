@@ -29,4 +29,4 @@ Required entries verified:
 - `content/.template.config/generated/.claude/settings.json`
 - `content/.template.config/generated/.specify/memory/constitution.md`
 
-Total entries: 2089
+Total entries: 2090

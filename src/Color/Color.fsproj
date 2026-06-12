@@ -5,7 +5,7 @@
     <IsPackable>true</IsPackable>
     <PackageId>FS.Skia.UI.Color</PackageId>
     <AssemblyName>FS.Skia.UI.Color</AssemblyName>
-    <Version>0.1.114-preview.1</Version>
+    <Version>0.1.115-preview.1</Version>
     <Title>FS.Skia.UI.Color</Title>
     <Description>WCAG 2.x contrast measurement and Radix-derived accessible palette ramps over the FS.Skia.UI.Scene Color type.</Description>
     <PackageTags>fsharp;skia;color;contrast;wcag;accessibility</PackageTags>

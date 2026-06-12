@@ -1,22 +1,22 @@
-# Aggregate-hang diagnostics (feature 108)
-
-aggregate-result=non-authoritative aggregate
-focused-rerun=performed
-
-When the full aggregate test run is interrupted or its result is unknown, the affected FAKE-backed
-commands are rerun **sequentially** (shared `.fake` state) and the focused rerun is authoritative. The
-per-suite Feature108 results below were captured by a focused rerun of each test project in isolation
-(`dotnet run --project <suite> -- --filter-test-list "Feature 108"`):
-
-- tests/Controls.Tests (Feature108 Focus + Composition + Theming): 16 passed, 0 failed.
-- tests/Elmish.Tests (Feature108 Perf.runScript metrics + coalescing): 7 passed, 0 failed.
-- tests/KeyboardInput.Tests (Feature108 modifier boundary): 4 passed, 0 failed.
-- tests/SkillSupport.Tests (Feature108 EvidenceTour): 3 passed, 0 failed.
-
-No race-like or concurrent-FAKE failure was observed; the focused reruns are the authoritative signal.
+# Aggregate Hang Diagnostics
 
 validation_verdict:
-  verdict: aggregate pass via focused sequential reruns; no hang observed (any non-authoritative aggregate result is superseded by the focused reruns below)
+  target: Dev
+  verdict: aggregate pass after smoke orchestration isolation; previous adapter hang was a non-authoritative aggregate result
   stage: Test aggregate
-  elapsed duration: Dev completed without hang (Restore ~35s, Build ~50s, Test suites green), exit code 0 on the build+test gate; the routed gates ran sequentially (Status Ok each) — PackageSurfaceCheck, PerPackageSurfaceDiff, ControlsDocCoverageCheck, DesignTokenDrift, ContrastCheck, FsiTranscripts, ControlsCatalogCheck, ControlsCatalogGenerationCheck, ControlsInteractionCheck, ControlsRenderingCheck, SkillContractPathCheck, TemplateDrift, GeneratedGuidanceCheck, TemplateCheck, EvidenceGraph
-  last observed command: dotnet test tests/Governance.Tests/Governance.Tests.fsproj (Passed 583/0)
+  elapsed duration: Verify passed in 3 minutes 58 seconds after the smoke runner change
+  last observed command: dotnet run --project tests/Smoke.Tests/Smoke.Tests.fsproj --no-restore
+  timeout_policy: Smoke.Tests bypasses the VSTest/YoloDev adapter path and runs the Expecto executable directly
+  recommended focused rerun: dotnet run --project tests/Smoke.Tests/Smoke.Tests.fsproj --no-restore
+  focused rerun:
+    command: dotnet run --project tests/Smoke.Tests/Smoke.Tests.fsproj
+    focused rerun result: passed 3 smoke tests in 2.6 seconds during investigation
+    evidence_path: specs/020-asteroids-integration-feedback/readiness/logs/test.txt
+  investigated_failure:
+    command: VSTest/YoloDev adapter execution filtered to KeyboardInputGallery
+    result: hung before launching the KeyboardInputGallery child process
+  control_check:
+    command: dotnet run --project samples/KeyboardInputGallery/KeyboardInputGallery.fsproj --no-build --no-restore -- --contract-smoke
+    result: passed and printed contract smoke output
+  final_classification: VSTest/YoloDev adapter orchestration concern for the smoke executable, not a sample or product failure
+  diagnostic: The FAKE Test target runs the native-GUI Expecto suites (Smoke.Tests and SkiaViewer.Tests) via direct Expecto execution to bypass the VSTest/YoloDev adapter testhost (libdecor-gtk crash under a dual Wayland/X11 display); all other test projects continue to use dotnet test.

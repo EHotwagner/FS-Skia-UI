@@ -44,6 +44,8 @@ type FrameMetrics =
 
       FrameDuration: TimeSpan }
 
+[<RequireQualifiedAccess>]
+
 type FrameInput<'msg> =
     | Key of ViewerKey * KeyModifiers
     | Pointer of PointerInteraction

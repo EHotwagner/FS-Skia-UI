@@ -2,8 +2,8 @@ package-set=LocalPacked
 
 # Package skew (pinned-vs-local) check
 
-pinned-version=0.1.113-preview.1
-local-version=0.1.113-preview.1
+pinned-version=0.1.115-preview.1
+local-version=0.1.115-preview.1
 version-gap=none
 
 status=clean

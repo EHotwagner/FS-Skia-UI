@@ -61,7 +61,7 @@ let private counts (frames: FrameMetrics list) =
 let tests =
     testList "Feature 108 ControlsElmish.Perf.runScript metrics + coalescing (US2/3/4, SC-003/004/005/012)" [
         test "an idle frame reports zero work and no rebuild (SC-005/012)" {
-            let frames = ControlsElmish.Perf.runScript host size [ Idle ]
+            let frames = ControlsElmish.Perf.runScript host size [ FrameInput.Idle ]
             Expect.equal frames.Length 1 "one frame per idle step"
             Expect.equal frames.[0].RemeasuredNodeCount 0 "idle re-measures nothing"
             Expect.equal frames.[0].PointerSamplesReceived 0 "no pointer samples"
@@ -82,7 +82,7 @@ let tests =
         }
 
         test "a key that changes the model rebuilds; a following idle does not (SC-003/005)" {
-            let frames = ControlsElmish.Perf.runScript keyHost size [ FrameInput.Key(Enter, ViewerKeyboard.noModifiers); FrameInput.Key(Enter, ViewerKeyboard.noModifiers); Idle ]
+            let frames = ControlsElmish.Perf.runScript keyHost size [ FrameInput.Key(Enter, ViewerKeyboard.noModifiers); FrameInput.Key(Enter, ViewerKeyboard.noModifiers); FrameInput.Idle ]
             Expect.equal frames.Length 3 "three frames"
             Expect.isTrue frames.[0].ViewRebuilt "first Enter rebuilds (model 0->1)"
             Expect.isTrue frames.[1].ViewRebuilt "second Enter rebuilds (model 1->2)"
@@ -115,7 +115,7 @@ let tests =
                   FrameInput.Pointer(HoverEnter("btn", 3.0, 3.0))
                   FrameInput.Pointer(HoverEnter("btn", 9.0, 9.0))
                   FrameInput.Pointer(Click("btn", PointerButton.Primary, 9.0, 9.0))
-                  Idle ]
+                  FrameInput.Idle ]
 
             let r1 = ControlsElmish.Perf.runScript keyHost size script
             let r2 = ControlsElmish.Perf.runScript keyHost size script

@@ -54,9 +54,13 @@ type FrameMetrics =
       /// Wall-clock duration of the frame's work — reported, EXCLUDED from the golden/determinism.
       FrameDuration: TimeSpan }
 
+[<RequireQualifiedAccess>]
 /// Feature 108 (US3, FR-009): one ordered step of the deterministic perf driver. `Key` carries the
 /// parsed base key + held modifiers; `Pointer` carries an already-resolved `PointerInteraction`;
 /// `Tick` advances animation clocks by an injected delta; `Idle` is a no-input frame.
+/// `RequireQualifiedAccess` — the generic case names (`Key`/`Pointer`/`Tick`/`Idle`) would otherwise
+/// shadow a consumer's own `Msg` cases when it `open`s this namespace, so they must be qualified
+/// (`FrameInput.Tick` etc.).
 type FrameInput<'msg> =
     | Key of ViewerKey * KeyModifiers
     | Pointer of PointerInteraction
