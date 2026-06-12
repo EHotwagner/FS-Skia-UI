@@ -1,0 +1,17 @@
+# Frame-metrics count golden (T015, SC-003) — ControlsElmish.Perf.runScript
+#
+# Byte-stable per-frame COUNT/BOOL fields over a fixed FrameInput script. FrameDuration is reported
+# by the runtime but EXCLUDED from this golden (it varies run to run). Enforced for byte-stability and
+# the coalescing/idle invariants by tests/Elmish.Tests/Feature108MetricsTests.fs.
+#
+# Script (host with no key/pointer mapping; event-driven Tick default):
+#   [ Idle
+#     Pointer(HoverEnter "btn"); Pointer(HoverEnter "btn"); Pointer(HoverEnter "btn")
+#     Idle ]
+#
+# Frame layout: the three consecutive moves COALESCE into one frame (FR-011/SC-004); each Idle is its
+# own frame. Columns: RemeasuredNodeCount | PointerSamplesReceived | PointerMovesProcessed | ViewRebuilt
+#
+frame=0  remeasured=0  samples=0  moves=0  rebuilt=false   # idle: zero work (SC-005/012)
+frame=1  remeasured=0  samples=3  moves=1  rebuilt=false   # 3 hover samples coalesce to 1 processed move (SC-004); no rebuild (SC-005)
+frame=2  remeasured=0  samples=0  moves=0  rebuilt=false   # idle: zero work

@@ -188,6 +188,13 @@ module Keyboard =
             { model with PendingSequence = sequence }
             |> attachState [ PendingSequenceChanged sequence ]
 
+// Feature 108 (US5, FR-016): modifier state recovered at the key boundary (see KeyboardInput.fsi).
+type KeyModifiers =
+    { Ctrl: bool
+      Alt: bool
+      Shift: bool
+      Meta: bool }
+
 module ViewerKeyboard =
     let normalize (raw: string) =
         let value =
@@ -267,3 +274,50 @@ module ViewerKeyboard =
         | Digit value -> string value
         | Function value -> $"F{value}"
         | Unknown raw -> raw
+
+    let noModifiers =
+        { Ctrl = false
+          Alt = false
+          Shift = false
+          Meta = false }
+
+    // FR-016: split the raw key on '+'; the final segment is the base key, every preceding segment
+    // is a modifier token classified case-insensitively (any order, repeats tolerated). A raw key
+    // with no '+' has no modifiers and its base IS the raw key, so routing is byte-identical to
+    // `normalize`. Pure, total.
+    let private parseModifiers (raw: string) : string * KeyModifiers =
+        if System.String.IsNullOrEmpty raw then
+            raw, noModifiers
+        else
+            let parts = raw.Split('+')
+
+            if parts.Length <= 1 then
+                raw, noModifiers
+            else
+                let baseKey = parts.[parts.Length - 1]
+                let mutable mods = noModifiers
+
+                for i in 0 .. parts.Length - 2 do
+                    match parts.[i].Trim().ToLowerInvariant() with
+                    | "ctrl"
+                    | "control" -> mods <- { mods with Ctrl = true }
+                    | "alt"
+                    | "option" -> mods <- { mods with Alt = true }
+                    | "shift" -> mods <- { mods with Shift = true }
+                    | "meta"
+                    | "cmd"
+                    | "command"
+                    | "win"
+                    | "super" -> mods <- { mods with Meta = true }
+                    | _ -> ()
+
+                baseKey, mods
+
+    let normalizeEventWithModifiers event =
+        let isDown =
+            match event.Direction with
+            | ViewerKeyDirection.KeyDown -> true
+            | ViewerKeyDirection.KeyUp -> false
+
+        let baseKey, mods = parseModifiers event.RawKey
+        normalize baseKey, isDown, mods

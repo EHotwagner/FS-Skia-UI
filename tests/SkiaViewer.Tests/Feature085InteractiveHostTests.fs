@@ -38,6 +38,8 @@ let private host: InteractiveAppHost<Model, Msg> =
             | Click("go", _, _, _) -> Some Increment
             | _ -> None
       Tick = fun _ -> None
+      MapKeyChord = fun _ _ -> None
+      OnFrameMetrics = ignore
       Diagnostics = Viewer.defaultDiagnostics }
 
 let private size = { Width = 320; Height = 200 }

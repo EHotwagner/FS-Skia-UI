@@ -17,3 +17,6 @@ module Widget =
     val toControl: widget: Widget<'msg> -> Control<'msg>
     /// Convenience = `Control.render theme (toControl widget)`. FR-009.
     val render: theme: Theme -> widget: Widget<'msg> -> ControlRenderResult<'msg>
+    /// Feature 108 (US5, FR-014): `Widget.map f = ofControl ∘ Control.map f ∘ toControl` — change
+    /// only the message type of the lowered control, preserving structure / key / focus identity.
+    val map: f: ('a -> 'b) -> widget: Widget<'a> -> Widget<'b>

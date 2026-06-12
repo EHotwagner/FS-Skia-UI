@@ -1444,6 +1444,43 @@ module Control =
     let withKey key (control: Control<'msg>) =
         { control with Key = Some key }
 
+    // Feature 108 (US5, FR-014): rewrite a single AttrValue's message type. Only the two
+    // handler-bearing cases (`MessageValue`/`EventValue`) actually thread `f`; the nested-control
+    // cases recurse; every data-only case is reconstructed verbatim in the `'b` DU. Total over the
+    // closed `AttrValue` set.
+    let rec private mapAttrValue (f: 'a -> 'b) (value: AttrValue<'a>) : AttrValue<'b> =
+        match value with
+        | TextValue v -> TextValue v
+        | BoolValue v -> BoolValue v
+        | FloatValue v -> FloatValue v
+        | StringListValue v -> StringListValue v
+        | ValidationValue v -> ValidationValue v
+        | StyleClassesValue v -> StyleClassesValue v
+        | VisualStateValue v -> VisualStateValue v
+        | SlotFillsValue fills -> SlotFillsValue(fills |> List.map (fun (name, child) -> name, mapControl f child))
+        | AccessibilityValue v -> AccessibilityValue v
+        | ThemeValue v -> ThemeValue v
+        | ChildValue child -> ChildValue(mapControl f child)
+        | ChildrenValue children -> ChildrenValue(children |> List.map (mapControl f))
+        | MessageValue msg -> MessageValue(f msg)
+        | EventValue handler -> EventValue(handler >> f)
+        | UntypedValue v -> UntypedValue v
+
+    and mapControl (f: 'a -> 'b) (control: Control<'a>) : Control<'b> =
+        { Kind = control.Kind
+          Key = control.Key
+          Attributes =
+            control.Attributes
+            |> List.map (fun attr ->
+                { Name = attr.Name
+                  Category = attr.Category
+                  Value = mapAttrValue f attr.Value })
+          Children = control.Children |> List.map (mapControl f)
+          Content = control.Content
+          Accessibility = control.Accessibility }
+
+    let map (f: 'a -> 'b) (control: Control<'a>) : Control<'b> = mapControl f control
+
     let rec count (control: Control<'msg>) =
         1 + (control.Children |> List.sumBy count)
 

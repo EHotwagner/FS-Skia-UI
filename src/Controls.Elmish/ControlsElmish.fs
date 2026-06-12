@@ -31,6 +31,21 @@ type AdapterProgram<'model, 'msg> =
       View: 'model -> Control<'msg>
       Subscriptions: 'model -> AdapterSubscription<'msg> list }
 
+/// Feature 108 (US2, FR-006): per-frame structured work/timing signal (see ControlsElmish.fsi).
+type FrameMetrics =
+    { RemeasuredNodeCount: int
+      PointerSamplesReceived: int
+      PointerMovesProcessed: int
+      ViewRebuilt: bool
+      FrameDuration: TimeSpan }
+
+/// Feature 108 (US3, FR-009): one ordered step of the deterministic perf driver.
+type FrameInput<'msg> =
+    | Key of ViewerKey * KeyModifiers
+    | Pointer of PointerInteraction
+    | Tick of TimeSpan
+    | Idle
+
 type InteractiveAppHost<'model, 'msg> =
     { Init: unit -> 'model * ViewerEffect list
       Update: 'msg -> 'model -> 'model * ViewerEffect list
@@ -39,6 +54,8 @@ type InteractiveAppHost<'model, 'msg> =
       MapKey: ViewerKey -> bool -> 'msg option
       MapPointer: PointerInteraction -> 'msg option
       Tick: TimeSpan -> 'msg option
+      MapKeyChord: ViewerKey -> KeyModifiers -> 'msg option
+      OnFrameMetrics: FrameMetrics -> unit
       Diagnostics: ViewerDiagnosticsOptions }
 
 /// Verdict of a responds-proof (feature 090, FR-006): `Responsive` when a real input applied to the
@@ -682,6 +699,18 @@ module ControlsElmish =
         // standing collision is reported once, not every frame. The path stays total in their presence.
         let surfacedDiagnostics = ref (Set.empty: Set<string>)
 
+        // Feature 108 (US4, FR-011/012): the per-frame pointer-move coalescing accumulator. A native
+        // MOVE sample (hover/drag) is buffered here (latest wins) and processed at the NEXT sample
+        // boundary, collapsing a burst of moves to at most one PROCESSED move (one render + hit-test)
+        // while discrete interactions are never coalesced or dropped. Mutation is confined to this
+        // interpreter closure (constitution III); the consumer `view`/`update` stay pure.
+        let pendingMove = ref (None: ViewerPointerInput option) // mutable: hot path / per frame
+        let pointerSampleCount = ref 0 // mutable: hot path / per frame
+        // Feature 108 (US2, FR-006): the most recent retained-step work record, so `OnFrameMetrics`
+        // can report the frame's `RemeasuredNodeCount` (the live observability sink; the byte-stable
+        // determinism surface is `Perf.runScript`).
+        let lastWorkReduction = ref (None: WorkReductionRecord option)
+
         let surface (diags: ControlDiagnostic list) =
             for d in diags do
                 let key = sprintf "%A|%A|%s" d.Code d.ControlId d.Message
@@ -736,6 +765,7 @@ module ControlsElmish =
                 let next = ControlRuntime.applyRuntimeVisualState runtimeModel (host.View size model)
                 let s = RetainedRender.step host.Theme size prev next
                 surface s.Diagnostics
+                lastWorkReduction.Value <- Some s.WorkReduction
                 retained.Value <- Some s.Retained
                 s.Render.Scene
 
@@ -761,7 +791,18 @@ module ControlsElmish =
 
             find r.Root
 
-        let mapPointer (input: ViewerPointerInput) (size: Size) (model: 'model) : 'msg list =
+        // Feature 108 (US2, FR-006): emit one `OnFrameMetrics` for a processed pointer frame.
+        let emitFrameMetrics (samples: int) (movesProcessed: int) (viewRebuilt: bool) =
+            host.OnFrameMetrics
+                { RemeasuredNodeCount = lastWorkReduction.Value |> Option.map (fun w -> w.RemeasuredNodeCount) |> Option.defaultValue 0
+                  PointerSamplesReceived = samples
+                  PointerMovesProcessed = movesProcessed
+                  ViewRebuilt = viewRebuilt
+                  FrameDuration = TimeSpan.Zero }
+
+        // The single pointer-routing step (the pre-108 `mapPointer` body): focus-on-click + the real
+        // `routeInteractivePointer` adapter path. Shared by the discrete and coalesced-move paths.
+        let processInput (input: ViewerPointerInput) (size: Size) (model: 'model) : 'msg list =
             // Focus-on-click (FR-004/FR-006): a press resolves to the `RetainedId` under the point via
             // the retained tree's per-node boxes (distinguishing unkeyed same-kind siblings); if that
             // control is FOCUSABLE (per its accessibility metadata) it becomes the focus target, so a
@@ -784,16 +825,82 @@ module ControlsElmish =
             pointerState.Value <- state'
             messages
 
+        // Feature 108 (US4, FR-011/012): pointer-move coalescing on the live loop. A MOVE sample is
+        // buffered (latest position wins) and the PREVIOUSLY-buffered move is processed at the next
+        // sample boundary — so a burst of K moves yields at most one processed move (one render +
+        // hit-test) per boundary, while every discrete interaction (press/release/click/drag
+        // begin/end/cancel/scroll/secondary) is processed in arrival order, never coalesced or
+        // dropped. The authoritative, byte-stable coalescing surface is `Perf.runScript`; here the
+        // identical predicate drives the live loop and feeds best-effort `OnFrameMetrics`.
+        let mapPointer (input: ViewerPointerInput) (size: Size) (model: 'model) : 'msg list =
+            pointerSampleCount.Value <- pointerSampleCount.Value + 1
+
+            match input.Phase with
+            | ViewerPointerPhaseKind.Moved ->
+                // Process the previously-deferred move (≤1 per boundary), then defer this one.
+                let flushedMsgs =
+                    match pendingMove.Value with
+                    | Some prev ->
+                        pendingMove.Value <- None
+                        processInput prev size model
+                    | None -> []
+
+                pendingMove.Value <- Some input
+
+                // This Moved sample carries into the next frame's count; report the flushed move now.
+                let samples = pointerSampleCount.Value - 1
+                pointerSampleCount.Value <- 1
+
+                if samples > 0 then
+                    emitFrameMetrics samples 1 (not (List.isEmpty flushedMsgs))
+
+                flushedMsgs
+            | _ ->
+                // Discrete interaction: flush any pending move first (arrival order preserved), then
+                // process the discrete event in the same frame it arrived (a click is never dropped).
+                let moveFlushed, moveMsgs =
+                    match pendingMove.Value with
+                    | Some prev ->
+                        pendingMove.Value <- None
+                        true, processInput prev size model
+                    | None -> false, []
+
+                let discreteMsgs = processInput input size model
+                let samples = pointerSampleCount.Value
+                pointerSampleCount.Value <- 0
+                let msgs = moveMsgs @ discreteMsgs
+                emitFrameMetrics samples (if moveFlushed then 1 else 0) (not (List.isEmpty msgs))
+                msgs
+
+        // Feature 108 (US5, FR-016): the unconsumed-key fallthrough. The modifier-aware `MapKeyChord`
+        // seam is consulted BEFORE `MapKey`: a chord like `Ctrl+L` survives the backend as
+        // `ViewerKey.Unknown "Ctrl+L"`, so its modifiers are recovered here via
+        // `normalizeEventWithModifiers` and offered to `MapKeyChord`. The default `MapKeyChord`
+        // returns `None`, so an unmodified key routes through `MapKey` exactly as before (SC-012).
+        let chordFallthrough (key: ViewerKey) : 'msg list =
+            let baseKey, mods =
+                match key with
+                | ViewerKey.Unknown raw ->
+                    let bk, _, m =
+                        ViewerKeyboard.normalizeEventWithModifiers { RawKey = raw; Direction = ViewerKeyDirection.KeyDown }
+
+                    bk, m
+                | _ -> key, ViewerKeyboard.noModifiers
+
+            match host.MapKeyChord baseKey mods with
+            | Some msg -> [ msg ]
+            | None -> host.MapKey key true |> Option.toList
+
         let mapKey (key: ViewerKey) (pressed: bool) : 'msg list =
             // Feature 094 (E4) focus-first key routing. Only key-down (`pressed`) is routed; key-up
             // falls straight through. Precedence (R3): (1) E1 text seam for a focused TEXT control's
             // printable keys, (2) `routeFocusedKey` for activation / navigation / Tab-traversal,
-            // (3) `host.MapKey` for anything no focused control and no traversal consumed.
+            // (3) `MapKeyChord`/`host.MapKey` for anything no focused control and no traversal consumed.
             if not pressed then
                 host.MapKey key false |> Option.toList
             else
                 match retained.Value with
-                | None -> host.MapKey key true |> Option.toList
+                | None -> chordFallthrough key
                 | Some r ->
                     let focusedNode = focused.Value |> Option.bind (fun id -> tryFindNode id r.Root)
 
@@ -829,9 +936,9 @@ module ControlsElmish =
                                 focused.Value <- next |> Option.bind (retainedIdOfControl r')
                             | _ -> ()
 
-                        // (3) Fall through to host.MapKey only when nothing was consumed.
+                        // (3) Fall through to the chord/`host.MapKey` seam only when nothing was consumed.
                         match productMsgs, controlMsgs with
-                        | [], [] -> host.MapKey key true |> Option.toList
+                        | [], [] -> chordFallthrough key
                         | _ -> productMsgs
 
         // Feature 099 (R4): the host animation seam (contract C1). Each frame the viewer hands us the
@@ -866,3 +973,158 @@ module ControlsElmish =
               Diagnostics = host.Diagnostics }
 
         Viewer.runInteractiveViewer options viewerHost
+
+    // Feature 108 (US3, FR-009/010): the pure, headless, deterministic frame driver. Nested in
+    // `ControlsElmish` so it reuses the SAME message→update→retained-step + binding-resolution +
+    // coalescing primitives the live `runInteractiveApp` loop uses (no parallel logic).
+    module Perf =
+        // FR-011: the move predicate shared with the live loop's coalescing — hover/drag moves
+        // collapse; every other interaction is discrete.
+        let private isMoveInteraction (interaction: PointerInteraction) : bool =
+            match interaction with
+            | HoverEnter _
+            | HoverLeave _
+            | DragMove _ -> true
+            | _ -> false
+
+        // Group the script into frames: consecutive pointer-MOVE inputs coalesce into ONE frame;
+        // every other input (key, discrete pointer, tick, idle) is its own frame. Order preserved.
+        let private toFrames (script: FrameInput<'msg> list) : FrameInput<'msg> list list =
+            let frames = System.Collections.Generic.List<FrameInput<'msg> list>()
+            let current = System.Collections.Generic.List<FrameInput<'msg>>()
+
+            let flush () =
+                if current.Count > 0 then
+                    frames.Add(List.ofSeq current)
+                    current.Clear()
+
+            for input in script do
+                match input with
+                | Pointer interaction when isMoveInteraction interaction -> current.Add input
+                | other ->
+                    flush ()
+                    frames.Add [ other ]
+
+            flush ()
+            List.ofSeq frames
+
+        let runScript
+            (host: InteractiveAppHost<'model, 'msg>)
+            (size: Size)
+            (script: FrameInput<'msg> list)
+            : FrameMetrics list =
+            let mutable model = fst (host.Init())
+            let mutable retained: RetainedRender<'msg> option = None
+
+            // Render the retained step for the current model, returning the frame's
+            // RemeasuredNodeCount (the first frame seeds via `init`, which has no work record -> 0).
+            let renderStep () : int =
+                let next = host.View size model
+
+                match retained with
+                | None ->
+                    let r0 = RetainedRender.init host.Theme size next
+                    retained <- Some r0.Retained
+                    0
+                | Some prev ->
+                    let s = RetainedRender.step host.Theme size prev next
+                    retained <- Some s.Retained
+                    s.WorkReduction.RemeasuredNodeCount
+
+            let applyMessages (msgs: 'msg list) =
+                model <- msgs |> List.fold (fun acc msg -> fst (host.Update msg acc)) model
+
+            // Route a single pointer interaction to product messages (authored bindings else
+            // MapPointer) over the current model's rendered tree — the resolution
+            // `routeInteractivePointer` uses.
+            let routeInteraction (interaction: PointerInteraction) : 'msg list =
+                let rendered = Control.renderTree host.Theme size (host.View size model)
+
+                match bindingMessagesFor rendered interaction with
+                | Some ms -> ms
+                | None -> interpretPointerEffect host.MapPointer interaction |> AdapterCmd.productMessages
+
+            let zero =
+                { RemeasuredNodeCount = 0
+                  PointerSamplesReceived = 0
+                  PointerMovesProcessed = 0
+                  ViewRebuilt = false
+                  FrameDuration = TimeSpan.Zero }
+
+            toFrames script
+            |> List.map (fun frame ->
+                match frame with
+                | Pointer _ :: _ when frame |> List.forall (function
+                                                            | Pointer p -> isMoveInteraction p
+                                                            | _ -> false) ->
+                    // Coalesced move frame: K samples, ONE processed move (the latest), one render.
+                    let k = List.length frame
+
+                    let msgs =
+                        match List.last frame with
+                        | Pointer interaction -> routeInteraction interaction
+                        | _ -> []
+
+                    let rebuilt = not (List.isEmpty msgs)
+                    applyMessages msgs
+                    let remeasured = if rebuilt then renderStep () else 0
+
+                    { zero with
+                        RemeasuredNodeCount = remeasured
+                        PointerSamplesReceived = k
+                        PointerMovesProcessed = 1
+                        ViewRebuilt = rebuilt }
+                | [ Idle ] -> zero
+                | [ Tick delta ] ->
+                    // Advance every live clock by the injected delta; if an animation is live, render
+                    // the overlay step (bounded remeasure, NOT a whole-tree rebuild) with no model
+                    // rebuild (ViewRebuilt = false). A consumer `Tick` message rebuilds as usual.
+                    let hadAnimation =
+                        match retained with
+                        | Some r -> r.StateByIdentity |> Map.exists (fun _ s -> s.Animation.IsSome)
+                        | None -> false
+
+                    match retained with
+                    | Some r ->
+                        retained <-
+                            Some
+                                { r with
+                                    StateByIdentity =
+                                        r.StateByIdentity
+                                        |> Map.map (fun _ s ->
+                                            { s with Animation = s.Animation |> Option.map (RetainedRender.advance delta) }) }
+                    | None -> ()
+
+                    let tickMsgs = host.Tick delta |> Option.toList
+                    let rebuilt = not (List.isEmpty tickMsgs)
+                    applyMessages tickMsgs
+                    let remeasured = if rebuilt || hadAnimation then renderStep () else 0
+
+                    { zero with
+                        RemeasuredNodeCount = remeasured
+                        ViewRebuilt = rebuilt }
+                | [ Key(k, mods) ] ->
+                    let msgs =
+                        match host.MapKeyChord k mods with
+                        | Some m -> [ m ]
+                        | None -> host.MapKey k true |> Option.toList
+
+                    let rebuilt = not (List.isEmpty msgs)
+                    applyMessages msgs
+                    let remeasured = if rebuilt then renderStep () else 0
+
+                    { zero with
+                        RemeasuredNodeCount = remeasured
+                        ViewRebuilt = rebuilt }
+                | [ Pointer interaction ] ->
+                    // A discrete pointer interaction: one sample, never a coalesced move.
+                    let msgs = routeInteraction interaction
+                    let rebuilt = not (List.isEmpty msgs)
+                    applyMessages msgs
+                    let remeasured = if rebuilt then renderStep () else 0
+
+                    { zero with
+                        RemeasuredNodeCount = remeasured
+                        PointerSamplesReceived = 1
+                        ViewRebuilt = rebuilt }
+                | _ -> zero)

@@ -10,6 +10,18 @@ module CodeGen =
 
 namespace FS.Skia.UI.SkillSupport
 
+module EvidenceTour =
+
+    val run:
+        script: 'msg list ->
+        seed: 'model ->
+        update: ('msg -> 'model -> 'model) ->
+        project: ('model -> 'acc -> 'acc) ->
+        initial: 'acc ->
+            'acc
+
+namespace FS.Skia.UI.SkillSupport
+
 module Globbing =
 
     val isMatch: glob: string -> path: string -> bool

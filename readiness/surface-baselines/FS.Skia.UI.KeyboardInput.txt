@@ -1,3 +1,4 @@
+FS.Skia.UI.KeyboardInput.KeyModifiers
 FS.Skia.UI.KeyboardInput.Keyboard
 FS.Skia.UI.KeyboardInput.KeyboardBinding
 FS.Skia.UI.KeyboardInput.KeyboardDiagnostic

@@ -264,6 +264,10 @@ FS.Skia.UI.Controls.TextInputMsg+SelectRange
 FS.Skia.UI.Controls.TextInputMsg+Tags
 FS.Skia.UI.Controls.TextSelection
 FS.Skia.UI.Controls.Theme
+FS.Skia.UI.Controls.Theming.RolePalette
+FS.Skia.UI.Controls.Theming.ThemeMode
+FS.Skia.UI.Controls.Theming.ThemeMode+Tags
+FS.Skia.UI.Controls.Theming.Theming
 FS.Skia.UI.Controls.Toast
 FS.Skia.UI.Controls.Toolbar
 FS.Skia.UI.Controls.Tooltip

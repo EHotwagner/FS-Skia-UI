@@ -33,6 +33,9 @@
          shipped as real public API (deterministic seeded RNG + HUD-band reserve). -->
     <Compile Include="Random.fsi" />
     <Compile Include="Random.fs" />
+    <!-- Feature 108 (US3): generic ordered-Msg fold combinator beside Random; dependency-free. -->
+    <Compile Include="EvidenceTour.fsi" />
+    <Compile Include="EvidenceTour.fs" />
     <Compile Include="Hud.fsi" />
     <Compile Include="Hud.fs" />
     <!-- Feature 063 (FR-010): shortest wrap-aware delta on a toroidal axis — the

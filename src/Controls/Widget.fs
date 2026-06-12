@@ -9,3 +9,7 @@ module Widget =
 
     let render (theme: Theme) (widget: Widget<'msg>) : ControlRenderResult<'msg> =
         Control.render theme widget.Lowered
+
+    // Feature 108 (US5, FR-014): map the message type through the lowered control.
+    let map (f: 'a -> 'b) (widget: Widget<'a>) : Widget<'b> =
+        ofControl (Control.map f (toControl widget))

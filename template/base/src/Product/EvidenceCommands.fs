@@ -291,6 +291,8 @@ let interactiveHost: InteractiveAppHost<Model, Msg> =
             | Click(controlId, _, _, _) when controlId = "save" -> Some SaveRequested
             | _ -> None
       Tick = tick
+      MapKeyChord = fun _ _ -> None
+      OnFrameMetrics = ignore
       Diagnostics = Viewer.defaultDiagnostics }
 //#endif
 

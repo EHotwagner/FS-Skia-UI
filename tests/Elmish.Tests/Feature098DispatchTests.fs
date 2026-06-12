@@ -36,6 +36,8 @@ let private hostOf view mapPointer : InteractiveAppHost<Model, Msg> =
       MapKey = fun _ _ -> None
       MapPointer = mapPointer
       Tick = fun _ -> None
+      MapKeyChord = fun _ _ -> None
+      OnFrameMetrics = ignore
       Diagnostics = Viewer.defaultDiagnostics }
 
 let private pointer phase x y : ViewerPointerInput =

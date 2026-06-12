@@ -265,6 +265,8 @@ module Control =
 
     val withKey: key: ControlId -> control: Control<'msg> -> Control<'msg>
 
+    val map: f: ('a -> 'b) -> control: Control<'a> -> Control<'b>
+
     val render: theme: Theme -> control: Control<'msg> -> ControlRenderResult<'msg>
 
     val renderTree:
@@ -830,6 +832,8 @@ module Focus =
         shift: bool ->
             KeyRouting
 
+    val markFocused: focused: ControlId option -> control: Control<'msg> -> Control<'msg>
+
 namespace FS.Skia.UI.Controls
 
 open FS.Skia.UI.Layout
@@ -1168,6 +1172,29 @@ module Theme =
 
     val resolve: overrides: Theme option -> Theme
 
+namespace FS.Skia.UI.Controls.Theming
+
+open FS.Skia.UI.Scene
+open FS.Skia.UI.Controls
+
+type ThemeMode =
+    | Light
+    | Dark
+
+type RolePalette =
+    { Background: Color
+      Foreground: Color
+      Accent: Color
+      Danger: Color
+      Muted: Color
+      FocusRing: Color }
+
+module Theming =
+
+    val resolve: mode: ThemeMode -> accent: Color -> RolePalette
+
+    val toTheme: palette: RolePalette -> Theme
+
 namespace FS.Skia.UI.Controls
 
 open FS.Skia.UI.Scene
@@ -1500,6 +1527,8 @@ module Widget =
     val toControl: widget: Widget<'msg> -> Control<'msg>
 
     val render: theme: Theme -> widget: Widget<'msg> -> ControlRenderResult<'msg>
+
+    val map: f: ('a -> 'b) -> widget: Widget<'a> -> Widget<'b>
 
 namespace FS.Skia.UI.Controls.Typed
 

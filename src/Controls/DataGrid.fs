@@ -138,12 +138,18 @@ module DataGrid =
 
                 { model with Diagnostics = diagnostic :: model.Diagnostics }, [ ReportDataGridDiagnostic diagnostic ]
             else
-                let direction =
+                // Feature 108 (US5, FR-015): three-state cycle on the SAME column
+                //   None -> Asc -> Desc -> None; a DIFFERENT column restarts at Asc.
+                // The clearing transition emits `DataGridSortChanged None`, so the consumer no longer
+                // intercepts the third press to clear the sort (SC-008).
+                let sort =
                     match model.Sort with
-                    | Some current when current.ColumnKey = columnKey && current.Direction = Ascending -> Descending
-                    | _ -> Ascending
+                    | Some current when current.ColumnKey = columnKey ->
+                        match current.Direction with
+                        | Ascending -> Some { ColumnKey = columnKey; Direction = Descending }
+                        | Descending -> None
+                    | _ -> Some { ColumnKey = columnKey; Direction = Ascending }
 
-                let sort = Some { ColumnKey = columnKey; Direction = direction }
                 { model with Sort = sort }, [ DataGridSortChanged sort ]
         | ApplyFilter filterText ->
             { model with FilterText = filterText }, [ DataGridFilterChanged filterText ]

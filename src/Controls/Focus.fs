@@ -191,3 +191,39 @@ module Focus =
             Traverse(if shift then Previous else Next)
         else
             Fallthrough
+
+    // FR-004: the same focusability predicate `order` uses — a control is focusable iff its
+    // AccessibilityMetadata declares `Keyboard.Focusable`.
+    let private isFocusable (c: Control<'msg>) : bool =
+        match c.Accessibility with
+        | Some metadata -> metadata.Keyboard.Focusable
+        | None -> false
+
+    // FR-001/SC-012: stamp `Focused` only when the control is at `Normal` (no consumer-set state to
+    // preserve). Appending the `visualState` attribute makes `Focused` the last-writer the renderer
+    // reads; a control already at a non-`Normal` state is returned verbatim so `Disabled` wins.
+    let private stampFocused (c: Control<'msg>) : Control<'msg> =
+        if ControlInternals.visualStateOf c.Attributes = Normal then
+            { c with Attributes = c.Attributes @ [ Attr.visualState Focused ] }
+        else
+            c
+
+    // FR-001..005: walk the tree minting the unified `Key ?? structural path` id (root "0", child
+    // `path + "." + index`, descending ALL children exactly as `collectBoundsWith`/dispatch do, so
+    // the stamped id agrees with the id a consumer's focus model holds), stamping `Focused` on the
+    // one focusable control whose id equals `focused`. `None` short-circuits to the input tree
+    // (byte-identical, no allocation of a rewritten tree).
+    let markFocused (focused: ControlId option) (control: Control<'msg>) : Control<'msg> =
+        match focused with
+        | None -> control
+        | Some target ->
+            let rec go (path: string) (c: Control<'msg>) : Control<'msg> =
+                let id = c.Key |> Option.defaultValue path
+
+                let c =
+                    { c with
+                        Children = c.Children |> List.mapi (fun index child -> go (path + "." + string index) child) }
+
+                if id = target && isFocusable c then stampFocused c else c
+
+            go "0" control

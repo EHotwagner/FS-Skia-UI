@@ -36,6 +36,33 @@ type AdapterProgram<'model, 'msg> =
       View: 'model -> Control<'msg>
       Subscriptions: 'model -> AdapterSubscription<'msg> list }
 
+/// Feature 108 (US2, FR-006): the per-frame structured work/timing signal the host loop and the
+/// deterministic `Perf.runScript` driver both produce. The four count/bool fields are the
+/// byte-stable determinism surface (FR-007/SC-003); `FrameDuration` is reported for real perf
+/// observation but EXCLUDED from golden assertions (it varies run to run).
+type FrameMetrics =
+    { /// Nodes re-measured this frame (from `WorkReductionRecord.RemeasuredNodeCount`); 0 on an idle
+      /// frame, bounded (overlay-assembly, not whole-tree) on an animation-only frame.
+      RemeasuredNodeCount: int
+      /// Raw pointer samples that arrived this frame (K before coalescing).
+      PointerSamplesReceived: int
+      /// Pointer MOVES actually applied after coalescing — at most one per frame (FR-011/SC-004).
+      PointerMovesProcessed: int
+      /// Did this frame meaningfully rebuild the view (a product message changed the model)? An
+      /// idle frame, a pure-hover frame, and an animation-only tick all report `false` (SC-005/012).
+      ViewRebuilt: bool
+      /// Wall-clock duration of the frame's work — reported, EXCLUDED from the golden/determinism.
+      FrameDuration: TimeSpan }
+
+/// Feature 108 (US3, FR-009): one ordered step of the deterministic perf driver. `Key` carries the
+/// parsed base key + held modifiers; `Pointer` carries an already-resolved `PointerInteraction`;
+/// `Tick` advances animation clocks by an injected delta; `Idle` is a no-input frame.
+type FrameInput<'msg> =
+    | Key of ViewerKey * KeyModifiers
+    | Pointer of PointerInteraction
+    | Tick of TimeSpan
+    | Idle
+
 /// Pointer-routing, size-aware durable host (feature 085, research D3-AMEND). Mirrors
 /// `GeneratedAppHost` field-for-field PLUS a `MapPointer` seam over `PointerInteraction` and a
 /// size-carrying `View` that returns a `Control<'msg>` tree (so `Control.renderTree` yields the
@@ -44,7 +71,8 @@ type AdapterProgram<'model, 'msg> =
 /// host-independent. `Theme` drives `renderTree`. Feature 090: a hit control's authored
 /// `EventBindings` (`onClick`/`onChanged`) are dispatched in the live window; `MapKey` gains a
 /// focus-aware text-routing seam for the focused text control (see `routeInteractivePointer`,
-/// `routeFocusedText`, and `runInteractiveApp`).
+/// `routeFocusedText`, and `runInteractiveApp`). Feature 108: the additive `MapKeyChord` /
+/// `OnFrameMetrics` fields carry inert defaults (at-rest byte-identical).
 type InteractiveAppHost<'model, 'msg> =
     { Init: unit -> 'model * ViewerEffect list
       Update: 'msg -> 'model -> 'model * ViewerEffect list
@@ -53,6 +81,14 @@ type InteractiveAppHost<'model, 'msg> =
       MapKey: ViewerKey -> bool -> 'msg option
       MapPointer: PointerInteraction -> 'msg option
       Tick: TimeSpan -> 'msg option
+      /// Feature 108 (US5, FR-016): an additive modifier-aware key seam consulted BEFORE `MapKey`.
+      /// The default (`fun _ _ -> None`) ignores modifiers and defers to `MapKey`, so unmodified
+      /// keys route exactly as today (at-rest byte-identical, SC-012).
+      MapKeyChord: ViewerKey -> KeyModifiers -> 'msg option
+      /// Feature 108 (US2, FR-006): an additive opt-in observability sink called once per frame with
+      /// that frame's `FrameMetrics`. The default (`ignore`) is inert, so a host that does not
+      /// observe metrics is byte-identical to its pre-108 behaviour (SC-012).
+      OnFrameMetrics: FrameMetrics -> unit
       Diagnostics: ViewerDiagnosticsOptions }
 
 /// Verdict of a responds-proof (feature 090, FR-006): `Responsive` when a real input applied to the
@@ -255,3 +291,21 @@ module ControlsElmish =
     /// (FR-008).
     val runInteractiveApp:
         options: ViewerOptions -> host: InteractiveAppHost<'model, 'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
+
+    /// Feature 108 (US3, FR-009/010): the pure, headless, deterministic frame driver. Folds an
+    /// ordered `FrameInput` script over the host's pure `Update` + `RetainedRender.step`, advancing
+    /// one frame per step (consecutive pointer-MOVE inputs coalesce into a single frame) and
+    /// accumulating the per-frame `FrameMetrics`. Shares the message→update→retained-step +
+    /// clock-advance + coalescing code path with `runInteractiveApp` (no parallel logic), so a
+    /// regression that un-coalesces moves or reintroduces a per-hover full rebuild fails the
+    /// byte-stable count golden (SC-003/004/005) rather than shipping. The four count/bool fields are
+    /// identical across repeated runs of the same script; `FrameDuration` is not asserted.
+    module Perf =
+        /// Fold an ordered `FrameInput` script over the host's pure `Update` + `RetainedRender.step`,
+        /// returning the per-frame `FrameMetrics` (consecutive pointer-MOVE inputs coalesce into one
+        /// frame). Pure, headless, byte-stable in its count/bool fields (SC-003/004/005).
+        val runScript:
+            host: InteractiveAppHost<'model, 'msg> ->
+            size: Size ->
+            script: FrameInput<'msg> list ->
+                FrameMetrics list

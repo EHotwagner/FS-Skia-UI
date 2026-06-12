@@ -88,3 +88,15 @@ module Focus =
         isTab: bool ->
         shift: bool ->
             KeyRouting
+
+    /// Feature 108 (US1, FR-001..005): stamp `VisualState.Focused` on the single focusable control
+    /// whose identity (`Key ?? structural path`, the feature-098 unification minted root "0", child
+    /// `path + "." + index`, the SAME id `collectBoundsWith`/dispatch use) equals `focused`. Every
+    /// other control is untouched; a control already carrying a consumer-set non-`Normal` state (e.g.
+    /// `Disabled`) keeps it — `Focused` never overrides it (spec edge case). `None` returns the tree
+    /// byte-identical — no stamp, at-rest output unchanged (SC-012). Reaches keyed AND unkeyed
+    /// focusable controls (path makes same-kind siblings distinct, FR-002); structural/non-focusable
+    /// elements are never stamped (FR-004); at most one control carries the ring (FR-003). Consumers
+    /// reflect their own focus model by calling `markFocused model.Focused (view …)` in `view`
+    /// (FR-005). Pure, total; never throws.
+    val markFocused: focused: ControlId option -> control: Control<'msg> -> Control<'msg>

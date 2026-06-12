@@ -17,7 +17,7 @@ FAIL
 
 - Changed alignment classes: ``
 - Deferral file: `/home/developer/projects/FS-Skia-UI/readiness/template-deferrals.yml`
-- Active feature evidence: `specs/107-governance-skew-doc-hardening`
+- Active feature evidence: `specs/108-focus-and-perf-feedback`
 
 ## Controls Boundary Guidance
 

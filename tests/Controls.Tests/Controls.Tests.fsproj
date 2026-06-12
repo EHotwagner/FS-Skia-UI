@@ -46,11 +46,18 @@
     <Compile Include="Feature101LayoutDriftGuardTests.fs" />
     <Compile Include="Feature103CrossFadeTests.fs" />
     <Compile Include="Feature105ParityTests.fs" />
+    <Compile Include="Feature108FocusTests.fs" />
+    <Compile Include="Feature108CompositionTests.fs" />
+    <Compile Include="Feature108ThemingTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Controls\Controls.fsproj" />
+    <!-- Feature 108 (US6, T032): the theming-contrast suite reuses FS.Skia.UI.Color.Contrast.ratio
+         against the WCAG reference pairs. Test-only reference — Controls itself does not depend on
+         the Color package (no package-graph change). -->
+    <ProjectReference Include="..\..\src\Color\Color.fsproj" />
     <!-- Feature 066 (US1/US2): the typed-catalog parity/drift/correspondence tests exercise
          the build-front single source `FS.Skia.UI.Build.CatalogGen` against the real
          `FS.Skia.UI.Controls.Typed` surface, so this suite references the governance engine. -->

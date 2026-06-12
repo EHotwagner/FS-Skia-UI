@@ -122,6 +122,14 @@ module Control =
     /// Stamp a stable identity `key` onto a control so the keyed reconciler tracks it across
     /// sibling-shifting re-renders (the `withKey` anchor read by `nearestAuthored`).
     val withKey: key: ControlId -> control: Control<'msg> -> Control<'msg>
+    /// Feature 108 (US5, FR-014): change ONLY the message type of a control. `Kind`, `Key`,
+    /// `Content`, `Accessibility`, and the `Children` shape are preserved exactly; every `Attr`'s
+    /// `AttrValue` is rewritten so its `'a`-bearing handler (`MessageValue`, `EventValue`) maps
+    /// through `f` and its nested controls (`ChildValue`/`ChildrenValue`/`SlotFillsValue`) recurse.
+    /// The result lowers structurally equal to a control authored directly in `'b` (SC-007), so a
+    /// page authored as a self-contained `Control<PageMsg>` folds into a shell via one
+    /// `Control.map PageMsg`. Keys / focus identity survive — only the message type changes.
+    val map: f: ('a -> 'b) -> control: Control<'a> -> Control<'b>
     /// Render a SINGLE control to a `ControlRenderResult<'msg>` preview at intrinsic size
     /// (Feature 080); use `renderTree` to lay out and paint nested children.
     val render: theme: Theme -> control: Control<'msg> -> ControlRenderResult<'msg>

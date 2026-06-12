@@ -73,14 +73,14 @@
       "src/KeyboardInput/KeyboardInput.fsi"
     ],
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.KeyboardInput.md",
-    "SymbolCount": 73,
+    "SymbolCount": 80,
     "SampledSymbols": [
       "KeyboardModel",
       "KeyboardEvent",
       "KeyDown",
       "KeyUp"
     ],
-    "XmlSummaryCount": 19,
+    "XmlSummaryCount": 30,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"
@@ -130,7 +130,7 @@
       "src/Controls/Types.fsi"
     ],
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.Controls.md",
-    "SymbolCount": 762,
+    "SymbolCount": 763,
     "SampledSymbols": [
       "type Control\u003C\u0027msg\u003E",
       "KnownControl.TextBlock",
@@ -139,7 +139,7 @@
       "LineChart.series",
       "TextBox.onChanged"
     ],
-    "XmlSummaryCount": 643,
+    "XmlSummaryCount": 650,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"
@@ -155,9 +155,9 @@
       "src/Controls.Elmish/ControlsElmish.fsi"
     ],
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.Controls.Elmish.md",
-    "SymbolCount": 88,
+    "SymbolCount": 106,
     "SampledSymbols": [],
-    "XmlSummaryCount": 137,
+    "XmlSummaryCount": 168,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"

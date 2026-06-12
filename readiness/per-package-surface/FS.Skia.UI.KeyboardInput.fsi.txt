@@ -84,6 +84,12 @@ module Keyboard =
 
     val stateDisplay: model: KeyboardModel -> KeyboardStateDisplay
 
+type KeyModifiers =
+    { Ctrl: bool
+      Alt: bool
+      Shift: bool
+      Meta: bool }
+
 module ViewerKeyboard =
 
     val normalize: raw: string -> ViewerKey
@@ -91,3 +97,7 @@ module ViewerKeyboard =
     val normalizeEvent: event: ViewerKeyEvent -> ViewerKey * bool
 
     val toKeyId: key: ViewerKey -> KeyId
+
+    val noModifiers: KeyModifiers
+
+    val normalizeEventWithModifiers: event: ViewerKeyEvent -> ViewerKey * bool * KeyModifiers

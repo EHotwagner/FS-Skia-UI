@@ -1,0 +1,162 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (feature 108).
+# Phase-checkpoint edges (every task in Phase N+1 -> last foundation task of
+# Phase N) are auto-injected by the graph script; only non-phase cross-edges
+# are written here.
+
+tasks:
+  # Phase 1 — Setup
+  T001:
+    deps: []
+    skillist: []
+  T002:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+  T003:
+    deps: []
+    skillist: []
+
+  # Phase 2 — Foundation
+  T004:
+    deps: []
+    skillist: ["fs-skia-ui-widgets", "fs-skia-controls-host", "fs-skia-keyboard-input"]
+  T005:
+    deps: [T004]
+    skillist: ["fs-skia-evidence-mode"]
+  T006:
+    deps: [T004]
+    skillist: []
+  T007:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+
+  # Phase 3 — US1 Focus visibility
+  T008:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+  T009:
+    deps: [T008]
+    skillist: ["fs-skia-ui-widgets"]
+  T010:
+    deps: [T009]
+    skillist: ["fs-skia-evidence-mode"]
+  T011:
+    deps: [T009]
+    skillist: ["fs-skia-controls-host", "fs-skia-evidence-mode"]
+  T012:
+    deps: [T009]
+    skillist: []
+
+  # Phase 4 — US2 Per-frame metrics
+  T013:
+    deps: []
+    skillist: ["fs-skia-elmish", "fs-skia-evidence-mode"]
+  T014:
+    deps: [T013]
+    skillist: ["fs-skia-controls-host", "fs-skia-elmish"]
+  T015:
+    deps: [T014]
+    skillist: ["fs-skia-evidence-mode"]
+  T016:
+    deps: [T014]
+    skillist: []
+
+  # Phase 5 — US3 Deterministic perf driver
+  T017:
+    deps: []
+    skillist: ["fs-skia-evidence-mode", "fs-skia-elmish"]
+  T018:
+    deps: [T017, T014]
+    skillist: ["fs-skia-controls-host", "fs-skia-evidence-mode"]
+  T019:
+    deps: [T017]
+    skillist: ["fs-skia-evidence-mode"]
+  T020:
+    deps: [T018]
+    skillist: []
+
+  # Phase 6 — US4 Pointer-move coalescing
+  T021:
+    deps: []
+    skillist: ["fs-skia-controls-host", "fs-skia-evidence-mode"]
+  T022:
+    deps: [T021, T014]
+    skillist: ["fs-skia-controls-host", "fs-skia-elmish"]
+  T023:
+    deps: [T022]
+    skillist: ["fs-skia-controls-host"]
+  T024:
+    deps: [T022]
+    skillist: ["fs-skia-evidence-mode"]
+  T025:
+    deps: [T022]
+    skillist: []
+
+  # Phase 7 — US5 Composition & input ergonomics
+  T026:
+    deps: []
+    skillist: ["fs-skia-ui-widgets", "fs-skia-keyboard-input"]
+  T027:
+    deps: [T026]
+    skillist: ["fs-skia-ui-widgets"]
+  T028:
+    deps: [T026]
+    skillist: ["fs-skia-ui-widgets"]
+  T029:
+    deps: [T026]
+    skillist: ["fs-skia-keyboard-input", "fs-skia-controls-host"]
+  T030:
+    deps: [T027, T028, T029]
+    skillist: ["fs-skia-evidence-mode"]
+  T031:
+    deps: [T027, T028, T029]
+    skillist: []
+
+  # Phase 8 — US6 Live theming
+  T032:
+    deps: []
+    skillist: ["fs-skia-design-tokens"]
+  T033:
+    deps: [T032]
+    skillist: ["fs-skia-design-tokens", "fs-skia-ui-widgets"]
+  T034:
+    deps: [T033]
+    skillist: ["fs-skia-design-tokens", "fs-skia-evidence-mode"]
+  T035:
+    deps: [T033]
+    skillist: []
+
+  # Phase 9 — US7 Discoverability & governance
+  T036:
+    deps: []
+    skillist: ["fs-skia-controls-host"]
+  T037:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+  T038:
+    deps: [T036, T037]
+    skillist: []
+
+  # Phase 10 — Integration & Polish
+  T039:
+    deps: [T009, T014, T018, T019, T022, T027, T028, T029, T033]
+    skillist: []
+  T040:
+    deps: [T011, T015, T024]
+    skillist: ["fs-skia-evidence-mode"]
+  T041:
+    deps: []
+    skillist: ["speckit-implement"]
+    owns: ["implementation-loading"]
+  T042:
+    deps: [T039]
+    skillist: ["fs-skia-template-update"]
+  T043:
+    deps: [T042]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T044:
+    deps: [T043]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

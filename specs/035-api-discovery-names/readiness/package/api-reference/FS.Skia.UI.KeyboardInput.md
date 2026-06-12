@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 73
-xml-summary-count: 19
+symbol-count: 80
+xml-summary-count: 30
 source-fsi-paths:
 - src/KeyboardInput/KeyboardInput.fsi
 sampled-symbols:
@@ -126,6 +126,16 @@ module Keyboard =
     /// Public contract function exposed by this FS.Skia.UI package.
     val stateDisplay: model: KeyboardModel -> KeyboardStateDisplay
 
+/// Feature 108 (US5, FR-016): the modifier state recovered at the key boundary. The raw key
+/// string can carry `Ctrl+`/`Alt+`/`Shift+`/`Meta+` prefixes that the plain `normalize` collapses
+/// into `Unknown "Ctrl+L"` and loses; parsing them here makes chords as dependable as plain keys,
+/// with no backend change. A closed record of four bools — total, deterministic, equatable.
+type KeyModifiers =
+    { Ctrl: bool
+      Alt: bool
+      Shift: bool
+      Meta: bool }
+
 /// Public contract module exposed by this FS.Skia.UI package.
 module ViewerKeyboard =
     /// Public contract function exposed by this FS.Skia.UI package.
@@ -134,5 +144,16 @@ module ViewerKeyboard =
     val normalizeEvent: event: ViewerKeyEvent -> ViewerKey * bool
     /// Public contract function exposed by this FS.Skia.UI package.
     val toKeyId: key: ViewerKey -> KeyId
+
+    /// Feature 108 (US5, FR-016): the all-false `KeyModifiers` — an unmodified key's modifier set.
+    val noModifiers: KeyModifiers
+
+    /// Feature 108 (US5, FR-016): strip the leading `Ctrl+`/`Alt+`/`Shift+`/`Meta+` prefixes
+    /// (case-insensitive, any order, repeats tolerated) off the raw key, then `normalize` the base
+    /// key. Returns the base `ViewerKey`, the down/up flag (as `normalizeEvent`), and the held
+    /// `KeyModifiers`. An unmodified key yields `noModifiers` and the SAME `ViewerKey` as
+    /// `normalizeEvent` (byte-identical routing); a chord recovers every held modifier — zero silent
+    /// loss (SC-009). Pure, total; never throws.
+    val normalizeEventWithModifiers: event: ViewerKeyEvent -> ViewerKey * bool * KeyModifiers
 
 ```

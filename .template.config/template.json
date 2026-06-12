@@ -102,12 +102,13 @@
         "**/bin/**",
         "**/obj/**"
       ],
-      "comment": "Feature 060 (FR-003): the emitted docs/api-surface/**/*.fsi tree is the authoritative framework contract surface; copy it verbatim so the sourceName ('Product') substitution does not rewrite framework signatures (e.g. ProductDefect) in the generated reference. Feature 062 (FR-003/005/006): the generated docs/evidence-formats.md and docs/skillist-reference.md references and the authored docs/scaffold-map.md are copied verbatim (no sourceName substitution) so their governance tokens are not rewritten.",
+      "comment": "Feature 060 (FR-003): the emitted docs/api-surface/**/*.fsi tree is the authoritative framework contract surface; copy it verbatim so the sourceName ('Product') substitution does not rewrite framework signatures (e.g. ProductDefect) in the generated reference. Feature 062 (FR-003/005/006): the generated docs/evidence-formats.md and docs/skillist-reference.md references and the authored docs/scaffold-map.md are copied verbatim (no sourceName substitution) so their governance tokens are not rewritten. Feature 108 (FR-020): docs/interactive-readiness.md is copied verbatim for the same reason (its skill names / readiness tokens must not be rewritten).",
       "copyOnly": [
         "docs/api-surface/**",
         "docs/evidence-formats.md",
         "docs/skillist-reference.md",
-        "docs/scaffold-map.md"
+        "docs/scaffold-map.md",
+        "docs/interactive-readiness.md"
       ]
     },
     {

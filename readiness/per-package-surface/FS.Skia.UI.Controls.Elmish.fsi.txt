@@ -31,6 +31,25 @@ type AdapterProgram<'model, 'msg> =
       View: 'model -> Control<'msg>
       Subscriptions: 'model -> AdapterSubscription<'msg> list }
 
+type FrameMetrics =
+    {
+
+      RemeasuredNodeCount: int
+
+      PointerSamplesReceived: int
+
+      PointerMovesProcessed: int
+
+      ViewRebuilt: bool
+
+      FrameDuration: TimeSpan }
+
+type FrameInput<'msg> =
+    | Key of ViewerKey * KeyModifiers
+    | Pointer of PointerInteraction
+    | Tick of TimeSpan
+    | Idle
+
 type InteractiveAppHost<'model, 'msg> =
     { Init: unit -> 'model * ViewerEffect list
       Update: 'msg -> 'model -> 'model * ViewerEffect list
@@ -39,6 +58,10 @@ type InteractiveAppHost<'model, 'msg> =
       MapKey: ViewerKey -> bool -> 'msg option
       MapPointer: PointerInteraction -> 'msg option
       Tick: TimeSpan -> 'msg option
+
+      MapKeyChord: ViewerKey -> KeyModifiers -> 'msg option
+
+      OnFrameMetrics: FrameMetrics -> unit
       Diagnostics: ViewerDiagnosticsOptions }
 
 type RespondsVerdict =
@@ -131,3 +154,11 @@ module ControlsElmish =
 
     val runInteractiveApp:
         options: ViewerOptions -> host: InteractiveAppHost<'model, 'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
+
+    module Perf =
+
+        val runScript:
+            host: InteractiveAppHost<'model, 'msg> ->
+            size: Size ->
+            script: FrameInput<'msg> list ->
+                FrameMetrics list

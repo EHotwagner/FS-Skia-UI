@@ -1,0 +1,19 @@
+# FSI / draft-surface exercise (T005)
+#
+# The feature-108 public surface was exercised through its real entry points via the compiled
+# Feature108 test suites (the in-assembly user-reachable surface for these pure / host-seam stories),
+# not a throwaway FSI transcript, because the host-field construction and Perf.runScript paths are
+# most faithfully driven from compiled tests against the built libraries:
+#
+#   Focus.markFocused        -> tests/Controls.Tests/Feature108FocusTests.fs
+#   Control.map / Widget.map -> tests/Controls.Tests/Feature108CompositionTests.fs
+#   DataGrid tri-state       -> tests/Controls.Tests/Feature108CompositionTests.fs
+#   Theming.resolve/toTheme  -> tests/Controls.Tests/Feature108ThemingTests.fs
+#   KeyModifiers boundary    -> tests/KeyboardInput.Tests/Feature108ModifierTests.fs
+#   FrameMetrics/FrameInput/Perf.runScript + InteractiveAppHost MapKeyChord/OnFrameMetrics construction
+#                            -> tests/Elmish.Tests/Feature108MetricsTests.fs
+#   EvidenceTour.run         -> tests/SkillSupport.Tests/Feature108EvidenceTourTests.fs
+#
+# Representative focus-stamp and host-field construction paths are exercised: the metrics test
+# constructs InteractiveAppHost record literals (incl. the new MapKeyChord/OnFrameMetrics fields) and
+# drives Perf.runScript over Key/Pointer/Tick/Idle FrameInput scripts. All suites green.

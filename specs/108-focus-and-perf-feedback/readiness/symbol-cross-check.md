@@ -1,0 +1,43 @@
+## Symbol consistency (analyze pass G)
+- entity-record Accessibility — in {tasks}, missing from {plan, data-model}
+- entity-record Children — in {tasks}, missing from {plan, data-model}
+- entity-record Content — in {tasks}, missing from {plan, data-model}
+- entity-record Focused — in {tasks}, missing from {plan, data-model}
+- entity-record FrameMetrics — in {plan, tasks}, missing from {data-model}
+- entity-record InteractiveAppHost — in {data-model, tasks}, missing from {plan}
+- entity-record Key — in {tasks}, missing from {plan, data-model}
+- entity-record KeyModifiers — in {tasks}, missing from {plan, data-model}
+- entity-record Kind — in {tasks}, missing from {plan, data-model}
+- entity-record None — in {tasks}, missing from {plan, data-model}
+- entity-record OnFrameMetrics — in {tasks}, missing from {plan, data-model}
+- entity-record PointerMovesProcessed — in {plan}, missing from {data-model, tasks}
+- entity-record PointerSamplesReceived — in {plan}, missing from {data-model, tasks}
+- entity-record RetainedRender — in {plan}, missing from {data-model, tasks}
+- entity-record RolePalette — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record WorkReductionRecord — in {plan}, missing from {data-model, tasks}
+- fr-id FR-001 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-002 — in {plan}, missing from {data-model, tasks}
+- fr-id FR-003 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-004 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-006 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-007 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-008 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-009 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-012 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-013 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-017 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-018 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-019 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-020 — in {plan, tasks}, missing from {data-model}
+- msg-case Msg — in {plan, tasks}, missing from {data-model}
+- sc-id SC-001 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-005 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-008 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-009 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-010 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-011 — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant Focused — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant Idle — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant Pointer — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant SortBy — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
