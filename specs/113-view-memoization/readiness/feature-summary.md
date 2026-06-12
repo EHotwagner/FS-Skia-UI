@@ -1,0 +1,8 @@
+# Feature 113 tier / package / obligations (T003)
+
+feature-tier=tier-1-contracted
+affected-packages=FS.Skia.UI.Controls (internal RetainedRender memo seam + cache/entry types, the DataGrid projection site in Control.fs, the public Diagnostics.stabilityReport val, the ControlDiagnosticCode UnstableReuseInput case) + FS.Skia.UI.Controls.Elmish (public FrameMetrics MemoHitCount/MemoMissCount)
+public-api-impact=breaking FrameMetrics .fsi (two additive public fields) + new public Diagnostics.stabilityReport val + new ControlDiagnosticCode case; internal memo seam (MemoEntry/MemoCache/MemoOutcome/memoize) reached via InternalsVisibleTo
+mvu-applicability=N/A (no Model/Msg/Effect/init/update/interpreter change — dispatch outcomes byte-identical, FR-014; only WHETHER a pure subtree is recomputed or reused changes; the memo cache lives in the retained interpreter-edge state)
+interactive-ui-gate=N/A (delivers an internal seam + deterministic metrics observable via ControlsElmish.Perf.runScript + a report-only diagnostic, not a new interactive surface)
+evidence-obligations=memo hit/miss/cold + reference-reuse (Feature113MemoSeamTests), memo-on/memo-off scene parity + no-staleness (Feature113MemoParityTests), deterministic MemoHitCount/MemoMissCount goldens incl idle 0/0 (Feature113MemoMetricsTests + regenerated 109 corpus goldens), stability-diagnostic flag/no-flag (Feature113StabilityDiagTests), stable-props guidance page (docs/controls/stable-props.md), per-package Controls + Controls.Elmish surface baselines, XML-doc on the new fields/vals/types, at-rest byte-identity via the Scene-parity suite under Dev

@@ -53,6 +53,10 @@ type FrameMetrics =
 
       RemeasuredNodeCount: int
 
+      MemoHitCount: int
+
+      MemoMissCount: int
+
       PointerSamplesReceived: int
 
       PointerMovesProcessed: int

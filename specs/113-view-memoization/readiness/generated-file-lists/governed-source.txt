@@ -1,0 +1,344 @@
+# governed/source generated product
+
+Validation rules: exactly one product app, exactly one product test suite, selected capability skills, Controls ownership for form/chart/graph/DataGrid authoring, Controls.Elmish adapter references, consumer-mode package references, stale Charts exclusions, no copied framework samples/specs/readiness/docs, and no framework implementation projects.
+
+Files:
+.agents/skills/fs-skia-project/SKILL.md
+.agents/skills/fs-skia-scene/SKILL.md
+.agents/skills/fs-skia-testing/SKILL.md
+.agents/skills/speckit-analyze/SKILL.md
+.agents/skills/speckit-archive-readiness/SKILL.md
+.agents/skills/speckit-checklist/SKILL.md
+.agents/skills/speckit-clarify/SKILL.md
+.agents/skills/speckit-constitution/SKILL.md
+.agents/skills/speckit-evidence-audit/SKILL.md
+.agents/skills/speckit-evidence-graph/SKILL.md
+.agents/skills/speckit-git-commit/SKILL.md
+.agents/skills/speckit-git-feature/SKILL.md
+.agents/skills/speckit-git-initialize/SKILL.md
+.agents/skills/speckit-git-remote/SKILL.md
+.agents/skills/speckit-git-validate/SKILL.md
+.agents/skills/speckit-implement/SKILL.md
+.agents/skills/speckit-merge/SKILL.md
+.agents/skills/speckit-plan/SKILL.md
+.agents/skills/speckit-specify/SKILL.md
+.agents/skills/speckit-tasks/SKILL.md
+.agents/skills/speckit-taskstoissues/SKILL.md
+.claude/hooks/validate-speckit-project.sh
+.claude/settings.json
+.claude/skills/fs-skia-project/SKILL.md
+.claude/skills/fs-skia-scene/SKILL.md
+.claude/skills/fs-skia-testing/SKILL.md
+.claude/skills/speckit-analyze/SKILL.md
+.claude/skills/speckit-archive-readiness/SKILL.md
+.claude/skills/speckit-checklist/SKILL.md
+.claude/skills/speckit-clarify/SKILL.md
+.claude/skills/speckit-constitution/SKILL.md
+.claude/skills/speckit-evidence-audit/SKILL.md
+.claude/skills/speckit-evidence-graph/SKILL.md
+.claude/skills/speckit-git-commit/SKILL.md
+.claude/skills/speckit-git-feature/SKILL.md
+.claude/skills/speckit-git-initialize/SKILL.md
+.claude/skills/speckit-git-remote/SKILL.md
+.claude/skills/speckit-git-validate/SKILL.md
+.claude/skills/speckit-implement/SKILL.md
+.claude/skills/speckit-merge/SKILL.md
+.claude/skills/speckit-plan/SKILL.md
+.claude/skills/speckit-specify/SKILL.md
+.claude/skills/speckit-tasks/SKILL.md
+.claude/skills/speckit-taskstoissues/SKILL.md
+.specify/extensions.yml
+.specify/extensions/.registry
+.specify/extensions/evidence/audit-patterns.yml
+.specify/extensions/evidence/commands/speckit.evidence.audit.md
+.specify/extensions/evidence/commands/speckit.evidence.graph.md
+.specify/extensions/evidence/extension.yml
+.specify/extensions/git/README.md
+.specify/extensions/git/commands/speckit.git.commit.md
+.specify/extensions/git/commands/speckit.git.feature.md
+.specify/extensions/git/commands/speckit.git.initialize.md
+.specify/extensions/git/commands/speckit.git.remote.md
+.specify/extensions/git/commands/speckit.git.validate.md
+.specify/extensions/git/config-template.yml
+.specify/extensions/git/extension.yml
+.specify/extensions/git/git-config.yml
+.specify/extensions/git/scripts/bash/auto-commit.sh
+.specify/extensions/git/scripts/bash/create-new-feature.sh
+.specify/extensions/git/scripts/bash/git-common.sh
+.specify/extensions/git/scripts/bash/initialize-repo.sh
+.specify/extensions/git/scripts/powershell/auto-commit.ps1
+.specify/extensions/git/scripts/powershell/create-new-feature.ps1
+.specify/extensions/git/scripts/powershell/git-common.ps1
+.specify/extensions/git/scripts/powershell/initialize-repo.ps1
+.specify/init-options.json
+.specify/integration.json
+.specify/integrations/codex.manifest.json
+.specify/integrations/speckit.manifest.json
+.specify/memory/constitution.md
+.specify/presets/.registry
+.specify/presets/fsharp-opinionated/commands/speckit.constitution.md
+.specify/presets/fsharp-opinionated/commands/speckit.implement.md
+.specify/presets/fsharp-opinionated/commands/speckit.tasks.md
+.specify/presets/fsharp-opinionated/preset.yml
+.specify/presets/fsharp-opinionated/templates/constitution-template.md
+.specify/presets/fsharp-opinionated/templates/plan-template.md
+.specify/presets/fsharp-opinionated/templates/spec-template.md
+.specify/presets/fsharp-opinionated/templates/tasks-deps-template.yml
+.specify/presets/fsharp-opinionated/templates/tasks-template.md
+.specify/schedules/foundations-dogfood-pipeline.yml
+.specify/scripts/bash/check-prerequisites.sh
+.specify/scripts/bash/common.sh
+.specify/scripts/bash/create-new-feature.sh
+.specify/scripts/bash/setup-plan.sh
+.specify/scripts/bash/setup-tasks.sh
+.specify/templates/checklist-template.md
+.specify/templates/constitution-template.md
+.specify/templates/plan-template.md
+.specify/templates/spec-template.md
+.specify/templates/tasks-template.md
+.specify/workflows/speckit/workflow.yml
+.specify/workflows/workflow-registry.json
+CLAUDE.md
+Directory.Build.props
+Directory.Packages.props
+README.md
+build.fsx
+docs/UPGRADING.md
+docs/api-surface/Controls/Accessibility.fsi
+docs/api-surface/Controls/Attributes.fsi
+docs/api-surface/Controls/Buttons.fsi
+docs/api-surface/Controls/Catalog.fsi
+docs/api-surface/Controls/Charts.fsi
+docs/api-surface/Controls/ChartsWidgets.fsi
+docs/api-surface/Controls/Collections.fsi
+docs/api-surface/Controls/CollectionsWidgets.fsi
+docs/api-surface/Controls/Containers.fsi
+docs/api-surface/Controls/Control.fsi
+docs/api-surface/Controls/ControlRuntime.fsi
+docs/api-surface/Controls/CustomControl.fsi
+docs/api-surface/Controls/CustomControlWidget.fsi
+docs/api-surface/Controls/DataGrid.fsi
+docs/api-surface/Controls/DataGridWidget.fsi
+docs/api-surface/Controls/Diagnostics.fsi
+docs/api-surface/Controls/Display.fsi
+docs/api-surface/Controls/Input.fsi
+docs/api-surface/Controls/Navigation.fsi
+docs/api-surface/Controls/Overlay.fsi
+docs/api-surface/Controls/Pickers.fsi
+docs/api-surface/Controls/Primitives.fsi
+docs/api-surface/Controls/RichText.fsi
+docs/api-surface/Controls/TextAreaWidget.fsi
+docs/api-surface/Controls/TextBoxWidget.fsi
+docs/api-surface/Controls/TextInput.fsi
+docs/api-surface/Controls/Theme.fsi
+docs/api-surface/Controls/Types.fsi
+docs/api-surface/Elmish/Elmish.fsi
+docs/api-surface/KeyboardInput/KeyboardInput.fsi
+docs/api-surface/Layout/Graph.fsi
+docs/api-surface/Layout/GraphValidation.fsi
+docs/api-surface/Layout/Layout.fsi
+docs/api-surface/Layout/Types.fsi
+docs/api-surface/Scene/Scene.fsi
+docs/api-surface/SkiaViewer/SkiaViewer.fsi
+docs/api-surface/Testing/Testing.fsi
+docs/controls-catalog.md
+docs/effects-boundary.md
+docs/evidence-formats.md
+docs/interactive-readiness.md
+docs/product.md
+docs/scaffold-map.md
+docs/skillist-reference.md
+fake.cmd
+fake.sh
+load-product.fsx
+specs/seed-087-generated-verify/plan.md
+specs/seed-087-generated-verify/readiness/aggregate-hang-diagnostics.md
+specs/seed-087-generated-verify/readiness/audit-status-hits.json
+specs/seed-087-generated-verify/readiness/diff-scan-hits.json
+specs/seed-087-generated-verify/readiness/governance-risk-levels.md
+specs/seed-087-generated-verify/readiness/persistent-gui-runtime-hits.json
+specs/seed-087-generated-verify/readiness/persistent-launch-hits.json
+specs/seed-087-generated-verify/readiness/readiness-contract-hits.json
+specs/seed-087-generated-verify/readiness/runtime-limitations.md
+specs/seed-087-generated-verify/readiness/seh-audit-summary.json
+specs/seed-087-generated-verify/readiness/task-graph.json
+specs/seed-087-generated-verify/readiness/task-graph.md
+specs/seed-087-generated-verify/readiness/window-visibility-hits.json
+specs/seed-087-generated-verify/spec.md
+specs/seed-087-generated-verify/tasks.deps.yml
+specs/seed-087-generated-verify/tasks.md
+src/Product/EvidenceCommands.fs
+src/Product/LayoutEvidence.fs
+src/Product/Model.fs
+src/Product/Product.fsproj
+src/Product/Program.fs
+src/Product/View.fs
+src/Product/WindowOptions.fs
+tests/Product.Tests/BehaviorTests.fs
+tests/Product.Tests/GovernanceTests.fs
+tests/Product.Tests/Product.Tests.fsproj
+tests/Product.Tests/Program.fs
+
+Package references:
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FS.Skia.UI.Scene" />
+    <PackageReference Include="FS.Skia.UI.Testing" />
+  </ItemGroup>
+
+</Project>
+
+
+Product source:
+module Product.Program
+
+open System
+open System.IO
+open FS.Skia.UI.Scene
+
+let productScene =
+    { Nodes =
+        [ Rectangle((16.0, 16.0, 160.0, 96.0), Colors.rgb 32uy 96uy 160uy)
+          Text((28.0, 56.0), "Generated scene product", Colors.white) ] }
+
+let sceneElementCount () =
+    productScene.Nodes.Length
+
+let writeLines (path: string) (lines: string list) =
+    let directory = Path.GetDirectoryName path
+
+    if not (String.IsNullOrWhiteSpace directory) then
+        Directory.CreateDirectory(directory) |> ignore
+
+    File.WriteAllLines(path, Array.ofList lines)
+
+let sceneEvidence evidencePath =
+    match
+        SceneEvidence.render
+            { Scene = productScene
+              OutputSize = { Width = 320; Height = 200 }
+              Format = Metadata
+              RendererMode = "deterministic-scene"
+              EvidencePath = Some evidencePath }
+    with
+    | Result.Ok evidence ->
+        writeLines
+            evidencePath
+            [ "status=ok"
+              "mode=headless-scene"
+              "command=--scene-evidence"
+              $"renderer-mode={evidence.RendererMode}"
+              $"scene-evidence-format={evidence.Format}"
+              $"value={evidence.Value}" ]
+
+        printfn "status=ok mode=headless-scene command=--scene-evidence renderer-mode=%s evidence=%s value=%s" evidence.RendererMode evidencePath evidence.Value
+        0
+    | Result.Error failure ->
+        writeLines
+            evidencePath
+            [ "status=failed"
+              "mode=headless-scene"
+              "command=--scene-evidence"
+              $"blocked-stage={failure.BlockedStage}"
+              $"classification={failure.Classification}"
+              $"category={failure.DiagnosticCategory}"
+              $"message={failure.Message}" ]
+
+        printfn "status=failed mode=headless-scene command=--scene-evidence blocked-stage=%s classification=%A category=%s message=%s evidence=%s" failure.BlockedStage failure.Classification failure.DiagnosticCategory failure.Message evidencePath
+        1
+
+[<EntryPoint>]
+let main args =
+    match List.ofArray args with
+    | "--scene-evidence" :: path :: _ -> sceneEvidence path
+    | "--scene-evidence" :: _ -> sceneEvidence "readiness/headless-scene-evidence.txt"
+    | _ ->
+        printfn "status=ok mode=headless-scene command=dotnet-run scene-elements=%d" (sceneElementCount())
+        0
+
+
+Product tests:
+module ProductGovernanceTests
+
+open Expecto
+
+[<Tests>]
+let governanceTests =
+    testList "product-governance" [
+        test "generated product test suite is wired" {
+            Expect.equal 1 1 "product tests run"
+        }
+    ]
+
+module ProductBehaviorTests
+
+open Expecto
+open Product.Program
+open FS.Skia.UI.Scene
+
+[<Tests>]
+let behaviorTests =
+    testList "product-behavior" [
+        test "headless scene profile builds a scene-only product" {
+            Expect.isGreaterThan (sceneElementCount()) 1 "scene-only product renders multiple scene nodes"
+            Expect.exists productScene.Nodes (function Rectangle _ -> true | _ -> false) "scene includes a rectangle"
+            Expect.exists productScene.Nodes (function Text(_, value, _) when value.Contains("Generated scene product") -> true | _ -> false) "scene includes text"
+        }
+    ]
+
+
+Selected skills:
+.agents/skills/fs-skia-project/SKILL.md
+.agents/skills/fs-skia-scene/SKILL.md
+.agents/skills/fs-skia-testing/SKILL.md
+.agents/skills/speckit-analyze/SKILL.md
+.agents/skills/speckit-archive-readiness/SKILL.md
+.agents/skills/speckit-checklist/SKILL.md
+.agents/skills/speckit-clarify/SKILL.md
+.agents/skills/speckit-constitution/SKILL.md
+.agents/skills/speckit-evidence-audit/SKILL.md
+.agents/skills/speckit-evidence-graph/SKILL.md
+.agents/skills/speckit-git-commit/SKILL.md
+.agents/skills/speckit-git-feature/SKILL.md
+.agents/skills/speckit-git-initialize/SKILL.md
+.agents/skills/speckit-git-remote/SKILL.md
+.agents/skills/speckit-git-validate/SKILL.md
+.agents/skills/speckit-implement/SKILL.md
+.agents/skills/speckit-merge/SKILL.md
+.agents/skills/speckit-plan/SKILL.md
+.agents/skills/speckit-specify/SKILL.md
+.agents/skills/speckit-tasks/SKILL.md
+.agents/skills/speckit-taskstoissues/SKILL.md
+
+Selected Claude skills:
+.claude/skills/fs-skia-project/SKILL.md
+.claude/skills/fs-skia-scene/SKILL.md
+.claude/skills/fs-skia-testing/SKILL.md
+.claude/skills/speckit-analyze/SKILL.md
+.claude/skills/speckit-archive-readiness/SKILL.md
+.claude/skills/speckit-checklist/SKILL.md
+.claude/skills/speckit-clarify/SKILL.md
+.claude/skills/speckit-constitution/SKILL.md
+.claude/skills/speckit-evidence-audit/SKILL.md
+.claude/skills/speckit-evidence-graph/SKILL.md
+.claude/skills/speckit-git-commit/SKILL.md
+.claude/skills/speckit-git-feature/SKILL.md
+.claude/skills/speckit-git-initialize/SKILL.md
+.claude/skills/speckit-git-remote/SKILL.md
+.claude/skills/speckit-git-validate/SKILL.md
+.claude/skills/speckit-implement/SKILL.md
+.claude/skills/speckit-merge/SKILL.md
+.claude/skills/speckit-plan/SKILL.md
+.claude/skills/speckit-specify/SKILL.md
+.claude/skills/speckit-tasks/SKILL.md
+.claude/skills/speckit-taskstoissues/SKILL.md

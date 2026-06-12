@@ -41,3 +41,14 @@ module Diagnostics =
     val staleEventTarget: controlId: ControlId -> eventKind: string -> ControlDiagnostic
     /// Reports that `scopeName` owned by `owner` cannot be expanded as requested.
     val unsupportedScopeExpansion: scopeName: string -> owner: string -> ControlDiagnostic
+
+    /// Feature 113 (Phase 5) — the stability-diagnostic report (report-only, NOT an enforced gate).
+    /// Given TWO builds of the SAME logical control (sub)tree (`first`/`second` — the same model run
+    /// through `View` twice), walk them in parallel and return one `UnstableReuseInput` finding per
+    /// attribute/event that compared UNEQUAL despite no semantic change: a rebuilt `UntypedValue`, a
+    /// per-frame event closure (reference-fresh each build), or an unstable key. Each finding names the
+    /// control (`ControlId` + `ControlKind`) and the offending attribute/event name. An empty list ⇒
+    /// the tree's inputs are stable across builds (the case memoization can exploit). Stable structural
+    /// values (`TextValue`, `StringListValue`, …) and reference-shared event handlers do not flag. Pure,
+    /// total, deterministic; never compares a function with `=` (uses reference identity for closures).
+    val stabilityReport: first: Control<'msg> -> second: Control<'msg> -> ControlDiagnostic list

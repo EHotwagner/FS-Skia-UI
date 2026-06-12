@@ -1,0 +1,42 @@
+// Feature 113 (T006) — FSI exercise of the drafted memoization seam shape.
+// Reaches the internal RetainedRender.memoize via InternalsVisibleTo (the Controls.Tests assembly is the
+// reachable surface; this transcript records the same shape interactively against the seam contract).
+
+> open FS.Skia.UI.Scene
+> open FS.Skia.UI.Controls
+> let scene (tag: float) : Scene list = [ Scene.rectangle (tag, 0.0, 10.0, 10.0) Colors.black ];;
+val scene : tag:float -> Scene list
+
+// A thunk instrumented to record invocation, so a Hit can be proven to NOT run it.
+> let mutable calls = 0;;
+> let thunk (t: float) = fun () -> calls <- calls + 1; scene t;;
+
+// (1) cold first call — a Miss: runs the thunk, stores the entry.
+> let s0, c0, o0 = RetainedRender.memoize "grid" (box "a") (thunk 1.0) Map.empty;;
+val o0 : MemoOutcome = Miss
+> calls;;
+val it : int = 1
+
+// (2) same dependency — a Hit: returns the SAME subtree instance, does NOT run the thunk.
+> let s1, c1, o1 = RetainedRender.memoize "grid" (box "a") (thunk 2.0) c0;;
+val o1 : MemoOutcome = Hit
+> calls;;            // still 1 — the thunk did not run
+val it : int = 1
+> System.Object.ReferenceEquals(s0, s1);;
+val it : bool = true
+
+// (3) changed dependency — a Miss: re-runs the thunk, stores a fresh subtree.
+> let s2, c2, o2 = RetainedRender.memoize "grid" (box "b") (thunk 3.0) c1;;
+val o2 : MemoOutcome = Miss
+> calls;;
+val it : int = 2
+
+// (4) structural equality, not object identity: two equal-but-distinct boxed deps Hit.
+> let depA = box ("x", 1) in let depB = box ("x", 1) in
+-   let _, c3, _ = RetainedRender.memoize "g2" depA (thunk 4.0) Map.empty in
+-   let _, _, o3 = RetainedRender.memoize "g2" depB (thunk 5.0) c3 in o3;;
+val it : MemoOutcome = Hit
+
+// Conclusion: the seam reuses iff the boxed dependency compares structurally equal, returning the stored
+// instance without recomputing (Hit); any unequal/cold dependency recomputes and stores (Miss). This is
+// the shape Feature113MemoSeamTests asserts, and the shape the DataGrid projection site is wired against.

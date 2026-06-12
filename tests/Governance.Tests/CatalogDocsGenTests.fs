@@ -221,7 +221,9 @@ let catalogDocsCurrencyTests =
             // resolution deferred to the strict site build, so AvailableReferenceSlugs = None).
             let controlsDir = Path.Combine(repositoryRoot, "docs", "controls")
             let read rel = let p = Path.Combine(controlsDir, rel) in if File.Exists p then File.ReadAllText p else ""
-            let excluded = set [ "catalog"; "spec-kit-workflow" ]
+            // Non-control guidance pages under docs/controls/ (mirrors Engine/Update.fs `excluded`):
+            // the catalog index, the spec-kit workflow guide, and (feature 113) the stable-props page.
+            let excluded = set [ "catalog"; "spec-kit-workflow"; "stable-props" ]
             let detailPages =
                 Directory.GetFiles(controlsDir, "*.md")
                 |> Array.map (fun p -> Path.GetFileNameWithoutExtension p |> Option.ofObj |> Option.defaultValue "", p)

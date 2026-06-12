@@ -125,6 +125,7 @@ type ControlDiagnosticCode =
     | UnsupportedEnvironment
     | KeyCollision
     | StaleGeneratedReference
+    | UnstableReuseInput
 
 type AccessibilityRole =
     | StaticText

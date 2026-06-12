@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 775
-xml-summary-count: 672
+symbol-count: 778
+xml-summary-count: 688
 source-fsi-paths:
 - src/Controls/Accessibility.fsi
 - src/Controls/Attributes.fsi
@@ -391,6 +391,12 @@ module internal ControlInternals =
     /// Exposed (internal) so the migration parity tests assert the Button/CheckBox paint is
     /// structurally-`Scene`-equal to the frozen pre-refactor procedural geometry (SC-003/SC-007).
     val faithfulContent: theme: Theme -> box: FS.Skia.UI.Scene.Rect -> control: Control<'msg> -> FS.Skia.UI.Scene.Scene list
+
+    /// Feature 113 (Phase 5) — the resolved cell data the `data-grid` row/column projection
+    /// (`gridGeom`) reads: the control's `items` attribute, or the sample fallback `faithfulContent`
+    /// substitutes when none is authored. The projection's sole control-borne input; the memoization
+    /// seam folds it with the theme + evaluated box into the deterministic dependency value.
+    val dataGridCells: control: Control<'msg> -> string list
 
     /// Feature 093 (E3) — the ordered attached style classes carried by a control's `styleClasses`
     /// attribute (last-writer convention; absent ≡ `[]`). The resolver folds these in list order.
@@ -1129,6 +1135,17 @@ module Diagnostics =
     /// Reports that `scopeName` owned by `owner` cannot be expanded as requested.
     val unsupportedScopeExpansion: scopeName: string -> owner: string -> ControlDiagnostic
 
+    /// Feature 113 (Phase 5) — the stability-diagnostic report (report-only, NOT an enforced gate).
+    /// Given TWO builds of the SAME logical control (sub)tree (`first`/`second` — the same model run
+    /// through `View` twice), walk them in parallel and return one `UnstableReuseInput` finding per
+    /// attribute/event that compared UNEQUAL despite no semantic change: a rebuilt `UntypedValue`, a
+    /// per-frame event closure (reference-fresh each build), or an unstable key. Each finding names the
+    /// control (`ControlId` + `ControlKind`) and the offending attribute/event name. An empty list ⇒
+    /// the tree's inputs are stable across builds (the case memoization can exploit). Stable structural
+    /// values (`TextValue`, `StringListValue`, …) and reference-shared event handlers do not flag. Pure,
+    /// total, deterministic; never compares a function with `=` (uses reference identity for closures).
+    val stabilityReport: first: Control<'msg> -> second: Control<'msg> -> ControlDiagnostic list
+
 namespace FS.Skia.UI.Controls
 
 open FS.Skia.UI.Scene
@@ -1397,7 +1414,7 @@ type ControlDiagnosticSeverity =
 
 /// Closed classification (`ControlDiagnosticCode`) of an authoring or runtime defect,
 /// from `MissingRequiredAttribute` and `MissingStableKey` to `ContrastFailure`,
-/// `KeyCollision`, and `StaleGeneratedReference`.
+/// `KeyCollision`, `StaleGeneratedReference`, and the feature-113 `UnstableReuseInput`.
 type ControlDiagnosticCode =
     | MissingRequiredAttribute
     | DuplicateAttribute
@@ -1410,6 +1427,10 @@ type ControlDiagnosticCode =
     | UnsupportedEnvironment
     | KeyCollision
     | StaleGeneratedReference
+    /// Feature 113 (Phase 5): an always-new input (a rebuilt `UntypedValue`, a per-frame event
+    /// closure, an unstable key) that compared unequal across two builds of the same model and so
+    /// defeats memoized subtree reuse. Reported by `Diagnostics.stabilityReport`; advisory only.
+    | UnstableReuseInput
 
 /// Accessibility/semantic role of a control (`AccessibilityRole`), e.g. `Button`,
 /// `Slider`, `Grid`, or `Chart`; drives keyboard routing and assistive-tech naming,

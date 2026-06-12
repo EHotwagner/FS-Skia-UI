@@ -502,7 +502,10 @@ PASS: Controls catalog tests verified supported row count, metadata, examples, t
         let stem (p: string) =
             Path.GetFileNameWithoutExtension p |> Option.ofObj |> Option.defaultValue ""
 
-        let excluded = Set.ofList [ "catalog"; "spec-kit-workflow" ]
+        // Non-control guidance pages that live under docs/controls/ but are NOT per-control detail
+        // pages: the catalog index, the spec-kit workflow guide, and (feature 113) the author-facing
+        // stable-props memoization guidance page.
+        let excluded = Set.ofList [ "catalog"; "spec-kit-workflow"; "stable-props" ]
 
         let detailPages : CatalogDocsGen.DetailPage list =
             (if Directory.Exists controlsDir then Directory.GetFiles(controlsDir, "*.md") |> List.ofArray else [])

@@ -41,11 +41,29 @@ type internal RetainedUiState =
     { Animation: AnimationClock option
       Text: TextInputModel option }
 
+// Feature 113 (Phase 5): the control-internal memoization seam types. `Dependency` is boxed so a
+// single uniform cache holds heterogeneous sites; reuse is decided by F# structural `=`, never object
+// identity (FR-005). `Subtree` is the stored `Scene list` (a reference type, so a Hit returns the same
+// instance). Specialized to `Scene list` this rung (the DataGrid projection is the sole site).
+type internal MemoOutcome =
+    | Hit
+    | Miss
+
+type internal MemoEntry =
+    { Dependency: obj
+      Subtree: FS.Skia.UI.Scene.Scene list }
+
+type internal MemoCache = Map<ControlId, MemoEntry>
+
 type internal RetainedRender<'msg> =
     { Root: RetainedNode<'msg>
       NextId: uint64
       StateByIdentity: Map<RetainedId, RetainedUiState>
       Theme: Theme
+      // Feature 113 (Phase 5): the per-identity memo store carried frame-to-frame (FR-003/FR-004).
+      Memo: MemoCache
+      // Feature 113 (Phase 5): the always-miss switch (FR-008); `true` on the live path.
+      MemoEnabled: bool
       // Feature 097 (R2): previous frame's full LayoutResult — the measure/bounds cache (FR-002).
       Layout: FS.Skia.UI.Layout.LayoutResult }
 
@@ -55,7 +73,10 @@ type internal WorkReductionRecord =
       ChangedSubtreeBound: int
       ShiftedNodeCount: int
       // Feature 097 (R2, FR-006): nodes actually re-measured this frame (post-propagation dirty set).
-      RemeasuredNodeCount: int }
+      RemeasuredNodeCount: int
+      // Feature 113 (Phase 5, FR-009/FR-010): memoizable-control reuse outcomes this frame.
+      MemoHits: int
+      MemoMisses: int }
 
 type internal RetainedRenderStep<'msg> =
     { Retained: RetainedRender<'msg>
@@ -71,6 +92,47 @@ type internal RetainedInit<'msg> =
 module internal RetainedRender =
 
     let childPath (path: string) (index: int) = path + "." + string index
+
+    // ---------------------------------------------------------------------------------------------
+    // Feature 113 (Phase 5) — the control-internal memoization seam. Pure + total + deterministic:
+    // reuse is decided ONLY by F# structural equality on the boxed dependency value (never object
+    // identity, never a clock). A Hit returns the stored subtree instance without running `compute`.
+    // ---------------------------------------------------------------------------------------------
+
+    let memoize
+        (id: ControlId)
+        (dependency: obj)
+        (compute: unit -> Scene list)
+        (cache: MemoCache)
+        : Scene list * MemoCache * MemoOutcome =
+        match Map.tryFind id cache with
+        // Hit: an entry exists AND its dependency compares EQUAL (structural `=`); reuse the stored
+        // subtree instance WITHOUT running `compute` (contract C1/C3).
+        | Some entry when entry.Dependency = dependency -> entry.Subtree, cache, Hit
+        // Miss: no entry, or an unequal/unknown dependency — run `compute`, store keyed by id + dep
+        // (contract C2/C3). Never reuses across an unequal dependency (FR-001/FR-005).
+        | _ ->
+            let result = compute ()
+            result, Map.add id { Dependency = dependency; Subtree = result } cache, Miss
+
+    /// Feature 113 (Phase 5): the sole memoized site this rung — the DataGrid row/column projection
+    /// (`Control.fs` `gridGeom`), reached as a `data-grid` LEAF node's own paint. A node is memoizable
+    /// iff it is a childless `data-grid`. The dependency captures every input that projection reads —
+    /// the theme, the evaluated box, and the resolved cells (`ControlInternals.dataGridCells`) — so an
+    /// equal dependency guarantees a byte-identical projection (FR-006) and any real input change shifts
+    /// it to a Miss (FR-007). Boxed to `obj` at the seam boundary; compared by structural `=`.
+    let private isMemoizable (c: Control<'msg>) =
+        c.Kind = "data-grid" && List.isEmpty c.Children
+
+    let private memoDependency
+        (theme: Theme)
+        (boundsById: Map<string, FS.Skia.UI.Layout.LayoutBounds>)
+        (path: string)
+        (c: Control<'msg>)
+        : obj =
+        // A tuple is a reference type, so the upcast yields a non-null `obj` (satisfies nullness); it is
+        // compared only by structural `=` in `memoize`, never by reference.
+        (theme, ControlInternals.nodeBox boundsById path c, ControlInternals.dataGridCells c) :> obj
 
     // ---------------------------------------------------------------------------------------------
     // Feature 099 (R4) — the per-identity animation clock core. Pure + total + deterministic: every
@@ -236,8 +298,23 @@ module internal RetainedRender =
             nextId <- nextId + 1UL
             id
 
+        // Feature 113 (Phase 5): seed the memo cache on the first frame. Every memoizable node is a
+        // cold miss here (an empty cache), so the projection runs once and is stored; subsequent
+        // `step` frames consult it. The first frame reports no metrics (init carries no work record).
+        let mutable memo: MemoCache = Map.empty
+
+        let paintOwn (path: string) (nc: Control<'msg>) : Scene list =
+            if isMemoizable nc then
+                let dep = memoDependency theme boundsById path nc
+                let id = nc.Key |> Option.defaultValue path
+                let subtree, memo', _ = memoize id dep (fun () -> ControlInternals.paintNode theme boundsById path nc) memo
+                memo <- memo'
+                subtree
+            else
+                ControlInternals.paintNode theme boundsById path nc
+
         let rec build (path: string) (nc: Control<'msg>) : RetainedNode<'msg> =
-            let own = ControlInternals.paintNode theme boundsById path nc
+            let own = paintOwn path nc
             let children = nc.Children |> List.mapi (fun i child -> build (childPath path i) child)
             let subtree = own @ (children |> List.collect (fun c -> c.Fragment.SubtreeScene))
 
@@ -268,6 +345,8 @@ module internal RetainedRender =
               NextId = nextId
               StateByIdentity = Map.empty
               Theme = theme
+              Memo = memo
+              MemoEnabled = true
               Layout = layoutResult }
           Render = render
           Diagnostics = firstFrameCollisions control }
@@ -378,15 +457,40 @@ module internal RetainedRender =
         // subtree out (a shifted `Keep`) or a theme change forced a repaint — counted distinctly
         // from genuinely-changed work so `RecomputedNodeCount = ChangedSubtreeBound + ShiftedNodeCount`.
         let mutable shifted = 0
+        // Feature 113 (Phase 5): the memo cache carried from `prev`, advanced as memoizable nodes are
+        // (re)painted this frame, plus the frame's hit/miss tally (FR-009/FR-010).
+        let mutable memo = prev.Memo
+        let mutable memoHits = 0
+        let mutable memoMisses = 0
 
         let mint () =
             let id = RetainedId nextId
             nextId <- nextId + 1UL
             id
 
+        // Feature 113 (Phase 5): paint a node's OWN scene, routing the sole memoized site (the DataGrid
+        // projection) through the memo seam. A HIT reuses the stored projection (its theme/box/cells
+        // dependency was unchanged) without recomputing; a MISS recomputes and stores it. With
+        // `MemoEnabled = false` (the always-miss oracle, FR-008) every node paints directly — nothing is
+        // reused — so the rendered scene is byte-identical to the seam-active build (memo-on ≡ memo-off).
+        let paintOwn (path: string) (nc: Control<'msg>) : FS.Skia.UI.Scene.Scene list =
+            if prev.MemoEnabled && isMemoizable nc then
+                let dep = memoDependency theme boundsById path nc
+                let id = nc.Key |> Option.defaultValue path
+                let subtree, memo', outcome = memoize id dep (fun () -> ControlInternals.paintNode theme boundsById path nc) memo
+                memo <- memo'
+
+                match outcome with
+                | Hit -> memoHits <- memoHits + 1
+                | Miss -> memoMisses <- memoMisses + 1
+
+                subtree
+            else
+                ControlInternals.paintNode theme boundsById path nc
+
         let paintFresh (path: string) (nc: Control<'msg>) : FS.Skia.UI.Scene.Scene list =
             recomputed <- recomputed + 1
-            ControlInternals.paintNode theme boundsById path nc
+            paintOwn path nc
 
         // Build a brand-new subtree (Replace / ChildInsert / fallback): mint fresh ids, paint
         // every node. Used where there is no matched prev node — so no false identity is retained.
@@ -583,6 +687,8 @@ module internal RetainedRender =
               NextId = nextId
               StateByIdentity = stateById
               Theme = theme
+              Memo = memo
+              MemoEnabled = prev.MemoEnabled
               Layout = layoutResult }
           Render = render
           Diagnostics = result.Diagnostics
@@ -591,7 +697,9 @@ module internal RetainedRender =
               RecomputedNodeCount = recomputed
               ChangedSubtreeBound = changedBound
               ShiftedNodeCount = shifted
-              RemeasuredNodeCount = remeasured } }
+              RemeasuredNodeCount = remeasured
+              MemoHits = memoHits
+              MemoMisses = memoMisses } }
 
     let retainedHitTest (x: float) (y: float) (retained: RetainedRender<'msg>) : RetainedId option =
         // The deepest node whose cached box contains the point. Each node — including unkeyed

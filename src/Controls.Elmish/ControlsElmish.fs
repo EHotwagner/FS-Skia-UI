@@ -48,6 +48,8 @@ type FrameMetrics =
       ViewCalled: bool
       FullRenderCount: int
       RemeasuredNodeCount: int
+      MemoHitCount: int
+      MemoMissCount: int
       PointerSamplesReceived: int
       PointerMovesProcessed: int
       FullRenderFallbackCount: int
@@ -991,6 +993,9 @@ module ControlsElmish =
                   ViewCalled = fullRenderFallbackCount > 0
                   FullRenderCount = fullRenderFallbackCount
                   RemeasuredNodeCount = lastWorkReduction.Value |> Option.map (fun w -> w.RemeasuredNodeCount) |> Option.defaultValue 0
+                  // Feature 113 (Phase 5): the last retained-step's memo tally (live `OnFrameMetrics` sink).
+                  MemoHitCount = lastWorkReduction.Value |> Option.map (fun w -> w.MemoHits) |> Option.defaultValue 0
+                  MemoMissCount = lastWorkReduction.Value |> Option.map (fun w -> w.MemoMisses) |> Option.defaultValue 0
                   PointerSamplesReceived = samples
                   PointerMovesProcessed = movesProcessed
                   FullRenderFallbackCount = fullRenderFallbackCount
@@ -1243,6 +1248,10 @@ module ControlsElmish =
             // threaded retained value, so a routed interaction reads `EventBindings`/`BoundIds` without a
             // fresh render. Kept in lock-step with `retained` by `renderStep`/`ensureRetained`.
             let mutable lastRender: ControlRenderResult<'msg> option = None
+            // Feature 113 (Phase 5): the last retained-step's memo tally (hits, misses), captured by
+            // `renderStep`/`repaintCached` so each per-frame `FrameMetrics` reports it. The first frame
+            // seeds via `init` (no work record), so it stays (0, 0) until a `step` runs.
+            let mutable lastMemo: int * int = 0, 0
 
             // Render the retained step for the current model, returning the frame's
             // RemeasuredNodeCount (the first frame seeds via `init`, which has no work record -> 0).
@@ -1254,11 +1263,13 @@ module ControlsElmish =
                     let r0 = RetainedRender.init host.Theme size next
                     retained <- Some r0.Retained
                     lastRender <- Some r0.Render
+                    lastMemo <- 0, 0
                     0
                 | Some prev ->
                     let s = RetainedRender.step host.Theme size prev next
                     retained <- Some s.Retained
                     lastRender <- Some s.Render
+                    lastMemo <- s.WorkReduction.MemoHits, s.WorkReduction.MemoMisses
                     s.WorkReduction.RemeasuredNodeCount
 
             // Feature 111 (FR-003/FR-004): re-sample the overlay for an animation-only tick WITHOUT
@@ -1273,6 +1284,7 @@ module ControlsElmish =
                     let s = RetainedRender.step host.Theme size prev prev.Root.Control
                     retained <- Some s.Retained
                     lastRender <- Some s.Render
+                    lastMemo <- s.WorkReduction.MemoHits, s.WorkReduction.MemoMisses
                     s.WorkReduction.RemeasuredNodeCount
                 | None -> 0
 
@@ -1322,6 +1334,8 @@ module ControlsElmish =
                   ViewCalled = false
                   FullRenderCount = 0
                   RemeasuredNodeCount = 0
+                  MemoHitCount = 0
+                  MemoMissCount = 0
                   PointerSamplesReceived = 0
                   PointerMovesProcessed = 0
                   FullRenderFallbackCount = 0
@@ -1333,6 +1347,11 @@ module ControlsElmish =
 
             toFrames script
             |> List.map (fun frame ->
+                // Feature 113 (Phase 5): clear the per-frame memo tally before processing this frame, so a
+                // frame that runs no render reports 0/0 (the previous frame's render must not bleed
+                // through). `renderStep`/`repaintCached` overwrite it when they actually run.
+                lastMemo <- 0, 0
+
                 match frame with
                 | FrameInput.Pointer _ :: _ when frame |> List.forall (function
                                                                        | FrameInput.Pointer p -> isMoveInteraction p
@@ -1359,6 +1378,8 @@ module ControlsElmish =
                         ViewCalled = fullRenderCount > 0
                         FullRenderCount = fullRenderCount
                         RemeasuredNodeCount = remeasured
+                        MemoHitCount = fst lastMemo
+                        MemoMissCount = snd lastMemo
                         PointerSamplesReceived = k
                         PointerMovesProcessed = 1
                         FullRenderFallbackCount = fallbacks
@@ -1406,6 +1427,8 @@ module ControlsElmish =
                         ViewCalled = viewRan
                         FullRenderCount = (if viewRan then 1 else 0)
                         RemeasuredNodeCount = remeasured
+                        MemoHitCount = fst lastMemo
+                        MemoMissCount = snd lastMemo
                         FrameCause = FrameCause.Tick
                         DiffRan = viewRan
                         LayoutRan = remeasured > 0
@@ -1428,6 +1451,8 @@ module ControlsElmish =
                         ViewCalled = fullRenderCount > 0
                         FullRenderCount = fullRenderCount
                         RemeasuredNodeCount = remeasured
+                        MemoHitCount = fst lastMemo
+                        MemoMissCount = snd lastMemo
                         FrameCause = FrameCause.Key
                         DiffRan = hasMsgs
                         LayoutRan = remeasured > 0
@@ -1449,6 +1474,8 @@ module ControlsElmish =
                         ViewCalled = fullRenderCount > 0
                         FullRenderCount = fullRenderCount
                         RemeasuredNodeCount = remeasured
+                        MemoHitCount = fst lastMemo
+                        MemoMissCount = snd lastMemo
                         PointerSamplesReceived = 1
                         FullRenderFallbackCount = fallbacks
                         FrameCause = FrameCause.PointerDiscrete

@@ -72,6 +72,12 @@ module internal ControlInternals =
     /// structurally-`Scene`-equal to the frozen pre-refactor procedural geometry (SC-003/SC-007).
     val faithfulContent: theme: Theme -> box: FS.Skia.UI.Scene.Rect -> control: Control<'msg> -> FS.Skia.UI.Scene.Scene list
 
+    /// Feature 113 (Phase 5) — the resolved cell data the `data-grid` row/column projection
+    /// (`gridGeom`) reads: the control's `items` attribute, or the sample fallback `faithfulContent`
+    /// substitutes when none is authored. The projection's sole control-borne input; the memoization
+    /// seam folds it with the theme + evaluated box into the deterministic dependency value.
+    val dataGridCells: control: Control<'msg> -> string list
+
     /// Feature 093 (E3) — the ordered attached style classes carried by a control's `styleClasses`
     /// attribute (last-writer convention; absent ≡ `[]`). The resolver folds these in list order.
     val styleClassesOf: attrs: Attr<'msg> list -> StyleClass list

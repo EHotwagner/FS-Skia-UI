@@ -58,6 +58,29 @@ type internal AnimationClock =
       Target: VisualState
       From: FS.Skia.UI.Scene.Scene list }
 
+/// Feature 113 (Phase 5) — what a single `memoize` call resolved to: a `Hit` reused the
+/// previously-lowered subtree for the identity (the dependency compared equal, the thunk did NOT
+/// run); a `Miss` recomputed it (a changed or cold dependency). Aggregated per frame into the two
+/// `FrameMetrics` memo counts.
+type internal MemoOutcome =
+    | Hit
+    | Miss
+
+/// Feature 113 (Phase 5) — one cached memoized projection for a control identity. `Dependency` is the
+/// deterministic dependency value the site supplied last frame, BOXED to `obj` so a single uniform
+/// cache holds entries from heterogeneous sites; reuse is decided by `=` on the boxed value (F#
+/// STRUCTURAL equality, never object identity — FR-005). `Subtree` is the previously-lowered `Scene
+/// list` fragment, a reference type, so a `Hit` returns the SAME instance stored last frame (FR-004).
+/// Specialized to `Scene list` this rung because the DataGrid row/column projection is the sole
+/// memoized site; widening the stored subtree type travels with the deferred `Style.resolve` site.
+type internal MemoEntry =
+    { Dependency: obj
+      Subtree: FS.Skia.UI.Scene.Scene list }
+
+/// Feature 113 (Phase 5) — the per-frame memo store, keyed by the control's stable `ControlId`.
+/// Carried frame-to-frame in the retained structure; an absent key is a cold miss.
+type internal MemoCache = Map<ControlId, MemoEntry>
+
 /// Per-control UI state keyed by the STABLE `RetainedId` rather than the path-derived `ControlId`,
 /// so it survives a positional shift (FR-003). `Animation` is the per-control clock proving
 /// FR-003 survival; under feature 099 (R4) it is the live `AnimationClock` advanced by the host
@@ -78,6 +101,14 @@ type internal RetainedRender<'msg> =
       NextId: uint64
       StateByIdentity: Map<RetainedId, RetainedUiState>
       Theme: Theme
+      /// Feature 113 (Phase 5): the per-identity memoization store carried frame-to-frame — the
+      /// DataGrid row/column projection's reuse cache (keyed by stable `ControlId`). Seeded by `init`
+      /// (all cold misses); each `step` consults it for a memoizable node and advances it.
+      Memo: MemoCache
+      /// Feature 113 (Phase 5): the always-miss switch (FR-008). `true` on the live path (the seam is
+      /// active); a parity test flips it `false` to force every `memoize` call down the Miss path
+      /// (nothing reused), proving the rendered scene is byte-identical with the seam disabled.
+      MemoEnabled: bool
       /// Feature 097 (R2): the previous frame's full `LayoutResult` — the per-frame measure/bounds
       /// cache (FR-002). `step` threads it into `Layout.evaluateIncremental` so an unchanged subtree's
       /// bounds survive across frames and are reused without re-measuring. Seeded by `init` with a full
@@ -103,7 +134,14 @@ type internal WorkReductionRecord =
       /// set `Layout.evaluateIncremental` reports in `Invalidated`). For a localized update this is
       /// strictly below `BaselineNodeCount`; for a genuine whole-tree relayout it equals it; for an
       /// empty patch it is 0. Measures partial MEASURE work, distinct from partial PAINT above.
-      RemeasuredNodeCount: int }
+      RemeasuredNodeCount: int
+      /// Feature 113 (Phase 5, FR-009/FR-010): memoizable-control reuse outcomes while building this
+      /// frame — `MemoHits` reused a stored subtree (its dependency was unchanged), `MemoMisses`
+      /// recomputed one (a changed or cold dependency). Summed over every memoized site evaluated
+      /// this frame; both 0 on a frame that evaluates no memoizable control. Surfaced as the public
+      /// `FrameMetrics.MemoHitCount` / `MemoMissCount`.
+      MemoHits: int
+      MemoMisses: int }
 
 /// The result of one wired frame: the next retained structure, the render result (byte-identical
 /// to a full rebuild of `next`), the diagnostics surfaced from the diff (e.g. `KeyCollision`), and
@@ -124,6 +162,21 @@ type internal RetainedInit<'msg> =
       Diagnostics: ControlDiagnostic list }
 
 module internal RetainedRender =
+
+    /// Feature 113 (Phase 5) — the control-internal memoization seam (contract C1–C4). Given a stable
+    /// `ControlId`, a deterministic `dependency` value (boxed; compared by F# structural `=`, never
+    /// object identity), a `compute` thunk that lowers the subtree, and the prior `cache`: a HIT (an
+    /// entry exists for `id` AND its dependency compares EQUAL) returns the stored `Scene list` WITHOUT
+    /// running `compute`; a MISS (no entry, or an unequal dependency) runs `compute` and stores the
+    /// result keyed by `id` + `dependency`. Returns the resolved subtree, the advanced cache, and the
+    /// `MemoOutcome`. Never reuses across an unequal/unknown dependency (FR-001/FR-005). Pure, total,
+    /// deterministic.
+    val internal memoize:
+        id: ControlId ->
+        dependency: obj ->
+        compute: (unit -> FS.Skia.UI.Scene.Scene list) ->
+        cache: MemoCache ->
+            FS.Skia.UI.Scene.Scene list * MemoCache * MemoOutcome
 
     /// Feature 099 (R4): the single pinned framework default transition — exactly 150 ms, `EaseOut`,
     /// on the opacity channel — applied when a tween is started/retargeted. A fixed constant (not a

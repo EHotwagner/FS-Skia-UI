@@ -1094,6 +1094,14 @@ module internal ControlInternals =
             iconGeom theme box name
         | other -> emptyState theme box other
 
+    /// Feature 113 (Phase 5) — the resolved cell/header data the `data-grid` row/column projection
+    /// (`gridGeom`) consumes: the control's `items` attribute, or the same sample fallback
+    /// `faithfulContent` substitutes when none is authored. This is the projection's sole control-borne
+    /// input; the memoization seam (`RetainedRender.memoize`) folds it with the theme + evaluated box
+    /// into the deterministic dependency value (an equal value ⇒ a byte-identical projection, FR-006).
+    let dataGridCells (control: Control<'msg>) : string list =
+        itemsOr [ "Name"; "Qty"; "Widget"; "12"; "Gadget"; "7" ] (stringListOf "items" control)
+
     let renderNode (theme: Theme) y (control: Control<'msg>) =
         let width = nodeWidth control
         let height = nodeHeight control

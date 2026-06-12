@@ -239,6 +239,8 @@ module internal ControlInternals =
 
     val faithfulContent: theme: Theme -> box: FS.Skia.UI.Scene.Rect -> control: Control<'msg> -> FS.Skia.UI.Scene.Scene list
 
+    val dataGridCells: control: Control<'msg> -> string list
+
     val styleClassesOf: attrs: Attr<'msg> list -> StyleClass list
 
     val visualStateOf: attrs: Attr<'msg> list -> VisualState
@@ -801,6 +803,8 @@ module Diagnostics =
 
     val unsupportedScopeExpansion: scopeName: string -> owner: string -> ControlDiagnostic
 
+    val stabilityReport: first: Control<'msg> -> second: Control<'msg> -> ControlDiagnostic list
+
 namespace FS.Skia.UI.Controls
 
 type FocusStop =
@@ -1006,6 +1010,16 @@ type internal AnimationClock =
       Target: VisualState
       From: FS.Skia.UI.Scene.Scene list }
 
+type internal MemoOutcome =
+    | Hit
+    | Miss
+
+type internal MemoEntry =
+    { Dependency: obj
+      Subtree: FS.Skia.UI.Scene.Scene list }
+
+type internal MemoCache = Map<ControlId, MemoEntry>
+
 type internal RetainedUiState =
     { Animation: AnimationClock option
       Text: TextInputModel option }
@@ -1016,6 +1030,10 @@ type internal RetainedRender<'msg> =
       StateByIdentity: Map<RetainedId, RetainedUiState>
       Theme: Theme
 
+      Memo: MemoCache
+
+      MemoEnabled: bool
+
       Layout: FS.Skia.UI.Layout.LayoutResult }
 
 type internal WorkReductionRecord =
@@ -1024,7 +1042,10 @@ type internal WorkReductionRecord =
       ChangedSubtreeBound: int
       ShiftedNodeCount: int
 
-      RemeasuredNodeCount: int }
+      RemeasuredNodeCount: int
+
+      MemoHits: int
+      MemoMisses: int }
 
 type internal RetainedRenderStep<'msg> =
     { Retained: RetainedRender<'msg>
@@ -1038,6 +1059,13 @@ type internal RetainedInit<'msg> =
       Diagnostics: ControlDiagnostic list }
 
 module internal RetainedRender =
+
+    val internal memoize:
+        id: ControlId ->
+        dependency: obj ->
+        compute: (unit -> FS.Skia.UI.Scene.Scene list) ->
+        cache: MemoCache ->
+            FS.Skia.UI.Scene.Scene list * MemoCache * MemoOutcome
 
     val internal defaultTransitionDuration: System.TimeSpan
 
@@ -1344,6 +1372,8 @@ type ControlDiagnosticCode =
     | UnsupportedEnvironment
     | KeyCollision
     | StaleGeneratedReference
+
+    | UnstableReuseInput
 
 type AccessibilityRole =
     | StaticText

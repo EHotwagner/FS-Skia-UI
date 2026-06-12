@@ -151,12 +151,17 @@ let private corpus: Scenario list =
 // ---- golden serialization (counts + booleans only; FrameDuration / allocation EXCLUDED) --------
 
 let private serializeFrame (f: FrameMetrics) : string =
+    // Feature 113 (Phase 5): the corpus golden now carries the two additive memo counts
+    // (MemoHitCount/MemoMissCount); all prior fields are unchanged (memoization does not alter
+    // layout/measure/diff). Both are 0 for scenarios that evaluate no memoizable control.
     sprintf
-        "ProductModelChanged=%b ViewCalled=%b FullRenderCount=%d RemeasuredNodeCount=%d PointerSamplesReceived=%d PointerMovesProcessed=%d FullRenderFallbackCount=%d FrameCause=%A DiffRan=%b LayoutRan=%b PaintRan=%b"
+        "ProductModelChanged=%b ViewCalled=%b FullRenderCount=%d RemeasuredNodeCount=%d MemoHitCount=%d MemoMissCount=%d PointerSamplesReceived=%d PointerMovesProcessed=%d FullRenderFallbackCount=%d FrameCause=%A DiffRan=%b LayoutRan=%b PaintRan=%b"
         f.ProductModelChanged
         f.ViewCalled
         f.FullRenderCount
         f.RemeasuredNodeCount
+        f.MemoHitCount
+        f.MemoMissCount
         f.PointerSamplesReceived
         f.PointerMovesProcessed
         f.FullRenderFallbackCount

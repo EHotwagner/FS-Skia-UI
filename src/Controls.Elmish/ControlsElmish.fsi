@@ -85,6 +85,17 @@ type FrameMetrics =
       /// Nodes re-measured this frame (from `WorkReductionRecord.RemeasuredNodeCount`); 0 on an idle
       /// frame, bounded (overlay-assembly, not whole-tree) on an animation-only frame.
       RemeasuredNodeCount: int
+      /// Feature 113 (Phase 5, FR-009/FR-010): memoized-projection HITS while building this frame — a
+      /// memoizable control (the DataGrid row/column projection) whose declared dependency was
+      /// unchanged and whose previously-lowered subtree was reused without recomputing. `0` on an idle
+      /// frame or any frame that evaluates no memoizable control. Deterministic, golden-asserted via
+      /// `Perf.runScript`.
+      MemoHitCount: int
+      /// Feature 113 (Phase 5, FR-009/FR-010): memoized-projection MISSES while building this frame — a
+      /// memoizable control whose dependency changed, or a cold first evaluation, so the projection was
+      /// recomputed and stored. `0` on an idle frame or any frame that evaluates no memoizable control.
+      /// Deterministic, golden-asserted via `Perf.runScript`.
+      MemoMissCount: int
       /// Raw pointer samples that arrived this frame, including deferred/queued moves carried from a
       /// prior boundary (K before coalescing) (FR-008).
       PointerSamplesReceived: int

@@ -140,7 +140,7 @@ type ControlDiagnosticSeverity =
 
 /// Closed classification (`ControlDiagnosticCode`) of an authoring or runtime defect,
 /// from `MissingRequiredAttribute` and `MissingStableKey` to `ContrastFailure`,
-/// `KeyCollision`, and `StaleGeneratedReference`.
+/// `KeyCollision`, `StaleGeneratedReference`, and the feature-113 `UnstableReuseInput`.
 type ControlDiagnosticCode =
     | MissingRequiredAttribute
     | DuplicateAttribute
@@ -153,6 +153,10 @@ type ControlDiagnosticCode =
     | UnsupportedEnvironment
     | KeyCollision
     | StaleGeneratedReference
+    /// Feature 113 (Phase 5): an always-new input (a rebuilt `UntypedValue`, a per-frame event
+    /// closure, an unstable key) that compared unequal across two builds of the same model and so
+    /// defeats memoized subtree reuse. Reported by `Diagnostics.stabilityReport`; advisory only.
+    | UnstableReuseInput
 
 /// Accessibility/semantic role of a control (`AccessibilityRole`), e.g. `Button`,
 /// `Slider`, `Grid`, or `Chart`; drives keyboard routing and assistive-tech naming,
