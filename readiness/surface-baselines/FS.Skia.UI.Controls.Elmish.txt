@@ -11,6 +11,8 @@ FS.Skia.UI.Controls.Elmish.AdapterProgram`2
 FS.Skia.UI.Controls.Elmish.AdapterSubscription`1
 FS.Skia.UI.Controls.Elmish.ControlsElmish
 FS.Skia.UI.Controls.Elmish.ControlsElmish+Perf
+FS.Skia.UI.Controls.Elmish.FrameCause
+FS.Skia.UI.Controls.Elmish.FrameCause+Tags
 FS.Skia.UI.Controls.Elmish.FrameInput`1
 FS.Skia.UI.Controls.Elmish.FrameInput`1+Key
 FS.Skia.UI.Controls.Elmish.FrameInput`1+Pointer

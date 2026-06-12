@@ -36,24 +36,45 @@ type AdapterProgram<'model, 'msg> =
       View: 'model -> Control<'msg>
       Subscriptions: 'model -> AdapterSubscription<'msg> list }
 
-/// Feature 108/109/110 (US1, FR-001/002): the per-frame structured work/timing signal the host loop
-/// and the deterministic `Perf.runScript` driver both produce. The seven count/bool fields are the
+[<RequireQualifiedAccess>]
+/// Feature 111 (US1, FR-001): the closed TRIGGER taxonomy naming WHY a frame ran. The scheduler
+/// classifies each produced frame from the input that caused it and runs only the phases that cause
+/// requires (`FrameMetrics.ViewCalled`/`DiffRan`/`LayoutRan`/`PaintRan`). `RequireQualifiedAccess` —
+/// the case names `Key`/`Tick`/`Idle` would otherwise shadow a consumer's own `Msg` cases when it
+/// `open`s this namespace, so they must be qualified (`FrameCause.Tick` etc.), exactly as `FrameInput`
+/// requires. `Resize`/`Theme` are live-scheduler causes (a window resize / theme switch between
+/// paints); the deterministic `Perf.runScript` corpus produces only `Idle`/`PointerMove`/
+/// `PointerDiscrete`/`Key`/`Tick` (a model-driven theme change is a `Key` frame with the theme changed
+/// as an effect, not a `Theme` cause).
+type FrameCause =
+    | Idle
+    | PointerMove
+    | PointerDiscrete
+    | Key
+    | Tick
+    | Resize
+    | Theme
+
+/// Feature 108/109/110/111 (US1, FR-001/002): the per-frame structured work/timing signal the host
+/// loop and the deterministic `Perf.runScript` driver both produce. The count/bool fields are the
 /// byte-stable determinism surface (FR-007/SC-005); `FrameDuration` is reported for real perf
 /// observation but EXCLUDED from golden assertions (it varies run to run, FR-012). Feature 109
 /// replaced the conflating `ViewRebuilt` with the two precise booleans `ProductModelChanged` +
-/// `ViewCalled` and added the integer `FullRenderCount`, so "the model changed" and "the view ran"
-/// are reported as separate facts (SC-011). Feature 110 added `FullRenderFallbackCount` and narrowed
-/// `FullRenderCount`/`ViewCalled` so routing a pointer event via the retained frame increments
-/// NEITHER (the hot-path full render for routing is gone, FR-004/FR-008).
+/// `ViewCalled` and added the integer `FullRenderCount`. Feature 110 added `FullRenderFallbackCount`
+/// and narrowed `FullRenderCount`/`ViewCalled` so retained routing increments NEITHER. Feature 111
+/// added `FrameCause` + the per-phase booleans `DiffRan`/`LayoutRan`/`PaintRan` (the VIEW phase is
+/// `ViewCalled`) and narrowed `ViewCalled`/`FullRenderCount` to `false`/`0` on a model-unchanged frame
+/// (the scheduler reuses the already-produced view tree, FR-003/FR-011).
 type FrameMetrics =
     { /// A product message actually changed the model this frame (the reference identity of the folded
       /// model changed across `host.Update`). `false` for a no-message frame, a pure hover/focus
       /// frame, and an animation-only tick (FR-001/003/005).
       ProductModelChanged: bool
-      /// `host.View size model` ran this frame to (re)produce a tree (FR-001). Equals
-      /// `FullRenderCount > 0` — an animation-only tick that re-renders an overlay reports `true` here
-      /// while `ProductModelChanged` stays `false`. Feature 110: routing a pointer event via the
-      /// retained frame does NOT set this true (routing performs no full render).
+      /// THE VIEW PHASE: `host.View size model` actually ran this frame to (re)produce a tree. Feature
+      /// 111 narrows this — it is `false` on a model-unchanged frame (including an animation-only tick,
+      /// which formerly reported `true`) because the scheduler reuses the already-produced view tree and
+      /// skips `host.View` (FR-003/FR-011); the overlay/paint fact moves to `PaintRan`. Still equals
+      /// `FullRenderCount > 0`. Feature 110: retained pointer routing does not set it true either.
       ViewCalled: bool
       /// Number of full `host.View` + `Control.renderTree` materializations this frame performed — the
       /// retained-step render where it occurs, plus any oracle fallback render. Feature 110 narrowed
@@ -75,6 +96,23 @@ type FrameMetrics =
       /// oracle had to run (a counted correctness escape hatch, never the normal path). Deterministic,
       /// golden-asserted.
       FullRenderFallbackCount: int
+      /// Feature 111 (FR-001): the trigger that caused this frame (idle / pointer-move / pointer-discrete
+      /// / key / tick / resize / theme). Deterministic, golden-asserted. Names the trigger, not the
+      /// effect — a key that changes the model is `FrameCause.Key` with `ProductModelChanged = true`.
+      FrameCause: FrameCause
+      /// Feature 111 (FR-002): the DIFF/reconcile phase ran — a newly-produced view tree was reconciled
+      /// against the retained tree this frame (the retained step ran on a fresh `host.View`). An
+      /// animation-only tick re-samples the overlay WITHOUT producing a new tree, so it reports `false`.
+      DiffRan: bool
+      /// Feature 111 (FR-002): the LAYOUT phase ran — at least one node was re-measured this frame
+      /// (equivalent to `RemeasuredNodeCount > 0`, but set explicitly as part of the phase record).
+      LayoutRan: bool
+      /// Feature 111 (FR-002): the PAINT phase ran — the painted scene (a model render) or the animation
+      /// overlay was (re)assembled this frame. `true` on model frames AND animation-only ticks; `false`
+      /// on idle and pure routing frames. (Hit-test is intentionally NOT a phase field — clarified
+      /// 2026-06-12: the deterministic path does not hit-test coalesced moves; routing work stays in
+      /// `PointerSamplesReceived`/`PointerMovesProcessed`/`FullRenderFallbackCount`.)
+      PaintRan: bool
       /// Wall-clock duration of the frame's work — reported, EXCLUDED from the golden/determinism
       /// surface (FR-012).
       FrameDuration: TimeSpan }

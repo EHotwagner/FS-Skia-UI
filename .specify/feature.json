@@ -1,3 +1,3 @@
 {
-  "feature_directory": "specs/110-retained-pointer-routing"
+  "feature_directory": "specs/111-frame-scheduler-invalidation"
 }

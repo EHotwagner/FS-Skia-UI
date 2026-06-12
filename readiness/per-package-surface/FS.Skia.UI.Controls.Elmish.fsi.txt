@@ -31,6 +31,17 @@ type AdapterProgram<'model, 'msg> =
       View: 'model -> Control<'msg>
       Subscriptions: 'model -> AdapterSubscription<'msg> list }
 
+[<RequireQualifiedAccess>]
+
+type FrameCause =
+    | Idle
+    | PointerMove
+    | PointerDiscrete
+    | Key
+    | Tick
+    | Resize
+    | Theme
+
 type FrameMetrics =
     {
 
@@ -47,6 +58,14 @@ type FrameMetrics =
       PointerMovesProcessed: int
 
       FullRenderFallbackCount: int
+
+      FrameCause: FrameCause
+
+      DiffRan: bool
+
+      LayoutRan: bool
+
+      PaintRan: bool
 
       FrameDuration: TimeSpan }
 

@@ -1,1 +1,1 @@
-ProductModelChanged=false ViewCalled=false FullRenderCount=0 RemeasuredNodeCount=0 PointerSamplesReceived=1000 PointerMovesProcessed=1 FullRenderFallbackCount=0
+ProductModelChanged=false ViewCalled=false FullRenderCount=0 RemeasuredNodeCount=0 PointerSamplesReceived=1000 PointerMovesProcessed=1 FullRenderFallbackCount=0 FrameCause=PointerMove DiffRan=false LayoutRan=false PaintRan=false

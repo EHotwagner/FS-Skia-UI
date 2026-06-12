@@ -31,7 +31,18 @@ type AdapterProgram<'model, 'msg> =
       View: 'model -> Control<'msg>
       Subscriptions: 'model -> AdapterSubscription<'msg> list }
 
-/// Feature 108/109 (US1, FR-001/002): per-frame structured work/timing signal (see ControlsElmish.fsi).
+/// Feature 111 (US1, FR-001): the closed trigger taxonomy naming why a frame ran (see ControlsElmish.fsi).
+[<RequireQualifiedAccess>]
+type FrameCause =
+    | Idle
+    | PointerMove
+    | PointerDiscrete
+    | Key
+    | Tick
+    | Resize
+    | Theme
+
+/// Feature 108/109/110/111 (US1, FR-001/002): per-frame structured work/timing signal (see ControlsElmish.fsi).
 type FrameMetrics =
     { ProductModelChanged: bool
       ViewCalled: bool
@@ -40,6 +51,10 @@ type FrameMetrics =
       PointerSamplesReceived: int
       PointerMovesProcessed: int
       FullRenderFallbackCount: int
+      FrameCause: FrameCause
+      DiffRan: bool
+      LayoutRan: bool
+      PaintRan: bool
       FrameDuration: TimeSpan }
 
 /// Feature 108 (US3, FR-009): one ordered step of the deterministic perf driver.
@@ -807,6 +822,14 @@ module ControlsElmish =
         // WITHOUT a fresh `Control.renderTree`. Seeded from `r0.Render` on the first paint and updated to
         // `s.Render` each step; only `s.Render.Scene` was consumed before — `s.Render` itself was dropped.
         let lastRender = ref (None: ControlRenderResult<'msg> option)
+        // Feature 111 (FR-003): the un-stamped `host.View size model` output for the current `(model,
+        // size)`, cached so a model-unchanged repaint (a host-owned hover/focus/animation change) reuses
+        // it and SKIPS `host.View`. `host.View` is pure in `(model, size)`, so the reused tree equals a
+        // fresh call — the full-tree visual-state stamp + `step` still run, only the view call is skipped
+        // (FR-009, byte-identical). Keyed by reference identity of the model: a reference-type model that
+        // did not change is the same instance (reuse); a value-type model is never `ReferenceEquals` so it
+        // re-views (a safe, byte-identical fallback — the deterministic view-skip surface is `Perf.runScript`).
+        let lastView = ref (None: (Size * 'model * Control<'msg>) option) // mutable: hot path / per frame
         // Diff/first-frame diagnostics (e.g. KeyCollision from duplicate sibling keys) surfaced
         // through the host's diagnostics stderr channel — never silently dropped; de-duped so a
         // standing collision is reported once, not every frame. The path stays total in their presence.
@@ -864,11 +887,24 @@ module ControlsElmish =
         // Feature 096 (R1): the runtime visual-state bridge is applied to `host.View size model` before
         // `init`/`step`, so a hover/press/focus change becomes a scoped reconciler `Update` patch on
         // exactly that subtree, and a `Normal`-and-unset tree stamps nothing (byte-identity at rest).
+        // Feature 111 (FR-003): the un-stamped consumer view for `(size, model)`, REUSING the cache when
+        // the model instance and size are unchanged so `host.View` is skipped on a host-owned
+        // hover/focus/animation repaint. The runtime visual-state stamp is applied to the reused tree by
+        // the caller (it always runs — FR-009), so output is byte-identical.
+        let viewFor (size: Size) (model: 'model) : Control<'msg> =
+            match lastView.Value with
+            | Some(cachedSize, cachedModel, cachedView) when cachedSize = size && obj.ReferenceEquals(model, cachedModel) ->
+                cachedView
+            | _ ->
+                let v = host.View size model
+                lastView.Value <- Some(size, model, v)
+                v
+
         let renderRetained (size: Size) (model: 'model) : Scene =
             match retained.Value with
             | None ->
                 let runtimeModel = assembleRuntimeModel None
-                let next = ControlRuntime.applyRuntimeVisualState runtimeModel (host.View size model)
+                let next = ControlRuntime.applyRuntimeVisualState runtimeModel (viewFor size model)
                 let r0 = RetainedRender.init host.Theme size next
                 surface r0.Diagnostics
                 retained.Value <- Some r0.Retained
@@ -876,7 +912,7 @@ module ControlsElmish =
                 r0.Render.Scene
             | Some prev ->
                 let runtimeModel = assembleRuntimeModel (Some prev)
-                let next = ControlRuntime.applyRuntimeVisualState runtimeModel (host.View size model)
+                let next = ControlRuntime.applyRuntimeVisualState runtimeModel (viewFor size model)
                 let s = RetainedRender.step host.Theme size prev next
                 surface s.Diagnostics
                 lastWorkReduction.Value <- Some s.WorkReduction
@@ -915,7 +951,11 @@ module ControlsElmish =
         // both `FullRenderCount` and `FullRenderFallbackCount` here (the model-driven repaint is the
         // viewer's separate paint cycle, not this sink). `duration` is the real wall-clock of that work
         // (FR-012, EXCLUDED from goldens — the golden surface reports 0).
-        let emitFrameMetrics (samples: int) (movesProcessed: int) (productModelChanged: bool) (fullRenderFallbackCount: int) (duration: TimeSpan) =
+        // Feature 111: the live sink reports the INPUT-side phases this seam performs — the only `host.View`
+        // it can run is a counted oracle fallback (so `ViewCalled`/`DiffRan` track that), and the
+        // model-driven repaint is the viewer's SEPARATE `renderRetained` cycle (not observed here), so
+        // `PaintRan`/`LayoutRan` stay `false`. The authoritative, full per-phase record is `Perf.runScript`.
+        let emitFrameMetrics (cause: FrameCause) (samples: int) (movesProcessed: int) (productModelChanged: bool) (fullRenderFallbackCount: int) (duration: TimeSpan) =
             host.OnFrameMetrics
                 { ProductModelChanged = productModelChanged
                   ViewCalled = fullRenderFallbackCount > 0
@@ -924,6 +964,10 @@ module ControlsElmish =
                   PointerSamplesReceived = samples
                   PointerMovesProcessed = movesProcessed
                   FullRenderFallbackCount = fullRenderFallbackCount
+                  FrameCause = cause
+                  DiffRan = fullRenderFallbackCount > 0
+                  LayoutRan = false
+                  PaintRan = false
                   FrameDuration = duration }
 
         // The single pointer-routing step (the pre-108 `mapPointer` body): focus-on-click + the feature-
@@ -996,7 +1040,7 @@ module ControlsElmish =
                 pointerSampleCount.Value <- 1
 
                 if samples > 0 then
-                    emitFrameMetrics samples 1 (not (List.isEmpty flushedMsgs)) flushedFallbacks sw.Elapsed
+                    emitFrameMetrics FrameCause.PointerMove samples 1 (not (List.isEmpty flushedMsgs)) flushedFallbacks sw.Elapsed
 
                 flushedMsgs
             | _ ->
@@ -1019,7 +1063,7 @@ module ControlsElmish =
                 pointerSampleCount.Value <- 0
                 let msgs = moveMsgs @ discreteMsgs
                 let fallbackCount = moveFallbacks + discreteFallbacks
-                emitFrameMetrics samples (if moveFlushed then 1 else 0) (not (List.isEmpty msgs)) fallbackCount sw.Elapsed
+                emitFrameMetrics FrameCause.PointerDiscrete samples (if moveFlushed then 1 else 0) (not (List.isEmpty msgs)) fallbackCount sw.Elapsed
                 msgs
 
         // Feature 108 (US5, FR-016): the unconsumed-key fallthrough. The modifier-aware `MapKeyChord`
@@ -1187,6 +1231,21 @@ module ControlsElmish =
                     lastRender <- Some s.Render
                     s.WorkReduction.RemeasuredNodeCount
 
+            // Feature 111 (FR-003/FR-004): re-sample the overlay for an animation-only tick WITHOUT
+            // calling `host.View`. The model is unchanged, so `host.View size model` would return a tree
+            // structurally equal to `prev.Root.Control` (the tree the previous view produced for this same
+            // model) — stepping `prev` against it yields the byte-identical all-`Keep` diff + overlay. The
+            // VIEW phase is skipped (`ViewCalled = false`, `FullRenderCount` unchanged) while the PAINT
+            // phase runs. Returns the frame's RemeasuredNodeCount.
+            let repaintCached () : int =
+                match retained with
+                | Some prev ->
+                    let s = RetainedRender.step host.Theme size prev prev.Root.Control
+                    retained <- Some s.Retained
+                    lastRender <- Some s.Render
+                    s.WorkReduction.RemeasuredNodeCount
+                | None -> 0
+
             // Feature 110: seed the retained frame for the CURRENT model if none exists yet — the
             // "initial render" precondition the retained route needs to hit-test a `Click`. This is NOT a
             // routing full render (it is the initial frame the live host paints before any input), so it
@@ -1236,6 +1295,10 @@ module ControlsElmish =
                   PointerSamplesReceived = 0
                   PointerMovesProcessed = 0
                   FullRenderFallbackCount = 0
+                  FrameCause = FrameCause.Idle
+                  DiffRan = false
+                  LayoutRan = false
+                  PaintRan = false
                   FrameDuration = TimeSpan.Zero }
 
             toFrames script
@@ -1268,13 +1331,19 @@ module ControlsElmish =
                         RemeasuredNodeCount = remeasured
                         PointerSamplesReceived = k
                         PointerMovesProcessed = 1
-                        FullRenderFallbackCount = fallbacks }
+                        FullRenderFallbackCount = fallbacks
+                        FrameCause = FrameCause.PointerMove
+                        DiffRan = hasMsgs
+                        LayoutRan = remeasured > 0
+                        PaintRan = hasMsgs }
                 | [ FrameInput.Idle ] -> zero
                 | [ FrameInput.Tick delta ] ->
-                    // Advance every live clock by the injected delta; if an animation is live, render
-                    // the overlay step (bounded remeasure, NOT a whole-tree rebuild) with no product
-                    // message — so `ProductModelChanged = false` while `ViewCalled = true` (the view ran
-                    // to assemble the overlay, SC-011). A consumer `Tick` message rebuilds as usual.
+                    // Advance every live clock by the injected delta. Feature 111 (FR-004): an
+                    // animation-only tick (a live clock, no consumer message) is a PAINT-ONLY frame — it
+                    // re-samples the overlay via `repaintCached` (stepping the unchanged retained tree) with
+                    // NO `host.View`, so `ViewCalled = false`, `FullRenderCount = 0`, `PaintRan = true`
+                    // (was `ViewCalled = true`/`FullRenderCount = 1` pre-111). A consumer `Tick` MESSAGE
+                    // changes the model and rebuilds via `host.View` as a normal model frame.
                     let hadAnimation =
                         match retained with
                         | Some r -> r.StateByIdentity |> Map.exists (fun _ s -> s.Animation.IsSome)
@@ -1295,15 +1364,22 @@ module ControlsElmish =
                     let tickMsgs = host.Tick delta |> Option.toList
                     let hasMsgs = not (List.isEmpty tickMsgs)
                     applyMessages tickMsgs
-                    let rendered = hasMsgs || hadAnimation
-                    let remeasured = if rendered then renderStep () else 0
-                    let fullRenderCount = if rendered then 1 else 0
+
+                    // hasMsgs -> model frame (host.View runs); animation-only -> view-free overlay; else nothing.
+                    let viewRan, remeasured, paintRan =
+                        if hasMsgs then true, renderStep (), true
+                        elif hadAnimation then false, repaintCached (), true
+                        else false, 0, false
 
                     { zero with
                         ProductModelChanged = productModelChanged before model tickMsgs
-                        ViewCalled = fullRenderCount > 0
-                        FullRenderCount = fullRenderCount
-                        RemeasuredNodeCount = remeasured }
+                        ViewCalled = viewRan
+                        FullRenderCount = (if viewRan then 1 else 0)
+                        RemeasuredNodeCount = remeasured
+                        FrameCause = FrameCause.Tick
+                        DiffRan = viewRan
+                        LayoutRan = remeasured > 0
+                        PaintRan = paintRan }
                 | [ FrameInput.Key(k, mods) ] ->
                     let before = model
 
@@ -1321,7 +1397,11 @@ module ControlsElmish =
                         ProductModelChanged = productModelChanged before model msgs
                         ViewCalled = fullRenderCount > 0
                         FullRenderCount = fullRenderCount
-                        RemeasuredNodeCount = remeasured }
+                        RemeasuredNodeCount = remeasured
+                        FrameCause = FrameCause.Key
+                        DiffRan = hasMsgs
+                        LayoutRan = remeasured > 0
+                        PaintRan = hasMsgs }
                 | [ FrameInput.Pointer interaction ] ->
                     // A discrete pointer interaction: one sample, never a coalesced move. Feature 110:
                     // routing resolves from the retained frame and performs ZERO routing full renders;
@@ -1340,5 +1420,9 @@ module ControlsElmish =
                         FullRenderCount = fullRenderCount
                         RemeasuredNodeCount = remeasured
                         PointerSamplesReceived = 1
-                        FullRenderFallbackCount = fallbacks }
+                        FullRenderFallbackCount = fallbacks
+                        FrameCause = FrameCause.PointerDiscrete
+                        DiffRan = hasMsgs
+                        LayoutRan = remeasured > 0
+                        PaintRan = hasMsgs }
                 | _ -> zero)

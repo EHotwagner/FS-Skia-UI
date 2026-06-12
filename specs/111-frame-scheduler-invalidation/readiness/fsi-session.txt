@@ -1,0 +1,10 @@
+# FSI session — feature 111 FrameCause + phase record (T005)
+#
+# Captured via: dotnet fsi against the built FS.Skia.UI.Controls.Elmish.dll (Debug, full dep closure).
+# An idle frame names FrameCause.Idle and runs no phase; a coalesced hover/move burst names
+# FrameCause.PointerMove and runs no phase either (a pure routing frame — view/diff/layout/paint
+# all skipped). (Model/animation frames need the Yoga layout native, loaded only in the test host
+# — see Feature111PhaseRecordTests / Feature111ViewSkipTests.)
+#
+frame 0 Idle                       -> FrameCause=Idle ViewCalled=false DiffRan=false LayoutRan=false PaintRan=false FullRenderCount=0
+frame 0 Move burst                 -> FrameCause=PointerMove ViewCalled=false DiffRan=false LayoutRan=false PaintRan=false FullRenderCount=0

@@ -111,9 +111,11 @@ let tests =
             Expect.equal frames.[1].RemeasuredNodeCount 0 "the view did not change, so nothing re-measured — no field over-reports work"
         }
 
-        test "an animation-only tick runs the view with NO product message: ProductModelChanged and ViewCalled DIVERGE (SC-011 / FR-005)" {
+        test "an animation-only tick is a PAINT-ONLY frame: no view, PaintRan true (feature 111, FR-004/SC-003)" {
             // Enter (model 1, Normal) seeds; Enter (model 2, Hover) starts the cross-fade clock; the
-            // Tick advances that clock and re-renders the overlay carrying no product message.
+            // Tick advances that clock and re-samples the overlay carrying no product message. Feature 111:
+            // the overlay is re-sampled from the unchanged retained tree WITHOUT calling host.View, so the
+            // view phase is skipped and the paint phase runs (formerly ViewCalled=true conflated the two).
             let frames =
                 ControlsElmish.Perf.runScript
                     animKeyHost
@@ -121,13 +123,12 @@ let tests =
                     [ FrameInput.Key(Enter, noMods); FrameInput.Key(Enter, noMods); tick 16.0 ]
 
             let tickFrame = frames.[2]
+            Expect.equal tickFrame.FrameCause FrameCause.Tick "the frame's cause is a tick"
             Expect.isFalse tickFrame.ProductModelChanged "the tick carried no product message"
-            Expect.isTrue tickFrame.ViewCalled "the view ran to assemble the animation overlay"
-            Expect.isTrue (tickFrame.FullRenderCount > 0) "ViewCalled implies at least one full render"
-            Expect.notEqual
-                tickFrame.ProductModelChanged
-                tickFrame.ViewCalled
-                "the two facts diverge on an animation-only tick — no surviving field conflates them"
+            Expect.isFalse tickFrame.ViewCalled "the view phase is SKIPPED — host.View did not run (FR-004)"
+            Expect.equal tickFrame.FullRenderCount 0 "zero full renders — the overlay re-sample is not a host.View materialization"
+            Expect.isFalse tickFrame.DiffRan "no new view tree was reconciled (overlay re-sample only)"
+            Expect.isTrue tickFrame.PaintRan "the PAINT phase ran to re-assemble the animation overlay (FR-002)"
         }
 
         test "ViewCalled equals FullRenderCount > 0 for every produced frame (SC-011 invariant)" {

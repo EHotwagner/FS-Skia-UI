@@ -1,0 +1,38 @@
+## Symbol consistency (analyze pass G)
+- entity-record Dev — in {tasks}, missing from {plan, data-model}
+- entity-record DiffRan — in {data-model, tasks}, missing from {plan}
+- entity-record Feature111PhaseRecordTests — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedGuidanceCheck — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedProductCheck — in {tasks}, missing from {plan, data-model}
+- entity-record LayoutRan — in {tasks}, missing from {plan, data-model}
+- entity-record PaintRan — in {tasks}, missing from {plan, data-model}
+- entity-record Route — in {tasks}, missing from {plan, data-model}
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- entity-record ViewCalled — in {data-model, tasks}, missing from {plan}
+- entity-record ViewRan — in {plan}, missing from {data-model, tasks}
+- fr-id FR-001 — in {plan, data-model}, missing from {tasks}
+- fr-id FR-002 — in {plan, data-model}, missing from {tasks}
+- fr-id FR-003 — in {plan, data-model}, missing from {tasks}
+- fr-id FR-004 — in {plan}, missing from {data-model, tasks}
+- fr-id FR-006 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-007 — in {plan}, missing from {data-model, tasks}
+- fr-id FR-009 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-010 — in {plan}, missing from {data-model, tasks}
+- fr-id FR-011 — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Effect — in {tasks}, missing from {plan, data-model}
+- msg-case FrameInput — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case FullRenderCount — in {tasks}, missing from {plan, data-model}
+- msg-case Idle — in {plan, data-model}, missing from {tasks}
+- msg-case Key — in {plan, data-model}, missing from {tasks}
+- msg-case Model — in {plan, tasks}, missing from {data-model}
+- msg-case RequireQualifiedAccess — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- sc-id SC-001 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-002 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-003 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-004 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-005 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-007 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-011 — in {plan}, missing from {data-model, tasks}
+- union-or-screen-variant Feature109MetricsHonestyTests — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant FrameCause — in {plan}, missing from {data-model, tasks}
+- union-or-screen-variant ViewCalled — in {tasks}, missing from {plan, data-model}

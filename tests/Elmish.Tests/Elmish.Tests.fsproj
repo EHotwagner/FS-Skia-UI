@@ -26,6 +26,9 @@
     <Compile Include="Feature110RetainedRoutingTests.fs" />
     <Compile Include="Feature110RetainedRoutingParityTests.fs" />
     <Compile Include="Feature110FallbackTests.fs" />
+    <Compile Include="Feature111FrameCauseTests.fs" />
+    <Compile Include="Feature111PhaseRecordTests.fs" />
+    <Compile Include="Feature111ViewSkipTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
