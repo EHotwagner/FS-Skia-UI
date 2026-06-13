@@ -40,6 +40,7 @@ type DataGridModel =
       RowHeight: float
       ViewportHeight: float
       VisibleRange: VisibleRange
+      Overscan: int
       SelectedRows: Set<string>
       FocusedCell: DataGridFocusedCell option
       Sort: DataGridSort option
@@ -64,8 +65,8 @@ type DataGridEffect =
     | ReportDataGridDiagnostic of ControlDiagnostic
 
 module DataGrid =
-    let range rowHeight viewportHeight firstRow total =
-        Collections.visibleRange rowHeight viewportHeight (float firstRow * rowHeight) total
+    let range rowHeight viewportHeight firstRow total overscan =
+        Collections.visibleRange rowHeight viewportHeight (float firstRow * rowHeight) total overscan
 
     let viewportDiagnostics controlId rowHeight viewportHeight =
         [ if rowHeight <= 0.0 then
@@ -91,7 +92,7 @@ module DataGrid =
 
     let init controlId columns rowCount rowHeight viewportHeight =
         let rowCount = max 0 rowCount
-        let visibleRange = range rowHeight viewportHeight 0 rowCount
+        let visibleRange = range rowHeight viewportHeight 0 rowCount 0
         let diagnostics = viewportDiagnostics controlId rowHeight viewportHeight
 
         { ControlId = controlId
@@ -100,6 +101,7 @@ module DataGrid =
           RowHeight = rowHeight
           ViewportHeight = viewportHeight
           VisibleRange = visibleRange
+          Overscan = 0
           SelectedRows = Set.empty
           FocusedCell = None
           Sort = None
@@ -110,8 +112,11 @@ module DataGrid =
     let update msg model =
         match msg with
         | ScrollRowsTo firstRow ->
+            // Feature 114 (Phase 6, FR-009/FR-011): relocate the realized window so `firstRow` is realized,
+            // widened by `model.Overscan` each side. The window RELOCATES (its first index jumps to the
+            // clamped target) and stays bounded — it never expands to span the path (FR-003).
             let visibleRange =
-                range model.RowHeight model.ViewportHeight (max 0 (min firstRow (max 0 (model.RowCount - 1)))) model.RowCount
+                range model.RowHeight model.ViewportHeight (max 0 (min firstRow (max 0 (model.RowCount - 1)))) model.RowCount model.Overscan
 
             { model with VisibleRange = visibleRange }, [ DataGridVisibleRangeChanged visibleRange ]
         | SelectRow rowKey ->
@@ -155,7 +160,7 @@ module DataGrid =
             { model with FilterText = filterText }, [ DataGridFilterChanged filterText ]
         | ReplaceRowCount count ->
             let count = max 0 count
-            let visibleRange = range model.RowHeight model.ViewportHeight model.VisibleRange.FirstIndex count
+            let visibleRange = range model.RowHeight model.ViewportHeight model.VisibleRange.FirstIndex count model.Overscan
             { model with RowCount = count; VisibleRange = visibleRange }, [ DataGridVisibleRangeChanged visibleRange ]
 
     let tryLast (name: string) (attrs: Attr<'msg> list) =
@@ -216,16 +221,37 @@ module DataGrid =
         |> List.skip (max 0 visibleRange.FirstIndex)
         |> List.truncate (max 0 visibleRange.Count)
 
+    let focusedCellFrom (attrs: Attr<'msg> list) : DataGridFocusedCell option =
+        AttrKeys.tryKey AttrKeys.FocusedCell attrs
+        |> Option.bind (fun attr ->
+            match attr.Value with
+            | UntypedValue(:? (DataGridFocusedCell option) as fc) -> fc
+            | UntypedValue(:? DataGridFocusedCell as cell) -> Some cell
+            | _ -> None)
+
     let create (columns: DataGridColumn list) (attrs: Attr<'msg> list) =
         let rows = rowsFrom attrs
         let visibleRange = visibleRangeFrom rows attrs
         let header = Control.create "data-grid-header" [ Attr.children (columns |> List.map headerCell) ]
         let children = header :: (visibleRows rows visibleRange |> List.map (rowControl columns))
 
+        // Feature 114 (FR-012): report the LOGICAL total + focused position to assistive technology,
+        // computed from the logical model (the visible range's `Total` and the focused row's index in the
+        // full row set) — NOT the materialized slice. Only the realized window exists as controls, but
+        // a11y still describes the true size and position. Non-collection controls keep `Collection = None`.
+        let focusedIndex =
+            focusedCellFrom attrs
+            |> Option.bind (fun cell -> rows |> List.tryFindIndex (fun row -> row.Key = cell.RowKey))
+
+        let collectionMetadata =
+            { Accessibility.defaultFor "data-grid" "data-grid" with
+                Collection = Some { TotalItems = visibleRange.Total; FocusedIndex = focusedIndex } }
+
         let attrs =
             attrs
             |> fun attrs -> if AttrKeys.hasKey AttrKeys.Columns attrs then attrs else Attr.create (AttrKeys.nameOf AttrKeys.Columns) Data (UntypedValue columns) :: attrs
             |> fun attrs -> if AttrKeys.hasKey AttrKeys.VisibleRange attrs then attrs else Attr.create (AttrKeys.nameOf AttrKeys.VisibleRange) State (UntypedValue visibleRange) :: attrs
+            |> fun attrs -> if AttrKeys.hasKey AttrKeys.Accessibility attrs then attrs else Attr.accessibility collectionMetadata :: attrs
 
         Control.create "data-grid" (Attr.children children :: attrs)
 

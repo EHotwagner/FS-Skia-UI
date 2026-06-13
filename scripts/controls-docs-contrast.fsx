@@ -6,8 +6,9 @@
 //
 // Run:  dotnet fsi scripts/controls-docs-contrast.fsx
 
-#r "/home/developer/projects/FS-Skia-UI/src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll"
-#r "/home/developer/projects/FS-Skia-UI/src/Color/bin/Debug/net10.0/FS.Skia.UI.Color.dll"
+#I __SOURCE_DIRECTORY__
+#r "../src/Scene/bin/Debug/net10.0/FS.Skia.UI.Scene.dll"
+#r "../src/Color/bin/Debug/net10.0/FS.Skia.UI.Color.dll"
 
 open System.IO
 open System.Text
@@ -15,7 +16,7 @@ open System.Text.Json
 open FS.Skia.UI.Scene
 open FS.Skia.UI.Color
 
-let repoRoot = "/home/developer/projects/FS-Skia-UI"
+let repoRoot = Path.GetFullPath(Path.Combine(__SOURCE_DIRECTORY__, ".."))
 let tokensPath = Path.Combine(repoRoot, "src/Controls/design-tokens.tokens.json")
 
 // --- read the DTCG colour tokens (alias-resolved) the controls render with -------------------

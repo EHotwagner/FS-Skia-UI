@@ -1,6 +1,6 @@
 ---
 name: fs-skia-reconciliation
-description: Understand and work with the internal keyed VDOM diff over the lowered Control<'msg> IR (feature 067) — its key-first-then-positional matching, the NodePatch/ChildOp operation set, the totality/determinism/identity-at-rest/round-trip invariants, and the module's disposition (internal, property-tested, wired onto the live render path via RetainedRender in feature 091 and current through feature 103: layout/bounds cache, injected-delta animation clock, visual-state cross-fade). Use when reading the diff invariants, extending the property tests, or working on the wired retained render path.
+description: Understand and work with the internal keyed VDOM diff over the lowered Control<'msg> IR (feature 067) — its key-first-then-positional matching, the NodePatch/ChildOp operation set, the totality/determinism/identity-at-rest/round-trip invariants, and the module's disposition (internal, property-tested, wired onto the live render path via RetainedRender in feature 091 and current through feature 103 — layout/bounds cache, injected-delta animation clock, visual-state cross-fade). Use when reading the diff invariants, extending the property tests, or working on the wired retained render path.
 compatibility: F# net10.0; FS.Skia.UI.Controls package, `module internal Reconcile` — assembly-internal, no public-surface entry (zero baseline delta). Wired onto the live render path via `module internal RetainedRender` (feature 091).
 metadata:
   author: fs-skia-ui

@@ -1,0 +1,14 @@
+== default overscan 0 reproduces the visible slice (byte-identical) ==
+mid-list, overscan 0                     FirstIndex=50 Count=11 Total=10000
+== symmetric widening with overscan 5 (mid-list = V + 2N) ==
+mid-list, overscan 5                     FirstIndex=45 Count=21 Total=10000
+== top edge clamp (no negative index) ==
+top edge, overscan 5                     FirstIndex=0 Count=16 Total=10000
+== bottom edge clamp (no index >= Total) ==
+bottom edge, overscan 5                  FirstIndex=9994 Count=6 Total=10000
+== small total (<= V + 2N) realizes the whole set (transparent) ==
+total 8, overscan 4                      FirstIndex=0 Count=8 Total=8
+== non-scaling: same Count across 100 / 1000 / 10000 at a fixed mid-list scroll, overscan 3 ==
+total 100, overscan 3                    FirstIndex=47 Count=17 Total=100
+total 1000, overscan 3                   FirstIndex=47 Count=17 Total=1000
+total 10000, overscan 3                  FirstIndex=47 Count=17 Total=10000

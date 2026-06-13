@@ -176,6 +176,8 @@ type CollectionModel =
       ScrollOffset: float
       SelectedKeys: Set<string>
       VisibleRange: VisibleRange
+
+      Overscan: int
       RecalculationThresholdMs: int }
 
 type CollectionMsg =
@@ -189,7 +191,7 @@ type CollectionEffect =
 
 module Collections =
 
-    val visibleRange: rowHeight: float -> viewportHeight: float -> scrollOffset: float -> totalItems: int -> VisibleRange
+    val visibleRange: rowHeight: float -> viewportHeight: float -> scrollOffset: float -> totalItems: int -> overscan: int -> VisibleRange
 
     val init: controlId: ControlId -> itemCount: int -> rowHeight: float -> viewportHeight: float -> CollectionModel * CollectionEffect list
 
@@ -662,6 +664,8 @@ type DataGridModel =
       RowHeight: float
       ViewportHeight: float
       VisibleRange: VisibleRange
+
+      Overscan: int
       SelectedRows: Set<string>
       FocusedCell: DataGridFocusedCell option
       Sort: DataGridSort option
@@ -1045,7 +1049,10 @@ type internal WorkReductionRecord =
       RemeasuredNodeCount: int
 
       MemoHits: int
-      MemoMisses: int }
+      MemoMisses: int
+
+      VirtualMaterialized: int
+      VirtualTotal: int }
 
 type internal RetainedRenderStep<'msg> =
     { Retained: RetainedRender<'msg>
@@ -1409,6 +1416,10 @@ type NavRange =
       Min: float
       Max: float }
 
+type CollectionPosition =
+    { TotalItems: int
+      FocusedIndex: int option }
+
 type AccessibilityMetadata =
     { Role: AccessibilityRole
       NameSource: string
@@ -1417,7 +1428,9 @@ type AccessibilityMetadata =
       Keyboard: KeyboardOperation
       Contrast: ContrastEvidence option
 
-      Navigation: NavRange option }
+      Navigation: NavRange option
+
+      Collection: CollectionPosition option }
 
 type ValidationState =
     | Valid

@@ -30,6 +30,7 @@
     <Compile Include="Feature111PhaseRecordTests.fs" />
     <Compile Include="Feature111ViewSkipTests.fs" />
     <Compile Include="Feature113MemoMetricsTests.fs" />
+    <Compile Include="Feature114VirtualMetricsTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

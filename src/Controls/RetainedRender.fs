@@ -76,7 +76,10 @@ type internal WorkReductionRecord =
       RemeasuredNodeCount: int
       // Feature 113 (Phase 5, FR-009/FR-010): memoizable-control reuse outcomes this frame.
       MemoHits: int
-      MemoMisses: int }
+      MemoMisses: int
+      // Feature 114 (Phase 6, FR-013): materialized data-grid-row nodes + logical row total this frame.
+      VirtualMaterialized: int
+      VirtualTotal: int }
 
 type internal RetainedRenderStep<'msg> =
     { Retained: RetainedRender<'msg>
@@ -605,6 +608,29 @@ module internal RetainedRender =
 
         let newRoot = build "0" prev.Root result.Patch next
 
+        // Feature 114 (Phase 6, FR-013/FR-014): tally the frame's virtualization counts by a read-only
+        // walk of the lowered `next` tree (no render effect). `VirtualMaterialized` counts materialized
+        // `data-grid-row` nodes (the realized window); `VirtualTotal` sums the logical `Total` carried on
+        // each `data-grid` node's `visibleRange` attr. Both stay 0 when no `data-grid` is present, and
+        // aggregate across multiple grids in a frame.
+        let mutable virtualMaterialized = 0
+        let mutable virtualTotal = 0
+
+        let rec countVirtual (c: Control<'msg>) =
+            if c.Kind = "data-grid-row" then
+                virtualMaterialized <- virtualMaterialized + 1
+            elif c.Kind = "data-grid" then
+                c.Attributes
+                |> List.tryFind (fun a -> a.Name = AttrKeys.nameOf AttrKeys.VisibleRange)
+                |> Option.iter (fun a ->
+                    match a.Value with
+                    | UntypedValue(:? VisibleRange as vr) -> virtualTotal <- virtualTotal + vr.Total
+                    | _ -> ())
+
+            c.Children |> List.iter countVirtual
+
+        countVirtual next
+
         // Re-key UI state to the STABLE identities still live this frame AND compute this frame's
         // animation clocks (R4). Walking `newRoot` is the GC: only live identities carry state, so a
         // removed identity's clock/text is dropped with the rest of its state (FR-007, no new GC
@@ -699,7 +725,9 @@ module internal RetainedRender =
               ShiftedNodeCount = shifted
               RemeasuredNodeCount = remeasured
               MemoHits = memoHits
-              MemoMisses = memoMisses } }
+              MemoMisses = memoMisses
+              VirtualMaterialized = virtualMaterialized
+              VirtualTotal = virtualTotal } }
 
     let retainedHitTest (x: float) (y: float) (retained: RetainedRender<'msg>) : RetainedId option =
         // The deepest node whose cached box contains the point. Each node — including unkeyed

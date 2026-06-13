@@ -151,17 +151,22 @@ let private corpus: Scenario list =
 // ---- golden serialization (counts + booleans only; FrameDuration / allocation EXCLUDED) --------
 
 let private serializeFrame (f: FrameMetrics) : string =
-    // Feature 113 (Phase 5): the corpus golden now carries the two additive memo counts
-    // (MemoHitCount/MemoMissCount); all prior fields are unchanged (memoization does not alter
-    // layout/measure/diff). Both are 0 for scenarios that evaluate no memoizable control.
+    // Feature 113 (Phase 5): the corpus golden carries the two additive memo counts
+    // (MemoHitCount/MemoMissCount). Feature 114 (Phase 6): it additionally carries the two
+    // virtualization counts (VirtualItemsMaterialized/VirtualItemsTotal) — both 0 for scenarios with
+    // no virtualized control; for the datagrid scenarios the materialized count stays bounded by the
+    // realized window while the total scales with the row count (proving virtualization, SC-001). All
+    // prior fields are unchanged (the counts are read-only — no layout/measure/diff effect).
     sprintf
-        "ProductModelChanged=%b ViewCalled=%b FullRenderCount=%d RemeasuredNodeCount=%d MemoHitCount=%d MemoMissCount=%d PointerSamplesReceived=%d PointerMovesProcessed=%d FullRenderFallbackCount=%d FrameCause=%A DiffRan=%b LayoutRan=%b PaintRan=%b"
+        "ProductModelChanged=%b ViewCalled=%b FullRenderCount=%d RemeasuredNodeCount=%d MemoHitCount=%d MemoMissCount=%d VirtualItemsMaterialized=%d VirtualItemsTotal=%d PointerSamplesReceived=%d PointerMovesProcessed=%d FullRenderFallbackCount=%d FrameCause=%A DiffRan=%b LayoutRan=%b PaintRan=%b"
         f.ProductModelChanged
         f.ViewCalled
         f.FullRenderCount
         f.RemeasuredNodeCount
         f.MemoHitCount
         f.MemoMissCount
+        f.VirtualItemsMaterialized
+        f.VirtualItemsTotal
         f.PointerSamplesReceived
         f.PointerMovesProcessed
         f.FullRenderFallbackCount

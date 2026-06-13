@@ -40,6 +40,7 @@ FS.Skia.UI.Controls.CollectionMsg+ScrollTo
 FS.Skia.UI.Controls.CollectionMsg+SelectKey
 FS.Skia.UI.Controls.CollectionMsg+Tags
 FS.Skia.UI.Controls.CollectionMsg+ToggleKey
+FS.Skia.UI.Controls.CollectionPosition
 FS.Skia.UI.Controls.Collections
 FS.Skia.UI.Controls.ContrastEvidence
 FS.Skia.UI.Controls.Control

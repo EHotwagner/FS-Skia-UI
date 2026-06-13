@@ -55,6 +55,12 @@ type DataGridModel =
       RowHeight: float
       ViewportHeight: float
       VisibleRange: VisibleRange
+      /// Feature 114 (Phase 6): extra logical rows realized on EACH side of the visible window.
+      /// Default <c>0</c> (byte-identical to today's slice, FR-006); a positive value is an opt-in
+      /// widening the realized window by up to <c>2 * Overscan</c> real, edge-clamped adjacent rows
+      /// (FR-007). The window always stays bounded (<c>materialized &lt;= visible + 2 * Overscan</c>) — a
+      /// scroll/relocation moves the window, it never expands it.
+      Overscan: int
       SelectedRows: Set<string>
       FocusedCell: DataGridFocusedCell option
       Sort: DataGridSort option

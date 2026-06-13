@@ -68,6 +68,11 @@
     <Compile Include="TextInput.fs" />
     <Compile Include="ControlRuntime.fsi" />
     <Compile Include="ControlRuntime.fs" />
+    <!-- Feature 114 (Phase 6): the virtualization model (`VisibleRange`/`CollectionModel`) compiles
+         before RetainedRender so the retained `step` can read each `data-grid` node's `VisibleRange`
+         total for the `VirtualMaterialized`/`VirtualTotal` counts. Depends only on `Types`. -->
+    <Compile Include="Collections.fsi" />
+    <Compile Include="Collections.fs" />
     <!-- Feature 091 (E2): the retained render structure that wires the parked keyed
          reconciler (067) onto the live render path. `module internal` (no public-surface
          entry, mirrors Reconcile); reached by Controls.Tests via InternalsVisibleTo.
@@ -84,8 +89,6 @@
          Accessibility/Control types; the ControlId<->RetainedId binding lives at the host seam. -->
     <Compile Include="Focus.fsi" />
     <Compile Include="Focus.fs" />
-    <Compile Include="Collections.fsi" />
-    <Compile Include="Collections.fs" />
     <Compile Include="Charts.fsi" />
     <Compile Include="Charts.fs" />
     <Compile Include="RichText.fsi" />

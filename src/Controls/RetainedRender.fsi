@@ -141,7 +141,15 @@ type internal WorkReductionRecord =
       /// this frame; both 0 on a frame that evaluates no memoizable control. Surfaced as the public
       /// `FrameMetrics.MemoHitCount` / `MemoMissCount`.
       MemoHits: int
-      MemoMisses: int }
+      MemoMisses: int
+      /// Feature 114 (Phase 6, FR-013): the virtualization counts read off the lowered tree this frame —
+      /// `VirtualMaterialized` is the number of materialized `data-grid-row` nodes (the realized window),
+      /// `VirtualTotal` is the sum of the logical `Total` over every `data-grid` node present. The walk is
+      /// read-only (render output unchanged); both `0` on a frame with no virtualized control. Aggregated
+      /// across multiple virtualized controls. Surfaced as the public `FrameMetrics.VirtualItemsMaterialized`
+      /// / `VirtualItemsTotal`.
+      VirtualMaterialized: int
+      VirtualTotal: int }
 
 /// The result of one wired frame: the next retained structure, the render result (byte-identical
 /// to a full rebuild of `next`), the diagnostics surfaced from the diff (e.g. `KeyCollision`), and

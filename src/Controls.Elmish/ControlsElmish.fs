@@ -50,6 +50,8 @@ type FrameMetrics =
       RemeasuredNodeCount: int
       MemoHitCount: int
       MemoMissCount: int
+      VirtualItemsMaterialized: int
+      VirtualItemsTotal: int
       PointerSamplesReceived: int
       PointerMovesProcessed: int
       FullRenderFallbackCount: int
@@ -996,6 +998,9 @@ module ControlsElmish =
                   // Feature 113 (Phase 5): the last retained-step's memo tally (live `OnFrameMetrics` sink).
                   MemoHitCount = lastWorkReduction.Value |> Option.map (fun w -> w.MemoHits) |> Option.defaultValue 0
                   MemoMissCount = lastWorkReduction.Value |> Option.map (fun w -> w.MemoMisses) |> Option.defaultValue 0
+                  // Feature 114 (Phase 6): the last retained-step's virtualization tally (live sink).
+                  VirtualItemsMaterialized = lastWorkReduction.Value |> Option.map (fun w -> w.VirtualMaterialized) |> Option.defaultValue 0
+                  VirtualItemsTotal = lastWorkReduction.Value |> Option.map (fun w -> w.VirtualTotal) |> Option.defaultValue 0
                   PointerSamplesReceived = samples
                   PointerMovesProcessed = movesProcessed
                   FullRenderFallbackCount = fullRenderFallbackCount
@@ -1252,6 +1257,10 @@ module ControlsElmish =
             // `renderStep`/`repaintCached` so each per-frame `FrameMetrics` reports it. The first frame
             // seeds via `init` (no work record), so it stays (0, 0) until a `step` runs.
             let mutable lastMemo: int * int = 0, 0
+            // Feature 114 (Phase 6): the last retained-step's virtualization tally (materialized, total),
+            // captured by `renderStep`/`repaintCached` so each per-frame `FrameMetrics` reports it. Stays
+            // (0, 0) until a `step` runs (the first frame seeds via `init`, which has no work record).
+            let mutable lastVirtual: int * int = 0, 0
 
             // Render the retained step for the current model, returning the frame's
             // RemeasuredNodeCount (the first frame seeds via `init`, which has no work record -> 0).
@@ -1264,12 +1273,14 @@ module ControlsElmish =
                     retained <- Some r0.Retained
                     lastRender <- Some r0.Render
                     lastMemo <- 0, 0
+                    lastVirtual <- 0, 0
                     0
                 | Some prev ->
                     let s = RetainedRender.step host.Theme size prev next
                     retained <- Some s.Retained
                     lastRender <- Some s.Render
                     lastMemo <- s.WorkReduction.MemoHits, s.WorkReduction.MemoMisses
+                    lastVirtual <- s.WorkReduction.VirtualMaterialized, s.WorkReduction.VirtualTotal
                     s.WorkReduction.RemeasuredNodeCount
 
             // Feature 111 (FR-003/FR-004): re-sample the overlay for an animation-only tick WITHOUT
@@ -1285,6 +1296,7 @@ module ControlsElmish =
                     retained <- Some s.Retained
                     lastRender <- Some s.Render
                     lastMemo <- s.WorkReduction.MemoHits, s.WorkReduction.MemoMisses
+                    lastVirtual <- s.WorkReduction.VirtualMaterialized, s.WorkReduction.VirtualTotal
                     s.WorkReduction.RemeasuredNodeCount
                 | None -> 0
 
@@ -1336,6 +1348,8 @@ module ControlsElmish =
                   RemeasuredNodeCount = 0
                   MemoHitCount = 0
                   MemoMissCount = 0
+                  VirtualItemsMaterialized = 0
+                  VirtualItemsTotal = 0
                   PointerSamplesReceived = 0
                   PointerMovesProcessed = 0
                   FullRenderFallbackCount = 0
@@ -1351,6 +1365,7 @@ module ControlsElmish =
                 // frame that runs no render reports 0/0 (the previous frame's render must not bleed
                 // through). `renderStep`/`repaintCached` overwrite it when they actually run.
                 lastMemo <- 0, 0
+                lastVirtual <- 0, 0
 
                 match frame with
                 | FrameInput.Pointer _ :: _ when frame |> List.forall (function
@@ -1380,6 +1395,8 @@ module ControlsElmish =
                         RemeasuredNodeCount = remeasured
                         MemoHitCount = fst lastMemo
                         MemoMissCount = snd lastMemo
+                        VirtualItemsMaterialized = fst lastVirtual
+                        VirtualItemsTotal = snd lastVirtual
                         PointerSamplesReceived = k
                         PointerMovesProcessed = 1
                         FullRenderFallbackCount = fallbacks
@@ -1429,6 +1446,8 @@ module ControlsElmish =
                         RemeasuredNodeCount = remeasured
                         MemoHitCount = fst lastMemo
                         MemoMissCount = snd lastMemo
+                        VirtualItemsMaterialized = fst lastVirtual
+                        VirtualItemsTotal = snd lastVirtual
                         FrameCause = FrameCause.Tick
                         DiffRan = viewRan
                         LayoutRan = remeasured > 0
@@ -1453,6 +1472,8 @@ module ControlsElmish =
                         RemeasuredNodeCount = remeasured
                         MemoHitCount = fst lastMemo
                         MemoMissCount = snd lastMemo
+                        VirtualItemsMaterialized = fst lastVirtual
+                        VirtualItemsTotal = snd lastVirtual
                         FrameCause = FrameCause.Key
                         DiffRan = hasMsgs
                         LayoutRan = remeasured > 0
@@ -1476,6 +1497,8 @@ module ControlsElmish =
                         RemeasuredNodeCount = remeasured
                         MemoHitCount = fst lastMemo
                         MemoMissCount = snd lastMemo
+                        VirtualItemsMaterialized = fst lastVirtual
+                        VirtualItemsTotal = snd lastVirtual
                         PointerSamplesReceived = 1
                         FullRenderFallbackCount = fallbacks
                         FrameCause = FrameCause.PointerDiscrete

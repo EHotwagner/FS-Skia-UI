@@ -1,0 +1,326 @@
+
+## BasicViewer contract smoke
+$ dotnet run --project samples/BasicViewer/BasicViewer.fsproj --no-build --no-restore -- --contract-smoke
+status=ok
+sample=BasicViewer
+scene={ Nodes =
+   [Group
+      [{ Nodes = [Rectangle ((0.0, 0.0, 640.0, 480.0), { Red = 18uy
+                                                         Green = 24uy
+                                                         Blue = 32uy
+                                                         Alpha = 255uy })] };
+       { Nodes = [Rectangle ((32.0, 32.0, 220.0, 96.0), { Red = 36uy
+                                                          Green = 118uy
+                                                          Blue = 160uy
+                                                          Alpha = 255uy })] };
+       { Nodes = [Text ((48.0, 88.0), "Basic Vulkan Viewer", { Red = 255uy
+                                                               Green = 255uy
+                                                               Blue = 255uy
+                                                               Alpha = 255uy })] };
+       { Nodes =
+          [ClipNode
+             (RectClip { X = 28.0
+                         Y = 146.0
+                         Width = 240.0
+                         Height = 112.0 },
+              { Nodes =
+                 [Group
+                    [{ Nodes =
+                        [Path
+                           ({ Commands =
+                               [MoveTo { X = 42.0
+                                         Y = 168.0 }; LineTo { X = 148.0
+                                                               Y = 150.0 };
+                                QuadTo ({ X = 230.0
+                                          Y = 178.0 }, { X = 190.0
+                                                         Y = 232.0 });
+                                LineTo { X = 64.0
+                                         Y = 232.0 }; Close]
+                              FillType = EvenOdd },
+                            { Fill = Some { Red = 220uy
+                                            Green = 64uy
+                                            Blue = 52uy
+                                            Alpha = 230uy }
+                              Stroke = None
+                              Opacity = 1.0
+                              Antialias = true
+                              BlendMode = SrcOver
+                              Shader =
+                               Some
+                                 (LinearGradient
+                                    ({ X = 32.0
+                                       Y = 150.0 }, { X = 260.0
+                                                      Y = 230.0 },
+                                     [{ Red = 220uy
+                                        Green = 64uy
+                                        Blue = 52uy
+                                        Alpha = 230uy }; { Red = 52uy
+                                                           Green = 112uy
+                                                           Blue = 220uy
+                                                           Alpha = 255uy };
+                                      { Red = 68uy
+                                        Green = 168uy
+                                        Blue = 96uy
+                                        Alpha = 255uy }]))
+                              ColorFilter =
+                               BlendColor ({ Red = 255uy
+                                             Green = 255uy
+                                             Blue = 255uy
+                                             Alpha = 48uy }, Screen)
+                              MaskFilter = Blur 0.5
+                              ImageFilter =
+                               DropShadow (4.0, 4.0, 3.0, { Red = 0uy
+                                                            Green = 0uy
+                                                            Blue = 0uy
+                                                            Alpha = 120uy })
+                              PathEffect = Corner 6.0 })] };
+                     { Nodes =
+                        [Line
+                           ({ X = 44.0
+                              Y = 244.0 }, { X = 250.0
+                                             Y = 158.0 },
+                            { Fill = Some { Red = 248uy
+                                            Green = 220uy
+                                            Blue = 92uy
+                                            Alpha = 255uy }
+                              Stroke = Some { Width = 3.0
+                                              Cap = Round
+                                              Join = RoundJoin
+                                              Miter = 4.0 }
+                              Opacity = 1.0
+                              Antialias = true
+                              BlendMode = SrcOver
+                              Shader = None
+                              ColorFilter = NoColorFilter
+                              MaskFilter = NoMaskFilter
+                              ImageFilter = NoImageFilter
+                              PathEffect = Dash ([8.0; 4.0], 0.0) })] };
+                     { Nodes =
+                        [PerspectiveNode
+                           ({ M11 = 1.0
+                              M12 = 0.08
+                              M13 = 0.0
+                              M21 = -0.04
+                              M22 = 1.0
+                              M23 = 0.0
+                              M31 = 0.0002
+                              M32 = 0.0002
+                              M33 = 1.0 },
+                            { Nodes =
+                               [PaintedRectangle
+                                  ({ X = 184.0
+                                     Y = 174.0
+                                     Width = 42.0
+                                     Height = 42.0 },
+                                   { Fill = Some { Red = 220uy
+                                                   Green = 64uy
+                                                   Blue = 52uy
+                                                   Alpha = 230uy }
+                                     Stroke = None
+                                     Opacity = 1.0
+                                     Antialias = true
+                                     BlendMode = SrcOver
+                                     Shader =
+                                      Some
+                                        (LinearGradient
+                                           ({ X = 32.0
+                                              Y = 150.0 }, { X = 260.0
+                                                             Y = 230.0 },
+                                            [{ Red = 220uy
+                                               Green = 64uy
+                                               Blue = 52uy
+                                               Alpha = 230uy };
+                                             { Red = 52uy
+                                               Green = 112uy
+                                               Blue = 220uy
+                                               Alpha = 255uy };
+                                             { Red = 68uy
+                                               Green = 168uy
+                                               Blue = 96uy
+                                               Alpha = 255uy }]))
+                                     ColorFilter =
+                                      BlendColor ({ Red = 255uy
+                                                    Green = 255uy
+                                                    Blue = 255uy
+                                                    Alpha = 48uy }, Screen)
+                                     MaskFilter = Blur 0.5
+                                     ImageFilter =
+                                      DropShadow
+                                        (4.0, 4.0, 3.0, { Red = 0uy
+                                                          Green = 0uy
+                                                          Blue = 0uy
+                                                          Alpha = 120uy })
+                                     PathEffect = Corner 6.0 })] })] }]] })] };
+       { Nodes = [Image ((280.0, 40.0, 96.0, 96.0), "assets/sample.png")] };
+       { Nodes = [Chart [2.0; 4.0; 3.0; 8.0; 5.0]] }]] }
+contains-shapes=true
+contains-text=true
+contains-image=true
+contains-chart=true
+screenshot-destination=specs/002-skia-feature-parity/readiness/screenshots/basic-viewer.png
+screenshot-format=Png
+
+exit-code=0
+
+## BasicViewer contract smoke
+$ dotnet run --project samples/BasicViewer/BasicViewer.fsproj --no-build --no-restore -- --contract-smoke
+status=ok
+sample=BasicViewer
+scene={ Nodes =
+   [Group
+      [{ Nodes = [Rectangle ((0.0, 0.0, 640.0, 480.0), { Red = 18uy
+                                                         Green = 24uy
+                                                         Blue = 32uy
+                                                         Alpha = 255uy })] };
+       { Nodes = [Rectangle ((32.0, 32.0, 220.0, 96.0), { Red = 36uy
+                                                          Green = 118uy
+                                                          Blue = 160uy
+                                                          Alpha = 255uy })] };
+       { Nodes = [Text ((48.0, 88.0), "Basic Vulkan Viewer", { Red = 255uy
+                                                               Green = 255uy
+                                                               Blue = 255uy
+                                                               Alpha = 255uy })] };
+       { Nodes =
+          [ClipNode
+             (RectClip { X = 28.0
+                         Y = 146.0
+                         Width = 240.0
+                         Height = 112.0 },
+              { Nodes =
+                 [Group
+                    [{ Nodes =
+                        [Path
+                           ({ Commands =
+                               [MoveTo { X = 42.0
+                                         Y = 168.0 }; LineTo { X = 148.0
+                                                               Y = 150.0 };
+                                QuadTo ({ X = 230.0
+                                          Y = 178.0 }, { X = 190.0
+                                                         Y = 232.0 });
+                                LineTo { X = 64.0
+                                         Y = 232.0 }; Close]
+                              FillType = EvenOdd },
+                            { Fill = Some { Red = 220uy
+                                            Green = 64uy
+                                            Blue = 52uy
+                                            Alpha = 230uy }
+                              Stroke = None
+                              Opacity = 1.0
+                              Antialias = true
+                              BlendMode = SrcOver
+                              Shader =
+                               Some
+                                 (LinearGradient
+                                    ({ X = 32.0
+                                       Y = 150.0 }, { X = 260.0
+                                                      Y = 230.0 },
+                                     [{ Red = 220uy
+                                        Green = 64uy
+                                        Blue = 52uy
+                                        Alpha = 230uy }; { Red = 52uy
+                                                           Green = 112uy
+                                                           Blue = 220uy
+                                                           Alpha = 255uy };
+                                      { Red = 68uy
+                                        Green = 168uy
+                                        Blue = 96uy
+                                        Alpha = 255uy }]))
+                              ColorFilter =
+                               BlendColor ({ Red = 255uy
+                                             Green = 255uy
+                                             Blue = 255uy
+                                             Alpha = 48uy }, Screen)
+                              MaskFilter = Blur 0.5
+                              ImageFilter =
+                               DropShadow (4.0, 4.0, 3.0, { Red = 0uy
+                                                            Green = 0uy
+                                                            Blue = 0uy
+                                                            Alpha = 120uy })
+                              PathEffect = Corner 6.0 })] };
+                     { Nodes =
+                        [Line
+                           ({ X = 44.0
+                              Y = 244.0 }, { X = 250.0
+                                             Y = 158.0 },
+                            { Fill = Some { Red = 248uy
+                                            Green = 220uy
+                                            Blue = 92uy
+                                            Alpha = 255uy }
+                              Stroke = Some { Width = 3.0
+                                              Cap = Round
+                                              Join = RoundJoin
+                                              Miter = 4.0 }
+                              Opacity = 1.0
+                              Antialias = true
+                              BlendMode = SrcOver
+                              Shader = None
+                              ColorFilter = NoColorFilter
+                              MaskFilter = NoMaskFilter
+                              ImageFilter = NoImageFilter
+                              PathEffect = Dash ([8.0; 4.0], 0.0) })] };
+                     { Nodes =
+                        [PerspectiveNode
+                           ({ M11 = 1.0
+                              M12 = 0.08
+                              M13 = 0.0
+                              M21 = -0.04
+                              M22 = 1.0
+                              M23 = 0.0
+                              M31 = 0.0002
+                              M32 = 0.0002
+                              M33 = 1.0 },
+                            { Nodes =
+                               [PaintedRectangle
+                                  ({ X = 184.0
+                                     Y = 174.0
+                                     Width = 42.0
+                                     Height = 42.0 },
+                                   { Fill = Some { Red = 220uy
+                                                   Green = 64uy
+                                                   Blue = 52uy
+                                                   Alpha = 230uy }
+                                     Stroke = None
+                                     Opacity = 1.0
+                                     Antialias = true
+                                     BlendMode = SrcOver
+                                     Shader =
+                                      Some
+                                        (LinearGradient
+                                           ({ X = 32.0
+                                              Y = 150.0 }, { X = 260.0
+                                                             Y = 230.0 },
+                                            [{ Red = 220uy
+                                               Green = 64uy
+                                               Blue = 52uy
+                                               Alpha = 230uy };
+                                             { Red = 52uy
+                                               Green = 112uy
+                                               Blue = 220uy
+                                               Alpha = 255uy };
+                                             { Red = 68uy
+                                               Green = 168uy
+                                               Blue = 96uy
+                                               Alpha = 255uy }]))
+                                     ColorFilter =
+                                      BlendColor ({ Red = 255uy
+                                                    Green = 255uy
+                                                    Blue = 255uy
+                                                    Alpha = 48uy }, Screen)
+                                     MaskFilter = Blur 0.5
+                                     ImageFilter =
+                                      DropShadow
+                                        (4.0, 4.0, 3.0, { Red = 0uy
+                                                          Green = 0uy
+                                                          Blue = 0uy
+                                                          Alpha = 120uy })
+                                     PathEffect = Corner 6.0 })] })] }]] })] };
+       { Nodes = [Image ((280.0, 40.0, 96.0, 96.0), "assets/sample.png")] };
+       { Nodes = [Chart [2.0; 4.0; 3.0; 8.0; 5.0]] }]] }
+contains-shapes=true
+contains-text=true
+contains-image=true
+contains-chart=true
+screenshot-destination=specs/002-skia-feature-parity/readiness/screenshots/basic-viewer.png
+screenshot-format=Png
+
+exit-code=0

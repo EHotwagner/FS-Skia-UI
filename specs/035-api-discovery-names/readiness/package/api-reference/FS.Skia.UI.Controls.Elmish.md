@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 138
-xml-summary-count: 249
+symbol-count: 140
+xml-summary-count: 260
 source-fsi-paths:
 - src/Controls.Elmish/ControlsElmish.fsi
 sampled-symbols:
@@ -119,6 +119,19 @@ type FrameMetrics =
       /// recomputed and stored. `0` on an idle frame or any frame that evaluates no memoizable control.
       /// Deterministic, golden-asserted via `Perf.runScript`.
       MemoMissCount: int
+      /// Feature 114 (Phase 6, FR-013): the number of repeated-control row items actually MATERIALIZED
+      /// this frame — the count of `data-grid-row` nodes the virtualized control(s) realized. Bounded by
+      /// `visibleCount + 2 * overscan` and does NOT scale with the total logical row count: a 100-, 1000-,
+      /// and 10000-row grid with the same viewport + overscan all report the same materialized count.
+      /// `0` on a frame that evaluates no virtualized control; aggregates across virtualized controls.
+      /// Deterministic, golden-asserted via `Perf.runScript`.
+      VirtualItemsMaterialized: int
+      /// Feature 114 (Phase 6, FR-013): the total LOGICAL item count the virtualized control(s) represent
+      /// this frame (the sum of each `data-grid`'s logical `Total`). Equals `VirtualItemsMaterialized` only
+      /// when the whole collection fits the realized window; otherwise it scales with the data while
+      /// `VirtualItemsMaterialized` stays bounded. `0` on a frame with no virtualized control. Deterministic,
+      /// golden-asserted via `Perf.runScript`.
+      VirtualItemsTotal: int
       /// Raw pointer samples that arrived this frame, including deferred/queued moves carried from a
       /// prior boundary (K before coalescing) (FR-008).
       PointerSamplesReceived: int

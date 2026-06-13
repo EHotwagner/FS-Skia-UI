@@ -341,7 +341,8 @@ module private Gen067 =
           FocusOrder = None
           Keyboard = { Focusable = false; ActivationKeys = []; NavigationKeys = [] }
           Contrast = None
-          Navigation = None }
+          Navigation = None
+          Collection = None }
 
     let private genA11y : Gen<AccessibilityMetadata option> =
         Gen.frequency [ 3, Gen.constant None; 1, Gen.constant (Some a11y) ]

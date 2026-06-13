@@ -35,8 +35,7 @@
 
 | Status | Count |
 |--------|-------|
-| [ ] pending | 1 |
-| [X] done | 23 |
+| [X] done | 24 |
 | [S] synthetic | 0 |
 | [S*] auto-synthetic | 0 |
 | accepted [SEH] synthetic | 0 |
@@ -69,7 +68,7 @@ graph TD
   T021["T021 Confirm the new `FrameMetrics` fields, the `Diagno"]:::done
   T022["T022 Run the escalated controls-public-surface gates se"]:::done
   T023["T023 Run `./fake.sh build -t EvidenceGraph` — confirm n"]:::done
-  T024["T024 Run `./fake.sh build -t EvidenceAudit` — confirm v"]:::pending
+  T024["T024 Run `./fake.sh build -t EvidenceAudit` — confirm v"]:::done
   T003 -. injected .-> T004
   T004 --> T005
   T003 -. injected .-> T005
@@ -146,7 +145,7 @@ T020 [X] Run `./fake.sh build -t RefreshSurfaceBaselines` to regenerate the top-
 T021 [X] Confirm the new `FrameMetrics` fields, the `Diagnostics` `val`, and the internal memo seam/types satisfy the doc-preservation / XML-doc gate, and that no unrelated public function signature changed
 T022 [X] Run the escalated controls-public-surface gates sequentially as `Route` prints them — `Dev`, `GeneratedGuidanceCheck`, `TemplateCheck`, `GeneratedProductCheck`, the package/per-package surface diffs, `FsiTranscripts`, the controls catalog/doc/interaction/rendering checks, and `TemplateDrift` — and record the focused governance risk level + non-authoritative aggregate notes in `readiness/`
 T023 [X] Run `./fake.sh build -t EvidenceGraph` — confirm no cycles, no dangling refs, no `[S*]` surprises, and the echoed `feature-directory`/`tasks=<n>` match this feature
-T024 [ ] Run `./fake.sh build -t EvidenceAudit` — confirm verdict PASS with no remaining `[S]`/`[S*]` and no diff-scan hits, or document every `--accept-synthetic` override
+T024 [X] Run `./fake.sh build -t EvidenceAudit` — confirm verdict PASS with no remaining `[S]`/`[S*]` and no diff-scan hits, or document every `--accept-synthetic` override
 ```
 
 ## Injected checkpoint edges (Phase N+1 → Phase N) — FR-007

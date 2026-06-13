@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 778
-xml-summary-count: 688
+symbol-count: 784
+xml-summary-count: 712
 source-fsi-paths:
 - src/Controls/Accessibility.fsi
 - src/Controls/Attributes.fsi
@@ -296,6 +296,12 @@ type CollectionModel =
       ScrollOffset: float
       SelectedKeys: Set<string>
       VisibleRange: VisibleRange
+      /// Feature 114 (Phase 6): extra logical rows realized on EACH side of the visible window
+      /// (the overscan buffer). Default <c>0</c>, which reproduces today's realized slice
+      /// byte-identically (FR-006); a positive value is an opt-in that widens the realized window by
+      /// up to <c>2 * Overscan</c> real, edge-clamped adjacent rows (FR-007). Negative values are
+      /// clamped to 0.
+      Overscan: int
       RecalculationThresholdMs: int }
 
 /// Messages that drive a `CollectionModel`: `ScrollTo`, `SelectKey`/`ToggleKey`, `ReplaceItemCount`.
@@ -311,8 +317,12 @@ type CollectionEffect =
 
 /// Virtualization model for large scrolling lists: `visibleRange`/`init`/`update` over `CollectionModel`.
 module Collections =
-    /// Compute the realized `VisibleRange` from row height, viewport height, scroll offset, and item total.
-    val visibleRange: rowHeight: float -> viewportHeight: float -> scrollOffset: float -> totalItems: int -> VisibleRange
+    /// Compute the realized `VisibleRange` from row height, viewport height, scroll offset, item total,
+    /// and an `overscan` buffer (Feature 114, additive trailing parameter). `overscan = 0` reproduces
+    /// the pre-feature visible slice byte-identically; a positive `overscan` shifts `FirstIndex` back by
+    /// up to `overscan` and widens `Count` by up to `2 * overscan`, edge-clamped so no index is `< 0` or
+    /// `>= totalItems`. Negative `overscan` is treated as 0.
+    val visibleRange: rowHeight: float -> viewportHeight: float -> scrollOffset: float -> totalItems: int -> overscan: int -> VisibleRange
     /// Build the initial `CollectionModel` for a `controlId` and emit its first `CollectionEffect` list.
     val init: controlId: ControlId -> itemCount: int -> rowHeight: float -> viewportHeight: float -> CollectionModel * CollectionEffect list
     /// Apply a `CollectionMsg` to the `CollectionModel`, returning the next model and any effects.
@@ -1038,6 +1048,12 @@ type DataGridModel =
       RowHeight: float
       ViewportHeight: float
       VisibleRange: VisibleRange
+      /// Feature 114 (Phase 6): extra logical rows realized on EACH side of the visible window.
+      /// Default <c>0</c> (byte-identical to today's slice, FR-006); a positive value is an opt-in
+      /// widening the realized window by up to <c>2 * Overscan</c> real, edge-clamped adjacent rows
+      /// (FR-007). The window always stays bounded (<c>materialized &lt;= visible + 2 * Overscan</c>) — a
+      /// scroll/relocation moves the window, it never expands it.
+      Overscan: int
       SelectedRows: Set<string>
       FocusedCell: DataGridFocusedCell option
       Sort: DataGridSort option
@@ -1480,9 +1496,20 @@ type NavRange =
       Min: float
       Max: float }
 
+/// Feature 114 (Phase 6): the logical size + current position of a virtualized collection
+/// (e.g. a DataGrid), reported to assistive technology INDEPENDENT of how many items are
+/// materialized. <c>TotalItems</c> is the total logical item count (from the collection's
+/// <c>RowCount</c>/<c>ItemCount</c>); <c>FocusedIndex</c> is the focused item's logical index
+/// within that total (<c>None</c> when nothing is focused). Both are computed from the logical
+/// model, never from the realized slice (FR-012).
+type CollectionPosition =
+    { TotalItems: int
+      FocusedIndex: int option }
+
 /// Per-control accessibility record (`AccessibilityMetadata`): the semantic `Role`,
 /// `NameSource`, current `State` flags, optional `FocusOrder`, the `Keyboard` contract,
-/// optional `Contrast` evidence, and optional value-range `Navigation` metadata.
+/// optional `Contrast` evidence, optional value-range `Navigation` metadata, and the optional
+/// virtualized-`Collection` total/position.
 type AccessibilityMetadata =
     { Role: AccessibilityRole
       NameSource: string
@@ -1493,7 +1520,11 @@ type AccessibilityMetadata =
       /// Feature 100 (R5): the declared value/range step + bounds for a range role
       /// (<c>Some</c> for Slider/Progress/numeric value roles), <c>None</c> otherwise. Read by
       /// both <c>Focus.route</c> and the host per-intent resolver.
-      Navigation: NavRange option }
+      Navigation: NavRange option
+      /// Feature 114 (Phase 6): the total logical item count + current focused position for a
+      /// virtualized collection control (<c>Some</c> for a virtualized DataGrid), <c>None</c> for
+      /// every non-collection control (so at-rest a11y for existing controls is byte-identical).
+      Collection: CollectionPosition option }
 
 /// Validation status of an input control (`ValidationState`): `Valid`, `Invalid` with
 /// an error message, or `Pending` with an in-progress message.

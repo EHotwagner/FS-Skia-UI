@@ -206,9 +206,20 @@ type NavRange =
       Min: float
       Max: float }
 
+/// Feature 114 (Phase 6): the logical size + current position of a virtualized collection
+/// (e.g. a DataGrid), reported to assistive technology INDEPENDENT of how many items are
+/// materialized. <c>TotalItems</c> is the total logical item count (from the collection's
+/// <c>RowCount</c>/<c>ItemCount</c>); <c>FocusedIndex</c> is the focused item's logical index
+/// within that total (<c>None</c> when nothing is focused). Both are computed from the logical
+/// model, never from the realized slice (FR-012).
+type CollectionPosition =
+    { TotalItems: int
+      FocusedIndex: int option }
+
 /// Per-control accessibility record (`AccessibilityMetadata`): the semantic `Role`,
 /// `NameSource`, current `State` flags, optional `FocusOrder`, the `Keyboard` contract,
-/// optional `Contrast` evidence, and optional value-range `Navigation` metadata.
+/// optional `Contrast` evidence, optional value-range `Navigation` metadata, and the optional
+/// virtualized-`Collection` total/position.
 type AccessibilityMetadata =
     { Role: AccessibilityRole
       NameSource: string
@@ -219,7 +230,11 @@ type AccessibilityMetadata =
       /// Feature 100 (R5): the declared value/range step + bounds for a range role
       /// (<c>Some</c> for Slider/Progress/numeric value roles), <c>None</c> otherwise. Read by
       /// both <c>Focus.route</c> and the host per-intent resolver.
-      Navigation: NavRange option }
+      Navigation: NavRange option
+      /// Feature 114 (Phase 6): the total logical item count + current focused position for a
+      /// virtualized collection control (<c>Some</c> for a virtualized DataGrid), <c>None</c> for
+      /// every non-collection control (so at-rest a11y for existing controls is byte-identical).
+      Collection: CollectionPosition option }
 
 /// Validation status of an input control (`ValidationState`): `Valid`, `Invalid` with
 /// an error message, or `Pending` with an in-progress message.

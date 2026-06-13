@@ -161,6 +161,10 @@ type NavRange =
       Min: float
       Max: float }
 
+type CollectionPosition =
+    { TotalItems: int
+      FocusedIndex: int option }
+
 type AccessibilityMetadata =
     { Role: AccessibilityRole
       NameSource: string
@@ -168,7 +172,8 @@ type AccessibilityMetadata =
       FocusOrder: int option
       Keyboard: KeyboardOperation
       Contrast: ContrastEvidence option
-      Navigation: NavRange option }
+      Navigation: NavRange option
+      Collection: CollectionPosition option }
 
 type ValidationState =
     | Valid

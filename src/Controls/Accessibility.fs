@@ -19,7 +19,10 @@ module Accessibility =
           FocusOrder = focusOrder
           Keyboard = keyboard
           Contrast = contrast
-          Navigation = navRange }
+          Navigation = navRange
+          // Feature 114 (FR-012): the default metadata carries no collection total/position; a
+          // virtualized control (DataGrid) sets it explicitly from its logical model at the build site.
+          Collection = None }
 
     let roleFor kind =
         match kind with

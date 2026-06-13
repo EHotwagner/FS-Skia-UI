@@ -55,6 +55,10 @@
     <Compile Include="Feature113MemoSeamTests.fs" />
     <Compile Include="Feature113MemoParityTests.fs" />
     <Compile Include="Feature113StabilityDiagTests.fs" />
+    <Compile Include="Feature114OverscanTests.fs" />
+    <Compile Include="Feature114OverscanParityTests.fs" />
+    <Compile Include="Feature114OffscreenTests.fs" />
+    <Compile Include="Feature114AccessibilityTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
