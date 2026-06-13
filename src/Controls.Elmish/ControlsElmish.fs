@@ -58,6 +58,9 @@ type FrameMetrics =
       PictureCacheHitCount: int
       PictureCacheMissCount: int
       PictureCacheEntryCount: int
+      TextMeasureCacheHitCount: int
+      TextMeasureCacheMissCount: int
+      LayoutInvalidatedNodeCount: int
       PointerSamplesReceived: int
       PointerMovesProcessed: int
       FullRenderFallbackCount: int
@@ -1014,6 +1017,10 @@ module ControlsElmish =
                   PictureCacheHitCount = lastWorkReduction.Value |> Option.map (fun w -> w.PictureCacheHits) |> Option.defaultValue 0
                   PictureCacheMissCount = lastWorkReduction.Value |> Option.map (fun w -> w.PictureCacheMisses) |> Option.defaultValue 0
                   PictureCacheEntryCount = lastWorkReduction.Value |> Option.map (fun w -> w.PictureCacheEntryCount) |> Option.defaultValue 0
+                  // Feature 117 (Phase 8): the last retained-step's text-cache tally + dirty-set size (live sink).
+                  TextMeasureCacheHitCount = lastWorkReduction.Value |> Option.map (fun w -> w.TextMeasureCacheHits) |> Option.defaultValue 0
+                  TextMeasureCacheMissCount = lastWorkReduction.Value |> Option.map (fun w -> w.TextMeasureCacheMisses) |> Option.defaultValue 0
+                  LayoutInvalidatedNodeCount = lastWorkReduction.Value |> Option.map (fun w -> w.LayoutInvalidatedNodeCount) |> Option.defaultValue 0
                   PointerSamplesReceived = samples
                   PointerMovesProcessed = movesProcessed
                   FullRenderFallbackCount = fullRenderFallbackCount
@@ -1279,6 +1286,11 @@ module ControlsElmish =
             // `renderStep`/`repaintCached`. Stay zero until a `step` runs.
             let mutable lastDamage: int * int * int = 0, 0, 0
             let mutable lastPicture: int * int * int = 0, 0, 0
+            // Feature 117 (Phase 8): the last retained-step's text-cache tally (hits, misses) and the
+            // layout dirty-set size, captured by `renderStep`/`repaintCached`. Stay zero until a `step`
+            // runs (the first frame seeds via `init`, which has no work record).
+            let mutable lastTextCache: int * int = 0, 0
+            let mutable lastInvalidated: int = 0
 
             // Render the retained step for the current model, returning the frame's
             // RemeasuredNodeCount (the first frame seeds via `init`, which has no work record -> 0).
@@ -1301,6 +1313,8 @@ module ControlsElmish =
                     lastVirtual <- s.WorkReduction.VirtualMaterialized, s.WorkReduction.VirtualTotal
                     lastDamage <- s.WorkReduction.RepaintedNodeCount, s.WorkReduction.DirtyRectCount, s.WorkReduction.DirtyArea
                     lastPicture <- s.WorkReduction.PictureCacheHits, s.WorkReduction.PictureCacheMisses, s.WorkReduction.PictureCacheEntryCount
+                    lastTextCache <- s.WorkReduction.TextMeasureCacheHits, s.WorkReduction.TextMeasureCacheMisses
+                    lastInvalidated <- s.WorkReduction.LayoutInvalidatedNodeCount
                     s.WorkReduction.RemeasuredNodeCount
 
             // Feature 111 (FR-003/FR-004): re-sample the overlay for an animation-only tick WITHOUT
@@ -1319,6 +1333,8 @@ module ControlsElmish =
                     lastVirtual <- s.WorkReduction.VirtualMaterialized, s.WorkReduction.VirtualTotal
                     lastDamage <- s.WorkReduction.RepaintedNodeCount, s.WorkReduction.DirtyRectCount, s.WorkReduction.DirtyArea
                     lastPicture <- s.WorkReduction.PictureCacheHits, s.WorkReduction.PictureCacheMisses, s.WorkReduction.PictureCacheEntryCount
+                    lastTextCache <- s.WorkReduction.TextMeasureCacheHits, s.WorkReduction.TextMeasureCacheMisses
+                    lastInvalidated <- s.WorkReduction.LayoutInvalidatedNodeCount
                     s.WorkReduction.RemeasuredNodeCount
                 | None -> 0
 
@@ -1378,6 +1394,9 @@ module ControlsElmish =
                   PictureCacheHitCount = 0
                   PictureCacheMissCount = 0
                   PictureCacheEntryCount = 0
+                  TextMeasureCacheHitCount = 0
+                  TextMeasureCacheMissCount = 0
+                  LayoutInvalidatedNodeCount = 0
                   PointerSamplesReceived = 0
                   PointerMovesProcessed = 0
                   FullRenderFallbackCount = 0
@@ -1396,6 +1415,8 @@ module ControlsElmish =
                 lastVirtual <- 0, 0
                 lastDamage <- 0, 0, 0
                 lastPicture <- 0, 0, 0
+                lastTextCache <- 0, 0
+                lastInvalidated <- 0
 
                 match frame with
                 | FrameInput.Pointer _ :: _ when frame |> List.forall (function
@@ -1433,6 +1454,9 @@ module ControlsElmish =
                         PictureCacheHitCount = (let (h, _, _) = lastPicture in h)
                         PictureCacheMissCount = (let (_, m, _) = lastPicture in m)
                         PictureCacheEntryCount = (let (_, _, e) = lastPicture in e)
+                        TextMeasureCacheHitCount = fst lastTextCache
+                        TextMeasureCacheMissCount = snd lastTextCache
+                        LayoutInvalidatedNodeCount = lastInvalidated
                         PointerSamplesReceived = k
                         PointerMovesProcessed = 1
                         FullRenderFallbackCount = fallbacks
@@ -1490,6 +1514,9 @@ module ControlsElmish =
                         PictureCacheHitCount = (let (h, _, _) = lastPicture in h)
                         PictureCacheMissCount = (let (_, m, _) = lastPicture in m)
                         PictureCacheEntryCount = (let (_, _, e) = lastPicture in e)
+                        TextMeasureCacheHitCount = fst lastTextCache
+                        TextMeasureCacheMissCount = snd lastTextCache
+                        LayoutInvalidatedNodeCount = lastInvalidated
                         FrameCause = FrameCause.Tick
                         DiffRan = viewRan
                         LayoutRan = remeasured > 0
@@ -1522,6 +1549,9 @@ module ControlsElmish =
                         PictureCacheHitCount = (let (h, _, _) = lastPicture in h)
                         PictureCacheMissCount = (let (_, m, _) = lastPicture in m)
                         PictureCacheEntryCount = (let (_, _, e) = lastPicture in e)
+                        TextMeasureCacheHitCount = fst lastTextCache
+                        TextMeasureCacheMissCount = snd lastTextCache
+                        LayoutInvalidatedNodeCount = lastInvalidated
                         FrameCause = FrameCause.Key
                         DiffRan = hasMsgs
                         LayoutRan = remeasured > 0
@@ -1553,6 +1583,9 @@ module ControlsElmish =
                         PictureCacheHitCount = (let (h, _, _) = lastPicture in h)
                         PictureCacheMissCount = (let (_, m, _) = lastPicture in m)
                         PictureCacheEntryCount = (let (_, _, e) = lastPicture in e)
+                        TextMeasureCacheHitCount = fst lastTextCache
+                        TextMeasureCacheMissCount = snd lastTextCache
+                        LayoutInvalidatedNodeCount = lastInvalidated
                         PointerSamplesReceived = 1
                         FullRenderFallbackCount = fallbacks
                         FrameCause = FrameCause.PointerDiscrete

@@ -70,6 +70,21 @@ type internal PictureCache =
     { Entries: Map<RetainedId, int * PictureCacheKey>
       Clock: int }
 
+// Feature 117 (Phase 8, FR-002): the text-measure cache key — every input `Scene.measureText` reads.
+type internal TextMeasureKey =
+    { Text: string
+      Family: string option
+      Size: float
+      Weight: int option }
+
+// Feature 117 (Phase 8, FR-003): the bounded cross-frame text-measure cache — a fixed-cap LRU over
+// measured text identities, each holding its measured `TextMetrics` + a monotonic access stamp advanced
+// by measurement order (no wall-clock). Over the cap the least-recently-accessed entry is dropped; a
+// dropped key re-misses when next needed.
+type internal TextMeasureCache =
+    { Entries: Map<TextMeasureKey, int * FS.Skia.UI.Scene.TextMetrics>
+      Clock: int }
+
 type internal RetainedRender<'msg> =
     { Root: RetainedNode<'msg>
       NextId: uint64
@@ -84,7 +99,11 @@ type internal RetainedRender<'msg> =
       // Feature 116 (Phase 7): the bounded cross-frame picture cache (FR-009/FR-010).
       PictureCache: PictureCache
       // Feature 116 (Phase 7): the picture-cache always-miss switch (FR-007); `true` on the live path.
-      PictureCacheEnabled: bool }
+      PictureCacheEnabled: bool
+      // Feature 117 (Phase 8): the bounded cross-frame text-measure cache (FR-001/FR-003).
+      TextCache: TextMeasureCache
+      // Feature 117 (Phase 8): the text-cache always-miss switch (FR-004); `true` on the live path.
+      TextCacheEnabled: bool }
 
 type internal WorkReductionRecord =
     { BaselineNodeCount: int
@@ -107,7 +126,12 @@ type internal WorkReductionRecord =
       // Feature 116 (Phase 7, FR-005/FR-009/FR-010): picture-cache hits, misses, and live entry count.
       PictureCacheHits: int
       PictureCacheMisses: int
-      PictureCacheEntryCount: int }
+      PictureCacheEntryCount: int
+      // Feature 117 (Phase 8, FR-001/FR-005): per-frame text-measure cache hits + misses.
+      TextMeasureCacheHits: int
+      TextMeasureCacheMisses: int
+      // Feature 117 (Phase 8, FR-006): the pre-pinning layout dirty-set size (<= RemeasuredNodeCount).
+      LayoutInvalidatedNodeCount: int }
 
 type internal RetainedRenderStep<'msg> =
     { Retained: RetainedRender<'msg>
@@ -178,6 +202,47 @@ module internal RetainedRender =
     /// the eviction-pressure scenario (320 distinct rows = 1.25 × cap), so the bound is exercised
     /// without spuriously evicting the small scenes.
     let PictureCacheCap = 256
+
+    /// Feature 117 (Phase 8, FR-003): the fixed text-measure-cache entry cap (aligned with
+    /// `PictureCacheCap`). `TextCache.Entries.Count` never exceeds this; the eviction-pressure scenario
+    /// drives more distinct strings than the cap to prove bounded memory + deterministic LRU eviction.
+    let TextMeasureCacheCap = 256
+
+    // Feature 117 (Phase 8, FR-001/FR-002/FR-003/FR-004): the pure, total text-measure cache lookup.
+    // `Scene.measureText` is a pure function of `(text, font)`, so the cached value EQUALS the un-cached
+    // value for every key (research R5) — the cache is a transparent accelerator. A resident key returns
+    // its stored `TextMetrics` WITHOUT re-invoking `Scene.measureText` (a hit), bumps its recency stamp,
+    // and returns the advanced cache; an absent/evicted key measures fresh, inserts (evicting the
+    // least-recently-used entry deterministically over the cap), and returns it (a miss). When `enabled`
+    // is `false` (the always-miss oracle, FR-004) every request re-measures and is a miss, never
+    // consulting/populating the cache — proving cache-on ≡ cache-off. Returns `(metrics, advanced cache,
+    // wasHit)`. Deterministic: the recency stamp (`Clock`) advances by measurement order, never a clock.
+    let internal measureTextCached
+        (cache: TextMeasureCache)
+        (enabled: bool)
+        (text: string)
+        (font: FS.Skia.UI.Scene.FontSpec)
+        : FS.Skia.UI.Scene.TextMetrics * TextMeasureCache * bool =
+        if not enabled then
+            FS.Skia.UI.Scene.Scene.measureText text font, cache, false
+        else
+            let key: TextMeasureKey =
+                { Text = text; Family = font.Family; Size = font.Size; Weight = font.Weight }
+
+            match Map.tryFind key cache.Entries with
+            | Some(_, metrics) ->
+                let clock = cache.Clock + 1
+                metrics, { cache with Entries = Map.add key (clock, metrics) cache.Entries; Clock = clock }, true
+            | None ->
+                let metrics = FS.Skia.UI.Scene.Scene.measureText text font
+                let clock = cache.Clock + 1
+                let mutable entries = Map.add key (clock, metrics) cache.Entries
+
+                while entries.Count > TextMeasureCacheCap do
+                    let lruKey, _ = entries |> Map.toSeq |> Seq.minBy (fun (_, (stamp, _)) -> stamp)
+                    entries <- Map.remove lruKey entries
+
+                metrics, { cache with Entries = entries; Clock = clock }, false
 
     // A cacheable picture boundary: a materialized data-grid row (the row analog of the 113 data-grid
     // memo site). Each row's painted picture is cached and reused when its full correctness key is
@@ -479,7 +544,12 @@ module internal RetainedRender =
               MemoEnabled = true
               Layout = layoutResult
               PictureCache = { Entries = pcEntries; Clock = pcClock }
-              PictureCacheEnabled = true }
+              PictureCacheEnabled = true
+              // Feature 117 (Phase 8): seed the text-measure cache EMPTY. `init` measures uncached (no
+              // hook installed), byte-identical to pre-117, so the FIRST `step` starts cold (misses) and a
+              // subsequent unchanged-text `step` reports hits (cold → warm, SC-001/SC-002).
+              TextCache = { Entries = Map.empty; Clock = 0 }
+              TextCacheEnabled = true }
           Render = render
           Diagnostics = firstFrameCollisions control }
 
@@ -570,6 +640,38 @@ module internal RetainedRender =
         //     `Bounds` are byte-identical to a full `evaluateLayout` (INV-1), so the reuse-driven paint
         //     walk below (`box = pr.Fragment.Box`) and the surfaced Bounds are unchanged.
         let dirty = layoutDirtySet prev.Root.Control result.Patch next
+        // FR-006: the size of the layout dirty set fed into incremental layout this frame (the
+        // patch-derived self-dirty nodes BEFORE fixed-size-ancestor propagation). Distinct from the
+        // post-pinning `remeasured` below; `invalidated <= remeasured` because propagation expands each
+        // dirty node to its first fixed-size ancestor's whole subtree (a superset). `0` on an idle /
+        // style-only / visual-state-only frame (no layout-affecting attr changed → empty dirty set).
+        let invalidated = Set.count dirty
+
+        // Feature 117 (Phase 8, FR-001/FR-003/FR-004): install the per-frame text-measure cache over THIS
+        // frame's layout + paint measurement. A working copy of the carried cache + per-frame hit/miss
+        // counters; the closure consults the cache (a resident key → hit, reused without re-invoking
+        // `Scene.measureText`; an absent/evicted key → miss, measured once, stored, LRU-evicted over the
+        // cap), or — when the `TextCacheEnabled` oracle is `false` — always re-measures and counts a miss
+        // (never consulting/populating the cache), proving cache-on ≡ cache-off (FR-004). The cached value
+        // EQUALS the un-cached value by construction (`Scene.measureText` is pure, research R5), so layout
+        // boxes / fitted sizes / emitted scene are byte-identical. Interpreter-edge mutation confined to the
+        // step (constitution III), exactly like the id/work counters and the 116 picture cache.
+        let mutable tc = prev.TextCache
+        let mutable textHits = 0
+        let mutable textMisses = 0
+
+        let measureCached (text: string) (font: FS.Skia.UI.Scene.FontSpec) : FS.Skia.UI.Scene.TextMetrics =
+            let metrics, tc', wasHit = measureTextCached tc prev.TextCacheEnabled text font
+            tc <- tc'
+            if wasHit then textHits <- textHits + 1 else textMisses <- textMisses + 1
+            metrics
+
+        // Active for the WHOLE measurement window of this frame — the incremental layout pass AND the
+        // reuse-driven paint walk below (`build` → `paintNode`/geom). Cleared right after `build` (nothing
+        // past it measures text). `step` is total (the diff/layout/paint paths never throw), so the
+        // explicit clear always runs; `ThreadStatic` isolates concurrent test `step`s.
+        ControlInternals.setMeasureTextHook (Some measureCached)
+
         let root, boundsById, layoutResult = ControlInternals.evaluateLayoutIncremental size next prev.Layout dirty
         // FR-006: nodes actually re-measured this frame = the honest post-propagation set.
         let remeasured = layoutResult.Invalidated |> List.length
@@ -747,6 +849,11 @@ module internal RetainedRender =
                   Children = children }
 
         let newRoot = build "0" prev.Root result.Patch next
+
+        // Feature 117 (Phase 8): the measurement window is closed — nothing past the paint walk measures
+        // text (the virtualization tally and picture-cache pass below read counts/digests only). Clear the
+        // hook so any later `Control.renderTree` on this thread measures uncached again.
+        ControlInternals.setMeasureTextHook None
 
         // Feature 114 (Phase 6, FR-013/FR-014): tally the frame's virtualization counts by a read-only
         // walk of the lowered `next` tree (no render effect). `VirtualMaterialized` counts materialized
@@ -932,7 +1039,11 @@ module internal RetainedRender =
               MemoEnabled = prev.MemoEnabled
               Layout = layoutResult
               PictureCache = pictureCache
-              PictureCacheEnabled = prev.PictureCacheEnabled }
+              PictureCacheEnabled = prev.PictureCacheEnabled
+              // Feature 117 (Phase 8): carry the advanced text-measure cache forward (the working copy the
+              // hook populated this frame); the always-miss oracle flag threads through unchanged.
+              TextCache = tc
+              TextCacheEnabled = prev.TextCacheEnabled }
           Render = render
           Diagnostics = result.Diagnostics @ List.ofSeq offscreenDiags
           WorkReduction =
@@ -950,7 +1061,10 @@ module internal RetainedRender =
               DirtyArea = dirtyArea
               PictureCacheHits = pictureHits
               PictureCacheMisses = pictureMisses
-              PictureCacheEntryCount = pictureEntryCount } }
+              PictureCacheEntryCount = pictureEntryCount
+              TextMeasureCacheHits = textHits
+              TextMeasureCacheMisses = textMisses
+              LayoutInvalidatedNodeCount = invalidated } }
 
     let retainedHitTest (x: float) (y: float) (retained: RetainedRender<'msg>) : RetainedId option =
         // The deepest node whose cached box contains the point. Each node — including unkeyed

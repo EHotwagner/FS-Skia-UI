@@ -143,6 +143,25 @@ let private cacheRow (key: string) (content: string) : Control<Msg> =
 let private cacheGridView (n: int) (_: int) : Control<Msg> =
     Stack.create [ Stack.children [ for i in 0 .. n - 1 -> cacheRow (sprintf "r%d" i) (sprintf "row-%d" i) ] ]
 
+// Feature 117 (Phase 8): a text-heavy stack of `n` FIXED-label rows whose `selected` style flips with
+// model parity — every step repaints (and so RE-MEASURES the unchanged text) with NO layout change. The
+// first step is a cold population (text-cache misses); a subsequent step over the unchanged text serves
+// hits with zero misses (cold → warm, SC-001/SC-002); the repaint is style-only (zero layout-invalidated
+// / zero re-measured, SC-003). With `n` above the cap the text cache evicts and re-misses deterministically.
+let private textHeavyRow (key: string) (content: string) (model: int) : Control<Msg> =
+    { Kind = "data-grid-row"
+      Key = Some key
+      Attributes =
+        [ { Name = "width"; Category = AttrCategory.Style; Value = FloatValue 200.0 }
+          { Name = "height"; Category = AttrCategory.Style; Value = FloatValue 24.0 }
+          { Name = "selected"; Category = AttrCategory.Style; Value = BoolValue(model % 2 = 0) } ]
+      Children = []
+      Content = Some content
+      Accessibility = None }
+
+let private textHeavyView (n: int) (model: int) : Control<Msg> =
+    Stack.create [ Stack.children [ for i in 0 .. n - 1 -> textHeavyRow (sprintf "r%d" i) (sprintf "label-%d" i) model ] ]
+
 // A single canvas dragged through hundreds of raw samples (coalesced for processing).
 let private canvasView (_: int) : Control<Msg> =
     Stack.create [ Stack.children [ Button.create [ Button.text "canvas" ] |> Control.withKey "canvas" ] ]
@@ -166,7 +185,12 @@ let private corpus: Scenario list =
       // Feature 116 (Phase 7): stable-subtree reuse (every row a hit, zero damage) + cache-cap eviction
       // (320 distinct rows > the 256 cap → bounded live entry count).
       { Name = "picture-cache-reuse"; Run = intHost (cacheGridView 20) [ key (); key () ] }
-      { Name = "picture-cache-eviction"; Run = intHost (cacheGridView 320) [ key (); key () ] } ]
+      { Name = "picture-cache-eviction"; Run = intHost (cacheGridView 320) [ key (); key () ] }
+      // Feature 117 (Phase 8): text-heavy cold → warm (the first step misses every label, the second
+      // step over unchanged text hits every label; both style-only — zero invalidated / zero re-measured),
+      // and a text-cache eviction layout (320 distinct labels > the 256 cap → bounded, deterministic).
+      { Name = "text-heavy-cold-warm"; Run = intHost (textHeavyView 40) [ key (); key (); key () ] }
+      { Name = "text-cache-eviction"; Run = intHost (textHeavyView 320) [ key (); key (); key () ] } ]
 
 // ---- golden serialization (counts + booleans only; FrameDuration / allocation EXCLUDED) --------
 
@@ -180,9 +204,12 @@ let private serializeFrame (f: FrameMetrics) : string =
     // Feature 116 (Phase 7): the corpus golden additionally carries the six damage + picture-cache
     // metrics (RepaintedNodeCount/DirtyRectCount/DirtyArea/PictureCacheHitCount/PictureCacheMissCount/
     // PictureCacheEntryCount) — all read-only observations of the work the step already performed, so
-    // the prior fields and the rendered scenes are unchanged (additive only).
+    // the prior fields and the rendered scenes are unchanged (additive only). Feature 117 (Phase 8): it
+    // additionally carries the two text-measure-cache counts + the layout-invalidated dirty-set size
+    // (TextMeasureCacheHitCount/TextMeasureCacheMissCount/LayoutInvalidatedNodeCount) — again read-only,
+    // additive, with the rendered scenes byte-identical (the text cache is a transparent accelerator).
     sprintf
-        "ProductModelChanged=%b ViewCalled=%b FullRenderCount=%d RemeasuredNodeCount=%d MemoHitCount=%d MemoMissCount=%d VirtualItemsMaterialized=%d VirtualItemsTotal=%d RepaintedNodeCount=%d DirtyRectCount=%d DirtyArea=%d PictureCacheHitCount=%d PictureCacheMissCount=%d PictureCacheEntryCount=%d PointerSamplesReceived=%d PointerMovesProcessed=%d FullRenderFallbackCount=%d FrameCause=%A DiffRan=%b LayoutRan=%b PaintRan=%b"
+        "ProductModelChanged=%b ViewCalled=%b FullRenderCount=%d RemeasuredNodeCount=%d MemoHitCount=%d MemoMissCount=%d VirtualItemsMaterialized=%d VirtualItemsTotal=%d RepaintedNodeCount=%d DirtyRectCount=%d DirtyArea=%d PictureCacheHitCount=%d PictureCacheMissCount=%d PictureCacheEntryCount=%d TextMeasureCacheHitCount=%d TextMeasureCacheMissCount=%d LayoutInvalidatedNodeCount=%d PointerSamplesReceived=%d PointerMovesProcessed=%d FullRenderFallbackCount=%d FrameCause=%A DiffRan=%b LayoutRan=%b PaintRan=%b"
         f.ProductModelChanged
         f.ViewCalled
         f.FullRenderCount
@@ -197,6 +224,9 @@ let private serializeFrame (f: FrameMetrics) : string =
         f.PictureCacheHitCount
         f.PictureCacheMissCount
         f.PictureCacheEntryCount
+        f.TextMeasureCacheHitCount
+        f.TextMeasureCacheMissCount
+        f.LayoutInvalidatedNodeCount
         f.PointerSamplesReceived
         f.PointerMovesProcessed
         f.FullRenderFallbackCount

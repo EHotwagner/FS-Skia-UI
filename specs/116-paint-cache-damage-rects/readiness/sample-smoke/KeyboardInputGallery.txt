@@ -50,3 +50,29 @@ scene-kinds=[GroupElement; GroupElement; ClipElement; TextRunElement; RectangleE
 elapsed-ms=72
 
 exit-code=0
+
+## KeyboardInputGallery contract smoke
+$ dotnet run --project samples/KeyboardInputGallery/KeyboardInputGallery.fsproj --no-build --no-restore -- --contract-smoke
+status=ok
+sample=KeyboardInputGallery
+active-layout=default
+available-layouts=default
+mode-stack=["symbols"]
+held=["H"]
+effects=4
+compact-labels=1
+expanded-stack=1
+hidden=KeyboardStateDisplayHidden
+last-command=Some "move.left"
+recovered-pressed=[]
+adapter-init-commands=0 mode-commands=0 key-commands=1 recovery-commands=1
+scene-kinds=[GroupElement; GroupElement; ClipElement; TextRunElement; RectangleElement;
+ RectangleElement; TextRunElement; RectangleElement; RectangleElement;
+ TextRunElement; RectangleElement; RectangleElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement]
+elapsed-ms=70
+
+exit-code=0

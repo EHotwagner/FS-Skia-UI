@@ -73,6 +73,12 @@ type FrameMetrics =
 
       PictureCacheEntryCount: int
 
+      TextMeasureCacheHitCount: int
+
+      TextMeasureCacheMissCount: int
+
+      LayoutInvalidatedNodeCount: int
+
       PointerSamplesReceived: int
 
       PointerMovesProcessed: int

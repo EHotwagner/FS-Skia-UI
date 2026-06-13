@@ -20,6 +20,37 @@ module StandardControlKindHelpers =
         | FS.Skia.UI.Controls.StandardControlKind.Custom value -> value
 
 module internal ControlInternals =
+    // Feature 117 (Phase 8, FR-001/FR-004): the text-measure cache hook. `Scene.measureText` is a pure
+    // function of `(text, font)`, so a cache over it is a transparent accelerator — the cached value
+    // equals the un-cached value for every key (research R5). The bounded cache itself and its per-frame
+    // hit/miss accounting live on `RetainedRender` (the 113/116 cache home, research R1); the retained
+    // `init`/`step` install a per-pass closure here around the frame's layout + paint measurement and
+    // clear it afterwards (`try/finally`). `[<ThreadStatic>]` so concurrent test `step`s route to their own
+    // cache and never cross-contaminate; the default (`None`) is the direct un-cached path, byte-identical
+    // to pre-117. The mutation is interpreter-edge mutation confined to the step (constitution III), exactly
+    // like the existing id/work counters and the 116 picture cache.
+    type private TextMeasureHookHolder() =
+        [<System.ThreadStatic; DefaultValue>]
+        static val mutable private slot: (string -> FontSpec -> TextMetrics) option
+
+        static member Slot
+            with get () = TextMeasureHookHolder.slot
+            and set value = TextMeasureHookHolder.slot <- value
+
+    /// Feature 117 (Phase 8): install (or clear with `None`) the per-pass text-measure cache hook on this
+    /// thread. Called by `RetainedRender.step` around the frame's layout + paint measurement.
+    let setMeasureTextHook (hook: (string -> FontSpec -> TextMetrics) option) =
+        TextMeasureHookHolder.Slot <- hook
+
+    /// Measure text through the active text-measure cache hook when one is installed (inside a retained
+    /// `step`), else directly via the pure `Scene.measureText`. All six layout/paint text-measure call
+    /// sites route through here so the cache spans both the layout pass and the paint pass of a single
+    /// frame (FR-001). With no hook installed this is exactly `Scene.measureText` (byte-identical, FR-004).
+    let measureText (text: string) (font: FontSpec) : TextMetrics =
+        match TextMeasureHookHolder.Slot with
+        | Some f -> f text font
+        | None -> Scene.measureText text font
+
     let tryLast name (attrs: Attr<'msg> list) =
         attrs
         |> List.rev
@@ -236,7 +267,7 @@ module internal ControlInternals =
         let upper = Math.Clamp(maxSize, minSize, max minSize availableHeight)
         let font size = { Family = family; Size = size; Weight = None }
         let fits size =
-            let metrics = Scene.measureText label (font size)
+            let metrics = measureText label (font size)
             metrics.Width <= availableWidth && metrics.Height <= availableHeight
 
         if fits upper then
@@ -783,7 +814,7 @@ module internal ControlInternals =
     // geometry; the resolver supplies the colours.
     let private buttonGeom theme (box: Rect) (classes: StyleClass list) (state: VisualState) (primary: bool) (label: string) : Scene list =
         let h = 38.0
-        let textW = (Scene.measureText label { Family = theme.FontFamily; Size = 15.0; Weight = None }).Width
+        let textW = (measureText label { Family = theme.FontFamily; Size = 15.0; Weight = None }).Width
         let w = min box.Width (max 70.0 (textW + 32.0))
         let by = box.Y + box.Height / 2.0 - h / 2.0
         let rect = { X = box.X; Y = by; Width = w; Height = h }
@@ -818,7 +849,7 @@ module internal ControlInternals =
     /// A compact accent pill with light text — a status badge.
     let private badgeGeom theme (box: Rect) (label: string) : Scene list =
         let h = 26.0
-        let textW = (Scene.measureText label { Family = theme.FontFamily; Size = 12.0; Weight = None }).Width
+        let textW = (measureText label { Family = theme.FontFamily; Size = 12.0; Weight = None }).Width
         let w = max 40.0 (textW + 20.0)
         let by = box.Y + box.Height / 2.0 - h / 2.0
         [ Scene.rectangle (box.X, by, w, h) theme.Accent
@@ -963,7 +994,7 @@ module internal ControlInternals =
         let field: Rect = { X = box.X; Y = by; Width = box.Width; Height = h }
         let textX = box.X + 10.0
         let baseline = by + h / 2.0 + 5.0
-        let textW = (Scene.measureText value { Family = theme.FontFamily; Size = 15.0; Weight = None }).Width
+        let textW = (measureText value { Family = theme.FontFamily; Size = 15.0; Weight = None }).Width
         let caretX = min (box.X + box.Width - 8.0) (textX + textW + 3.0)
 
         let baseStyle: ResolvedStyle =
@@ -993,7 +1024,7 @@ module internal ControlInternals =
             lines
             |> List.mapi (fun i ln -> mkText theme (box.X + 10.0) (firstBaseline + float i * lineH) 14.0 theme.Foreground ln)
         let lastLine = lines |> List.tryLast |> Option.defaultValue ""
-        let lastW = (Scene.measureText lastLine { Family = theme.FontFamily; Size = 14.0; Weight = None }).Width
+        let lastW = (measureText lastLine { Family = theme.FontFamily; Size = 14.0; Weight = None }).Width
         let caretX = min (box.X + box.Width - 8.0) (box.X + 10.0 + lastW + 3.0)
         let caretY = firstBaseline + float (max 0 (List.length lines - 1)) * lineH
         [ Scene.rectangle (box.X, box.Y, box.Width, box.Height) theme.Background
@@ -1014,7 +1045,7 @@ module internal ControlInternals =
                 (fun (x, acc) (text, fg, fontSize, weight) ->
                     let size = max 8.0 fontSize
                     let font: FontSpec = { Family = theme.FontFamily; Size = size; Weight = Some weight }
-                    let w = (Scene.measureText text font).Width
+                    let w = (measureText text font).Width
                     let node = mkTextW theme x baseline size (Some weight) fg text
                     x + w, node :: acc)
                 (box.X + 4.0, [])

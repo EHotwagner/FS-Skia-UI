@@ -1,0 +1,22 @@
+{
+  "base_ref": "main",
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "docs/reports/2026-06-13-1314-specflow-graph-operating-system-plan.md",
+      "line": 2301,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/specflow/SKILL.md"
+    },
+    {
+      "file": "docs/reports/2026-06-13-1314-specflow-graph-operating-system-plan.md",
+      "line": 2732,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/specflow/SKILL.md"
+    }
+  ]
+}

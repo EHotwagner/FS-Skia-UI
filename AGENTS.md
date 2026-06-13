@@ -1,7 +1,7 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
 <!-- SPECKIT START -->
-specs/116-paint-cache-damage-rects/plan.md
+specs/117-layout-hot-path/plan.md
 <!-- SPECKIT END -->
 
 ## Run `Route` first; run only the gates it prints

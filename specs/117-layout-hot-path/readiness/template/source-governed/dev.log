@@ -1,0 +1,6 @@
+
+## source/governed generated Dev
+$ bash ./fake.sh build -t Dev
+Dev completed for generated v3dotnetgovernedsource
+
+exit-code=0

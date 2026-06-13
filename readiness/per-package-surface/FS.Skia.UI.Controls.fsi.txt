@@ -203,6 +203,10 @@ module internal ControlInternals =
 
     val chartValues: control: Control<'msg> -> ChartPoint list
 
+    val setMeasureTextHook: hook: (string -> FS.Skia.UI.Scene.FontSpec -> FS.Skia.UI.Scene.TextMetrics) option -> unit
+
+    val measureText: text: string -> font: FS.Skia.UI.Scene.FontSpec -> FS.Skia.UI.Scene.TextMetrics
+
     val layoutAffectingAttrNames: Set<string>
 
     val evaluateLayout:
@@ -1036,6 +1040,16 @@ type internal PictureCache =
     { Entries: Map<RetainedId, int * PictureCacheKey>
       Clock: int }
 
+type internal TextMeasureKey =
+    { Text: string
+      Family: string option
+      Size: float
+      Weight: int option }
+
+type internal TextMeasureCache =
+    { Entries: Map<TextMeasureKey, int * FS.Skia.UI.Scene.TextMetrics>
+      Clock: int }
+
 type internal RetainedRender<'msg> =
     { Root: RetainedNode<'msg>
       NextId: uint64
@@ -1050,7 +1064,11 @@ type internal RetainedRender<'msg> =
 
       PictureCache: PictureCache
 
-      PictureCacheEnabled: bool }
+      PictureCacheEnabled: bool
+
+      TextCache: TextMeasureCache
+
+      TextCacheEnabled: bool }
 
 type internal WorkReductionRecord =
     { BaselineNodeCount: int
@@ -1072,7 +1090,12 @@ type internal WorkReductionRecord =
 
       PictureCacheHits: int
       PictureCacheMisses: int
-      PictureCacheEntryCount: int }
+      PictureCacheEntryCount: int
+
+      TextMeasureCacheHits: int
+      TextMeasureCacheMisses: int
+
+      LayoutInvalidatedNodeCount: int }
 
 type internal RetainedRenderStep<'msg> =
     { Retained: RetainedRender<'msg>
@@ -1095,6 +1118,15 @@ module internal RetainedRender =
             FS.Skia.UI.Scene.Scene list * MemoCache * MemoOutcome
 
     val internal PictureCacheCap: int
+
+    val internal TextMeasureCacheCap: int
+
+    val internal measureTextCached:
+        cache: TextMeasureCache ->
+        enabled: bool ->
+        text: string ->
+        font: FS.Skia.UI.Scene.FontSpec ->
+            FS.Skia.UI.Scene.TextMetrics * TextMeasureCache * bool
 
     val internal offscreenEffect: ownScene: FS.Skia.UI.Scene.Scene list -> string option
 

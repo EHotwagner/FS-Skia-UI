@@ -11,14 +11,30 @@ title: SpecFlow Graph Operating System Implementation Plan
   typed F# feature graph. No backward compatibility with existing agent
   workflows, `.specify` scripts, phase command names, or hand-authored
   `tasks.md` / `tasks.deps.yml` semantics is required.
+- **Rebrand scope added:** If the project is being renamed, use this repository
+  as the evidence-backed bootstrapper for a clean new repository, then continue
+  active development in the new repository.
 - **Constraint for this report:** No governance machinery was run for this
   report. Research used source inspection, upstream Spec Kit release/catalog
   data, official Spec Kit extension documentation, the community extension
-  catalog, and official FSharp.Formatting content guidance.
+  catalog, official GitHub repository rename/transfer documentation, official
+  NuGet packaging/deprecation documentation, official .NET template
+  documentation, and official FSharp.Formatting content guidance.
 
 ## Executive Decision
 
-Build a new **SpecFlow Graph Operating System** inside `FS.Skia.UI.Build`.
+Design and bootstrap **FS.GG.UI** from this repository. The target is not a
+cleaned-up `FS.Skia.UI` tree; it is a new graph-governed repository that carries
+the runtime product, product contract, governance kernel, evidence ledger, and
+release policy from day one.
+
+If the rebrand is accepted, do not treat this repository as the final host for
+that operating system. Treat it as the design, extraction, and provenance
+environment for the new repository. The new repository should start with the
+graph-first workflow, new package identities, new template identity, new docs URL
+assumptions, and no active `.specify` runtime. The old repository should not be
+made pristine before the new repository exists; it should become just clean
+enough to assemble and prove the new tree.
 
 The feature graph becomes the single authoritative state model for:
 
@@ -31,6 +47,22 @@ The feature graph becomes the single authoritative state model for:
 - route expectations, actual diff classification, required gates, and gate
   results;
 - agent context packs and phase-specific file-reading budgets.
+
+The redesign should now be treated as a **full governance integration**, not only
+as a Spec Kit replacement. The same graph operating system should also own the
+active project governance model: target catalog, routing policy, generated
+views, package identity, template identity, docs publishing assumptions, CI
+rules, release/publish policy, platform ruleset expectations, and provenance
+requirements. The compiled F# rulebook remains the authority, but the graph
+becomes the state and intent layer that binds every policy surface together.
+
+There is a second integration layer worth adding: a **product contract graph**.
+`ProjectGraph` should say how the repository operates; `FeatureGraph` should say
+what a feature is doing; `ProductGraph` should say what the product promises.
+It binds controls, capabilities, public API surfaces, docs pages, gallery
+samples, screenshots, visual evidence, scenario corpus rows, performance
+budgets, accessibility and interaction contracts, ADRs, and toolchain
+environment assumptions into one product-facing contract.
 
 Markdown remains useful, but not authoritative. `spec.md`, `plan.md`, `tasks.md`,
 readiness reports, Mermaid diagrams, and context prompts become deterministic
@@ -48,10 +80,14 @@ The redesign is intentionally breaking:
    task completion.
 6. Replace readiness file discovery as the audit source with a structured
    evidence index.
+7. Replace standalone governance islands with graph-bound policy modules and
+   generated platform/configuration views.
+8. Replace scattered product contract metadata with a graph-owned product
+   surface model.
 
 The destination is not a marketplace, workflow engine, or generic Spec Kit clone.
-It is a repo-specific specification and evidence operating system for
-FS.Skia.UI.
+It is a repo-specific specification, governance, product-contract, release, and
+evidence operating system for FS.GG.UI.
 
 ## Research Summary
 
@@ -168,6 +204,1210 @@ The active coupling to delete or archive:
 The replacement can keep `.specify/memory/constitution.md` only if it is renamed
 or imported into a repo-owned governance source.
 
+### Rebrand And New Repository Research
+
+The rebrand question changes the recommendation. A complete graph-first
+workflow redesign can be built in this repository, but a simultaneous product
+rebrand makes an in-place rename a poor destination. The cleanest path is:
+
+1. Use this repository for one final bootstrap feature.
+2. Specify the new brand, package namespace, repository layout, docs URL, and
+   cutover policy in that feature.
+3. Generate or assemble the new repository from this repository's best product
+   slices.
+4. Continue active development in the new repository.
+5. Leave this repository as a bridge, archive, and migration reference.
+
+This is not only an aesthetic preference. External platform behavior and local
+identity inventory both point to the same conclusion.
+
+#### GitHub Rename And Transfer Behavior
+
+Official GitHub repository rename and transfer documentation supports renames
+for many links, but it does not make a rename equivalent to a clean new product
+boundary:
+
+| Platform behavior | Consequence for this project |
+|---|---|
+| Repository renames redirect issues, wikis, stars, followers, and ordinary git operations. | Rename-in-place is viable if the main goal is preserving social/repository continuity. |
+| GitHub Pages project-site URLs are explicitly excluded from automatic rename/transfer redirects. | The current docs URL shape (`https://ehotwagner.github.io/FS-Skia-UI/`) is a real cutover surface, not a free redirect. |
+| GitHub does not redirect calls to an action hosted by a renamed repository. | If any workflows or downstream generated products consume repository-hosted actions, rename-in-place can break them. |
+| Reusing the old repository name later deletes redirects. | A bridge repository at the old name must be intentional; accidental reuse can destroy expected redirects. |
+| Transfers preserve commits, issues, pull requests, stars, watchers, and many settings, but packages may transfer or lose repository linkage depending on registry. | A transfer helps ownership cleanup, not brand/package cleanup. |
+
+Inference: GitHub rename/transfer mechanics reduce the pain of moving code, but
+they do not solve product identity. They are compatibility bridges, not the
+target architecture for a rebranded framework.
+
+#### NuGet Package Identity
+
+NuGet package identity is the package ID. The official `.nuspec` reference
+describes `id` as the case-insensitive unique package identifier for a gallery.
+The MSBuild packaging docs likewise treat `PackageId` as the package identity
+used by feeds and tooling. NuGet deprecation supports an alternate recommended
+package, which is exactly the migration mechanism for renamed packages.
+
+That means a rebrand creates new packages, not renamed packages:
+
+| Current identity | Rebrand implication |
+|---|---|
+| `FS.Skia.UI.Scene` | New package ID under the new brand. |
+| `FS.Skia.UI.Color` | New package ID under the new brand. |
+| `FS.Skia.UI.SkiaViewer` | New package ID under the new brand. |
+| `FS.Skia.UI.Elmish` | New package ID under the new brand. |
+| `FS.Skia.UI.KeyboardInput` | New package ID under the new brand. |
+| `FS.Skia.UI.Layout` | New package ID under the new brand. |
+| `FS.Skia.UI.Controls` | New package ID under the new brand. |
+| `FS.Skia.UI.Controls.Elmish` | New package ID under the new brand. |
+| `FS.Skia.UI.Input` | New package ID under the new brand. |
+| `FS.Skia.UI.Testing` | New package ID under the new brand. |
+| `FS.Skia.UI.SkillSupport` | Either dropped, renamed, or replaced by graph-owned generated skills. |
+| `FS.Skia.UI.Build` | Either renamed as the new build/SpecFlow package or kept private to the new repository. |
+| `FS.Skia.UI.Template` | New template package ID; old template package deprecated after the new one works. |
+
+Deprecating old package versions should come after the new packages exist. The
+old package pages can then tell existing users why the package is legacy and
+which alternate package to install. Unlisting alone would hide the old packages
+from search but would not communicate the migration as well.
+
+#### `dotnet new` Template Identity
+
+The .NET template engine has its own identity layer. Official template
+documentation names `identity`, `name`, `shortName`, and `sourceName` as template
+configuration fields, and the template package docs state that `PackageId` is
+used by feeds and uninstall tooling.
+
+The local template currently contains these identity anchors:
+
+| Surface | Current value |
+|---|---|
+| Template package ID | `FS.Skia.UI.Template` |
+| Template identity | `FS.Skia.UI.Template` |
+| Template display name | `FS Skia UI Governed Project` |
+| Template short name | `fs-skia-ui` |
+| Template author | `FS-Skia-UI Contributors` |
+| Generated package prefix default | `FS.Skia.UI` |
+| Generated repository URL default | `https://github.com/FS-Skia-UI/FS-Skia-UI` |
+| Template package README install command | `dotnet new install FS.Skia.UI.Template` |
+| Template package README scaffold command | `dotnet new fs-skia-ui ...` |
+
+Therefore the rebrand is not a documentation-only change. The template package,
+the template metadata, generated docs, generated package pins, generated
+skill names, and all generated project instructions need one coherent identity
+matrix.
+
+#### Proposed Brand Candidate
+
+Use the following as the current working brand candidate:
+
+```text
+FS.GG.UI
+Graph-governed UI infrastructure for F# and Skia.
+```
+
+Interpretation:
+
+- `FS` keeps the F# ecosystem signal.
+- `GG` means **Graph-governed**, matching the new `ProjectGraph`,
+  `ProductGraph`, `FeatureGraph`, and evidence-ledger architecture.
+- `UI` keeps the product category explicit.
+
+Initial package/template shape:
+
+| Surface | Proposed value |
+|---|---|
+| Product name | `FS.GG.UI` |
+| Tagline | `Graph-governed UI infrastructure for F# and Skia.` |
+| Root namespace | `FS.GG.UI` |
+| Package prefix | `FS.GG.UI` |
+| Example runtime package | `FS.GG.UI.Scene` |
+| Example controls package | `FS.GG.UI.Controls` |
+| Example Elmish controls package | `FS.GG.UI.Controls.Elmish` |
+| Template package ID | `FS.GG.UI.Template` |
+| Template short name | `fs-gg-ui` |
+| Build/governance package | `FS.GG.UI.Build` if public; otherwise private to the repo. |
+
+The bootstrap feature should still validate this candidate against NuGet
+availability, template short-name collision risk, repository availability, docs
+URL shape, and whether `GG` reads clearly enough to new users. If the name
+survives that validation, it becomes the brand matrix seed for the new
+repository.
+
+#### Local Identity Blast Radius
+
+The local repository inventory shows a broad and intentionally tangled identity
+surface:
+
+| Local area | Identity currently embedded |
+|---|---|
+| Root README | `FS.Skia.UI`, NuGet badges, docs links, `Spec Kit` positioning, `speckit-*` workflow text. |
+| Docs site | `https://ehotwagner.github.io/FS-Skia-UI/` links throughout the root README and docs. |
+| Source namespaces | `FS.Skia.UI.*` namespaces across public `.fsi` and implementation files. |
+| Package projects | `PackageId`, `AssemblyName`, and `Title` under `src/**` and `build/Governance/**`. |
+| Template package | `.template.package/FS.Skia.UI.Template.fsproj`, package README, and content includes. |
+| Template config | `.template.config/template.json` identity, short name, generated replacement symbols, sources, and generated skill targets. |
+| Template pins | `template/base/Directory.Packages.props` pins every `FS.Skia.UI.*` package through one `FsSkiaUiVersion`. |
+| Capability catalog | `template/capabilities.yml` maps capabilities to `FS.Skia.UI.*` package IDs, surface baselines, and skill names. |
+| Generated product docs | `template/base/docs/**` explains `FS.Skia.UI.*`, `FS.Skia.UI.Build`, `.specify`, and generated skills. |
+| Skills | Source and generated skills carry names such as `fs-skia-ui-widgets` and references to `FS.Skia.UI.SkillSupport`. |
+| Tests and governance fixtures | Template identity tests, generated-product tests, golden task graphs, and baseline fixtures assert current names. |
+| Historical specs | Prior specs and readiness logs contain thousands of old identity references that should become archive/provenance, not active truth. |
+| Git remote | Actual origin is `https://github.com/EHotwagner/FS-Skia-UI.git`, while some generated/package metadata points at `https://github.com/FS-Skia-UI/FS-Skia-UI`. |
+
+The important finding is the mismatch between active identity and historical
+identity. A new repository lets the active tree be coherent on day one while
+keeping the old repository's history available for audit and migration. An
+in-place rename would force every old and new identity into one branch history,
+one docs site, one issue tracker, and one governance system during the same
+period when the graph-first workflow is intentionally deleting old assumptions.
+
+#### Repository Strategy Options
+
+| Option | Description | Strength | Weakness | Recommendation |
+|---|---|---|---|---|
+| A. New clean repository with provenance | Create a new repository with a clean initial history assembled from selected source, docs, template, tests, and graph governance. Record the old repository commit SHA and migration map. | Maximum freedom, lowest active-tree clutter, best fit for breaking agent workflow and brand reset. | Loses ordinary git blame continuity in the new default history unless files are imported with history. | Recommended. |
+| B. New repository with filtered history | Use history-filtering to import selected directories and preserve file ancestry where useful. | Preserves some blame and audit trail. | More complex; risks dragging old `.specify`, readiness, generated artifacts, and naming churn into the new project. | Use only if history continuity is a hard requirement. |
+| C. Rename/transfer this repository in place | Rename the GitHub repository and update all package/docs/template names in this tree. | Preserves stars, issues, PRs, forks, and local git continuity. | Does not solve NuGet identities, template identities, docs-site URL changes, or active/historical identity confusion. | Not recommended for this redesign. |
+| D. Keep this repository as-is and start an unrelated repo manually | Create the new repo by hand outside the current governance flow. | Fastest to start typing. | Throws away the chance to make the cutover itself evidence-backed and repeatable. | Not recommended. |
+
+Option A is the best fit because the user has explicitly allowed breaking
+existing agent workflows and no backward compatibility is required. A clean
+repository also prevents the graph-first redesign from spending months
+explaining exceptions for `.specify`, `speckit-*`, historical generated files,
+and old package names.
+
+#### Bootstrap Feature In This Repository
+
+The current repository should still own the transition, but only as a
+bootstrapper. Create one final feature here, tentatively:
+
+```text
+117-rebrand-new-repo-bootstrap
+```
+
+That feature should not implement the entire graph operating system in the old
+tree. It should design and create the new tree, prove that it is usable, then
+freeze this repository into bridge mode.
+
+The bootstrap feature's deliverables:
+
+1. A brand matrix:
+   - product name;
+   - repository owner/name;
+   - root namespace;
+   - package ID prefix;
+   - template package ID;
+   - template `identity`;
+   - template `shortName`;
+   - docs domain/path;
+   - NuGet owners;
+   - GitHub organization/account;
+   - CI and package-publishing secret names.
+2. An old-to-new identity map:
+   - package IDs;
+   - assembly names;
+   - namespaces;
+   - docs URLs;
+   - template names;
+   - skill names;
+   - build-engine package name;
+   - generated product property names such as `FsSkiaUiVersion`.
+3. A new repository skeleton:
+   - `src/**` product libraries under the new namespace;
+   - `tests/**` with only live tests and essential fixtures;
+   - `build/**` with the graph-first governance kernel;
+   - `template/**` with new package/template identity;
+   - `docs/**` with new navigation and no active Spec Kit pages;
+   - no `.specify` runtime;
+   - no active `speckit-*` skills;
+   - no historical readiness logs in the active tree.
+4. A provenance record:
+   - source repository URL;
+   - source commit SHA;
+   - selected imported directories;
+   - intentionally dropped directories;
+   - package ID mapping;
+   - docs URL mapping;
+   - reason for clean-history reset.
+5. A cutover checklist:
+   - create remote repository;
+   - push new initial branch;
+   - configure GitHub Pages or custom domain;
+   - configure package publishing;
+   - publish preview packages under the new package IDs;
+   - publish the new template package;
+   - deprecate old preview package versions with alternate packages;
+   - update this repository's README to bridge users to the new project;
+   - archive or freeze this repository after the bridge commit.
+
+The bootstrap feature may generate the new repository under an artifact path
+first, for example:
+
+```text
+artifacts/rebrand/<new-repo-name>/
+```
+
+Once the generated tree passes its own initial gates, it can be copied or pushed
+to a new repository. The old repo should not keep evolving in parallel after
+that point except for migration notes and emergency bridge fixes.
+
+#### New Repository Minimum Viable Tree
+
+The new repository should start smaller than this one. The current tree has
+valuable product code, but it also carries years of process scaffolding,
+historical evidence, generated fixtures, and name-specific tests.
+
+Minimum viable tree:
+
+```text
+.
+  README.md
+  LICENSE
+  Directory.Packages.props
+  <new-solution>.slnx
+  build/
+    Build.fsproj
+    Governance/
+      <new-build-package>.fsproj
+      Engine/
+      SpecFlow/
+      Routing/
+      Evidence/
+  src/
+    Scene/
+    Color/
+    Layout/
+    KeyboardInput/
+    Input/
+    SkiaViewer/
+    Elmish/
+    Controls/
+    Controls.Elmish/
+    Testing/
+  tests/
+    Scene.Tests/
+    Layout.Tests/
+    Controls.Tests/
+    Elmish.Tests/
+    Governance.Tests/
+    Template.Tests/
+  template/
+    base/
+    fragments/
+    product-skills/
+  docs/
+    index.md
+    architecture/
+    controls/
+    governance/
+    migration/
+    reports/
+  .agents/
+    skills/
+      specflow-*
+      fsharp-*
+```
+
+Excluded from the active new tree:
+
+- `.specify/**`;
+- generated `.claude/skills/**` if peer generation remains a build output
+  rather than source;
+- old readiness logs;
+- archived specs except a curated migration note;
+- old `speckit-*` skills;
+- old community-extension catalog snapshots;
+- template-generated product artifacts;
+- API docs generated from old package names;
+- stale docs pages whose only job was to explain the retired Spec Kit process.
+
+#### Namespace And Package Policy
+
+The brand decision must happen before code generation. The new root namespace
+and package prefix should be stable, short, and not too tied to implementation
+details if the project may later support renderers beyond Skia.
+
+Bad outcomes to avoid:
+
+- naming every package after a temporary renderer if the architecture wants
+  backend independence later;
+- keeping `FS.Skia.UI.*` package IDs while changing only the repository name;
+- changing package IDs but leaving namespaces old;
+- changing namespace/package names but leaving template skill names old;
+- publishing the new template before published package IDs exist;
+- deprecating old packages before the replacement packages can restore from
+  nuget.org.
+
+Recommended package policy:
+
+1. Pick one root package prefix and one root namespace.
+2. Keep package suffixes aligned with architectural packages:
+   `Scene`, `Color`, `Layout`, `Input`, `SkiaViewer`, `Elmish`, `Controls`,
+   `Controls.Elmish`, `Testing`, and the build engine if published.
+3. Publish all replacement packages on the preview channel first.
+4. Install the new template only after the replacement packages are available.
+5. Deprecate old preview package versions with alternate package IDs and a
+   short migration message.
+6. Do not unlist old packages until the alternate-package guidance is visible
+   and tested from a consumer project.
+
+#### Docs And GitHub Pages Policy
+
+The current docs site path is repository-name dependent. Because GitHub Pages
+project-site URLs are not automatically redirected on repository rename or
+transfer, the rebrand should either:
+
+1. move to a custom documentation domain during cutover, or
+2. publish a static bridge page from this repository that points to the new docs
+   URL, while the new repository owns the new project-site path.
+
+The custom-domain option is cleaner if the project is becoming a product with a
+stable name. It decouples documentation identity from GitHub repository naming
+and avoids repeating this problem on the next repo rename.
+
+#### Issue And History Policy
+
+The current repository has useful history, but for a preview framework the
+highest-value migration artifact is not every old commit. It is a precise
+mapping from old concepts to new ones:
+
+| Old artifact | New handling |
+|---|---|
+| Open issues that still apply | Recreate or transfer manually into the new repo with old links. |
+| Completed specs/readiness | Archive here; summarize only durable architectural decisions in the new repo. |
+| Historical reports | Keep here; copy only the few reports that explain current architecture. |
+| ADRs | Copy active ADRs after rewriting identities; retire ADRs about old governance placement. |
+| Git blame | Preserve in old repository; optionally include source commit provenance in new files. |
+| Release tags | Keep old tags here; start new preview version lineage in the new repo. |
+
+This preserves auditability without forcing the new repository to carry every
+obsolete process surface.
+
+#### Cutover Acceptance Criteria
+
+The bootstrap feature is complete only when these are true:
+
+- The new repository has a coherent brand matrix and no active `FS.Skia.UI`
+  identifiers except in migration docs.
+- The new root namespace, package IDs, assembly names, docs URL, and template
+  identity agree.
+- The new graph-first workflow owns feature state through `feature.graph.json`
+  and generated projections.
+- The new tree has no active `.specify` runtime and no active `speckit-*`
+  skills.
+- The new build can restore, build, and test from a clean checkout.
+- The new template can be packed, installed, used with the new `shortName`, and
+  restored against replacement package IDs.
+- The new docs site builds with the new navigation and URL assumptions.
+- Package metadata uses the new repository URL, project URL, readme, tags, and
+  icon/license policy.
+- A NuGet deprecation plan exists for every old package ID, including alternate
+  package IDs.
+- This repository has a bridge README/report explaining the move, the source
+  commit, the new repository, and the package/template migration.
+- No active development task remains assigned to this repository after cutover
+  except bridge maintenance.
+
+#### Decision
+
+Yes: if the project is being rebranded anyway, it makes sense to start over in a
+new repository. The current repository should not be thrown away casually; it
+should be used to design, generate, and prove the replacement. But the long-term
+destination should be the new repository because the planned workflow redesign
+and the rebrand both benefit from a clean active tree and a single coherent
+identity.
+
+### Full Governance Integration Research
+
+The earlier graph redesign already planned to replace the Spec Kit workflow
+authority. Further research shows there is a larger opportunity: integrate the
+entire governance lifecycle into one project operating model. This does not mean
+putting every rule into JSON. It means the graph owns the declared intent and
+state, while compiled F# policy modules own deterministic validation and
+generation.
+
+#### External Platform Findings
+
+| Source | Relevant finding | Design consequence |
+|---|---|---|
+| GitHub rulesets | Branch/tag rulesets and push rulesets can enforce merge status checks, path restrictions, file sizes, and other repository constraints. Multiple rulesets can apply together, and the most restrictive overlapping rule wins. | The project should model expected GitHub rulesets as generated policy, not as memory. The graph should produce a platform-policy report and, where credentials allow, compare expected rules with actual repository settings. |
+| GitHub required status checks | Required status checks must pass before a protected branch/tag can merge; a ruleset can pin a status check to an expected GitHub App source. | A full governance model should name the required CI checks and their expected source. Local `Route` gates and remote required checks should be mapped explicitly so CI cannot silently diverge from local policy. |
+| GitHub Actions reusable workflows | Reusable workflows are called as jobs via `uses`; same-repo calls use the workflow from the same commit, while cross-repo calls should use immutable refs for stability and security. Permissions can only be maintained or reduced through nested reusable workflows. | If the new repo uses reusable workflows, the graph should generate workflow callers or check them. Cross-repo reusable workflow refs should be pinned by SHA or release tag policy, and permission narrowing should be validated. |
+| `GITHUB_TOKEN` permissions | GitHub recommends granting the token the least access needed. Actions can access the token even if it is not explicitly passed. | Workflow YAML should be graph-checked for explicit minimal `permissions:`. Release jobs should be the only jobs with publish-grade permissions. |
+| GitHub artifact attestations | GitHub Actions can generate provenance attestations for binaries and SBOMs, with `id-token: write`, `contents: read`, and `attestations: write`; attestations can be verified with the GitHub CLI. | Release evidence should include package digests and attestation references. The graph should distinguish local build logs from CI provenance that can be verified later. |
+| NuGet Trusted Publishing | nuget.org can exchange a GitHub Actions OIDC token for a short-lived, single-use API key when the repository, workflow, and environment match a trusted publishing policy. | Publish policy belongs in the graph: repository owner/name, workflow file, release environment, package owner, and expected package IDs. The publish gate should verify the declared policy before pushing. |
+| NuGet authoring guidance | NuGet metadata affects discoverability, usability, and trust. SDK-style projects should carry package metadata in project files; readme files are a first-class package detail page surface. | Package metadata should be a declared package matrix, not a scattered `.fsproj` convention. Pre-publish checks should derive from that matrix and fail on missing or stale metadata. |
+| Central Package Management | NuGet central package management uses `Directory.Packages.props` with `ManagePackageVersionsCentrally` and package-version rows. | Dependency and generated-template pins should be graph-owned or graph-checked. A rebrand should rename the single version property, package IDs, and generated product pins in one policy pass. |
+| Source Link and package signing | Source Link embeds repository metadata during package creation; signed packages add authenticity/integrity checks. | Release policy should decide whether each package requires Source Link, signing, artifact attestation, or all three. The decision should be explicit, not accidental. |
+| JSON Schema | JSON Schema is useful for editor validation and UI hints, but it is still a projection of validation vocabulary. | JSON Schema should be generated from the compiled graph model for authoring support. It should not replace the F# validator. |
+| FAKE targets | FAKE targets can run dependencies unless `--single-target` is used; final and failure targets exist for cleanup/reporting. | The graph should record whether evidence came from a target including dependencies or a single-target run. Gate evidence should include the exact command, target, dependency behavior, and output paths. |
+| SLSA provenance | SLSA provenance describes how artifacts were produced so consumers can verify build expectations and rebuild if needed. | Release evidence should move toward provenance-oriented rows: source commit, workflow identity, package digest, builder identity, and attestation location. |
+
+The platform conclusion is straightforward: local governance cannot stop at
+`spec.md`/`plan.md`/`tasks.md`. A serious project governance system must connect
+local route/gate policy to GitHub merge policy, release policy, package
+metadata, workflow permissions, and provenance. Otherwise the graph can say a
+feature is ready while CI, publishing, or repository rules enforce a different
+truth.
+
+#### Local Governance Inventory
+
+The repository already contains most of the necessary policy engines. The
+problem is that they are stitched together by path conventions, target names,
+readiness files, and documentation rather than by one governance state model.
+
+| Local subsystem | Current authority | Full-integration destination |
+|---|---|---|
+| `Targets.fs` | Closed `Target` union, target metadata, prerequisites, cost, timeout, failure owner. | Becomes the compiled target catalog; graph stores target evidence, selected gates, and expected remote status checks. |
+| `Routing.fs` | Compiled path-to-tier/gate rules and expected artifact presence. | Remains the route-rule authority; graph stores declared impact, expected route, actual route, rule trace, and route-drift evidence. |
+| `TargetMetadata.fs` | Validates target metadata and rendered docs/contract references. | Fold into a broader `PolicyProjectionCheck` that covers target metadata plus GitHub, package, docs, template, and release policy projections. |
+| `Engine/Model.fs` and `Update.fs` | Pure build model/effect pattern; active feature still comes from `.specify/feature.json`. | Reuse the pure-update/interpreter architecture; replace `.specify` feature resolution with `.specflow/current.json` and graph workspace state. |
+| `Evidence/Engine.fs` | Pure graph/audit orchestration over edge-supplied files. | Promote to graph-native evidence ledger over typed task/evidence/release rows. |
+| `Evidence/Graph.fs` | Cycle detection, topo sort, synthetic taint propagation. | Keep algorithms; operate over `TaskNode` in `feature.graph.json`. |
+| `Evidence/Audit.fs` | Skill ownership, skill loading, SEH, synthetic verdicts, diff scans. | Keep policies; replace Markdown/YAML task parsing with graph fields and typed evidence rows. |
+| `EvidenceFormatSchema.fs` | Single source for evidence-format reference docs. | Extend to a graph-owned evidence schema for gate, CI, package, docs, release, and provenance evidence. |
+| `GeneratedProduct.fs` | Template pack/install/instantiate, generated project scans, consumer validation, package-skew checks. | Becomes generated-product policy under `TemplatePolicy` and `ConsumerPolicy`; graph records matrix rows and validation evidence. |
+| `Capabilities.fs` | Typed `template/capabilities.yml` model and validation. | Move capability rows into the project graph or make the YAML a generated projection from it. |
+| `ApiSurfaceGen.fs`, `PerPackageSurface.fs` | Public surface generation and per-package baseline checks. | Package/surface policy modules derive package matrices and baselines from graph identity and source contracts. |
+| `Guidance.fs` | Generated-guidance scans, constitution-check areas, skill-id resolution. | Replace prose heuristics with graph-bound context-pack policy; keep scanners only for generated projection currency. |
+| `SkillTreeGen.fs` / `SkillSync.fs` | `.agents` canonical, `.claude` generated mirror. | Make skill surfaces generated from graph/context-pack policy. Keep peer generation only if the new repo still supports multiple agent clients. |
+| `PrePublish.fs` / `Publish.fs` | Package pin parity, metadata, publish plan, idempotent push. | Becomes `ReleasePolicy` + `PackagePolicy`; graph declares package IDs, versions, metadata, feed, trusted-publishing policy, and publish evidence. |
+| `PackageSkew.fs` | Detects generated source references absent from pinned package surface. | Remains a package-consumer safety check under `ConsumerPolicy`. |
+| Governance docs | Explain procedure and known limitations. | Become generated or checked projections from policy, with manual narrative limited to rationale. |
+
+The most important local finding is that the project has already made the hard
+architectural move: governance rules are compiled F# with pure cores and
+interpreter edges. Full integration should not replace that. It should remove
+the remaining fragmented state and turn the graph into the input/state model for
+these existing engines.
+
+#### Current Gaps Full Integration Would Close
+
+The existing governance docs and code reveal concrete gaps that the full model
+should close:
+
+| Gap | Current behavior | Integrated behavior |
+|---|---|---|
+| Route output is plain text | Agents parse human text or rely on memory. | `specflow route --json` records route selection, matched rules, expected artifacts, and gate list in the graph. |
+| `Route --enforce` checks presence only | A stale artifact can satisfy presence. | Evidence rows bind artifacts to graph hash, commit, command, target, and timestamp; stale evidence is rejected. |
+| Whole-worktree route is merge-oriented | Authoring one report file in a dirty tree inherits unrelated gates. | Graph supports both merge route and scoped authoring route; scoped route cannot satisfy merge readiness. |
+| Active feature comes from `.specify/feature.json` | Evidence gates depend on old runtime state. | `.specflow/current.json` points to the active graph; workspaces can pin a feature without global `.specify` mutation. |
+| Package policy is separate from feature policy | Pre-publish checks live at release time, not design time. | Package/release impact is declared during planning and validated before implementation completion. |
+| CI required checks are outside repo policy | GitHub settings can drift from local `Route` gates. | Graph generates or checks expected ruleset/status policy and records actual CI check evidence. |
+| Workflow permissions are conventional | `.github/workflows/**` may drift from least-privilege policy. | `CiPolicyCheck` validates permissions, OIDC use, reusable workflow refs, and publish-job isolation. |
+| Provenance is optional narrative | Local logs are treated as evidence, but release provenance is not modeled. | Release rows carry package digest, source commit, builder identity, attestation reference, and verification status. |
+| Generated guidance still uses prose scanners | English wording can become a brittle contract. | Context packs are generated from graph/policy fields; prose scans are only projection sanity checks. |
+| Rebrand cutover spans too many surfaces | Package/template/docs/repo identity changes can diverge. | `ProjectGraph` owns the brand matrix and generates package/template/docs/repo policy projections. |
+
+#### Full Integration Decision
+
+The full approach should be:
+
+```text
+ProjectGraph + FeatureGraph + EvidenceLedger + PolicyProjections
+```
+
+`FeatureGraph` owns feature-local workflow state. `ProjectGraph` owns
+project-wide identity and governance policy. `EvidenceLedger` records every
+authoritative proof event. `PolicyProjections` are generated views consumed by
+humans, GitHub, NuGet, templates, docs, generated products, and agents.
+
+The active authority split:
+
+| Layer | Authority |
+|---|---|
+| Policy algorithms | Compiled F# modules in `build/Governance/**`. |
+| Project identity and policy state | `.specflow/project.graph.json`. |
+| Active feature state | `specs/<feature>/feature.graph.json`. |
+| Active feature pointer | `.specflow/current.json`. |
+| Evidence rows | Graph-owned ledger rows, with attached files as payloads. |
+| Human-readable docs/reports | Generated or checked projections. |
+| GitHub/NuGet/template/workflow config | Generated or checked projections from project policy. |
+
+This gives the new repo a single mental model:
+
+1. Author policy or feature intent in graph form.
+2. Generate projections and platform files.
+3. Run route-selected gates.
+4. Record evidence rows.
+5. Validate graph, projections, platform policy, and evidence freshness.
+6. Release only when package/template/docs/CI/provenance policy all pass.
+
+#### Governance Domains To Integrate
+
+| Domain | Graph-owned fields | Compiled validator/generator |
+|---|---|---|
+| Brand and repository identity | product name, repo owner/name, docs URL, package prefix, root namespace, template short name. | `IdentityPolicy`, `RepositoryBootstrap`, `DocsPolicy`. |
+| Target catalog | target ids, command strings, prerequisites, timeout/cost/failure owner, product-check classification. | Existing `Targets`, extended `TargetCatalogProjection`. |
+| Routing and gates | declared impact, expected route, actual route evidence, rule trace, scoped authoring route. | Existing `Routing`, new `RoutePlanning` and `RouteEvidence`. |
+| Feature workflow | requirements, scenarios, decisions, tasks, dependencies, approvals. | New `FeatureGraph` modules plus existing graph algorithms. |
+| Evidence | gate run rows, CI run rows, package rows, docs rows, screenshots, research, manual observations. | `EvidenceLedger`, existing audit/scans adapted to graph. |
+| Public API surface | package IDs, `.fsi` surfaces, baseline locations, source-link requirements. | Existing `PerPackageSurface`, `ApiSurfaceGen`, `PackagePolicy`. |
+| Template and generated product | template identity, profiles, capabilities, generated skills, generated product matrix. | Existing `GeneratedProduct`, `Capabilities`, new `TemplatePolicy`. |
+| Docs | site URL, generated API docs, navigation policy, report inventory, migration pages. | `DocsPolicy`, FSharp.Formatting projection checks. |
+| Skills/context | agent surfaces, context packs, skill generation, tool availability. | Existing `SkillTreeGen`, `SkillSync`, new `ContextPackPolicy`. |
+| CI and repository rules | required status checks, ruleset expectations, workflow permissions, reusable workflow refs. | `PlatformPolicy`, `CiPolicy`, optional GitHub API verifier. |
+| Release and publish | package matrix, versions, metadata, readme, Trusted Publishing policy, feed, environment, package deprecation map. | Existing `PrePublish`, `Publish`, new `ReleasePolicy` and `DeprecationPolicy`. |
+| Provenance | source commit, package digest, builder/workflow identity, attestation path/URL, SBOM reference. | `ArtifactProvenance`, optional GitHub attestation verifier. |
+| Rebrand/cutover | old-to-new identity map, imported/dropped paths, bridge policy, archive policy. | `RepositoryBootstrap`, `MigrationPolicy`. |
+
+#### Project Graph
+
+Full integration needs a project-level graph in addition to per-feature graphs:
+
+```text
+.specflow/project.graph.json
+```
+
+It should carry long-lived state that is not owned by a single feature:
+
+```fsharp
+type ProjectGraph =
+  { SchemaVersion: SchemaVersion
+    Project: ProjectIdentity
+    Repository: RepositoryPolicy
+    Targets: TargetCatalogPolicy
+    Routing: RoutingPolicy
+    Packages: PackagePolicy
+    Templates: TemplatePolicy
+    Docs: DocsPolicy
+    Skills: SkillPolicy
+    Ci: CiPolicy
+    Release: ReleasePolicy
+    Provenance: ProvenancePolicy
+    Migration: MigrationPolicy option
+    Projections: ProjectProjectionState }
+```
+
+Rules:
+
+- `ProjectGraph` is edited rarely and always routes as governance impact.
+- `FeatureGraph.Impact` references project policy by stable ids, not copied
+  strings.
+- Package/template/docs/CI release surfaces are generated from or checked
+  against `ProjectGraph`.
+- If project policy changes, affected feature approvals and route plans become
+  stale when their graph hash included old policy.
+
+#### Evidence Ledger
+
+Evidence should become a ledger, not a folder scan. The minimum row shape:
+
+```fsharp
+type EvidenceItem =
+  { Id: string
+    Scope: EvidenceScope
+    Kind: EvidenceKind
+    Status: EvidenceStatus
+    Authoritative: bool
+    ProducedBy: Producer
+    Command: CommandEvidence option
+    Ci: CiEvidence option
+    Artifact: ArtifactEvidence option
+    AppliesToGraphHash: string option
+    AppliesToProjectGraphHash: string option
+    AppliesToCommit: string option
+    Paths: string list
+    CreatedAtUtc: DateTimeOffset option
+    Notes: string option }
+```
+
+Additional evidence kinds for full integration:
+
+```fsharp
+type EvidenceKind =
+  | GateRun
+  | CiRun
+  | RulesetSnapshot
+  | WorkflowPolicyCheck
+  | PackagePack
+  | PackagePublish
+  | PackageDeprecation
+  | ArtifactAttestation
+  | SourceLinkCheck
+  | DocsBuild
+  | TemplatePack
+  | TemplateInstantiate
+  | GeneratedProductValidation
+  | Research
+  | ApprovalEvidence
+  | ManualObservation
+```
+
+Freshness rules:
+
+- Feature evidence must bind to the feature graph hash or to a commit that
+  contains that graph.
+- Feature readiness evidence must also bind to the project graph hash used for
+  route, target, package, and policy validation.
+- Route evidence must bind to the diff or commit range it classified.
+- Package/release evidence must bind to package ID, version, digest, source
+  commit, and build workflow identity.
+- Docs evidence must bind to docs source commit and published target URL or
+  generated output path.
+- Manual observation can explain a decision but is not authoritative unless a
+  policy explicitly allows it.
+
+This removes the main weakness of `Route --enforce`: file presence stops being
+proof. An artifact satisfies policy only if the graph row says what produced it,
+which graph/commit it applies to, and which requirement or gate it covers.
+
+#### Platform Policy
+
+The graph should not require online GitHub access for normal local checks. Split
+platform policy into deterministic projection and optional verification:
+
+| Mode | Behavior |
+|---|---|
+| Offline deterministic | Validate generated `.github/workflows/**`, expected status-check names, workflow permissions, and local ruleset projection files. |
+| Online advisory | With credentials, call GitHub APIs or `gh` to compare actual repository rulesets, branch protection, environments, and latest required checks to the graph projection. |
+| Online release gate | For publishing, require CI-provided OIDC/trusted-publishing identity and release-environment approval evidence. |
+
+Expected generated/checkable files:
+
+```text
+.github/workflows/ci.yml
+.github/workflows/publish.yml
+.github/rulesets/*.json
+docs/governance/platform-policy.md
+readiness/platform-policy.md
+```
+
+Rules:
+
+- Workflow jobs default to `permissions: contents: read`.
+- Only publish/attestation jobs may request `id-token: write`.
+- Only attestation jobs may request `attestations: write`.
+- Release jobs must be environment-protected.
+- Required status check names must map to `Targets.Target` or declared CI-only
+  checks.
+- Cross-repository reusable workflows must use SHA or release-tag policy.
+- Any workflow that publishes packages must declare its trusted-publishing
+  policy fields in `ReleasePolicy`.
+
+#### Release Policy
+
+The graph should model publishing as a governed state transition:
+
+```fsharp
+type ReleasePolicy =
+  { Packages: ReleasePackage list
+    Versioning: VersionPolicy
+    Feeds: FeedPolicy list
+    TrustedPublishing: TrustedPublishingPolicy option
+    RequiredEvidence: ReleaseEvidenceRequirement list
+    Deprecations: PackageDeprecationPlan list }
+```
+
+Release acceptance requires:
+
+- package matrix matches packable projects and template package;
+- package IDs and assembly names match brand policy;
+- versions are internally consistent;
+- central package pins match package matrix;
+- package metadata exists and points at the new repository/docs;
+- readme files are included and renderable by nuget.org constraints;
+- Source Link policy is satisfied or explicitly not required;
+- package signing/attestation policy is satisfied or explicitly deferred;
+- Trusted Publishing policy matches repository owner, repository name, workflow
+  file, and environment;
+- publish plan is idempotent and records `Push`/`Skip` decisions;
+- old package deprecations are planned and linked to replacement IDs.
+
+This is a direct extension of `PrePublish.fs` and `Publish.fs`, not a
+replacement. The pure rules already exist; the graph supplies a broader package
+matrix and evidence model.
+
+#### Template And Generated-Product Policy
+
+Template governance should be fully graph-owned because the rebrand makes
+template identity central:
+
+```fsharp
+type TemplatePolicy =
+  { PackageId: string
+    Identity: string
+    DisplayName: string
+    ShortName: string
+    SourceName: string
+    Profiles: TemplateProfile list
+    CapabilityIds: string list
+    GeneratedSkills: GeneratedSkillPolicy list
+    GeneratedDocs: GeneratedDocsPolicy
+    PackagePins: PackagePinPolicy }
+```
+
+Rules:
+
+- template package ID, template `identity`, package README install command, and
+  generated docs agree;
+- every profile has an expected generated-product row;
+- every selected capability maps to package IDs and contract files;
+- generated product `Directory.Packages.props` is derived from the package
+  matrix;
+- generated skill names are derived from context-pack policy, not inherited
+  from the old brand;
+- generated product scans record typed evidence rows instead of only readiness
+  files.
+
+#### Documentation Policy
+
+Docs are a product surface after a rebrand. The graph should declare:
+
+- docs URL base;
+- docs publish mode: GitHub Pages project site, custom domain, or other host;
+- generated API-reference source;
+- report inventory policy;
+- migration/bridge page paths;
+- whether old brand links are allowed in active docs.
+
+Checks:
+
+- active docs do not link to old repo/package names except migration pages;
+- package readmes link to current docs;
+- template README install/scaffold commands match template policy;
+- generated API docs match package matrix;
+- FSharp.Formatting frontmatter fields are present where policy requires them.
+
+#### Security And Trust Policy
+
+The graph should make trust assumptions explicit:
+
+| Trust surface | Policy row |
+|---|---|
+| Maintainer local gates | Allowed as feature evidence, not release provenance. |
+| GitHub Actions CI | Required for merge/release evidence when publishing. |
+| GitHub rulesets | Expected platform policy; optionally verified online. |
+| NuGet Trusted Publishing | Required for production publish once configured. |
+| Artifact attestations | Required or deferred per package class. |
+| Manual approval | Binds to graph hash and scope. |
+| AI review | Advisory unless a human or explicit policy promotes it. |
+
+This resolves a recurring ambiguity: local evidence proves development
+correctness; CI provenance proves release origin. They are related, but not the
+same proof.
+
+#### Integration Options
+
+| Option | Description | Gain | Cost | Recommendation |
+|---|---|---|---|---|
+| Workflow-only | Only move spec/plan/tasks/evidence into the graph. | Fixes authoring drift. | Leaves route/package/CI/release/doc policy fragmented. | Too small for the rebrand. |
+| Governance-kernel integration | Add project graph, route/target/evidence/package/template/docs policy and generated projections. | One operating model; high drift reduction. | Larger initial design; more schema. | Minimum acceptable scope. |
+| Full lifecycle integration | Governance-kernel plus CI rulesets, Trusted Publishing, provenance, deprecation, repository bootstrap. | Rebrand and release are auditable from day one. | Requires staged implementation and some online checks. | Recommended target. |
+| Separate governance product now | Extract SpecFlow governance into a reusable standalone repo/package immediately. | Reusable outside this framework. | Splits focus during rebrand; premature API freeze. | Defer until new repo proves the model. |
+
+Decision: implement full lifecycle integration in the new repository, but stage
+it through the bootstrap feature. Do not extract it as a standalone product yet.
+
+### Product Contract Integration Plan
+
+Full governance integration still leaves a product-contract problem: the library
+surface is spread across source modules, `.fsi` files, package projects,
+readiness baselines, docs pages, screenshots, samples, generated template
+fragments, capability YAML, test corpora, skills, and historical specs. The
+project already has checks for many of those surfaces, but they are mostly
+connected by convention. The next integration layer should make the product
+contract explicit.
+
+The proposed shape:
+
+```text
+ProjectGraph + ProductGraph + FeatureGraph + EvidenceLedger + PolicyProjections
+```
+
+`ProjectGraph` owns repository operation. `ProductGraph` owns product promises.
+`FeatureGraph` owns feature work. `EvidenceLedger` proves both policy and
+product claims. `PolicyProjections` and `ProductProjections` render the files
+that humans, docs, templates, tests, and CI consume.
+
+#### ProductGraph Scope
+
+The product graph should live beside the project graph:
+
+```text
+.specflow/product.graph.json
+```
+
+It should carry stable product contract rows:
+
+```fsharp
+type ProductGraph =
+  { SchemaVersion: SchemaVersion
+    GraphId: string
+    Project: ProjectPolicyRef
+    Capabilities: CapabilityContract list
+    Controls: ControlContract list
+    PublicSurfaces: PublicSurfaceContract list
+    VisualEvidence: VisualEvidenceContract list
+    Scenarios: ScenarioContract list
+    PerformanceBudgets: PerformanceBudgetContract list
+    InteractionContracts: InteractionContract list
+    AccessibilityContracts: AccessibilityContract list
+    ArchitectureTrace: ArchitectureTraceContract list
+    Toolchain: ToolchainEnvironmentContract
+    Projections: ProductProjectionState
+    Lifecycle: ProductLifecycleState }
+```
+
+Rules:
+
+- `ProductGraph` is product-facing, not workflow-facing. It does not contain
+  feature tasks.
+- Product rows are referenced by feature impact, tests, docs, samples, template
+  profiles, and evidence rows.
+- Product rows can be generated from existing source/catalogs during bootstrap,
+  but after cutover they become the stable contract source.
+- A feature that changes a product row must declare product impact before it can
+  satisfy readiness.
+
+#### Candidate 1 - Control And Capability Registry
+
+Current surfaces:
+
+- `src/**` and public `.fsi` files;
+- `template/capabilities.yml`;
+- `docs/controls/**`;
+- `docs/img/controls/**`;
+- `samples/*Gallery/**`;
+- `readiness/surface-baselines/**`;
+- `readiness/per-package-surface/**`;
+- `tests/Controls.Tests/**`, `tests/Package.Tests/**`, and generated product
+  validation.
+
+Destination:
+
+```fsharp
+type CapabilityContract =
+  { Id: string
+    DisplayName: string
+    PackageId: string
+    SourceModules: string list
+    PublicSurfaceIds: string list
+    DocsPages: string list
+    TemplateFragments: string list
+    SampleIds: string list
+    SkillIds: string list
+    RequiredEvidenceKinds: EvidenceKind list }
+
+type ControlContract =
+  { Id: string
+    DisplayName: string
+    CapabilityId: string
+    WidgetType: string option
+    PropsType: string option
+    DocsPage: string
+    ScreenshotId: string option
+    GallerySampleId: string option
+    Tests: string list
+    AccessibilityContractIds: string list
+    InteractionContractIds: string list
+    PerformanceBudgetIds: string list }
+```
+
+Integration plan:
+
+- Import `template/capabilities.yml` into `ProductGraph.Capabilities`.
+- Import `docs/controls/*.md` and `docs/img/controls/*.png` into
+  `ControlContract` rows.
+- Bind each control row to its typed control surface, widget surface, docs page,
+  screenshot, gallery sample, and required tests.
+- Generate or check `template/capabilities.yml`, docs catalog pages, and control
+  screenshot manifests from the graph.
+- Make orphan controls, orphan docs pages, missing screenshots, and missing
+  template fragments product-check failures.
+
+Gain:
+
+- A control cannot exist only in code, only in docs, only in screenshots, or
+  only in template metadata.
+- Package-surface, docs, sample, and generated-template drift become one
+  diagnostic instead of several unrelated failures.
+
+#### Candidate 2 - Visual Evidence Pipeline
+
+Current surfaces:
+
+- `docs/img/controls/**`;
+- `tests/ControlsPreview.Harness/fixtures/fidelity/**`;
+- screenshot gallery samples;
+- contrast and design-token tests;
+- sample-smoke logs under feature readiness;
+- image assets copied into docs output.
+
+Destination:
+
+```fsharp
+type VisualEvidenceContract =
+  { Id: string
+    SubjectId: string
+    Kind: VisualEvidenceKind
+    SourceScenarioId: string
+    ExpectedImagePath: string option
+    ActualImagePath: string option
+    DiffPath: string option
+    EnvironmentId: string
+    Tolerance: VisualTolerance
+    RequiredForRelease: bool }
+```
+
+Integration plan:
+
+- Define visual evidence rows for control docs images, preview harness fidelity
+  fixtures, gallery screenshots, and smoke screenshots.
+- Bind every visual row to a scenario, environment, and product subject.
+- Make generated docs images traceable to a control/scenario row.
+- Record visual evidence as typed `EvidenceItem` rows with environment and
+  tolerance metadata.
+- Keep advisory screenshots possible, but prevent advisory rows from satisfying
+  required visual proof.
+
+Gain:
+
+- The docs image, preview fixture, gallery output, and visual test for a control
+  become one contract.
+- Visual regressions can be diagnosed by product subject and scenario, not by
+  whichever PNG happened to differ.
+
+#### Candidate 3 - Scenario Corpus
+
+Current surfaces:
+
+- `docs/testSpecs/**`;
+- gallery/sample projects;
+- generated product profiles;
+- smoke tests;
+- consumer-friction historical features;
+- performance corpus rows;
+- scenario-specific readiness files.
+
+Destination:
+
+```fsharp
+type ScenarioContract =
+  { Id: string
+    Domain: ScenarioDomain
+    Title: string
+    ProductSubjects: string list
+    RequiredPackages: string list
+    SamplePath: string option
+    TestSpecPath: string option
+    GeneratedProfile: string option
+    RequiredEvidence: EvidenceRequirement list
+    VisualEvidenceIds: string list
+    PerformanceBudgetIds: string list
+    AccessibilityContractIds: string list }
+```
+
+Integration plan:
+
+- Import `docs/testSpecs/**` as scenario seeds.
+- Register gallery samples and generated-product profiles as scenario
+  implementations.
+- Connect smoke tests and sample logs to scenario IDs.
+- Let feature plans declare which scenarios are affected by a change.
+- Generate a scenario matrix for docs and release readiness.
+
+Gain:
+
+- The project can answer "which user workflow proves this product claim?"
+  mechanically.
+- Generated product validation and sample smoke evidence can be planned from the
+  same scenario corpus instead of separate template/gate conventions.
+
+#### Candidate 4 - Performance And Budget Model
+
+Current surfaces:
+
+- retained render metrics features 109-116;
+- performance corpus tests;
+- memoization, virtualization, frame scheduler, pointer routing, damage rects,
+  cache metrics, and layout hot-path work;
+- readiness performance reports and golden text.
+
+Destination:
+
+```fsharp
+type PerformanceBudgetContract =
+  { Id: string
+    ScenarioId: string
+    Metric: PerformanceMetric
+    Budget: BudgetThreshold
+    EvidenceKind: EvidenceKind
+    RequiredForMerge: bool
+    RequiredForRelease: bool }
+```
+
+Integration plan:
+
+- Register stable metrics: frame count, view skips, touched nodes, recomputed
+  nodes, shifted nodes, dirty rect count, dirty area, picture-cache hits/misses,
+  retained routing fallbacks, allocations where available.
+- Bind each budget to a scenario and product subject.
+- Store budget evidence as typed rows instead of plain corpus logs.
+- Allow advisory exploratory metrics, but keep release budgets explicit.
+- Generate performance dashboards/reports from ProductGraph and evidence rows.
+
+Gain:
+
+- Performance is no longer a sequence of feature-local reports. It becomes a
+  standing product contract with scenario-owned budgets and evidence freshness.
+
+#### Candidate 5 - Interaction And Accessibility Contract
+
+Current surfaces:
+
+- keyboard input framework;
+- pointer routing and retained hit testing;
+- focus traversal;
+- visual state stamping and cross-fade;
+- control diagnostics;
+- accessibility tests and docs guidance;
+- control-specific interaction tests.
+
+Destination:
+
+```fsharp
+type InteractionContract =
+  { Id: string
+    SubjectId: string
+    InputModes: InputMode list
+    FocusBehavior: FocusBehavior option
+    PointerBehavior: PointerBehavior option
+    KeyboardBehavior: KeyboardBehavior option
+    VisualStates: string list
+    RequiredTests: string list }
+
+type AccessibilityContract =
+  { Id: string
+    SubjectId: string
+    Role: string option
+    NameSource: string option
+    KeyboardReachable: bool
+    ContrastPolicy: string option
+    DiagnosticPolicy: string option
+    RequiredTests: string list }
+```
+
+Integration plan:
+
+- Register per-control interaction and accessibility rows.
+- Bind focus, pointer, keyboard, visual state, contrast, and diagnostic tests to
+  those rows.
+- Generate docs snippets or reference tables from the contract.
+- Require affected controls to update interaction/accessibility rows when their
+  public behavior changes.
+
+Gain:
+
+- Interaction behavior becomes part of the product contract, not just a test
+  suite side effect.
+- Controls can be compared for consistency across focus, pointer, keyboard,
+  disabled, hover, pressed, and validation states.
+
+#### Candidate 6 - Architecture And ADR Traceability
+
+Current surfaces:
+
+- `docs/adr/**`;
+- `docs/architecture/**`;
+- implementation plans and reports;
+- source modules;
+- feature specs;
+- governance docs.
+
+Destination:
+
+```fsharp
+type ArchitectureTraceContract =
+  { Id: string
+    Subsystem: string
+    SourcePaths: string list
+    ArchitectureDocs: string list
+    AdrIds: string list
+    FeatureIds: string list
+    Supersedes: string list
+    Status: ArchitectureStatus }
+```
+
+Integration plan:
+
+- Register architecture docs and ADRs by subsystem.
+- Bind source path groups to architecture trace rows.
+- Require high-risk subsystem changes to cite an existing ADR, add a new ADR, or
+  record an explicit "no architecture update" decision.
+- Generate an architecture traceability report.
+
+Gain:
+
+- Architecture docs become checked product memory instead of a parallel prose
+  archive.
+- Contributors can navigate from subsystem to ADRs, current docs, historical
+  features, and affected source paths.
+
+#### Candidate 7 - Toolchain And Environment Graph
+
+Current surfaces:
+
+- `global.json` or SDK assumptions;
+- `Directory.Packages.props`;
+- Skia/native startup assumptions;
+- CI images;
+- screenshot/fidelity environment;
+- package sources;
+- docs build environment;
+- sample smoke environment.
+
+Destination:
+
+```fsharp
+type ToolchainEnvironmentContract =
+  { DotnetSdk: string option
+    TargetFrameworks: string list
+    PackageSources: string list
+    NativeDependencies: NativeDependency list
+    CiImages: CiImageContract list
+    VisualEvidenceEnvironments: VisualEnvironment list
+    DocsEnvironment: DocsEnvironmentContract option
+    GeneratedProductEnvironment: GeneratedProductEnvironment option }
+```
+
+Integration plan:
+
+- Record the SDK, target frameworks, package sources, Skia/native assumptions,
+  docs build assumptions, and CI image expectations.
+- Bind visual evidence to a named visual environment.
+- Bind generated product validation to a named generated-product environment.
+- Reject release evidence whose environment does not match policy unless
+  explicitly allowed.
+
+Gain:
+
+- Native/rendering and docs evidence becomes reproducible enough to audit.
+- Environment drift is diagnosed directly instead of appearing as unrelated
+  screenshot, package, or smoke failures.
+
+#### ProductGraph Integration Decision
+
+Add `ProductGraph` to the full redesign, but stage it after the project graph
+kernel and before the new repository becomes the active development home.
+
+Minimum viable ProductGraph for bootstrap:
+
+- package/capability rows;
+- control rows for the existing docs catalog;
+- public surface rows;
+- scenario rows for current galleries and generated profiles;
+- visual evidence rows for docs/control images and preview fixtures;
+- performance budget rows for the retained-render corpus;
+- interaction/accessibility rows for controls with existing tests;
+- architecture trace rows for current architecture docs and ADRs;
+- toolchain/environment rows for SDK, target frameworks, package sources, and
+  visual evidence environment.
+
+Do not build a generic product-management system. The graph should only model
+contract facts that are already enforced, documented, released, or needed for
+the rebrand cutover.
+
 ## Corrected Assumptions
 
 The initial radical sketch was directionally right but too casual in several
@@ -190,13 +1430,114 @@ places. Research corrected these assumptions:
    results and audit verdicts are evidence events, not reusable truths.
 7. **Do not derive active feature from git branch.** Feature activation is an
    explicit graph/workspace state.
+8. **Do not treat a GitHub rename as a product rebrand.** GitHub redirects are
+   useful compatibility behavior, but docs URLs, actions, packages, templates,
+   and generated product identity all need deliberate cutover.
+9. **Do not assume package names can be renamed in place.** NuGet package IDs
+   are package identities. Rebranded packages are new packages, with old package
+   versions deprecated toward alternates.
+10. **Do not let historical identity govern the new active tree.** Old specs,
+    readiness logs, package baselines, and generated fixtures are archive data.
+    The new repository should copy durable product code and current decisions,
+    not every process artifact.
+11. **Do not implement the full graph operating system in the old brand if the
+    new repo is accepted.** This repository's next job should become bootstrap
+    and cutover, not long-lived workflow evolution.
+12. **Do not stop at workflow governance.** The feature graph alone does not
+    integrate package, template, docs, CI, release, platform, and provenance
+    policy. Full integration requires a project graph plus an evidence ledger.
+13. **Do not make online platform checks mandatory for deterministic local
+    gates.** GitHub/NuGet verification should have offline generated projections
+    and optional online comparison, except release publishing where CI identity
+    is part of the proof.
+14. **Do not treat local gate logs as release provenance.** Local logs can prove
+    implementation behavior. Published packages need source commit, workflow
+    identity, package digest, and preferably artifact attestation evidence.
+15. **Do not duplicate existing F# policy engines.** `Targets`, `Routing`,
+    `PrePublish`, `Publish`, `GeneratedProduct`, `Capabilities`, `SkillTreeGen`,
+    and the evidence algorithms should be reused as compiled policy modules.
+16. **Do not put product contract state into feature workflow.** Product
+    promises such as controls, screenshots, scenarios, performance budgets,
+    accessibility, and architecture traceability deserve `ProductGraph`, not
+    overloaded feature tasks.
+17. **Do not treat docs screenshots or samples as passive assets.** If a
+    screenshot, gallery, docs page, or generated profile proves a product claim,
+    it should be a graph-bound product evidence row.
+18. **Do not centralize runtime code just because metadata is integrated.** The
+    value is in integrated contracts, projections, and evidence around clean
+    package/module boundaries.
 
 ## Target Architecture
 
-Add a new `SpecFlow` subsystem under the governance build project:
+The complete-break architecture has two hosts:
+
+1. **Old repository bootstrap host:** minimal code in this repository that can
+   describe, assemble, and prove the new FS.GG.UI repository.
+2. **New repository target host:** the real long-lived graph-governed system.
+
+Do not optimize for a polished in-place `FS.Skia.UI` conversion. The old host
+exists to produce a coherent new tree and a provenance record.
+
+### Old Repository Bootstrap Architecture
+
+The old repository should add only the extraction machinery it needs:
+
+```text
+build/Governance/SpecFlowBootstrap/
+  BootstrapPlan.fs
+  BrandMatrix.fs
+  SourceSelection.fs
+  RewritePlan.fs
+  NewRepoAssembly.fs
+  BootstrapEvidence.fs
+  BootstrapProvenance.fs
+```
+
+This layer may reuse existing governance modules, but it should not make this
+repository the final home for `ProjectGraph`, `ProductGraph`, or `FeatureGraph`.
+Its outputs are staged files under `artifacts/rebrand/<new-repo-name>/` and a
+machine-readable provenance record.
+
+### New Repository Target Architecture
+
+The new FS.GG.UI repository should contain the `SpecFlow` subsystem under its
+build/governance project. It is not only a feature-workflow layer; it is the
+integration layer over project policy, product contract, evidence, platform
+policy, release policy, and the product runtime.
 
 ```text
 build/Governance/SpecFlow/
+  ProjectGraphModel.fs
+  ProjectGraphJson.fs
+  ProjectGraphHash.fs
+  ProjectPolicyValidation.fs
+  ProductGraphModel.fs
+  ProductGraphJson.fs
+  ProductGraphHash.fs
+  ProductContractValidation.fs
+  ProductProjection.fs
+  CapabilityRegistry.fs
+  ControlCatalogPolicy.fs
+  PublicSurfacePolicy.fs
+  VisualEvidencePolicy.fs
+  ScenarioCorpusPolicy.fs
+  PerformanceBudgetPolicy.fs
+  InteractionAccessibilityPolicy.fs
+  ArchitectureTracePolicy.fs
+  ToolchainEnvironmentPolicy.fs
+  IdentityPolicy.fs
+  TargetCatalogPolicy.fs
+  PlatformPolicy.fs
+  CiPolicy.fs
+  PackagePolicy.fs
+  TemplatePolicy.fs
+  DocsPolicy.fs
+  ReleasePolicy.fs
+  DeprecationPolicy.fs
+  ArtifactProvenance.fs
+  RepositoryBootstrap.fs
+  MigrationPolicy.fs
+  PolicyProjection.fs
   GraphModel.fs
   GraphJson.fs
   GraphSchema.fs
@@ -221,15 +1562,33 @@ build/Governance/SpecFlow/
 
 The modules follow the existing build engine rule:
 
-- pure modules compute plans, mutations, projections, diagnostics, and reports;
+- pure modules compute project policy, feature plans, mutations, projections,
+  product contracts, diagnostics, and reports;
 - interpreter modules perform filesystem, git, process, and console IO;
 - command output supports `--json`, `--plain`, and human-rich modes;
+- project-policy projections cover `.github`, package metadata, template
+  metadata, docs policy, release policy, and generated governance docs;
+- product-contract projections cover control/capability catalogs, docs images,
+  scenario matrices, performance budgets, interaction/accessibility contracts,
+  architecture traceability, and environment policy;
 - generated files are deterministic and do not contain wall-clock timestamps
   unless the timestamp is an evidence event explicitly committed to the graph.
 
 ## Authority Model
 
 ### Single Source
+
+The project has one canonical policy graph:
+
+```text
+.specflow/project.graph.json
+```
+
+The product has one canonical contract graph:
+
+```text
+.specflow/product.graph.json
+```
 
 Each active feature has one canonical graph:
 
@@ -243,15 +1602,32 @@ The active feature pointer becomes:
 .specflow/current.json
 ```
 
-`feature.graph.json` is the only authored workflow state file. The graph may
-embed Markdown strings for long-form prose, but those strings are fields in a
-typed schema, not free-floating files with implied semantics.
+`project.graph.json` is the only authored project-policy state file.
+`product.graph.json` is the only authored product-contract state file.
+`feature.graph.json` is the only authored feature-workflow state file. Any graph
+may embed Markdown strings for long-form prose, but those strings are fields in
+a typed schema, not free-floating files with implied semantics.
 
 ### Generated Projections
 
 The following become generated projections:
 
 ```text
+.github/workflows/*.yml
+.github/rulesets/*.json
+Directory.Packages.props
+.template.config/template.json
+.template.package/*.fsproj
+docs/governance/*.md
+docs/distribution.md
+docs/controls/catalog.md
+docs/controls/*.md
+docs/img/controls/manifest.generated.json
+docs/testSpecs/index.generated.md
+docs/architecture/traceability.generated.md
+readiness/product-contract.md
+readiness/scenario-corpus.md
+readiness/performance-budgets.md
 specs/<feature-id>/spec.md
 specs/<feature-id>/plan.md
 specs/<feature-id>/tasks.md
@@ -270,12 +1646,17 @@ still useful for review, it is generated as:
 specs/<feature-id>/readiness/task-deps.generated.yml
 ```
 
-Projection files carry a small generated header:
+Projection files carry a small generated header where the file format permits
+comments:
 
 ```text
 <!-- GENERATED FROM feature.graph.json sha256:<hash>; DO NOT EDIT -->
 ```
 
+Project projections cite `project.graph.json`; product projections cite
+`product.graph.json` and the project-policy hash they were rendered against;
+feature projections cite `feature.graph.json` plus the project-policy and
+product-contract hashes they were rendered against.
 `SpecFlowProjectionCheck` recomputes every projection and fails on drift.
 
 ### Evidence State
@@ -317,10 +1698,58 @@ the authority.
 
 ### Top-Level Shape
 
+Project policy has its own top-level graph:
+
+```fsharp
+type ProjectGraph =
+  { SchemaVersion: SchemaVersion
+    GraphId: string
+    Identity: ProjectIdentity
+    Repository: RepositoryPolicy
+    Targets: TargetCatalogPolicy
+    Routing: RoutingPolicy
+    Packages: PackagePolicy
+    Templates: TemplatePolicy
+    Docs: DocsPolicy
+    Skills: SkillPolicy
+    Ci: CiPolicy
+    Release: ReleasePolicy
+    Provenance: ProvenancePolicy
+    Migration: MigrationPolicy option
+    Projections: ProjectProjectionState
+    Lifecycle: ProjectLifecycleState }
+```
+
+Product contract has its own graph:
+
+```fsharp
+type ProductGraph =
+  { SchemaVersion: SchemaVersion
+    GraphId: string
+    Project: ProjectPolicyRef
+    Capabilities: CapabilityContract list
+    Controls: ControlContract list
+    PublicSurfaces: PublicSurfaceContract list
+    VisualEvidence: VisualEvidenceContract list
+    Scenarios: ScenarioContract list
+    PerformanceBudgets: PerformanceBudgetContract list
+    InteractionContracts: InteractionContract list
+    AccessibilityContracts: AccessibilityContract list
+    ArchitectureTrace: ArchitectureTraceContract list
+    Toolchain: ToolchainEnvironmentContract
+    Projections: ProductProjectionState
+    Lifecycle: ProductLifecycleState }
+```
+
+Feature state references the project policy and product contract it was authored
+and validated against:
+
 ```fsharp
 type FeatureGraph =
   { SchemaVersion: SchemaVersion
     GraphId: string
+    Project: ProjectPolicyRef
+    Product: ProductContractRef
     Feature: FeatureHeader
     Requirements: Requirement list
     Scenarios: Scenario list
@@ -331,10 +1760,40 @@ type FeatureGraph =
     Evidence: EvidenceItem list
     Approvals: Approval list
     Route: RouteState
+    Governance: GovernanceState
+    Release: FeatureReleaseImpact option
     Projections: ProjectionState
     ContextPacks: ContextPackSpec list
     Lifecycle: LifecycleState }
+
+type ProjectPolicyRef =
+  { ProjectGraphPath: string
+    ProjectGraphHash: string
+    PolicyVersion: string
+    IdentityId: string }
+
+type ProductContractRef =
+  { ProductGraphPath: string
+    ProductGraphHash: string
+    ContractVersion: string
+    ProductId: string }
 ```
+
+Rules:
+
+- A feature graph with a stale `ProjectGraphHash` can still be inspected, but
+  cannot satisfy readiness or release gates.
+- A feature graph with a stale `ProductGraphHash` can still be inspected, but
+  cannot satisfy product-contract readiness or release gates.
+- Project policy changes route as governance impact and invalidate any feature
+  approvals whose scope depends on changed policy fields.
+- Product contract changes route as product impact and invalidate any feature
+  approvals/evidence whose scope depends on changed product fields.
+- Feature graphs refer to package, template, target, docs, and workflow policy
+  by stable project-policy IDs, not by copied strings.
+- Feature graphs refer to controls, capabilities, scenarios, visual evidence,
+  performance budgets, and interaction/accessibility contracts by stable
+  product-contract IDs.
 
 ### Feature Header
 
@@ -448,10 +1907,16 @@ Rules:
 type ImpactModel =
   { RuntimePackages: string list
     PublicSurfaces: SurfaceImpact list
+    Product: ProductImpact
+    Packages: PackageImpact list
     Templates: TemplateImpact
     GeneratedProducts: GeneratedProductImpact
     Governance: GovernanceImpact
+    Platform: PlatformImpact
+    Ci: CiImpact
     Docs: DocsImpact
+    Release: ReleaseImpact
+    Provenance: ProvenanceImpact
     Risk: RiskLevel
     DeclaredChangedPaths: string list
     ExpectedRoute: ExpectedRoute option }
@@ -463,7 +1928,14 @@ Rules:
 
 - A public `.fsi` change must be declared before implementation tasks can be
   completed.
+- A control, capability, docs image, scenario, sample, performance budget,
+  interaction, accessibility, architecture, or environment change must declare
+  product impact.
 - A generated-template change must declare generated-product impact.
+- A package ID, version, metadata, Source Link, signing, or publish-policy
+  change must declare package and release impact.
+- A workflow, required-check, ruleset, or permissions change must declare CI or
+  platform impact.
 - A governance/build-path change must declare governance impact.
 - `RoutePlanning` compares declared impact to actual git diff classification.
 
@@ -517,14 +1989,22 @@ Rules:
 ```fsharp
 type EvidenceItem =
   { Id: string
+    Scope: EvidenceScope
     Kind: EvidenceKind
     Status: EvidenceStatus
     Authoritative: bool
     Synthetic: SyntheticClass option
+    ProducedBy: Producer
     Paths: string list
-    Command: string option
-    Gate: string option
+    Command: CommandEvidence option
+    Ci: CiEvidence option
+    Artifact: ArtifactEvidence option
+    Gate: TargetId option
     Environment: EvidenceEnvironment option
+    AppliesToGraphHash: string option
+    AppliesToProjectGraphHash: string option
+    AppliesToProductGraphHash: string option
+    AppliesToCommit: string option
     Covers: TraceLink list
     CreatedAtUtc: DateTimeOffset option
     Notes: string option }
@@ -533,9 +2013,20 @@ type EvidenceKind =
   | GateRun
   | TestRun
   | FsiTranscript
+  | CiRun
+  | RulesetSnapshot
+  | WorkflowPolicyCheck
   | SurfaceBaseline
   | GoldenFile
   | GeneratedProduct
+  | PackagePack
+  | PackagePublish
+  | PackageDeprecation
+  | ArtifactAttestation
+  | SourceLinkCheck
+  | DocsBuild
+  | TemplatePack
+  | TemplateInstantiate
   | Screenshot
   | Research
   | ApprovalEvidence
@@ -547,6 +2038,7 @@ type EvidenceStatus =
   | Missing
   | NotApplicable
   | Deferred
+  | External
 ```
 
 Rules:
@@ -556,6 +2048,45 @@ Rules:
 - `Authoritative = true` means the row can satisfy a requirement.
 - Non-authoritative aggregate logs can be stored but cannot satisfy a blocking
   acceptance check unless a policy explicitly allows it.
+- Package and release evidence must include package ID, version, digest, source
+  commit, and builder/workflow identity.
+- Visual, scenario, performance, interaction, and accessibility evidence must
+  cite product-contract IDs and the product graph hash.
+- CI evidence must name the workflow, job, run attempt, commit, and status-check
+  name if it is used to satisfy a required platform rule.
+- Attestation evidence must identify the artifact subject and verification
+  policy. A link to an attestation is not sufficient unless the verification row
+  passes or the policy explicitly allows deferred verification.
+
+### Governance State
+
+```fsharp
+type GovernanceState =
+  { ProjectPolicyHash: string
+    ProductContractHash: string
+    TargetCatalog: TargetCatalogSnapshot
+    RoutingPolicy: RoutingPolicySnapshot
+    ProductContract: ProductContractSnapshot option
+    PlatformPolicy: PlatformPolicySnapshot option
+    PackagePolicy: PackagePolicySnapshot option
+    TemplatePolicy: TemplatePolicySnapshot option
+    DocsPolicy: DocsPolicySnapshot option
+    ReleasePolicy: ReleasePolicySnapshot option
+    ProvenancePolicy: ProvenancePolicySnapshot option
+    Drift: GovernanceDrift list }
+```
+
+Rules:
+
+- Snapshots record the policy IDs and hashes used when the feature route,
+  projections, approvals, and evidence were produced.
+- A target, package, template, workflow, docs, or release-policy change can
+  invalidate stale feature evidence without rewriting feature history.
+- A control, capability, scenario, visual evidence, performance budget,
+  interaction/accessibility, architecture, or environment change can invalidate
+  stale feature evidence without rewriting feature history.
+- Governance drift is blocking for release and merge readiness, but can be
+  reported as advisory during early feature authoring.
 
 ### Approvals
 
@@ -594,13 +2125,20 @@ replace the actual `Route` target; it records expectations and actual evidence.
 
 ## Command Surface
 
-Create a new root launcher:
+Create an internal governance launcher:
 
 ```bash
 ./specflow <command> [args]
 ```
 
-No `speckit` aliases are required.
+No `speckit` aliases are required. Keep `specflow` as the precise name for the
+feature/project/product graph engine. If the new FS.GG.UI repository wants a
+branded convenience command later, it can add a thin `./gg` or `./fs-gg` wrapper
+for project/product commands, but the first implementation should not overbrand
+the internal workflow tool.
+
+In this repository, command work should be limited to bootstrap commands needed
+to assemble the new tree. The full command surface belongs in FS.GG.UI.
 
 ### Feature Lifecycle
 
@@ -632,6 +2170,61 @@ mutations:
 
 Direct graph edits are allowed for bulk work, but the validator is strict and
 the projection check catches drift.
+
+### Project Policy
+
+Project-policy commands operate on `.specflow/project.graph.json`:
+
+```bash
+./specflow project status --json
+./specflow project validate --json
+./specflow project render
+./specflow project check
+./specflow project identity set --name "<new name>" --package-prefix "<prefix>"
+./specflow project package add <package-id> --project src/...fsproj
+./specflow project template set --short-name <name> --identity <identity>
+./specflow project ci check
+./specflow project release plan --json
+./specflow project bootstrap-repo --output artifacts/rebrand/<new-repo-name>
+```
+
+Rules:
+
+- `project validate` is pure and offline.
+- `project render` writes generated/checkable project-policy projections.
+- `project check` recomputes projections and fails on drift.
+- `project ci check` validates workflow YAML and generated ruleset projections
+  offline; online comparison is a separate advisory or release-only mode.
+- `project release plan` does not publish. It explains the package matrix,
+  publish/skip decisions, required provenance, and missing release evidence.
+
+### Product Contract
+
+Product-contract commands operate on `.specflow/product.graph.json`:
+
+```bash
+./specflow product status --json
+./specflow product validate --json
+./specflow product render
+./specflow product check
+./specflow product capability add <id> --package <package-id>
+./specflow product control add <id> --capability <id> --docs docs/controls/<id>.md
+./specflow product scenario add <id> --sample samples/<name>
+./specflow product visual add <id> --subject <control-id> --scenario <scenario-id>
+./specflow product budget add <id> --scenario <scenario-id> --metric <metric>
+./specflow product trace architecture --subsystem <name>
+./specflow product environment set --visual <id>
+```
+
+Rules:
+
+- `product validate` is pure and offline.
+- `product render` writes generated/checkable product-contract projections.
+- `product check` recomputes product projections and fails on drift.
+- Product commands do not mark feature tasks done. Feature task completion still
+  requires feature evidence rows.
+- Product contract rows can be imported during bootstrap, but after cutover
+  feature work mutates product state deliberately and routes as product impact.
 
 ### Projection
 
@@ -701,20 +2294,17 @@ Workspaces are graph-owned. The workspace state records:
 
 ## Agent Model
 
-Delete the active `speckit-*` skills and generate a smaller set:
+Delete the active `speckit-*` skills and start with one generated context-pack
+entry point:
 
 ```text
-.agents/skills/specflow-author/SKILL.md
-.agents/skills/specflow-plan/SKILL.md
-.agents/skills/specflow-task/SKILL.md
-.agents/skills/specflow-implement/SKILL.md
-.agents/skills/specflow-review/SKILL.md
-.agents/skills/specflow-evidence/SKILL.md
+.agents/skills/specflow/SKILL.md
 ```
 
-Each skill becomes thin:
+The skill stays thin:
 
-1. Run the matching `./specflow context --phase ... --json`.
+1. Run `./specflow context --phase ... --json` or
+   `./specflow context --task ... --json`.
 2. Read only the files listed in the context pack unless local discovery shows a
    clear need.
 3. Mutate the graph through `./specflow` commands or direct graph edits.
@@ -722,21 +2312,41 @@ Each skill becomes thin:
 5. Do not hand-edit generated projections.
 
 The skill prose should not duplicate the governance policy. The graph and
-context-pack generator are the policy source.
+context-pack generator are the policy source. Phase-specific skills such as
+`specflow-plan` or `specflow-implement` can be generated later as aliases if
+they measurably improve ergonomics, but they are not required for the complete
+break.
 
-`.claude` mirroring can be retained if the repo still wants Claude support, but
-it is generated from the new `specflow-*` skills.
+`.claude` mirroring can be retained if the new repo still wants Claude support,
+but it is generated from the single `specflow` skill or its generated aliases.
 
 ## Build Targets
 
 Add or replace targets in `Targets.fs`:
 
 ```fsharp
+| SpecFlowProjectCheck
+| SpecFlowProductCheck
 | SpecFlowGraphCheck
 | SpecFlowProjectionCheck
+| SpecFlowPolicyProjectionCheck
+| SpecFlowProductProjectionCheck
+| SpecFlowControlCatalogCheck
+| SpecFlowVisualEvidenceCheck
+| SpecFlowScenarioCorpusCheck
+| SpecFlowPerformanceBudgetCheck
+| SpecFlowInteractionContractCheck
+| SpecFlowArchitectureTraceCheck
+| SpecFlowEnvironmentPolicyCheck
+| SpecFlowPlatformPolicyCheck
+| SpecFlowPackagePolicyCheck
+| SpecFlowTemplatePolicyCheck
+| SpecFlowReleasePolicyCheck
+| SpecFlowProvenanceCheck
 | SpecFlowTraceCheck
 | SpecFlowContextCheck
 | SpecFlowAudit
+| SpecFlowBootstrapCheck
 ```
 
 Recommended mapping:
@@ -745,19 +2355,107 @@ Recommended mapping:
 |---|---|
 | `EvidenceGraph` | `SpecFlowGraphCheck` |
 | `EvidenceAudit` | `SpecFlowAudit` |
-| `GeneratedGuidanceCheck` | `SpecFlowContextCheck` plus projection checks |
+| `GeneratedGuidanceCheck` | `SpecFlowContextCheck` plus policy/projection checks |
+| `GeneratedProductCheck` | `SpecFlowTemplatePolicyCheck` plus generated-product evidence rows |
+| `TemplateCheck` | `SpecFlowTemplatePolicyCheck` |
+| `CatalogDocsGen` / control docs checks | `SpecFlowControlCatalogCheck` plus `SpecFlowProductProjectionCheck` |
+| `ControlsDocCoverage` | `SpecFlowControlCatalogCheck` |
+| `ContrastGate` / design-token visual checks | `SpecFlowVisualEvidenceCheck` plus `SpecFlowInteractionContractCheck` |
+| performance corpus checks | `SpecFlowPerformanceBudgetCheck` |
+| `PrePublishCheck` / publish planning targets | `SpecFlowPackagePolicyCheck` plus `SpecFlowReleasePolicyCheck` |
 | `PhaseHookParityCheck` | Delete or replace with `SpecFlowContextCheck` |
 | `SkillSyncCheck` | Keep only if `.claude` mirroring remains |
-| `TargetMetadataDrift` | Keep, and add graph target references |
+| `TargetMetadataDrift` | Fold into `SpecFlowPolicyProjectionCheck` or keep as the target-catalog subcheck |
 
 The old targets may be removed once the new graph targets exist. No aliasing is
 required.
 
+Target policy:
+
+- `SpecFlowProjectCheck` validates `.specflow/project.graph.json` and its hash.
+- `SpecFlowProductCheck` validates `.specflow/product.graph.json`, its project
+  hash reference, and its own hash.
+- `SpecFlowPolicyProjectionCheck` validates generated/checkable project-policy
+  projections: target metadata, `.github` policy files, package metadata,
+  template metadata, docs policy, skill trees, and governance docs.
+- `SpecFlowProductProjectionCheck` validates generated/checkable product
+  projections: control catalogs, docs-page indexes, image manifests, scenario
+  matrices, performance-budget reports, interaction/accessibility tables,
+  architecture traceability, and environment reports.
+- `SpecFlowControlCatalogCheck` validates capability, control, public-surface,
+  docs, sample, template, and test bindings.
+- `SpecFlowVisualEvidenceCheck` validates visual evidence contracts and attached
+  screenshot/fidelity/doc-image evidence rows.
+- `SpecFlowScenarioCorpusCheck` validates scenario rows against docs test specs,
+  samples, generated profiles, and smoke evidence.
+- `SpecFlowPerformanceBudgetCheck` validates product-owned performance budgets
+  and budget evidence freshness.
+- `SpecFlowInteractionContractCheck` validates focus, pointer, keyboard, visual
+  state, contrast, diagnostics, and accessibility contract coverage.
+- `SpecFlowArchitectureTraceCheck` validates source-to-architecture-to-ADR
+  traceability.
+- `SpecFlowEnvironmentPolicyCheck` validates SDK, target-framework, native,
+  visual-evidence, generated-product, and docs environment assumptions.
+- `SpecFlowPlatformPolicyCheck` is offline by default. It checks workflow YAML,
+  permissions, required status-check names, reusable workflow refs, and generated
+  ruleset JSON. Online GitHub comparison is opt-in or release-only.
+- `SpecFlowReleasePolicyCheck` validates the package matrix, Trusted Publishing
+  declaration, publish plan, deprecation plan, required environment, and required
+  evidence.
+- `SpecFlowProvenanceCheck` validates package digest rows, Source Link/signing
+  policy, attestation policy, and CI builder identity when release evidence is
+  present.
+- `SpecFlowBootstrapCheck` validates a staged new repository tree without
+  treating the old repository as the long-term active destination.
+
 ## Validation Invariants
+
+### Project Policy Validity
+
+- `project.graph.json` schema version is supported.
+- Project identity, repository identity, package prefix, root namespace, template
+  identity, docs URL, and migration map are internally consistent.
+- Every package policy row maps to exactly one packable project or declared
+  virtual/template package.
+- Every packable project has a package policy row unless explicitly private.
+- Target catalog IDs match the compiled `Targets` union and generated target
+  metadata.
+- Routing policy references only existing targets and policy IDs.
+- Skill/context-pack policy references only active skills and supported phases.
+- Old brand/package/repo names are rejected in active project policy except in
+  migration/deprecation rows.
+
+### Product Contract Validity
+
+- `product.graph.json` schema version is supported.
+- Product graph references the current project graph hash for merge/release
+  readiness.
+- Every capability maps to a package row or explicit non-runtime declaration.
+- Every control maps to a capability, docs page, public surface, test set, and
+  optional screenshot/gallery row.
+- Every public `.fsi` surface maps to a package row and at least one product
+  subject or explicit infrastructure/private declaration.
+- Every docs control page maps to exactly one control row or an explicit
+  historical/migration page.
+- Every required docs/control image maps to a visual evidence contract.
+- Every scenario maps to a sample, test spec, generated profile, or explicit
+  manual scenario declaration.
+- Every performance budget maps to a scenario and a metric source.
+- Every interaction/accessibility contract maps to an existing control,
+  capability, or scenario.
+- Every architecture trace row maps source paths to architecture docs and ADRs
+  or records an explicit no-ADR-needed decision.
+- Toolchain/environment rows cover SDK, target frameworks, package sources,
+  visual evidence environment, docs environment, and generated-product
+  environment.
 
 ### Graph Validity
 
 - Graph schema version is supported.
+- Feature graph references the current project graph hash for merge/release
+  readiness.
+- Feature graph references the current product graph hash for product-contract
+  readiness.
 - Every ID is unique within its namespace.
 - Every dependency references an existing task.
 - The task graph is acyclic.
@@ -776,8 +2474,58 @@ required.
 
 - Every generated projection matches the current graph.
 - No projection contains stale graph hash.
+- Project-policy projections match `project.graph.json`.
+- Product-contract projections match `product.graph.json`.
+- Workflow, ruleset, package, template, docs, and skill projections are checked
+  together so identity cannot drift across surfaces.
+- Control docs, docs images, scenario matrices, sample references, performance
+  budgets, interaction/accessibility reports, and architecture trace reports are
+  checked together so product claims cannot drift across surfaces.
 - No hand-authored `tasks.deps.yml` exists in active feature directories.
 - No active `spec.md`, `plan.md`, or `tasks.md` lacks the generated header.
+
+### Platform Policy Validity
+
+- Every required status check maps to a local target or a declared CI-only check.
+- Workflow `permissions:` blocks are explicit and least-privilege by policy.
+- Jobs that do not publish or attest artifacts do not request `id-token: write`
+  or `attestations: write`.
+- Release jobs use the declared environment.
+- Cross-repository reusable workflows follow the pinning policy.
+- Generated ruleset files match the expected branch/tag/protection policy.
+- Online GitHub comparisons never run as mandatory local checks, but release
+  mode can require CI-recorded platform evidence.
+
+### Release And Provenance Validity
+
+- Package matrix, central package pins, template pins, and packable projects
+  agree.
+- Package metadata points to the current repository and docs identity.
+- Source Link, signing, Trusted Publishing, attestation, and SBOM requirements
+  are either satisfied by authoritative evidence or explicitly deferred by
+  policy.
+- Publish plans are idempotent and distinguish `Push`, `SkipExisting`, and
+  `Block`.
+- Package deprecation rows map old IDs to replacement IDs and migration docs.
+- Release evidence binds package ID, version, digest, source commit, workflow
+  identity, and builder identity.
+- Local gate evidence cannot satisfy CI provenance requirements.
+
+### Product Evidence Validity
+
+- Visual evidence binds subject ID, scenario ID, environment ID, expected image,
+  actual image or external reference, tolerance, and product graph hash.
+- Performance evidence binds scenario ID, metric ID, measured value, budget,
+  environment, and product graph hash.
+- Interaction/accessibility evidence binds control/capability/scenario ID,
+  input mode or accessibility policy, test evidence, and product graph hash.
+- Scenario evidence binds scenario ID to sample, generated profile, docs test
+  spec, smoke run, or manual observation as policy allows.
+- Architecture trace evidence binds source paths, architecture docs, ADRs, and
+  feature IDs.
+- Toolchain/environment evidence binds SDK, package source, CI image, native
+  dependency, visual environment, or docs environment to the evidence row.
+- Product evidence with stale product graph hash cannot satisfy readiness.
 
 ### Traceability
 
@@ -811,6 +2559,71 @@ required.
 - Context packs are deterministic over the graph and repository snapshot.
 
 ## Projection Design
+
+### Project Policy Projections
+
+Generated or checked from `ProjectGraph`:
+
+- `.github/workflows/ci.yml`
+- `.github/workflows/publish.yml`
+- `.github/rulesets/*.json`
+- `Directory.Packages.props`
+- `.template.config/template.json`
+- `.template.package/*.fsproj`
+- `template/capabilities.generated.yml` or replacement graph-owned capability
+  projection
+- `.agents/skills/specflow-*/SKILL.md`
+- `docs/governance/index.md`
+- `docs/governance/routing-and-gates.md`
+- `docs/governance/platform-policy.md`
+- `docs/governance/release-policy.md`
+- `docs/distribution.md`
+- `readiness/project-policy.md`
+
+Rules:
+
+- Some files can stay hand-authored during transition, but every project-policy
+  surface is either generated from the graph or checked against it.
+- Workflow and ruleset projections are deterministic offline artifacts. Actual
+  GitHub settings are compared only in optional online/advisory or release
+  modes.
+- Package/template/docs projections are rendered from the brand and package
+  matrix so a rebrand cannot update one surface without the others.
+- Human narrative belongs in rationale sections; policy facts belong in graph
+  fields.
+
+### Product Contract Projections
+
+Generated or checked from `ProductGraph`:
+
+- `docs/controls/catalog.md`
+- `docs/controls/*.md`
+- `docs/img/controls/manifest.generated.json`
+- `docs/testSpecs/index.generated.md`
+- `docs/architecture/traceability.generated.md`
+- `docs/governance/product-contract.md`
+- `readiness/product-contract.md`
+- `readiness/scenario-corpus.md`
+- `readiness/visual-evidence.md`
+- `readiness/performance-budgets.md`
+- `readiness/interaction-accessibility.md`
+- `readiness/environment-policy.md`
+- `template/capabilities.generated.yml` or the replacement generated capability
+  projection
+
+Rules:
+
+- Product contract projections cite both `product.graph.json` and the
+  project-policy hash used to interpret package/template/docs identity.
+- Control docs pages can remain hand-authored during transition, but their
+  frontmatter, product IDs, screenshot references, API-surface references,
+  scenario references, and required evidence links are checked against the graph.
+- Docs images are not just assets. Required images appear in the visual evidence
+  projection with subject, scenario, environment, and tolerance metadata.
+- Scenario projections connect docs test specs, samples, generated profiles,
+  smoke evidence, visual evidence, and performance budgets.
+- Architecture trace projections connect ADRs, source path groups, architecture
+  pages, and feature IDs.
 
 ### `spec.md`
 
@@ -869,13 +2682,16 @@ readiness/attachments/**
 Specialized readiness files can exist when they carry meaningful narrative, but
 they must be referenced by an `EvidenceItem`.
 
-## Destructive Migration Plan
+## Clean Repository Assembly Plan
 
-Because backward compatibility is irrelevant, use a clean cut.
+Because backward compatibility is irrelevant, use selective assembly rather than
+in-place migration. The new repository is created from chosen source, docs,
+tests, template, and governance slices. Old runtime/process surfaces stay behind
+unless they are deliberately rewritten into the new graph model.
 
-### Delete Active Spec Kit Runtime
+### Do Not Copy Active Spec Kit Runtime
 
-Remove:
+Do not copy these active old-process surfaces into FS.GG.UI:
 
 ```text
 .specify/scripts/**
@@ -889,48 +2705,769 @@ Remove:
 .specify/feature.json
 ```
 
-Replace with:
+The new repository starts with:
 
 ```text
+.specflow/project.graph.json
+.specflow/product.graph.json
 .specflow/current.json
 .specflow/config.json
+.specflow/schema/project-graph.schema.json
+.specflow/schema/product-graph.schema.json
 .specflow/schema/feature-graph.schema.json
 ```
 
-### Replace Skills
+### Start With New Agent Surface
 
-Delete or archive active:
+Do not copy active old workflow skills:
 
 ```text
 .agents/skills/speckit-*
 .claude/skills/speckit-*
 ```
 
-Add:
+Start with one generated context-pack entry point:
 
 ```text
-.agents/skills/specflow-*
+.agents/skills/specflow/SKILL.md
 ```
 
-Regenerate `.claude` only if still desired.
+Phase-specific `specflow-*` skills may be generated later if they prove useful,
+but they are projections of context-pack policy, not the primary source.
+Regenerate `.claude` only if the new repository still wants a Claude mirror.
 
-### Replace Feature Artifacts
+### Assemble New Feature Artifacts
 
-For active and future features:
+For the new repository:
 
-- add `feature.graph.json`;
-- regenerate `spec.md`, `plan.md`, `tasks.md`;
-- delete `tasks.deps.yml` or move it to generated readiness if needed;
-- replace readiness semantic files with `readiness/evidence.json` plus
+- create a seed `feature.graph.json` only for the first FS.GG.UI feature;
+- generate `spec.md`, `plan.md`, and `tasks.md` from that seed graph;
+- do not import old `tasks.deps.yml` into active state;
+- use `readiness/evidence.json` plus
   generated reports.
 
-Historical feature directories can be left alone initially if they are not
-active. The graph tools should operate on the active feature unless explicitly
-asked to import history.
+Historical feature directories remain in the old repository. The new repository
+may carry a curated migration note, selected ADRs, and source provenance, but it
+should not begin life with old feature workflow state.
+
+## Spec Implementation Roadmap
+
+Implement the plan as ten specs. The first spec is the final old-repository
+feature. Specs 2-10 belong in FS.GG.UI. This keeps the complete break honest:
+the old repository produces the new repository and provenance, then stops
+owning active product development.
+
+Roadmap dependency shape:
+
+```text
+S01 old-repo bootstrapper
+  -> S02 FS.GG.UI repository seed
+      -> S03 ProjectGraph kernel
+      -> S04 ProductGraph kernel
+      -> S05 FeatureGraph kernel
+          -> S06 Evidence ledger and traceability
+              -> S07 Routing and target integration
+              -> S08 Package/template/docs/generated-product integration
+              -> S09 Platform/CI/release/provenance integration
+              -> S10 Product contract hardening
+```
+
+Cross-spec rules:
+
+- Do not add compatibility aliases for `.specify`, `speckit-*`, old package IDs,
+  or old template identity.
+- Do not import historical feature workflow state into FS.GG.UI active state.
+- Every spec that writes generated files also adds the projection check that
+  catches hand edits.
+- Every spec that introduces authoritative evidence also defines freshness,
+  graph-hash binding, and diagnostic wording.
+- Keep implementation units spec-sized: each spec must produce a repo state that
+  can be reviewed without understanding all later specs.
+
+### Spec 01 - Old Repo Bootstrapper
+
+Repository: this repository.
+
+Purpose:
+
+- Build the final old-repository feature that assembles FS.GG.UI and records why
+  each selected surface was copied, rewritten, dropped, or archived.
+
+Deliverables:
+
+- `SpecFlowBootstrap` modules for brand matrix, source selection, rewrite plan,
+  new repository assembly, bootstrap evidence, and provenance.
+- FS.GG.UI brand matrix seeded with `FS.GG.UI` and the tagline
+  "Graph-governed UI infrastructure for F# and Skia."
+- Source selection manifest for product libraries, tests, docs, template
+  slices, active ADRs, and governance kernel slices.
+- Rewrite plan for namespace, package IDs, template identity, docs URLs, skill
+  names, and package-version property names.
+- Staged new repository tree under `artifacts/rebrand/<new-repo-name>/`.
+- Bootstrap provenance file with source commit, copied paths, rewritten paths,
+  dropped paths, and migration/deprecation map.
+
+Exit criteria:
+
+- Staged tree exists and contains no active `.specify` runtime.
+- Staged tree has no active `FS.Skia.UI` identity outside migration/deprecation
+  notes.
+- Staged tree includes enough source, tests, docs, template, and governance
+  code to become the first FS.GG.UI commit.
+- This repository has a bridge/archive plan and no planned long-lived workflow
+  conversion work.
+
+Not in scope:
+
+- Full `ProjectGraph`, `ProductGraph`, or `FeatureGraph` implementation inside
+  the old repository.
+- Historical feature import.
+- NuGet publishing.
+
+### Spec 02 - FS.GG.UI Repository Seed
+
+Repository: FS.GG.UI.
+
+Purpose:
+
+- Turn the staged tree into the first coherent FS.GG.UI repository.
+
+Deliverables:
+
+- New solution/project layout under `FS.GG.UI.*` namespaces and package IDs.
+- Initial package matrix and template identity:
+  `FS.GG.UI.Scene`, `FS.GG.UI.Controls`, `FS.GG.UI.Controls.Elmish`,
+  `FS.GG.UI.Template`, and any other carried packages.
+- Initial docs identity and docs URL policy.
+- Initial template short name `fs-gg-ui`.
+- No active `.specify` runtime, no active `speckit-*` skills, no old active
+  workflow metadata.
+- Basic restore/build/test/pack command wiring appropriate to the new repo.
+
+Exit criteria:
+
+- Fresh checkout restores and builds with the new identity.
+- Package/template/docs metadata all agree on FS.GG.UI identity.
+- Old identity appears only in migration/provenance/deprecation docs.
+- First commit provenance points back to this repository and source commit.
+
+Not in scope:
+
+- Graph validation kernel beyond minimal seed files.
+- Release publishing.
+- Product contract completeness.
+
+### Spec 03 - ProjectGraph Kernel
+
+Repository: FS.GG.UI.
+
+Purpose:
+
+- Make project policy graph-owned.
+
+Deliverables:
+
+- `.specflow/project.graph.json`.
+- `ProjectGraphModel`, deterministic JSON parser/writer, graph hash, schema
+  projection, and validator.
+- Identity, package, template, docs, target-catalog, routing-policy, release,
+  platform, and provenance policy stubs.
+- `specflow project validate`, `specflow project render`, and
+  `specflow project check`.
+- `SpecFlowProjectCheck` and initial policy projection check.
+
+Exit criteria:
+
+- Project graph round-trips deterministically.
+- Project graph hash changes only for semantic project-policy changes.
+- Package/template/docs identity drift is reported from graph policy.
+- Hand-edited project-policy projections fail with a clear diff.
+
+Not in scope:
+
+- Feature task workflow.
+- Product control/scenario contracts.
+- CI online verification.
+
+### Spec 04 - ProductGraph Kernel
+
+Repository: FS.GG.UI.
+
+Purpose:
+
+- Make product promises graph-owned.
+
+Deliverables:
+
+- `.specflow/product.graph.json`.
+- `ProductGraphModel`, deterministic JSON parser/writer, graph hash, schema
+  projection, and validator.
+- Imported seed rows for packages/capabilities, controls, public surfaces, docs
+  pages, docs images, samples, generated profiles, test specs, performance
+  corpus rows, interaction/accessibility rows, architecture trace rows, and
+  toolchain/environment policy.
+- `specflow product validate`, `specflow product render`, and
+  `specflow product check`.
+- `SpecFlowProductCheck` and `SpecFlowProductProjectionCheck`.
+
+Exit criteria:
+
+- Product graph references current project graph hash.
+- Product projections cover the initial control/capability/scenario surface.
+- Orphan controls, docs pages, screenshots, public surfaces, and sample rows are
+  diagnosed.
+- Hand-edited product projections fail with a clear diff.
+
+Not in scope:
+
+- Full visual/performance/accessibility enforcement. Spec 10 hardens those.
+- Feature workflow.
+
+### Spec 05 - FeatureGraph Kernel
+
+Repository: FS.GG.UI.
+
+Purpose:
+
+- Replace Markdown task/spec/plan authority with a typed feature graph.
+
+Deliverables:
+
+- `feature.graph.json` model, parser/writer, hash, schema projection, and
+  validator.
+- Generated `spec.md`, `plan.md`, `tasks.md`, task graph JSON/Markdown, and
+  context-pack skeletons.
+- `specflow new`, `specflow activate`, `specflow status`,
+  `specflow graph validate`, and `specflow project --check`.
+- `SpecFlowGraphCheck` and `SpecFlowProjectionCheck`.
+- Seed first FS.GG.UI feature graph.
+
+Exit criteria:
+
+- `spec.md`, `plan.md`, and `tasks.md` are generated projections.
+- `tasks.deps.yml` is not an authored active artifact.
+- Feature graph references current project and product graph hashes.
+- A fresh checkout can explain the active feature without `.specify`.
+
+Not in scope:
+
+- Gate evidence recording.
+- Route integration.
+- Approval/research refresh ergonomics beyond schema fields.
+
+### Spec 06 - Evidence Ledger And Traceability
+
+Repository: FS.GG.UI.
+
+Purpose:
+
+- Make evidence authoritative, typed, fresh, and graph-bound.
+
+Deliverables:
+
+- Evidence ledger model for gate, CI, package, docs, visual, scenario,
+  performance, interaction/accessibility, architecture, environment, research,
+  approval, and manual observation rows.
+- Evidence freshness rules for project/product/feature graph hashes and commit
+  binding.
+- `specflow evidence add-*`, `specflow task complete`, and evidence status
+  commands.
+- Traceability reports for requirement -> task -> evidence and product subject
+  -> scenario -> evidence.
+- `SpecFlowAudit`.
+
+Exit criteria:
+
+- Done task requires graph-owned completion proof.
+- Stale evidence cannot satisfy current readiness.
+- Missing evidence payloads fail unless explicitly external/deferred.
+- Local development evidence is distinct from release provenance.
+
+Not in scope:
+
+- Route gate selection.
+- CI/release attestation verification.
+
+### Spec 07 - Routing And Target Integration
+
+Repository: FS.GG.UI.
+
+Purpose:
+
+- Bind declared feature impact, actual diff classification, target catalog, and
+  required gates.
+
+Deliverables:
+
+- Target catalog policy over compiled targets.
+- Route planning over project, product, and feature impact.
+- Actual route capture from git diff.
+- JSON route output and route evidence rows.
+- Drift diagnostics for undeclared public surface, package, template, docs,
+  product, platform, and governance impact.
+- `SpecFlowTraceCheck`, route subcheck, and target metadata projection check.
+
+Exit criteria:
+
+- Feature plans show expected route before implementation.
+- Actual route is compared to declared impact after implementation.
+- Required gates map to target IDs or declared CI-only checks.
+- Missing or stale gate evidence blocks readiness.
+
+Not in scope:
+
+- Package/template generated-product deep integration.
+- CI platform verification.
+
+### Spec 08 - Package, Template, Docs, And Generated Product Integration
+
+Repository: FS.GG.UI.
+
+Purpose:
+
+- Bind project package policy and product capability policy to generated product
+  behavior.
+
+Deliverables:
+
+- Package matrix validation.
+- Template identity validation and generated template profile matrix.
+- Generated product pack/install/instantiate evidence rows.
+- Docs policy projections for package readmes, docs navigation, API reference
+  assumptions, migration pages, and active old-brand-link restrictions.
+- Capability/template/profile projections from ProductGraph and ProjectGraph.
+- `SpecFlowPackagePolicyCheck`, `SpecFlowTemplatePolicyCheck`, and docs
+  projection subchecks.
+
+Exit criteria:
+
+- Package IDs, template IDs, central pins, generated product pins, and docs
+  identity agree.
+- Every generated profile has validation evidence.
+- Product capability rows map to package/template/docs surfaces.
+- Active docs reject old identity except migration/deprecation pages.
+
+Not in scope:
+
+- NuGet publishing.
+- GitHub ruleset verification.
+- Full visual/performance hardening.
+
+### Spec 09 - Platform, CI, Release, And Provenance Integration
+
+Repository: FS.GG.UI.
+
+Purpose:
+
+- Make merge and release policy graph-owned and provenance-aware.
+
+Deliverables:
+
+- Offline workflow/ruleset policy projections.
+- Workflow permissions checks.
+- Required status-check mapping to local targets or declared CI-only checks.
+- Trusted Publishing policy declaration.
+- Release plan command that emits `Push`, `SkipExisting`, and `Block` decisions.
+- Package digest, Source Link, signing, attestation, SBOM, and builder identity
+  evidence model.
+- Deprecation plan for old `FS.Skia.UI.*` package IDs.
+- `SpecFlowPlatformPolicyCheck`, `SpecFlowReleasePolicyCheck`, and
+  `SpecFlowProvenanceCheck`.
+
+Exit criteria:
+
+- Release plan is deterministic and idempotent.
+- Publish jobs use release environment and least privileges.
+- Trusted Publishing fields match repository/workflow/environment policy.
+- Release evidence cannot be satisfied by local gate logs.
+- Old package IDs have alternate-package deprecation rows.
+
+Not in scope:
+
+- Publishing the first package unless explicitly chosen as a follow-up release
+  spec.
+- Generic reusable governance product extraction.
+
+### Spec 10 - Product Contract Hardening
+
+Repository: FS.GG.UI.
+
+Purpose:
+
+- Turn the seeded ProductGraph into an enforced product contract.
+
+Deliverables:
+
+- Control/capability/public-surface hardening.
+- Visual evidence policy for docs images, preview harness fixtures, gallery
+  screenshots, and smoke screenshots.
+- Scenario corpus policy over docs test specs, samples, generated profiles, and
+  smoke evidence.
+- Performance budget policy over retained-render and future layout/viewer
+  metrics.
+- Interaction/accessibility policy over focus, pointer, keyboard, visual state,
+  contrast, diagnostics, and accessibility expectations.
+- Architecture trace policy over source path groups, ADRs, architecture docs,
+  and feature IDs.
+- Toolchain/environment policy over SDK, target frameworks, package sources, CI
+  images, native dependencies, docs environment, visual environment, and
+  generated-product environment.
+- `SpecFlowControlCatalogCheck`, `SpecFlowVisualEvidenceCheck`,
+  `SpecFlowScenarioCorpusCheck`, `SpecFlowPerformanceBudgetCheck`,
+  `SpecFlowInteractionContractCheck`, `SpecFlowArchitectureTraceCheck`, and
+  `SpecFlowEnvironmentPolicyCheck`.
+
+Exit criteria:
+
+- Product subjects have complete docs/sample/test/evidence bindings or explicit
+  deferrals.
+- Required visual/performance/interaction/accessibility evidence is graph-bound
+  and fresh.
+- Architecture trace gaps are diagnosed for high-risk source changes.
+- Environment mismatch is diagnosed before visual, generated-product, docs, or
+  release evidence is trusted.
+
+Not in scope:
+
+- Adding new controls or runtime features for their own sake.
+- Turning ProductGraph into a generic product-management database.
 
 ## Implementation Stages
 
-### Stage 0 - Commit The Breaking Decision
+Full integration changes the order of attack. The workflow-only stages below are
+still useful implementation detail, but the first deliverable should be a
+project-governance kernel that can create the new repository correctly and keep
+identity, package, template, docs, CI, release, and evidence policy in one
+model.
+
+### Stage G0 - Commit Full Governance Scope
+
+Deliverables:
+
+- ADR: "Project graph, product graph, and feature graph are the governance
+  authorities".
+- Decide the new project name, package prefix, root namespace, template short
+  name, docs URL, and repository owner/name.
+- Record old-to-new identity mapping and package deprecation intent.
+- Decide which platform policies are generated only, checked offline, checked
+  online, or release-gated.
+
+Exit criteria:
+
+- Maintainers accept that existing agent workflows, `.specify`, and old
+  package/template identity can be broken.
+- The first new-repo feature is allowed to import only the governance/product
+  pieces that serve the new identity.
+
+### Stage G1 - Add Project Graph And Identity Policy
+
+Deliverables:
+
+- `ProjectGraphModel.fs(i)`.
+- `ProjectGraphJson.fs`.
+- `ProjectGraphHash.fs`.
+- `IdentityPolicy.fs`.
+- `.specflow/project.graph.json` fixture with the new brand matrix.
+- Generated JSON Schema for editor support.
+
+Tests:
+
+- Project graph round-trip is deterministic.
+- Hash ignores JSON field-order variation.
+- Old brand references outside migration/deprecation rows are rejected.
+- Package prefix, namespace, docs URL, template identity, and repository identity
+  are mutually consistent.
+
+### Stage G2 - Bind Existing Target And Routing Catalogs
+
+Deliverables:
+
+- `TargetCatalogPolicy.fs`.
+- `RoutingPolicy` graph bindings over existing `Targets` and `Routing`.
+- `SpecFlowProjectCheck`.
+- `SpecFlowPolicyProjectionCheck` target-catalog subcheck.
+- JSON route output and graph route evidence shape.
+
+Tests:
+
+- Every graph target ID maps to the compiled `Target` union.
+- Every routing gate maps to a target or declared CI-only check.
+- Target metadata projection catches drift against compiled target metadata.
+- Route evidence records diff scope, matched rules, required gates, and expected
+  artifacts.
+
+### Stage G3 - Add Evidence Ledger And Freshness Rules
+
+Deliverables:
+
+- `EvidenceLedger.fs`.
+- `GateEvidence.fs`.
+- `ArtifactProvenance.fs` skeleton.
+- Evidence row parser/writer, hash binding, and path validation.
+- Bootstrap adapter that can summarize selected old readiness files as
+  migration provenance without importing old feature workflow state.
+
+Tests:
+
+- Pass evidence with missing payload fails.
+- Evidence bound to an old graph hash cannot satisfy current readiness.
+- Local gate evidence cannot satisfy release provenance.
+- Package/release evidence must include package ID, version, digest, commit, and
+  builder/workflow identity when release policy requires it.
+
+### Stage G4 - Integrate Package, Template, Docs, And Generated Products
+
+Deliverables:
+
+- `PackagePolicy.fs`.
+- `TemplatePolicy.fs`.
+- `DocsPolicy.fs`.
+- Port `GeneratedProduct`, `Capabilities`, `ApiSurfaceGen`,
+  `PerPackageSurface`, and `PackageSkew` under graph-owned policy.
+- Project-policy projections for package metadata, template identity, capability
+  rows, docs governance, and generated skills.
+
+Tests:
+
+- Every packable project has a graph package row or explicit private
+  declaration.
+- Template package ID, template identity, short name, install command, and
+  generated docs agree.
+- Generated product pins match the package matrix.
+- Active docs reject old identity outside migration pages.
+- Public-surface baselines resolve through package policy.
+
+### Stage G5 - Add Platform And CI Policy
+
+Deliverables:
+
+- `PlatformPolicy.fs`.
+- `CiPolicy.fs`.
+- Offline workflow/ruleset validators.
+- Generated `.github/workflows/*.yml` and `.github/rulesets/*.json` or checked
+  hand-authored equivalents.
+- Optional online verifier behind an explicit command or CI-only release mode.
+
+Tests:
+
+- Workflows have explicit minimal `permissions:`.
+- Publish/attestation permissions appear only on release jobs.
+- Required status-check names map to local targets or declared CI-only checks.
+- Cross-repository reusable workflow refs satisfy pinning policy.
+- Online verifier absence does not fail deterministic local checks.
+
+### Stage G6 - Add Release, Deprecation, And Provenance Policy
+
+Deliverables:
+
+- `ReleasePolicy.fs`.
+- `DeprecationPolicy.fs`.
+- Trusted Publishing policy declaration.
+- Source Link/signing/attestation/SBOM policy rows.
+- Release plan command that outputs `Push`, `SkipExisting`, and `Block`
+  decisions without publishing.
+- `SpecFlowReleasePolicyCheck` and `SpecFlowProvenanceCheck`.
+
+Tests:
+
+- Publish plan is deterministic and idempotent.
+- Trusted Publishing fields match repository, workflow file, environment, and
+  package owner policy.
+- Source Link/signing/attestation requirements are either satisfied or explicitly
+  deferred.
+- Deprecation rows link old package IDs to new package IDs and migration docs.
+
+### Stage G7 - Bootstrap The New Repository
+
+Deliverables:
+
+- `RepositoryBootstrap.fs`.
+- `MigrationPolicy.fs`.
+- `specflow project bootstrap-repo --output artifacts/rebrand/<new-repo-name>`.
+- Generated new repository tree with new identity, package matrix, template
+  identity, docs metadata, workflows, ruleset projections, and SpecFlow kernel.
+- Provenance file recording source repository URL, source commit, copied paths,
+  rewritten paths, dropped paths, and package/template migration map.
+
+Tests:
+
+- Staged new repository has no active `.specify` runtime.
+- New identity is present in packages, namespaces, docs, template, generated
+  skills, and workflows.
+- Old identity appears only in migration/deprecation docs.
+- Staged repo restore/build/test/pack/template-instantiation commands are
+  planned as evidence rows even if the old repo does not run them locally in the
+  report-only phase.
+
+### Stage G8 - Prepare The Active-Development Move
+
+Deliverables:
+
+- Bridge README/report update in this repository.
+- Archive or freeze old readiness artifacts.
+- New repository first feature uses `ProjectGraph + ProductGraph +
+  FeatureGraph + EvidenceLedger + PolicyProjections` from the start.
+- No active feature work continues in this repository except migration notices
+  and emergency bridge fixes.
+
+Exit criteria:
+
+- This stage is ready to execute after `P7`.
+- New repository owns the active project graph, product graph, and feature graph.
+- This repository no longer has to support long-lived workflow evolution after
+  `P7` and this prepared move execute.
+
+### Stage P0 - Commit ProductGraph Scope
+
+Deliverables:
+
+- ADR: "Product graph owns product contract metadata".
+- Decide whether ProductGraph is mandatory in the first new repository commit or
+  introduced immediately after repository bootstrap.
+- Define product subject namespaces: capability IDs, control IDs, scenario IDs,
+  visual evidence IDs, performance budget IDs, and environment IDs.
+
+Exit criteria:
+
+- Maintainers accept that docs images, samples, scenarios, and performance
+  budgets are product evidence, not passive files.
+
+### Stage P1 - Add Product Graph Model
+
+Deliverables:
+
+- `ProductGraphModel.fs(i)`.
+- `ProductGraphJson.fs`.
+- `ProductGraphHash.fs`.
+- `ProductContractValidation.fs`.
+- Minimal `.specflow/product.graph.json` fixture.
+
+Tests:
+
+- Product graph round-trip is deterministic.
+- Product hash changes when semantic product contract fields change.
+- Product graph rejects stale project graph hash for readiness.
+- Duplicate capability/control/scenario/evidence IDs fail clearly.
+
+### Stage P2 - Import Capability, Control, And Surface Contracts
+
+Deliverables:
+
+- `CapabilityRegistry.fs`.
+- `ControlCatalogPolicy.fs`.
+- `PublicSurfacePolicy.fs`.
+- Import from `template/capabilities.yml`, `docs/controls/**`, docs images,
+  public `.fsi` surfaces, sample galleries, surface baselines, and tests.
+- `SpecFlowControlCatalogCheck`.
+
+Tests:
+
+- Every imported capability maps to a package row.
+- Every control docs page maps to a control row.
+- Every required control screenshot maps to a visual evidence row.
+- Every public surface maps to a package row and product subject or explicit
+  private/infrastructure declaration.
+
+### Stage P3 - Add Visual Evidence And Scenario Corpus
+
+Deliverables:
+
+- `VisualEvidencePolicy.fs`.
+- `ScenarioCorpusPolicy.fs`.
+- Import docs images, preview harness fidelity fixtures, gallery screenshots,
+  `docs/testSpecs/**`, generated product profiles, and smoke scenarios.
+- `SpecFlowVisualEvidenceCheck`.
+- `SpecFlowScenarioCorpusCheck`.
+
+Tests:
+
+- Required visual evidence rows name subject, scenario, environment, and
+  tolerance.
+- Scenario rows map to at least one test spec, sample, generated profile, or
+  explicit manual declaration.
+- Orphan docs images and orphan preview fixtures are reported.
+- Advisory visual evidence cannot satisfy required product proof.
+
+### Stage P4 - Add Performance Budget Contracts
+
+Deliverables:
+
+- `PerformanceBudgetPolicy.fs`.
+- Budget rows for retained-render corpus metrics and future layout/viewer
+  budgets.
+- Product-owned performance report projection.
+- `SpecFlowPerformanceBudgetCheck`.
+
+Tests:
+
+- Budget rows require scenario ID, metric ID, threshold, environment, and
+  evidence kind.
+- Evidence with stale product graph hash cannot satisfy a budget.
+- Advisory metrics are rendered but cannot satisfy blocking budgets.
+
+### Stage P5 - Add Interaction And Accessibility Contracts
+
+Deliverables:
+
+- `InteractionAccessibilityPolicy.fs`.
+- Control interaction rows for focus, pointer, keyboard, visual-state, disabled,
+  hover, pressed, validation, and diagnostics behavior where applicable.
+- Accessibility rows for role/name/keyboard/contrast/diagnostic expectations.
+- `SpecFlowInteractionContractCheck`.
+
+Tests:
+
+- A control with keyboard behavior must cite keyboard/focus evidence.
+- A visual-state behavior change without product impact is blocking.
+- Contrast/accessibility obligations map to tests or explicit deferrals.
+
+### Stage P6 - Add Architecture Trace And Environment Policy
+
+Deliverables:
+
+- `ArchitectureTracePolicy.fs`.
+- `ToolchainEnvironmentPolicy.fs`.
+- Architecture trace rows for `docs/architecture/**`, `docs/adr/**`, source
+  path groups, and historical features.
+- Environment rows for SDK, target frameworks, package sources, CI images,
+  native dependencies, visual evidence environment, docs environment, and
+  generated-product environment.
+- `SpecFlowArchitectureTraceCheck`.
+- `SpecFlowEnvironmentPolicyCheck`.
+
+Tests:
+
+- High-risk source path changes require an ADR/docs trace or explicit no-update
+  decision.
+- Visual evidence with mismatched environment cannot satisfy required proof.
+- Generated-product evidence cites the expected package source and SDK policy.
+
+### Stage P7 - ProductGraph Cutover
+
+Deliverables:
+
+- `.specflow/product.graph.json` becomes mandatory for active feature readiness.
+- Product projections are generated or checked in the new repository.
+- Product impact becomes a first-class route dimension.
+- Existing docs/control/sample/performance/surface checks are folded under
+  product graph checks or retained as subchecks.
+
+Exit criteria:
+
+- A feature touching controls, capabilities, samples, docs images, public
+  surfaces, scenario corpus, performance budgets, interaction/accessibility, or
+  architecture trace must declare product impact and cite product evidence.
+- New repository release readiness includes project policy, product contract,
+  feature workflow, evidence ledger, and release provenance.
+- After this stage, execute the prepared `G8` move so active development shifts
+  to FS.GG.UI and this repository enters bridge/archive mode.
+
+The stages below are **fallback appendix stages** for the case where the rebrand
+is deferred and this repository remains the final destination. In the complete
+break path they are not the primary plan and should not run ahead of `G0-G8` and
+`P0-P7`.
+
+### Fallback Stage A0 - Commit The Breaking Decision
 
 Deliverables:
 
@@ -945,7 +3482,7 @@ Exit criteria:
 - Maintainers accept deletion of old Spec Kit surfaces.
 - No compatibility window is expected.
 
-### Stage 1 - Add Core Graph Model
+### Fallback Stage A1 - Add Core Graph Model
 
 Deliverables:
 
@@ -968,7 +3505,7 @@ Design constraints:
 - No generated F# quotations.
 - Keep JSON formatting deterministic and reviewable.
 
-### Stage 2 - Add Graph Validation Kernel
+### Fallback Stage A2 - Add Graph Validation Kernel
 
 Deliverables:
 
@@ -990,7 +3527,7 @@ Tests:
 - Synthetic taint propagates through real dependencies.
 - Accepted synthetic deferral stops taint only when approval is current.
 
-### Stage 3 - Add Projection Generator
+### Fallback Stage A3 - Add Projection Generator
 
 Deliverables:
 
@@ -1006,7 +3543,7 @@ Tests:
 - Hand-edited projection fails with a small diff.
 - Projection output does not include nondeterministic timestamps.
 
-### Stage 4 - Add `specflow` CLI
+### Fallback Stage A4 - Add `specflow` CLI
 
 Deliverables:
 
@@ -1029,7 +3566,7 @@ Tests:
 - Status reads `.specflow/current.json`.
 - Missing active feature fails with clear next command.
 
-### Stage 5 - Import One Active Feature And Cut Over
+### Fallback Stage A5 - Import One Active Feature And Cut Over
 
 Deliverables:
 
@@ -1055,7 +3592,7 @@ This is not compatibility support. The importer exists to bootstrap the new
 authority from the current active feature, then can be removed or left as a
 historical tool.
 
-### Stage 6 - Replace Evidence Graph And Audit Targets
+### Fallback Stage A6 - Replace Evidence Graph And Audit Targets
 
 Deliverables:
 
@@ -1077,7 +3614,7 @@ Tests:
 - Old target names no longer appear in validation contract unless deliberately
   retained.
 
-### Stage 7 - Add Route Planning To The Graph
+### Fallback Stage A7 - Add Route Planning To The Graph
 
 Deliverables:
 
@@ -1099,7 +3636,7 @@ Tests:
 - Actual diff mismatch is blocking.
 - Expected gates render in `plan.md` projection.
 
-### Stage 8 - Add Evidence Command Rows
+### Fallback Stage A8 - Add Evidence Command Rows
 
 Deliverables:
 
@@ -1120,7 +3657,7 @@ Tests:
 - Task completion records evidence and graph hash.
 - Re-running projection updates task status in generated `tasks.md`.
 
-### Stage 9 - Add Context Packs And New Skills
+### Fallback Stage A9 - Add Context Packs And New Skills
 
 Deliverables:
 
@@ -1146,7 +3683,7 @@ Tests:
 - No active skill references `.specify/scripts`.
 - No active skill instructs hand-editing generated projections.
 
-### Stage 10 - Delete Spec Kit Runtime Surfaces
+### Fallback Stage A10 - Delete Spec Kit Runtime Surfaces
 
 Deliverables:
 
@@ -1170,7 +3707,7 @@ Tests:
 - `specflow status` works from a fresh checkout.
 - `SpecFlowProjectionCheck` passes.
 
-### Stage 11 - Worktree-First Execution
+### Fallback Stage A11 - Worktree-First Execution
 
 Deliverables:
 
@@ -1190,7 +3727,7 @@ Tests:
 - Two workspaces for two features do not share generated-product output paths.
 - Workspace disposal does not delete committed evidence.
 
-### Stage 12 - Approval And Review Gates
+### Fallback Stage A12 - Approval And Review Gates
 
 Deliverables:
 
@@ -1215,7 +3752,7 @@ Tests:
 - Revoked approval cannot satisfy route.
 - Approval projection renders in `plan.md` and readiness index.
 
-### Stage 13 - Research Claim Verification
+### Fallback Stage A13 - Research Claim Verification
 
 Deliverables:
 
@@ -1234,7 +3771,7 @@ Tests:
 - Old retrieval date reports stale warning by policy.
 - Network refresh is never required by deterministic gates.
 
-### Stage 14 - Historical Import And Archive
+### Fallback Stage A14 - Historical Import And Archive
 
 Deliverables:
 
@@ -1253,7 +3790,25 @@ Tests:
 ### Unit Tests
 
 - JSON parse/write round-trip.
-- Graph hash determinism.
+- Project graph hash determinism.
+- Product graph hash determinism.
+- Feature graph hash determinism.
+- Identity policy validation.
+- Capability/control registry validation.
+- Public surface to product subject validation.
+- Visual evidence contract validation.
+- Scenario corpus validation.
+- Performance budget validation.
+- Interaction/accessibility contract validation.
+- Architecture trace validation.
+- Toolchain/environment validation.
+- Target catalog binding to compiled target IDs.
+- Package matrix validation.
+- Template identity validation.
+- Docs identity validation.
+- Workflow permissions policy validation.
+- Trusted Publishing policy validation.
+- Release evidence freshness validation.
 - DAG cycle detection and topo order.
 - Synthetic taint propagation.
 - Requirement coverage.
@@ -1270,9 +3825,34 @@ Tests:
 - Projection render followed by parse/import does not invent IDs.
 - Graph hash changes when semantic fields change.
 - Graph hash does not change when JSON object field order changes.
+- Project policy hash changes when package/template/docs/CI/release policy
+  changes.
+- Product contract hash changes when controls/capabilities/scenarios/visual
+  evidence/performance/interaction/accessibility/architecture/environment policy
+  changes.
+- Feature readiness cannot be satisfied by evidence bound to a different project
+  policy hash.
+- Product readiness cannot be satisfied by evidence bound to a different product
+  contract hash.
+- Generated package/template/docs identity stays consistent across arbitrary
+  valid brand matrices.
+- Generated product docs/images/scenario/performance projections stay
+  internally consistent across arbitrary valid product subject graphs.
 
 ### Golden Tests
 
+- Minimal project graph projections.
+- Rebrand project graph projections.
+- Minimal product graph projections.
+- Control catalog product graph projections.
+- Visual evidence product graph projections.
+- Scenario corpus product graph projections.
+- Performance budget product graph projections.
+- Interaction/accessibility product graph projections.
+- Architecture trace product graph projections.
+- Platform policy projection.
+- Release policy projection.
+- Template/package matrix projection.
 - Minimal feature graph projections.
 - Public-surface feature graph projections.
 - Template-impact feature graph projections.
@@ -1282,11 +3862,31 @@ Tests:
 
 ### Integration Tests
 
+- `specflow project validate` validates `.specflow/project.graph.json`.
+- `specflow product validate` validates `.specflow/product.graph.json`.
+- `specflow project check` fails after hand-editing package/template/docs or
+  workflow projections.
+- `specflow product check` fails after hand-editing control catalog, image
+  manifest, scenario, performance, interaction/accessibility, architecture, or
+  environment projections.
+- `specflow project release plan --json` emits deterministic publish/skip/block
+  decisions without publishing.
+- `specflow project bootstrap-repo` creates a staged new repository tree with
+  new identity and migration provenance.
 - `specflow new` creates graph and projections.
 - `specflow activate` changes `.specflow/current.json`.
 - `specflow task complete` updates graph and projections.
 - `specflow project --check` fails after hand-editing generated `tasks.md`.
 - `SpecFlowGraphCheck` and `SpecFlowAudit` run through FAKE target dispatch.
+- `SpecFlowPolicyProjectionCheck`, `SpecFlowPlatformPolicyCheck`,
+  `SpecFlowPackagePolicyCheck`, `SpecFlowTemplatePolicyCheck`,
+  `SpecFlowReleasePolicyCheck`, and `SpecFlowProvenanceCheck` run through FAKE
+  target dispatch.
+- `SpecFlowProductCheck`, `SpecFlowProductProjectionCheck`,
+  `SpecFlowControlCatalogCheck`, `SpecFlowVisualEvidenceCheck`,
+  `SpecFlowScenarioCorpusCheck`, `SpecFlowPerformanceBudgetCheck`,
+  `SpecFlowInteractionContractCheck`, `SpecFlowArchitectureTraceCheck`, and
+  `SpecFlowEnvironmentPolicyCheck` run through FAKE target dispatch.
 - Worktree command creates isolated workspace paths.
 
 ## Failure Modes And Diagnostics
@@ -1297,29 +3897,53 @@ Tests:
 | Done task lacks evidence | Name task, expected evidence kinds, and suggested `specflow evidence` command. |
 | Evidence path missing | Name evidence ID, path, and task/requirement it was meant to satisfy. |
 | Route mismatch | Show declared impact, actual diff rule matches, expected gates, actual gates. |
+| Project policy drift | Show old project hash, current project hash, changed policy domains, and affected feature approvals/evidence. |
+| Product contract drift | Show old product hash, current product hash, changed product subjects, and affected feature approvals/evidence. |
+| Orphan control docs page | Show docs page, nearest control IDs, and suggested product row or migration declaration. |
+| Missing control screenshot | Show control ID, docs page, expected visual evidence row, and screenshot path. |
+| Scenario corpus gap | Show scenario ID, missing sample/test spec/generated profile/smoke evidence, and affected product subjects. |
+| Performance budget failure | Show scenario ID, metric, measured value, budget, environment, and evidence ID. |
+| Interaction/accessibility coverage gap | Show control/capability/scenario ID, missing input/accessibility contract, and expected tests. |
+| Architecture trace gap | Show changed source path, subsystem, missing ADR/docs trace, and allowed no-update decision format. |
+| Environment mismatch | Show evidence ID, expected environment, actual environment, and affected product proof. |
+| Package identity drift | Show package row, project file, generated pins, template pins, and stale metadata path. |
+| Workflow permission violation | Show workflow job, requested permission, allowed permission, and policy row. |
+| Required status check mismatch | Show ruleset/check name, expected source, local target mapping, and CI evidence state. |
+| Release provenance missing | Show package ID, version, missing digest/commit/workflow/builder/attestation field, and required policy. |
 | Stale approval | Show approval ID, approved graph hash, current graph hash. |
 | Uncovered requirement | Show requirement ID, text, and nearest candidate tasks if any. |
 | Orphan evidence | Show evidence ID, path, and no covering requirement/task. |
 | Synthetic taint | Show root synthetic task and downstream affected tasks. |
 | Context pack stale | Show phase, projection path, expected graph hash. |
 
-## Data Migration Rules
+## Selective Import Policy
 
-No backward compatibility is required, but data loss should still be explicit.
+No backward compatibility is required, and the new repository should not inherit
+old workflow state by default. Data loss should still be explicit: every copied,
+rewritten, dropped, or archived surface gets a provenance decision.
 
 Rules:
 
-- Import current active feature first.
-- Preserve requirement IDs and task IDs when possible.
-- Preserve long-form prose by embedding it in graph fields.
-- Preserve old readiness files only if referenced by an evidence row.
-- Convert `tasks.deps.yml` dependencies into `TaskNode.Dependencies`.
-- Convert `owns:` values into `TaskNode.Owns`.
-- Convert skill lists into `TaskNode.SkillIds`.
-- Convert checkboxes into initial `TaskStatus`, then stop reading checkboxes.
-- Record import warnings in `readiness/import-report.md`.
+- Import durable product source, public `.fsi` contracts, tests, template
+  fragments, docs pages, active ADRs, and selected architecture docs.
+- Import package/template/docs identity only after rewriting it to the new
+  `FS.GG.UI` brand matrix.
+- Import product contract state into `product.graph.json`, not into feature
+  tasks.
+- Import project policy state into `project.graph.json`, not into old
+  governance prose.
+- Do not import old active feature workflow state unless a row is needed for
+  migration provenance.
+- Do not import historical readiness logs as active evidence. Keep them in the
+  old repository or summarize them in migration notes.
+- Do not preserve old requirement IDs, task IDs, or `tasks.deps.yml` unless a
+  specific migration note needs them.
+- Preserve long-form durable decisions by copying or rewriting ADRs and
+  architecture docs, not by importing old feature plans wholesale.
+- Record import/drop/rewrite decisions in the bootstrap provenance file.
 
-After import, the old artifacts are generated or deleted.
+The old repository remains the audit archive. FS.GG.UI starts from a curated
+contract and a clean active workflow.
 
 ## Route Policy Changes
 
@@ -1328,11 +3952,14 @@ Current `Route` reads working-tree diff. Keep that, but add graph planning.
 New flow:
 
 1. During planning, graph `ImpactModel` declares expected impact.
-2. `RoutePlanning` computes expected gates from declared impact.
+2. `RoutePlanning` computes expected gates from declared impact and the current
+   project-policy hash.
 3. During implementation, actual git diff is classified by existing
    `Routing.fs`.
 4. `SpecFlowAudit` compares expected route to actual route.
-5. Missing gate evidence is blocking.
+5. Required local gates map to typed target evidence.
+6. Required remote checks map to CI evidence or declared CI-only checks.
+7. Missing or stale evidence is blocking.
 
 This makes validation obligations visible before implementation and catches
 under-declared features.
@@ -1350,6 +3977,33 @@ Keep token scans only for:
   practical attachment format.
 
 Every blocking evidence obligation should have a typed `EvidenceItem`.
+
+Release evidence is stricter than development evidence:
+
+- Local gate rows can satisfy implementation readiness, but not release
+  provenance.
+- CI rows can satisfy merge/release policy only when they bind to the expected
+  commit, workflow, job, and required status-check name.
+- Package rows can satisfy release policy only when they bind to package ID,
+  version, digest, source commit, package matrix row, and builder identity.
+- Attestation rows can satisfy provenance policy only when the artifact subject
+  and verification policy match the package row.
+- Manual observations can explain decisions but cannot replace package, CI, or
+  attestation proof unless a policy row explicitly says so.
+
+Product evidence is stricter than asset presence:
+
+- A docs image satisfies a visual obligation only when it is referenced by a
+  visual evidence row with subject, scenario, environment, tolerance, and product
+  graph hash.
+- A sample smoke log satisfies a scenario obligation only when it cites the
+  scenario ID and expected generated profile or sample path.
+- A performance corpus row satisfies a budget only when it cites the scenario,
+  metric, threshold, environment, measured value, and product graph hash.
+- An interaction/accessibility test satisfies a contract only when it cites the
+  affected control/capability/scenario and input or accessibility policy.
+- An architecture doc or ADR satisfies traceability only when it is linked to
+  the changed source path group and feature impact.
 
 ## Context Budgeting
 
@@ -1387,6 +4041,15 @@ Rules:
 - Network lookup helpers are opt-in and non-gating.
 - Approval artifacts bind to graph hash.
 - Evidence rows point to local files or explicit external references.
+- Workflow jobs default to minimal permissions.
+- Publish and attestation jobs are isolated behind release policy and
+  environment protection.
+- Trusted Publishing is preferred over long-lived NuGet API keys once the new
+  repository/package owner policy is configured.
+- Release provenance is CI-backed. Local maintainer logs remain useful
+  development evidence, but they do not prove package origin.
+- Online platform verification is optional for local development and may become
+  mandatory only inside release CI.
 
 ## Performance And Caching
 
@@ -1404,6 +4067,9 @@ Do not cache:
 - gate pass/fail verdicts;
 - route actual diff results;
 - evidence audit verdicts;
+- product contract verdicts;
+- visual evidence verdicts;
+- performance budget verdicts;
 - approval status against current graph hash.
 
 Cache path:
@@ -1422,49 +4088,163 @@ Workspace-specific cache path:
 
 The redesign is complete when:
 
-- Active feature state is stored in `feature.graph.json`.
-- `.specflow/current.json` replaces `.specify/feature.json`.
+- The FS.GG.UI repository exists as the active development home.
+- Project policy is stored in FS.GG.UI `.specflow/project.graph.json`.
+- Product contract is stored in FS.GG.UI `.specflow/product.graph.json`.
+- Active feature state is stored in FS.GG.UI `feature.graph.json`.
+- FS.GG.UI has no active `.specify` runtime or `.specify/feature.json`.
+- Feature graphs reference the current project-policy hash for readiness and
+  release.
+- Feature graphs reference the current product-contract hash for product
+  readiness and release.
 - `spec.md`, `plan.md`, and `tasks.md` are generated projections.
+- Project-policy projections cover target metadata, route policy, package
+  matrix, template identity, docs policy, skills/context packs, workflow policy,
+  ruleset expectations, release policy, and provenance policy.
+- Product-contract projections cover capability/control registry, public
+  surfaces, docs pages, docs images, scenario corpus, visual evidence,
+  performance budgets, interaction/accessibility contracts, architecture trace,
+  and environment policy.
 - `tasks.deps.yml` is not an active authored artifact.
 - Task completion is graph-owned and evidence-backed.
 - Requirement-to-task-to-evidence traceability is machine-checked.
 - Route expectations are graph-visible before implementation.
 - Actual diff route is compared with declared impact.
 - Gate evidence is stored as typed evidence rows.
+- Required GitHub status checks map to local targets or declared CI-only checks.
+- Workflow permissions and reusable workflow refs are checked against CI policy.
+- Package IDs, versions, central package pins, template pins, generated-product
+  pins, and package metadata are graph-owned or graph-checked.
+- Controls, capabilities, public surfaces, docs pages, screenshots, samples,
+  generated profiles, tests, and template fragments are product-graph-owned or
+  product-graph-checked.
+- Scenario, visual, performance, interaction/accessibility, architecture, and
+  environment evidence binds to product-contract IDs and product graph hash.
+- Docs and package readmes point to the current project identity; old identity is
+  limited to migration/deprecation pages.
+- Release plans are deterministic and idempotent.
+- Trusted Publishing, Source Link, signing, attestation, SBOM, and deprecation
+  requirements are explicit policy decisions.
+- Release evidence binds package ID, version, digest, source commit, workflow
+  identity, builder identity, and attestation status when required.
 - Approval artifacts bind to graph hash.
 - Context packs replace long phase prompt instructions as operational input.
 - Active `speckit-*` skills and `.specify/scripts/**` are gone.
-- New graph FAKE targets replace `EvidenceGraph` / `EvidenceAudit`.
+- New graph and policy FAKE targets replace `EvidenceGraph` / `EvidenceAudit`
+  and fragmented guidance/template/publish checks.
+- Product graph targets replace fragmented control-doc, visual-evidence,
+  scenario-corpus, performance, accessibility, architecture-trace, and
+  environment checks where a product contract exists.
 - Projection drift is a hard failure.
-- A fresh checkout can run `./specflow status` and explain the active feature.
+- Staged new-repository bootstrap can generate a coherent new tree with new
+  identity and migration provenance.
+- A fresh checkout of FS.GG.UI can validate the project graph, product graph,
+  first feature graph, package matrix, template identity, docs identity, release
+  plan, and evidence ledger without consulting old active workflow state.
+- This repository is in bridge/archive mode after cutover and does not receive
+  new product feature work except migration notices or emergency bridge fixes.
 
 ## Risks And Mitigations
 
 | Risk | Impact | Mitigation |
 |---|---|---|
+| Scope explosion from full integration | Bootstrap never lands | Stage project graph, target/routing binding, evidence ledger, and rebrand bootstrap first; defer optional online verification and reusable extraction. |
+| Polishing the old repo delays the new repo | Energy goes into in-place cleanup instead of extraction | Clean only enough to assemble/prove FS.GG.UI; do not make old-repo workflow conversion a prerequisite. |
+| Project graph becomes a mega-config file | Hard to reason about policy | Split `ProjectGraph` from `FeatureGraph`; keep algorithms in compiled F# modules; generate human projections for review. |
+| Product graph becomes a product-management database | Hard to maintain and too abstract | Model only enforceable/released/documented contract facts; keep runtime architecture in code and use generated projections for review. |
 | Graph schema becomes too large | Hard to author and review | Keep prose fields simple; generate projections for human review; add focused mutation commands. |
 | Generated Markdown becomes unreadable | Maintainers stop trusting projections | Golden-review projections early; keep current spec/plan readability as a design constraint. |
 | Direct JSON edits are painful | Slower authoring | Provide `specflow requirement/task/evidence/approval` mutation commands. |
 | Route planning duplicates `Routing.fs` | Drift between declared and actual route | Reuse `Routing.rules`; do not create a parallel rule set. |
 | Evidence rows become busywork | Agents add low-value evidence | Context packs list required evidence per task; audit distinguishes authoritative and informational evidence. |
-| Deleting `.specify` breaks hidden assumptions | Build/skills fail in unexpected places | Search and remove references in the same cutover feature; add `specflow status` and projection tests first. |
+| Product evidence rows become asset bookkeeping | Maintainers ignore visual/sample/docs evidence | Require product rows only for contract-bearing assets; let purely decorative/advisory assets remain informational. |
+| ProductGraph duplicates source truth | Code and graph disagree | Source remains implementation authority; graph owns published contract references and projection/evidence links. Drift is reported instead of silently choosing one. |
+| Visual evidence is environment-sensitive | False failures on screenshots | Bind visual evidence to named environments and tolerances; separate advisory visual rows from required release proof. |
+| Performance budgets become brittle | Minor runtime variance blocks work | Use deterministic scenario metrics where possible; keep wall-clock/byte-size metrics advisory unless CI environment is pinned. |
+| Platform API checks are flaky or credential-dependent | Local gates become unreliable | Make online GitHub/NuGet comparison opt-in or release-only; keep deterministic offline projection checks mandatory. |
+| Local logs are mistaken for release provenance | Published packages have weak origin proof | Require CI-backed release rows for package digest, source commit, workflow identity, builder identity, and attestation policy. |
+| Package/template identity churn during rebrand | New repo ships inconsistent names or pins | Make brand matrix and package/template policy the first project graph content; check all generated projections together. |
+| Governance package public/private boundary is unclear | New repo freezes a premature external API | Keep SpecFlow governance internal to the new repo first; extract a reusable package only after the new repo proves the model. |
+| Accidentally copying `.specify` into FS.GG.UI | Old workflow assumptions survive the break | Treat `.specify/**` as old-repo archive/provenance only; new repo starts with `.specflow/**` and generated context packs. |
 | Worktrees fight shared state | Parallel runs corrupt cache or FAKE state | Namespace caches; explicitly audit FAKE state before default worktree mode. |
 | Approval hashes churn too often | Review gates become noisy | Scope approvals; allow narrow approval reuse only when validator proves affected graph fields unchanged. |
 
 ## Recommended First Feature Cut
 
+If the rebrand/new-repository decision is accepted, the first cut changes. Do
+not start by landing the whole graph operating system in the old tree. The first
+cut is the final old-repo feature and the first FS.GG.UI seed. Its purpose is to
+create the new repository correctly, not to make this repository clean.
+
+Recommended first cut for the rebrand path:
+
+1. Create `117-rebrand-new-repo-bootstrap` in this repository.
+2. Add `.specflow/project.graph.json` with the brand matrix, package matrix,
+   template identity, docs identity, repository identity, target/routing policy
+   references, release policy, and old-to-new identity map.
+3. Add `.specflow/product.graph.json` with the minimal product contract:
+   capabilities, controls, public surfaces, docs pages, docs images, scenarios,
+   visual evidence, performance budgets, interaction/accessibility contracts,
+   architecture trace, and toolchain/environment rows imported from existing
+   surfaces.
+4. Add a deterministic new-repository assembly plan that names imported,
+   rewritten, generated, and intentionally dropped paths.
+5. Add policy projections for packages, template, docs, skills/context packs,
+   workflows, ruleset expectations, release plan, product contract, control
+   catalog, scenario corpus, performance budgets, architecture trace,
+   environment policy, and migration/deprecation map.
+6. Generate the new repository tree under `artifacts/rebrand/<new-repo-name>/`
+   or an equivalent staging path.
+7. Port the core product libraries with new namespaces, package IDs, assembly
+   names, and docs metadata.
+8. Port the integrated governance/product kernel: `ProjectGraph`,
+   `ProductGraph`, `FeatureGraph`, `EvidenceLedger`, target/routing bindings,
+   policy projections, product projections, package policy, template policy,
+   docs policy, release policy, and provenance policy.
+9. Create the new template package identity, `template.json` identity,
+   `shortName`, package pins, generated docs, and generated skills.
+10. Add a provenance file that records the old repository URL, source commit,
+   copied paths, rewritten paths, dropped paths, package/template migration map,
+   project graph hash, and product graph hash.
+11. Plan, and later record, typed evidence rows for restore/build/test/pack,
+    generated product instantiation, docs generation, control catalog, visual
+    evidence, scenario corpus, performance budgets, interaction/accessibility,
+    architecture trace, environment policy, release plan, and provenance policy.
+    Do not confuse local bootstrap logs with final CI release provenance.
+12. Prove the staged new repository can restore, build, test, pack packages, and
+    instantiate the template from the new identity.
+13. Add the bridge README/report change in this repository that points to the
+    new repository and documents the package/template migration.
+
+After that bootstrap feature, active feature development moves to FS.GG.UI. This
+repository should only receive bridge, archive, provenance, or migration notice
+changes.
+
+If the rebrand is deferred and this repository remains the destination, use the
+fallback graph-first cut below. That path is no longer the preferred plan.
+
 Because the redesign is breaking, the first cut should still be narrow and
 mechanically decisive:
 
-1. Add graph model, JSON parser/writer, hash, and validator.
-2. Add projection generator for `spec.md`, `plan.md`, `tasks.md`,
+1. Add project graph, product graph, and feature graph models, JSON
+   parser/writer, hash, and validator.
+2. Bind project policy to existing `Targets`, `Routing`, package, template,
+   docs, and release engines.
+3. Bind product contract to existing capability, control docs, public surface,
+   sample, screenshot, scenario, performance, interaction/accessibility, ADR,
+   and environment surfaces.
+4. Add projection generator for project-policy and product-contract views plus
+   `spec.md`, `plan.md`, `tasks.md`,
    `task-graph.json`, and `task-graph.md`.
-3. Add `specflow status`, `specflow graph validate`, and
+5. Add `specflow status`, `specflow project validate`,
+   `specflow product validate`, `specflow graph validate`, and
    `specflow project --check`.
-4. Import the active feature into `feature.graph.json`.
-5. Regenerate projections and delete `tasks.deps.yml` for the active feature.
-6. Add `SpecFlowGraphCheck` and `SpecFlowProjectionCheck`.
-7. Delete `.specify/scripts/**` and active `speckit-*` skill references in the
+6. Import the active feature into `feature.graph.json`.
+7. Regenerate projections and delete `tasks.deps.yml` for the active feature.
+8. Add `SpecFlowProjectCheck`, `SpecFlowProductCheck`,
+   `SpecFlowGraphCheck`, `SpecFlowProjectionCheck`,
+   `SpecFlowPolicyProjectionCheck`, and `SpecFlowProductProjectionCheck`.
+9. Delete `.specify/scripts/**` and active `speckit-*` skill references in the
    same feature if the graph commands are usable.
 
 Do not start with worktrees, approvals, research refresh, or historical import.
@@ -1484,11 +4264,72 @@ Those are valuable, but the core authority transfer must land first.
   <https://github.com/github/spec-kit/blob/main/extensions/catalog.community.json>
 - Spec Kit built-in workflow:
   <https://github.com/github/spec-kit/blob/main/workflows/speckit/workflow.yml>
+- GitHub repository rename documentation:
+  <https://docs.github.com/en/repositories/creating-and-managing-repositories/renaming-a-repository>
+- GitHub repository transfer documentation:
+  <https://docs.github.com/en/repositories/creating-and-managing-repositories/transferring-a-repository>
+- NuGet package deprecation documentation:
+  <https://learn.microsoft.com/en-us/nuget/nuget-org/deprecate-packages>
+- NuGet `.nuspec` package metadata reference:
+  <https://learn.microsoft.com/en-us/nuget/reference/nuspec>
+- NuGet package creation with MSBuild:
+  <https://learn.microsoft.com/en-us/nuget/create-packages/creating-a-package-msbuild>
+- NuGet Trusted Publishing:
+  <https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing>
+- NuGet Central Package Management:
+  <https://learn.microsoft.com/en-us/nuget/consume-packages/central-package-management>
+- NuGet package signing:
+  <https://learn.microsoft.com/en-us/nuget/create-packages/sign-a-package>
+- .NET Source Link guidance:
+  <https://learn.microsoft.com/en-us/dotnet/standard/library-guidance/sourcelink>
+- .NET custom template documentation:
+  <https://learn.microsoft.com/en-us/dotnet/core/tools/custom-templates>
+- .NET project template tutorial:
+  <https://learn.microsoft.com/en-us/dotnet/core/tutorials/cli-templates-create-project-template>
 - FSharp.Formatting content guidance:
   <https://fsprojects.github.io/FSharp.Formatting/content.html>
+- GitHub rulesets documentation:
+  <https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets>
+- GitHub protected branches and required status checks documentation:
+  <https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches>
+- GitHub reusable workflow documentation:
+  <https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows>
+- GitHub `GITHUB_TOKEN` permissions documentation:
+  <https://docs.github.com/en/actions/tutorials/authenticate-with-github_token>
+- GitHub artifact attestations documentation:
+  <https://docs.github.com/en/actions/concepts/security/artifact-attestations>
+- GitHub artifact attestation build-provenance workflow documentation:
+  <https://docs.github.com/actions/security-for-github-actions/using-artifact-attestations/using-artifact-attestations-to-establish-provenance-for-builds>
+- FAKE target execution documentation:
+  <https://fake.build/guide/core-targets.html>
+- JSON Schema getting-started documentation:
+  <https://json-schema.org/learn/getting-started-step-by-step>
+- SLSA provenance specification:
+  <https://slsa.dev/spec/v1.0/provenance>
 - Local modules inspected:
-  `build/Governance/Engine/{Model,Update}.fs`,
-  `build/Governance/Evidence/{TaskParser,DepsParser,Graph,Audit,Render,Scans}.fs`,
-  `build/Governance/{Routing,Targets,TargetMetadata,Guidance,SymbolCrossCheck}.fs`,
+  `build/Governance/Engine/{Model,Update,Interpret}.fs`,
+  `build/Governance/Evidence/{Engine,TaskParser,DepsParser,Graph,Audit,Render,Scans}.fs`,
+  `build/Governance/{Routing,Targets,TargetMetadata,GeneratedProduct,PrePublish,Publish,Capabilities,ApiSurfaceGen,PerPackageSurface,PackageSkew,Guidance,SkillTreeGen,SkillSync,SymbolCrossCheck}.fs`,
   `.specify/**`, `.agents/skills/**`, and current feature artifacts under
   `specs/116-paint-cache-damage-rects/**`.
+- Local governance docs inspected:
+  `docs/governance/index.md`, `docs/governance/routing-and-gates.md`,
+  `docs/governance/single-source-generation.md`,
+  `docs/governance/evidence-and-audit.md`,
+  `docs/governance/speckit-placement.md`, `docs/distribution.md`, and
+  `docs/development.md`.
+- Local rebrand identity surfaces inspected:
+  `README.md`, `.template.config/template.json`,
+  `.template.package/FS.Skia.UI.Template.fsproj`, `.template.package/README.md`,
+  `template/base/Directory.Packages.props`, `template/capabilities.yml`,
+  `template/base/**`, `template/product-skills/**`, `src/**/*.fsproj`,
+  `build/Governance/FS.Skia.UI.Build.fsproj`, docs links under `docs/**`, and
+  the configured git remote.
+- Local product-contract surfaces inspected:
+  `docs/controls/**`, `docs/img/controls/**`, `docs/testSpecs/**`,
+  `docs/architecture/**`, `docs/adr/**`, `samples/**`,
+  `readiness/surface-baselines/**`, `readiness/per-package-surface/**`,
+  `tests/ControlsPreview.Harness/fixtures/fidelity/**`,
+  `tests/Controls.Tests/**`, `tests/Elmish.Tests/**`, `tests/Package.Tests/**`,
+  `template/fragments/**`, `template/profiles/**`, and
+  `template/capabilities.yml`.

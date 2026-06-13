@@ -1,0 +1,38 @@
+Feature 117 — drafted-seam exercise (T005)
+==========================================
+
+The internal text-measure-cache seam drafted in T004 was exercised through the Expecto suites that load
+the built Controls / Controls.Elmish assemblies via [<assembly: InternalsVisibleTo("Controls.Tests")>] /
+("Elmish.Tests") — the same internal reach an FSI `#r` of the built DLLs gives, captured as repeatable
+test evidence rather than a transient REPL log. The shapes below are the real values those tests assert.
+
+--- FrameMetrics carrying the three new fields (ControlsElmish.Perf.runScript) ------------------------
+
+A warm text-heavy frame (styleGrid 6, third Key frame) over ControlsElmish.Perf.runScript reports:
+  { ... ; TextMeasureCacheHitCount = 6
+          TextMeasureCacheMissCount = 0
+          LayoutInvalidatedNodeCount = 0 ; ... }
+The preceding cold frame reports TextMeasureCacheHitCount = 0 / TextMeasureCacheMissCount = 6.
+(tests/Elmish.Tests/Feature117MetricsTests.fs)
+
+--- TextCacheEnabled always-miss oracle toggle (RetainedRender) ---------------------------------------
+
+let r0 = (RetainedRender.init theme size v0).Retained
+let on  = RetainedRender.step theme size r0 v1
+let off = RetainedRender.step theme size { r0 with TextCacheEnabled = false } v1
+  on.Render.Scene = off.Render.Scene                          // true  (cache-on ≡ cache-off)
+  off.WorkReduction.TextMeasureCacheHits = 0                  // true  (oracle never hits)
+(tests/Controls.Tests/Feature117TextCacheTests.fs)
+
+--- TextMeasureKey round-trip via the pure measureTextCached helper -----------------------------------
+
+let empty : TextMeasureCache = { Entries = Map.empty; Clock = 0 }
+let font  : FontSpec = { Family = Some "Inter"; Size = 15.0; Weight = None }
+let m1, c1, hit1 = RetainedRender.measureTextCached empty true "Hello" font   // hit1 = false (cold miss)
+let m2, _,  hit2 = RetainedRender.measureTextCached c1    true "Hello" font   // hit2 = true,  m2 = m1
+  m1 = Scene.measureText "Hello" font                        // true  (hit is byte-identical, FR-004)
+Changing exactly one of text / Family / Size / Weight from c1 each yields hit = false (FR-002).
+(tests/Controls.Tests/Feature117TextCacheTests.fs, Feature117CacheBoundTests.fs)
+
+Result: the drafted seam compiles and round-trips; the three FrameMetrics fields surface through
+Perf.runScript; the TextCacheEnabled oracle proves cache-on ≡ cache-off.

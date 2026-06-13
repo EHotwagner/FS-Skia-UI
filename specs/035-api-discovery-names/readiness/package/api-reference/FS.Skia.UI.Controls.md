@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 785
-xml-summary-count: 718
+symbol-count: 787
+xml-summary-count: 726
 source-fsi-paths:
 - src/Controls/Accessibility.fsi
 - src/Controls/Attributes.fsi
@@ -337,6 +337,18 @@ namespace FS.Skia.UI.Controls
 module internal ControlInternals =
     /// Extract the chart data points (X/Y/Label preserved) a chart-like control carries.
     val chartValues: control: Control<'msg> -> ChartPoint list
+
+    /// Feature 117 (Phase 8, FR-001): install (or clear with `None`) the per-pass text-measure cache hook
+    /// on the current thread. `RetainedRender.step` installs a closure over its bounded cache around the
+    /// frame's layout + paint measurement and clears it afterwards; with no hook installed `measureText`
+    /// is the direct un-cached `Scene.measureText` (byte-identical to pre-117). `[<ThreadStatic>]`-backed,
+    /// so concurrent test steps never cross-contaminate.
+    val setMeasureTextHook: hook: (string -> FS.Skia.UI.Scene.FontSpec -> FS.Skia.UI.Scene.TextMetrics) option -> unit
+
+    /// Feature 117 (Phase 8, FR-001/FR-004): measure text through the active cache hook when one is
+    /// installed, else directly via the pure `Scene.measureText`. The six layout/paint text-measure call
+    /// sites route through here so the cache spans both the layout and paint passes of one frame.
+    val measureText: text: string -> font: FS.Skia.UI.Scene.FontSpec -> FS.Skia.UI.Scene.TextMetrics
 
     /// Feature 097 (R2): attribute names `toLayout` reads to derive geometry (single source for the
     /// incremental dirty-set classifier; FR-003 anti-drift). See the implementation comment.

@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 146
-xml-summary-count: 286
+symbol-count: 149
+xml-summary-count: 301
 source-fsi-paths:
 - src/Controls.Elmish/ControlsElmish.fsi
 sampled-symbols:
@@ -164,6 +164,24 @@ type FrameMetrics =
       /// pictures than the cap). A steady cache may retain entries across an idle frame, so this reflects
       /// live size, not necessarily `0`. Deterministic, golden-asserted via `Perf.runScript`.
       PictureCacheEntryCount: int
+      /// Feature 117 (Phase 8, FR-001/FR-005, US1): text-measure cache HITS this frame — measurements
+      /// `(text, font)` whose key was resident, reused without re-invoking `Scene.measureText`. `0` on a
+      /// frame that measures no text or under the always-miss oracle. A warm text-heavy frame whose text
+      /// inputs did not change reports `> 0`. Deterministic, golden-asserted via `Perf.runScript`.
+      TextMeasureCacheHitCount: int
+      /// Feature 117 (Phase 8, FR-001/FR-005, US1): text-measure cache MISSES this frame — measurements
+      /// whose key was cold, changed (any of text/family/size/weight), or evicted, so the text was measured
+      /// fresh and stored. `0` on a frame that measures no text; `> 0` on a cold frame and on a style-only
+      /// frame only if new text appeared (unchanged text serves hits). Deterministic, golden-asserted via
+      /// `Perf.runScript`.
+      TextMeasureCacheMissCount: int
+      /// Feature 117 (Phase 8, FR-006, US2): the size of the layout dirty set fed into incremental layout
+      /// this frame (the patch-derived self-dirty nodes BEFORE fixed-size-ancestor propagation). Distinct
+      /// from `RemeasuredNodeCount` (the POST-pinning set actually re-measured); because propagation expands
+      /// each dirty node to its first fixed-size ancestor's whole subtree, `LayoutInvalidatedNodeCount <=
+      /// RemeasuredNodeCount`. `0` on an idle / style-only / visual-state-only frame; bounded and explainable
+      /// on a geometry frame. Deterministic, golden-asserted via `Perf.runScript`.
+      LayoutInvalidatedNodeCount: int
       /// Raw pointer samples that arrived this frame, including deferred/queued moves carried from a
       /// prior boundary (K before coalescing) (FR-008).
       PointerSamplesReceived: int
