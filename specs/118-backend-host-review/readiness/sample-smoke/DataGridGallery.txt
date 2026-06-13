@@ -72,3 +72,40 @@ kinds=[GroupElement; RectangleElement; TextElement; GroupElement; GroupElement;
 elapsed-ms=93
 
 exit-code=0
+
+## DataGridGallery contract smoke
+$ dotnet run --project samples/DataGridGallery/DataGridGallery.fsproj --no-build --no-restore -- --contract-smoke
+status=ok
+sample=DataGridGallery
+state-owned-by-model=true
+selection-effects=[DataGridSelectionChanged ["row-00128"]]
+focus-effects=[DataGridFocusChanged (Some { RowKey = "row-00128"
+                              ColumnKey = "account" })]
+visible-range={ FirstIndex = 0
+  Count = 14
+  Total = 1000 }
+node-count=76
+kinds=[GroupElement; RectangleElement; TextElement; GroupElement; GroupElement;
+ ClipElement; TextRunElement; RectangleElement; RectangleElement; LineElement;
+ LineElement; LineElement; TextRunElement; TextRunElement; TextRunElement;
+ TextRunElement; TextRunElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ClipElement; TextRunElement; GroupElement; RectangleElement; ClipElement;
+ TextRunElement; GroupElement; RectangleElement; ClipElement; TextRunElement;
+ GroupElement; RectangleElement; ClipElement; TextRunElement; GroupElement;
+ RectangleElement; ClipElement; TextRunElement; GroupElement; RectangleElement;
+ ...]
+elapsed-ms=95
+
+exit-code=0

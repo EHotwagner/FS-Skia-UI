@@ -1,22 +1,22 @@
-# Aggregate Hang Diagnostics (feature 118)
+# Aggregate Hang Diagnostics
 
 validation_verdict:
   target: Dev
-  verdict: focused per-target gates are authoritative and PASS; any full-solution aggregate build/test is a non-authoritative aggregate result recorded as advisory only
+  verdict: aggregate pass after smoke orchestration isolation; previous adapter hang was a non-authoritative aggregate result
   stage: Test aggregate
-  elapsed duration: Dev (Restore+Build+SampleContractSmoke+Test) passed in 3 minutes 49 seconds; Test stage 1 minute 38 seconds
-  last observed command: ./fake.sh build -t Dev
-  timeout_policy: native-GUI Expecto suites (SkiaViewer.Tests, Smoke.Tests) run via direct Expecto execution to bypass the VSTest/YoloDev adapter testhost (libdecor-gtk init failure under a dual Wayland/X11 display); all other test projects use dotnet test
-  recommended focused rerun: dotnet run --project tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj -c Debug --no-build -- --filter-test-list "Feature 118"
+  elapsed duration: Verify passed in 3 minutes 58 seconds after the smoke runner change
+  last observed command: dotnet run --project tests/Smoke.Tests/Smoke.Tests.fsproj --no-restore
+  timeout_policy: Smoke.Tests bypasses the VSTest/YoloDev adapter path and runs the Expecto executable directly
+  recommended focused rerun: dotnet run --project tests/Smoke.Tests/Smoke.Tests.fsproj --no-restore
   focused rerun:
-    command: dotnet run --project tests/SkiaViewer.Tests/SkiaViewer.Tests.fsproj -c Debug --no-build -- --filter-test-list "Feature 118"
-    focused rerun result: 5 Feature 118 present-mode tests passed; full SkiaViewer suite 67 passed / 0 failed / 0 errored
-    evidence_path: specs/118-backend-host-review/readiness/logs
+    command: dotnet run --project tests/Smoke.Tests/Smoke.Tests.fsproj
+    focused rerun result: passed 3 smoke tests in 2.6 seconds during investigation
+    evidence_path: specs/020-asteroids-integration-feedback/readiness/logs/test.txt
   investigated_failure:
-    command: (none — no hang observed during this feature's Dev run)
-    result: not applicable; the libdecor-gtk plugin load warning is benign (dual Wayland/X11 display) and does not fail tests
+    command: VSTest/YoloDev adapter execution filtered to KeyboardInputGallery
+    result: hung before launching the KeyboardInputGallery child process
   control_check:
-    command: FEATURE118_MODE=direct dotnet specs/118-backend-host-review/readiness/live-host/bin/Debug/net10.0/LiveHost.dll
-    result: passed — persistent window opened, presented 40 frames, captured screenshot, self-closed (RESULT: ok)
-  final_classification: no aggregate hang; focused gates authoritative and green
-  diagnostic: A non-authoritative aggregate (full-solution build/test) is advisory only; the routed focused gate set Route prints is authoritative. A race-like or unknown concurrent FAKE failure is rerun sequentially (shared .fake state) before any product-regression classification. GeneratedProductCheck's pre-merge pin-lag failure is non-authoritative (resolved by the speckit-merge version bump; see generated-validation.md).
+    command: dotnet run --project samples/KeyboardInputGallery/KeyboardInputGallery.fsproj --no-build --no-restore -- --contract-smoke
+    result: passed and printed contract smoke output
+  final_classification: VSTest/YoloDev adapter orchestration concern for the smoke executable, not a sample or product failure
+  diagnostic: The FAKE Test target runs the native-GUI Expecto suites (Smoke.Tests and SkiaViewer.Tests) via direct Expecto execution to bypass the VSTest/YoloDev adapter testhost (libdecor-gtk crash under a dual Wayland/X11 display); all other test projects continue to use dotnet test.

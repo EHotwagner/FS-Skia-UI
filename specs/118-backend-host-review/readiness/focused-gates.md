@@ -396,3 +396,93 @@
 - remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
 
 
+## GeneratedProductStructure
+
+- command: `./fake.sh build -t GeneratedProductStructure`
+- direct-prerequisites: (none)
+- timestamp-utc: `2026-06-13T15:25:09.8690076+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/118-backend-host-review/readiness/logs/GeneratedProductStructure.txt`
+- readiness-path: `(none)`
+- verdict-category: `success`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active
+- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists
+- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared
+- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure
+- affected-gate: `GeneratedProductStructure`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+
+## SkillSyncCheck
+
+- command: `./fake.sh build -t SkillSyncCheck`
+- direct-prerequisites: (none)
+- timestamp-utc: `2026-06-13T15:26:21.9850929+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/118-backend-host-review/readiness/logs/skill-sync-check.txt`
+- readiness-path: `/home/developer/projects/FS-Skia-UI/specs/118-backend-host-review/readiness/skill-sync-check.md`
+- verdict-category: `success`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active
+- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists
+- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared
+- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure
+- affected-gate: `SkillSyncCheck`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+
+## GeneratedConsumerValidation
+
+- command: `./fake.sh build -t GeneratedConsumerValidation`
+- direct-prerequisites: (none)
+- timestamp-utc: `2026-06-13T15:26:42.9562851+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/118-backend-host-review/readiness/logs/GeneratedConsumerValidation.txt`
+- readiness-path: `(none)`
+- verdict-category: `success`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active
+- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists
+- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared
+- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure
+- affected-gate: `GeneratedConsumerValidation`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+
+## TemplateCheck
+
+- command: `./fake.sh build -t TemplateCheck`
+- direct-prerequisites: TemplatePack, TemplateInstallSource, TemplateInstallPackage, TemplateInstantiate, TemplateSmoke
+- timestamp-utc: `2026-06-13T15:31:11.5235529+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/118-backend-host-review/readiness/template/verdict.md`
+- readiness-path: `/home/developer/projects/FS-Skia-UI/specs/118-backend-host-review/readiness/template/verdict.md`
+- verdict-category: `success`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active
+- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists
+- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared
+- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure
+- affected-gate: `TemplateCheck`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+
+## GeneratedProductCheck
+
+- command: `./fake.sh build -t GeneratedProductCheck`
+- direct-prerequisites: CapabilityCheck, SkillCheck
+- timestamp-utc: `2026-06-13T15:31:11.5243983+00:00`
+- log-path: `/home/developer/projects/FS-Skia-UI/specs/118-backend-host-review/readiness/generated-file-lists/summary.md`
+- readiness-path: `/home/developer/projects/FS-Skia-UI/specs/118-backend-host-review/readiness/generated-file-lists/summary.md`
+- verdict-category: `success`
+- stale-build-restore-assumptions: (none)
+- failure-rule: `stale-build-restore-assumption`
+- concurrent-fake-context: `unknown` until the runner records no other FAKE-backed command was active
+- fake-race-classification: `unknown` for race-like failures until sequential rerun evidence exists
+- sequential-rerun-action: rerun affected FAKE-backed commands one at a time because `.fake` state is shared
+- follow-up-classification: classify product regression only after the sequential rerun reproduces the failure
+- affected-gate: `GeneratedProductCheck`
+- remediation-command: `dotnet restore` or `dotnet build` for the named project when assumptions are stale
+
+

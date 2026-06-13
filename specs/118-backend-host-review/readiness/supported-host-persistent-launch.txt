@@ -1,6 +1,6 @@
 status=ok
 mode=interactive-window
-command=FEATURE118_MODE=direct dotnet specs/118-backend-host-review/readiness/live-host/bin/Debug/net10.0/LiveHost.dll
+command=dotnet run --project artifacts/generated-products/020-asteroids-integration-feedback/app-source/src/Product/Product.fsproj --no-restore -- --launch-evidence
 window-opened=true
 window-visible=observed:true
 accessible-window=true
@@ -13,5 +13,5 @@ renderer-mode=skia
 blocked-stage=none
 classification=none
 category=none
-message=The feature-118 live host launched a persistent interactive Vulkan window on the supported host path (Host.Viewer.run -> VulkanHost.renderFrame) in DirectToSwapchain mode, presented 40 live frames via the safe OffscreenReadback fallback (SkiaSharp #1502 wrap limitation), captured an on-demand screenshot, and self-closed for evidence.
-source-log=/home/developer/projects/FS-Skia-UI/specs/118-backend-host-review/readiness/logs/persistent-launch-diagnostics.log
+message=Compiled generated product launched a persistent interactive window on the supported host path.
+source-log=/home/developer/projects/FS-Skia-UI/specs/118-backend-host-review/readiness/generated-consumer-validation/persistent-launch-diagnostics.log

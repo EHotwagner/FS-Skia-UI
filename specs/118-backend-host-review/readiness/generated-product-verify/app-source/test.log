@@ -2,17 +2,14 @@
 ## app/source generated Test
 $ bash ./fake.sh build -t Test
   Determining projects to restore...
-  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/118-backend-host-review/app-source/tests/Product.Tests/Product.Tests.fsproj (in 312 ms).
-  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/118-backend-host-review/app-source/src/Product/Product.fsproj (in 312 ms).
-/home/developer/projects/FS-Skia-UI/artifacts/generated-products/118-backend-host-review/app-source/src/Product/EvidenceCommands.fs(181,52): error FS0039: The record label 'PresentMode' is not defined. [/home/developer/projects/FS-Skia-UI/artifacts/generated-products/118-backend-host-review/app-source/src/Product/Product.fsproj]
-/home/developer/projects/FS-Skia-UI/artifacts/generated-products/118-backend-host-review/app-source/src/Product/EvidenceCommands.fs(289,60): error FS1129: The record type 'ViewerOptions' does not contain a label 'PresentMode'. [/home/developer/projects/FS-Skia-UI/artifacts/generated-products/118-backend-host-review/app-source/src/Product/Product.fsproj]
-System.Exception: Test failed with exit code 1; see readiness/logs/Test.txt
-   at Microsoft.FSharp.Core.PrintfModule.PrintFormatToStringThenFail@1447.Invoke(String message)
-   at FSI_0001.runProcess(String target, String fileName, String arguments) in /home/developer/projects/FS-Skia-UI/artifacts/generated-products/118-backend-host-review/app-source/build.fsx:line 204
-   at FSI_0001.runGeneratedTests() in /home/developer/projects/FS-Skia-UI/artifacts/generated-products/118-backend-host-review/app-source/build.fsx:line 207
-   at <StartupCode$FSI_0001>.$FSI_0001.main@() in /home/developer/projects/FS-Skia-UI/artifacts/generated-products/118-backend-host-review/app-source/build.fsx:line 239
-   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
-   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
-Stopped due to error
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/118-backend-host-review/app-source/tests/Product.Tests/Product.Tests.fsproj (in 325 ms).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/118-backend-host-review/app-source/src/Product/Product.fsproj (in 325 ms).
+  Product -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/118-backend-host-review/app-source/src/Product/bin/Debug/net10.0/Product.dll
+  Product.Tests -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/118-backend-host-review/app-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll
+Test run for /home/developer/projects/FS-Skia-UI/artifacts/generated-products/118-backend-host-review/app-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
 
-exit-code=1
+Passed!  - Failed:     0, Passed:    29, Skipped:     0, Total:    29, Duration: 191 ms - Product.Tests.dll (net10.0)
+Test completed for generated product
+
+exit-code=0
