@@ -92,3 +92,13 @@ module GlHost =
     /// Public contract function exposed by this FS.Skia.UI package. Signature shape preserved
     /// from the former VulkanHost.run so Host/Viewer.fs routes unchanged.
     val run: program: ViewerProgram<'model, 'msg> -> Result<unit, RenderDiagnostic>
+
+    /// Feature 120 (US1, FR-001/002): the most recent present's per-phase durations — the scene→canvas
+    /// paint walk and the flush + buffer-swap (compose). Live-only, non-golden; consumed by the
+    /// interactive adapter's `FrameMetrics.PaintDuration`/`ComposeDuration` and the timing baseline.
+    val lastPresentTiming: unit -> System.TimeSpan * System.TimeSpan
+
+    /// Feature 120 (US2): pure present-or-skip decision (present iff first frame, scene changed, or the
+    /// framebuffer size changed). Exposed for the idle-skip transition test (T016).
+    val shouldPresent:
+        prev: FS.Skia.UI.Scene.Scene option -> next: FS.Skia.UI.Scene.Scene -> sizeChanged: bool -> bool

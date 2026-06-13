@@ -1004,7 +1004,9 @@ type internal RetainedId = RetainedId of uint64
 type internal RenderFragment =
     { OwnScene: FS.Skia.UI.Scene.Scene list
       SubtreeScene: FS.Skia.UI.Scene.Scene list
-      Box: FS.Skia.UI.Scene.Rect option }
+      Box: FS.Skia.UI.Scene.Rect option
+
+      Fingerprint: uint64 }
 
 type internal RetainedNode<'msg> =
     { Identity: RetainedId
@@ -1034,7 +1036,8 @@ type internal RetainedUiState =
 
 type internal PictureCacheKey =
     { Box: FS.Skia.UI.Scene.Rect option
-      Picture: string }
+
+      Fingerprint: uint64 }
 
 type internal PictureCache =
     { Entries: Map<RetainedId, int * PictureCacheKey>
@@ -1095,7 +1098,13 @@ type internal WorkReductionRecord =
       TextMeasureCacheHits: int
       TextMeasureCacheMisses: int
 
-      LayoutInvalidatedNodeCount: int }
+      LayoutInvalidatedNodeCount: int
+
+      ReplayHits: int
+      ReplayMisses: int
+      ReplayRecords: int
+      ReplaySkippedNodes: int
+      ReplayCacheNativeBytes: int }
 
 type internal RetainedRenderStep<'msg> =
     { Retained: RetainedRender<'msg>
@@ -1118,6 +1127,10 @@ module internal RetainedRender =
             FS.Skia.UI.Scene.Scene list * MemoCache * MemoOutcome
 
     val internal PictureCacheCap: int
+
+    val internal hashScene: scenes: FS.Skia.UI.Scene.Scene list -> uint64
+
+    val internal unionArea: boxes: FS.Skia.UI.Scene.Rect list -> frameArea: int -> int
 
     val internal TextMeasureCacheCap: int
 

@@ -8,9 +8,13 @@ open FS.Skia.UI.Scene
 type ViewerOptions =
     { Title: string
       InitialSize: Size
-      /// Live present mechanism (feature 118). Defaults to `ViewerPresentMode.OffscreenReadback`
-      /// at every construction site, preserving today's behavior; set to
-      /// `ViewerPresentMode.DirectToSwapchain` to opt into the readback-free live present path.
+      /// Live present mechanism. Defaults to `ViewerPresentMode.DirectToSwapchain` (feature 119) — the
+      /// readback-free direct present on the OpenGL backend (the scene is drawn straight onto the default
+      /// framebuffer and presented by the toolkit buffer swap, no per-frame GPU→CPU readback). Set to
+      /// `ViewerPresentMode.OffscreenReadback` only for evidence/screenshot capture that needs a readback.
+      /// (Feature 120, FR-016: corrects stale feature-118 text that named `OffscreenReadback` as the
+      /// default; the shipped default lives at `Viewer.defaultConfiguration`, which uses
+      /// `DirectToSwapchain` — the docstring is brought into agreement with it.)
       PresentMode: ViewerPresentMode }
 
 /// Public contract type exposed by this FS.Skia.UI package.

@@ -93,7 +93,21 @@ type FrameMetrics =
 
       PaintRan: bool
 
-      FrameDuration: TimeSpan }
+      FrameDuration: TimeSpan
+
+      PaintDuration: TimeSpan
+
+      ComposeDuration: TimeSpan
+
+      ReplayHitCount: int
+
+      ReplayMissCount: int
+
+      ReplayRecordCount: int
+
+      ReplaySkippedNodeCount: int
+
+      ReplayCacheNativeBytes: int }
 
 [<RequireQualifiedAccess>]
 

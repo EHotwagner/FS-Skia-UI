@@ -198,6 +198,11 @@ module GlHost =
 
     val run: program: ViewerProgram<'model, 'msg> -> Result<unit, RenderDiagnostic>
 
+    val lastPresentTiming: unit -> System.TimeSpan * System.TimeSpan
+
+    val shouldPresent:
+        prev: FS.Skia.UI.Scene.Scene option -> next: FS.Skia.UI.Scene.Scene -> sizeChanged: bool -> bool
+
 namespace FS.Skia.UI.SkiaViewer.Host
 
 open System
@@ -233,6 +238,37 @@ module Viewer =
             ViewerProgram<'model, 'msg>
 
     val run: program: ViewerProgram<'model, 'msg> -> Result<unit, RenderDiagnostic>
+
+namespace FS.Skia.UI.SkiaViewer
+
+module internal PictureReplayCache =
+
+    val cap: int
+
+    [<Sealed>]
+    type internal Cache
+
+    val create: enabled: bool -> Cache
+
+    val paintBoundary:
+        cache: Cache ->
+        canvas: SkiaSharp.SKCanvas ->
+        paintScene: (SkiaSharp.SKCanvas -> FS.Skia.UI.Scene.Scene -> unit) ->
+        boundary: FS.Skia.UI.Scene.CacheBoundary ->
+            unit
+
+    val stats:
+        cache: Cache ->
+            {| Entries: int
+               NativeBytes: int
+               Hits: int
+               Misses: int
+               Records: int
+               SkippedNodes: int |}
+
+    val resetCounters: cache: Cache -> unit
+
+    val dispose: cache: Cache -> unit
 
 namespace FS.Skia.UI.SkiaViewer
 

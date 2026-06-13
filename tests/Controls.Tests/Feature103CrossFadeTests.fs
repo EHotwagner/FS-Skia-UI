@@ -107,6 +107,8 @@ let rec private colorsOfNode (n: SceneNode) : (Rgb * byte) list =
     | PerspectiveNode(_, s)
     | Translate(_, s) -> colorsOfScene s
     | PictureNode pic -> colorsOfScene pic.Scene
+    // Feature 120: transparent replay boundary — recurse into the wrapped subtree.
+    | CachedSubtree boundary -> colorsOfScene boundary.Scene
 
 and private colorsOfScene (s: Scene) : (Rgb * byte) list = s.Nodes |> List.collect colorsOfNode
 

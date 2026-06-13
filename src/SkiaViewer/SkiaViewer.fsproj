@@ -16,6 +16,8 @@
     <Compile Include="PresentMode.fs" />
     <Compile Include="Host/Diagnostics.fsi" />
     <Compile Include="Host/Diagnostics.fs" />
+    <Compile Include="PictureReplayCache.fsi" />
+    <Compile Include="PictureReplayCache.fs" />
     <Compile Include="SceneRenderer.fs" />
     <Compile Include="Host/OpenGl.fsi" />
     <Compile Include="Host/OpenGl.fs" />
@@ -23,6 +25,12 @@
     <Compile Include="Host/Viewer.fs" />
     <Compile Include="SkiaViewer.fsi" />
     <Compile Include="SkiaViewer.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Feature 120: the test assembly reaches the internal PictureReplayCache via InternalsVisibleTo
+         (it is not part of the public package surface). -->
+    <InternalsVisibleTo Include="SkiaViewer.Tests" />
   </ItemGroup>
 
   <ItemGroup>

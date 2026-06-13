@@ -1,0 +1,31 @@
+feature: 120-backend-paint-replay-cache
+artifact: live-host-evidence (US1 timing, US2 idle-skip, US4 present-mode)
+status: ok
+host: Linux (DISPLAY=:1, X11 normalized: GDK_BACKEND=x11 SDL_VIDEODRIVER=x11, WAYLAND_DISPLAY unset), .NET 10, net10.0
+gpu: AMD Radeon (radeonsi/Mesa) OpenGL — same reference host as feature 119
+backend: OpenGL (Silk.NET.Windowing + Silk.NET.OpenGL), GraphicsAPI OpenGL Core 3.3
+present-mode: DirectToSwapchain (default)
+
+command: dotnet run (bounded evidence harness driving the PRODUCTION Host.Viewer.run -> GlHost.run)
+  harness source: specs/120-backend-paint-replay-cache/readiness/sample-smoke/evidence-harness.fs
+  the harness renders changed scenes for 15 ticks, then holds ONE unchanged scene (idle), then
+  shuts down after 40 ticks; it reads GlHost.lastPresentTiming() after a changed frame and after an
+  idle frame.
+
+production render path exercised: Host.Viewer.run -> GlHost.run -> renderFrame -> renderFrameDirect ->
+  ensureFramebufferSurface (SKSurface over GRBackendRenderTarget over FBO 0) -> SceneRenderer.paintNode
+  -> SKCanvas.Flush -> GRContext.Flush -> IWindow.SwapBuffers (no readback).
+
+result: Ok ()
+
+US4 / FR-016 / FR-017 / SC-008 — live present-mode diagnostic emitted once:
+  present-mode=DirectToSwapchain readback=false (live frames render straight onto the default framebuffer).
+
+US1 / FR-001 / FR-002 / SC-001 — a PRESENTED frame reports DISTINCT non-zero per-phase durations:
+  PaintDuration=00:00:00.0006318 (scene->canvas walk)  ComposeDuration=00:00:00.0074077 (flush + buffer-swap)
+
+US2 / FR-004 / FR-005 / FR-006 / SC-002 — an UNCHANGED frame is idle-skipped (no clear/walk/swap):
+  PaintDuration=00:00:00  ComposeDuration=00:00:00   (zero paint work, zero draw-call re-issue)
+
+raw harness line:
+EVIDENCE result=Ok () presentDiag=[present-mode=DirectToSwapchain readback=false (live frames render straight onto the default framebuffer).] changedTiming=(00:00:00.0006318, 00:00:00.0074077) idleTiming=(00:00:00, 00:00:00)

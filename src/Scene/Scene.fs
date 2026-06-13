@@ -299,12 +299,20 @@ type SceneNode =
     | Chart of values: float list
     | Translate of (float * float) * Scene
     | SizedText of (float * float) * string * float * Color
+    /// Feature 120 (FR-007): a backend replay-cache boundary; transparent to every consumer except
+    /// the GL painter (see `Scene.fsi`).
+    | CachedSubtree of CacheBoundary
 
 and Scene =
     { Nodes: SceneNode list }
 
 and Picture =
     { Name: string
+      Scene: Scene }
+
+and CacheBoundary =
+    { CacheId: uint64
+      Fingerprint: uint64
       Scene: Scene }
 
 type LayoutEvidenceReport =
@@ -582,6 +590,8 @@ module Scene =
             | Chart _ -> [ ChartElement ]
             | Translate(_, scene) -> TranslateElement :: describe scene
             | SizedText _ -> [ SizedTextElement ]
+            // Feature 120 (FR-007): transparent — describe the wrapped subtree, no marker element.
+            | CachedSubtree boundary -> describe boundary.Scene
 
         scene.Nodes |> List.collect describeNode
 
@@ -628,6 +638,8 @@ module Scene =
             | PerspectiveNode(_, scene)
             | Translate(_, scene) -> diagnostics scene
             | PictureNode picture -> diagnostics picture.Scene
+            // Feature 120 (FR-007): transparent — recurse into the wrapped subtree.
+            | CachedSubtree boundary -> diagnostics boundary.Scene
             | _ -> []
 
         scene.Nodes |> List.collect nodeDiagnostics

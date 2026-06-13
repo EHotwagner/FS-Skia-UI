@@ -1,0 +1,63 @@
+## Symbol consistency (analyze pass G)
+- entity-record CacheBoundary — in {data-model, tasks}, missing from {plan}
+- entity-record CacheId — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record CachedSubtree — in {tasks}, missing from {plan, data-model}
+- entity-record Dispose — in {tasks}, missing from {plan, data-model}
+- entity-record DrawPicture — in {tasks}, missing from {plan, data-model}
+- entity-record EndRecording — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record EvidenceAudit — in {tasks}, missing from {plan, data-model}
+- entity-record Feature120 — in {tasks}, missing from {plan, data-model}
+- entity-record Fingerprint — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record FrameMetrics — in {data-model, tasks}, missing from {plan}
+- entity-record Picture — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record RenderFrame — in {plan, tasks}, missing from {data-model}
+- entity-record ReplayCacheNativeBytes — in {tasks}, missing from {plan, data-model}
+- entity-record ReplayHitCount — in {data-model, tasks}, missing from {plan}
+- entity-record ReplayMissCount — in {data-model, tasks}, missing from {plan}
+- entity-record ReplayRecordCount — in {data-model, tasks}, missing from {plan}
+- entity-record ReplaySkippedNodeCount — in {tasks}, missing from {plan, data-model}
+- entity-record RetainedId — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record SKPictureRecorder — in {plan, tasks}, missing from {data-model}
+- entity-record SKSurface — in {plan}, missing from {data-model, tasks}
+- entity-record Scene — in {data-model, tasks}, missing from {plan}
+- entity-record SkiaViewer — in {tasks}, missing from {plan, data-model}
+- entity-record Stamp — in {tasks}, missing from {plan, data-model}
+- entity-record Stopwatch — in {plan}, missing from {data-model, tasks}
+- fr-id FR-002 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-003 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-004 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-005 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-006 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-008 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-009 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-010 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-011 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-012 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-013 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-014 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-015 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-016 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-017 — in {plan, tasks}, missing from {data-model}
+- msg-case Cmd — in {plan, tasks}, missing from {data-model}
+- msg-case Effect — in {tasks}, missing from {plan, data-model}
+- msg-case LegacyRenderTick — in {plan}, missing from {data-model, tasks}
+- msg-case Model — in {tasks}, missing from {plan, data-model}
+- msg-case Msg — in {plan, tasks}, missing from {data-model}
+- msg-case RenderFrame — in {tasks}, missing from {plan, data-model}
+- msg-case RenderTick — in {plan}, missing from {data-model, tasks}
+- sc-id SC-001 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-002 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-003 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-004 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-005 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-007 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-008 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-009 — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant FrameMetrics — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant OffscreenReadback — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant PaintDuration — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant ReplayHitCount — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant ReplayMissCount — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant ReplayRecordCount — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant ReplaySkippedNodeCount — in {tasks}, missing from {plan, data-model}

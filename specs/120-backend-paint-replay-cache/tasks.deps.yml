@@ -1,0 +1,173 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (feature 120).
+#
+# Phase-checkpoint edges are auto-injected by the EvidenceGraph script (every task
+# in Phase N+1 implicitly depends on the last foundation task of Phase N). Only
+# non-phase cross-edges are written below.
+
+tasks:
+  T001:
+    deps: []
+    skillist: []
+    owns: []
+  T002:
+    deps: []
+    skillist: []
+    owns: []
+  T003:
+    deps: []
+    skillist: []
+    owns: []
+  T004:
+    deps: []
+    skillist: ["fs-skia-scene"]
+    owns: []
+  T005:
+    deps: []
+    skillist: ["fs-skia-elmish"]
+    owns: []
+  T006:
+    deps: [T004]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T007:
+    deps: [T004]
+    skillist: ["fs-skia-reconciliation"]
+    owns: []
+  T008:
+    deps: [T004, T005, T006, T007]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T009:
+    deps: [T004, T005, T006, T007]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T010:
+    deps: []
+    skillist: ["fs-skia-elmish"]
+    owns: []
+  T011:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+  T012:
+    deps: []
+    skillist: ["fs-skia-elmish"]
+    owns: []
+  T013:
+    deps: [T012]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T014:
+    deps: [T013]
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+  T015:
+    deps: [T013, T014]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T016:
+    deps: []
+    skillist: ["fs-skia-elmish"]
+    owns: []
+  T017:
+    deps: [T016]
+    skillist: ["fs-skia-controls-host"]
+    owns: []
+  T018:
+    deps: [T017]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T019:
+    deps: [T018]
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+  T020:
+    deps: []
+    skillist: ["fs-skia-reconciliation"]
+    owns: []
+  T021:
+    deps: []
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T022:
+    deps: [T020]
+    skillist: ["fs-skia-reconciliation"]
+    owns: []
+  T023:
+    deps: [T022]
+    skillist: ["fs-skia-scene"]
+    owns: []
+  T024:
+    deps: [T022, T023]
+    skillist: ["fs-skia-reconciliation"]
+    owns: []
+  T025:
+    deps: [T021, T023]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T026:
+    deps: [T025]
+    skillist: ["fs-skia-elmish"]
+    owns: []
+  T027:
+    deps: [T024, T025, T026]
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+  T028:
+    deps: [T024, T025, T026]
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+  T029:
+    deps: []
+    skillist: ["fs-skia-ui-widgets"]
+    owns: []
+  T030:
+    deps: [T029]
+    skillist: ["fs-skia-reconciliation"]
+    owns: []
+  T031:
+    deps: []
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T032:
+    deps: []
+    skillist: ["fs-skia-samples"]
+    owns: []
+  T033:
+    deps: []
+    skillist: ["fs-skia-controls-host"]
+    owns: []
+  T034:
+    deps: [T031, T032]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T035:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+    owns: []
+  T036:
+    deps: [T035]
+    skillist: ["fs-skia-template-update"]
+    owns: []
+  T037:
+    deps: [T035]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T038:
+    deps: [T035]
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+  T039:
+    deps: []
+    skillist: ["fsharp-code-generation"]
+    owns: []
+  T040:
+    deps: [T035, T037, T038]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T041:
+    deps: [T040]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

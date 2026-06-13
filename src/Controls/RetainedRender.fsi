@@ -27,7 +27,11 @@ type internal RetainedId = RetainedId of uint64
 type internal RenderFragment =
     { OwnScene: FS.Skia.UI.Scene.Scene list
       SubtreeScene: FS.Skia.UI.Scene.Scene list
-      Box: FS.Skia.UI.Scene.Rect option }
+      Box: FS.Skia.UI.Scene.Rect option
+      /// Feature 120 (US3, FR-008): the collision-resistant structural fingerprint of `SubtreeScene`,
+      /// computed via `hashScene` when the fragment is (re)painted and carried unchanged on a `Keep`
+      /// reuse (cost ∝ damage, not tree size). The backend replay key and the `CachedSubtree.Fingerprint`.
+      Fingerprint: uint64 }
 
 /// One retained control node: its stable identity, the lowered control it was built from, its
 /// cached render fragment, and its retained children (mirroring `Control.Children` order).
@@ -99,7 +103,11 @@ type internal RetainedUiState =
 /// single changed input forces a miss (no input can be omitted). Compared by F# structural `=`.
 type internal PictureCacheKey =
     { Box: FS.Skia.UI.Scene.Rect option
-      Picture: string }
+      /// Feature 120 (US3, FR-008): the collision-resistant structural fingerprint of the boundary's
+      /// painted subtree, replacing the feature-116 truncation-prone `sprintf "%A"` digest. Two subtrees
+      /// that stringify identically under the old truncating key but differ structurally produce different
+      /// fingerprints, so no stale hit can cross a render-affecting change. Compared by `=`.
+      Fingerprint: uint64 }
 
 /// Feature 116 (Phase 7, FR-009/FR-010): the bounded cross-frame picture cache. A fixed-cap LRU over
 /// cacheable picture identities (`RetainedId`), each holding its last-seen `PictureCacheKey` and a
@@ -252,7 +260,23 @@ type internal WorkReductionRecord =
       /// `LayoutInvalidatedNodeCount <= RemeasuredNodeCount` (the pre-pinning set is a subset of the
       /// re-measured boundary subtrees). `0` on an idle / style-only / visual-state-only frame (no
       /// layout-affecting attribute changed, so the dirty set is empty).
-      LayoutInvalidatedNodeCount: int }
+      LayoutInvalidatedNodeCount: int
+      /// Feature 120 (US3, FR-014): the backend replay cache's per-frame reuse outcomes over the
+      /// `CachedSubtree` replay boundaries emitted this frame (prior-frame-stable cacheable subtrees,
+      /// FR-012), modeled deterministically with the same cross-frame LRU + new structural fingerprint as
+      /// `PictureCache`. `ReplayHits` replayed a recorded picture (resident + matching fingerprint + enabled);
+      /// `ReplayMisses` (re)recorded one (cold / changed fingerprint / evicted); `ReplayRecords` equals the
+      /// misses (one record per miss); `ReplaySkippedNodes` sums the painted node count of every replayed
+      /// boundary's subtree (the draw-call walk avoided); `ReplayCacheNativeBytes` is the deterministic
+      /// model native-byte estimate of resident recorded pictures (bounded by the cap). All `0` on a frame
+      /// with no replay boundary or under the replay-disable oracle. Surfaced as the public
+      /// `FrameMetrics.ReplayHitCount` / `ReplayMissCount` / `ReplayRecordCount` / `ReplaySkippedNodeCount` /
+      /// `ReplayCacheNativeBytes`.
+      ReplayHits: int
+      ReplayMisses: int
+      ReplayRecords: int
+      ReplaySkippedNodes: int
+      ReplayCacheNativeBytes: int }
 
 /// The result of one wired frame: the next retained structure, the render result (byte-identical
 /// to a full rebuild of `next`), the diagnostics surfaced from the diff (e.g. `KeyCollision`), and
@@ -292,6 +316,19 @@ module internal RetainedRender =
     /// Feature 116 (Phase 7, FR-009): the fixed picture-cache entry cap. `PictureCacheEntryCount` never
     /// exceeds this; the eviction-pressure scenario drives 320 distinct cacheable rows (1.25 × cap).
     val internal PictureCacheCap: int
+
+    /// Feature 120 (US3, FR-008): the collision-resistant structural fingerprint of a painted `Scene list`.
+    /// Folds every render-affecting input of the subtree (geometry, color, path, text, font, opacity,
+    /// transform, clip, and node shape) into a 64-bit hash via a deterministic FNV-1a-style mix — NO
+    /// truncation, unlike the superseded `sprintf "%A"` digest, so a structural difference that the old key
+    /// would have collided on yields a different fingerprint. Pure, total, deterministic; identical scenes
+    /// hash identically and any single render-affecting change flips the value (FR-010). The replay key.
+    val internal hashScene: scenes: FS.Skia.UI.Scene.Scene list -> uint64
+
+    /// Feature 120 (US4, FR-015): the integer area of the UNION of a set of damage rectangles, clamped to
+    /// the frame area. Overlapping rectangles are counted once (never the sum), and the result never
+    /// exceeds `frameArea`. Pure, total, deterministic (coordinate-compression over integer geometry).
+    val internal unionArea: boxes: FS.Skia.UI.Scene.Rect list -> frameArea: int -> int
 
     /// Feature 117 (Phase 8, FR-003): the fixed text-measure-cache entry cap (aligned with
     /// `PictureCacheCap`). `TextCache.Entries.Count` never exceeds this; the eviction-pressure scenario

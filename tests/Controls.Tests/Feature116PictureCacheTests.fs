@@ -43,6 +43,25 @@ let private grid (rows: Control<int> list) : Control<int> =
 
 let private threeRows = grid [ plainRow "r0" "zero"; plainRow "r1" "one"; plainRow "r2" "two" ]
 
+// Feature 120: with literal `CachedSubtree` emission a reuse-stable row's contribution is wrapped in a
+// transparent replay boundary, which adds a grouping layer that the full rebuild does not have. Both
+// `Group` and `CachedSubtree` are PURE grouping (the painter descends through them with no visual
+// effect), so the byte-identity invariant is asserted on the flattened paint-order node stream — which
+// normalizes that grouping while preserving every leaf node's payload (geometry, color, font, clip,
+// transform). Equal flattened streams ⇒ byte-identical presented pixels.
+let rec private flattenScene (s: Scene) : SceneNode list = s.Nodes |> List.collect flattenNode
+
+and private flattenNode (n: SceneNode) : SceneNode list =
+    match n with
+    | CachedSubtree b -> flattenScene b.Scene
+    | Group scenes -> scenes |> List.collect flattenScene
+    | ClipNode(c, s) -> [ ClipNode(c, { Nodes = flattenScene s }) ]
+    | ColorSpaceNode(c, s) -> [ ColorSpaceNode(c, { Nodes = flattenScene s }) ]
+    | PerspectiveNode(t, s) -> [ PerspectiveNode(t, { Nodes = flattenScene s }) ]
+    | Translate(o, s) -> [ Translate(o, { Nodes = flattenScene s }) ]
+    | PictureNode p -> [ PictureNode { p with Scene = { Nodes = flattenScene p.Scene } } ]
+    | other -> [ other ]
+
 [<Tests>]
 let tests =
     testList "Feature 116 picture cache (US2, FR-005/006/007, SC-002/003)" [
@@ -60,7 +79,7 @@ let tests =
             let s = RetainedRender.step theme size r0 threeRows
             let full = Control.renderTree theme size threeRows
 
-            Expect.equal s.Render.Scene full.Scene "the reused (hit) scene is byte-identical to a fresh paint"
+            Expect.equal (flattenScene s.Render.Scene) (flattenScene full.Scene) "the reused (hit) scene is byte-identical (paint-order) to a fresh paint, transparent to the replay boundary"
         }
 
         test "perturbing CONTENT (font/text) forces a miss on exactly that row (FR-006)" {
@@ -118,6 +137,6 @@ let tests =
 
             Expect.equal off.WorkReduction.PictureCacheHits 0 "the disabled oracle reports zero hits"
             Expect.isTrue (off.WorkReduction.PictureCacheMisses > 0) "the disabled oracle re-misses every picture"
-            Expect.equal off.Render.Scene on.Render.Scene "cache-off scene is byte-identical to cache-on (FR-007)"
+            Expect.equal (flattenScene off.Render.Scene) (flattenScene on.Render.Scene) "cache-off scene is byte-identical (paint-order) to cache-on, transparent to the replay boundary (FR-007)"
         }
     ]

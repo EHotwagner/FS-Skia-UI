@@ -15,7 +15,9 @@ type internal RetainedId = RetainedId of uint64
 type internal RenderFragment =
     { OwnScene: FS.Skia.UI.Scene.Scene list
       SubtreeScene: FS.Skia.UI.Scene.Scene list
-      Box: FS.Skia.UI.Scene.Rect option }
+      Box: FS.Skia.UI.Scene.Rect option
+      // Feature 120 (US3): the structural fingerprint of `SubtreeScene` (computed when painted, carried on Keep).
+      Fingerprint: uint64 }
 
 type internal RetainedNode<'msg> =
     { Identity: RetainedId
@@ -60,7 +62,8 @@ type internal MemoCache = Map<ControlId, MemoEntry>
 // input). Compared by F# structural `=`.
 type internal PictureCacheKey =
     { Box: FS.Skia.UI.Scene.Rect option
-      Picture: string }
+      // Feature 120 (US3): the collision-resistant structural fingerprint (replaces the 116 `sprintf "%A"`).
+      Fingerprint: uint64 }
 
 // Feature 116 (Phase 7): the bounded cross-frame picture cache — a fixed-cap LRU over cacheable
 // picture identities, each holding its last-seen key + a monotonic access stamp advanced by the
@@ -131,7 +134,13 @@ type internal WorkReductionRecord =
       TextMeasureCacheHits: int
       TextMeasureCacheMisses: int
       // Feature 117 (Phase 8, FR-006): the pre-pinning layout dirty-set size (<= RemeasuredNodeCount).
-      LayoutInvalidatedNodeCount: int }
+      LayoutInvalidatedNodeCount: int
+      // Feature 120 (US3, FR-014): backend replay-cache per-frame outcomes (deterministic model).
+      ReplayHits: int
+      ReplayMisses: int
+      ReplayRecords: int
+      ReplaySkippedNodes: int
+      ReplayCacheNativeBytes: int }
 
 type internal RetainedRenderStep<'msg> =
     { Retained: RetainedRender<'msg>
@@ -249,13 +258,191 @@ module internal RetainedRender =
     // unchanged AND its entry is still resident.
     let private isCacheablePicture (c: Control<'msg>) = c.Kind = "data-grid-row"
 
-    // The COMPLETE correctness key for a cacheable boundary: the node's evaluated box + a structural
-    // digest of its painted subtree. The digest embeds EVERY render-affecting input (theme colours,
-    // clip, opacity, transform, font/text, visual-state) by construction, so an equal key proves a hit
-    // is byte-identical to a fresh paint and any single changed input forces a miss (no input omitted).
+    // Feature 120 (US3, FR-008/FR-010): the collision-resistant structural fingerprint of a painted
+    // scene. An FNV-1a fold over a deterministic walk: the UNBOUNDED dimension (the node tree AND every
+    // node's intrinsic list payload — points, vertices, chart values) is recursed/iterated element by
+    // element, so NOTHING is truncated (the defect of the superseded `sprintf "%A"` over the whole
+    // subtree, which truncates sequences past ~100 elements and so collides on long lists). Each small
+    // fixed leaf payload (Color/Rect/Paint/Font) is folded via `%A` (complete for a bounded record). A
+    // distinct tag per case keeps structurally-different shapes apart. Pure, total, deterministic — equal
+    // scenes hash equal, any render-affecting change flips the value. Exhaustive over `SceneNode`.
+    let hashScene (scenes: FS.Skia.UI.Scene.Scene list) : uint64 =
+        let mutable h = 0xcbf29ce484222325UL // mutable: hot path / FNV-1a accumulator
+        let prime = 0x100000001b3UL
+        let mix (x: uint64) = h <- (h ^^^ x) * prime
+        let bits (d: float) = uint64 (System.BitConverter.DoubleToInt64Bits d)
+
+        let mixStr (s: string) =
+            mix (uint64 s.Length)
+            for c in s do
+                mix (uint64 (uint16 c))
+
+        let mixA (v: 'a) = mixStr (sprintf "%A" v)
+        let mixTag (t: int) = mix (uint64 (uint32 t))
+
+        let rec goNodes (nodes: SceneNode list) =
+            mixTag 0xA1
+            mix (uint64 (List.length nodes))
+            nodes |> List.iter goNode
+            mixTag 0xA2
+
+        and goScene (s: Scene) = goNodes s.Nodes
+
+        and goNode (node: SceneNode) =
+            match node with
+            | Empty -> mixTag 1
+            | Group scenes ->
+                mixTag 2
+                mix (uint64 (List.length scenes))
+                scenes |> List.iter goScene
+            | Rectangle(b, c) ->
+                mixTag 3
+                mixA b
+                mixA c
+            | PaintedRectangle(r, p) ->
+                mixTag 4
+                mixA r
+                mixA p
+            | Circle(ctr, rad, fill) ->
+                mixTag 5
+                mixA ctr
+                mix (bits rad)
+                mixA fill
+            | FilledEllipse(b, fill) ->
+                mixTag 6
+                mixA b
+                mixA fill
+            | Ellipse(r, p) ->
+                mixTag 7
+                mixA r
+                mixA p
+            | Line(a, b, p) ->
+                mixTag 8
+                mixA a
+                mixA b
+                mixA p
+            | Path(spec, p) ->
+                mixTag 9
+                mixA spec
+                mixA p
+            | Points(pts, p) ->
+                mixTag 10
+                mix (uint64 (List.length pts))
+                pts |> List.iter mixA
+                mixA p
+            | Vertices(m, vs, p) ->
+                mixTag 11
+                mixA m
+                mix (uint64 (List.length vs))
+                vs |> List.iter mixA
+                mixA p
+            | Arc(r, sa, ea, p) ->
+                mixTag 12
+                mixA r
+                mix (bits sa)
+                mix (bits ea)
+                mixA p
+            | Text((x, y), t, c) ->
+                mixTag 13
+                mix (bits x)
+                mix (bits y)
+                mixStr t
+                mixA c
+            | TextRun run ->
+                mixTag 14
+                mixStr run.Text
+                mixA run.Position
+                mixA run.Font
+                mixA run.Paint
+            | Image((x, y, w, ht), src) ->
+                mixTag 15
+                mix (bits x)
+                mix (bits y)
+                mix (bits w)
+                mix (bits ht)
+                mixStr src
+            | ClipNode(clip, scene) ->
+                mixTag 16
+                mixA clip
+                goScene scene
+            | RegionNode(region, p) ->
+                mixTag 17
+                mixA region
+                mixA p
+            | ColorSpaceNode(cs, scene) ->
+                mixTag 18
+                mixA cs
+                goScene scene
+            | PerspectiveNode(t, scene) ->
+                mixTag 19
+                mixA t
+                goScene scene
+            | PictureNode picture ->
+                mixTag 20
+                mixStr picture.Name
+                goScene picture.Scene
+            | Chart values ->
+                mixTag 21
+                mix (uint64 (List.length values))
+                values |> List.iter (bits >> mix)
+            | Translate((dx, dy), scene) ->
+                mixTag 22
+                mix (bits dx)
+                mix (bits dy)
+                goScene scene
+            | SizedText((x, y), t, size, c) ->
+                mixTag 23
+                mix (bits x)
+                mix (bits y)
+                mixStr t
+                mix (bits size)
+                mixA c
+            // Feature 120 (FR-007): transparent — hash the wrapped subtree's content.
+            | CachedSubtree boundary ->
+                mixTag 24
+                goScene boundary.Scene
+
+        mix (uint64 (List.length scenes))
+        scenes |> List.iter goScene
+        h
+
+    // The COMPLETE correctness key for a cacheable boundary: the node's evaluated box + the
+    // collision-resistant structural fingerprint of its painted subtree (feature 120, FR-008 — replacing
+    // the feature-116 truncation-prone `sprintf "%A"`). It embeds EVERY render-affecting input (theme
+    // colours, clip, opacity, transform, font/text, visual-state) by construction, so an equal key proves
+    // a hit is byte-identical to a fresh paint and any single changed input forces a miss. The fingerprint
+    // is the one already memoized on the fragment (cost ∝ damage, not tree size).
     let private pictureKeyOf (n: RetainedNode<'msg>) : PictureCacheKey =
         { Box = n.Fragment.Box
-          Picture = sprintf "%A" n.Fragment.SubtreeScene }
+          Fingerprint = n.Fragment.Fingerprint }
+
+    // Feature 120 (US4, FR-015): the integer area of the UNION of a set of damage rectangles (no longer
+    // the sum), clamped to the frame area. Coordinate-compression over the distinct boxes: each elementary
+    // cell of the x/y grid is counted once iff any box covers it — so overlapping damage is not
+    // double-counted and the result never exceeds the frame. `n` is the small dirty-rect count; integer
+    // control geometry → deterministic.
+    let unionArea (boxes: FS.Skia.UI.Scene.Rect list) (frameArea: int) : int =
+        match boxes with
+        | [] -> 0
+        | boxes ->
+            let xs = boxes |> List.collect (fun b -> [ b.X; b.X + b.Width ]) |> List.distinct |> List.sort
+            let ys = boxes |> List.collect (fun b -> [ b.Y; b.Y + b.Height ]) |> List.distinct |> List.sort
+            let mutable area = 0.0 // mutable: hot path / union accumulator
+
+            for i in 0 .. xs.Length - 2 do
+                let x0, x1 = xs.[i], xs.[i + 1]
+
+                for j in 0 .. ys.Length - 2 do
+                    let y0, y1 = ys.[j], ys.[j + 1]
+
+                    let covered =
+                        boxes
+                        |> List.exists (fun b -> b.X <= x0 && x1 <= b.X + b.Width && b.Y <= y0 && y1 <= b.Y + b.Height)
+
+                    if covered then
+                        area <- area + (x1 - x0) * (y1 - y0)
+
+            min (int area) frameArea
 
     /// Feature 116 (FR-011): scan a node's own painted scene for an effect that forces OFFSCREEN
     /// composition (a separate layer + composite). In THIS renderer that is: a drop-shadow / image
@@ -497,7 +684,8 @@ module internal RetainedRender =
               Fragment =
                 { OwnScene = own
                   SubtreeScene = subtree
-                  Box = ControlInternals.nodeBox boundsById path nc }
+                  Box = ControlInternals.nodeBox boundsById path nc
+                  Fingerprint = hashScene subtree }
               Children = children }
 
         let root = build "0" control
@@ -749,7 +937,8 @@ module internal RetainedRender =
               Fragment =
                 { OwnScene = own
                   SubtreeScene = subtree
-                  Box = ControlInternals.nodeBox boundsById path nc }
+                  Box = ControlInternals.nodeBox boundsById path nc
+                  Fingerprint = hashScene subtree }
               Children = children }
 
         // Recompute a structurally-identical subtree whose box SHIFTED (a `Keep` relaid out by an
@@ -769,7 +958,8 @@ module internal RetainedRender =
               Fragment =
                 { OwnScene = own
                   SubtreeScene = subtree
-                  Box = ControlInternals.nodeBox boundsById path nc }
+                  Box = ControlInternals.nodeBox boundsById path nc
+                  Fingerprint = hashScene subtree }
               Children = children }
 
         // The reuse-driven walk: produce the next retained node for `nc` under `patch`, matched
@@ -845,7 +1035,8 @@ module internal RetainedRender =
                   Fragment =
                     { OwnScene = own
                       SubtreeScene = subtree
-                      Box = box }
+                      Box = box
+                      Fingerprint = hashScene subtree }
                   Children = children }
 
         let newRoot = build "0" prev.Root result.Patch next
@@ -884,7 +1075,12 @@ module internal RetainedRender =
         let repaintedNodeCount = recomputed
         let distinctBoxes = repaintedBoxes |> Seq.distinct |> List.ofSeq
         let dirtyRectCount = List.length distinctBoxes
-        let dirtyArea = distinctBoxes |> List.sumBy (fun (b: Rect) -> int (b.Width * b.Height))
+        // Feature 120 (US4, FR-015): the damage area is the area of the UNION of the distinct damage
+        // rectangles (no longer the sum), so overlapping damage is counted once and the value never
+        // exceeds the frame area. Computed by coordinate-compression over the distinct boxes (n is the
+        // small dirty-rect count, integer control geometry → deterministic), then clamped to the frame.
+        let frameArea = size.Width * size.Height
+        let dirtyArea = unionArea distinctBoxes frameArea
 
         // Feature 116 (Phase 7, FR-005/FR-006/FR-007/FR-009/FR-010): the bounded picture cache. A
         // read-only walk over the new retained tree visits each cacheable boundary (a data-grid row)
@@ -898,6 +1094,21 @@ module internal RetainedRender =
         let mutable pcClock = prev.PictureCache.Clock
         let mutable pictureHits = 0
         let mutable pictureMisses = 0
+        // Feature 120 (US3, FR-007/FR-012/FR-014): the backend replay cache is the load-bearing
+        // realization of this same picture cache, so its hit/miss/record counts coincide with the
+        // picture-cache outcomes by construction (same boundaries, same residency + new structural
+        // fingerprint). A HIT is a reuse-stable boundary (resident with an unchanged key) — exactly the
+        // FR-012 prior-frame-stability gate — and is the boundary we emit as a `CachedSubtree` so the
+        // backend replays it; `replaySkippedNodes` sums the painted-node count of every replayed
+        // boundary's subtree (the draw-call walk avoided); `replayNativeBytes` is the deterministic
+        // model native-byte estimate of resident recorded pictures.
+        let bytesPerNode = 64
+        let replayHitIds = System.Collections.Generic.HashSet<RetainedId>()
+        let mutable replaySkippedNodes = 0
+        let mutable replayNativeBytes = 0
+
+        let countNodes (scenes: FS.Skia.UI.Scene.Scene list) =
+            scenes |> List.sumBy (fun s -> List.length (FS.Skia.UI.Scene.Scene.describe s))
 
         let rec walkPictures (n: RetainedNode<'msg>) =
             if isCacheablePicture n.Control then
@@ -912,8 +1123,16 @@ module internal RetainedRender =
 
                 if isHit then
                     pictureHits <- pictureHits + 1
+                    // Reuse-stable boundary → emit + replay; tally the skipped painted nodes (SC-004).
+                    replayHitIds.Add n.Identity |> ignore
+                    replaySkippedNodes <- replaySkippedNodes + countNodes n.Fragment.SubtreeScene
                 else
                     pictureMisses <- pictureMisses + 1
+
+                // Native-byte model: every cacheable boundary resident after this frame holds a recorded
+                // picture proportional to its subtree node count (bounded by the cap).
+                if prev.PictureCacheEnabled then
+                    replayNativeBytes <- replayNativeBytes + countNodes n.Fragment.SubtreeScene * bytesPerNode
 
                 pcEntries <- Map.add n.Identity (pcClock, key) pcEntries
 
@@ -925,6 +1144,8 @@ module internal RetainedRender =
 
         walkPictures newRoot
         let pictureEntryCount = pcEntries.Count
+        // Bound the modeled native bytes by the cap (residency never exceeds PictureCacheCap entries).
+        let replayCacheNativeBytes = min replayNativeBytes (PictureCacheCap * bytesPerNode * 64)
         let pictureCache: PictureCache = { Entries = pcEntries; Clock = pcClock }
 
         // Feature 116 (Phase 7, FR-011): the advisory offscreen-effect diagnostic. A read-only walk
@@ -1002,19 +1223,36 @@ module internal RetainedRender =
         let anyActive =
             stateById |> Map.exists (fun _ s -> s.Animation |> Option.exists clockActive)
 
+        // Feature 120 (US3, FR-007/FR-012): emit a `CachedSubtree` replay boundary around each
+        // reuse-stable cacheable subtree (`replayHitIds`, the prior-frame-stability gate) so the backend
+        // painter replays its recorded picture instead of re-walking it. TRANSPARENT to pixels (the
+        // painter sees through when replay is disabled, replays the identical content when enabled) and to
+        // every IR consumer (`describe`/diagnostics/`measure` recurse into the wrapped scene). A
+        // reuse-stable boundary is at rest, so its wrapped content is exactly `Fragment.SubtreeScene`.
+        let needsEmitWalk = anyActive || replayHitIds.Count > 0
+
         let sceneList =
-            if not anyActive then
+            if not needsEmitWalk then
                 newRoot.Fragment.SubtreeScene
             else
                 let rec assemble (n: RetainedNode<'msg>) : Scene list =
-                    let ownStatic = n.Fragment.OwnScene
+                    if replayHitIds.Contains n.Identity then
+                        let (RetainedId cacheId) = n.Identity
 
-                    let own =
-                        match Map.tryFind n.Identity stateById |> Option.bind (fun s -> s.Animation) with
-                        | Some c when clockActive c -> sampleOnPaint c ownStatic
-                        | _ -> ownStatic
+                        [ { Nodes =
+                              [ CachedSubtree
+                                    { CacheId = cacheId
+                                      Fingerprint = n.Fragment.Fingerprint
+                                      Scene = Scene.group n.Fragment.SubtreeScene } ] } ]
+                    else
+                        let ownStatic = n.Fragment.OwnScene
 
-                    own @ (n.Children |> List.collect assemble)
+                        let own =
+                            match Map.tryFind n.Identity stateById |> Option.bind (fun s -> s.Animation) with
+                            | Some c when clockActive c -> sampleOnPaint c ownStatic
+                            | _ -> ownStatic
+
+                        own @ (n.Children |> List.collect assemble)
 
                 assemble newRoot
 
@@ -1064,7 +1302,15 @@ module internal RetainedRender =
               PictureCacheEntryCount = pictureEntryCount
               TextMeasureCacheHits = textHits
               TextMeasureCacheMisses = textMisses
-              LayoutInvalidatedNodeCount = invalidated } }
+              LayoutInvalidatedNodeCount = invalidated
+              // Feature 120 (US3, FR-014): replay hits/misses/records coincide with the picture-cache
+              // outcomes (the replay cache is its load-bearing realization); the node-skip + native-byte
+              // model are the new signals.
+              ReplayHits = pictureHits
+              ReplayMisses = pictureMisses
+              ReplayRecords = pictureMisses
+              ReplaySkippedNodes = replaySkippedNodes
+              ReplayCacheNativeBytes = replayCacheNativeBytes } }
 
     let retainedHitTest (x: float) (y: float) (retained: RetainedRender<'msg>) : RetainedId option =
         // The deepest node whose cached box contains the point. Each node — including unkeyed

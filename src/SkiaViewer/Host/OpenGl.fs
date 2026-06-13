@@ -236,6 +236,28 @@ module GlHost =
         // Feature 063 (FR-001): delegate to the single shared exhaustive painter.
         scene.Nodes |> List.iter (SceneRenderer.paintNode canvas)
 
+    // Feature 120 (US1, FR-001/002): the most recent present's per-phase durations — the scene→canvas
+    // paint walk (incl. surface clear + canvas flush) vs the GL flush + buffer-swap (compose/present).
+    // Live-only, non-golden; surfaced to `FrameMetrics.PaintDuration`/`ComposeDuration`.
+    let mutable lastPaintDuration = System.TimeSpan.Zero
+    let mutable lastComposeDuration = System.TimeSpan.Zero
+    let lastPresentTiming () : System.TimeSpan * System.TimeSpan = lastPaintDuration, lastComposeDuration
+
+    // Feature 120 (US2, FR-004/005/006): the last presented scene (for the idle-skip decision). A
+    // present is skipped only when the scene is structurally unchanged AND the framebuffer size is
+    // unchanged, so the double-buffered front buffer still holds the last presented frame (re-presenting
+    // is "no scene work"). The first frame and any forced repaint always present.
+    let mutable lastPresentedScene: Scene option = None
+    let mutable skippedPresentCount = 0
+
+    /// Feature 120 (US2, FR-004/005/006): the pure present-or-skip decision — present iff this is the
+    /// first frame, the scene changed, or the framebuffer size changed. Testable in isolation (T016).
+    let shouldPresent (prev: Scene option) (next: Scene) (sizeChanged: bool) : bool =
+        sizeChanged
+        || match prev with
+           | None -> true
+           | Some p -> not (obj.ReferenceEquals(p, next) || p = next)
+
     let bind result next =
         match result with
         | Ok value -> next value
@@ -398,11 +420,19 @@ module GlHost =
                     |> Option.defaultValue Colors.black
                     |> SceneRenderer.skColor
 
+                // Feature 120 (US1): time the scene→canvas paint walk separately from flush + swap.
+                SceneRenderer.activeReplayCache |> Option.iter PictureReplayCache.resetCounters
+                let paintSw = System.Diagnostics.Stopwatch.StartNew()
                 surface.Canvas.Clear clear
                 drawScene scene surface.Canvas
                 surface.Canvas.Flush()
+                paintSw.Stop()
+                let composeSw = System.Diagnostics.Stopwatch.StartNew()
                 context.Flush()
                 window.SwapBuffers()
+                composeSw.Stop()
+                lastPaintDuration <- paintSw.Elapsed
+                lastComposeDuration <- composeSw.Elapsed
 
                 Ok
                     { Width = framebuffer.Width
@@ -423,11 +453,18 @@ module GlHost =
                     |> Option.defaultValue Colors.black
                     |> SceneRenderer.skColor
 
+                SceneRenderer.activeReplayCache |> Option.iter PictureReplayCache.resetCounters
+                let paintSw = System.Diagnostics.Stopwatch.StartNew()
                 surface.Canvas.Clear clear
                 drawScene scene surface.Canvas
                 surface.Canvas.Flush()
+                paintSw.Stop()
+                let composeSw = System.Diagnostics.Stopwatch.StartNew()
                 context.Flush()
                 window.SwapBuffers()
+                composeSw.Stop()
+                lastPaintDuration <- paintSw.Elapsed
+                lastComposeDuration <- composeSw.Elapsed
 
                 bind (renderSceneToPixels configuration context framebuffer.Width framebuffer.Height scene) (fun pixels ->
                     Ok
@@ -442,6 +479,32 @@ module GlHost =
     /// `OffscreenReadback` keeps the readback path for evidence/fallback. `report` carries
     /// live-only, non-golden present diagnostics (FR-005/FR-007).
     let renderFrame configuration (window: IWindow) (context: GRContext) (framebuffer: FramebufferState) (announced: bool ref) (report: RenderDiagnostic -> unit) scene =
+        // Feature 120 (US2, FR-004/005/006): idle-skip. On the double-buffered direct present, an
+        // unchanged scene at an unchanged framebuffer size performs NO clear, NO scene walk, and NO
+        // draw-call re-issue — the front buffer still holds the last presented (byte-identical) frame.
+        // Readback present always renders (its consumer needs fresh pixels).
+        let fbSize = window.FramebufferSize
+        let sizeChanged = framebuffer.Width <> max 1 fbSize.X || framebuffer.Height <> max 1 fbSize.Y
+
+        let canIdleSkip =
+            configuration.PresentMode = ViewerPresentMode.DirectToSwapchain
+            && framebuffer.Surface.IsSome
+            && not (shouldPresent lastPresentedScene scene sizeChanged)
+
+        if canIdleSkip then
+            skippedPresentCount <- skippedPresentCount + 1
+            lastPaintDuration <- System.TimeSpan.Zero
+            lastComposeDuration <- System.TimeSpan.Zero
+
+            Ok
+                { Width = framebuffer.Width
+                  Height = framebuffer.Height
+                  ColorType = SKColorType.Rgba8888
+                  Pixels = [||] }
+        else
+
+        lastPresentedScene <- Some scene
+
         match configuration.PresentMode with
         | ViewerPresentMode.OffscreenReadback ->
             renderFrameReadback configuration window context framebuffer scene
@@ -649,6 +712,12 @@ module GlHost =
         let mutable lastScene: Scene option = None
         let mutable lastFrame: FrameSnapshot option = None
         let mutable shutdownRequested = false
+        // Feature 120 (US3): the backend replay cache for this run; set as the active painter cache so
+        // `CachedSubtree` boundaries record/replay. Reset the idle-skip carrier so a new run repaints.
+        let replayCache = PictureReplayCache.create true
+        SceneRenderer.activeReplayCache <- Some replayCache
+        lastPresentedScene <- None
+        skippedPresentCount <- 0
 
         let requestShutdown closeWindow =
             shutdownRequested <- true
@@ -885,6 +954,10 @@ module GlHost =
 
             framebuffer.Surface |> Option.iter (fun s -> s.Dispose())
             framebuffer.RenderTarget |> Option.iter (fun rt -> rt.Dispose())
+
+            // Feature 120 (US3, FR-013): release all resident native pictures on teardown.
+            PictureReplayCache.dispose replayCache
+            SceneRenderer.activeReplayCache <- None
 
             match grContext with
             | Some context -> context.Dispose()

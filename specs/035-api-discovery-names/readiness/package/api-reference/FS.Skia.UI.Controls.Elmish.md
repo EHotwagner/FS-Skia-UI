@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 149
-xml-summary-count: 301
+symbol-count: 156
+xml-summary-count: 322
 source-fsi-paths:
 - src/Controls.Elmish/ControlsElmish.fsi
 sampled-symbols:
@@ -144,10 +144,11 @@ type FrameMetrics =
       /// contribute none), so `<= RepaintedNodeCount`. `0` on an idle frame. Deterministic integer,
       /// golden-asserted via `Perf.runScript`.
       DirtyRectCount: int
-      /// Feature 116 (Phase 7, FR-001/FR-004, US1): the total damaged area this frame — the summed integer
-      /// `width * height` over the DISTINCT damage rectangles. A localized change covers only the changed
-      /// box(es) (`< FrameArea`); a theme switch covers the frame; an idle frame reports `0`. Deterministic
-      /// integer (control geometry is integer), golden-asserted via `Perf.runScript`.
+      /// Feature 116 (Phase 7, FR-001/FR-004, US1); Feature 120 (FR-015) corrected the computation: the
+      /// integer area of the **union** of distinct damage rectangles this frame (no longer the sum of their
+      /// areas), so overlapping damage is counted once and the value never exceeds the frame area. A
+      /// localized change covers only the changed box(es) (`< FrameArea`); a theme switch covers the frame;
+      /// an idle frame reports `0`. Deterministic integer, golden-asserted via `Perf.runScript`.
       DirtyArea: int
       /// Feature 116 (Phase 7, FR-005/FR-007, US2): picture-cache HITS this frame — cacheable boundaries
       /// (a `data-grid-row` identity) whose full correctness key was unchanged and whose cached picture was
@@ -212,7 +213,34 @@ type FrameMetrics =
       PaintRan: bool
       /// Wall-clock duration of the frame's work — reported, EXCLUDED from the golden/determinism
       /// surface (FR-012).
-      FrameDuration: TimeSpan }
+      FrameDuration: TimeSpan
+      /// Feature 120 (US1, FR-001/FR-002): scene→canvas paint-walk time. Live diagnostic only — EXCLUDED
+      /// from count goldens (mirrors `FrameDuration`); `TimeSpan.Zero` on the deterministic `Perf.runScript`
+      /// path so adding it leaves every golden byte-identical (SC-001).
+      PaintDuration: TimeSpan
+      /// Feature 120 (US1, FR-001/FR-002): flush + buffer-swap present/compose time. Live diagnostic only;
+      /// non-golden; `TimeSpan.Zero` on the deterministic path.
+      ComposeDuration: TimeSpan
+      /// Feature 120 (US3, FR-014): replay HITS this frame — `CachedSubtree` boundaries whose recorded
+      /// picture was resident and whose fingerprint matched, so the recorded draw commands were replayed
+      /// instead of re-walked. `0` on a frame with no cacheable boundary or under the replay-disable oracle.
+      /// Deterministic, golden-asserted via `Perf.runScript`.
+      ReplayHitCount: int
+      /// Feature 120 (US3, FR-014): replay MISSES this frame — boundaries (re)recorded because the identity
+      /// was cold, its fingerprint changed, or its entry had been evicted. `0` on a frame with no cacheable
+      /// boundary. Deterministic, golden-asserted.
+      ReplayMissCount: int
+      /// Feature 120 (US3, FR-014): pictures recorded this frame (one per miss). Deterministic, golden-asserted.
+      ReplayRecordCount: int
+      /// Feature 120 (US3, FR-014/SC-004): subtree paint-nodes skipped by replay this frame — the summed
+      /// node count of every replayed (hit) boundary's recorded subtree, i.e. the draw-call walk avoided.
+      /// The work-reduction signal. `0` on a frame with no replay hit. Deterministic, golden-asserted.
+      ReplaySkippedNodeCount: int
+      /// Feature 120 (US3, FR-013): native bytes held by the replay cache after this frame — a deterministic
+      /// model estimate (resident recorded-picture subtree node counts), bounded by the cap so a memory
+      /// regression is observable. Deterministic, golden-asserted. The live backend additionally reports its
+      /// real `SKPicture` native byte total in the non-golden timing baseline.
+      ReplayCacheNativeBytes: int }
 
 [<RequireQualifiedAccess>]
 /// Feature 108 (US3, FR-009): one ordered step of the deterministic perf driver. `Key` carries the

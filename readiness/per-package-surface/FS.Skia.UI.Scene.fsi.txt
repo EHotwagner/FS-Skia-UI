@@ -381,11 +381,21 @@ type SceneNode =
     | Translate of (float * float) * Scene
     | SizedText of (float * float) * string * float * Color
 
+    | CachedSubtree of CacheBoundary
+
 and Scene =
     { Nodes: SceneNode list }
 
 and Picture =
     { Name: string
+      Scene: Scene }
+
+and CacheBoundary =
+    {
+      CacheId: uint64
+
+      Fingerprint: uint64
+
       Scene: Scene }
 
 type LayoutEvidenceReport =

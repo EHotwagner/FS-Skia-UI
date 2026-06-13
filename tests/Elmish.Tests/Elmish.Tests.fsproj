@@ -33,6 +33,7 @@
     <Compile Include="Feature114VirtualMetricsTests.fs" />
     <Compile Include="Feature116MetricsTests.fs" />
     <Compile Include="Feature117MetricsTests.fs" />
+    <Compile Include="Feature120MetricsTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

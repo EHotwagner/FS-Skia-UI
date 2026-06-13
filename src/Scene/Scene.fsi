@@ -342,12 +342,31 @@ type SceneNode =
     | Chart of values: float list
     | Translate of (float * float) * Scene
     | SizedText of (float * float) * string * float * Color
+    /// Feature 120 (FR-007): a reuse-stable subtree marked as a backend replay-cache boundary.
+    /// TRANSPARENT to every Scene-IR consumer except the OpenGL backend painter — `describe`,
+    /// diagnostics, `measure`, opacity scaling, and every retained walk recurse straight into
+    /// `CacheBoundary.Scene`, so deterministic goldens and at-rest pixels are unchanged. Only the GL
+    /// painter consults the `SKPicture` replay cache here; with replay disabled it recurses into
+    /// `Scene` identically to the direct walk (the parity oracle).
+    | CachedSubtree of CacheBoundary
 
 and Scene =
     { Nodes: SceneNode list }
 
 and Picture =
     { Name: string
+      Scene: Scene }
+
+/// Feature 120 (FR-007): the payload of `SceneNode.CachedSubtree` — a stable subtree identity, a
+/// collision-resistant structural fingerprint of its render-affecting inputs, and the wrapped
+/// subtree itself (both the record source and the transparent fallback).
+and CacheBoundary =
+    { /// Stable subtree identity (from `RetainedId`) — the replay cache slot.
+      CacheId: uint64
+      /// Collision-resistant structural fingerprint of the wrapped subtree's render-affecting
+      /// inputs; replay is valid iff a cached picture's fingerprint matches this.
+      Fingerprint: uint64
+      /// The wrapped subtree — record source and transparent fallback.
       Scene: Scene }
 
 /// Public contract type exposed by this FS.Skia.UI package.

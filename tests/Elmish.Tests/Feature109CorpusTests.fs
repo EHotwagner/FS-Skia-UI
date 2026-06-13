@@ -208,8 +208,12 @@ let private serializeFrame (f: FrameMetrics) : string =
     // additionally carries the two text-measure-cache counts + the layout-invalidated dirty-set size
     // (TextMeasureCacheHitCount/TextMeasureCacheMissCount/LayoutInvalidatedNodeCount) — again read-only,
     // additive, with the rendered scenes byte-identical (the text cache is a transparent accelerator).
+    // Feature 120: the golden additionally carries the five backend replay-cache counters
+    // (ReplayHitCount/ReplayMissCount/ReplayRecordCount/ReplaySkippedNodeCount/ReplayCacheNativeBytes) —
+    // deterministic read-only model counts. The two TimeSpan timing fields (PaintDuration/ComposeDuration)
+    // stay EXCLUDED (non-golden, like FrameDuration). `DirtyArea` is now the union area (FR-015).
     sprintf
-        "ProductModelChanged=%b ViewCalled=%b FullRenderCount=%d RemeasuredNodeCount=%d MemoHitCount=%d MemoMissCount=%d VirtualItemsMaterialized=%d VirtualItemsTotal=%d RepaintedNodeCount=%d DirtyRectCount=%d DirtyArea=%d PictureCacheHitCount=%d PictureCacheMissCount=%d PictureCacheEntryCount=%d TextMeasureCacheHitCount=%d TextMeasureCacheMissCount=%d LayoutInvalidatedNodeCount=%d PointerSamplesReceived=%d PointerMovesProcessed=%d FullRenderFallbackCount=%d FrameCause=%A DiffRan=%b LayoutRan=%b PaintRan=%b"
+        "ProductModelChanged=%b ViewCalled=%b FullRenderCount=%d RemeasuredNodeCount=%d MemoHitCount=%d MemoMissCount=%d VirtualItemsMaterialized=%d VirtualItemsTotal=%d RepaintedNodeCount=%d DirtyRectCount=%d DirtyArea=%d PictureCacheHitCount=%d PictureCacheMissCount=%d PictureCacheEntryCount=%d TextMeasureCacheHitCount=%d TextMeasureCacheMissCount=%d LayoutInvalidatedNodeCount=%d PointerSamplesReceived=%d PointerMovesProcessed=%d FullRenderFallbackCount=%d FrameCause=%A DiffRan=%b LayoutRan=%b PaintRan=%b ReplayHitCount=%d ReplayMissCount=%d ReplayRecordCount=%d ReplaySkippedNodeCount=%d ReplayCacheNativeBytes=%d"
         f.ProductModelChanged
         f.ViewCalled
         f.FullRenderCount
@@ -234,6 +238,11 @@ let private serializeFrame (f: FrameMetrics) : string =
         f.DiffRan
         f.LayoutRan
         f.PaintRan
+        f.ReplayHitCount
+        f.ReplayMissCount
+        f.ReplayRecordCount
+        f.ReplaySkippedNodeCount
+        f.ReplayCacheNativeBytes
 
 let private serialize (frames: FrameMetrics list) : string =
     (frames |> List.map serializeFrame |> String.concat "\n") + "\n"

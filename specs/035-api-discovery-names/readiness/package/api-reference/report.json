@@ -6,7 +6,7 @@
       "src/Scene/Scene.fsi"
     ],
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.Scene.md",
-    "SymbolCount": 360,
+    "SymbolCount": 364,
     "SampledSymbols": [
       "type Rect =",
       "Width: float",
@@ -16,7 +16,7 @@
       "TextRun",
       "SceneElementKind"
     ],
-    "XmlSummaryCount": 129,
+    "XmlSummaryCount": 141,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"
@@ -39,7 +39,7 @@
       "ViewerWindowPosition",
       "Coordinates of x: int * y: int"
     ],
-    "XmlSummaryCount": 114,
+    "XmlSummaryCount": 118,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"
@@ -155,9 +155,9 @@
       "src/Controls.Elmish/ControlsElmish.fsi"
     ],
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.Controls.Elmish.md",
-    "SymbolCount": 149,
+    "SymbolCount": 156,
     "SampledSymbols": [],
-    "XmlSummaryCount": 301,
+    "XmlSummaryCount": 322,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"

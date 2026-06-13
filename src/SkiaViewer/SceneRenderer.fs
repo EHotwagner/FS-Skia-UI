@@ -16,6 +16,11 @@ open FS.Skia.UI.Scene
 /// compile error until handled. Non-public (`internal`): no SkiaViewer surface change.
 module internal SceneRenderer =
 
+    // Feature 120 (US3): the active backend replay cache for the current present, set by the OpenGL host
+    // before `drawScene`. `None` (or a disabled cache) ⇒ `CachedSubtree` paints its wrapped scene
+    // directly (transparent), so the painter is byte-identical to the pre-120 direct walk.
+    let mutable activeReplayCache: PictureReplayCache.Cache option = None
+
     let skColor color =
         SKColor(color.Red, color.Green, color.Blue, color.Alpha)
 
@@ -416,3 +421,11 @@ module internal SceneRenderer =
             canvas.Restore()
         | SizedText((x, y), text, size, color) ->
             drawTextWithFallback canvas x y text size (skColor color) true
+        // Feature 120 (US3, FR-007): a backend replay-cache boundary. With an active cache, replay the
+        // recorded picture on a hit or record-then-draw on a miss; otherwise (no/disabled cache) recurse
+        // straight into the wrapped scene — TRANSPARENT, byte-identical to the direct walk (FR-011).
+        | CachedSubtree boundary ->
+            match activeReplayCache with
+            | Some cache ->
+                PictureReplayCache.paintBoundary cache canvas (fun c (s: Scene) -> s.Nodes |> List.iter (paintNode c)) boundary
+            | None -> boundary.Scene.Nodes |> List.iter (paintNode canvas)
