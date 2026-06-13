@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 140
-xml-summary-count: 260
+symbol-count: 146
+xml-summary-count: 286
 source-fsi-paths:
 - src/Controls.Elmish/ControlsElmish.fsi
 sampled-symbols:
@@ -132,6 +132,38 @@ type FrameMetrics =
       /// `VirtualItemsMaterialized` stays bounded. `0` on a frame with no virtualized control. Deterministic,
       /// golden-asserted via `Perf.runScript`.
       VirtualItemsTotal: int
+      /// Feature 116 (Phase 7, FR-001/FR-002, US1): the number of nodes whose paint was REPAINTED this
+      /// frame — the damage set: the changed node(s) plus any genuinely-shifted nodes. A localized
+      /// visual-state change reports a small count (the changed control + its immediate shifted
+      /// neighbours, `<= 4` for a leaf hover, `< TotalNodeCount`); a theme switch that invalidates all
+      /// paint reports every node; an idle frame reports `0`. Deterministic, golden-asserted via
+      /// `Perf.runScript`.
+      RepaintedNodeCount: int
+      /// Feature 116 (Phase 7, FR-001/FR-004, US1): the number of DISTINCT axis-aligned damage rectangles
+      /// this frame — one per repainted node's evaluated box, identical boxes deduplicated (`None` boxes
+      /// contribute none), so `<= RepaintedNodeCount`. `0` on an idle frame. Deterministic integer,
+      /// golden-asserted via `Perf.runScript`.
+      DirtyRectCount: int
+      /// Feature 116 (Phase 7, FR-001/FR-004, US1): the total damaged area this frame — the summed integer
+      /// `width * height` over the DISTINCT damage rectangles. A localized change covers only the changed
+      /// box(es) (`< FrameArea`); a theme switch covers the frame; an idle frame reports `0`. Deterministic
+      /// integer (control geometry is integer), golden-asserted via `Perf.runScript`.
+      DirtyArea: int
+      /// Feature 116 (Phase 7, FR-005/FR-007, US2): picture-cache HITS this frame — cacheable boundaries
+      /// (a `data-grid-row` identity) whose full correctness key was unchanged and whose cached picture was
+      /// still resident, reused without recomputing. `0` on a frame with no cacheable picture or under the
+      /// always-miss oracle. Deterministic, golden-asserted via `Perf.runScript`.
+      PictureCacheHitCount: int
+      /// Feature 116 (Phase 7, FR-006/FR-010, US2/US3): picture-cache MISSES this frame — a cacheable
+      /// boundary recomputed because its correctness key changed, the identity was cold, or its entry had
+      /// been evicted. `0` on a frame with no cacheable picture. Deterministic, golden-asserted via
+      /// `Perf.runScript`.
+      PictureCacheMissCount: int
+      /// Feature 116 (Phase 7, FR-009, US3): the live bounded-LRU picture-cache entry count after this
+      /// frame — `<= PictureCacheCap` at all times, even under eviction pressure (more distinct cacheable
+      /// pictures than the cap). A steady cache may retain entries across an idle frame, so this reflects
+      /// live size, not necessarily `0`. Deterministic, golden-asserted via `Perf.runScript`.
+      PictureCacheEntryCount: int
       /// Raw pointer samples that arrived this frame, including deferred/queued moves carried from a
       /// prior boundary (K before coalescing) (FR-008).
       PointerSamplesReceived: int

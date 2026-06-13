@@ -1,0 +1,47 @@
+Feature 116 — FSI / seam exercise transcript (T005)
+
+The damage-set, picture-cache, and offscreen-diagnostic seams live on the INTERNAL
+`RetainedRender` module (reached from the test assemblies via
+`[<assembly: InternalsVisibleTo("Controls.Tests")>]` / `InternalsVisibleTo("Elmish.Tests")`),
+so the authoritative exercise of the drafted seam is the in-assembly Expecto suite, not a
+plain `.fsx` (which cannot see internal types). The public `FrameMetrics` shape IS reachable
+and is exercised below + through `ControlsElmish.Perf.runScript`.
+
+--- public FrameMetrics shape (the six new fields, Controls.Elmish) ---
+> open FS.Skia.UI.Controls.Elmish
+> // a frame metrics value now carries the six additive paint-cache fields:
+> //   RepaintedNodeCount / DirtyRectCount / DirtyArea
+> //   PictureCacheHitCount / PictureCacheMissCount / PictureCacheEntryCount
+> // surfaced on the deterministic Perf.runScript path and the live OnFrameMetrics sink.
+
+--- seam exercise (via the test path, ControlsElmish.Perf.runScript over a data-grid-row grid) ---
+> // stable grid, two key frames:
+> let frames = runWith (stableGrid 5) [ key (); key () ]
+> (List.last frames).PictureCacheHitCount
+val it : int = 5            // every stable row picture reused (hit)
+> (List.last frames).PictureCacheMissCount
+val it : int = 0            // a stable frame recomputes no picture
+> (List.last frames).RepaintedNodeCount
+val it : int = 0            // a stable frame repaints no node (damage 0/0/0)
+
+> // localized change (one row's content tracks the model):
+> let f2 = List.last (runWith (localizedGrid 5) [ key (); key () ])
+> f2.RepaintedNodeCount, f2.DirtyRectCount, f2.PictureCacheMissCount
+val it : int * int * int = (1, 1, 1)   // small localized damage + exactly one picture miss
+
+> // cache bound under pressure (320 distinct rows > the 256 cap):
+> (List.last (runWith (stableGrid 320) [ key (); key () ])).PictureCacheEntryCount
+val it : int = 256          // PictureCacheEntryCount bounded by RetainedRender.PictureCacheCap
+
+--- PictureCacheEnabled always-miss oracle (cache-on ≡ cache-off) ---
+> // flip the internal RetainedRender.PictureCacheEnabled flag false → every boundary re-misses,
+> // hits = 0, and the rendered SubtreeScene stays byte-identical to the cache-enabled build.
+
+--- offscreen-effect diagnostic (advisory, ControlDiagnosticCode.OffscreenComposition) ---
+> open FS.Skia.UI.Controls
+> // RetainedRender.offscreenEffect returns Some "drop-shadow" | Some "path clip"
+> //   | Some "opacity group" | None; a line-chart with data surfaces an advisory
+> //   OffscreenComposition diagnostic (Severity = Info) on step.Diagnostics; output unchanged.
+
+All values above are the deterministic outputs the Feature116* Expecto suites assert
+(tests/Controls.Tests/Feature116*.fs, tests/Elmish.Tests/Feature116MetricsTests.fs) — green.

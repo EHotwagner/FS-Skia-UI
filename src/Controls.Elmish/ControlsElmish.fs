@@ -52,6 +52,12 @@ type FrameMetrics =
       MemoMissCount: int
       VirtualItemsMaterialized: int
       VirtualItemsTotal: int
+      RepaintedNodeCount: int
+      DirtyRectCount: int
+      DirtyArea: int
+      PictureCacheHitCount: int
+      PictureCacheMissCount: int
+      PictureCacheEntryCount: int
       PointerSamplesReceived: int
       PointerMovesProcessed: int
       FullRenderFallbackCount: int
@@ -1001,6 +1007,13 @@ module ControlsElmish =
                   // Feature 114 (Phase 6): the last retained-step's virtualization tally (live sink).
                   VirtualItemsMaterialized = lastWorkReduction.Value |> Option.map (fun w -> w.VirtualMaterialized) |> Option.defaultValue 0
                   VirtualItemsTotal = lastWorkReduction.Value |> Option.map (fun w -> w.VirtualTotal) |> Option.defaultValue 0
+                  // Feature 116 (Phase 7): the last retained-step's damage + picture-cache tallies (live sink).
+                  RepaintedNodeCount = lastWorkReduction.Value |> Option.map (fun w -> w.RepaintedNodeCount) |> Option.defaultValue 0
+                  DirtyRectCount = lastWorkReduction.Value |> Option.map (fun w -> w.DirtyRectCount) |> Option.defaultValue 0
+                  DirtyArea = lastWorkReduction.Value |> Option.map (fun w -> w.DirtyArea) |> Option.defaultValue 0
+                  PictureCacheHitCount = lastWorkReduction.Value |> Option.map (fun w -> w.PictureCacheHits) |> Option.defaultValue 0
+                  PictureCacheMissCount = lastWorkReduction.Value |> Option.map (fun w -> w.PictureCacheMisses) |> Option.defaultValue 0
+                  PictureCacheEntryCount = lastWorkReduction.Value |> Option.map (fun w -> w.PictureCacheEntryCount) |> Option.defaultValue 0
                   PointerSamplesReceived = samples
                   PointerMovesProcessed = movesProcessed
                   FullRenderFallbackCount = fullRenderFallbackCount
@@ -1261,6 +1274,11 @@ module ControlsElmish =
             // captured by `renderStep`/`repaintCached` so each per-frame `FrameMetrics` reports it. Stays
             // (0, 0) until a `step` runs (the first frame seeds via `init`, which has no work record).
             let mutable lastVirtual: int * int = 0, 0
+            // Feature 116 (Phase 7): the last retained-step's damage tally (repainted-node, dirty-rect,
+            // dirty-area) and picture-cache tally (hits, misses, entry-count), captured by
+            // `renderStep`/`repaintCached`. Stay zero until a `step` runs.
+            let mutable lastDamage: int * int * int = 0, 0, 0
+            let mutable lastPicture: int * int * int = 0, 0, 0
 
             // Render the retained step for the current model, returning the frame's
             // RemeasuredNodeCount (the first frame seeds via `init`, which has no work record -> 0).
@@ -1281,6 +1299,8 @@ module ControlsElmish =
                     lastRender <- Some s.Render
                     lastMemo <- s.WorkReduction.MemoHits, s.WorkReduction.MemoMisses
                     lastVirtual <- s.WorkReduction.VirtualMaterialized, s.WorkReduction.VirtualTotal
+                    lastDamage <- s.WorkReduction.RepaintedNodeCount, s.WorkReduction.DirtyRectCount, s.WorkReduction.DirtyArea
+                    lastPicture <- s.WorkReduction.PictureCacheHits, s.WorkReduction.PictureCacheMisses, s.WorkReduction.PictureCacheEntryCount
                     s.WorkReduction.RemeasuredNodeCount
 
             // Feature 111 (FR-003/FR-004): re-sample the overlay for an animation-only tick WITHOUT
@@ -1297,6 +1317,8 @@ module ControlsElmish =
                     lastRender <- Some s.Render
                     lastMemo <- s.WorkReduction.MemoHits, s.WorkReduction.MemoMisses
                     lastVirtual <- s.WorkReduction.VirtualMaterialized, s.WorkReduction.VirtualTotal
+                    lastDamage <- s.WorkReduction.RepaintedNodeCount, s.WorkReduction.DirtyRectCount, s.WorkReduction.DirtyArea
+                    lastPicture <- s.WorkReduction.PictureCacheHits, s.WorkReduction.PictureCacheMisses, s.WorkReduction.PictureCacheEntryCount
                     s.WorkReduction.RemeasuredNodeCount
                 | None -> 0
 
@@ -1350,6 +1372,12 @@ module ControlsElmish =
                   MemoMissCount = 0
                   VirtualItemsMaterialized = 0
                   VirtualItemsTotal = 0
+                  RepaintedNodeCount = 0
+                  DirtyRectCount = 0
+                  DirtyArea = 0
+                  PictureCacheHitCount = 0
+                  PictureCacheMissCount = 0
+                  PictureCacheEntryCount = 0
                   PointerSamplesReceived = 0
                   PointerMovesProcessed = 0
                   FullRenderFallbackCount = 0
@@ -1366,6 +1394,8 @@ module ControlsElmish =
                 // through). `renderStep`/`repaintCached` overwrite it when they actually run.
                 lastMemo <- 0, 0
                 lastVirtual <- 0, 0
+                lastDamage <- 0, 0, 0
+                lastPicture <- 0, 0, 0
 
                 match frame with
                 | FrameInput.Pointer _ :: _ when frame |> List.forall (function
@@ -1397,6 +1427,12 @@ module ControlsElmish =
                         MemoMissCount = snd lastMemo
                         VirtualItemsMaterialized = fst lastVirtual
                         VirtualItemsTotal = snd lastVirtual
+                        RepaintedNodeCount = (let (r, _, _) = lastDamage in r)
+                        DirtyRectCount = (let (_, rc, _) = lastDamage in rc)
+                        DirtyArea = (let (_, _, da) = lastDamage in da)
+                        PictureCacheHitCount = (let (h, _, _) = lastPicture in h)
+                        PictureCacheMissCount = (let (_, m, _) = lastPicture in m)
+                        PictureCacheEntryCount = (let (_, _, e) = lastPicture in e)
                         PointerSamplesReceived = k
                         PointerMovesProcessed = 1
                         FullRenderFallbackCount = fallbacks
@@ -1448,6 +1484,12 @@ module ControlsElmish =
                         MemoMissCount = snd lastMemo
                         VirtualItemsMaterialized = fst lastVirtual
                         VirtualItemsTotal = snd lastVirtual
+                        RepaintedNodeCount = (let (r, _, _) = lastDamage in r)
+                        DirtyRectCount = (let (_, rc, _) = lastDamage in rc)
+                        DirtyArea = (let (_, _, da) = lastDamage in da)
+                        PictureCacheHitCount = (let (h, _, _) = lastPicture in h)
+                        PictureCacheMissCount = (let (_, m, _) = lastPicture in m)
+                        PictureCacheEntryCount = (let (_, _, e) = lastPicture in e)
                         FrameCause = FrameCause.Tick
                         DiffRan = viewRan
                         LayoutRan = remeasured > 0
@@ -1474,6 +1516,12 @@ module ControlsElmish =
                         MemoMissCount = snd lastMemo
                         VirtualItemsMaterialized = fst lastVirtual
                         VirtualItemsTotal = snd lastVirtual
+                        RepaintedNodeCount = (let (r, _, _) = lastDamage in r)
+                        DirtyRectCount = (let (_, rc, _) = lastDamage in rc)
+                        DirtyArea = (let (_, _, da) = lastDamage in da)
+                        PictureCacheHitCount = (let (h, _, _) = lastPicture in h)
+                        PictureCacheMissCount = (let (_, m, _) = lastPicture in m)
+                        PictureCacheEntryCount = (let (_, _, e) = lastPicture in e)
                         FrameCause = FrameCause.Key
                         DiffRan = hasMsgs
                         LayoutRan = remeasured > 0
@@ -1499,6 +1547,12 @@ module ControlsElmish =
                         MemoMissCount = snd lastMemo
                         VirtualItemsMaterialized = fst lastVirtual
                         VirtualItemsTotal = snd lastVirtual
+                        RepaintedNodeCount = (let (r, _, _) = lastDamage in r)
+                        DirtyRectCount = (let (_, rc, _) = lastDamage in rc)
+                        DirtyArea = (let (_, _, da) = lastDamage in da)
+                        PictureCacheHitCount = (let (h, _, _) = lastPicture in h)
+                        PictureCacheMissCount = (let (_, m, _) = lastPicture in m)
+                        PictureCacheEntryCount = (let (_, _, e) = lastPicture in e)
                         PointerSamplesReceived = 1
                         FullRenderFallbackCount = fallbacks
                         FrameCause = FrameCause.PointerDiscrete

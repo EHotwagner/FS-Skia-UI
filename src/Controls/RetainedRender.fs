@@ -55,6 +55,21 @@ type internal MemoEntry =
 
 type internal MemoCache = Map<ControlId, MemoEntry>
 
+// Feature 116 (Phase 7): the picture cache's COMPLETE correctness key for one cacheable boundary —
+// the node's box + a structural digest of its painted subtree (which embeds every render-affecting
+// input). Compared by F# structural `=`.
+type internal PictureCacheKey =
+    { Box: FS.Skia.UI.Scene.Rect option
+      Picture: string }
+
+// Feature 116 (Phase 7): the bounded cross-frame picture cache — a fixed-cap LRU over cacheable
+// picture identities, each holding its last-seen key + a monotonic access stamp advanced by the
+// frame's deterministic traversal order (no wall-clock). Over the cap the least-recently-accessed
+// entry is dropped; a dropped identity re-misses when next needed.
+type internal PictureCache =
+    { Entries: Map<RetainedId, int * PictureCacheKey>
+      Clock: int }
+
 type internal RetainedRender<'msg> =
     { Root: RetainedNode<'msg>
       NextId: uint64
@@ -65,7 +80,11 @@ type internal RetainedRender<'msg> =
       // Feature 113 (Phase 5): the always-miss switch (FR-008); `true` on the live path.
       MemoEnabled: bool
       // Feature 097 (R2): previous frame's full LayoutResult — the measure/bounds cache (FR-002).
-      Layout: FS.Skia.UI.Layout.LayoutResult }
+      Layout: FS.Skia.UI.Layout.LayoutResult
+      // Feature 116 (Phase 7): the bounded cross-frame picture cache (FR-009/FR-010).
+      PictureCache: PictureCache
+      // Feature 116 (Phase 7): the picture-cache always-miss switch (FR-007); `true` on the live path.
+      PictureCacheEnabled: bool }
 
 type internal WorkReductionRecord =
     { BaselineNodeCount: int
@@ -79,7 +98,16 @@ type internal WorkReductionRecord =
       MemoMisses: int
       // Feature 114 (Phase 6, FR-013): materialized data-grid-row nodes + logical row total this frame.
       VirtualMaterialized: int
-      VirtualTotal: int }
+      VirtualTotal: int
+      // Feature 116 (Phase 7, FR-001/FR-004): the damage set — repainted-node count, distinct dirty-rect
+      // count, summed integer dirty area.
+      RepaintedNodeCount: int
+      DirtyRectCount: int
+      DirtyArea: int
+      // Feature 116 (Phase 7, FR-005/FR-009/FR-010): picture-cache hits, misses, and live entry count.
+      PictureCacheHits: int
+      PictureCacheMisses: int
+      PictureCacheEntryCount: int }
 
 type internal RetainedRenderStep<'msg> =
     { Retained: RetainedRender<'msg>
@@ -136,6 +164,84 @@ module internal RetainedRender =
         // A tuple is a reference type, so the upcast yields a non-null `obj` (satisfies nullness); it is
         // compared only by structural `=` in `memoize`, never by reference.
         (theme, ControlInternals.nodeBox boundsById path c, ControlInternals.dataGridCells c) :> obj
+
+    // ---------------------------------------------------------------------------------------------
+    // Feature 116 (Phase 7) — the bounded picture cache + the offscreen-effect detector. The picture
+    // cache is the data-grid-ROW analog of feature 113's data-grid-only memo cache: each materialized
+    // row is one cacheable picture. The bounded LRU + hit/miss counting OBSERVE the row pictures the
+    // step already built — they are DECOUPLED from scene emission, so the emitted `SubtreeScene`, the
+    // 091–114 reuse behaviour, and every prior work-reduction count are untouched (additive only,
+    // byte-identical at rest).
+    // ---------------------------------------------------------------------------------------------
+
+    /// The fixed picture-cache entry cap (FR-009). Sits above a small grid's stable-row count and below
+    /// the eviction-pressure scenario (320 distinct rows = 1.25 × cap), so the bound is exercised
+    /// without spuriously evicting the small scenes.
+    let PictureCacheCap = 256
+
+    // A cacheable picture boundary: a materialized data-grid row (the row analog of the 113 data-grid
+    // memo site). Each row's painted picture is cached and reused when its full correctness key is
+    // unchanged AND its entry is still resident.
+    let private isCacheablePicture (c: Control<'msg>) = c.Kind = "data-grid-row"
+
+    // The COMPLETE correctness key for a cacheable boundary: the node's evaluated box + a structural
+    // digest of its painted subtree. The digest embeds EVERY render-affecting input (theme colours,
+    // clip, opacity, transform, font/text, visual-state) by construction, so an equal key proves a hit
+    // is byte-identical to a fresh paint and any single changed input forces a miss (no input omitted).
+    let private pictureKeyOf (n: RetainedNode<'msg>) : PictureCacheKey =
+        { Box = n.Fragment.Box
+          Picture = sprintf "%A" n.Fragment.SubtreeScene }
+
+    /// Feature 116 (FR-011): scan a node's own painted scene for an effect that forces OFFSCREEN
+    /// composition (a separate layer + composite). In THIS renderer that is: a drop-shadow / image
+    /// filter (`DropShadow`, lowered to `SKImageFilter.CreateDropShadow`); a path clip (`PathClip` — a
+    /// `RectClip` lowers to the cheap `canvas.ClipRect` with no layer, and is the ubiquitous label clip,
+    /// so it is intentionally NOT flagged); or a non-opaque paint over a multi-node group (which a
+    /// layered backend composites through a `SaveLayer`). Returns the effect name (for the advisory
+    /// message) or `None`. Pure; reads only the lowered scene. Advisory only — never alters output.
+    let offscreenEffect (ownScene: FS.Skia.UI.Scene.Scene list) : string option =
+        let mutable sawPathClip = false
+        let mutable sawShadow = false
+        let mutable sawLowOpacity = false
+        let mutable painted = 0
+
+        let rec go (nodes: SceneNode list) =
+            for node in nodes do
+                match node with
+                | ClipNode(clip, s) ->
+                    (match clip with
+                     | PathClip _ -> sawPathClip <- true
+                     | RectClip _ -> ())
+                    go s.Nodes
+                | Group ss -> ss |> List.iter (fun s -> go s.Nodes)
+                | Translate(_, s)
+                | ColorSpaceNode(_, s)
+                | PerspectiveNode(_, s) -> go s.Nodes
+                | PictureNode pic -> go pic.Scene.Nodes
+                | PaintedRectangle(_, p)
+                | Ellipse(_, p)
+                | Line(_, _, p)
+                | Path(_, p)
+                | Points(_, p)
+                | Vertices(_, _, p)
+                | Arc(_, _, _, p)
+                | RegionNode(_, p) ->
+                    painted <- painted + 1
+
+                    match p.ImageFilter with
+                    | DropShadow _ -> sawShadow <- true
+                    | _ -> ()
+
+                    if p.Opacity < 1.0 then
+                        sawLowOpacity <- true
+                | _ -> ()
+
+        ownScene |> List.iter (fun s -> go s.Nodes)
+
+        if sawShadow then Some "drop-shadow"
+        elif sawPathClip then Some "path clip"
+        elif sawLowOpacity && painted > 1 then Some "opacity group"
+        else None
 
     // ---------------------------------------------------------------------------------------------
     // Feature 099 (R4) — the per-identity animation clock core. Pure + total + deterministic: every
@@ -331,6 +437,27 @@ module internal RetainedRender =
 
         let root = build "0" control
 
+        // Feature 116 (Phase 7): seed the bounded picture cache from the first frame's cacheable
+        // boundaries (every data-grid row) — all cold here, so a subsequent `step` whose row pictures
+        // are unchanged finds them resident and reports hits. Bounded from creation (FR-009): a
+        // first tree with more than the cap of cacheable rows evicts LRU (by deterministic
+        // first-seen/traversal order) immediately.
+        let mutable pcEntries: Map<RetainedId, int * PictureCacheKey> = Map.empty
+        let mutable pcClock = 0
+
+        let rec seedPictures (n: RetainedNode<'msg>) =
+            if isCacheablePicture n.Control then
+                pcClock <- pcClock + 1
+                pcEntries <- Map.add n.Identity (pcClock, pictureKeyOf n) pcEntries
+
+                while pcEntries.Count > PictureCacheCap do
+                    let lruId, _ = pcEntries |> Map.toSeq |> Seq.minBy (fun (_, (stamp, _)) -> stamp)
+                    pcEntries <- Map.remove lruId pcEntries
+
+            n.Children |> List.iter seedPictures
+
+        seedPictures root
+
         // Paint the first frame ONCE: the Scene IS the root's pre-order SubtreeScene (the same list
         // `Control.renderTree`'s `paint "0"` builds), so this `Render` is byte-identical to a full
         // rebuild — the adapter reuses it instead of calling `Control.renderTree` a second time.
@@ -350,7 +477,9 @@ module internal RetainedRender =
               Theme = theme
               Memo = memo
               MemoEnabled = true
-              Layout = layoutResult }
+              Layout = layoutResult
+              PictureCache = { Entries = pcEntries; Clock = pcClock }
+              PictureCacheEnabled = true }
           Render = render
           Diagnostics = firstFrameCollisions control }
 
@@ -465,6 +594,11 @@ module internal RetainedRender =
         let mutable memo = prev.Memo
         let mutable memoHits = 0
         let mutable memoMisses = 0
+        // Feature 116 (Phase 7): the per-frame DAMAGE set — each repainted node (every `paintFresh`)
+        // contributes its evaluated box (FR-001/FR-002). `RepaintedNodeCount` = repaint count;
+        // `DirtyRectCount` = distinct boxes; `DirtyArea` = summed integer w*h over distinct boxes. An
+        // idle (all-`Keep`) frame repaints nothing → `0/0/0`; a theme switch repaints every node.
+        let repaintedBoxes = ResizeArray<Rect>()
 
         let mint () =
             let id = RetainedId nextId
@@ -493,6 +627,12 @@ module internal RetainedRender =
 
         let paintFresh (path: string) (nc: Control<'msg>) : FS.Skia.UI.Scene.Scene list =
             recomputed <- recomputed + 1
+            // FR-001: a repainted node contributes its evaluated box to the damage set (`None` boxes
+            // contribute no rectangle).
+            match ControlInternals.nodeBox boundsById path nc with
+            | Some b -> repaintedBoxes.Add b
+            | None -> ()
+
             paintOwn path nc
 
         // Build a brand-new subtree (Replace / ChildInsert / fallback): mint fresh ids, paint
@@ -631,6 +771,81 @@ module internal RetainedRender =
 
         countVirtual next
 
+        // Feature 116 (Phase 7, FR-001/FR-004): reduce the accumulated damage set to its three integer
+        // carriers — repainted-node count, count of DISTINCT repainted boxes, and summed integer area
+        // over the distinct boxes. Deterministic (integer geometry → reproducible across runs).
+        let repaintedNodeCount = recomputed
+        let distinctBoxes = repaintedBoxes |> Seq.distinct |> List.ofSeq
+        let dirtyRectCount = List.length distinctBoxes
+        let dirtyArea = distinctBoxes |> List.sumBy (fun (b: Rect) -> int (b.Width * b.Height))
+
+        // Feature 116 (Phase 7, FR-005/FR-006/FR-007/FR-009/FR-010): the bounded picture cache. A
+        // read-only walk over the new retained tree visits each cacheable boundary (a data-grid row)
+        // and consults the cross-frame LRU carried from `prev`: a HIT is an identity whose entry is
+        // resident AND whose full correctness key is unchanged (and the oracle is enabled); everything
+        // else is a MISS (a changed key, a cold identity, or an evicted entry). Each visit refreshes
+        // recency and may evict the least-recently-accessed entry over the cap. This OBSERVES the row
+        // pictures the step already built — it never changes the emitted scene (byte-identical at rest)
+        // nor any 091–114 work count.
+        let mutable pcEntries = prev.PictureCache.Entries
+        let mutable pcClock = prev.PictureCache.Clock
+        let mutable pictureHits = 0
+        let mutable pictureMisses = 0
+
+        let rec walkPictures (n: RetainedNode<'msg>) =
+            if isCacheablePicture n.Control then
+                pcClock <- pcClock + 1
+                let key = pictureKeyOf n
+
+                let isHit =
+                    prev.PictureCacheEnabled
+                    && (match Map.tryFind n.Identity pcEntries with
+                        | Some(_, prevKey) -> prevKey = key
+                        | None -> false)
+
+                if isHit then
+                    pictureHits <- pictureHits + 1
+                else
+                    pictureMisses <- pictureMisses + 1
+
+                pcEntries <- Map.add n.Identity (pcClock, key) pcEntries
+
+                while pcEntries.Count > PictureCacheCap do
+                    let lruId, _ = pcEntries |> Map.toSeq |> Seq.minBy (fun (_, (stamp, _)) -> stamp)
+                    pcEntries <- Map.remove lruId pcEntries
+
+            n.Children |> List.iter walkPictures
+
+        walkPictures newRoot
+        let pictureEntryCount = pcEntries.Count
+        let pictureCache: PictureCache = { Entries = pcEntries; Clock = pcClock }
+
+        // Feature 116 (Phase 7, FR-011): the advisory offscreen-effect diagnostic. A read-only walk
+        // surfaces, per node whose own paint forces offscreen composition, an advisory
+        // `ControlDiagnostic` (Info) naming the control + the effect — appended to the step's existing
+        // `Diagnostics` channel like `KeyCollision`. Never fails a build, never alters output.
+        let offscreenDiags = ResizeArray<ControlDiagnostic>()
+
+        let rec collectOffscreen (n: RetainedNode<'msg>) =
+            match offscreenEffect n.Fragment.OwnScene with
+            | Some effect ->
+                offscreenDiags.Add
+                    { ControlId = n.Control.Key
+                      ControlKind = n.Control.Kind
+                      Code = OffscreenComposition
+                      Severity = ControlDiagnosticSeverity.Info
+                      Message =
+                        sprintf
+                            "Control '%s' requires offscreen composition (%s); it allocates a separate layer + composite (a real backend cost and a cache-defeating boundary)."
+                            n.Control.Kind
+                            effect
+                      EvidencePath = None }
+            | None -> ()
+
+            n.Children |> List.iter collectOffscreen
+
+        collectOffscreen newRoot
+
         // Re-key UI state to the STABLE identities still live this frame AND compute this frame's
         // animation clocks (R4). Walking `newRoot` is the GC: only live identities carry state, so a
         // removed identity's clock/text is dropped with the rest of its state (FR-007, no new GC
@@ -715,9 +930,11 @@ module internal RetainedRender =
               Theme = theme
               Memo = memo
               MemoEnabled = prev.MemoEnabled
-              Layout = layoutResult }
+              Layout = layoutResult
+              PictureCache = pictureCache
+              PictureCacheEnabled = prev.PictureCacheEnabled }
           Render = render
-          Diagnostics = result.Diagnostics
+          Diagnostics = result.Diagnostics @ List.ofSeq offscreenDiags
           WorkReduction =
             { BaselineNodeCount = Control.count next
               RecomputedNodeCount = recomputed
@@ -727,7 +944,13 @@ module internal RetainedRender =
               MemoHits = memoHits
               MemoMisses = memoMisses
               VirtualMaterialized = virtualMaterialized
-              VirtualTotal = virtualTotal } }
+              VirtualTotal = virtualTotal
+              RepaintedNodeCount = repaintedNodeCount
+              DirtyRectCount = dirtyRectCount
+              DirtyArea = dirtyArea
+              PictureCacheHits = pictureHits
+              PictureCacheMisses = pictureMisses
+              PictureCacheEntryCount = pictureEntryCount } }
 
     let retainedHitTest (x: float) (y: float) (retained: RetainedRender<'msg>) : RetainedId option =
         // The deepest node whose cached box contains the point. Each node — including unkeyed

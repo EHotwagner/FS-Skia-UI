@@ -61,6 +61,18 @@ type FrameMetrics =
 
       VirtualItemsTotal: int
 
+      RepaintedNodeCount: int
+
+      DirtyRectCount: int
+
+      DirtyArea: int
+
+      PictureCacheHitCount: int
+
+      PictureCacheMissCount: int
+
+      PictureCacheEntryCount: int
+
       PointerSamplesReceived: int
 
       PointerMovesProcessed: int

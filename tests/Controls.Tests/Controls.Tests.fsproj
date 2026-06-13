@@ -59,6 +59,10 @@
     <Compile Include="Feature114OverscanParityTests.fs" />
     <Compile Include="Feature114OffscreenTests.fs" />
     <Compile Include="Feature114AccessibilityTests.fs" />
+    <Compile Include="Feature116DamageTests.fs" />
+    <Compile Include="Feature116PictureCacheTests.fs" />
+    <Compile Include="Feature116CacheBoundTests.fs" />
+    <Compile Include="Feature116OffscreenDiagTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

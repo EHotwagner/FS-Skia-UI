@@ -126,6 +126,7 @@ type ControlDiagnosticCode =
     | KeyCollision
     | StaleGeneratedReference
     | UnstableReuseInput
+    | OffscreenComposition
 
 type AccessibilityRole =
     | StaticText

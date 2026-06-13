@@ -91,6 +91,25 @@ type internal RetainedUiState =
     { Animation: AnimationClock option
       Text: TextInputModel option }
 
+/// Feature 116 (Phase 7, FR-006): the picture cache's COMPLETE correctness key for one cacheable
+/// boundary. `Box` is the node's evaluated absolute box (explicit for attribution); `Picture` is a
+/// structural digest of the node's painted subtree (`Fragment.SubtreeScene`) — which embeds EVERY
+/// render-affecting input (theme colours, clip, opacity, transform, font/text, visual-state) by
+/// construction, so equality on this key proves a hit is byte-identical to a fresh paint and any
+/// single changed input forces a miss (no input can be omitted). Compared by F# structural `=`.
+type internal PictureCacheKey =
+    { Box: FS.Skia.UI.Scene.Rect option
+      Picture: string }
+
+/// Feature 116 (Phase 7, FR-009/FR-010): the bounded cross-frame picture cache. A fixed-cap LRU over
+/// cacheable picture identities (`RetainedId`), each holding its last-seen `PictureCacheKey` and a
+/// monotonic access stamp (`Clock`, advanced deterministically by the frame's traversal order — NO
+/// wall-clock). On overflow the least-recently-accessed entry is dropped; a dropped identity re-misses
+/// when next needed (never a stale hit). `Entries.Count <= PictureCacheCap` at all times.
+type internal PictureCache =
+    { Entries: Map<RetainedId, int * PictureCacheKey>
+      Clock: int }
+
 /// The per-frame retained root plus the monotonic identity counter, the identity-keyed UI
 /// state map, and the theme this structure was painted under. Lives in the host loop's existing
 /// mutable-ref state (the interpreter edge). 092: `Theme` is the fragment-reuse key — a theme
@@ -113,7 +132,17 @@ type internal RetainedRender<'msg> =
       /// cache (FR-002). `step` threads it into `Layout.evaluateIncremental` so an unchanged subtree's
       /// bounds survive across frames and are reused without re-measuring. Seeded by `init` with a full
       /// `evaluate`; advanced each `step` to the incremental result.
-      Layout: FS.Skia.UI.Layout.LayoutResult }
+      Layout: FS.Skia.UI.Layout.LayoutResult
+      /// Feature 116 (Phase 7, FR-009/FR-010): the bounded cross-frame picture cache carried frame-to-frame.
+      /// Seeded by `init` (every first-frame cacheable boundary a cold miss); each `step` consults it for a
+      /// hit/miss outcome per cacheable identity, refreshes recency, and evicts LRU over the cap. An absent
+      /// or evicted identity is a miss.
+      PictureCache: PictureCache
+      /// Feature 116 (Phase 7, FR-007): the picture-cache always-miss switch (mirrors `MemoEnabled`).
+      /// `true` on the live path; a parity test flips it `false` to force every cacheable boundary down the
+      /// miss path (`PictureCacheHits = 0`), proving the rendered scene is byte-identical with the cache
+      /// disabled (cache-on ≡ cache-off).
+      PictureCacheEnabled: bool }
 
 /// Measured per-frame work reduction (SC-003). `BaselineNodeCount` is what a full rebuild
 /// re-measures/re-paints (== N); `RecomputedNodeCount` is what the wired path actually
@@ -149,7 +178,31 @@ type internal WorkReductionRecord =
       /// across multiple virtualized controls. Surfaced as the public `FrameMetrics.VirtualItemsMaterialized`
       /// / `VirtualItemsTotal`.
       VirtualMaterialized: int
-      VirtualTotal: int }
+      VirtualTotal: int
+      /// Feature 116 (Phase 7, FR-001/FR-002/FR-003/FR-004): the per-frame DAMAGE set, accumulated from
+      /// the step's own repaint decisions (each `paintFresh` — `carry`/`buildFresh`/`Update`-own-repaint —
+      /// contributes the repainted node's evaluated `Fragment.Box`). `RepaintedNodeCount` is the count of
+      /// repainted nodes (the changed node(s) + genuinely-shifted nodes); `DirtyRectCount` is the count of
+      /// DISTINCT repainted boxes (deduped; `None` boxes contribute none); `DirtyArea` is the summed integer
+      /// `w*h` over the distinct boxes. A localized hover reports a small region, a theme switch
+      /// frame-spanning, an idle frame `0/0/0`. Deterministic (integer geometry). Surfaced as the public
+      /// `FrameMetrics.RepaintedNodeCount` / `DirtyRectCount` / `DirtyArea`.
+      RepaintedNodeCount: int
+      DirtyRectCount: int
+      DirtyArea: int
+      /// Feature 116 (Phase 7, FR-005/FR-006/FR-007/FR-009/FR-010): the bounded picture cache's per-frame
+      /// reuse outcomes over the cacheable picture boundary (a `data-grid-row` identity, the natural analog
+      /// of the feature-113 data-grid-only memo cache). `PictureCacheHits` reused a cached picture whose
+      /// full correctness key (theme/box/clip/opacity/transform/font-text/visual-state, by construction the
+      /// painted picture's structural digest) was unchanged AND whose entry was still resident (not evicted);
+      /// `PictureCacheMisses` recomputed a picture (a changed key, a cold identity, or an evicted entry).
+      /// `PictureCacheEntryCount` is the live bounded-LRU entry count after this frame (`<= PictureCacheCap`).
+      /// All three `0` on a frame with no cacheable picture; with the `PictureCacheEnabled` oracle `false`
+      /// every picture re-misses (`PictureCacheHits = 0`). Surfaced as the public
+      /// `FrameMetrics.PictureCacheHitCount` / `PictureCacheMissCount` / `PictureCacheEntryCount`.
+      PictureCacheHits: int
+      PictureCacheMisses: int
+      PictureCacheEntryCount: int }
 
 /// The result of one wired frame: the next retained structure, the render result (byte-identical
 /// to a full rebuild of `next`), the diagnostics surfaced from the diff (e.g. `KeyCollision`), and
@@ -185,6 +238,17 @@ module internal RetainedRender =
         compute: (unit -> FS.Skia.UI.Scene.Scene list) ->
         cache: MemoCache ->
             FS.Skia.UI.Scene.Scene list * MemoCache * MemoOutcome
+
+    /// Feature 116 (Phase 7, FR-009): the fixed picture-cache entry cap. `PictureCacheEntryCount` never
+    /// exceeds this; the eviction-pressure scenario drives 320 distinct cacheable rows (1.25 × cap).
+    val internal PictureCacheCap: int
+
+    /// Feature 116 (Phase 7, FR-011): the pure offscreen-effect detector. Returns the name of the first
+    /// offscreen-composition-forcing effect in a node's painted scene (a drop-shadow/image-filter, a
+    /// `PathClip`, or a non-opaque paint over a multi-node group) or `None`. A `RectClip` (the cheap
+    /// ubiquitous label clip, lowered to `canvas.ClipRect` with no layer) is deliberately NOT flagged.
+    /// Advisory only — reads the lowered scene, never alters output. Reached by the test assemblies.
+    val internal offscreenEffect: ownScene: FS.Skia.UI.Scene.Scene list -> string option
 
     /// Feature 099 (R4): the single pinned framework default transition — exactly 150 ms, `EaseOut`,
     /// on the opacity channel — applied when a tween is started/retargeted. A fixed constant (not a

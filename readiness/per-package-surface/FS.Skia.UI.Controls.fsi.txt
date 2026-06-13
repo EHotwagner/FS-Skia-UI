@@ -1028,6 +1028,14 @@ type internal RetainedUiState =
     { Animation: AnimationClock option
       Text: TextInputModel option }
 
+type internal PictureCacheKey =
+    { Box: FS.Skia.UI.Scene.Rect option
+      Picture: string }
+
+type internal PictureCache =
+    { Entries: Map<RetainedId, int * PictureCacheKey>
+      Clock: int }
+
 type internal RetainedRender<'msg> =
     { Root: RetainedNode<'msg>
       NextId: uint64
@@ -1038,7 +1046,11 @@ type internal RetainedRender<'msg> =
 
       MemoEnabled: bool
 
-      Layout: FS.Skia.UI.Layout.LayoutResult }
+      Layout: FS.Skia.UI.Layout.LayoutResult
+
+      PictureCache: PictureCache
+
+      PictureCacheEnabled: bool }
 
 type internal WorkReductionRecord =
     { BaselineNodeCount: int
@@ -1052,7 +1064,15 @@ type internal WorkReductionRecord =
       MemoMisses: int
 
       VirtualMaterialized: int
-      VirtualTotal: int }
+      VirtualTotal: int
+
+      RepaintedNodeCount: int
+      DirtyRectCount: int
+      DirtyArea: int
+
+      PictureCacheHits: int
+      PictureCacheMisses: int
+      PictureCacheEntryCount: int }
 
 type internal RetainedRenderStep<'msg> =
     { Retained: RetainedRender<'msg>
@@ -1073,6 +1093,10 @@ module internal RetainedRender =
         compute: (unit -> FS.Skia.UI.Scene.Scene list) ->
         cache: MemoCache ->
             FS.Skia.UI.Scene.Scene list * MemoCache * MemoOutcome
+
+    val internal PictureCacheCap: int
+
+    val internal offscreenEffect: ownScene: FS.Skia.UI.Scene.Scene list -> string option
 
     val internal defaultTransitionDuration: System.TimeSpan
 
@@ -1381,6 +1405,8 @@ type ControlDiagnosticCode =
     | StaleGeneratedReference
 
     | UnstableReuseInput
+
+    | OffscreenComposition
 
 type AccessibilityRole =
     | StaticText

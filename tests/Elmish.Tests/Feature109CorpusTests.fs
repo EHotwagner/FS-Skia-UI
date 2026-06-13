@@ -127,6 +127,22 @@ let private dashboardView (model: int) : Control<Msg> =
         [ Attr.theme (if model % 2 = 0 then Theme.light else Theme.dark)
           Stack.children (TextBlock.create [ TextBlock.text "Dashboard" ] :: tiles) ]
 
+// Feature 116 (Phase 7): a stack of stable cacheable data-grid rows (identical across model values),
+// so the second frame reuses every row picture (hits) with zero damage. With `n` above the picture-
+// cache cap the cross-frame LRU evicts and `PictureCacheEntryCount` reports the bounded live size.
+let private cacheRow (key: string) (content: string) : Control<Msg> =
+    { Kind = "data-grid-row"
+      Key = Some key
+      Attributes =
+        [ { Name = "width"; Category = AttrCategory.Style; Value = FloatValue 200.0 }
+          { Name = "height"; Category = AttrCategory.Style; Value = FloatValue 24.0 } ]
+      Children = []
+      Content = Some content
+      Accessibility = None }
+
+let private cacheGridView (n: int) (_: int) : Control<Msg> =
+    Stack.create [ Stack.children [ for i in 0 .. n - 1 -> cacheRow (sprintf "r%d" i) (sprintf "row-%d" i) ] ]
+
 // A single canvas dragged through hundreds of raw samples (coalesced for processing).
 let private canvasView (_: int) : Control<Msg> =
     Stack.create [ Stack.children [ Button.create [ Button.text "canvas" ] |> Control.withKey "canvas" ] ]
@@ -146,7 +162,11 @@ let private corpus: Scenario list =
       { Name = "deep-nested-layout"; Run = intHost (deepNestView 30) [ key (); key () ] }
       { Name = "text-entry-while-animating"; Run = intHost textAndAnimView [ key (); key (); tick 16.0; key (); tick 16.0 ] }
       { Name = "theme-switch-dashboard"; Run = intHost dashboardView [ key (); key () ] }
-      { Name = "continuous-drag-400"; Run = intHost canvasView (dragScript 400) } ]
+      { Name = "continuous-drag-400"; Run = intHost canvasView (dragScript 400) }
+      // Feature 116 (Phase 7): stable-subtree reuse (every row a hit, zero damage) + cache-cap eviction
+      // (320 distinct rows > the 256 cap → bounded live entry count).
+      { Name = "picture-cache-reuse"; Run = intHost (cacheGridView 20) [ key (); key () ] }
+      { Name = "picture-cache-eviction"; Run = intHost (cacheGridView 320) [ key (); key () ] } ]
 
 // ---- golden serialization (counts + booleans only; FrameDuration / allocation EXCLUDED) --------
 
@@ -157,8 +177,12 @@ let private serializeFrame (f: FrameMetrics) : string =
     // no virtualized control; for the datagrid scenarios the materialized count stays bounded by the
     // realized window while the total scales with the row count (proving virtualization, SC-001). All
     // prior fields are unchanged (the counts are read-only — no layout/measure/diff effect).
+    // Feature 116 (Phase 7): the corpus golden additionally carries the six damage + picture-cache
+    // metrics (RepaintedNodeCount/DirtyRectCount/DirtyArea/PictureCacheHitCount/PictureCacheMissCount/
+    // PictureCacheEntryCount) — all read-only observations of the work the step already performed, so
+    // the prior fields and the rendered scenes are unchanged (additive only).
     sprintf
-        "ProductModelChanged=%b ViewCalled=%b FullRenderCount=%d RemeasuredNodeCount=%d MemoHitCount=%d MemoMissCount=%d VirtualItemsMaterialized=%d VirtualItemsTotal=%d PointerSamplesReceived=%d PointerMovesProcessed=%d FullRenderFallbackCount=%d FrameCause=%A DiffRan=%b LayoutRan=%b PaintRan=%b"
+        "ProductModelChanged=%b ViewCalled=%b FullRenderCount=%d RemeasuredNodeCount=%d MemoHitCount=%d MemoMissCount=%d VirtualItemsMaterialized=%d VirtualItemsTotal=%d RepaintedNodeCount=%d DirtyRectCount=%d DirtyArea=%d PictureCacheHitCount=%d PictureCacheMissCount=%d PictureCacheEntryCount=%d PointerSamplesReceived=%d PointerMovesProcessed=%d FullRenderFallbackCount=%d FrameCause=%A DiffRan=%b LayoutRan=%b PaintRan=%b"
         f.ProductModelChanged
         f.ViewCalled
         f.FullRenderCount
@@ -167,6 +191,12 @@ let private serializeFrame (f: FrameMetrics) : string =
         f.MemoMissCount
         f.VirtualItemsMaterialized
         f.VirtualItemsTotal
+        f.RepaintedNodeCount
+        f.DirtyRectCount
+        f.DirtyArea
+        f.PictureCacheHitCount
+        f.PictureCacheMissCount
+        f.PictureCacheEntryCount
         f.PointerSamplesReceived
         f.PointerMovesProcessed
         f.FullRenderFallbackCount

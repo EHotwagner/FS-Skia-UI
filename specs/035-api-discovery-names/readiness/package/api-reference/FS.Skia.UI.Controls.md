@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 784
-xml-summary-count: 712
+symbol-count: 785
+xml-summary-count: 718
 source-fsi-paths:
 - src/Controls/Accessibility.fsi
 - src/Controls/Attributes.fsi
@@ -1447,6 +1447,13 @@ type ControlDiagnosticCode =
     /// closure, an unstable key) that compared unequal across two builds of the same model and so
     /// defeats memoized subtree reuse. Reported by `Diagnostics.stabilityReport`; advisory only.
     | UnstableReuseInput
+    /// Feature 116 (Phase 7): a control whose paint requires OFFSCREEN COMPOSITION — a non-opaque
+    /// opacity group over a multi-node subtree, a clip (`ClipNode`), or a drop-shadow/image-filter
+    /// (`DropShadow`). Offscreen composition allocates a separate layer + composite (a real backend
+    /// cost and a cache-defeating boundary), so the framework surfaces it as actionable advisory
+    /// context. Advisory ONLY: never fails a build, never alters rendered output (matching the
+    /// `KeyCollision` non-blocking model).
+    | OffscreenComposition
 
 /// Accessibility/semantic role of a control (`AccessibilityRole`), e.g. `Button`,
 /// `Slider`, `Grid`, or `Chart`; drives keyboard routing and assistive-tech naming,
