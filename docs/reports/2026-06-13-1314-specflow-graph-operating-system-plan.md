@@ -28,6 +28,15 @@ cleaned-up `FS.Skia.UI` tree; it is a new graph-governed repository that carries
 the runtime product, product contract, governance kernel, evidence ledger, and
 release policy from day one.
 
+The split-kernel decision changes the packaging shape: extract a small
+standalone **rule kernel** now, because there are at least two non-FS.GG.UI
+projects that may use it if adoption is cheap. Do not extract the whole
+FS.GG.UI governance system as a generic platform. The reusable package should
+own deterministic fact/rule evaluation, provenance, diagnostics, graph hashing,
+and explanation primitives. FS.GG.UI-specific routing, package, template,
+product, release, and evidence policy should remain in FS.GG.UI governance
+adapters.
+
 If the rebrand is accepted, do not treat this repository as the final host for
 that operating system. Treat it as the design, extraction, and provenance
 environment for the new repository. The new repository should start with the
@@ -84,10 +93,13 @@ The redesign is intentionally breaking:
    generated platform/configuration views.
 8. Replace scattered product contract metadata with a graph-owned product
    surface model.
+9. Replace repo-local expert-system machinery with a small standalone rule
+   kernel plus project-specific governance adapters.
 
 The destination is not a marketplace, workflow engine, or generic Spec Kit clone.
 It is a repo-specific specification, governance, product-contract, release, and
-evidence operating system for FS.GG.UI.
+evidence operating system for FS.GG.UI, built on a reusable typed rule substrate
+that other projects can consume without adopting FS.GG.UI policy.
 
 ## Research Summary
 
@@ -1088,10 +1100,112 @@ same proof.
 | Workflow-only | Only move spec/plan/tasks/evidence into the graph. | Fixes authoring drift. | Leaves route/package/CI/release/doc policy fragmented. | Too small for the rebrand. |
 | Governance-kernel integration | Add project graph, route/target/evidence/package/template/docs policy and generated projections. | One operating model; high drift reduction. | Larger initial design; more schema. | Minimum acceptable scope. |
 | Full lifecycle integration | Governance-kernel plus CI rulesets, Trusted Publishing, provenance, deprecation, repository bootstrap. | Rebrand and release are auditable from day one. | Requires staged implementation and some online checks. | Recommended target. |
-| Separate governance product now | Extract SpecFlow governance into a reusable standalone repo/package immediately. | Reusable outside this framework. | Splits focus during rebrand; premature API freeze. | Defer until new repo proves the model. |
+| Standalone rule kernel now | Extract only the generic typed inference substrate, graph-hash primitives, provenance, diagnostics, and explanation helpers. | Gives the other projects a cheap adoption path and keeps FS.GG.UI from freezing local policy as a public API. | One more package boundary and compatibility matrix. | Recommended, with strict scope. |
+| Separate FS.GG.UI governance product now | Extract SpecFlow governance policy into a reusable standalone repo/package immediately. | Reusable outside this framework if other projects adopt the same policy model. | Splits focus during rebrand; premature API freeze; leaks FS.GG.UI package/template/release assumptions. | Defer until FS.GG.UI and one other real project converge on shared policy. |
 
 Decision: implement full lifecycle integration in the new repository, but stage
-it through the bootstrap feature. Do not extract it as a standalone product yet.
+it through the bootstrap feature. Extract the **generic rule kernel** as a small
+standalone package before or alongside the bootstrap. Do not extract
+FS.GG.UI-specific governance policy as a standalone product yet.
+
+### Split-Kernel And Standalone Reuse Research
+
+The 2026-06-06 extraction plan and the 2026-06-07 detailed design were correct
+about the first boundary: move pure governance logic away from the FAKE/build
+edge, keep generated-product compatibility facades stable, and avoid inventing a
+new policy language. Their only now-stale assumption is the standalone timing.
+They deferred a separate reusable package until a second real context existed.
+That condition is now satisfied by the two candidate projects.
+
+The design should therefore split into three package layers:
+
+```text
+FS.GG.RuleKernel
+  Generic deterministic rule/evidence substrate.
+  No FS.GG.UI, FAKE, package, template, release, or repository-layout types.
+
+FS.GG.Governance
+  Optional shared governance contracts: project graph, feature graph,
+  evidence ledger, route decision DTOs, diagnostics, and context-pack models.
+  May remain internal/pre-release until a second project proves the vocabulary.
+
+FS.GG.UI.Governance
+  FS.GG.UI policy adapter: package matrix, template profiles, docs policy,
+  product graph, generated-product validation, release policy, and bridge
+  compatibility with the current `FS.Skia.UI.Build` facade.
+```
+
+The incorporation test is intentionally strict: a non-FS.GG.UI project should be
+able to reference `FS.GG.RuleKernel`, define its own fact union and small rule
+set, and get useful `validate`, `explain`, and `required-evidence` output with
+roughly 50-150 lines of adapter code. If adoption requires copying FS.GG.UI
+directory layout, FAKE target names, template profiles, package vocabulary, or
+readiness file conventions, the extraction failed.
+
+#### What The Rule Kernel Does
+
+The standalone kernel should own:
+
+| Capability | Kernel responsibility |
+|---|---|
+| Nominal IDs | `RuleId`, `FactId`, `QueryId`, `GraphHash`, `EvidenceId`, `SourceRef`, and validating constructors. |
+| Fact store | Deterministic de-duplication by caller-supplied identity function. |
+| Rule evaluation | Fixed-point monotonic derivation with max-iteration diagnostics and stable trace order. |
+| Provenance | Every derived fact records rule id, input fact ids, source references, and explanation text. |
+| Queries | Pure query helpers that convert evaluated facts into decisions and diagnostics. |
+| Evidence vocabulary | Generic evidence rows, freshness binding, payload references, and authoritative/informational status. |
+| Rendering DTOs | Stable JSON-friendly results for `--json`, projection checks, and downstream tools. |
+| Test laws | Idempotence, determinism, convergence, provenance completeness, monotonicity where declared, and round-trip JSON stability. |
+
+It must not own:
+
+- FAKE targets or process execution;
+- git diff collection or filesystem walking;
+- FS.GG.UI package IDs, template profiles, docs URLs, controls, Skia hosts, or
+  product contracts;
+- release/publish decisions tied to NuGet, GitHub, or a repository identity;
+- generated-product validation.
+
+#### What FS.GG.UI Gets From The Split
+
+For FS.GG.UI, the standalone kernel turns governance from a local build package
+into a composed architecture:
+
+```text
+repository snapshot
+  -> FS.GG.UI adapter facts
+  -> RuleKernel evaluation
+  -> FS.GG.UI policy queries
+  -> route, evidence, product, package, release, and agent decisions
+```
+
+That gives FS.GG.UI:
+
+- fast pure tests for route, evidence, freshness, and authorization decisions;
+- explainable `why this gate`, `why this artifact`, and `what is stale` output;
+- a clean bootstrap slice for the new repository;
+- a smaller generated-product facade that can call stable DTO APIs without
+  loading the full maintainer runtime;
+- a way to compare FS.GG.UI policy against the two pilot projects and move only
+  genuinely shared vocabulary upward.
+
+The package boundary should be reviewed as a product promise. `FS.GG.RuleKernel`
+can become stable earlier because its surface is small. `FS.GG.Governance` and
+`FS.GG.UI.Governance` should stay preview until at least one external project
+has completed a real feature using them.
+
+#### Boundary Decision
+
+Use the Hopac-style lesson from the split design: expose a small semantic F#
+surface and keep machinery internal. Public users should see facts, rules,
+queries, evidence rows, diagnostics, and explanations. They should not see
+mutable work queues, repository scanners, FAKE-specific types, or FS.GG.UI
+policy internals.
+
+Interfaces are acceptable for binary/effect boundaries such as snapshot
+providers and optional renderers. Facts, route conclusions, evidence statuses,
+and product-policy decisions should remain closed discriminated unions and
+records so the compiler forces exhaustiveness when policy evolves.
 
 ### Product Contract Integration Plan
 
@@ -1747,14 +1861,86 @@ places. Research corrected these assumptions:
 
 ## Target Architecture
 
-The complete-break architecture has two hosts:
+The complete-break architecture has a reusable kernel layer plus two hosts:
 
-1. **Old repository bootstrap host:** minimal code in this repository that can
+1. **Standalone governance kernel:** small packages that other projects can
+   reference without adopting FS.GG.UI policy.
+2. **Old repository bootstrap host:** minimal code in this repository that can
    describe, assemble, and prove the new FS.GG.UI repository.
-2. **New repository target host:** the real long-lived graph-governed system.
+3. **New repository target host:** the real long-lived graph-governed system.
 
 Do not optimize for a polished in-place `FS.Skia.UI` conversion. The old host
 exists to produce a coherent new tree and a provenance record.
+
+### Standalone Kernel Package Architecture
+
+The standalone layer should be usable before FS.GG.UI is fully bootstrapped. It
+is deliberately smaller than SpecFlow:
+
+```text
+src/RuleKernel/FS.GG.RuleKernel.fsproj
+  Inference/
+    Ids.fs
+    Diagnostics.fs
+    SourceRef.fs
+    FactStore.fs
+    Rule.fs
+    FixedPoint.fs
+    Provenance.fs
+    Query.fs
+  Evidence/
+    EvidenceModel.fs
+    EvidenceFreshness.fs
+    EvidenceProjection.fs
+  Graph/
+    GraphHash.fs
+    SchemaVersion.fs
+    DeterministicJson.fs
+  Rendering/
+    ExplainDto.fs
+    JsonDto.fs
+
+src/Governance/FS.GG.Governance.fsproj
+  ProjectGraphContracts.fs
+  FeatureGraphContracts.fs
+  EvidenceLedgerContracts.fs
+  RouteContracts.fs
+  AgentDecisionContracts.fs
+  ContextPackContracts.fs
+
+src/UI.Governance/FS.GG.UI.Governance.fsproj
+  FsGgUiFacts.fs
+  FsGgUiPolicyRules.fs
+  FsGgUiProjectGraph.fs
+  FsGgUiProductGraph.fs
+  FsGgUiEvidenceRules.fs
+  FsGgUiRouteQueries.fs
+  FsGgUiGeneratedProductFacade.fs
+```
+
+Initial dependency direction:
+
+```text
+FS.GG.UI.Governance -> FS.GG.Governance -> FS.GG.RuleKernel
+FS.GG.UI.Build      -> FS.GG.UI.Governance
+build executable    -> FS.GG.UI.Build
+pilot project       -> FS.GG.RuleKernel
+optional pilot      -> FS.GG.Governance
+```
+
+Rules:
+
+- `FS.GG.RuleKernel` is packable, pure, and has no FAKE, git, filesystem,
+  process, Skia, UI runtime, template, or NuGet publishing dependency.
+- `FS.GG.Governance` starts as preview and may be skipped if the two pilot
+  projects only need the raw kernel.
+- `FS.GG.UI.Governance` owns FS.GG.UI policy and may expose compatibility DTOs,
+  but it must not become the public generic API.
+- `FS.GG.UI.Build` keeps FAKE registration, process execution, report writing,
+  package packing, template installation, and generated-product orchestration.
+- Generated products continue to call a stable facade. The facade delegates to
+  graph/policy APIs but does not force generated products to reference the full
+  maintainer command runtime.
 
 ### Old Repository Bootstrap Architecture
 
@@ -3234,28 +3420,32 @@ should not begin life with old feature workflow state.
 
 ## Spec Implementation Roadmap
 
-Implement the plan as ten specs. The first spec is the final old-repository
-feature. Specs 2-10 belong in FS.GG.UI. The six additional contract surfaces
-are assigned to the existing specs instead of creating a second roadmap: schema
-migration and package layers land with ProjectGraph, host/design/support rows
-land with ProductGraph and product hardening, and ConsumerGraph lands with
-generated-product integration. This keeps the complete break honest: the old
-repository produces the new repository and provenance, then stops owning active
-product development.
+Implement the plan as a small kernel track plus ten FS.GG.UI specs. The kernel
+track can start in this repository because it is deliberately independent of the
+rebrand destination. The first FS.GG.UI spec is still the final old-repository
+bootstrap feature. Specs 2-10 belong in FS.GG.UI. The six additional contract
+surfaces are assigned to the existing specs instead of creating a second
+roadmap: schema migration and package layers land with ProjectGraph,
+host/design/support rows land with ProductGraph and product hardening, and
+ConsumerGraph lands with generated-product integration. This keeps the complete
+break honest: the old repository extracts the reusable substrate, produces the
+new repository and provenance, then stops owning active product development.
 
 Roadmap dependency shape:
 
 ```text
-S01 old-repo bootstrapper
-  -> S02 FS.GG.UI repository seed
-      -> S03 ProjectGraph kernel
-      -> S04 ProductGraph kernel
-      -> S05 FeatureGraph kernel
-          -> S06 Evidence ledger and traceability
-              -> S07 Routing and target integration
-              -> S08 Package/template/docs/generated-product integration
-              -> S09 Platform/CI/release/provenance integration
-              -> S10 Product contract hardening
+K01 standalone rule kernel
+  -> K02 governance contract and pilot adapters
+      -> S01 old-repo bootstrapper
+          -> S02 FS.GG.UI repository seed
+              -> S03 ProjectGraph kernel
+              -> S04 ProductGraph kernel
+              -> S05 FeatureGraph kernel
+                  -> S06 Evidence ledger and traceability
+                      -> S07 Routing and target integration
+                      -> S08 Package/template/docs/generated-product integration
+                      -> S09 Platform/CI/release/provenance integration
+                      -> S10 Product contract hardening
 ```
 
 Cross-spec rules:
@@ -3269,6 +3459,86 @@ Cross-spec rules:
   graph-hash binding, and diagnostic wording.
 - Keep implementation units spec-sized: each spec must produce a repo state that
   can be reviewed without understanding all later specs.
+
+### Spec K01 - Standalone Rule Kernel
+
+Repository: this repository first; package identity should be carried into
+FS.GG.UI unchanged unless the brand decision changes it.
+
+Purpose:
+
+- Extract the generic inference and evidence substrate into a small packable
+  library that the two non-FS.GG.UI pilot projects can consume without adopting
+  FS.GG.UI policy.
+
+Deliverables:
+
+- `FS.GG.RuleKernel` library project.
+- Nominal ID and diagnostic modules.
+- Deterministic fact store and fixed-point evaluator.
+- Provenance model and explanation DTOs.
+- Generic evidence row and freshness helpers.
+- Deterministic JSON/hash helpers needed by graph projections.
+- `RuleKernel.Tests` with unit, property, round-trip, and toy-domain tests.
+- One tiny sample adapter using a non-governance fact domain.
+
+Exit criteria:
+
+- Kernel has no references to FAKE, git, filesystem scanning, process
+  execution, Skia/UI runtime packages, NuGet publishing, FS.GG.UI package IDs,
+  or template/profile vocabulary.
+- A toy domain can derive facts, query decisions, render explanations, and
+  round-trip JSON deterministically.
+- Property tests cover idempotence, stable ordering, convergence diagnostics,
+  provenance completeness, and graph-hash determinism.
+- Public surface is small enough to document in one page and review as an API.
+
+Not in scope:
+
+- FS.GG.UI route rules.
+- ProjectGraph/ProductGraph/FeatureGraph schema.
+- Generated-product validation.
+- Publishing a stable 1.0 package.
+
+### Spec K02 - Governance Contracts And Pilot Adapters
+
+Repository: this repository first, with pilot-project smoke fixtures either as
+local fixtures or separate example adapters that do not import private project
+code.
+
+Purpose:
+
+- Prove the standalone kernel is easy to incorporate and decide which governance
+  vocabulary is genuinely shared across projects.
+
+Deliverables:
+
+- Optional `FS.GG.Governance` preview package with shared contracts only:
+  project graph, feature graph, evidence ledger, route decision, agent decision,
+  context pack, and projection DTOs.
+- `FS.GG.UI.Governance` preview adapter that maps current FS.Skia.UI/FS.GG.UI
+  route/evidence facts into `RuleKernel`.
+- Two pilot adapter fixtures, one per candidate project, each using either
+  `FS.GG.RuleKernel` alone or `FS.GG.Governance` plus local facts.
+- Incorporation report measuring adapter size, required local assumptions,
+  useful queries, and vocabulary that should not be generalized.
+- Compatibility facade plan for `FS.Skia.UI.Build.Evidence.GeneratedRunner.run`.
+
+Exit criteria:
+
+- Each pilot can define a local fact domain and get useful validation/explain
+  output without copying FS.GG.UI folder layout, target names, package IDs,
+  template profiles, or readiness-file conventions.
+- Shared vocabulary moves into `FS.GG.Governance` only when at least two
+  projects use it without FS.GG.UI-specific assumptions.
+- FS.GG.UI-specific rules stay in `FS.GG.UI.Governance`.
+- Generated-product and FAKE compatibility remain owned by `FS.GG.UI.Build` or
+  its successor facade.
+
+Not in scope:
+
+- Forcing either pilot project onto ProjectGraph or FeatureGraph.
+- Extracting FS.GG.UI release/template/product policy as a standalone product.
 
 ### Spec 01 - Old Repo Bootstrapper
 
@@ -3668,6 +3938,93 @@ still useful implementation detail, but the first deliverable should be a
 project-governance kernel that can create the new repository correctly and keep
 identity, package, template, docs, CI, release, and evidence policy in one
 model.
+
+### Stage K0 - Define The Standalone Kernel Contract
+
+Deliverables:
+
+- ADR: "RuleKernel is generic; FS.GG.UI governance is an adapter".
+- Package names, namespace roots, and preview-versioning policy for
+  `FS.GG.RuleKernel`, optional `FS.GG.Governance`, and
+  `FS.GG.UI.Governance`.
+- Public surface sketch for facts, rules, provenance, evidence rows,
+  diagnostics, graph hashes, queries, and rendering DTOs.
+- Explicit non-goals: no FAKE, filesystem, git, process execution, package
+  publishing, template, Skia/UI runtime, or FS.GG.UI policy in the kernel.
+- Pilot-project incorporation criteria.
+
+Tests:
+
+- Public API approval/golden surface for the kernel.
+- Dependency check proves the kernel has only BCL/FSharp.Core and approved pure
+  serialization/hash dependencies.
+- A source scan fails if FS.GG.UI package names, template names, or FAKE target
+  names appear in the kernel source.
+
+### Stage K1 - Implement RuleKernel Core
+
+Deliverables:
+
+- `FS.GG.RuleKernel` project.
+- `RuleId`, `FactId`, `QueryId`, `EvidenceId`, `GraphHash`, `SourceRef`, and
+  diagnostics modules.
+- Deterministic `FactSet`, `Rule<'fact>`, fixed-point evaluator, rule trace,
+  provenance chain, and query helpers.
+- Generic evidence row and freshness helpers.
+- Stable JSON DTOs for explanation and evaluation output.
+- Toy-domain sample.
+
+Tests:
+
+- Fixed-point evaluation is deterministic for shuffled input/rule order when
+  ids are equal.
+- Re-running evaluation over its own derived facts is idempotent.
+- Non-converging rules produce a bounded diagnostic instead of hanging.
+- Every derived fact has non-empty provenance.
+- Evidence freshness rejects mismatched graph hash, stale commit, and missing
+  required payload.
+
+### Stage K2 - Add Governance Contracts And Pilot Adapters
+
+Deliverables:
+
+- Optional `FS.GG.Governance` contracts package if two pilots need shared graph
+  DTOs.
+- `FS.GG.UI.Governance` adapter over current `Targets`, `Routing`, and
+  `Evidence` concepts, without moving effectful build execution.
+- Two pilot adapters or fixtures that define local facts and call
+  `RuleKernel`.
+- Incorporation report documenting adapter LOC, local assumptions, useful
+  output, and vocabulary rejected as too FS.GG.UI-specific.
+
+Tests:
+
+- Pilot adapters compile and run without referencing `FS.GG.UI.Governance`.
+- FS.GG.UI adapter preserves current route selection and evidence graph/audit
+  behavior through golden parity.
+- Generated-product facade compatibility test still resolves
+  `FS.Skia.UI.Build.Evidence.GeneratedRunner.run` or its planned FS.GG.UI
+  successor.
+
+### Stage K3 - Carry The Kernel Into The Bootstrap
+
+Deliverables:
+
+- Bootstrap source-selection rules classify `RuleKernel`, optional governance
+  contracts, and FS.GG.UI adapter separately.
+- New-repository assembly plan keeps the generic kernel in a reusable package
+  and FS.GG.UI policy in the UI governance package.
+- Package dependency policy ensures generated products do not transitively
+  receive the full maintainer governance runtime unless they opt into governed
+  product mode.
+
+Tests:
+
+- Staged new repository contains the expected package split.
+- `FS.GG.RuleKernel` still has no FS.GG.UI policy references after namespace
+  rewrite.
+- Consumer-mode generated product validation references only the lean facade and
+  declared consumer graph contracts.
 
 ### Stage G0 - Commit Full Governance Scope
 
@@ -4689,6 +5046,16 @@ Workspace-specific cache path:
 
 The redesign is complete when:
 
+- `FS.GG.RuleKernel` exists as a small packable pure library with no FS.GG.UI,
+  FAKE, git, filesystem, process, Skia/UI runtime, template, or publishing
+  dependency.
+- At least two non-FS.GG.UI pilot adapters can use `FS.GG.RuleKernel` without
+  adopting FS.GG.UI path layout, package IDs, template profiles, target names,
+  or readiness-file conventions.
+- Shared governance contracts move above FS.GG.UI only when more than one
+  project uses them without local-policy leakage.
+- FS.GG.UI-specific policy lives in `FS.GG.UI.Governance` or its build adapter,
+  not in the generic kernel.
 - The FS.GG.UI repository exists as the active development home.
 - Project policy is stored in FS.GG.UI `.specflow/project.graph.json`.
 - Product contract is stored in FS.GG.UI `.specflow/product.graph.json`.
@@ -4774,7 +5141,10 @@ The redesign is complete when:
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Scope explosion from full integration | Bootstrap never lands | Stage project graph, target/routing binding, evidence ledger, and rebrand bootstrap first; defer optional online verification and reusable extraction. |
+| Scope explosion from full integration | Bootstrap never lands | Stage the generic rule kernel, project graph, target/routing binding, evidence ledger, and rebrand bootstrap first; defer optional online verification and full reusable governance-policy extraction. |
+| Standalone kernel is too hard to incorporate | Other projects do not adopt it, proving the package boundary was wrong | Require two pilot adapters before treating the package as validated; measure adapter LOC and rejected assumptions. |
+| FS.GG.UI policy leaks into the generic kernel | The kernel becomes unusable outside this framework | Add dependency/source scans that forbid FS.GG.UI package IDs, target names, template vocabulary, and repo paths in `FS.GG.RuleKernel`. |
+| Shared governance contracts freeze too early | Pilot projects inherit unstable DTOs or semantics | Keep `FS.GG.Governance` preview/internal until at least two projects use the same contract without project-specific exceptions. |
 | Polishing the old repo delays the new repo | Energy goes into in-place cleanup instead of extraction | Clean only enough to assemble/prove FS.GG.UI; do not make old-repo workflow conversion a prerequisite. |
 | Project graph becomes a mega-config file | Hard to reason about policy | Split `ProjectGraph` from `FeatureGraph`; keep algorithms in compiled F# modules; generate human projections for review. |
 | Product graph becomes a product-management database | Hard to maintain and too abstract | Model only enforceable/released/documented contract facts; keep runtime architecture in code and use generated projections for review. |
@@ -4798,7 +5168,7 @@ The redesign is complete when:
 | Host behavior stays implicit | Evidence passes in one host but fails or misleads in another | Model windowed, headless, screenshot, sample, and generated-product hosts as product contracts cited by evidence. |
 | Design tokens drift from product evidence | Themes, density, visual state, or contrast behavior breaks without product-level diagnosis | Put design-system rows in ProductGraph and bind visual, interaction, and accessibility evidence to them. |
 | Support reports are unstructured | Consumer issues cannot be reproduced or routed back to product contract gaps | Generate redacted support bundles from ConsumerGraph and import them as structured scenario evidence. |
-| Governance package public/private boundary is unclear | New repo freezes a premature external API | Keep SpecFlow governance internal to the new repo first; extract a reusable package only after the new repo proves the model. |
+| Governance package public/private boundary is unclear | New repo freezes a premature external API | Publish only the small `RuleKernel` surface early; keep FS.GG.UI policy and broader governance contracts preview until pilot evidence proves them. |
 | Accidentally copying `.specify` into FS.GG.UI | Old workflow assumptions survive the break | Treat `.specify/**` as old-repo archive/provenance only; new repo starts with `.specflow/**` and generated context packs. |
 | Worktrees fight shared state | Parallel runs corrupt cache or FAKE state | Namespace caches; explicitly audit FAKE state before default worktree mode. |
 | Approval hashes churn too often | Review gates become noisy | Scope approvals; allow narrow approval reuse only when validator proves affected graph fields unchanged. |
@@ -4812,47 +5182,58 @@ create the new repository correctly, not to make this repository clean.
 
 Recommended first cut for the rebrand path:
 
-1. Create `117-rebrand-new-repo-bootstrap` in this repository.
-2. Add `.specflow/project.graph.json` with the brand matrix, package matrix,
+1. Create a small kernel feature in this repository before or as the first
+   slice of `117-rebrand-new-repo-bootstrap`.
+2. Add `FS.GG.RuleKernel` with the generic fact/rule/provenance/evidence
+   substrate and toy-domain tests.
+3. Add two pilot adapters or fixtures proving non-FS.GG.UI incorporation is
+   cheap and does not require FS.GG.UI layout, package, target, template, or
+   readiness vocabulary.
+4. Add the `FS.GG.UI.Governance` adapter plan that maps current
+   `Targets`/`Routing`/`Evidence` behavior into the kernel while preserving the
+   generated-product facade.
+5. Create `117-rebrand-new-repo-bootstrap` in this repository.
+6. Add `.specflow/project.graph.json` with the brand matrix, package matrix,
    template identity, docs identity, repository identity, target/routing policy
    references, schema migration policy, package/module layer policy, release
    policy, and old-to-new identity map.
-3. Add `.specflow/product.graph.json` with the minimal product contract:
+7. Add `.specflow/product.graph.json` with the minimal product contract:
    capabilities, controls, public surfaces, docs pages, docs images, scenarios,
    visual evidence, performance budgets, interaction/accessibility contracts,
    architecture trace, host runtime, design-system, support-bundle, and
    toolchain/environment rows imported from existing surfaces.
-4. Add a deterministic new-repository assembly plan that names imported,
+8. Add a deterministic new-repository assembly plan that names imported,
    rewritten, generated, and intentionally dropped paths.
-5. Add policy projections for packages, template, docs, skills/context packs,
+9. Add policy projections for packages, template, docs, skills/context packs,
    workflows, ruleset expectations, release plan, product contract, control
    catalog, scenario corpus, performance budgets, architecture trace,
    environment policy, and migration/deprecation map.
-6. Generate the new repository tree under `artifacts/rebrand/<new-repo-name>/`
+10. Generate the new repository tree under `artifacts/rebrand/<new-repo-name>/`
    or an equivalent staging path.
-7. Port the core product libraries with new namespaces, package IDs, assembly
+11. Port the core product libraries with new namespaces, package IDs, assembly
    names, and docs metadata.
-8. Port the integrated governance/product kernel: `ProjectGraph`,
+12. Port the integrated governance/product kernel: `FS.GG.RuleKernel`,
+   optional `FS.GG.Governance`, `FS.GG.UI.Governance`, `ProjectGraph`,
    `ProductGraph`, `FeatureGraph`, `EvidenceLedger`, target/routing bindings,
    policy projections, product projections, package policy, template policy,
    docs policy, release policy, and provenance policy.
-9. Create the new template package identity, `template.json` identity,
+13. Create the new template package identity, `template.json` identity,
    `shortName`, graph-owned profiles, package pins, generated docs, generated
    skills, `.specflow/consumer.graph.json`, compact consumer contract
    projection, consumer-mode validation commands, support-bundle command, and
    generated-product upgrade report.
-10. Add a provenance file that records the old repository URL, source commit,
+14. Add a provenance file that records the old repository URL, source commit,
    copied paths, rewritten paths, dropped paths, package/template migration map,
    project graph hash, and product graph hash.
-11. Plan, and later record, typed evidence rows for restore/build/test/pack,
+15. Plan, and later record, typed evidence rows for restore/build/test/pack,
     generated product instantiation, docs generation, control catalog, visual
     evidence, scenario corpus, performance budgets, interaction/accessibility,
     architecture trace, host runtime, design-system, support-bundle,
     environment policy, release plan, and provenance policy.
     Do not confuse local bootstrap logs with final CI release provenance.
-12. Prove the staged new repository can restore, build, test, pack packages, and
+16. Prove the staged new repository can restore, build, test, pack packages, and
     instantiate the template from the new identity.
-13. Add the bridge README/report change in this repository that points to the
+17. Add the bridge README/report change in this repository that points to the
     new repository and documents the package/template migration.
 
 After that bootstrap feature, active feature development moves to FS.GG.UI. This
@@ -4891,6 +5272,10 @@ Those are valuable, but the core authority transfer must land first.
 
 ## Source Notes
 
+- Governance kernel extraction implementation plan:
+  `docs/reports/2026-06-06-1055-governance-kernel-extraction-implementation-plan.md`
+- Governance kernel split detailed design:
+  `docs/reports/2026-06-07-0838-governance-kernel-split-detailed-design.md`
 - GitHub Spec Kit latest release API, checked 2026-06-13:
   <https://api.github.com/repos/github/spec-kit/releases/latest>
 - GitHub Spec Kit `v0.10.2` release page:
