@@ -3,6 +3,7 @@ namespace FS.Skia.UI.SkiaViewer.Host
 open System
 open Elmish
 open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer
 
 type DiagnosticOptions =
     { Verbose: bool }
@@ -16,7 +17,9 @@ type ViewerConfiguration =
       TargetFrameRate: int option
       Diagnostics: DiagnosticOptions
 
-      ConfigureWindow: (Silk.NET.Windowing.WindowOptions -> Silk.NET.Windowing.WindowOptions) option }
+      ConfigureWindow: (Silk.NET.Windowing.WindowOptions -> Silk.NET.Windowing.WindowOptions) option
+
+      PresentMode: ViewerPresentMode }
 
 type DiagnosticSeverity =
     | Info
@@ -237,13 +240,25 @@ module VulkanHost =
 
 namespace FS.Skia.UI.SkiaViewer
 
+[<RequireQualifiedAccess>]
+
+type ViewerPresentMode =
+
+    | OffscreenReadback
+
+    | DirectToSwapchain
+
+namespace FS.Skia.UI.SkiaViewer
+
 open System
 open FS.Skia.UI.KeyboardInput
 open FS.Skia.UI.Scene
 
 type ViewerOptions =
     { Title: string
-      InitialSize: Size }
+      InitialSize: Size
+
+      PresentMode: ViewerPresentMode }
 
 type ViewerLaunchMode =
     | InteractiveWindow

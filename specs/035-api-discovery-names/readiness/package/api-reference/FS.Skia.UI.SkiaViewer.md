@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 467
-xml-summary-count: 111
+symbol-count: 468
+xml-summary-count: 114
 source-fsi-paths:
 - src/SkiaViewer/SkiaViewer.fsi
 sampled-symbols:
@@ -38,7 +38,11 @@ open FS.Skia.UI.Scene
 /// Public contract type exposed by this FS.Skia.UI package.
 type ViewerOptions =
     { Title: string
-      InitialSize: Size }
+      InitialSize: Size
+      /// Live present mechanism (feature 118). Defaults to `ViewerPresentMode.OffscreenReadback`
+      /// at every construction site, preserving today's behavior; set to
+      /// `ViewerPresentMode.DirectToSwapchain` to opt into the readback-free live present path.
+      PresentMode: ViewerPresentMode }
 
 /// Public contract type exposed by this FS.Skia.UI package.
 type ViewerLaunchMode =

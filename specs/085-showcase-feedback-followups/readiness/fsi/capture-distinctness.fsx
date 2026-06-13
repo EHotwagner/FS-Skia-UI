@@ -49,7 +49,7 @@ let capture name (page: Control<Msg>) =
           CaptureMode = ViewerRenderTargetPng
           HostFacts = [ "feature=085"; "evidence=render-distinctness" ]
           Timeout = TimeSpan.FromSeconds 30.0 }
-    let options: ViewerOptions = { Title = sprintf "page-%s" name; InitialSize = size }
+    let options: ViewerOptions = { Title = sprintf "page-%s" name; InitialSize = size; PresentMode = ViewerPresentMode.OffscreenReadback }
     let result = Viewer.captureScreenshotEvidence request options sceneNode
     printfn "page %s: status=%A path=%A dims=%Ax%A pixelContent=%A proves=%b"
         name result.Status result.ScreenshotPath result.Width result.Height result.PixelContentValidation result.ProvesScreenshot

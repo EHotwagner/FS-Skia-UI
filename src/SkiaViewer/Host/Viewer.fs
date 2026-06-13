@@ -3,6 +3,7 @@ namespace FS.Skia.UI.SkiaViewer.Host
 open System
 open Elmish
 open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer
 // Open the host namespace last so the host's own diagnostic types take precedence over Scene's.
 open FS.Skia.UI.SkiaViewer.Host
 
@@ -13,7 +14,8 @@ module Viewer =
           ClearColor = Some Colors.black
           TargetFrameRate = Some 60
           Diagnostics = { Verbose = false }
-          ConfigureWindow = None }
+          ConfigureWindow = None
+          PresentMode = ViewerPresentMode.OffscreenReadback }
 
     let create configuration init update view =
         { Configuration = configuration

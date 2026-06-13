@@ -1,0 +1,4 @@
+present-modes: OffscreenReadback | DirectToSwapchain
+default options present-mode: OffscreenReadback
+opted-in present-mode: DirectToSwapchain
+FSI surface exercise: OK

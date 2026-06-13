@@ -7,7 +7,11 @@ open FS.Skia.UI.Scene
 /// Public contract type exposed by this FS.Skia.UI package.
 type ViewerOptions =
     { Title: string
-      InitialSize: Size }
+      InitialSize: Size
+      /// Live present mechanism (feature 118). Defaults to `ViewerPresentMode.OffscreenReadback`
+      /// at every construction site, preserving today's behavior; set to
+      /// `ViewerPresentMode.DirectToSwapchain` to opt into the readback-free live present path.
+      PresentMode: ViewerPresentMode }
 
 /// Public contract type exposed by this FS.Skia.UI package.
 type ViewerLaunchMode =

@@ -48,7 +48,7 @@ let host: InteractiveAppHost<Model, Msg> =
 
 [<EntryPoint>]
 let main _ =
-    let options: ViewerOptions = { Title = "FS.Skia.UI 090 — live interactive host"; InitialSize = { Width = 480; Height = 240 } }
+    let options: ViewerOptions = { Title = "FS.Skia.UI 090 — live interactive host"; InitialSize = { Width = 480; Height = 240 }; PresentMode = ViewerPresentMode.OffscreenReadback }
     match ControlsElmish.runInteractiveApp options host with
     | Ok outcome ->
         printfn "LIVE-LAUNCH-OUTCOME"

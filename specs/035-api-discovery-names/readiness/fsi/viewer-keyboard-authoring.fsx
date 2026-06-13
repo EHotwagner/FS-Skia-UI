@@ -8,7 +8,7 @@ open FS.Skia.UI.SkiaViewer
 
 let options: ViewerOptions =
     { Title = "Package authoring"
-      InitialSize = { Width = 640; Height = 480 } }
+      InitialSize = { Width = 640; Height = 480 }; PresentMode = ViewerPresentMode.OffscreenReadback }
 let position = ViewerWindowPosition.Coordinates(x = 40, y = 60)
 let (keyboard: KeyboardModel), keyboardEffects = Keyboard.init []
 let down = KeyboardMsg.KeyDown "Enter"

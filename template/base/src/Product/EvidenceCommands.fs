@@ -240,7 +240,7 @@ let tick elapsed =
 
 let viewerOptions =
     { Title = "Generated Product"
-      InitialSize = { Width = 640; Height = 480 } }
+      InitialSize = { Width = 640; Height = 480 }; PresentMode = ViewerPresentMode.OffscreenReadback }
 
 let appCommandName command =
     match command with
@@ -350,7 +350,7 @@ let boundedSmoke includeFrameDiagnostics evidencePath =
         Viewer.runBounded
             request
             { Title = "Generated Product Bounded Smoke"
-              InitialSize = { Width = 320; Height = 200 } }
+              InitialSize = { Width = 320; Height = 200 }; PresentMode = ViewerPresentMode.OffscreenReadback }
             scene
 
     match result with

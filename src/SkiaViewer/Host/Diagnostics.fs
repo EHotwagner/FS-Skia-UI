@@ -3,6 +3,7 @@ namespace FS.Skia.UI.SkiaViewer.Host
 open System
 open Elmish
 open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer
 
 type DiagnosticOptions =
     { Verbose: bool }
@@ -17,7 +18,9 @@ type ViewerConfiguration =
       // Optional transform applied to the native WindowOptions just before window
       // creation, so a caller can carry window-startup intent (fullscreen / maximized
       // / windowed-fullscreen / borderless) into the live presented window.
-      ConfigureWindow: (Silk.NET.Windowing.WindowOptions -> Silk.NET.Windowing.WindowOptions) option }
+      ConfigureWindow: (Silk.NET.Windowing.WindowOptions -> Silk.NET.Windowing.WindowOptions) option
+      // Live present mechanism (feature 118), threaded from ViewerOptions.PresentMode.
+      PresentMode: ViewerPresentMode }
 
 type DiagnosticSeverity =
     | Info

@@ -10,7 +10,7 @@ let tests =
     testList "Elmish adapter contract" [
         test "init maps viewer effects" {
             let scene = Empty
-            let _, effects = ElmishAdapter.init { Title = "Product"; InitialSize = { Width = 320; Height = 240 } } 0 scene
+            let _, effects = ElmishAdapter.init { Title = "Product"; InitialSize = { Width = 320; Height = 240 }; PresentMode = ViewerPresentMode.OffscreenReadback } 0 scene
 
             match effects with
             | [ DispatchViewer(OpenWindow(title, size))

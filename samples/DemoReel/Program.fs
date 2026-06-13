@@ -729,7 +729,8 @@ let host =
 
 let viewerOptions title =
     { Title = title
-      InitialSize = initialSize }
+      InitialSize = initialSize
+      PresentMode = ViewerPresentMode.OffscreenReadback }
 
 let normalWindow =
     { Viewer.defaultWindowBehavior with

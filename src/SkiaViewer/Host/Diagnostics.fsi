@@ -3,6 +3,7 @@ namespace FS.Skia.UI.SkiaViewer.Host
 open System
 open Elmish
 open FS.Skia.UI.Scene
+open FS.Skia.UI.SkiaViewer
 
 /// Viewer host contract type (moved from the FS.Skia.UI monolith, retyped onto FS.Skia.UI.Scene).
 type DiagnosticOptions =
@@ -18,7 +19,11 @@ type ViewerConfiguration =
       Diagnostics: DiagnosticOptions
       /// Optional transform applied to the native WindowOptions just before window
       /// creation, carrying window-startup intent into the live presented window.
-      ConfigureWindow: (Silk.NET.Windowing.WindowOptions -> Silk.NET.Windowing.WindowOptions) option }
+      ConfigureWindow: (Silk.NET.Windowing.WindowOptions -> Silk.NET.Windowing.WindowOptions) option
+      /// Live present mechanism (feature 118), threaded from `ViewerOptions.PresentMode`.
+      /// `renderFrame` branches on this; the default `OffscreenReadback` keeps the proven
+      /// readback present path byte-identical.
+      PresentMode: ViewerPresentMode }
 
 /// Viewer host contract type (moved from the FS.Skia.UI monolith, retyped onto FS.Skia.UI.Scene).
 type DiagnosticSeverity =

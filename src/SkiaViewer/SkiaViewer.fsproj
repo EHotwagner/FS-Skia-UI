@@ -12,6 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="PresentMode.fsi" />
+    <Compile Include="PresentMode.fs" />
     <Compile Include="Host/Diagnostics.fsi" />
     <Compile Include="Host/Diagnostics.fs" />
     <Compile Include="SceneRenderer.fs" />

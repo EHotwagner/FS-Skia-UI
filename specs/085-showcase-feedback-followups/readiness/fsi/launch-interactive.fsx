@@ -40,7 +40,7 @@ let host: InteractiveAppHost<int, Msg> =
             if ticks >= 3 then Some SelfClose else None
       Diagnostics = Viewer.defaultDiagnostics }
 
-let options: ViewerOptions = { Title = "Feature085 Interactive Host"; InitialSize = { Width = 800; Height = 600 } }
+let options: ViewerOptions = { Title = "Feature085 Interactive Host"; InitialSize = { Width = 800; Height = 600 }; PresentMode = ViewerPresentMode.OffscreenReadback }
 
 match ControlsElmish.runInteractiveApp options host with
 | Result.Ok outcome ->

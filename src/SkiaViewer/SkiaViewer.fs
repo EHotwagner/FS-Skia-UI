@@ -13,7 +13,8 @@ open Silk.NET.Windowing
 
 type ViewerOptions =
     { Title: string
-      InitialSize: Size }
+      InitialSize: Size
+      PresentMode: ViewerPresentMode }
 
 type ViewerLaunchMode =
     | InteractiveWindow
@@ -1232,6 +1233,7 @@ module Viewer =
                 ClearColor = Some Colors.black
                 TargetFrameRate = Some 60
                 Diagnostics = { Verbose = false }
+                PresentMode = options.PresentMode
                 // Carry the requested startup state (fullscreen / maximized /
                 // windowed-fullscreen / borderless) into the live presented window —
                 // previously `behavior` only reached the diagnostic report.
@@ -1287,7 +1289,14 @@ module Viewer =
                         | Host.DiagnosticSeverity.Error -> ViewerDiagnosticLevel.Error
                         | Host.DiagnosticSeverity.Warning -> ViewerDiagnosticLevel.Warning
                         | Host.DiagnosticSeverity.Info -> ViewerDiagnosticLevel.Info
-                      Category = ViewerDiagnosticCategory.Renderer
+                      // Feature 118 (FR-007): carry the backend stage into the consumer-facing
+                      // category so the live present-mode / readback diagnostic surfaces as
+                      // Swapchain (or Frame), not Renderer. All other stages keep Renderer.
+                      Category =
+                        match diagnostic.Stage with
+                        | Host.DiagnosticStage.VulkanSwapchain -> ViewerDiagnosticCategory.Swapchain
+                        | Host.DiagnosticStage.FrameRender -> ViewerDiagnosticCategory.Frame
+                        | _ -> ViewerDiagnosticCategory.Renderer
                       Message = diagnostic.Message
                       FrameIndex = None
                       Stage = None
@@ -2896,4 +2905,4 @@ module GeneratedAppHost =
             | FrameCount _ -> { Width = 1; Height = 1 }
             | Duration _ -> { Width = 1; Height = 1 }
 
-        Viewer.runBounded request { Title = "Generated App"; InitialSize = size } scene
+        Viewer.runBounded request { Title = "Generated App"; InitialSize = size; PresentMode = ViewerPresentMode.OffscreenReadback } scene

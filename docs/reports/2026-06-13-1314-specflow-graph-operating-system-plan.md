@@ -950,6 +950,100 @@ Rules:
 - generated product scans record typed evidence rows instead of only readiness
   files.
 
+#### Framework-To-Consumer Contract Flow
+
+The two-tier development topology should stay:
+
+```text
+framework repo -> template package -> user-generated product
+```
+
+But the redesigned model should characterize it more strictly:
+
+```text
+framework contract -> template archetype -> consumer product instance
+```
+
+This is the right split for FS.GG.UI because the framework remains the upstream
+runtime and policy owner, the template remains the recommended consumer entry
+point, and generated projects remain the place where real users build product
+code. The change is that the template can no longer be an independently
+maintained convenience layer. It must be a projection of `ProjectGraph` and
+`ProductGraph`, and each generated product must record the exact contract slice
+it consumed.
+
+Layer responsibilities:
+
+| Layer | Owns | Must not own |
+|---|---|---|
+| Framework contract | Package matrix, public surfaces, capabilities, profiles, validation policy, upgrade rules, docs contract, evidence requirements. | Per-application feature decisions. |
+| Template archetype | A generated/checkable projection of supported profiles, pins, starter files, docs, skills, and validation commands. | Independent capability names, package pins, or workflow rules. |
+| Consumer product instance | User application code plus a lean generated consumer graph recording profile, packages, capabilities, durable files, replaceable files, validation commands, upgrade state, and support-bundle policy. | The full maintainer governance runtime. |
+
+Rules:
+
+- Template metadata, profiles, capability lists, package pins, generated docs,
+  generated skills, and validation commands are generated or drift-checked from
+  `ProjectGraph` and `ProductGraph`.
+- A capability, control, package, generated file, or validation command that is
+  absent from the graphs cannot silently appear in the template.
+- Generated products carry a lean `.specflow/consumer.graph.json` with the
+  selected template profile, FS.GG.UI package matrix, enabled capabilities,
+  durable user-owned files, replaceable generated files, validation commands,
+  upgrade state, and support-bundle policy. A compact
+  `.specflow/consumer.contract.json` may be generated from it for tooling that
+  only needs a manifest.
+- Generated products get a lean consumer-mode `specflow` surface, not the full
+  maintainer graph operating system. Consumer mode should cover package-version
+  checks, template-profile checks, generated-product health checks, optional
+  feature graph workflow, and upgrade guidance.
+- Generated-product validation simulates a real consumer: restore from the
+  package feed under test, instantiate the template, build the result, run the
+  selected profile smoke/headless checks, and prove that validation does not
+  depend on a framework source checkout.
+- Upgrade becomes a first-class report or command. It names the current
+  consumer graph, target package/template version, changed replaceable files,
+  durable files to preserve, and manual migration notes.
+- Consumer friction feeds back as typed scenario/product evidence: affected
+  profile, capability, missing docs/test/template support, and the ProductGraph
+  or ProjectGraph row that must change.
+
+Suggested generated consumer graph shape:
+
+```fsharp
+type ConsumerGraph =
+  { SchemaVersion: SchemaVersion
+    GraphId: string
+    Project: ProjectPolicyRef
+    Product: ProductContractRef
+    TemplateProfile: string
+    GeneratedFromPackageMatrix: string
+    EnabledCapabilities: string list
+    DurableFiles: string list
+    ReplaceableFiles: string list
+    ValidationCommands: string list
+    UpgradeState: ConsumerUpgradeState
+    SupportBundlePolicy: ConsumerSupportBundlePolicy }
+```
+
+Template profiles should be graph rows, not hand-maintained template folklore:
+
+| Profile | Purpose | Expected graph-owned outputs |
+|---|---|---|
+| `minimal-scene` | Smallest renderable app. | Runtime package pins, one scene, minimal docs, build validation. |
+| `controls-app` | Typical UI app with controls. | Controls packages, typed-control examples, interaction checks, docs links. |
+| `governed-product` | App that wants local feature/evidence workflow. | Lean consumer `specflow`, ConsumerGraph, feature graph starter, validation commands. |
+| `sample-pack` | Product demos and catalog examples. | Scenario rows, docs samples, screenshot/evidence expectations. |
+| `headless-validation` | CI-friendly validation host. | Headless packages, sample smoke checks, generated-product health checks. |
+
+The resulting characterization is:
+
+```text
+FS.GG.UI maintains the framework contract.
+The template projects the contract.
+The generated product records which contract slice it consumes.
+```
+
 #### Documentation Policy
 
 Docs are a product surface after a rebrand. The graph should declare:
@@ -1044,6 +1138,9 @@ type ProductGraph =
     InteractionContracts: InteractionContract list
     AccessibilityContracts: AccessibilityContract list
     ArchitectureTrace: ArchitectureTraceContract list
+    Hosts: HostRuntimeContract list
+    DesignSystem: DesignSystemContract option
+    SupportBundles: SupportBundleContract list
     Toolchain: ToolchainEnvironmentContract
     Projections: ProductProjectionState
     Lifecycle: ProductLifecycleState }
@@ -1401,12 +1498,181 @@ Minimum viable ProductGraph for bootstrap:
 - performance budget rows for the retained-render corpus;
 - interaction/accessibility rows for controls with existing tests;
 - architecture trace rows for current architecture docs and ADRs;
+- host runtime rows for windowed, headless, screenshot, sample, and
+  generated-product hosts;
+- design-system rows for token source, generated modules, themes, density,
+  visual states, and contrast obligations;
+- support-bundle rows for consumer diagnostics and issue reproduction;
 - toolchain/environment rows for SDK, target frameworks, package sources, and
   visual evidence environment.
 
 Do not build a generic product-management system. The graph should only model
 contract facts that are already enforced, documented, released, or needed for
 the rebrand cutover.
+
+### Additional Integrated Contract Surfaces
+
+The same analysis exposes six more implicit contracts that should be promoted
+into the redesign. The first is the `ConsumerGraph` described above; the other
+five close gaps that would otherwise become parallel systems after FS.GG.UI
+ships.
+
+#### Addition 1 - ConsumerGraph
+
+Generated products should not only contain a flat manifest. They should contain
+a small, consumer-owned graph:
+
+```text
+framework policy -> product contract -> template profile -> consumer graph
+```
+
+The consumer graph is intentionally much smaller than the maintainer graph. It
+records only the selected template profile, package matrix, enabled
+capabilities, durable and replaceable files, validation commands, upgrade
+state, and support-bundle policy. It gives generated apps enough structure for
+health checks, upgrades, and issue reproduction without forcing them to carry
+the full FS.GG.UI governance kernel.
+
+#### Addition 2 - Schema Migration Policy
+
+`SchemaVersion` is necessary but not sufficient. Once FS.GG.UI is live, project,
+product, feature, and consumer graphs will evolve. Schema evolution should be a
+first-class policy:
+
+```fsharp
+type GraphSchemaMigrationPolicy =
+  { CurrentVersion: SchemaVersion
+    SupportedVersions: SchemaVersion list
+    Migrations: GraphMigrationStep list
+    Fixtures: GraphMigrationFixture list
+    RetentionPolicy: SchemaRetentionPolicy }
+```
+
+Rules:
+
+- `specflow graph migrate` upgrades old graph files through deterministic,
+  reviewed migration steps.
+- Each migration has before/after golden fixtures.
+- A graph that uses an unsupported schema fails with a diagnostic naming the
+  required migration path.
+- Migration commands rewrite graph state, then regenerate projections; they do
+  not silently reinterpret old files during readiness checks.
+
+#### Addition 3 - Package And Module Layer Contract
+
+The package matrix owns names and versions, but it should also own architectural
+direction. FS.GG.UI should make package/module boundaries explicit:
+
+```fsharp
+type PackageLayerContract =
+  { Id: string
+    Packages: string list
+    AllowedReferences: string list
+    ForbiddenReferences: string list
+    PublicNamespaces: string list
+    InternalNamespaces: string list
+    TestOnlyReferences: string list }
+```
+
+Rules:
+
+- Runtime, controls, Elmish integration, Skia viewer, template, samples, tests,
+  and governance modules have declared layers.
+- Project references and namespace ownership are checked against layer policy.
+- Test-only references cannot leak into packable projects.
+- Governance code can inspect product metadata, but product runtime packages do
+  not depend on the governance kernel.
+
+This protects the complete-break redesign from creating a new repo with clean
+names but tangled project dependencies.
+
+#### Addition 4 - Host Runtime Contract
+
+The ProductGraph models controls and scenarios, but host behavior is also a
+product contract. Add host runtime rows for windowed, headless, screenshot,
+sample, and generated-product hosts:
+
+```fsharp
+type HostRuntimeContract =
+  { Id: string
+    HostKind: HostKind
+    RenderLoop: RenderLoopPolicy
+    Scheduler: SchedulerPolicy
+    FrameClock: FrameClockPolicy
+    InputRouting: InputRoutingPolicy
+    DpiPolicy: DpiPolicy
+    NativeDependencies: NativeDependency list
+    HeadlessModes: string list
+    ScreenshotModes: string list
+    ResourceLifetime: ResourceLifetimePolicy }
+```
+
+Rules:
+
+- Template profiles select host contracts.
+- Scenario, visual, and performance evidence cite the host contract they ran
+  under.
+- Headless validation, screenshot rendering, and live viewer behavior have
+  separate contracts instead of hidden test assumptions.
+- Host changes route as product impact when they affect input, rendering,
+  scheduling, screenshot, native dependency, or generated-product behavior.
+
+#### Addition 5 - Design System Contract
+
+Design tokens are already a disciplined surface in this repository. The new
+design should make them part of the product contract, not a side process:
+
+```fsharp
+type DesignSystemContract =
+  { TokenSource: string
+    GeneratedModules: string list
+    Themes: string list
+    DensityModes: string list
+    Typography: TypographyPolicy
+    Radii: RadiusPolicy
+    VisualStates: string list
+    ContrastRequirements: ContrastRequirement list
+    EvidenceIds: string list }
+```
+
+Rules:
+
+- DTCG token sources, generated F# token modules, theme names, density modes,
+  typography, radii, visual states, and contrast obligations are graph-owned or
+  graph-checked.
+- Control interaction and accessibility rows reference design-system IDs.
+- Visual evidence names the theme/density/design-system slice under test.
+- Template profiles expose only design-system combinations declared in the
+  graph.
+
+#### Addition 6 - Support Bundle And Reproduction Contract
+
+The release/provenance model explains how packages were produced. It does not
+yet explain how a user issue becomes reproducible product evidence. Add a
+support-bundle contract:
+
+```fsharp
+type SupportBundleContract =
+  { Id: string
+    CommandName: string
+    CollectedFields: SupportField list
+    RedactionPolicy: RedactionPolicy
+    OutputFormat: SupportBundleFormat
+    ScenarioBinding: string option
+    Attachments: SupportAttachmentPolicy list }
+```
+
+Rules:
+
+- Consumer mode provides `specflow consumer support-bundle`.
+- The bundle records package versions, project/product/consumer graph hashes,
+  selected template profile, enabled capabilities, OS, SDK, Skia/native
+  environment, host contract, scenario ID where known, logs, and optional
+  screenshots.
+- Redaction defaults are part of policy, not left to ad-hoc issue templates.
+- Support bundles can be imported as non-authoritative evidence first, then
+  promoted to scenario/product evidence when a maintainer links them to a
+  reproducible contract gap.
 
 ## Corrected Assumptions
 
@@ -1466,6 +1732,18 @@ places. Research corrected these assumptions:
 18. **Do not centralize runtime code just because metadata is integrated.** The
     value is in integrated contracts, projections, and evidence around clean
     package/module boundaries.
+19. **Do not leave schema evolution as tribal knowledge.** Graph schema changes
+    need deterministic migration commands and before/after fixtures.
+20. **Do not let a clean rebrand hide tangled project references.** Package and
+    namespace direction must be checked as a layer contract.
+21. **Do not treat host behavior as test scaffolding.** Windowed, headless,
+    screenshot, sample, and generated-product hosts are product contracts.
+22. **Do not keep design tokens outside the product graph.** Themes, density,
+    visual states, and contrast obligations are product evidence inputs.
+23. **Do not make support an issue-template afterthought.** Consumer diagnostics
+    should produce structured support bundles that can become scenario evidence.
+24. **Do not give generated products the maintainer graph.** Generated products
+    need a lean `ConsumerGraph`, not the full repository governance kernel.
 
 ## Target Architecture
 
@@ -1503,7 +1781,9 @@ machine-readable provenance record.
 The new FS.GG.UI repository should contain the `SpecFlow` subsystem under its
 build/governance project. It is not only a feature-workflow layer; it is the
 integration layer over project policy, product contract, evidence, platform
-policy, release policy, and the product runtime.
+policy, release policy, consumer graphs, schema migration, package/module
+layers, host runtime contracts, design-system contracts, support bundles, and
+the product runtime.
 
 ```text
 build/Governance/SpecFlow/
@@ -1511,11 +1791,16 @@ build/Governance/SpecFlow/
   ProjectGraphJson.fs
   ProjectGraphHash.fs
   ProjectPolicyValidation.fs
+  GraphMigrationPolicy.fs
   ProductGraphModel.fs
   ProductGraphJson.fs
   ProductGraphHash.fs
   ProductContractValidation.fs
   ProductProjection.fs
+  ConsumerGraphModel.fs
+  ConsumerGraphJson.fs
+  ConsumerGraphHash.fs
+  ConsumerContractValidation.fs
   CapabilityRegistry.fs
   ControlCatalogPolicy.fs
   PublicSurfacePolicy.fs
@@ -1525,6 +1810,10 @@ build/Governance/SpecFlow/
   InteractionAccessibilityPolicy.fs
   ArchitectureTracePolicy.fs
   ToolchainEnvironmentPolicy.fs
+  PackageLayerPolicy.fs
+  HostRuntimePolicy.fs
+  DesignSystemPolicy.fs
+  SupportBundlePolicy.fs
   IdentityPolicy.fs
   TargetCatalogPolicy.fs
   PlatformPolicy.fs
@@ -1566,11 +1855,13 @@ The modules follow the existing build engine rule:
   product contracts, diagnostics, and reports;
 - interpreter modules perform filesystem, git, process, and console IO;
 - command output supports `--json`, `--plain`, and human-rich modes;
-- project-policy projections cover `.github`, package metadata, template
-  metadata, docs policy, release policy, and generated governance docs;
+- project-policy projections cover `.github`, package metadata, package/module
+  layers, template metadata, docs policy, schema migration policy, release
+  policy, and generated governance docs;
 - product-contract projections cover control/capability catalogs, docs images,
   scenario matrices, performance budgets, interaction/accessibility contracts,
-  architecture traceability, and environment policy;
+  architecture traceability, host runtime contracts, design-system contracts,
+  support-bundle policy, and environment policy;
 - generated files are deterministic and do not contain wall-clock timestamps
   unless the timestamp is an evidence event explicitly committed to the graph.
 
@@ -1596,6 +1887,12 @@ Each active feature has one canonical graph:
 specs/<feature-id>/feature.graph.json
 ```
 
+Each generated consumer product has one lean canonical graph:
+
+```text
+.specflow/consumer.graph.json
+```
+
 The active feature pointer becomes:
 
 ```text
@@ -1605,8 +1902,10 @@ The active feature pointer becomes:
 `project.graph.json` is the only authored project-policy state file.
 `product.graph.json` is the only authored product-contract state file.
 `feature.graph.json` is the only authored feature-workflow state file. Any graph
-may embed Markdown strings for long-form prose, but those strings are fields in
-a typed schema, not free-floating files with implied semantics.
+`consumer.graph.json` is the only authored generated-product contract state
+file inside a consumer application. Any graph may embed Markdown strings for
+long-form prose, but those strings are fields in a typed schema, not
+free-floating files with implied semantics.
 
 ### Generated Projections
 
@@ -1616,10 +1915,16 @@ The following become generated projections:
 .github/workflows/*.yml
 .github/rulesets/*.json
 Directory.Packages.props
+.specflow/schema/migrations.generated.md
+.specflow/schema/consumer-graph.schema.json
 .template.config/template.json
 .template.package/*.fsproj
 docs/governance/*.md
 docs/distribution.md
+docs/governance/package-layers.md
+docs/governance/host-runtime.md
+docs/governance/design-system.md
+docs/governance/support-bundles.md
 docs/controls/catalog.md
 docs/controls/*.md
 docs/img/controls/manifest.generated.json
@@ -1656,7 +1961,9 @@ comments:
 Project projections cite `project.graph.json`; product projections cite
 `product.graph.json` and the project-policy hash they were rendered against;
 feature projections cite `feature.graph.json` plus the project-policy and
-product-contract hashes they were rendered against.
+product-contract hashes they were rendered against; consumer projections cite
+`consumer.graph.json` plus the project-policy and product-contract hashes they
+were generated from.
 `SpecFlowProjectionCheck` recomputes every projection and fails on drift.
 
 ### Evidence State
@@ -1705,10 +2012,12 @@ type ProjectGraph =
   { SchemaVersion: SchemaVersion
     GraphId: string
     Identity: ProjectIdentity
+    SchemaMigrations: GraphSchemaMigrationPolicy
     Repository: RepositoryPolicy
     Targets: TargetCatalogPolicy
     Routing: RoutingPolicy
     Packages: PackagePolicy
+    PackageLayers: PackageLayerContract list
     Templates: TemplatePolicy
     Docs: DocsPolicy
     Skills: SkillPolicy
@@ -1736,6 +2045,9 @@ type ProductGraph =
     InteractionContracts: InteractionContract list
     AccessibilityContracts: AccessibilityContract list
     ArchitectureTrace: ArchitectureTraceContract list
+    Hosts: HostRuntimeContract list
+    DesignSystem: DesignSystemContract option
+    SupportBundles: SupportBundleContract list
     Toolchain: ToolchainEnvironmentContract
     Projections: ProductProjectionState
     Lifecycle: ProductLifecycleState }
@@ -1779,12 +2091,35 @@ type ProductContractRef =
     ProductId: string }
 ```
 
+Generated consumer products use a smaller graph:
+
+```fsharp
+type ConsumerGraph =
+  { SchemaVersion: SchemaVersion
+    GraphId: string
+    Project: ProjectPolicyRef
+    Product: ProductContractRef
+    TemplateProfile: string
+    PackageMatrix: ConsumerPackageMatrix
+    EnabledCapabilities: string list
+    DurableFiles: string list
+    ReplaceableFiles: string list
+    ValidationCommands: string list
+    UpgradeState: ConsumerUpgradeState
+    SupportBundlePolicy: ConsumerSupportBundlePolicy
+    Projections: ConsumerProjectionState
+    Lifecycle: ConsumerLifecycleState }
+```
+
 Rules:
 
 - A feature graph with a stale `ProjectGraphHash` can still be inspected, but
   cannot satisfy readiness or release gates.
 - A feature graph with a stale `ProductGraphHash` can still be inspected, but
   cannot satisfy product-contract readiness or release gates.
+- A consumer graph with a stale `ProjectGraphHash` or `ProductGraphHash` can
+  still run advisory diagnostics, but cannot satisfy generated-product health or
+  upgrade readiness until it is refreshed or explicitly pinned by policy.
 - Project policy changes route as governance impact and invalidate any feature
   approvals whose scope depends on changed policy fields.
 - Product contract changes route as product impact and invalidate any feature
@@ -2171,6 +2506,27 @@ mutations:
 Direct graph edits are allowed for bulk work, but the validator is strict and
 the projection check catches drift.
 
+### Schema Migration
+
+Schema migration commands operate on project, product, feature, and consumer
+graphs:
+
+```bash
+./specflow graph schema status --json
+./specflow graph migrate --path .specflow/project.graph.json --to current
+./specflow graph migrate --path .specflow/product.graph.json --to current
+./specflow graph migrate --path specs/123-example/feature.graph.json --to current
+./specflow consumer migrate --to current
+```
+
+Rules:
+
+- Migration commands are explicit writes.
+- Readiness checks do not silently reinterpret unsupported schema versions.
+- Each migration has before/after fixtures and projection-regeneration tests.
+- Unsupported versions fail with the required migration path and the newest
+  supported version.
+
 ### Project Policy
 
 Project-policy commands operate on `.specflow/project.graph.json`:
@@ -2182,6 +2538,8 @@ Project-policy commands operate on `.specflow/project.graph.json`:
 ./specflow project check
 ./specflow project identity set --name "<new name>" --package-prefix "<prefix>"
 ./specflow project package add <package-id> --project src/...fsproj
+./specflow project layer add <id> --package <package-id>
+./specflow project layer check
 ./specflow project template set --short-name <name> --identity <identity>
 ./specflow project ci check
 ./specflow project release plan --json
@@ -2212,6 +2570,9 @@ Product-contract commands operate on `.specflow/product.graph.json`:
 ./specflow product scenario add <id> --sample samples/<name>
 ./specflow product visual add <id> --subject <control-id> --scenario <scenario-id>
 ./specflow product budget add <id> --scenario <scenario-id> --metric <metric>
+./specflow product host add <id> --kind headless
+./specflow product design-system check
+./specflow product support-bundle policy
 ./specflow product trace architecture --subsystem <name>
 ./specflow product environment set --visual <id>
 ```
@@ -2225,6 +2586,32 @@ Rules:
   requires feature evidence rows.
 - Product contract rows can be imported during bootstrap, but after cutover
   feature work mutates product state deliberately and routes as product impact.
+
+### Consumer Product
+
+Consumer commands operate inside a generated product and use the lean
+`.specflow/consumer.graph.json`:
+
+```bash
+./specflow consumer status --json
+./specflow consumer validate --json
+./specflow consumer health
+./specflow consumer profile check
+./specflow consumer packages check
+./specflow consumer upgrade plan --to <version>
+./specflow consumer support-bundle --output artifacts/support/<id>.zip
+```
+
+Rules:
+
+- Consumer commands do not require the FS.GG.UI source checkout.
+- Health checks validate package pins, selected template profile, enabled
+  capabilities, durable/replaceable file state, validation commands, and
+  project/product graph hashes.
+- Upgrade plans compare the current consumer graph to the target package and
+  template policy.
+- Support bundles follow graph-owned redaction policy and can be imported into
+  maintainer evidence as issue-reproduction input.
 
 ### Projection
 
@@ -2327,11 +2714,17 @@ Add or replace targets in `Targets.fs`:
 ```fsharp
 | SpecFlowProjectCheck
 | SpecFlowProductCheck
+| SpecFlowConsumerCheck
+| SpecFlowSchemaMigrationCheck
 | SpecFlowGraphCheck
 | SpecFlowProjectionCheck
 | SpecFlowPolicyProjectionCheck
 | SpecFlowProductProjectionCheck
+| SpecFlowLayerContractCheck
 | SpecFlowControlCatalogCheck
+| SpecFlowHostRuntimeCheck
+| SpecFlowDesignSystemCheck
+| SpecFlowSupportBundleCheck
 | SpecFlowVisualEvidenceCheck
 | SpecFlowScenarioCorpusCheck
 | SpecFlowPerformanceBudgetCheck
@@ -2375,15 +2768,32 @@ Target policy:
 - `SpecFlowProjectCheck` validates `.specflow/project.graph.json` and its hash.
 - `SpecFlowProductCheck` validates `.specflow/product.graph.json`, its project
   hash reference, and its own hash.
+- `SpecFlowConsumerCheck` validates `.specflow/consumer.graph.json`,
+  package/profile/capability consistency, durable/replaceable file policy, and
+  upgrade/support-bundle policy when running inside a generated product.
+- `SpecFlowSchemaMigrationCheck` validates supported graph schema versions,
+  migration fixtures, and generated schema/migration projections.
 - `SpecFlowPolicyProjectionCheck` validates generated/checkable project-policy
   projections: target metadata, `.github` policy files, package metadata,
-  template metadata, docs policy, skill trees, and governance docs.
+  package/module layers, template metadata, docs policy, skill trees, schema
+  migration policy, and governance docs.
 - `SpecFlowProductProjectionCheck` validates generated/checkable product
   projections: control catalogs, docs-page indexes, image manifests, scenario
   matrices, performance-budget reports, interaction/accessibility tables,
-  architecture traceability, and environment reports.
+  architecture traceability, host runtime, design-system, support-bundle, and
+  environment reports.
+- `SpecFlowLayerContractCheck` validates project references, namespace
+  ownership, public/internal boundaries, governance/product dependency
+  direction, and test-only references.
 - `SpecFlowControlCatalogCheck` validates capability, control, public-surface,
   docs, sample, template, and test bindings.
+- `SpecFlowHostRuntimeCheck` validates windowed, headless, screenshot, sample,
+  and generated-product host contracts and binds evidence to host IDs.
+- `SpecFlowDesignSystemCheck` validates token source, generated token modules,
+  themes, density modes, visual states, contrast requirements, and evidence
+  bindings.
+- `SpecFlowSupportBundleCheck` validates support-bundle collection fields,
+  redaction policy, output format, and importability into evidence rows.
 - `SpecFlowVisualEvidenceCheck` validates visual evidence contracts and attached
   screenshot/fidelity/doc-image evidence rows.
 - `SpecFlowScenarioCorpusCheck` validates scenario rows against docs test specs,
@@ -2413,11 +2823,17 @@ Target policy:
 ### Project Policy Validity
 
 - `project.graph.json` schema version is supported.
+- Project graph schema migration policy names current, supported, and
+  unsupported versions and has fixtures for each supported migration.
 - Project identity, repository identity, package prefix, root namespace, template
   identity, docs URL, and migration map are internally consistent.
 - Every package policy row maps to exactly one packable project or declared
   virtual/template package.
 - Every packable project has a package policy row unless explicitly private.
+- Every packable project belongs to a package/module layer or is explicitly
+  exempt.
+- Project references, namespace ownership, and test-only references satisfy
+  package/module layer policy.
 - Target catalog IDs match the compiled `Targets` union and generated target
   metadata.
 - Routing policy references only existing targets and policy IDs.
@@ -2445,9 +2861,32 @@ Target policy:
   capability, or scenario.
 - Every architecture trace row maps source paths to architecture docs and ADRs
   or records an explicit no-ADR-needed decision.
+- Every host runtime contract maps to scenarios, template profiles, samples, or
+  generated-product validation rows that use it.
+- Design-system contract rows map token sources, generated modules, themes,
+  density modes, visual states, and contrast requirements to tests or explicit
+  deferrals.
+- Support-bundle rows declare collected fields, redaction policy, output format,
+  and import rules for evidence.
 - Toolchain/environment rows cover SDK, target frameworks, package sources,
   visual evidence environment, docs environment, and generated-product
   environment.
+
+### Consumer Contract Validity
+
+- `consumer.graph.json` schema version is supported.
+- Consumer graph references supported project and product graph hashes.
+- Selected template profile exists in the current template policy.
+- Package pins match a declared package matrix or an explicit pinned legacy
+  compatibility policy.
+- Enabled capabilities exist in ProductGraph and map to available packages.
+- Durable and replaceable file lists are disjoint and cover generated files that
+  upgrade policy may touch.
+- Validation commands exist, are consumer-safe, and do not require the FS.GG.UI
+  source checkout.
+- Upgrade state names the current template/package slice and the target slice
+  when an upgrade is planned.
+- Support-bundle policy satisfies the redaction and field-collection contract.
 
 ### Graph Validity
 
@@ -2478,9 +2917,15 @@ Target policy:
 - Product-contract projections match `product.graph.json`.
 - Workflow, ruleset, package, template, docs, and skill projections are checked
   together so identity cannot drift across surfaces.
+- Schema migration, package/module layer, consumer graph schema, support-bundle,
+  and generated-product projections are checked together so consumer contracts
+  cannot drift from project policy.
 - Control docs, docs images, scenario matrices, sample references, performance
   budgets, interaction/accessibility reports, and architecture trace reports are
   checked together so product claims cannot drift across surfaces.
+- Host runtime and design-system projections are checked with scenario, visual,
+  performance, interaction, and accessibility projections because they determine
+  evidence meaning.
 - No hand-authored `tasks.deps.yml` exists in active feature directories.
 - No active `spec.md`, `plan.md`, or `tasks.md` lacks the generated header.
 
@@ -2568,6 +3013,8 @@ Generated or checked from `ProjectGraph`:
 - `.github/workflows/publish.yml`
 - `.github/rulesets/*.json`
 - `Directory.Packages.props`
+- `.specflow/schema/migrations.generated.md`
+- `.specflow/schema/consumer-graph.schema.json`
 - `.template.config/template.json`
 - `.template.package/*.fsproj`
 - `template/capabilities.generated.yml` or replacement graph-owned capability
@@ -2575,6 +3022,7 @@ Generated or checked from `ProjectGraph`:
 - `.agents/skills/specflow-*/SKILL.md`
 - `docs/governance/index.md`
 - `docs/governance/routing-and-gates.md`
+- `docs/governance/package-layers.md`
 - `docs/governance/platform-policy.md`
 - `docs/governance/release-policy.md`
 - `docs/distribution.md`
@@ -2602,11 +3050,17 @@ Generated or checked from `ProductGraph`:
 - `docs/testSpecs/index.generated.md`
 - `docs/architecture/traceability.generated.md`
 - `docs/governance/product-contract.md`
+- `docs/governance/host-runtime.md`
+- `docs/governance/design-system.md`
+- `docs/governance/support-bundles.md`
 - `readiness/product-contract.md`
 - `readiness/scenario-corpus.md`
 - `readiness/visual-evidence.md`
 - `readiness/performance-budgets.md`
 - `readiness/interaction-accessibility.md`
+- `readiness/host-runtime.md`
+- `readiness/design-system.md`
+- `readiness/support-bundles.md`
 - `readiness/environment-policy.md`
 - `template/capabilities.generated.yml` or the replacement generated capability
   projection
@@ -2624,6 +3078,32 @@ Rules:
   smoke evidence, visual evidence, and performance budgets.
 - Architecture trace projections connect ADRs, source path groups, architecture
   pages, and feature IDs.
+- Host runtime projections connect template profiles, scenario evidence,
+  generated-product validation, screenshot modes, and native/runtime
+  assumptions.
+- Design-system projections connect token sources, generated token modules,
+  themes, density modes, visual states, contrast obligations, and control
+  evidence.
+- Support-bundle projections describe the consumer diagnostic command,
+  redaction policy, collected fields, and evidence-import path.
+
+### Consumer Projections
+
+Generated or checked from `ConsumerGraph` inside a generated product:
+
+- `.specflow/consumer.contract.json`
+- `.specflow/consumer-health.md`
+- `.specflow/upgrade-plan.md`
+- `.specflow/support-bundle-policy.md`
+
+Rules:
+
+- Consumer projections cite `consumer.graph.json`, `project.graph.json`, and
+  `product.graph.json` hashes.
+- Consumer health projections are advisory until imported as maintainer
+  evidence, but stale package/profile/capability state is always reported.
+- Upgrade projections classify replaceable generated files, durable user files,
+  and manual migration notes.
 
 ### `spec.md`
 
@@ -2715,6 +3195,8 @@ The new repository starts with:
 .specflow/schema/project-graph.schema.json
 .specflow/schema/product-graph.schema.json
 .specflow/schema/feature-graph.schema.json
+.specflow/schema/consumer-graph.schema.json
+.specflow/schema/migrations.generated.md
 ```
 
 ### Start With New Agent Surface
@@ -2753,9 +3235,13 @@ should not begin life with old feature workflow state.
 ## Spec Implementation Roadmap
 
 Implement the plan as ten specs. The first spec is the final old-repository
-feature. Specs 2-10 belong in FS.GG.UI. This keeps the complete break honest:
-the old repository produces the new repository and provenance, then stops
-owning active product development.
+feature. Specs 2-10 belong in FS.GG.UI. The six additional contract surfaces
+are assigned to the existing specs instead of creating a second roadmap: schema
+migration and package layers land with ProjectGraph, host/design/support rows
+land with ProductGraph and product hardening, and ConsumerGraph lands with
+generated-product integration. This keeps the complete break honest: the old
+repository produces the new repository and provenance, then stops owning active
+product development.
 
 Roadmap dependency shape:
 
@@ -2872,6 +3358,10 @@ Deliverables:
   projection, and validator.
 - Identity, package, template, docs, target-catalog, routing-policy, release,
   platform, and provenance policy stubs.
+- Graph schema migration policy and migration fixture validation.
+- Package/module layer policy for project references, namespace ownership,
+  public/internal boundaries, governance/product dependency direction, and
+  test-only references.
 - `specflow project validate`, `specflow project render`, and
   `specflow project check`.
 - `SpecFlowProjectCheck` and initial policy projection check.
@@ -2880,7 +3370,9 @@ Exit criteria:
 
 - Project graph round-trips deterministically.
 - Project graph hash changes only for semantic project-policy changes.
+- Schema migrations are explicit, fixture-backed, and projection-checked.
 - Package/template/docs identity drift is reported from graph policy.
+- Package/module layer violations fail with source and target project IDs.
 - Hand-edited project-policy projections fail with a clear diff.
 
 Not in scope:
@@ -2904,7 +3396,8 @@ Deliverables:
   projection, and validator.
 - Imported seed rows for packages/capabilities, controls, public surfaces, docs
   pages, docs images, samples, generated profiles, test specs, performance
-  corpus rows, interaction/accessibility rows, architecture trace rows, and
+  corpus rows, interaction/accessibility rows, architecture trace rows, host
+  runtime rows, design-system rows, support-bundle rows, and
   toolchain/environment policy.
 - `specflow product validate`, `specflow product render`, and
   `specflow product check`.
@@ -2914,6 +3407,8 @@ Exit criteria:
 
 - Product graph references current project graph hash.
 - Product projections cover the initial control/capability/scenario surface.
+- Product projections cover host runtime, design-system, and support-bundle
+  policy stubs.
 - Orphan controls, docs pages, screenshots, public surfaces, and sample rows are
   diagnosed.
 - Hand-edited product projections fail with a clear diff.
@@ -3032,18 +3527,43 @@ Deliverables:
 
 - Package matrix validation.
 - Template identity validation and generated template profile matrix.
+- Template archetype generation/drift checks from ProjectGraph and ProductGraph.
+- ConsumerGraph emission for generated products as
+  `.specflow/consumer.graph.json`, with `.specflow/consumer.contract.json` as a
+  generated compact projection when useful.
+- Lean consumer-mode `specflow` command surface for generated-product health,
+  package/profile checks, optional feature workflow, upgrade guidance, schema
+  migration, and support bundles.
+- Consumer simulation validation that restores from the package feed under test,
+  instantiates the template, builds the generated product, and runs selected
+  profile smoke/headless checks without requiring a framework source checkout.
+- Upgrade report/command that compares the current consumer graph to target
+  package/template policy and classifies replaceable, durable, and manually
+  migrated files.
 - Generated product pack/install/instantiate evidence rows.
 - Docs policy projections for package readmes, docs navigation, API reference
   assumptions, migration pages, and active old-brand-link restrictions.
 - Capability/template/profile projections from ProductGraph and ProjectGraph.
-- `SpecFlowPackagePolicyCheck`, `SpecFlowTemplatePolicyCheck`, and docs
-  projection subchecks.
+- `SpecFlowPackagePolicyCheck`, `SpecFlowTemplatePolicyCheck`,
+  `SpecFlowConsumerCheck`, and docs projection subchecks.
 
 Exit criteria:
 
 - Package IDs, template IDs, central pins, generated product pins, and docs
   identity agree.
+- Template profiles are graph-owned and cover `minimal-scene`, `controls-app`,
+  `governed-product`, `sample-pack`, and `headless-validation` or explicitly
+  defer them.
 - Every generated profile has validation evidence.
+- Every generated profile records selected profile, package matrix,
+  capabilities, durable files, replaceable files, validation commands, and
+  upgrade/support-bundle policy in the consumer graph.
+- Generated-product validation works from package artifacts and template output,
+  without depending on the framework source checkout.
+- Upgrade output identifies changed generated files, preserved user files, and
+  manual migration notes.
+- Support-bundle output follows graph-owned redaction policy and can be imported
+  as issue-reproduction evidence.
 - Product capability rows map to package/template/docs surfaces.
 - Active docs reject old identity except migration/deprecation pages.
 
@@ -3112,10 +3632,17 @@ Deliverables:
 - Toolchain/environment policy over SDK, target frameworks, package sources, CI
   images, native dependencies, docs environment, visual environment, and
   generated-product environment.
+- Host runtime policy over windowed, headless, screenshot, sample, and
+  generated-product hosts.
+- Design-system policy over DTCG token sources, generated token modules, themes,
+  density modes, visual states, and contrast obligations.
+- Support-bundle policy over consumer diagnostics, redaction, collected fields,
+  output format, and evidence import.
 - `SpecFlowControlCatalogCheck`, `SpecFlowVisualEvidenceCheck`,
   `SpecFlowScenarioCorpusCheck`, `SpecFlowPerformanceBudgetCheck`,
-  `SpecFlowInteractionContractCheck`, `SpecFlowArchitectureTraceCheck`, and
-  `SpecFlowEnvironmentPolicyCheck`.
+  `SpecFlowInteractionContractCheck`, `SpecFlowArchitectureTraceCheck`,
+  `SpecFlowHostRuntimeCheck`, `SpecFlowDesignSystemCheck`,
+  `SpecFlowSupportBundleCheck`, and `SpecFlowEnvironmentPolicyCheck`.
 
 Exit criteria:
 
@@ -3124,6 +3651,8 @@ Exit criteria:
 - Required visual/performance/interaction/accessibility evidence is graph-bound
   and fresh.
 - Architecture trace gaps are diagnosed for high-risk source changes.
+- Host runtime, design-system, and support-bundle gaps are diagnosed where they
+  affect scenarios, template profiles, evidence, or generated products.
 - Environment mismatch is diagnosed before visual, generated-product, docs, or
   release evidence is trusted.
 
@@ -3167,6 +3696,8 @@ Deliverables:
 - `ProjectGraphJson.fs`.
 - `ProjectGraphHash.fs`.
 - `IdentityPolicy.fs`.
+- `GraphMigrationPolicy.fs`.
+- `PackageLayerPolicy.fs`.
 - `.specflow/project.graph.json` fixture with the new brand matrix.
 - Generated JSON Schema for editor support.
 
@@ -3174,9 +3705,12 @@ Tests:
 
 - Project graph round-trip is deterministic.
 - Hash ignores JSON field-order variation.
+- Schema migration fixtures prove supported old graph versions upgrade
+  deterministically.
 - Old brand references outside migration/deprecation rows are rejected.
 - Package prefix, namespace, docs URL, template identity, and repository identity
   are mutually consistent.
+- Project references and namespaces satisfy package/module layer policy.
 
 ### Stage G2 - Bind Existing Target And Routing Catalogs
 
@@ -3222,10 +3756,14 @@ Deliverables:
 - `PackagePolicy.fs`.
 - `TemplatePolicy.fs`.
 - `DocsPolicy.fs`.
+- `ConsumerGraphModel.fs`.
+- `ConsumerContractValidation.fs`.
+- `SupportBundlePolicy.fs` consumer-mode projection.
 - Port `GeneratedProduct`, `Capabilities`, `ApiSurfaceGen`,
   `PerPackageSurface`, and `PackageSkew` under graph-owned policy.
 - Project-policy projections for package metadata, template identity, capability
-  rows, docs governance, and generated skills.
+  rows, docs governance, generated skills, consumer graph schema, and generated
+  consumer projections.
 
 Tests:
 
@@ -3234,6 +3772,8 @@ Tests:
 - Template package ID, template identity, short name, install command, and
   generated docs agree.
 - Generated product pins match the package matrix.
+- Generated products emit and validate `.specflow/consumer.graph.json`.
+- Generated-product support bundles follow graph-owned redaction policy.
 - Active docs reject old identity outside migration pages.
 - Public-surface baselines resolve through package policy.
 
@@ -3340,6 +3880,9 @@ Deliverables:
 - `ProductGraphJson.fs`.
 - `ProductGraphHash.fs`.
 - `ProductContractValidation.fs`.
+- `HostRuntimePolicy.fs`.
+- `DesignSystemPolicy.fs`.
+- `SupportBundlePolicy.fs`.
 - Minimal `.specflow/product.graph.json` fixture.
 
 Tests:
@@ -3348,6 +3891,8 @@ Tests:
 - Product hash changes when semantic product contract fields change.
 - Product graph rejects stale project graph hash for readiness.
 - Duplicate capability/control/scenario/evidence IDs fail clearly.
+- Host runtime, design-system, and support-bundle policy rows validate as
+  product contract subjects.
 
 ### Stage P2 - Import Capability, Control, And Surface Contracts
 
@@ -3427,6 +3972,9 @@ Deliverables:
 
 - `ArchitectureTracePolicy.fs`.
 - `ToolchainEnvironmentPolicy.fs`.
+- `HostRuntimePolicy.fs` hardening.
+- `DesignSystemPolicy.fs` hardening.
+- `SupportBundlePolicy.fs` hardening.
 - Architecture trace rows for `docs/architecture/**`, `docs/adr/**`, source
   path groups, and historical features.
 - Environment rows for SDK, target frameworks, package sources, CI images,
@@ -3441,6 +3989,11 @@ Tests:
   decision.
 - Visual evidence with mismatched environment cannot satisfy required proof.
 - Generated-product evidence cites the expected package source and SDK policy.
+- Scenario, visual, performance, and generated-product evidence cite host
+  runtime IDs where required.
+- Design-system obligations map to token generation, visual state, contrast, and
+  accessibility evidence.
+- Support bundles can be imported as structured reproduction evidence.
 
 ### Stage P7 - ProductGraph Cutover
 
@@ -3793,9 +4346,15 @@ Tests:
 - Project graph hash determinism.
 - Product graph hash determinism.
 - Feature graph hash determinism.
+- Consumer graph hash determinism.
+- Graph schema migration validation.
 - Identity policy validation.
+- Package/module layer validation.
 - Capability/control registry validation.
 - Public surface to product subject validation.
+- Host runtime contract validation.
+- Design-system contract validation.
+- Support-bundle contract validation.
 - Visual evidence contract validation.
 - Scenario corpus validation.
 - Performance budget validation.
@@ -3827,13 +4386,19 @@ Tests:
 - Graph hash does not change when JSON object field order changes.
 - Project policy hash changes when package/template/docs/CI/release policy
   changes.
+- Project policy hash changes when schema migration or package/module layer
+  policy changes.
 - Product contract hash changes when controls/capabilities/scenarios/visual
   evidence/performance/interaction/accessibility/architecture/environment policy
   changes.
+- Product contract hash changes when host runtime, design-system, or
+  support-bundle policy changes.
 - Feature readiness cannot be satisfied by evidence bound to a different project
   policy hash.
 - Product readiness cannot be satisfied by evidence bound to a different product
   contract hash.
+- Consumer health cannot be satisfied by a consumer graph bound to unsupported
+  project or product graph hashes.
 - Generated package/template/docs identity stays consistent across arbitrary
   valid brand matrices.
 - Generated product docs/images/scenario/performance projections stay
@@ -3844,7 +4409,13 @@ Tests:
 - Minimal project graph projections.
 - Rebrand project graph projections.
 - Minimal product graph projections.
+- Consumer graph projections.
+- Schema migration projections.
+- Package/module layer projections.
 - Control catalog product graph projections.
+- Host runtime product graph projections.
+- Design-system product graph projections.
+- Support-bundle product graph projections.
 - Visual evidence product graph projections.
 - Scenario corpus product graph projections.
 - Performance budget product graph projections.
@@ -3864,11 +4435,21 @@ Tests:
 
 - `specflow project validate` validates `.specflow/project.graph.json`.
 - `specflow product validate` validates `.specflow/product.graph.json`.
+- `specflow consumer validate` validates `.specflow/consumer.graph.json` inside
+  a generated product.
+- `specflow graph migrate` upgrades supported graph fixtures and rejects
+  unsupported schema versions.
 - `specflow project check` fails after hand-editing package/template/docs or
   workflow projections.
+- `specflow project layer check` fails on forbidden project references,
+  namespace ownership violations, and test-only reference leaks.
 - `specflow product check` fails after hand-editing control catalog, image
   manifest, scenario, performance, interaction/accessibility, architecture, or
   environment projections.
+- `specflow product check` fails after hand-editing host-runtime,
+  design-system, or support-bundle projections.
+- `specflow consumer support-bundle` emits a redacted bundle that can be
+  imported as structured issue-reproduction evidence.
 - `specflow project release plan --json` emits deterministic publish/skip/block
   decisions without publishing.
 - `specflow project bootstrap-repo` creates a staged new repository tree with
@@ -3894,17 +4475,24 @@ Tests:
 | Failure | Diagnostic requirement |
 |---|---|
 | Projection edited by hand | Name projection, graph hash, and first differing hunk. |
+| Unsupported graph schema | Name graph path, found version, supported versions, and required migration command. |
+| Schema migration fixture drift | Name migration ID, fixture path, and first differing hunk. |
 | Done task lacks evidence | Name task, expected evidence kinds, and suggested `specflow evidence` command. |
 | Evidence path missing | Name evidence ID, path, and task/requirement it was meant to satisfy. |
 | Route mismatch | Show declared impact, actual diff rule matches, expected gates, actual gates. |
 | Project policy drift | Show old project hash, current project hash, changed policy domains, and affected feature approvals/evidence. |
 | Product contract drift | Show old product hash, current product hash, changed product subjects, and affected feature approvals/evidence. |
+| Consumer contract drift | Show old consumer hash, current consumer hash, changed profile/package/capability/file fields, and suggested health or upgrade command. |
+| Package layer violation | Show source project, target project, layer rule, and allowed reference direction. |
 | Orphan control docs page | Show docs page, nearest control IDs, and suggested product row or migration declaration. |
 | Missing control screenshot | Show control ID, docs page, expected visual evidence row, and screenshot path. |
 | Scenario corpus gap | Show scenario ID, missing sample/test spec/generated profile/smoke evidence, and affected product subjects. |
 | Performance budget failure | Show scenario ID, metric, measured value, budget, environment, and evidence ID. |
 | Interaction/accessibility coverage gap | Show control/capability/scenario ID, missing input/accessibility contract, and expected tests. |
 | Architecture trace gap | Show changed source path, subsystem, missing ADR/docs trace, and allowed no-update decision format. |
+| Host runtime gap | Show scenario/template profile/evidence row, missing host contract, and allowed host IDs. |
+| Design-system gap | Show control or scenario ID, missing token/theme/visual-state/contrast row, and required evidence. |
+| Support-bundle policy violation | Show field, redaction policy, output path, and evidence-import rule. |
 | Environment mismatch | Show evidence ID, expected environment, actual environment, and affected product proof. |
 | Package identity drift | Show package row, project file, generated pins, template pins, and stale metadata path. |
 | Workflow permission violation | Show workflow job, requested permission, allowed permission, and policy row. |
@@ -4002,8 +4590,17 @@ Product evidence is stricter than asset presence:
   metric, threshold, environment, measured value, and product graph hash.
 - An interaction/accessibility test satisfies a contract only when it cites the
   affected control/capability/scenario and input or accessibility policy.
+- A host-runtime-sensitive evidence row satisfies a scenario, visual,
+  performance, or generated-product obligation only when it cites the expected
+  host contract.
+- A design-system-sensitive evidence row satisfies a visual, interaction, or
+  accessibility obligation only when it cites the expected theme, density,
+  token generation state, and contrast policy.
 - An architecture doc or ADR satisfies traceability only when it is linked to
   the changed source path group and feature impact.
+- A support bundle starts as non-authoritative issue-reproduction input. It can
+  become authoritative only when a maintainer links it to a scenario/product
+  evidence row and redaction policy has passed.
 
 ## Context Budgeting
 
@@ -4059,6 +4656,8 @@ Cache only derived data:
 - graph hash;
 - projection render results;
 - context-pack render results;
+- schema migration fixture parse results;
+- consumer health input enumeration;
 - skill registry enumeration;
 - target metadata enumeration.
 
@@ -4068,8 +4667,10 @@ Do not cache:
 - route actual diff results;
 - evidence audit verdicts;
 - product contract verdicts;
+- consumer health verdicts;
 - visual evidence verdicts;
 - performance budget verdicts;
+- support-bundle redaction verdicts;
 - approval status against current graph hash.
 
 Cache path:
@@ -4092,6 +4693,8 @@ The redesign is complete when:
 - Project policy is stored in FS.GG.UI `.specflow/project.graph.json`.
 - Product contract is stored in FS.GG.UI `.specflow/product.graph.json`.
 - Active feature state is stored in FS.GG.UI `feature.graph.json`.
+- Generated products store lean consumer state in
+  `.specflow/consumer.graph.json`.
 - FS.GG.UI has no active `.specify` runtime or `.specify/feature.json`.
 - Feature graphs reference the current project-policy hash for readiness and
   release.
@@ -4099,12 +4702,13 @@ The redesign is complete when:
   readiness and release.
 - `spec.md`, `plan.md`, and `tasks.md` are generated projections.
 - Project-policy projections cover target metadata, route policy, package
-  matrix, template identity, docs policy, skills/context packs, workflow policy,
-  ruleset expectations, release policy, and provenance policy.
+  matrix, package/module layers, template identity, docs policy, schema
+  migrations, skills/context packs, workflow policy, ruleset expectations,
+  release policy, and provenance policy.
 - Product-contract projections cover capability/control registry, public
   surfaces, docs pages, docs images, scenario corpus, visual evidence,
   performance budgets, interaction/accessibility contracts, architecture trace,
-  and environment policy.
+  host runtime, design-system, support-bundle, and environment policy.
 - `tasks.deps.yml` is not an active authored artifact.
 - Task completion is graph-owned and evidence-backed.
 - Requirement-to-task-to-evidence traceability is machine-checked.
@@ -4115,6 +4719,28 @@ The redesign is complete when:
 - Workflow permissions and reusable workflow refs are checked against CI policy.
 - Package IDs, versions, central package pins, template pins, generated-product
   pins, and package metadata are graph-owned or graph-checked.
+- The template is a generated or drift-checked projection of ProjectGraph and
+  ProductGraph, not a separately maintained source of capability or package
+  truth.
+- Generated products contain a lean ConsumerGraph that records selected
+  profile, FS.GG.UI package matrix, enabled capabilities, durable files,
+  replaceable files, validation commands, upgrade policy, and support-bundle
+  policy.
+- Generated products can run consumer-mode health/profile/package validation
+  without carrying the full maintainer governance runtime.
+- Template validation simulates real consumption from package artifacts and does
+  not require a framework source checkout.
+- Generated-product upgrade guidance reports changed generated files, preserved
+  durable files, and manual migration notes.
+- Graph schema migrations are deterministic, fixture-backed, and explicit.
+- Package/module layer policy checks project references, namespace ownership,
+  public/internal boundaries, and test-only references.
+- Host runtime contracts bind windowed, headless, screenshot, sample, and
+  generated-product evidence to declared host behavior.
+- Design-system contracts bind token sources, generated token modules, themes,
+  density modes, visual states, contrast obligations, and evidence.
+- Consumer support bundles are graph-owned, redacted by policy, and importable
+  as structured issue-reproduction evidence.
 - Controls, capabilities, public surfaces, docs pages, screenshots, samples,
   generated profiles, tests, and template fragments are product-graph-owned or
   product-graph-checked.
@@ -4164,6 +4790,14 @@ The redesign is complete when:
 | Platform API checks are flaky or credential-dependent | Local gates become unreliable | Make online GitHub/NuGet comparison opt-in or release-only; keep deterministic offline projection checks mandatory. |
 | Local logs are mistaken for release provenance | Published packages have weak origin proof | Require CI-backed release rows for package digest, source commit, workflow identity, builder identity, and attestation policy. |
 | Package/template identity churn during rebrand | New repo ships inconsistent names or pins | Make brand matrix and package/template policy the first project graph content; check all generated projections together. |
+| Template drifts from framework/product contract | Generated products consume unsupported capabilities, stale pins, or misleading docs | Generate or drift-check template profiles, package pins, skills, docs, and validation commands from ProjectGraph and ProductGraph. |
+| Generated products inherit maintainer governance complexity | Consumers reject the template or cannot maintain generated apps | Ship a lean consumer-mode `specflow` surface and a small ConsumerGraph instead of the full maintainer graph operating system. |
+| Generated-product upgrades are underspecified | Users cannot move between FS.GG.UI versions safely | Make upgrade reporting a first-class command that classifies replaceable generated files, durable user files, and manual migration notes. |
+| Graph schema changes become breaking by accident | Old project/product/feature/consumer graphs cannot be opened or upgraded reliably | Require explicit schema migration policy, fixture-backed migrations, and unsupported-version diagnostics. |
+| Clean package names hide tangled dependencies | Runtime, template, samples, and governance layers become coupled again | Add package/module layer policy for references, namespaces, public/internal boundaries, and test-only dependencies. |
+| Host behavior stays implicit | Evidence passes in one host but fails or misleads in another | Model windowed, headless, screenshot, sample, and generated-product hosts as product contracts cited by evidence. |
+| Design tokens drift from product evidence | Themes, density, visual state, or contrast behavior breaks without product-level diagnosis | Put design-system rows in ProductGraph and bind visual, interaction, and accessibility evidence to them. |
+| Support reports are unstructured | Consumer issues cannot be reproduced or routed back to product contract gaps | Generate redacted support bundles from ConsumerGraph and import them as structured scenario evidence. |
 | Governance package public/private boundary is unclear | New repo freezes a premature external API | Keep SpecFlow governance internal to the new repo first; extract a reusable package only after the new repo proves the model. |
 | Accidentally copying `.specify` into FS.GG.UI | Old workflow assumptions survive the break | Treat `.specify/**` as old-repo archive/provenance only; new repo starts with `.specflow/**` and generated context packs. |
 | Worktrees fight shared state | Parallel runs corrupt cache or FAKE state | Namespace caches; explicitly audit FAKE state before default worktree mode. |
@@ -4181,12 +4815,13 @@ Recommended first cut for the rebrand path:
 1. Create `117-rebrand-new-repo-bootstrap` in this repository.
 2. Add `.specflow/project.graph.json` with the brand matrix, package matrix,
    template identity, docs identity, repository identity, target/routing policy
-   references, release policy, and old-to-new identity map.
+   references, schema migration policy, package/module layer policy, release
+   policy, and old-to-new identity map.
 3. Add `.specflow/product.graph.json` with the minimal product contract:
    capabilities, controls, public surfaces, docs pages, docs images, scenarios,
    visual evidence, performance budgets, interaction/accessibility contracts,
-   architecture trace, and toolchain/environment rows imported from existing
-   surfaces.
+   architecture trace, host runtime, design-system, support-bundle, and
+   toolchain/environment rows imported from existing surfaces.
 4. Add a deterministic new-repository assembly plan that names imported,
    rewritten, generated, and intentionally dropped paths.
 5. Add policy projections for packages, template, docs, skills/context packs,
@@ -4202,14 +4837,18 @@ Recommended first cut for the rebrand path:
    policy projections, product projections, package policy, template policy,
    docs policy, release policy, and provenance policy.
 9. Create the new template package identity, `template.json` identity,
-   `shortName`, package pins, generated docs, and generated skills.
+   `shortName`, graph-owned profiles, package pins, generated docs, generated
+   skills, `.specflow/consumer.graph.json`, compact consumer contract
+   projection, consumer-mode validation commands, support-bundle command, and
+   generated-product upgrade report.
 10. Add a provenance file that records the old repository URL, source commit,
    copied paths, rewritten paths, dropped paths, package/template migration map,
    project graph hash, and product graph hash.
 11. Plan, and later record, typed evidence rows for restore/build/test/pack,
     generated product instantiation, docs generation, control catalog, visual
     evidence, scenario corpus, performance budgets, interaction/accessibility,
-    architecture trace, environment policy, release plan, and provenance policy.
+    architecture trace, host runtime, design-system, support-bundle,
+    environment policy, release plan, and provenance policy.
     Do not confuse local bootstrap logs with final CI release provenance.
 12. Prove the staged new repository can restore, build, test, pack packages, and
     instantiate the template from the new identity.

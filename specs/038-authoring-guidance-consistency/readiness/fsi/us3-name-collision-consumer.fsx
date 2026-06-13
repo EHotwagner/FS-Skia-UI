@@ -37,7 +37,7 @@ let update (state: AppState) : AppState =
 // Touch the framework's qualified surface to prove the open is real and used.
 let viewerOptions: ViewerOptions =
     { Title = "collision-fixture"
-      InitialSize = { Width = 320; Height = 240 } }
+      InitialSize = { Width = 320; Height = 240 }; PresentMode = ViewerPresentMode.OffscreenReadback }
 
 let _firstState = init ()
 let _nextState = update _firstState

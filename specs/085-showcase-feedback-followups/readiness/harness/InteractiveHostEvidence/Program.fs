@@ -35,7 +35,7 @@ let host: InteractiveAppHost<int, Msg> =
 [<EntryPoint>]
 let main _ =
     let options: ViewerOptions =
-        { Title = "Feature085 Interactive Host"; InitialSize = { Width = 800; Height = 600 } }
+        { Title = "Feature085 Interactive Host"; InitialSize = { Width = 800; Height = 600 }; PresentMode = ViewerPresentMode.OffscreenReadback }
 
     match ControlsElmish.runInteractiveApp options host with
     | Result.Ok outcome ->

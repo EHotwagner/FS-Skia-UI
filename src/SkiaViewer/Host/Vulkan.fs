@@ -240,11 +240,35 @@ module VulkanStartup =
         firstRelease @ secondRelease
 
 module VulkanHost =
+    /// Feature 118 (DirectToSwapchain): persistent per-swapchain resources for the
+    /// readback-free direct present path. Built lazily once per swapchain (rebuilt when a
+    /// new SwapchainState is created on swapchain recreation, FR-006), disposed at shutdown.
+    /// SkiaSharp 4.147 does not bind GRBackendSurfaceMutableState (mono/SkiaSharp #2191), so
+    /// the GRBackendRenderTarget/SKSurface wrap is recreated per frame (cheap CPU object,
+    /// far below the GPU→CPU readback it replaces); only these command/sync resources are
+    /// cached per swapchain image index.
+    type DirectPresentState() =
+        /// Whether per-swapchain direct resources have been built (success or failure).
+        member val Attempted = false with get, set
+        /// Whether the direct path is usable; set false on any init/frame failure → the
+        /// readback fallback path runs from that frame onward (FR-005).
+        member val Available = false with get, set
+        /// Whether the live present-mode diagnostic (FR-007) has been emitted once.
+        member val Announced = false with get, set
+        /// Per-swapchain command pool owning the present-layout transition buffers.
+        member val CommandPool = CommandPool() with get, set
+        /// Pre-recorded COLOR_ATTACHMENT_OPTIMAL → PRESENT_SRC_KHR transition, one per image.
+        member val TransitionBuffers: CommandBuffer[] = [||] with get, set
+        /// Per-image semaphore signalled by the transition submit, waited on by QueuePresent.
+        member val PresentSemaphores: Semaphore[] = [||] with get, set
+
     type SwapchainState =
         { Swapchain: SwapchainKHR
           Format: Silk.NET.Vulkan.Format
           ImageUsage: ImageUsageFlags
-          Extent: Extent2D }
+          Extent: Extent2D
+          /// Feature 118: direct-to-swapchain present resources (DirectToSwapchain mode only).
+          Direct: DirectPresentState }
 
     type SkiaState =
         { Context: GRContext
@@ -686,7 +710,8 @@ module VulkanHost =
                         { Swapchain = swapchain
                           Format = format.Format
                           ImageUsage = imageUsage
-                          Extent = createInfo.ImageExtent }
+                          Extent = createInfo.ImageExtent
+                          Direct = DirectPresentState() }
                 | Result.Error diagnostic -> Result.Error diagnostic
             | Result.Error diagnostic, _ -> Result.Error diagnostic
             | _, Result.Error diagnostic -> Result.Error diagnostic
@@ -1075,7 +1100,10 @@ module VulkanHost =
                 finally
                     destroyStagingBuffer vk device staging)
 
-    let renderFrame configuration (vk: Vk) (swapchainExt: KhrSwapchain) physicalDevice device (swapchainState: SwapchainState) (skiaState: SkiaState) queueFamily scene =
+    // OffscreenReadback present path (the default, unchanged): offscreen render → GPU→CPU
+    // readback → per-frame staging upload → vkQueueWaitIdle → present. Byte-identical to the
+    // pre-feature baseline (FR-001/SC-001).
+    let renderFrameReadback configuration (vk: Vk) (swapchainExt: KhrSwapchain) physicalDevice device (swapchainState: SwapchainState) (skiaState: SkiaState) queueFamily scene =
         try
             trace configuration "querying swapchain images"
             match getSwapchainImages swapchainExt device swapchainState.Swapchain with
@@ -1105,6 +1133,302 @@ module VulkanHost =
                             vk.DestroyFence(device, fence, nullPtr<AllocationCallbacks>)
         with ex ->
             Result.Error(Diagnostics.frameRenderFailed ex.Message)
+
+    // --- Feature 118: DirectToSwapchain present path ---------------------------------------
+
+    let createSemaphore (vk: Vk) (device: Device) =
+        let mutable createInfo = SemaphoreCreateInfo()
+        createInfo.SType <- StructureType.SemaphoreCreateInfo
+        let mutable semaphore = Semaphore()
+        let result = vk.CreateSemaphore(device, &createInfo, nullPtr<AllocationCallbacks>, &semaphore)
+
+        match checkResult VulkanSwapchain "vkCreateSemaphore(direct present)" result with
+        | Ok() -> Ok semaphore
+        | Result.Error diagnostic -> Result.Error diagnostic
+
+    // Build the GRVkImageInfo describing an acquired swapchain image for Skia. ImageLayout is
+    // UNDEFINED — a valid barrier source from any prior layout that discards stale contents,
+    // correct because each direct frame is a full Clear+redraw.
+    let swapchainImageInfo (swapchainState: SwapchainState) queueFamily (image: Image) =
+        let mutable imageInfo = GRVkImageInfo()
+        imageInfo.Image <- image.Handle
+        imageInfo.Format <- uint (int swapchainState.Format)
+        imageInfo.ImageTiling <- uint (int ImageTiling.Optimal)
+        imageInfo.ImageLayout <- uint (int ImageLayout.Undefined)
+        imageInfo.ImageUsageFlags <- uint (int swapchainState.ImageUsage)
+        imageInfo.SampleCount <- 1u
+        imageInfo.LevelCount <- 1u
+        imageInfo.CurrentQueueFamily <- queueFamily
+        imageInfo.SharingMode <- uint (int SharingMode.Exclusive)
+        imageInfo
+
+    // Probe whether SkiaSharp can wrap an acquired swapchain image as a renderable SKSurface.
+    //
+    // KNOWN LIMITATION (verified): SkiaSharp's managed binding (incl. the newest 4.147 preview)
+    // does NOT support creating an SKSurface from a Vulkan-backed GRBackendRenderTarget —
+    // SKSurface.Create returns null even when GRBackendRenderTarget.IsValid is true and the
+    // VkImage handle/format are correct (mono/SkiaSharp #1502, open since 2020; the layout
+    // interop #2191 is likewise unbound). The readback-free DirectToSwapchain present therefore
+    // cannot be built on SkiaSharp; this probe detects it once and the path degrades to the
+    // proven OffscreenReadback fallback (FR-005). See
+    // specs/118-backend-host-review/feedback/skiasharp-vulkan-layout-api.md and
+    // readiness/audit/present-path-audit.md (OpenGL-backend resolution).
+    let probeDirectWrap (skiaState: SkiaState) (swapchainState: SwapchainState) queueFamily (image: Image) colorType =
+        try
+            let width = int swapchainState.Extent.Width
+            let height = int swapchainState.Extent.Height
+            let imageInfo = swapchainImageInfo swapchainState queueFamily image
+            use rt = new GRBackendRenderTarget(width, height, 1, imageInfo)
+            use surface = SKSurface.Create(skiaState.Context, rt, GRSurfaceOrigin.TopLeft, colorType)
+
+            if rt.IsValid && not (isNull surface) then
+                Ok()
+            else
+                Result.Error(
+                    Diagnostics.create
+                        Warning
+                        VulkanSwapchain
+                        "SkiaSharp cannot wrap a Vulkan swapchain image as an SKSurface (managed-binding limitation, mono/SkiaSharp #1502); DirectToSwapchain is unavailable and the viewer uses the OffscreenReadback present path."
+                        (Some(sprintf "GRBackendRenderTarget.IsValid=%b SKSurface.Create=%s" rt.IsValid (if isNull surface then "null" else "ok")))
+                )
+        with ex ->
+            Result.Error(Diagnostics.create Warning VulkanSwapchain "Direct-to-swapchain wrap probe threw." (Some ex.Message))
+
+    // Build the persistent per-swapchain direct resources once: a command pool plus a
+    // pre-recorded COLOR_ATTACHMENT_OPTIMAL → PRESENT_SRC_KHR transition buffer and a present
+    // semaphore per swapchain image. Skia leaves the wrapped render target in
+    // COLOR_ATTACHMENT_OPTIMAL after flush, so the same transition is valid every frame; a
+    // reacquire of an image implies its prior present (and thus prior transition) completed,
+    // so the pre-recorded buffer/semaphore are safely resubmitted without a reuse fence.
+    // Probes wrap capability first so no resources are allocated when the binding can't wrap.
+    let initDirectPresent configuration (vk: Vk) (skiaState: SkiaState) device queueFamily (swapchainState: SwapchainState) (images: Image[]) colorType =
+      match (if images.Length = 0 then Result.Error(Diagnostics.create Warning VulkanSwapchain "Swapchain exposed no images for direct present." None) else probeDirectWrap skiaState swapchainState queueFamily images[0] colorType) with
+      | Result.Error diagnostic -> Result.Error diagnostic
+      | Ok() ->
+        try
+            let direct = swapchainState.Direct
+            let mutable poolInfo = CommandPoolCreateInfo()
+            poolInfo.SType <- StructureType.CommandPoolCreateInfo
+            poolInfo.QueueFamilyIndex <- queueFamily
+            let mutable commandPool = CommandPool()
+            let poolResult = vk.CreateCommandPool(device, &poolInfo, nullPtr<AllocationCallbacks>, &commandPool)
+
+            match checkResult VulkanSwapchain "vkCreateCommandPool(direct present)" poolResult with
+            | Result.Error diagnostic -> Result.Error diagnostic
+            | Ok() ->
+                direct.CommandPool <- commandPool
+                let buffers = Array.zeroCreate<CommandBuffer> images.Length
+                let semaphores = Array.zeroCreate<Semaphore> images.Length
+
+                let rec buildEach index =
+                    if index >= images.Length then
+                        Ok()
+                    else
+                        let mutable allocInfo = CommandBufferAllocateInfo()
+                        allocInfo.SType <- StructureType.CommandBufferAllocateInfo
+                        allocInfo.CommandPool <- commandPool
+                        allocInfo.Level <- CommandBufferLevel.Primary
+                        allocInfo.CommandBufferCount <- 1u
+                        let mutable commandBuffer = CommandBuffer()
+                        let allocResult = vk.AllocateCommandBuffers(device, &allocInfo, &commandBuffer)
+
+                        match checkResult VulkanSwapchain "vkAllocateCommandBuffers(direct present)" allocResult with
+                        | Result.Error diagnostic -> Result.Error diagnostic
+                        | Ok() ->
+                            // Record (once, resubmittable — no OneTimeSubmit flag) the
+                            // present-layout transition for this image.
+                            let mutable beginInfo = CommandBufferBeginInfo()
+                            beginInfo.SType <- StructureType.CommandBufferBeginInfo
+                            let beginResult = vk.BeginCommandBuffer(commandBuffer, &beginInfo)
+
+                            match checkResult VulkanSwapchain "vkBeginCommandBuffer(direct present)" beginResult with
+                            | Result.Error diagnostic -> Result.Error diagnostic
+                            | Ok() ->
+                                let mutable toPresent =
+                                    transitionBarrier
+                                        images[index]
+                                        ImageLayout.ColorAttachmentOptimal
+                                        ImageLayout.PresentSrcKhr
+                                        AccessFlags.ColorAttachmentWriteBit
+                                        AccessFlags.None
+
+                                vk.CmdPipelineBarrier(
+                                    commandBuffer,
+                                    PipelineStageFlags.ColorAttachmentOutputBit,
+                                    PipelineStageFlags.BottomOfPipeBit,
+                                    DependencyFlags.None,
+                                    0u,
+                                    nullPtr<MemoryBarrier>,
+                                    0u,
+                                    nullPtr<BufferMemoryBarrier>,
+                                    1u,
+                                    &toPresent
+                                )
+
+                                match checkResult VulkanSwapchain "vkEndCommandBuffer(direct present)" (vk.EndCommandBuffer commandBuffer) with
+                                | Result.Error diagnostic -> Result.Error diagnostic
+                                | Ok() ->
+                                    match createSemaphore vk device with
+                                    | Result.Error diagnostic -> Result.Error diagnostic
+                                    | Ok semaphore ->
+                                        buffers[index] <- commandBuffer
+                                        semaphores[index] <- semaphore
+                                        buildEach (index + 1)
+
+                match buildEach 0 with
+                | Result.Error diagnostic -> Result.Error diagnostic
+                | Ok() ->
+                    direct.TransitionBuffers <- buffers
+                    direct.PresentSemaphores <- semaphores
+                    Ok()
+        with ex ->
+            Result.Error(Diagnostics.create Error VulkanSwapchain "Direct-to-swapchain present initialization failed." (Some ex.Message))
+
+    let disposeDirectPresent (vk: Vk) device (direct: DirectPresentState) =
+        for semaphore in direct.PresentSemaphores do
+            if semaphore.Handle <> 0UL then
+                vk.DestroySemaphore(device, semaphore, nullPtr<AllocationCallbacks>)
+
+        if direct.CommandPool.Handle <> 0UL then
+            vk.DestroyCommandPool(device, direct.CommandPool, nullPtr<AllocationCallbacks>)
+
+        direct.PresentSemaphores <- [||]
+        direct.TransitionBuffers <- [||]
+        direct.CommandPool <- CommandPool()
+
+    // Render the scene straight onto the acquired swapchain image, transition it to
+    // PRESENT_SRC_KHR with the pre-recorded buffer, and present — no readback, no per-frame
+    // staging buffer/command pool, no vkQueueWaitIdle (semaphore-synced present).
+    let presentDirectImage configuration (vk: Vk) (swapchainExt: KhrSwapchain) device (swapchainState: SwapchainState) (skiaState: SkiaState) queueFamily (image: Image) imageIndex colorType scene =
+        try
+            let direct = swapchainState.Direct
+            let width = int swapchainState.Extent.Width
+            let height = int swapchainState.Extent.Height
+            let imageInfo = swapchainImageInfo swapchainState queueFamily image
+
+            use rt = new GRBackendRenderTarget(width, height, 1, imageInfo)
+            use surface = SKSurface.Create(skiaState.Context, rt, GRSurfaceOrigin.TopLeft, colorType)
+
+            if isNull surface then
+                Result.Error(Diagnostics.create Error VulkanSwapchain "SkiaSharp did not wrap the swapchain image for direct present." None)
+            else
+                let clear =
+                    configuration.ClearColor
+                    |> Option.defaultValue Colors.black
+                    |> SceneRenderer.skColor
+
+                surface.Canvas.Clear clear
+                drawScene scene surface.Canvas
+                surface.Canvas.Flush()
+                surface.Flush()
+                skiaState.Context.Flush()
+                // Submit Skia's render work to the queue (no CPU stall) so the transition
+                // submitted next on the same queue orders after it.
+                skiaState.Context.Submit(false)
+
+                let mutable cmdBuf = direct.TransitionBuffers[int imageIndex]
+                let mutable signalSem = direct.PresentSemaphores[int imageIndex]
+                let mutable submitInfo = SubmitInfo()
+                submitInfo.SType <- StructureType.SubmitInfo
+                submitInfo.CommandBufferCount <- 1u
+                submitInfo.PCommandBuffers <- &&cmdBuf
+                submitInfo.SignalSemaphoreCount <- 1u
+                submitInfo.PSignalSemaphores <- &&signalSem
+
+                match checkResult VulkanSwapchain "vkQueueSubmit(direct present transition)" (vk.QueueSubmit(skiaState.Queue, 1u, &submitInfo, Fence(Nullable<uint64>()))) with
+                | Result.Error diagnostic -> Result.Error diagnostic
+                | Ok() ->
+                    let mutable waitSem = signalSem
+                    let mutable presentedSwapchain = swapchainState.Swapchain
+                    let mutable presentImageIndex = imageIndex
+                    let mutable presentInfo = PresentInfoKHR()
+                    presentInfo.SType <- StructureType.PresentInfoKhr
+                    presentInfo.WaitSemaphoreCount <- 1u
+                    presentInfo.PWaitSemaphores <- &&waitSem
+                    presentInfo.SwapchainCount <- 1u
+                    presentInfo.PSwapchains <- &&presentedSwapchain
+                    presentInfo.PImageIndices <- &&presentImageIndex
+
+                    match checkResult VulkanSwapchain "vkQueuePresentKHR(direct present)" (swapchainExt.QueuePresent(skiaState.Queue, &presentInfo)) with
+                    | Result.Error diagnostic -> Result.Error diagnostic
+                    | Ok() ->
+                        Ok
+                            { Width = width
+                              Height = height
+                              ColorType = colorType
+                              // No readback in direct mode; on-demand capture renders its own
+                              // offscreen surface (FR-004). Empty pixels signal "render on demand".
+                              Pixels = [||] }
+        with ex ->
+            Result.Error(Diagnostics.create Error VulkanSwapchain "Direct-to-swapchain present failed." (Some ex.Message))
+
+    let renderFrameDirect configuration (vk: Vk) (swapchainExt: KhrSwapchain) physicalDevice device (swapchainState: SwapchainState) (skiaState: SkiaState) queueFamily (report: RenderDiagnostic -> unit) scene =
+        let direct = swapchainState.Direct
+        let fallback () =
+            renderFrameReadback configuration vk swapchainExt physicalDevice device swapchainState skiaState queueFamily scene
+
+        try
+            match getSwapchainImages swapchainExt device swapchainState.Swapchain with
+            | Result.Error diagnostic -> Result.Error diagnostic
+            | Ok images ->
+                let colorType = colorTypeForFormat swapchainState.Format
+
+                // Lazy one-time init of the persistent direct resources for this swapchain.
+                // initDirectPresent probes wrap capability first; on this SkiaSharp build the
+                // probe fails (mono/SkiaSharp #1502) so Available stays false and every frame
+                // degrades to the proven readback path (FR-005), announced once via `report`.
+                if not direct.Attempted then
+                    direct.Attempted <- true
+
+                    match initDirectPresent configuration vk skiaState device queueFamily swapchainState images colorType with
+                    | Ok() -> direct.Available <- true
+                    | Result.Error diagnostic ->
+                        direct.Available <- false
+                        // FR-005: safe degradation with the actionable cause, then readback.
+                        report diagnostic
+
+                if not direct.Available then
+                    fallback ()
+                else
+                    match createFence vk device with
+                    | Result.Error diagnostic -> Result.Error diagnostic
+                    | Ok fence ->
+                        try
+                            match acquireImage vk swapchainExt device swapchainState.Swapchain fence with
+                            | Result.Error diagnostic -> Result.Error diagnostic
+                            | Ok imageIndex ->
+                                let image = images[int imageIndex]
+
+                                match presentDirectImage configuration vk swapchainExt device swapchainState skiaState queueFamily image imageIndex colorType scene with
+                                | Ok snapshot ->
+                                    // FR-007: announce the live present mode once (Category =
+                                    // Swapchain via the Stage→Category mapping), non-golden.
+                                    if not direct.Announced then
+                                        direct.Announced <- true
+                                        report (Diagnostics.create Info VulkanSwapchain "present-mode=DirectToSwapchain readback=false (live frames render straight onto the swapchain image)." None)
+
+                                    Ok snapshot
+                                | Result.Error diagnostic ->
+                                    // A per-frame direct failure after init: degrade to readback
+                                    // from this frame onward (FR-005), skip presenting this frame.
+                                    direct.Available <- false
+                                    report (Diagnostics.create Warning VulkanSwapchain "DirectToSwapchain present failed mid-frame; falling back to the offscreen readback present path." diagnostic.Cause)
+                                    Result.Error diagnostic
+                        finally
+                            if fence.Handle <> 0UL then
+                                vk.DestroyFence(device, fence, nullPtr<AllocationCallbacks>)
+        with ex ->
+            Result.Error(Diagnostics.frameRenderFailed ex.Message)
+
+    // Dispatch on the configured present mode. OffscreenReadback is byte-identical to the
+    // pre-feature baseline; DirectToSwapchain opts into the readback-free path with a safe
+    // fallback. `report` carries live-only, non-golden present diagnostics (FR-005/FR-007).
+    let renderFrame configuration (vk: Vk) (swapchainExt: KhrSwapchain) physicalDevice device (swapchainState: SwapchainState) (skiaState: SkiaState) queueFamily (report: RenderDiagnostic -> unit) scene =
+        match configuration.PresentMode with
+        | ViewerPresentMode.OffscreenReadback ->
+            renderFrameReadback configuration vk swapchainExt physicalDevice device swapchainState skiaState queueFamily scene
+        | ViewerPresentMode.DirectToSwapchain ->
+            renderFrameDirect configuration vk swapchainExt physicalDevice device swapchainState skiaState queueFamily report scene
 
     let encodeSnapshot (request: ScreenshotRequest) snapshot =
         try
@@ -1161,6 +1485,11 @@ module VulkanHost =
         let mutable pendingScene: Scene option = None
         let mutable pendingScreenshots: ScreenshotRequest list = []
         let mutable renderScene: (Scene -> Result<FrameSnapshot, RenderDiagnostic>) option = None
+        // Feature 118 (FR-004): on-demand offscreen-readback capture, decoupled from per-frame
+        // present, so screenshots/evidence work under both present modes (the direct present
+        // path performs no readback). `lastScene` is the most recent rendered scene to re-render.
+        let mutable captureScene: (Scene -> Result<FrameSnapshot, RenderDiagnostic>) option = None
+        let mutable lastScene: Scene option = None
         let mutable lastFrame: FrameSnapshot option = None
         let mutable surfaceExt: KhrSurface option = None
         let mutable swapchainExt: KhrSwapchain option = None
@@ -1214,10 +1543,25 @@ module VulkanHost =
             | RenderFrame scene ->
                 match renderScene with
                 | Some render ->
+                    lastScene <- Some scene
+
                     match render scene with
                     | Ok snapshot ->
                         lastFrame <- Some snapshot
-                        flushPendingScreenshots snapshot
+
+                        // Direct present yields no readback pixels; flush any deferred captures
+                        // by rendering the scene on demand through the offscreen routine (FR-004).
+                        if snapshot.Pixels.Length > 0 then
+                            flushPendingScreenshots snapshot
+                        else
+                            match captureScene with
+                            | Some capture when not (List.isEmpty pendingScreenshots) ->
+                                match capture scene with
+                                | Ok captureSnapshot -> flushPendingScreenshots captureSnapshot
+                                | Result.Error diagnostic ->
+                                    dispatchViewerEvent program dispatch (DiagnosticReported diagnostic)
+                                    Result.Error diagnostic
+                            | _ -> Ok()
                     | Result.Error diagnostic ->
                         dispatchViewerEvent program dispatch (DiagnosticReported diagnostic)
                         Result.Error diagnostic
@@ -1225,20 +1569,34 @@ module VulkanHost =
                     pendingScene <- Some scene
                     Ok()
             | CaptureScreenshot request ->
-                match lastFrame with
-                | Some snapshot ->
-                    saveScreenshot request snapshot
-                | None ->
-                    match pendingScene with
-                    | Some _ ->
-                        pendingScreenshots <- pendingScreenshots @ [ request ]
-                        Ok()
-                    | None ->
+                // On-demand capture (FR-004): prefer the readback pixels already captured by the
+                // offscreen present path; otherwise (direct present mode) render the last scene on
+                // demand through the offscreen readback routine — never gated on the present mode.
+                let captureOnDemand () =
+                    match lastScene |> Option.orElse pendingScene, captureScene with
+                    | Some scene, Some capture ->
+                        match capture scene with
+                        | Ok snapshot ->
+                            lastFrame <- Some snapshot
+                            saveScreenshot request snapshot
+                        | Result.Error diagnostic ->
+                            dispatchViewerEvent program dispatch (DiagnosticReported diagnostic)
+                            Result.Error diagnostic
+                    | _ ->
                         let diagnostic =
                             Diagnostics.screenshotFailed "Screenshot capture was requested before the first successful Vulkan/Skia frame."
 
                         dispatchViewerEvent program dispatch (DiagnosticReported diagnostic)
                         Result.Error diagnostic
+
+                match lastFrame with
+                | Some snapshot when snapshot.Pixels.Length > 0 -> saveScreenshot request snapshot
+                | _ ->
+                    match pendingScene with
+                    | Some _ when Option.isNone captureScene ->
+                        pendingScreenshots <- pendingScreenshots @ [ request ]
+                        Ok()
+                    | _ -> captureOnDemand ()
             | Shutdown ->
                 requestShutdown true
                 disposeSubscriptions ()
@@ -1359,8 +1717,26 @@ module VulkanHost =
                     skiaContext <- Some skia.Context
                     skiaExtensions <- Some skia.Extensions
 
+                    // Live-only, non-golden present diagnostics (FR-005 fallback Warning,
+                    // FR-007 present-mode Info) flow over the existing diagnostic channel.
+                    let report diagnostic =
+                        dispatchViewerEvent program dispatch (DiagnosticReported diagnostic)
+
                     renderScene <-
-                        Some(renderFrame program.Configuration vk createdSwapchainExt physicalDevice device createdSwapchain skia queueFamily)
+                        Some(renderFrame program.Configuration vk createdSwapchainExt physicalDevice device createdSwapchain skia queueFamily report)
+
+                    // On-demand offscreen-readback capture routine (FR-004), independent of the
+                    // present mode — the same readback Skia surface the offscreen path renders.
+                    let captureColorType = colorTypeForFormat createdSwapchain.Format
+
+                    captureScene <-
+                        Some(fun scene ->
+                            bind (renderSceneToPixels program.Configuration skia createdSwapchain.Extent captureColorType scene) (fun pixels ->
+                                Ok
+                                    { Width = int createdSwapchain.Extent.Width
+                                      Height = int createdSwapchain.Extent.Height
+                                      ColorType = captureColorType
+                                      Pixels = pixels }))
 
                     let scene =
                         pendingScene
@@ -1400,6 +1776,9 @@ module VulkanHost =
                 match swapchainState with
                 | Some state when state.Swapchain.Handle <> 0UL ->
                     let _ = vk.DeviceWaitIdle(device)
+                    // Feature 118: release the persistent direct-present resources (command
+                    // pool + per-image present semaphores) before destroying the swapchain.
+                    disposeDirectPresent vk device state.Direct
                     ext.DestroySwapchain(device, state.Swapchain, nullPtr<AllocationCallbacks>)
                 | _ -> ()
             | _ -> ()

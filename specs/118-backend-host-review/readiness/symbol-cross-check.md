@@ -1,0 +1,35 @@
+## Symbol consistency (analyze pass G)
+- entity-record Dev — in {tasks}, missing from {plan, data-model}
+- entity-record DirectToSwapchain — in {tasks}, missing from {plan, data-model}
+- entity-record FrameMetrics — in {tasks}, missing from {plan, data-model}
+- entity-record GeneratedProductCheck — in {tasks}, missing from {plan, data-model}
+- entity-record TemplateCheck — in {tasks}, missing from {plan, data-model}
+- entity-record ViewerConfiguration — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- entity-record ViewerOptions — in {plan, data-model}, missing from {tasks}
+- fr-id FR-002 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-003 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-009 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-010 — in {plan, tasks}, missing from {data-model}
+- msg-case Effect — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case Msg — in {plan, data-model}, missing from {tasks}
+- msg-case PresentMode — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- msg-case ViewerEffect — in {plan, tasks}, missing from {data-model}
+- msg-case ViewerModel — in {plan}, missing from {data-model, tasks}
+- msg-case ViewerMsg — in {plan, tasks}, missing from {data-model}
+- sc-id SC-001 — in {data-model, tasks}, missing from {plan}
+- sc-id SC-002 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-003 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-004 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-005 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-007 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-008 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-009 — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant GRBackendRenderTarget — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant GRVkImageInfo — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant OffscreenReadback — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant PresentMode — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant ReadPixels — in {data-model, tasks}, missing from {plan}
+- union-or-screen-variant SKSurface — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- union-or-screen-variant ViewerPresentMode — in {data-model, tasks}, missing from {plan}
+- union-or-screen-variant VkFormat — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
