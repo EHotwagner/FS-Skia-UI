@@ -73,7 +73,10 @@ let upgradeSkiaSpecKitTests =
         }
 
         test "Spec Kit root metadata and generated guidance posture record selected release" {
-            expectFileContains ".specify/init-options.json" [ "\"speckit_version\": \"0.8.16\"" ]
+            // Feature 115 (FR-001/FR-007): the recorded spec-kit version was bumped
+            // 0.8.16 -> 0.10.2; this live assertion tracks the version actually in use
+            // (feature 025's historical readiness records below stay at 0.8.16).
+            expectFileContains ".specify/init-options.json" [ "\"speckit_version\": \"0.10.2\"" ]
 
             expectFileContains
                 "specs/025-upgrade-skia-speckit/readiness/version-selection.md"

@@ -1,0 +1,6 @@
+
+## package/app generated Dev
+$ bash ./fake.sh build -t Dev
+Dev completed for generated v3dotnetapppackage
+
+exit-code=0

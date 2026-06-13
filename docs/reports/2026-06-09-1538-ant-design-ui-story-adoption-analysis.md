@@ -579,6 +579,101 @@ is the topic" but:*
    plumbing, and gate wiring are designed and evidenced like any feature (and the skill
    sync into `.claude` is owned by the generator, never hand-maintained).
 
+### Spec Kit Design Stage Decision
+
+UI and design-system work should add an optional design stage between `specify`
+and `plan`:
+
+```text
+specify -> design -> plan -> tasks -> implement
+```
+
+The stage should be named `speckit-design`. It is required for features that
+change visual language, design tokens, interaction states, showcase stories,
+generated templates, page patterns, or Penpot assets. It should be skipped for
+routine framework-internal changes where there is no user-facing design
+decision.
+
+The boundary is deliberate:
+
+- `specify` captures the user outcome, constraints, non-goals, and acceptance
+  criteria without prematurely choosing token names or page structure.
+- `speckit-design` translates that outcome into concrete design artifacts:
+  token taxonomy, selected design-system policy, interaction states, layout and
+  density rules, Penpot import/export notes, and required visual evidence.
+- `plan` consumes those artifacts to decide public surface impact, renderer
+  work, template impact, gates, and evidence paths.
+- `tasks` and `implement` then build against the planned contracts.
+
+Running design after `plan` would make the plan guess at public token shape,
+style-resolver boundaries, template parameters, and evidence needs. That is too
+late for governed UI work because those decisions affect `.fsi` surfaces,
+generated baselines, contrast policy, screenshots, and `Route` escalation.
+
+Recommended design-stage artifacts:
+
+| Artifact | Purpose |
+|----------|---------|
+| `specs/<feature>/design/brief.md` | Design intent, selected policy, audience, and non-goals. |
+| `specs/<feature>/design/token-taxonomy.md` | DTCG groups, generated F# names, public-vs-internal token decision. |
+| `specs/<feature>/design/interaction-states.md` | Hover, focus, pressed, disabled, selected, validation, loading, and feedback states. |
+| `specs/<feature>/design/page-patterns.md` | Ant-inspired page or component patterns the feature must support. |
+| `specs/<feature>/design/penpot/manifest.json` | Optional Penpot library/project import metadata and source DTCG file references. |
+| `specs/<feature>/design/evidence/` | Optional exported mockups or screenshots used as planning evidence. |
+
+### Penpot Integration Boundary
+
+Penpot should be an authoring, inspection, and collaboration workspace, not the
+canonical product source. The canonical source stays in the repository:
+
+```text
+src/Controls/design-tokens.tokens.json
+  -> DesignTokenGen
+  -> src/Controls/DesignTokens.fs
+  -> DesignTokenDrift / color-policy gates
+```
+
+The design workflow may load a feature or design-system library into Penpot by
+exporting the repo's DTCG token document and any feature-specific mockup assets.
+Changes that matter to the product must return as reviewed DTCG/source diffs,
+then flow through `RefreshSurfaceBaselines`, `DesignTokenDrift`, the selected
+color-policy gate, and whatever additional gates `Route` prints. Do not treat a
+Penpot project file, manual color swatch, or remote Penpot state as a second
+source of truth.
+
+This keeps the useful part of Penpot -- visual inspection, shared design review,
+and prototype composition -- without weakening the repo's deterministic
+generation and drift-check model.
+
+### FS.Skia.UI Token Libraries For Penpot
+
+Penpot should receive FS.Skia.UI-specific token libraries, not raw Ant Design
+libraries. Ant remains the upstream design language and token inspiration; the
+exported libraries must encode the local renderer roles, local naming, and local
+governance model.
+
+Recommended library set:
+
+| Library | Role |
+|---------|------|
+| `fs-skia-wcag.tokens.json` | Compatibility/default policy using today's explicit WCAG pairings and thresholds. |
+| `fs-skia-ant.tokens.json` | Ant-inspired seed/map/alias/component tokens adapted to FS.Skia.UI controls and Skia rendering. |
+| `fs-skia-material.tokens.json` | Future Material-inspired policy, if adopted. |
+| `fs-skia-fluent.tokens.json` | Future Fluent-inspired policy, if adopted. |
+
+The Ant library should be generated or curated from Ant seed, functional,
+neutral, semantic, and component-token concepts, but it must not import Ant
+React components, CSS variables, Less variables, DOM structure, or runtime
+dependencies. The useful translation path is:
+
+```text
+Ant docs / Ant MCP
+  -> fs-skia-ant-design skill + reference data
+  -> FS.Skia.UI DTCG token library
+  -> generated F# tokens + gates
+  -> optional Penpot import for design review
+```
+
 ### Highest-leverage single artifact
 
 Reimplement Ant's `@ant-design/colors` `generate(seed)` (a 10-shade palette derived from

@@ -1,0 +1,14 @@
+## Symbol consistency (analyze pass G)
+- fr-id FR-001 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-002 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-004 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-006 — in {plan, tasks}, missing from {data-model}
+- msg-case Effect — in {plan}, missing from {data-model, tasks}
+- msg-case Model — in {plan}, missing from {data-model, tasks}
+- msg-case Msg — in {plan}, missing from {data-model, tasks}
+- sc-id SC-001 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-002 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-003 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-004 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-005 — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant EvidenceAudit — in {plan}, missing from {data-model, tasks}

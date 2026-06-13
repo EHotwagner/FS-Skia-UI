@@ -1,0 +1,931 @@
+{
+  "schema_version": "1.0",
+  "verdict": "ok",
+  "errors": [],
+  "warnings": [],
+  "cycles": [],
+  "tasks": [
+    {
+      "id": "T001",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm the feature directory wiring (spec + plan + research + data-model + quickstart present) and record Tier, affected paths, public-API impact (none), Elmish/MVU applicability (none for safe bumps), and the real-evidence obligations in `readiness/unsupported-scope.md`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T001",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T001: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T002",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Author the audit-enforced readiness scaffolds discoverable before implementation: `readiness/governance-risk-levels.md`, `readiness/aggregate-hang-diagnostics.md`, `readiness/runtime-limitations.md`, `readiness/generated-validation.md` (package-resolution=resolved, package-mismatch=false), `readiness/evidence-graph.md`, and `readiness/evidence-audit.md` (verdict token). Each names its authoritative command, artifact path, failure class, and next action",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T002",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T002: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T003",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": true,
+      "title": "Author the not-applicable visual/window readiness set (this feature renders nothing): `readiness/visual-evidence-honesty.md`, `readiness/window-visibility.md`, `readiness/real-image-evidence.md`, `readiness/generated-guidance-validation.md` \u2014 each marked not-applicable (version/governance-only change, no scene/window/screenshot surface) with the reason",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T003",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T003: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T004",
+      "declared": "done",
+      "effective": "done",
+      "phase": 1,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Capture the before-state pin snapshot (`Directory.Packages.props`, `.specify/init-options.json` `speckit_version`, `dotnet --list-sdks`) into `readiness/before-pins.md` as the baseline the after-state diffs against",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T004",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T004: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T005",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Assert the zero-`.fsi`/zero-surface obligation (FR-003): record in `readiness/contract-impact.md` that no `.fsi`, surface baseline, golden, or sample contract is intended to change, and that the surface/golden gates are the enforcing assertion",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T005",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T005: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T006",
+      "declared": "done",
+      "effective": "done",
+      "phase": 2,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t Route` (and `--enforce`) on the clean tree to record the authoritative escalated gate list and a green baseline into `readiness/focused-gates.md` before any pin changes",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T006",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T006: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T004"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T007",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Bump `FSharp.Core` `10.1.300 \u2192 10.1.301` in `Directory.Packages.props`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T007",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T007: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T008",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Bump `Microsoft.Extensions.FileSystemGlobbing` `10.0.8 \u2192 10.0.9` in `Directory.Packages.props`",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T008",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T008: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T009",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Bump `speckit_version` `0.8.16 \u2192 0.10.2` in `.specify/init-options.json`. This is a recorded-version edit: the repo's skill/command tree is canonical under `.agents/**` and the `.claude/**` tree is generated **from it** (not vendored from spec-kit upstream), so the bump does not pull upstream assets. Only if a `.agents/**` source asset is actually touched, regenerate the `.claude` tree with `./fake.sh build -t RefreshSurfaceBaselines` and let `SkillSyncCheck` confirm currency \u2014 do not hand-edit generated trees (SC-005)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T009",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T009: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T010",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Run the routed gate set sequentially (`Route` \u2192 `Dev` \u2192 `GeneratedGuidanceCheck` \u2192 `TemplateCheck` \u2192 `GeneratedProductCheck` \u2192 `EvidenceGraph` \u2192 `EvidenceAudit`) and confirm all printed gates green with **zero** surface-baseline, golden, and generated-product diff; capture logs under `readiness/logs/` (SC-001, SC-002, FR-002, FR-003)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T010",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T010: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T007",
+        "T008",
+        "T009"
+      ],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T011",
+      "declared": "done",
+      "effective": "done",
+      "phase": 3,
+      "story": "US1",
+      "tier": null,
+      "parallel": false,
+      "title": "Record the US1 outcome in `readiness/us1-validation.md`: the four safe bumps `applied`, the .NET SDK float (`10.0.301`, no `global.json`) acknowledged for completeness, and `speckit_version` matching the version in use (FR-001, FR-007)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T011",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T011: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T010"
+      ],
+      "phase_deps": [
+        "T006"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T012",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "YamlDotNet `17.1.0 \u2192 18.0.0`: apply the single pin, run the full routed gate set, then either keep it (`adopted`, all gates green, no source change) or `git checkout -- Directory.Packages.props` and record `deferred(<failing gate + symptom>)`. No half-applied state may remain (FR-004, FR-005)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T012",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T012: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T013",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": true,
+      "title": "Fable.Elmish `4.2.0 \u2192 5.0.2`: apply, run the full routed gate set, then adopt (gates green, no source change) or revert and record the deferral reason \u2014 highest blast radius (Controls.Elmish MVU runtime) (FR-004, FR-005)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T013",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T013: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T014",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Test-stack cluster Expecto `10.2.2 \u2192 11.0.0` + Microsoft.NET.Test.Sdk `17.11.1 \u2192 18.6.0` + YoloDev.Expecto.TestSdk `0.15.3 \u2192 1.0.0`: bump the three together (they interlock), run the full routed gate set, then adopt the whole cluster or revert the whole cluster and record the reason \u2014 never a partial cluster (FR-004, FR-005)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T014",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T014: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T015",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "FSharp.Core 11.x line (`11.0.101-preview5`): record `deferred` as out-of-scope (tied to a newer F#/SDK, not drop-in on `net10.0`); not attempted, per spec",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T015",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T015: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T016",
+      "declared": "done",
+      "effective": "done",
+      "phase": 4,
+      "story": "US2",
+      "tier": null,
+      "parallel": false,
+      "title": "Confirm no partially-applied breaking bump remains (`git status` / `git diff Directory.Packages.props` shows only adopted pins) and record the per-bump adopt/defer dispositions in `readiness/us2-validation.md` (SC-003, FR-005)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T016",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T016: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T012",
+        "T013",
+        "T014",
+        "T015"
+      ],
+      "phase_deps": [
+        "T011"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T017",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Refresh the consumer-facing template pins (`template/**`) only if the adopted bumps make a generated project inconsistent, via the `fs-skia-template-update` skill (regenerate pins; do not hand-edit beyond what the skill governs) (FR-006)",
+      "skillist": [
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T017",
+          "declared_skillist": [
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T017: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T018",
+      "declared": "done",
+      "effective": "done",
+      "phase": 5,
+      "story": "US3",
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t TemplateCheck` then `./fake.sh build -t GeneratedProductCheck` and confirm a freshly generated `dotnet new fs-skia-ui` project restores and builds against the updated pins; capture evidence in `readiness/us3-validation.md` (SC-004, FR-006)",
+      "skillist": [
+        "fs-skia-template-update"
+      ],
+      "skillist_mirror": [
+        "fs-skia-template-update"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T018",
+          "declared_skillist": [
+            "fs-skia-template-update"
+          ],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "declared",
+          "diagnostic": "T018: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T017"
+      ],
+      "phase_deps": [
+        "T016"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T019",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Refresh `docs/reports/dependencies.md` pin notes to match the final pins and run `./fake.sh build -t DependencyReport` so its generated output reflects the new central-package versions",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T019",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T019: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T020",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Finalize per-package outcomes in `research.md` and `data-model.md` (each row `applied` / `adopted` / `deferred(reason)` / `unchanged`), and confirm the out-of-scope deferrals (SkiaSharp 4.147 preview line, FAKE lock at 6.1.4, FSharp.Core 11.x) are recorded (SC-003)",
+      "skillist": [],
+      "skillist_mirror": [],
+      "skill_match_assessments": [
+        {
+          "task_id": "T020",
+          "declared_skillist": [],
+          "candidate_skill_id": null,
+          "matched_signals": [],
+          "confidence": "none",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted-empty",
+          "diagnostic": "T020: skillist trusted as declared; no owns-based capability requirement"
+        }
+      ],
+      "explicit_deps": [
+        "T011",
+        "T016",
+        "T018"
+      ],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T021",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceGraph` \u2014 confirm no cycles, no dangling refs, no `[S*]` surprises; refresh `readiness/task-graph.md`",
+      "skillist": [
+        "speckit-evidence-graph"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-graph"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T021",
+          "declared_skillist": [
+            "speckit-evidence-graph"
+          ],
+          "candidate_skill_id": "speckit-evidence-graph",
+          "matched_signals": [
+            "owns:graph-validation"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T021: owns graph-validation requires skill speckit-evidence-graph; trigger_group=owns; matched_trigger=owns:graph-validation"
+        }
+      ],
+      "explicit_deps": [
+        "T019",
+        "T020"
+      ],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    },
+    {
+      "id": "T022",
+      "declared": "done",
+      "effective": "done",
+      "phase": 6,
+      "story": null,
+      "tier": null,
+      "parallel": false,
+      "title": "Run `./fake.sh build -t EvidenceAudit` \u2014 confirm verdict PASS with **zero** synthetic markers (none are used); record the verdict token in `readiness/evidence-audit.md`",
+      "skillist": [
+        "speckit-evidence-audit"
+      ],
+      "skillist_mirror": [
+        "speckit-evidence-audit"
+      ],
+      "skill_match_assessments": [
+        {
+          "task_id": "T022",
+          "declared_skillist": [
+            "speckit-evidence-audit"
+          ],
+          "candidate_skill_id": "speckit-evidence-audit",
+          "matched_signals": [
+            "owns:evidence-audit"
+          ],
+          "confidence": "high",
+          "ambiguity": null,
+          "reviewer_disposition": "accepted",
+          "diagnostic": "T022: owns evidence-audit requires skill speckit-evidence-audit; trigger_group=owns; matched_trigger=owns:evidence-audit"
+        }
+      ],
+      "explicit_deps": [
+        "T021"
+      ],
+      "phase_deps": [
+        "T018"
+      ],
+      "root_cause": [],
+      "seh": {
+        "annotation": false,
+        "approval_label": false,
+        "design_source": "",
+        "synthetic_input_class": "",
+        "expected_error_behavior": "",
+        "rationale": "",
+        "acceptance_status": "",
+        "diagnostics": [],
+        "accepted": false
+      }
+    }
+  ]
+}

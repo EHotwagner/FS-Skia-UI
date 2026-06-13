@@ -24,8 +24,8 @@ It moves dependency placement into explicit package owners:
 | Package | Version | Purpose | Owner | License posture | Upgrade expectation | Preview risk |
 |---------|---------|---------|-------|-----------------|---------------------|--------------|
 | Expecto | 10.2.2 | F# semantic and governance test framework. | Test infrastructure | OSS package accepted for tests. | Review during SDK/test adapter upgrades. | None. |
-| Fable.Elmish | 4.2.0 | Elmish model/update/effect workflow used by viewer APIs. | Runtime framework | OSS package accepted for runtime use. | Review before public API changes that affect Elmish contracts. | None. |
-| FSharp.Core | 10.1.300 | F# core library required by SDK-style F# projects. | Runtime framework | Microsoft OSS package accepted for runtime and tests. | Keep aligned with the supported .NET SDK. | None. |
+| Fable.Elmish | 5.0.2 | Elmish model/update/effect workflow used by viewer APIs. | Runtime framework | OSS package accepted for runtime use. | Review before public API changes that affect Elmish contracts. | None. |
+| FSharp.Core | 10.1.301 | F# core library required by SDK-style F# projects. | Runtime framework | Microsoft OSS package accepted for runtime and tests. | Keep aligned with the supported .NET SDK. | None. |
 | Microsoft.NET.Test.Sdk | 17.11.1 | Test SDK adapter infrastructure for `dotnet test`. | Test infrastructure | Microsoft OSS package accepted for tests. | Keep aligned with supported .NET SDK. | None. |
 | Silk.NET.Input | 2.23.0 | Input abstractions for keyboard and pointer integration. | Runtime framework | OSS package accepted for runtime use. | Review with Silk.NET platform updates. | None. |
 | Silk.NET.Vulkan | 2.23.0 | Vulkan bindings for the renderer path. | Runtime framework | OSS package accepted for runtime use. | Review with Vulkan backend changes. | None. |
@@ -35,7 +35,7 @@ It moves dependency placement into explicit package owners:
 | SkiaSharp | 4.147.0-preview.3.1 | Skia drawing APIs used by the renderer. | Runtime framework | OSS package accepted with preview review. | Reassess at each SkiaSharp 4 preview/stable change. | Preview package: package shape and native behavior may change. |
 | SkiaSharp.NativeAssets.Linux | 4.147.0-preview.3.1 | Linux native Skia assets. | Runtime framework | OSS package accepted with preview review. | Keep version-aligned with SkiaSharp. | Preview native asset package. |
 | SkiaSharp.NativeAssets.Win32 | 4.147.0-preview.3.1 | Windows native Skia assets. | Runtime framework | OSS package accepted with preview review. | Keep version-aligned with SkiaSharp. | Preview native asset package. |
-| YamlDotNet | 17.1.0 | YAML parsing for keyboard input configuration. | Runtime framework | OSS package accepted for runtime use. | Review with schema changes. | None. |
+| YamlDotNet | 18.0.0 | YAML parsing for keyboard input configuration. | Runtime framework | OSS package accepted for runtime use. | Review with schema changes. | None. |
 | Yoga.Net | 3.2.3 | Yoga layout engine bindings. | Layout package | OSS package accepted for layout use. | Review with layout engine updates. | None. |
 | YoloDev.Expecto.TestSdk | 0.15.3 | Expecto test SDK adapter for `dotnet test`. | Test infrastructure | OSS package accepted for tests. | Keep compatible with Expecto and test SDK versions. | None. |
 
@@ -96,7 +96,7 @@ them and none ships in any generated product. `DependencyReport` scans only
 |---------|---------|---------|-------|-----------------|---------------------|--------------|
 | FSharp.SystemTextJson | 1.4.36 | F# DU/record round-trip over `System.Text.Json` for the JSON read/write capability (C4, C5). | Build tooling / governance | OSS package accepted for build tooling only. | Review with `System.Text.Json` / SDK upgrades. | None. |
 | XParsec | 1.0.0 | Pure-F# parser combinators for the line/region/diff grammar capability (C2, C3, C16) after the regex-port parity gate. | Build tooling / governance | MIT; accepted for build tooling only. | Pinned to 1.0.0 per the capability report; review on a new major. | None. |
-| Microsoft.Extensions.FileSystemGlobbing | 10.0.8 | First-party `*`/`**` whitelist glob matching for the glob capability (C14). | Build tooling / governance | Microsoft OSS package accepted for build tooling only. | Keep aligned with the .NET 10 line. | None. |
+| Microsoft.Extensions.FileSystemGlobbing | 10.0.9 | First-party `*`/`**` whitelist glob matching for the glob capability (C14). | Build tooling / governance | Microsoft OSS package accepted for build tooling only. | Keep aligned with the .NET 10 line. | None. |
 | Fake.IO.FileSystem | 6.1.4 | FAKE-family file discovery / globbing for the discovery capability (C13). | Build tooling / governance | OSS package accepted for build tooling only. | Keep aligned with `Fake.Core.Target` 6.1.4 and `build.fsx.lock`. | None. |
 | Fake.Tools.Git | 6.1.4 | FAKE-family git wrapping (base-ref resolve, `merge-base`, diff) for the git capability (C15). | Build tooling / governance | OSS package accepted for build tooling only. | Keep aligned with `Fake.Core.Target` 6.1.4. | None. |
 | DiffPlex | 1.9.0 | Readable unified/side-by-side text diffs for the golden-parity / generation-currency capability (C19). | Build tooling / governance | OSS package accepted for build tooling only. | Review on a new minor. | None. |

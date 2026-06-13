@@ -127,7 +127,10 @@ let controlsBoundary =
       "Owns the rich keyboard input runtime, reducer/effect contracts, diagnostics, and YAML configuration parsing."
       "FS.Skia.UI.Controls.Elmish",
       "src/Controls.Elmish/Controls.Elmish.fsproj",
-      Set.ofList [ "../Controls/Controls.fsproj"; "../KeyboardInput/KeyboardInput.fsproj" ],
+      // Feature 085 added the documented acyclic Controls.Elmish -> SkiaViewer edge
+      // (InteractiveAppHost/runInteractiveApp host wiring); the expected set is brought
+      // current here (it had drifted, failing DependencyReport independently of pins).
+      Set.ofList [ "../Controls/Controls.fsproj"; "../KeyboardInput/KeyboardInput.fsproj"; "../SkiaViewer/SkiaViewer.fsproj" ],
       Set.ofList [ "Fable.Elmish" ],
       "Owns command, subscription, and program adapter integration so base Controls stays generic over product messages." ]
 
