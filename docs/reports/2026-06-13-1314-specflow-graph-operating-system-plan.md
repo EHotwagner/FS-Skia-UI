@@ -653,6 +653,8 @@ generation.
 | Source Link and package signing | Source Link embeds repository metadata during package creation; signed packages add authenticity/integrity checks. | Release policy should decide whether each package requires Source Link, signing, artifact attestation, or all three. The decision should be explicit, not accidental. |
 | JSON Schema | JSON Schema is useful for editor validation and UI hints, but it is still a projection of validation vocabulary. | JSON Schema should be generated from the compiled graph model for authoring support. It should not replace the F# validator. |
 | FAKE targets | FAKE targets can run dependencies unless `--single-target` is used; final and failure targets exist for cleanup/reporting. | The graph should record whether evidence came from a target including dependencies or a single-target run. Gate evidence should include the exact command, target, dependency behavior, and output paths. |
+| FAKE target parallelism | `Fake.Core.Target` supports `--parallel <num>` / `parallel-jobs`, but only independent target paths can run concurrently; dependent targets still execute in order. FAKE warns that target functions must be thread-safe, stdout/logs may race, and first-error detection can suffer. | Do not treat FAKE as a general concurrency scheduler. Use sequential target execution for authoritative gate evidence unless the target is explicitly marked concurrency-safe and writes only workspace-scoped outputs. |
+| FAKE runner/cache state | FAKE historically caches compiled scripts in `.fake`, and FAKE v6 release notes describe runner cache handling around `.fake/script.fsx`. That is generated runner state, not project evidence. | Worktree concurrency must isolate or prove safety for `.fake` and other generated build state. SpecFlow should own a per-workspace lock for FAKE-backed commands and require an explicit `concurrencySafe` target classification before parallel gate execution. |
 | SLSA provenance | SLSA provenance describes how artifacts were produced so consumers can verify build expectations and rebuild if needed. | Release evidence should move toward provenance-oriented rows: source commit, workflow identity, package digest, builder identity, and attestation location. |
 
 The platform conclusion is straightforward: local governance cannot stop at
@@ -704,6 +706,7 @@ should close:
 | `Route --enforce` checks presence only | A stale artifact can satisfy presence. | Evidence rows bind artifacts to graph hash, commit, command, target, and timestamp; stale evidence is rejected. |
 | Whole-worktree route is merge-oriented | Authoring one report file in a dirty tree inherits unrelated gates. | Graph supports both merge route and scoped authoring route; scoped route cannot satisfy merge readiness. |
 | Active feature comes from `.specify/feature.json` | Evidence gates depend on old runtime state. | `.specflow/current.json` points to the active graph; workspaces can pin a feature without global `.specify` mutation. |
+| Concurrent work relies on convention | Multiple agents/features can edit in separate worktrees, but build/gate state such as `.fake`, `bin/`, `obj/`, package output, generated-product staging, logs, and GL/display resources can collide. | Workspaces become first-class graph rows with cache/output namespaces and FAKE lock policy. Parallel authoring is supported; parallel authoritative FAKE gate execution is denied by default unless target/output safety is proven. |
 | Package policy is separate from feature policy | Pre-publish checks live at release time, not design time. | Package/release impact is declared during planning and validated before implementation completion. |
 | CI required checks are outside repo policy | GitHub settings can drift from local `Route` gates. | Graph generates or checks expected ruleset/status policy and records actual CI check evidence. |
 | Workflow permissions are conventional | `.github/workflows/**` may drift from least-privilege policy. | `CiPolicyCheck` validates permissions, OIDC use, reusable workflow refs, and publish-job isolation. |
@@ -2855,6 +2858,8 @@ These commands are read-only except where explicitly named otherwise.
 ./specflow workspace create --layout nested
 ./specflow workspace status
 ./specflow workspace dispose
+./specflow workspace lock fake
+./specflow workspace unlock fake
 ```
 
 Workspaces are graph-owned. The workspace state records:
@@ -2863,7 +2868,29 @@ Workspaces are graph-owned. The workspace state records:
 - branch;
 - cache namespace;
 - FAKE state namespace or confirmed shared-state policy;
+- generated-output namespace;
+- package/output staging namespace;
+- GL/display/resource policy for host-sensitive evidence;
+- per-workspace FAKE lock state;
 - active feature graph path.
+
+Concurrency rules:
+
+- Multiple feature workspaces may exist at the same time.
+- Feature activation is workspace-local; it is not inferred from the branch.
+- Pure graph/rule-kernel commands may run concurrently.
+- Read-only status, trace, route-plan, and explain commands may run
+  concurrently when they do not mutate graph state.
+- Graph mutation commands take the feature graph write lock for the active
+  workspace.
+- FAKE-backed commands take the workspace FAKE lock by default.
+- Cross-workspace FAKE concurrency is denied unless every involved target is
+  marked `concurrencySafe`, every output path is workspace-scoped, and shared
+  resources such as NuGet restore/cache, `.fake`, package output, generated
+  product staging, temp directories, and GL/display hosts are either isolated or
+  proven safe.
+- Authoritative CI/release evidence is produced in isolated CI checkouts, not by
+  concurrent local workspaces.
 
 ## Agent Model
 
@@ -4075,6 +4102,8 @@ Deliverables:
 
 - `TargetCatalogPolicy.fs`.
 - `RoutingPolicy` graph bindings over existing `Targets` and `Routing`.
+- Target concurrency metadata:
+  `Exclusive | WorkspaceSafe | GloballySafe` plus declared shared resources.
 - `SpecFlowProjectCheck`.
 - `SpecFlowPolicyProjectionCheck` target-catalog subcheck.
 - JSON route output and graph route evidence shape.
@@ -4086,6 +4115,12 @@ Tests:
 - Target metadata projection catches drift against compiled target metadata.
 - Route evidence records diff scope, matched rules, required gates, and expected
   artifacts.
+- FAKE-backed targets default to `Exclusive` until their outputs and shared
+  resources are audited.
+- `WorkspaceSafe` target tests prove all mutable outputs are workspace-scoped.
+- `GloballySafe` target tests prove the target has no mutable workspace,
+  repository, global cache, process, display, or network resource dependency
+  beyond declared read-only inputs.
 
 ### Stage G3 - Add Evidence Ledger And Freshness Rules
 
@@ -4626,8 +4661,17 @@ Deliverables:
 - Feature workspace state in graph.
 - Cache namespace per feature:
   - `.fs-skia-cache/specflow/<feature-id>/`
-- Explicit policy for FAKE state:
-  - either isolate `.fake` by workspace, or prove shared `.fake` state is safe.
+- Output namespace per workspace for generated products, package staging,
+  logs, temporary files, and support bundles.
+- Explicit policy for FAKE state and FAKE-backed commands:
+  - either isolate `.fake` by workspace, or prove shared `.fake` state is safe;
+  - take a per-workspace FAKE lock for every FAKE-backed command by default;
+  - allow cross-workspace FAKE concurrency only for targets marked
+    `concurrencySafe`.
+- Target metadata extension:
+  - `ConcurrencyClass = Exclusive | WorkspaceSafe | GloballySafe`;
+  - `SharedResources = FakeState | NuGetCache | DotNetRestore | PackageOutput
+    | GeneratedProductStaging | TempDirectory | DisplayHost | Network | Custom`.
 
 Tests:
 
@@ -4635,6 +4679,16 @@ Tests:
 - Nested worktree creation if supported.
 - Cache writes are feature-namespaced.
 - Two workspaces for two features do not share generated-product output paths.
+- Two workspaces for two features do not share package staging, support-bundle,
+  or log output paths.
+- A second FAKE-backed command in the same workspace is denied while the
+  workspace FAKE lock is held.
+- Cross-workspace FAKE concurrency is denied when either target is `Exclusive`.
+- Cross-workspace FAKE concurrency is allowed only for `WorkspaceSafe` or
+  `GloballySafe` targets whose declared shared resources are isolated or proven
+  safe.
+- Target metadata projection names every target's concurrency class and shared
+  resources.
 - Workspace disposal does not delete committed evidence.
 
 ### Fallback Stage A12 - Approval And Review Gates
@@ -4905,6 +4959,12 @@ New flow:
 5. Required local gates map to typed target evidence.
 6. Required remote checks map to CI evidence or declared CI-only checks.
 7. Missing or stale evidence is blocking.
+8. FAKE-backed gate evidence records workspace id, target concurrency class,
+   lock acquisition, dependency behavior, and shared-resource policy.
+9. A parallel local FAKE run can satisfy readiness only when the target metadata
+   marked every executed target concurrency-safe for the resources used by that
+   workspace. Otherwise the evidence is informational and the gate must be
+   rerun sequentially or in isolated CI.
 
 This makes validation obligations visible before implementation and catches
 under-declared features.
@@ -4927,6 +4987,9 @@ Release evidence is stricter than development evidence:
 
 - Local gate rows can satisfy implementation readiness, but not release
   provenance.
+- Local FAKE gate rows can satisfy implementation readiness only when they were
+  run under the workspace FAKE lock or under an explicitly safe target
+  concurrency policy.
 - CI rows can satisfy merge/release policy only when they bind to the expected
   commit, workflow, job, and required status-check name.
 - Package rows can satisfy release policy only when they bind to package ID,
@@ -5042,6 +5105,23 @@ Workspace-specific cache path:
 .fs-skia-cache/specflow/<feature-id>/<workspace-id>/
 ```
 
+FAKE/build state policy:
+
+- `.fake` is runner state, not evidence.
+- `bin/`, `obj/`, package output, generated-product staging, support bundles,
+  smoke logs, temporary files, and host/display resources are treated as
+  mutable build state unless a target declares otherwise.
+- Workspaces get their own output namespaces for every mutable path SpecFlow
+  controls.
+- Shared external caches such as NuGet/global package restore are allowed only
+  as shared caches; their use must not make gate output paths overlap.
+- SpecFlow never infers that two FAKE invocations are safe because they are in
+  different git worktrees. Safety comes from target metadata and resource
+  isolation.
+- CI may parallelize jobs by using isolated checkouts/workspaces and recording
+  CI evidence rows; local merge-readiness commands default to sequential FAKE
+  gate execution.
+
 ## Acceptance Criteria
 
 The redesign is complete when:
@@ -5125,6 +5205,14 @@ The redesign is complete when:
 - Active `speckit-*` skills and `.specify/scripts/**` are gone.
 - New graph and policy FAKE targets replace `EvidenceGraph` / `EvidenceAudit`
   and fragmented guidance/template/publish checks.
+- Every FAKE-backed target has a target metadata concurrency class and declared
+  shared-resource set.
+- Workspaces isolate generated outputs, package staging, logs, support bundles,
+  and SpecFlow caches by feature/workspace id.
+- Local FAKE-backed gate evidence records the workspace id, lock policy, target
+  concurrency class, command, dependency behavior, and output paths.
+- Parallel local FAKE evidence is authoritative only when target metadata and
+  resource isolation prove it safe; otherwise it is informational.
 - Product graph targets replace fragmented control-doc, visual-evidence,
   scenario-corpus, performance, accessibility, architecture-trace, and
   environment checks where a product contract exists.
@@ -5170,7 +5258,8 @@ The redesign is complete when:
 | Support reports are unstructured | Consumer issues cannot be reproduced or routed back to product contract gaps | Generate redacted support bundles from ConsumerGraph and import them as structured scenario evidence. |
 | Governance package public/private boundary is unclear | New repo freezes a premature external API | Publish only the small `RuleKernel` surface early; keep FS.GG.UI policy and broader governance contracts preview until pilot evidence proves them. |
 | Accidentally copying `.specify` into FS.GG.UI | Old workflow assumptions survive the break | Treat `.specify/**` as old-repo archive/provenance only; new repo starts with `.specflow/**` and generated context packs. |
-| Worktrees fight shared state | Parallel runs corrupt cache or FAKE state | Namespace caches; explicitly audit FAKE state before default worktree mode. |
+| Worktrees fight shared state | Parallel runs corrupt cache, `.fake`, package output, generated-product staging, or host/display resources | Namespace every SpecFlow-controlled output path; take a per-workspace FAKE lock by default; require target metadata before allowing cross-workspace FAKE concurrency. |
+| FAKE parallelism is mistaken for safe validation | A parallel local run produces confusing logs or races but is treated as authoritative | Record target concurrency class, lock status, dependency behavior, and shared resources in gate evidence; require sequential rerun unless concurrency safety is explicit. |
 | Approval hashes churn too often | Review gates become noisy | Scope approvals; allow narrow approval reuse only when validator proves affected graph fields unchanged. |
 
 ## Recommended First Feature Cut
@@ -5312,6 +5401,12 @@ Those are valuable, but the core authority transfer must land first.
   <https://learn.microsoft.com/en-us/dotnet/core/tutorials/cli-templates-create-project-template>
 - FSharp.Formatting content guidance:
   <https://fsprojects.github.io/FSharp.Formatting/content.html>
+- FAKE target command-line and parallel target documentation:
+  <https://fake.build/guide/core-targets.html>
+- FAKE build script cache documentation:
+  <https://v5.fake.build/fake-cache.html>
+- FAKE v6 release announcement, runner cache note:
+  <https://fake.build/articles/fake-v6-release-announcement.html>
 - GitHub rulesets documentation:
   <https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets>
 - GitHub protected branches and required status checks documentation:
