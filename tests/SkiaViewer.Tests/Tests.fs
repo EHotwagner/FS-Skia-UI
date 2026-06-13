@@ -346,7 +346,7 @@ let tests =
                   Window, UnsupportedEnvironment, Startup
                   Surface, UnsupportedEnvironment, Startup
                   ViewerRunBlockedStage.Renderer, UnsupportedEnvironment, ViewerDiagnosticCategory.Renderer
-                  ViewerRunBlockedStage.Swapchain, UnsupportedEnvironment, ViewerDiagnosticCategory.Swapchain
+                  ViewerRunBlockedStage.GlContext, UnsupportedEnvironment, ViewerDiagnosticCategory.Framebuffer
                   Readback, UnsupportedEnvironment, Screenshot
                   ViewerRunBlockedStage.Scene, ProductDefect, ViewerDiagnosticCategory.Scene
                   App, ProductDefect, Startup
@@ -1015,14 +1015,14 @@ let tests =
                         MaximizePolicy = NotMaximizable
                         StartupState = ViewerWindowStartupState.Maximized
                         StartupPosition = Some(Coordinates(20, 30))
-                        BackendPreference = Some ViewerBackendPreference.Vulkan }
+                        BackendPreference = Some ViewerBackendPreference.OpenGL }
 
             Expect.hasLength results 5 "one result is returned for each supported option family"
             Expect.exists results (fun item -> item.Option = "resize" && item.Status = Honored && item.Observed = Some "fixed-size") "resize policy is reported"
             Expect.exists results (fun item -> item.Option = "maximize" && item.Status = Honored && item.Observed = Some "not-maximizable") "maximize policy is reported"
             Expect.exists results (fun item -> item.Option = "startup-state" && item.Status = Honored && item.Observed = Some "maximized") "startup state is reported"
             Expect.exists results (fun item -> item.Option = "startup-position" && item.Status = Honored && item.Observed = Some "20,30") "startup position is reported"
-            Expect.exists results (fun item -> item.Option = "backend" && item.Status = Honored && item.Observed = Some "vulkan") "backend preference is reported"
+            Expect.exists results (fun item -> item.Option = "backend" && item.Status = Honored && item.Observed = Some "opengl") "backend preference is reported"
         }
 
         test "window behavior validation rejects invalid coordinates and unsupported backend settings with diagnostics" {
@@ -1031,7 +1031,7 @@ let tests =
                     { Viewer.defaultWindowBehavior with
                         StartupState = ViewerWindowStartupState.Minimized
                         StartupPosition = Some(Coordinates(-1, 10))
-                        BackendPreference = Some ViewerBackendPreference.OpenGL }
+                        BackendPreference = Some ViewerBackendPreference.Software }
 
             Expect.exists results (fun item -> item.Option = "startup-state" && item.Status = UnsupportedOption && item.Message.Contains "visible interactive") "minimized startup is unsupported for visible launch validation"
             Expect.exists results (fun item -> item.Option = "startup-position" && item.Status = FailedOption && item.Message.Contains "non-negative") "invalid coordinates fail validation"
@@ -1520,9 +1520,9 @@ let tests =
                 Expect.isTrue (Viewer.shouldCaptureDiagnostic options item) $"captures {item.Category} {item.Level}")
 
             Expect.isFalse (Viewer.shouldCaptureDiagnostic options (diagnostic Info ViewerDiagnosticCategory.Startup "startup info")) "info below warning threshold is filtered"
-            Expect.isFalse (Viewer.shouldCaptureDiagnostic options (diagnostic Warning Vulkan "vulkan detail")) "unselected category is filtered"
+            Expect.isFalse (Viewer.shouldCaptureDiagnostic options (diagnostic Warning OpenGl "opengl detail")) "unselected category is filtered"
             Expect.isFalse (Viewer.shouldCaptureDiagnostic options (diagnostic Error Skia "skia detail")) "unselected Skia category is filtered"
-            Expect.isFalse (Viewer.shouldCaptureDiagnostic options (diagnostic Error ViewerDiagnosticCategory.Swapchain "swapchain detail")) "unselected swapchain category is filtered"
+            Expect.isFalse (Viewer.shouldCaptureDiagnostic options (diagnostic Error ViewerDiagnosticCategory.Framebuffer "framebuffer detail")) "unselected framebuffer category is filtered"
             Expect.isFalse (Viewer.shouldCaptureDiagnostic options (diagnostic Error ViewerDiagnosticCategory.Scene "scene detail")) "unselected scene category is filtered"
             Expect.isFalse (Viewer.shouldCaptureDiagnostic options (diagnostic Error Frame "frame detail")) "unselected frame category is filtered"
         }
@@ -1614,13 +1614,13 @@ let tests =
             Expect.exists frameEffects (function EmitDiagnostic diagnostic when diagnostic.Category = ViewerDiagnosticCategory.Frame && diagnostic.Message.Contains "640x480" -> true | _ -> false) "frame milestone emits categorized diagnostic"
 
             let failure =
-                { BlockedStage = ViewerRunBlockedStage.Swapchain
+                { BlockedStage = ViewerRunBlockedStage.GlContext
                   Classification = UnsupportedEnvironment
-                  DiagnosticCategory = ViewerDiagnosticCategory.Swapchain
-                  Message = "swapchain unavailable"
-                  LastDiagnosticSummary = Some "swapchain unavailable" }
+                  DiagnosticCategory = ViewerDiagnosticCategory.Framebuffer
+                  Message = "framebuffer unavailable"
+                  LastDiagnosticSummary = Some "framebuffer unavailable" }
 
             let _, failureEffects = Viewer.update (RunFailed failure) model
-            Expect.exists failureEffects (function EmitDiagnostic diagnostic when diagnostic.Category = ViewerDiagnosticCategory.Swapchain && diagnostic.Stage = Some ViewerRunBlockedStage.Swapchain -> true | _ -> false) "swapchain failure preserves category and stage"
+            Expect.exists failureEffects (function EmitDiagnostic diagnostic when diagnostic.Category = ViewerDiagnosticCategory.Framebuffer && diagnostic.Stage = Some ViewerRunBlockedStage.GlContext -> true | _ -> false) "framebuffer failure preserves category and stage"
         }
     ]

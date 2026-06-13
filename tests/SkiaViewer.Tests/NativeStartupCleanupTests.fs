@@ -7,33 +7,29 @@ open FS.Skia.UI.SkiaViewer.Host
 let nativeStartupCleanupTests =
     testList "Native startup cleanup" [
         let resourceCategories =
-            [ VulkanResources.VulkanInstance
-              VulkanResources.VulkanSurface
-              VulkanResources.VulkanDevice
-              VulkanResources.VulkanSwapchain
-              VulkanResources.CommandPool
-              VulkanResources.CommandBuffer
-              VulkanResources.Fence
-              VulkanResources.StagingBuffer
-              VulkanResources.StagingMemory
-              VulkanResources.SkiaGpu ]
+            [ GlResources.GlContext
+              GlResources.GlSurface
+              GlResources.GrContext
+              GlResources.Framebuffer
+              GlResources.SkiaSurface
+              GlResources.SkiaGpu ]
 
-        test "startup stage inventory covers every owned Vulkan and Skia resource category" {
+        test "startup stage inventory covers every owned OpenGL and Skia resource category" {
             let stageResources =
-                VulkanStartup.stages
+                GlStartup.stages
                 |> List.choose _.Resource
 
             resourceCategories
             |> List.iter (fun category -> Expect.contains stageResources category $"stage inventory contains {category}")
 
-            let ordered = VulkanStartup.stages |> List.sortBy _.Order
-            Expect.equal ordered VulkanStartup.stages "startup stages are declared in acquisition order"
+            let ordered = GlStartup.stages |> List.sortBy _.Order
+            Expect.equal ordered GlStartup.stages "startup stages are declared in acquisition order"
         }
 
         test "injected acquisition failures Synthetic release acquired resources once in reverse order" {
-            // SYNTHETIC: symbolic handles force every failure stage deterministically; real native smoke path is readiness/native-smoke.txt.
-            for stage in VulkanStartup.stages |> List.tail do
-                let failure = VulkanStartup.simulateFailure stage.Name
+            // SYNTHETIC: symbolic handles force every failure stage deterministically; real native smoke path is the live GL launch under readiness/.
+            for stage in GlStartup.stages |> List.tail do
+                let failure = GlStartup.simulateFailure stage.Name
 
                 Expect.isTrue failure.Synthetic "failure fixture discloses synthetic acquisition"
                 Expect.equal failure.ExpectedReleaseOrder failure.ObservedReleaseOrder $"release order is reversed for {stage.Name}"
@@ -49,8 +45,8 @@ let nativeStartupCleanupTests =
         }
 
         test "successful shutdown Synthetic releases all acquired resources once and repeated cleanup is idempotent" {
-            // SYNTHETIC: symbolic successful acquisition avoids opening a real Vulkan device; real native smoke path is readiness/native-smoke.txt.
-            let releases = VulkanStartup.simulateSuccessfulShutdown ()
+            // SYNTHETIC: symbolic successful acquisition avoids opening a real GL context; real native smoke path is the live GL launch under readiness/.
+            let releases = GlStartup.simulateSuccessfulShutdown ()
             let categories = releases |> List.map _.Category
 
             Expect.equal categories (resourceCategories |> List.rev) "successful shutdown releases resources in reverse acquisition order"

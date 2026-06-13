@@ -230,7 +230,7 @@ regardless of whether tests pass.
   pinning strategy, and maintenance owner.
 - Pack output location: `~/.local/share/nuget-local/`
 - Structured-logging library: not yet selected; see ADR when chosen.
-- Project-specific constraints: build a new FS-Skia-UI implementation inspired by SkiaViewer, using SkiaSharp 4 preview packages with explicit version pinning, Elmish for application workflow, and .NET `net10.0` unless a plan justifies a narrower target. Treat the upstream SkiaViewer repository as behavioral/reference material only unless license attribution and source reuse are documented in the spec and plan. The primary development environment is expected to provide GPU passthrough; Vulkan smoke failures must distinguish implementation defects from missing window-system or presentation setup rather than assuming GPU access is unavailable.
+- Project-specific constraints: build a new FS-Skia-UI implementation inspired by SkiaViewer, using SkiaSharp 4 preview packages with explicit version pinning, Elmish for application workflow, and .NET `net10.0` unless a plan justifies a narrower target. Treat the upstream SkiaViewer repository as behavioral/reference material only unless license attribution and source reuse are documented in the spec and plan. The primary development environment is expected to provide GPU passthrough; OpenGL smoke failures must distinguish implementation defects from missing window-system or presentation setup rather than assuming GPU access is unavailable.
 
 ### Local Agent Skills
 

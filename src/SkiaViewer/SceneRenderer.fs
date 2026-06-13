@@ -10,7 +10,7 @@ open SkiaSharp
 open FS.Skia.UI.Scene
 
 /// Single shared scene painter (feature 063, FR-001/002). Both the interactive
-/// `VulkanHost.drawScene` and the image-evidence `drawScreenshotScene` delegate to
+/// `GlHost.drawScene` and the image-evidence `drawScreenshotScene` delegate to
 /// `paintNode`, so the evidence and interactive renderers can never diverge again.
 /// The `match` over `SceneNode` is **exhaustive — no wildcard** — so a new case is a
 /// compile error until handled. Non-public (`internal`): no SkiaViewer surface change.

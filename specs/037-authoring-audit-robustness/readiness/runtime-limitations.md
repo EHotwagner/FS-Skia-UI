@@ -36,3 +36,5 @@ mobile, and browser/WASM targets are all out of scope.
   failures stay fatal and are never suppressed by the load script.
 - The US3 mixed-open compile is a pure compile check and does not require a
   rendering host.
+
+- **OpenGL backend (feature 119).** The rendering backend was migrated from Vulkan to OpenGL in feature 119 (`119-opengl-present-backend`); this runtime envelope is updated so governance no longer asserts a backend that no longer exists (FR-010). The historical Vulkan context above is retained for provenance.

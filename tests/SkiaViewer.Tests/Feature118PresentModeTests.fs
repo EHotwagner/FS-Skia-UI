@@ -26,9 +26,9 @@ let tests =
             Expect.equal options.PresentMode ViewerPresentMode.OffscreenReadback "default present mode must be OffscreenReadback"
         }
 
-        test "defaultConfiguration carries OffscreenReadback (preserves pre-feature behavior)" {
+        test "defaultConfiguration carries DirectToSwapchain (feature 119 GL readback-free default)" {
             let configuration = Viewer.defaultConfiguration "Product" size
-            Expect.equal configuration.PresentMode ViewerPresentMode.OffscreenReadback "defaultConfiguration must default to OffscreenReadback"
+            Expect.equal configuration.PresentMode ViewerPresentMode.DirectToSwapchain "defaultConfiguration defaults to the GL readback-free DirectToSwapchain present path"
         }
 
         test "ViewerConfiguration.PresentMode mirrors the supplied ViewerOptions.PresentMode (config threading)" {
@@ -52,11 +52,11 @@ let tests =
             Expect.notEqual ViewerPresentMode.OffscreenReadback ViewerPresentMode.DirectToSwapchain "the two present modes must be distinct"
         }
 
-        test "FR-007 diagnostic categories Swapchain/Frame exist and are distinct from Renderer" {
-            // The present-mode / readback diagnostic must surface under Swapchain (or Frame), not
+        test "FR-007 diagnostic categories Framebuffer/Frame exist and are distinct from Renderer" {
+            // The present-mode / readback diagnostic must surface under Framebuffer (or Frame), not
             // Renderer; assert the consumer-facing category surface FR-007 relies on is separable.
-            Expect.notEqual ViewerDiagnosticCategory.Swapchain ViewerDiagnosticCategory.Renderer "Swapchain must differ from Renderer"
+            Expect.notEqual ViewerDiagnosticCategory.Framebuffer ViewerDiagnosticCategory.Renderer "Framebuffer must differ from Renderer"
             Expect.notEqual ViewerDiagnosticCategory.Frame ViewerDiagnosticCategory.Renderer "Frame must differ from Renderer"
-            Expect.notEqual ViewerDiagnosticCategory.Swapchain ViewerDiagnosticCategory.Frame "Swapchain must differ from Frame"
+            Expect.notEqual ViewerDiagnosticCategory.Framebuffer ViewerDiagnosticCategory.Frame "Framebuffer must differ from Frame"
         }
     ]

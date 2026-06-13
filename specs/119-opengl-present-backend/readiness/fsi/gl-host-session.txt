@@ -1,0 +1,9 @@
+=== FSI: feature 119 GL host surface ===
+GlResources.empty = { Owned = []
+  Released = [] }
+after acquire, acquired count = 1
+GlStartup.stages = ["create-gl-context"; "acquire-window-surface"; "create-skia-gl-context";
+ "wrap-default-framebuffer"; "create-skia-surface"; "create-skia-gpu-context"]
+default PresentMode = DirectToSwapchain
+ViewerPresentMode cases: OffscreenReadback | DirectToSwapchain
+glUnavailable stage = GlContext

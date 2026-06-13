@@ -1,18 +1,14 @@
 namespace FS.Skia.UI.SkiaViewer.Host
 
-/// Vulkan resource-ownership ledger (moved from the FS.Skia.UI monolith; behaviour preserved).
-module VulkanResources =
+/// GL resource-ownership ledger (feature 119; GL successor to the former VulkanResources).
+module GlResources =
     /// Public contract type exposed by this FS.Skia.UI package.
     type ResourceCategory =
-        | VulkanInstance
-        | VulkanSurface
-        | VulkanDevice
-        | VulkanSwapchain
-        | CommandPool
-        | CommandBuffer
-        | Fence
-        | StagingBuffer
-        | StagingMemory
+        | GlContext
+        | GlSurface
+        | GrContext
+        | Framebuffer
+        | SkiaSurface
         | SkiaGpu
 
     /// Public contract type exposed by this FS.Skia.UI package.
@@ -63,21 +59,21 @@ module VulkanResources =
     /// Public contract function exposed by this FS.Skia.UI package.
     val releaseAll: stage: string -> ledger: ResourceLedger -> ResourceLedger * ReleaseRecord list
 
-/// Vulkan startup-stage ordering + cleanup model (moved from the FS.Skia.UI monolith; behaviour preserved).
-module VulkanStartup =
+/// GL startup-stage ordering + cleanup model (feature 119; GL successor to the former VulkanStartup).
+module GlStartup =
     /// Public contract type exposed by this FS.Skia.UI package.
     type StartupStage =
         { Name: string
           Order: int
-          Resource: VulkanResources.ResourceCategory option
+          Resource: GlResources.ResourceCategory option
           DiagnosticStage: string }
 
     /// Public contract type exposed by this FS.Skia.UI package.
     type StartupFailureCase =
         { FailedStage: StartupStage
-          AcquiredBeforeFailure: VulkanResources.OwnedResource list
-          ExpectedReleaseOrder: VulkanResources.ResourceCategory list
-          ObservedReleaseOrder: VulkanResources.ResourceCategory list
+          AcquiredBeforeFailure: GlResources.OwnedResource list
+          ExpectedReleaseOrder: GlResources.ResourceCategory list
+          ObservedReleaseOrder: GlResources.ResourceCategory list
           DiagnosticStage: string
           DiagnosticCause: string
           Synthetic: bool }
@@ -89,9 +85,10 @@ module VulkanStartup =
     /// Public contract function exposed by this FS.Skia.UI package.
     val simulateFailure: failedStageName: string -> StartupFailureCase
     /// Public contract function exposed by this FS.Skia.UI package.
-    val simulateSuccessfulShutdown: unit -> VulkanResources.ReleaseRecord list
+    val simulateSuccessfulShutdown: unit -> GlResources.ReleaseRecord list
 
-/// The Vulkan/Skia presentation host body (internal helpers hidden; only `run` is reachable).
-module VulkanHost =
-    /// Public contract function exposed by this FS.Skia.UI package.
+/// The OpenGL/Skia presentation host body (internal helpers hidden; only `run` is reachable).
+module GlHost =
+    /// Public contract function exposed by this FS.Skia.UI package. Signature shape preserved
+    /// from the former VulkanHost.run so Host/Viewer.fs routes unchanged.
     val run: program: ViewerProgram<'model, 'msg> -> Result<unit, RenderDiagnostic>

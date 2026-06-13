@@ -11,7 +11,7 @@ next action: run `./fake.sh build -t PackLocal` and inspect packed XML entries a
 |--------------|------------|--------------|--------------------|-----------------------|--------|
 | `src/Lib/Lib.fsproj` | `FS.Skia.UI` | `src/Lib/Library.fsi` | `src/Lib/bin/Release/net10.0/FS.Skia.UI.xml` | `FS.Skia.UI.xml` | expected non-empty |
 | `src/Scene/Scene.fsproj` | `FS.Skia.UI.Scene` | `src/Scene/Scene.fsi` | `src/Scene/bin/Release/net10.0/FS.Skia.UI.Scene.xml` | `FS.Skia.UI.Scene.xml` | expected non-empty |
-| `src/SkiaViewer/SkiaViewer.fsproj` | `FS.Skia.UI.SkiaViewer` | `src/SkiaViewer/SkiaViewer.fsi`, `src/SkiaViewer/Host/Diagnostics.fsi`, `src/SkiaViewer/Host/Vulkan.fsi`, `src/SkiaViewer/Host/Viewer.fsi` | `src/SkiaViewer/bin/Release/net10.0/FS.Skia.UI.SkiaViewer.xml` | `FS.Skia.UI.SkiaViewer.xml` | expected non-empty |
+| `src/SkiaViewer/SkiaViewer.fsproj` | `FS.Skia.UI.SkiaViewer` | `src/SkiaViewer/SkiaViewer.fsi`, `src/SkiaViewer/Host/Diagnostics.fsi`, `src/SkiaViewer/Host/OpenGl.fsi`, `src/SkiaViewer/Host/Viewer.fsi` | `src/SkiaViewer/bin/Release/net10.0/FS.Skia.UI.SkiaViewer.xml` | `FS.Skia.UI.SkiaViewer.xml` | expected non-empty |
 | `src/Elmish/Elmish.fsproj` | `FS.Skia.UI.Elmish` | `src/Elmish/Elmish.fsi` | `src/Elmish/bin/Release/net10.0/FS.Skia.UI.Elmish.xml` | `FS.Skia.UI.Elmish.xml` | expected non-empty |
 | `src/KeyboardInput/KeyboardInput.fsproj` | `FS.Skia.UI.KeyboardInput` | `src/KeyboardInput/KeyboardInput.fsi` | `src/KeyboardInput/bin/Release/net10.0/FS.Skia.UI.KeyboardInput.xml` | `FS.Skia.UI.KeyboardInput.xml` | expected non-empty |
 | `src/Input/Input.fsproj` | `FS.Skia.UI.Input` | `src/Input/KeyboardInput.fsi` | `src/Input/bin/Release/net10.0/FS.Skia.UI.Input.xml` | `FS.Skia.UI.Input.xml` | expected non-empty |

@@ -1,16 +1,19 @@
 namespace FS.Skia.UI.SkiaViewer
 
 [<RequireQualifiedAccess>]
-/// Selects how the live viewer presents each rendered frame. The default
-/// (`OffscreenReadback`) is today's offscreen-render-plus-GPU→CPU-readback path and is
-/// byte-identical to the pre-feature baseline; `DirectToSwapchain` is an opt-in path that
-/// renders the Skia scene straight onto the acquired Vulkan swapchain image with no
-/// per-frame readback, staging buffer/command pool, or `vkQueueWaitIdle` stall.
+/// Selects how the live viewer presents each rendered frame on the OpenGL host backend
+/// (feature 119). `DirectToSwapchain` is the default **readback-free** path: the Skia scene is
+/// drawn straight onto the window's default framebuffer (FBO 0) through a GL-backed `SKSurface`
+/// and presented by the windowing toolkit's buffer swap, with no per-frame GPU→CPU readback,
+/// staging buffer, or queue stall. `OffscreenReadback` renders to an offscreen surface then reads
+/// back — it backs the on-demand screenshot/evidence routine and an explicit fallback.
 type ViewerPresentMode =
-    /// Offscreen render then GPU→CPU readback then CPU→GPU upload to the swapchain image
-    /// (the default, unchanged present path). Also the on-demand evidence/screenshot routine.
+    /// Offscreen render then GPU→CPU readback. On the GL backend this is no longer the live
+    /// present path; it backs the on-demand evidence/screenshot routine (decoupled from the live
+    /// present, FR-004) and serves as an explicit fallback.
     | OffscreenReadback
-    /// Render directly onto the acquired swapchain image via a backend render target; no
-    /// per-frame readback, staging buffer/command pool, or full-queue stall. Opt-in;
-    /// degrades safely to `OffscreenReadback` with a `Warning` diagnostic on init failure.
+    /// Render directly onto the window's default framebuffer (FBO 0) via a GL-backed `SKSurface`,
+    /// then present with the toolkit buffer swap — no per-frame readback, staging buffer, or
+    /// queue stall. The **default** live present path on the OpenGL backend (feature 119);
+    /// unblocks feature 118 FR-002/SC-002.
     | DirectToSwapchain

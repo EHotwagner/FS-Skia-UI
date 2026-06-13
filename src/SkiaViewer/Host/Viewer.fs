@@ -15,7 +15,7 @@ module Viewer =
           TargetFrameRate = Some 60
           Diagnostics = { Verbose = false }
           ConfigureWindow = None
-          PresentMode = ViewerPresentMode.OffscreenReadback }
+          PresentMode = ViewerPresentMode.DirectToSwapchain }
 
     let create configuration init update view =
         { Configuration = configuration
@@ -53,4 +53,4 @@ module Viewer =
     let run program : Result<unit, RenderDiagnostic> =
         match validate program.Configuration with
         | Result.Error diagnostic -> Result.Error diagnostic
-        | Ok() -> VulkanHost.run program
+        | Ok() -> GlHost.run program

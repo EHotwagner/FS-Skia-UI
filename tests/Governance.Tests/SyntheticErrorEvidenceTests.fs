@@ -33,7 +33,7 @@ let private writeStandardReadiness root =
     Directory.CreateDirectory(readiness) |> ignore
     writeFixtureFile root "readiness/governance-risk-levels.md" "small medium broad required evidence broad validation" |> ignore
     writeFixtureFile root "readiness/aggregate-hang-diagnostics.md" "verdict stage elapsed duration last observed command focused rerun non-authoritative aggregate" |> ignore
-    writeFixtureFile root "readiness/runtime-limitations.md" ".NET 10 desktop Vulkan SkiaSharp preview unsupported macOS/mobile/browser no software-renderer fallback" |> ignore
+    writeFixtureFile root "readiness/runtime-limitations.md" ".NET 10 desktop OpenGL SkiaSharp preview unsupported macOS/mobile/browser no software-renderer fallback" |> ignore
 
 let private writeFeature root tasks inventoryRows =
     writeStandardReadiness root

@@ -154,9 +154,9 @@ type ViewerDiagnosticCategory =
     | Input
     | Frame
     | Renderer
-    | Vulkan
+    | OpenGl
     | Skia
-    | Swapchain
+    | Framebuffer
     | Scene
     | Screenshot
 
@@ -174,7 +174,7 @@ type ViewerRunBlockedStage =
     | Window
     | Surface
     | Renderer
-    | Swapchain
+    | GlContext
     | Scene
     | Readback
     | App

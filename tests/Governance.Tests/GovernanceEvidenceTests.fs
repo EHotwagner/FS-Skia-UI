@@ -84,7 +84,7 @@ let governanceEvidenceTests =
             containsAll
                 $"{featureDir}/readiness/runtime-limitations.md"
                 [ ".NET 10 desktop"
-                  "Vulkan"
+                  "OpenGL"
                   "SkiaSharp preview"
                   "unsupported macOS/mobile/browser"
                   "no software-renderer fallback"

@@ -967,7 +967,7 @@ let provisionSeedFeature (root: string) : string =
         ("# Aggregate hang diagnostics\n\nverdict: ok\nstage: none\nelapsed duration: 0s\nlast observed command: none\n"
          + "focused rerun: not required\nnon-authoritative aggregate: none observed\n")
     writeReadiness "runtime-limitations.md"
-        ("# Runtime limitations\n\n- .NET 10 desktop only.\n- Vulkan backend required.\n- SkiaSharp preview pinned.\n"
+        ("# Runtime limitations\n\n- .NET 10 desktop only.\n- OpenGL backend required.\n- SkiaSharp preview pinned.\n"
          + "- unsupported macOS/mobile/browser targets.\n- no software-renderer fallback.\n")
 
     seedDir

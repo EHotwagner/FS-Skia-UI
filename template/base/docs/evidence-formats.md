@@ -24,7 +24,7 @@ failure, without decompiling `FS.Skia.UI.Build.dll` or copying a sibling project
 
 ### `runtime-limitations.md`
 
-- required tokens: .NET 10 desktop, Vulkan, SkiaSharp preview, unsupported macOS/mobile/browser, no software-renderer fallback
+- required tokens: .NET 10 desktop, OpenGL, SkiaSharp preview, unsupported macOS/mobile/browser, no software-renderer fallback
 - blocking: true
 
 ## skill-loading-evidence

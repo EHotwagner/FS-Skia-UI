@@ -41,7 +41,7 @@ let dependencyGovernanceTests =
               "Fable.Elmish"
               "FSharp.Core"
               "Microsoft.NET.Test.Sdk"
-              "Silk.NET.Vulkan"
+              "Silk.NET.OpenGL"
               "SkiaSharp"
               "YamlDotNet"
               "Yoga.Net"

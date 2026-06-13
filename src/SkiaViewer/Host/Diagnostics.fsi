@@ -35,10 +35,10 @@ type DiagnosticSeverity =
 /// Viewer host contract type (moved from the FS.Skia.UI monolith, retyped onto FS.Skia.UI.Scene).
 type DiagnosticStage =
     | PlatformCheck
-    | VulkanInstance
-    | VulkanDevice
-    | VulkanSurface
-    | VulkanSwapchain
+    | GlContext
+    | GlRenderer
+    | GlSurface
+    | Framebuffer
     | SkiaContext
     | FrameRender
     | ScreenshotCapture
@@ -116,7 +116,7 @@ module Diagnostics =
     /// Public contract function exposed by this FS.Skia.UI package.
     val invalidConfiguration: message: string -> RenderDiagnostic
     /// Public contract function exposed by this FS.Skia.UI package.
-    val vulkanUnavailable: detail: string -> RenderDiagnostic
+    val glUnavailable: detail: string -> RenderDiagnostic
     /// Public contract function exposed by this FS.Skia.UI package.
     val missingCapability: capability: string -> detail: string -> RenderDiagnostic
     /// Public contract function exposed by this FS.Skia.UI package.

@@ -137,9 +137,9 @@ type ViewerDiagnosticCategory =
     | Input
     | Frame
     | Renderer
-    | Vulkan
+    | OpenGl
     | Skia
-    | Swapchain
+    | Framebuffer
     | Scene
     | Screenshot
 
@@ -156,7 +156,7 @@ type ViewerRunBlockedStage =
     | Window
     | Surface
     | Renderer
-    | Swapchain
+    | GlContext
     | Scene
     | Readback
     | App
@@ -583,9 +583,9 @@ module Viewer =
                   ViewerDiagnosticCategory.Input
                   ViewerDiagnosticCategory.EnvironmentSession
                   ViewerDiagnosticCategory.Renderer
-                  ViewerDiagnosticCategory.Vulkan
+                  ViewerDiagnosticCategory.OpenGl
                   ViewerDiagnosticCategory.Skia
-                  ViewerDiagnosticCategory.Swapchain
+                  ViewerDiagnosticCategory.Framebuffer
                   ViewerDiagnosticCategory.Scene
                   ViewerDiagnosticCategory.Screenshot ]
           FrameLogLimit = Some 0
@@ -639,8 +639,8 @@ module Viewer =
                 match request.BackendPreference with
                 | None -> optionResult "backend" "" (Some "default") Degraded "No backend requested; default backend will be selected."
                 | Some ViewerBackendPreference.DefaultBackend -> optionResult "backend" "default" (Some "default") Honored "Default backend will be selected."
-                | Some ViewerBackendPreference.Vulkan -> optionResult "backend" "vulkan" (Some "vulkan") Honored "Vulkan backend can be requested."
-                | Some ViewerBackendPreference.OpenGL -> optionResult "backend" "opengl" None UnsupportedOption "OpenGL backend preference is not supported by this viewer host."
+                | Some ViewerBackendPreference.OpenGL -> optionResult "backend" "opengl" (Some "opengl") Honored "OpenGL backend can be requested."
+                | Some ViewerBackendPreference.Vulkan -> optionResult "backend" "vulkan" None UnsupportedOption "Vulkan backend is no longer supported; this viewer host presents through OpenGL (feature 119)."
                 | Some ViewerBackendPreference.Software -> optionResult "backend" "software" None UnsupportedOption "Software backend preference is not supported by this viewer host."
 
             [ resize; maximize; startupState; startupPosition; backend ]
@@ -724,7 +724,7 @@ module Viewer =
             | Window
             | Surface
             | Renderer
-            | Swapchain
+            | GlContext
             | FirstFrameRender
             | Readback -> UnsupportedEnvironment
             | Scene
@@ -1069,9 +1069,9 @@ module Viewer =
 
         match behavior.BackendPreference with
         | Some ViewerBackendPreference.DefaultBackend
-        | Some ViewerBackendPreference.Vulkan
-        | None -> applied.API <- GraphicsAPI.DefaultVulkan
         | Some ViewerBackendPreference.OpenGL
+        | None -> applied.API <- GraphicsAPI.Default
+        | Some ViewerBackendPreference.Vulkan
         | Some ViewerBackendPreference.Software -> ()
 
         applied
@@ -1194,10 +1194,10 @@ module Viewer =
         let stage =
             match diagnostic.Stage with
             | Host.DiagnosticStage.PlatformCheck -> ViewerRunBlockedStage.Window
-            | Host.DiagnosticStage.VulkanSurface -> ViewerRunBlockedStage.Surface
-            | Host.DiagnosticStage.VulkanInstance
-            | Host.DiagnosticStage.VulkanDevice -> ViewerRunBlockedStage.Renderer
-            | Host.DiagnosticStage.VulkanSwapchain -> ViewerRunBlockedStage.Swapchain
+            | Host.DiagnosticStage.GlSurface -> ViewerRunBlockedStage.Surface
+            | Host.DiagnosticStage.GlContext
+            | Host.DiagnosticStage.GlRenderer -> ViewerRunBlockedStage.Renderer
+            | Host.DiagnosticStage.Framebuffer -> ViewerRunBlockedStage.GlContext
             | Host.DiagnosticStage.SkiaContext
             | Host.DiagnosticStage.FrameRender -> ViewerRunBlockedStage.Renderer
             | Host.DiagnosticStage.ScreenshotCapture -> ViewerRunBlockedStage.Readback
@@ -1205,10 +1205,10 @@ module Viewer =
 
         let category =
             match diagnostic.Stage with
-            | Host.DiagnosticStage.VulkanInstance
-            | Host.DiagnosticStage.VulkanDevice
-            | Host.DiagnosticStage.VulkanSurface
-            | Host.DiagnosticStage.VulkanSwapchain -> ViewerDiagnosticCategory.Vulkan
+            | Host.DiagnosticStage.GlContext
+            | Host.DiagnosticStage.GlRenderer
+            | Host.DiagnosticStage.GlSurface
+            | Host.DiagnosticStage.Framebuffer -> ViewerDiagnosticCategory.OpenGl
             | Host.DiagnosticStage.SkiaContext -> ViewerDiagnosticCategory.Skia
             | Host.DiagnosticStage.FrameRender -> ViewerDiagnosticCategory.Frame
             | Host.DiagnosticStage.ScreenshotCapture -> ViewerDiagnosticCategory.Screenshot
@@ -1294,7 +1294,7 @@ module Viewer =
                       // Swapchain (or Frame), not Renderer. All other stages keep Renderer.
                       Category =
                         match diagnostic.Stage with
-                        | Host.DiagnosticStage.VulkanSwapchain -> ViewerDiagnosticCategory.Swapchain
+                        | Host.DiagnosticStage.Framebuffer -> ViewerDiagnosticCategory.Framebuffer
                         | Host.DiagnosticStage.FrameRender -> ViewerDiagnosticCategory.Frame
                         | _ -> ViewerDiagnosticCategory.Renderer
                       Message = diagnostic.Message
@@ -1358,10 +1358,10 @@ module Viewer =
                         ViewerObservedValue.Observed true
                     else
                         ViewerObservedValue.Unavailable
-                  Backend = Some "legacy-vulkan-presenter"
+                  Backend = Some "opengl-presenter"
                   InputDevicesAvailable = ViewerObservedValue.Unsupported
                   FailureClass = None
-                  Message = "persistent viewer presented frames through the Vulkan/Skia swapchain" }
+                  Message = "persistent viewer presented frames through the OpenGL/Skia framebuffer" }
 
             if not (inputVerified ()) then
                 Result.Error(
@@ -1414,11 +1414,11 @@ module Viewer =
 
         withNativeWindowEnvironment (fun () ->
             try
-                let mutable windowOptions = WindowOptions.DefaultVulkan
+                let mutable windowOptions = WindowOptions.Default
                 windowOptions.Title <- options.Title
                 windowOptions.Size <- toNativeSize options.InitialSize
                 windowOptions.IsVisible <- true
-                windowOptions.API <- GraphicsAPI.DefaultVulkan
+                windowOptions.API <- GraphicsAPI.Default
                 windowOptions.FramesPerSecond <- 60.0
                 windowOptions.UpdatesPerSecond <- 60.0
                 windowOptions <- applyWindowBehaviorToOptions behavior windowOptions
@@ -2186,11 +2186,11 @@ module Viewer =
 
                     withNativeWindowEnvironment (fun () ->
                         try
-                            let mutable windowOptions = WindowOptions.DefaultVulkan
+                            let mutable windowOptions = WindowOptions.Default
                             windowOptions.Title <- options.Title
                             windowOptions.Size <- toNativeSize options.InitialSize
                             windowOptions.IsVisible <- true
-                            windowOptions.API <- GraphicsAPI.DefaultVulkan
+                            windowOptions.API <- GraphicsAPI.Default
                             windowOptions.FramesPerSecond <- 60.0
                             windowOptions.UpdatesPerSecond <- 60.0
 

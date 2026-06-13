@@ -83,7 +83,7 @@ let feature061GovernanceTests =
                     ReadinessFiles =
                         [ "governance-risk-levels.md", "small medium broad required evidence broad validation\n"
                           "aggregate-hang-diagnostics.md", "verdict stage elapsed duration last observed command focused rerun non-authoritative aggregate\n"
-                          "runtime-limitations.md", ".NET 10 desktop Vulkan SkiaSharp preview unsupported macOS/mobile/browser no software-renderer fallback\n" ] }
+                          "runtime-limitations.md", ".NET 10 desktop OpenGL SkiaSharp preview unsupported macOS/mobile/browser no software-renderer fallback\n" ] }
             let rc = Scans.readinessContract populated
             Expect.equal (Render.readinessContractDiagnostics rc) "" "no hits -> empty diagnostic"
         }

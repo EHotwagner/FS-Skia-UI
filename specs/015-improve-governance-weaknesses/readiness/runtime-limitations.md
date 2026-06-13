@@ -15,3 +15,5 @@ new platform support.
 - Toolchain boundary: validation remains focused on governance scripts,
   generated guidance, and readiness artifacts unless the final risk level
   requires broad product validation.
+
+- **OpenGL backend (feature 119).** The rendering backend was migrated from Vulkan to OpenGL in feature 119 (`119-opengl-present-backend`); this runtime envelope is updated so governance no longer asserts a backend that no longer exists (FR-010). The historical Vulkan context above is retained for provenance.

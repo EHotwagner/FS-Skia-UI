@@ -1,0 +1,29 @@
+## Symbol consistency (analyze pass G)
+- entity-record EvidenceAudit — in {tasks}, missing from {plan, data-model}
+- entity-record EvidenceGraph — in {tasks}, missing from {plan, data-model}
+- entity-record OpenGL — in {tasks}, missing from {plan, data-model}
+- entity-record RefreshSurfaceBaselines — in {tasks}, missing from {plan, data-model}
+- entity-record SkiaViewer — in {tasks}, missing from {plan, data-model}
+- entity-record ViewerPresentMode — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]
+- fr-id FR-002 — in {plan}, missing from {data-model, tasks}
+- fr-id FR-004 — in {tasks}, missing from {plan, data-model}
+- fr-id FR-005 — in {plan, data-model}, missing from {tasks}
+- fr-id FR-006 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-008 — in {data-model, tasks}, missing from {plan}
+- fr-id FR-009 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-010 — in {plan, tasks}, missing from {data-model}
+- fr-id FR-011 — in {plan, tasks}, missing from {data-model}
+- msg-case Effect — in {data-model, tasks}, missing from {plan}
+- msg-case Model — in {data-model, tasks}, missing from {plan}
+- msg-case Tick — in {plan, tasks}, missing from {data-model}
+- msg-case ViewerModel — in {plan}, missing from {data-model, tasks}
+- sc-id SC-001 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-002 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-003 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-004 — in {tasks}, missing from {plan, data-model}
+- sc-id SC-005 — in {plan, tasks}, missing from {data-model}
+- sc-id SC-006 — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant DirectToSwapchain — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant Feature119 — in {tasks}, missing from {plan, data-model}
+- union-or-screen-variant OffscreenReadback — in {data-model, tasks}, missing from {plan}
+- union-or-screen-variant Readback — in {data-model}, missing from {plan, tasks}   [design-only? human judgment]

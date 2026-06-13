@@ -3,7 +3,7 @@
 Compiled-F# governance engine (evidence graph + merge-gate audit) consumed in-process by FS.Skia.UI build tooling and generated products.
 
 `FS.Skia.UI.Build` is one of the **FS.Skia.UI** distribution packages — an F# / Elmish UI and 2D
-scene-graph framework for .NET 10 desktop, rendered through Vulkan + SkiaSharp.
+scene-graph framework for .NET 10 desktop, rendered through OpenGL + SkiaSharp.
 
 ## Install
 

@@ -220,7 +220,7 @@ module EvidenceFormatSchema =
           [ "verdict"; "stage"; "elapsed duration"; "last observed command"; "focused rerun"; "non-authoritative aggregate" ],
           "aggregate timeout verdict evidence is incomplete"
           "runtime-limitations.md",
-          [ ".NET 10 desktop"; "Vulkan"; "SkiaSharp preview"; "unsupported macOS/mobile/browser"; "no software-renderer fallback" ],
+          [ ".NET 10 desktop"; "OpenGL"; "SkiaSharp preview"; "unsupported macOS/mobile/browser"; "no software-renderer fallback" ],
           "runtime limitation evidence is incomplete" ]
 
     // --- the enumerated schema ----------------------------------------------

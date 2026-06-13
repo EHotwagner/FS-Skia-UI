@@ -1,0 +1,27 @@
+feature: 119-opengl-present-backend
+artifact: supported-host-persistent-launch
+status: ok
+host: Linux (Wayland session, DISPLAY=:1), .NET 10, net10.0
+gpu: AMD Radeon Graphics (radeonsi, renoir), Mesa 26.1.2, /dev/dri/renderD128 — direct rendering: Yes
+backend: OpenGL (Silk.NET.Windowing + Silk.NET.OpenGL 2.23.0, GraphicsAPI OpenGL Core 3.3)
+present-mode: DirectToSwapchain (default)
+window-visible: observed:true
+first-frame-presented: true
+frames-presented: 60 (continuous render loop)
+pointer-keyboard: input mapping attached (Silk.NET.Input keyboards + mice + scroll + focus)
+self-closed-for-evidence: true (host requested Shutdown after 60 frames)
+process-running: true (during run)
+result: Ok ()
+
+command: dotnet run (evidence harness driving the production Host.Viewer.run -> GlHost.run)
+  harness source: specs/119-opengl-present-backend/readiness/sample-smoke/evidence-harness.fs
+  the harness builds a ViewerProgram, threads RenderTick/UpdateTick through the Elmish edge,
+  emits ViewerEffect.RenderFrame each tick, and the GL host draws the scene onto the window's
+  default framebuffer (FBO 0) and presents with the toolkit buffer swap.
+
+production render path exercised: Host.Viewer.run -> GlHost.run -> renderFrameDirect ->
+  ensureFramebufferSurface (SKSurface over GRBackendRenderTarget over FBO 0) -> SceneRenderer.paintNode
+  -> SKCanvas.Flush -> GRContext.Flush -> IWindow.SwapBuffers (no readback).
+
+live present-mode diagnostic emitted once (FR-007):
+  present-mode=DirectToSwapchain readback=false (live frames render straight onto the default framebuffer).

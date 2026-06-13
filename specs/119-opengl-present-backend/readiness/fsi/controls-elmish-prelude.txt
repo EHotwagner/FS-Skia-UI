@@ -1,0 +1,8 @@
+
+## dotnet fsi scripts/controls-elmish-prelude.fsx
+$ dotnet fsi scripts/controls-elmish-prelude.fsx
+controls-elmish-prelude view=button commandCount=1 controlCommandCount=2
+controls-elmish-075 pointerCommandCount=3 productMsgs=[Save] diagnosticCount=1
+controls-elmish-068 widgetView=button cmdCount=1 productMsgs=1 empty=true
+
+exit-code=0

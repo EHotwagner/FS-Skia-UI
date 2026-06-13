@@ -13,6 +13,7 @@
     <Compile Include="Feature085InteractiveHostTests.fs" />
     <Compile Include="Feature086SceneTranslateTests.fs" />
     <Compile Include="Feature118PresentModeTests.fs" />
+    <Compile Include="Feature119OpenGlHostTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

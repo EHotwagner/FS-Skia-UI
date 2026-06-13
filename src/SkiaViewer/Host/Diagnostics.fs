@@ -30,10 +30,10 @@ type DiagnosticSeverity =
 
 type DiagnosticStage =
     | PlatformCheck
-    | VulkanInstance
-    | VulkanDevice
-    | VulkanSurface
-    | VulkanSwapchain
+    | GlContext
+    | GlRenderer
+    | GlSurface
+    | Framebuffer
     | SkiaContext
     | FrameRender
     | ScreenshotCapture
@@ -98,16 +98,16 @@ module Diagnostics =
           Cause = cause }
 
     let unsupportedPlatform (platform: string) =
-        create Fatal PlatformCheck $"Unsupported platform '{platform}'. Vulkan desktop support is limited to Windows and Linux." None
+        create Fatal PlatformCheck $"Unsupported platform '{platform}'. OpenGL desktop support is limited to Windows and Linux." None
 
     let invalidConfiguration message =
         create DiagnosticSeverity.Error DiagnosticStage.PlatformCheck message None
 
-    let vulkanUnavailable detail =
-        create DiagnosticSeverity.Fatal DiagnosticStage.VulkanInstance "Vulkan initialization is unavailable. The viewer has no fallback renderer." (Some detail)
+    let glUnavailable detail =
+        create DiagnosticSeverity.Fatal DiagnosticStage.GlContext "OpenGL initialization is unavailable. The viewer has no fallback renderer." (Some detail)
 
     let missingCapability (capability: string) detail =
-        create DiagnosticSeverity.Warning DiagnosticStage.SkiaContext $"Skia capability '{capability}' is unavailable on the active Vulkan device." (Some detail)
+        create DiagnosticSeverity.Warning DiagnosticStage.SkiaContext $"Skia capability '{capability}' is unavailable on the active OpenGL renderer." (Some detail)
 
     let invalidPath detail =
         create DiagnosticSeverity.Error DiagnosticStage.FrameRender "Invalid path declaration." (Some detail)
@@ -116,7 +116,7 @@ module Diagnostics =
         create DiagnosticSeverity.Warning DiagnosticStage.FrameRender $"Font family '{family}' is unavailable; platform font resolution will choose a substitute." None
 
     let frameRenderFailed detail =
-        create DiagnosticSeverity.Error DiagnosticStage.FrameRender "Vulkan/Skia frame rendering failed. The viewer has no fallback renderer." (Some detail)
+        create DiagnosticSeverity.Error DiagnosticStage.FrameRender "OpenGL/Skia frame rendering failed. The viewer has no fallback renderer." (Some detail)
 
     let screenshotFailed detail =
         create DiagnosticSeverity.Error DiagnosticStage.ScreenshotCapture "Screenshot capture failed." (Some detail)
@@ -125,4 +125,4 @@ module Diagnostics =
         create DiagnosticSeverity.Warning DiagnosticStage.Shutdown "Renderer shutdown failed." (Some detail)
 
     let startupFailed stage detail =
-        create DiagnosticSeverity.Fatal stage "Vulkan initialization failed. The viewer has no fallback renderer." (Some detail)
+        create DiagnosticSeverity.Fatal stage "OpenGL initialization failed. The viewer has no fallback renderer." (Some detail)

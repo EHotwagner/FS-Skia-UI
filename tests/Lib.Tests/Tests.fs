@@ -326,10 +326,10 @@ let diagnosticTests =
     testList "Diagnostics" [
         test "diagnostic helpers preserve severity stage message and cause" {
             let diagnostic =
-                Diagnostics.create Fatal VulkanDevice "device failed" (Some "driver")
+                Diagnostics.create Fatal GlRenderer "device failed" (Some "driver")
 
             Expect.equal diagnostic.Severity Fatal "severity is retained"
-            Expect.equal diagnostic.Stage VulkanDevice "stage is retained"
+            Expect.equal diagnostic.Stage GlRenderer "stage is retained"
             Expect.equal diagnostic.Message "device failed" "message is retained"
             Expect.equal diagnostic.Cause (Some "driver") "cause is retained"
         }
@@ -357,11 +357,11 @@ let diagnosticTests =
             Expect.isFalse (configurationFields.Contains "Fallback") "no fallback selector is exposed"
         }
 
-        test "frame render diagnostics identify Vulkan path without fallback switching" {
+        test "frame render diagnostics identify OpenGL path without fallback switching" {
             let diagnostic = Diagnostics.frameRenderFailed "present failed"
 
             Expect.equal diagnostic.Stage FrameRender "frame failures are reported at the frame-render stage"
-            Expect.stringContains diagnostic.Message "Vulkan/Skia frame rendering failed" "diagnostic identifies the frame path"
+            Expect.stringContains diagnostic.Message "OpenGL/Skia frame rendering failed" "diagnostic identifies the frame path"
             Expect.stringContains diagnostic.Message "no fallback renderer" "diagnostic rules out fallback switching"
             Expect.equal diagnostic.Cause (Some "present failed") "cause is retained"
         }
@@ -679,37 +679,37 @@ let us2DiagnosticTests =
             Expect.stringContains diagnostic.Message "Windows and Linux" "message lists supported desktop OSes"
         }
 
-        test "vulkan unavailable diagnostic identifies Vulkan without fallback language" {
-            let diagnostic = Diagnostics.vulkanUnavailable "vkCreateInstance unavailable"
+        test "opengl unavailable diagnostic identifies OpenGL without fallback language" {
+            let diagnostic = Diagnostics.glUnavailable "GL context creation unavailable"
             let rendered = diagnostic.Message + "\n" + (diagnostic.Cause |> Option.defaultValue "")
 
-            Expect.equal diagnostic.Severity Fatal "unavailable Vulkan is fatal"
-            Expect.equal diagnostic.Stage VulkanInstance "Vulkan availability fails at instance setup"
-            Expect.stringContains rendered "Vulkan" "diagnostic names Vulkan availability"
+            Expect.equal diagnostic.Severity Fatal "unavailable OpenGL is fatal"
+            Expect.equal diagnostic.Stage GlContext "OpenGL availability fails at context setup"
+            Expect.stringContains rendered "OpenGL" "diagnostic names OpenGL availability"
             Expect.stringContains diagnostic.Message "no fallback renderer" "message states no fallback renderer is used"
-            Expect.isFalse (rendered.Contains "OpenGL") "message does not suggest OpenGL fallback"
+            Expect.isFalse (rendered.Contains "Vulkan") "message does not suggest Vulkan fallback"
             Expect.isFalse (rendered.Contains "software") "message does not suggest software fallback"
         }
 
-        test "missing Vulkan startup stages Synthetic produce stage-specific diagnostics without GPU resources" {
-            // SYNTHETIC: this fixture models native startup failures without mutating the workstation Vulkan driver; real evidence path is GitHub issue #2 plus unsupported-environment smoke capture.
+        test "missing OpenGL startup stages Synthetic produce stage-specific diagnostics without GPU resources" {
+            // SYNTHETIC: this fixture models native startup failures without mutating the workstation GL driver; real evidence path is the live GL launch plus unsupported-environment smoke capture under readiness/.
             let simulatedFailures =
-                [ VulkanInstance, "vkCreateInstance unavailable"
-                  VulkanDevice, "no suitable physical device"
-                  VulkanSurface, "surface creation failed"
-                  VulkanSwapchain, "swapchain creation failed" ]
+                [ GlContext, "GL context creation unavailable"
+                  GlRenderer, "no suitable GL renderer"
+                  GlSurface, "window surface creation failed"
+                  Framebuffer, "default framebuffer wrap failed" ]
 
             let diagnostics =
                 simulatedFailures
                 |> List.map (fun (stage, cause) ->
-                    Diagnostics.create Fatal stage "Vulkan initialization failed. The viewer has no fallback renderer." (Some cause))
+                    Diagnostics.create Fatal stage "OpenGL initialization failed. The viewer has no fallback renderer." (Some cause))
 
             diagnostics
             |> List.iter2
                 (fun (stage, cause) diagnostic ->
                     Expect.equal diagnostic.Stage stage "diagnostic preserves simulated startup stage"
                     Expect.equal diagnostic.Cause (Some cause) "diagnostic preserves native failure detail"
-                    Expect.stringContains diagnostic.Message "Vulkan initialization" "diagnostic names Vulkan initialization"
+                    Expect.stringContains diagnostic.Message "OpenGL initialization" "diagnostic names OpenGL initialization"
                     Expect.stringContains diagnostic.Message "no fallback renderer" "diagnostic rules out fallback rendering")
                 simulatedFailures
         }
@@ -913,12 +913,12 @@ let us4SampleAndScreenshotTests =
 
         test "screenshot diagnostics describe capture before a successful frame" {
             let diagnostic =
-                Diagnostics.screenshotFailed "Screenshot capture was requested before the first successful Vulkan/Skia frame."
+                Diagnostics.screenshotFailed "Screenshot capture was requested before the first successful OpenGL/Skia frame."
 
             Expect.equal diagnostic.Stage ScreenshotCapture "diagnostic is reported at screenshot stage"
             Expect.equal diagnostic.Severity DiagnosticSeverity.Error "pre-frame screenshot capture is an error"
             Expect.stringContains diagnostic.Message "Screenshot capture failed" "message identifies screenshot failure"
-            Expect.stringContains (diagnostic.Cause |> Option.defaultValue "") "before the first successful Vulkan/Skia frame" "cause identifies missing frame"
+            Expect.stringContains (diagnostic.Cause |> Option.defaultValue "") "before the first successful OpenGL/Skia frame" "cause identifies missing frame"
         }
 
         test "interactive update emits screenshot effect through public Elmish boundary" {

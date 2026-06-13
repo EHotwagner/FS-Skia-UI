@@ -1,0 +1,160 @@
+schema_version: "1.0"
+
+# Dependency topology and task skill metadata for tasks.md (feature 119).
+# Phase-checkpoint edges are auto-injected by the graph script; only non-phase
+# cross-edges are written here.
+
+tasks:
+  # --- Phase 1: Setup ---
+  T001:
+    deps: []
+    skillist: []
+    owns: []
+  T002:
+    deps: []
+    skillist: []
+    owns: []
+  T003:
+    deps: []
+    skillist: []
+    owns: []
+  T004:
+    deps: []
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+
+  # --- Phase 2: Foundation ---
+  T005:
+    deps: [T004]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T006:
+    deps: []
+    skillist: ["speckit-constitution"]
+    owns: ["constitution"]
+  T007:
+    deps: []
+    skillist: ["fsharp-code-generation"]
+    owns: []
+  T008:
+    deps: [T005]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T009:
+    deps: [T005]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T010:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+  T011:
+    deps: []
+    skillist: ["fs-skia-elmish"]
+    owns: []
+
+  # --- Phase 3: US1 ---
+  T012:
+    deps: []
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T013:
+    deps: [T012, T005]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T014:
+    deps: [T013]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T015:
+    deps: [T013]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T016:
+    deps: [T014]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T017:
+    deps: [T014]
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+  T018:
+    deps: [T016, T017]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+
+  # --- Phase 4: US2 ---
+  T019:
+    deps: []
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T020:
+    deps: [T014]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T021:
+    deps: [T014]
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+  T022:
+    deps: [T020]
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+  T023:
+    deps: [T020]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+
+  # --- Phase 5: US3 ---
+  T024:
+    deps: []
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+  T025:
+    deps: [T024, T013]
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+  T026:
+    deps: [T025]
+    skillist: ["fs-skia-evidence-mode"]
+    owns: []
+
+  # --- Phase 6: US4 ---
+  T027:
+    deps: [T005]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T028:
+    deps: [T014]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+
+  # --- Phase 7: Integration & Polish ---
+  T029:
+    deps: []
+    skillist: ["fsharp-build-orchestration"]
+    owns: []
+  T030:
+    deps: [T004]
+    skillist: ["fsharp-build-orchestration"]
+    owns: []
+  T031:
+    deps: [T007]
+    skillist: ["fsharp-code-generation"]
+    owns: []
+  T032:
+    deps: [T004]
+    skillist: ["fs-skia-template-update"]
+    owns: []
+  T033:
+    deps: [T009]
+    skillist: ["fs-skia-skiaviewer"]
+    owns: []
+  T034:
+    deps: [T033]
+    skillist: ["speckit-evidence-graph"]
+    owns: ["graph-validation"]
+  T035:
+    deps: [T034]
+    skillist: ["speckit-evidence-audit"]
+    owns: ["evidence-audit"]

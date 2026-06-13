@@ -8,7 +8,7 @@
     <Version>0.1.125-preview.1</Version>
     <Title>FS.Skia.UI.SkiaViewer</Title>
     <Description>Skia viewer host workflow contracts for FS.Skia.UI V3 products.</Description>
-    <PackageTags>fsharp;skia;viewer;vulkan;desktop</PackageTags>
+    <PackageTags>fsharp;skia;viewer;opengl;desktop</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,8 +17,8 @@
     <Compile Include="Host/Diagnostics.fsi" />
     <Compile Include="Host/Diagnostics.fs" />
     <Compile Include="SceneRenderer.fs" />
-    <Compile Include="Host/Vulkan.fsi" />
-    <Compile Include="Host/Vulkan.fs" />
+    <Compile Include="Host/OpenGl.fsi" />
+    <Compile Include="Host/OpenGl.fs" />
     <Compile Include="Host/Viewer.fsi" />
     <Compile Include="Host/Viewer.fs" />
     <Compile Include="SkiaViewer.fsi" />
@@ -30,8 +30,7 @@
     <ProjectReference Include="..\Scene\Scene.fsproj" />
     <PackageReference Include="Fable.Elmish" />
     <PackageReference Include="Silk.NET.Input" />
-    <PackageReference Include="Silk.NET.Vulkan" />
-    <PackageReference Include="Silk.NET.Vulkan.Extensions.KHR" />
+    <PackageReference Include="Silk.NET.OpenGL" />
     <PackageReference Include="Silk.NET.Windowing" />
     <PackageReference Include="Silk.NET.Windowing.Extensions" />
     <PackageReference Include="SkiaSharp" />

@@ -1,0 +1,70 @@
+{
+  "base_ref": "main",
+  "blocking": [],
+  "advisory": [
+    {
+      "file": "specs/119-opengl-present-backend/plan.md",
+      "line": 133,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "- **Synthetic evidence**: Target **0 synthetic**. The unsupported-GL diagnostic path (FR-005)"
+    },
+    {
+      "file": "specs/119-opengl-present-backend/plan.md",
+      "line": 185,
+      "pattern": "agent-readiness-artifacts",
+      "severity": "advisory",
+      "reason": "Agent-facing readiness artifact touched",
+      "match": ".agents/skills/fs-skia-viewer-host/SKILL.md  # + generated .claude peer via RefreshSurfaceBaselines"
+    },
+    {
+      "file": "specs/119-opengl-present-backend/readiness/task-graph.md",
+      "line": 154,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "classDef autoSynthetic fill:#ffab91,stroke:#bf360c,stroke-width:2px,stroke-dasharray:5 3"
+    },
+    {
+      "file": "specs/119-opengl-present-backend/tasks.md",
+      "line": 155,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "| Task | Reason | Real-evidence path | Tracking issue | Label | Design source | Synthetic input class | Expected error b"
+    },
+    {
+      "file": "tests/Lib.Tests/Tests.fs",
+      "line": 694,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "test \"missing OpenGL startup stages Synthetic produce stage-specific diagnostics without GPU resources\" {"
+    },
+    {
+      "file": "tests/Lib.Tests/Tests.fs",
+      "line": 695,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: this fixture models native startup failures without mutating the workstation GL driver; real evidence path"
+    },
+    {
+      "file": "tests/SkiaViewer.Tests/NativeStartupCleanupTests.fs",
+      "line": 30,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: symbolic handles force every failure stage deterministically; real native smoke path is the live GL launch"
+    },
+    {
+      "file": "tests/SkiaViewer.Tests/NativeStartupCleanupTests.fs",
+      "line": 48,
+      "pattern": "synthetic-banner",
+      "severity": "advisory",
+      "reason": "Synthetic-evidence disclosure (Principle V)",
+      "match": "// SYNTHETIC: symbolic successful acquisition avoids opening a real GL context; real native smoke path is the live GL la"
+    }
+  ]
+}

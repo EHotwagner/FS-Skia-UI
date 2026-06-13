@@ -29,10 +29,10 @@ type DiagnosticSeverity =
 
 type DiagnosticStage =
     | PlatformCheck
-    | VulkanInstance
-    | VulkanDevice
-    | VulkanSurface
-    | VulkanSwapchain
+    | GlContext
+    | GlRenderer
+    | GlSurface
+    | Framebuffer
     | SkiaContext
     | FrameRender
     | ScreenshotCapture
@@ -100,7 +100,7 @@ module Diagnostics =
 
     val invalidConfiguration: message: string -> RenderDiagnostic
 
-    val vulkanUnavailable: detail: string -> RenderDiagnostic
+    val glUnavailable: detail: string -> RenderDiagnostic
 
     val missingCapability: capability: string -> detail: string -> RenderDiagnostic
 
@@ -118,54 +118,14 @@ module Diagnostics =
 
 namespace FS.Skia.UI.SkiaViewer.Host
 
-open System
-open Elmish
-open FS.Skia.UI.Scene
-
-open FS.Skia.UI.SkiaViewer.Host
-
-module Viewer =
-
-    val defaultConfiguration: title: string -> initialSize: Size -> ViewerConfiguration
-
-    val create:
-        configuration: ViewerConfiguration ->
-        init: (unit -> 'model * Cmd<'msg>) ->
-        update: ('msg -> 'model -> 'model * Cmd<'msg>) ->
-        view: ('model -> Scene) ->
-            ViewerProgram<'model, 'msg>
-
-    val withSubscription:
-        subscription: ('model -> (string list * (Dispatch<'msg> -> IDisposable)) list) ->
-        program: ViewerProgram<'model, 'msg> ->
-            ViewerProgram<'model, 'msg>
-
-    val withEventMapping:
-        mapper: (ViewerEvent -> 'msg option) ->
-        program: ViewerProgram<'model, 'msg> ->
-            ViewerProgram<'model, 'msg>
-
-    val withEffectMapping:
-        mapper: ('msg -> ViewerEffect<'msg> option) ->
-        program: ViewerProgram<'model, 'msg> ->
-            ViewerProgram<'model, 'msg>
-
-    val run: program: ViewerProgram<'model, 'msg> -> Result<unit, RenderDiagnostic>
-
-namespace FS.Skia.UI.SkiaViewer.Host
-
-module VulkanResources =
+module GlResources =
 
     type ResourceCategory =
-        | VulkanInstance
-        | VulkanSurface
-        | VulkanDevice
-        | VulkanSwapchain
-        | CommandPool
-        | CommandBuffer
-        | Fence
-        | StagingBuffer
-        | StagingMemory
+        | GlContext
+        | GlSurface
+        | GrContext
+        | Framebuffer
+        | SkiaSurface
         | SkiaGpu
 
     type OwnershipState =
@@ -209,19 +169,19 @@ module VulkanResources =
 
     val releaseAll: stage: string -> ledger: ResourceLedger -> ResourceLedger * ReleaseRecord list
 
-module VulkanStartup =
+module GlStartup =
 
     type StartupStage =
         { Name: string
           Order: int
-          Resource: VulkanResources.ResourceCategory option
+          Resource: GlResources.ResourceCategory option
           DiagnosticStage: string }
 
     type StartupFailureCase =
         { FailedStage: StartupStage
-          AcquiredBeforeFailure: VulkanResources.OwnedResource list
-          ExpectedReleaseOrder: VulkanResources.ResourceCategory list
-          ObservedReleaseOrder: VulkanResources.ResourceCategory list
+          AcquiredBeforeFailure: GlResources.OwnedResource list
+          ExpectedReleaseOrder: GlResources.ResourceCategory list
+          ObservedReleaseOrder: GlResources.ResourceCategory list
           DiagnosticStage: string
           DiagnosticCause: string
           Synthetic: bool }
@@ -232,9 +192,45 @@ module VulkanStartup =
 
     val simulateFailure: failedStageName: string -> StartupFailureCase
 
-    val simulateSuccessfulShutdown: unit -> VulkanResources.ReleaseRecord list
+    val simulateSuccessfulShutdown: unit -> GlResources.ReleaseRecord list
 
-module VulkanHost =
+module GlHost =
+
+    val run: program: ViewerProgram<'model, 'msg> -> Result<unit, RenderDiagnostic>
+
+namespace FS.Skia.UI.SkiaViewer.Host
+
+open System
+open Elmish
+open FS.Skia.UI.Scene
+
+open FS.Skia.UI.SkiaViewer.Host
+
+module Viewer =
+
+    val defaultConfiguration: title: string -> initialSize: Size -> ViewerConfiguration
+
+    val create:
+        configuration: ViewerConfiguration ->
+        init: (unit -> 'model * Cmd<'msg>) ->
+        update: ('msg -> 'model -> 'model * Cmd<'msg>) ->
+        view: ('model -> Scene) ->
+            ViewerProgram<'model, 'msg>
+
+    val withSubscription:
+        subscription: ('model -> (string list * (Dispatch<'msg> -> IDisposable)) list) ->
+        program: ViewerProgram<'model, 'msg> ->
+            ViewerProgram<'model, 'msg>
+
+    val withEventMapping:
+        mapper: (ViewerEvent -> 'msg option) ->
+        program: ViewerProgram<'model, 'msg> ->
+            ViewerProgram<'model, 'msg>
+
+    val withEffectMapping:
+        mapper: ('msg -> ViewerEffect<'msg> option) ->
+        program: ViewerProgram<'model, 'msg> ->
+            ViewerProgram<'model, 'msg>
 
     val run: program: ViewerProgram<'model, 'msg> -> Result<unit, RenderDiagnostic>
 
@@ -383,9 +379,9 @@ type ViewerDiagnosticCategory =
     | Input
     | Frame
     | Renderer
-    | Vulkan
+    | OpenGl
     | Skia
-    | Swapchain
+    | Framebuffer
     | Scene
     | Screenshot
 
@@ -402,7 +398,7 @@ type ViewerRunBlockedStage =
     | Window
     | Surface
     | Renderer
-    | Swapchain
+    | GlContext
     | Scene
     | Readback
     | App
