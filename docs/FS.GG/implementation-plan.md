@@ -2,7 +2,7 @@
 title: FS.GG split implementation plan
 category: FS.GG
 categoryindex: 6
-index: 7
+index: 8
 description: Single implementation plan for splitting rendering and governance projects while using standard Spec Kit.
 ---
 
@@ -22,6 +22,8 @@ experimental governance from becoming a prerequisite for runtime development.
   adoption.
 - Keep rendering build, test, docs, package, and release work independent of the
   governance project.
+- Make controls, design-system primitives, concrete themes, and design-specific
+  kits explicit rendering-owned layers.
 - Preserve useful research from the previous report without carrying forward
   the monolithic graph operating system.
 
@@ -68,6 +70,10 @@ Rendering-owned surfaces:
 - runtime tests;
 - docs that describe the product;
 - controls catalog and examples;
+- design-system primitives and theme definitions;
+- concrete themes such as Ant Design, Fluent, Material, or project-specific
+  themes;
+- optional design-specific kits for patterns that go beyond styling;
 - templates and generated-product checks, unless split later;
 - package metadata and release notes;
 - focused checks for API surface, package skew, docs, template, and packaging.
@@ -87,7 +93,19 @@ Exit criteria:
 - docs can be built by the documented command;
 - packages can be packed locally;
 - template can be packed, installed, instantiated, and built;
+- control, design-system, theme, and kit ownership boundaries are documented;
 - no governance repository code is required for the above.
+
+Design/control boundary:
+
+- define one semantic control set before adding branded design variants;
+- define token and theme extension points separately from control behavior;
+- implement Ant Design, Fluent, Material, or product-specific visuals as themes
+  over shared controls by default;
+- create design-specific kit modules only for composition or workflow patterns
+  that cannot be represented as visual theming;
+- keep accessibility, focus, pointer, keyboard, and value behavior attached to
+  the semantic control contract, not duplicated per theme.
 
 ## Stage 3 - Extract governance as a tool product
 
@@ -131,6 +149,8 @@ Candidate contracts:
 - support-bundle format if governance tooling creates support artifacts;
 - package version compatibility ranges;
 - docs links and migration pages.
+- optional design-token or theme report formats, if governance tooling later
+  checks design drift from outside the rendering repository.
 
 Avoid:
 
@@ -193,6 +213,8 @@ Keep checks that protect product contracts directly:
 
 - unit and integration tests;
 - API surface drift checks;
+- design-token and theme smoke checks;
+- control behavior and accessibility checks;
 - package skew checks;
 - template pack/install/instantiate checks;
 - generated-product restore/build checks;
@@ -229,6 +251,8 @@ The split is complete when:
 
 - rendering has an active repository with standard Spec Kit, product tests, docs,
   package, and template validation;
+- rendering documents and enforces the boundary between semantic controls,
+  design-system primitives, concrete themes, and design-specific kits;
 - governance has an independent repository with standard Spec Kit and no
   required role in rendering's ordinary workflow;
 - this repository is documented as bridge/archive;

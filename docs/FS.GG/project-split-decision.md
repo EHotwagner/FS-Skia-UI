@@ -42,7 +42,7 @@ Use a split-repository direction:
 
 | Project | Purpose | Workflow baseline |
 |---|---|---|
-| Rendering/runtime | Scene, layout, input, viewer, controls, templates, docs, tests, packages. | Standard Spec Kit plus narrow repo-owned checks. |
+| Rendering/runtime | Scene, layout, input, viewer, controls, design systems, themes, templates, docs, tests, packages. | Standard Spec Kit plus narrow repo-owned checks. |
 | Governance/tooling | Rule kernels, evidence helpers, route analyzers, optional Spec Kit extensions or validators. | Standard Spec Kit, developed as a normal tool product. |
 | Templates/package support | Optional later split if release cadence differs from runtime. | Standard Spec Kit or rendering repo workflow, decided later. |
 
@@ -90,6 +90,12 @@ separate, earned tooling:
 
 The rendering repository keeps only checks that are simple, local, and clearly
 worth their cost.
+
+Design-system work stays with rendering. The default control strategy is one
+semantic control set with multiple themes, not separate AntD/Fluent/Material
+control copies. Design-specific kits are allowed when a design language adds
+composition or workflow behavior that cannot be represented as styling over the
+shared controls.
 
 ## Alternatives considered
 

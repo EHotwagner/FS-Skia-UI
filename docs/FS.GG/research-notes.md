@@ -2,7 +2,7 @@
 title: Research notes
 category: FS.GG
 categoryindex: 6
-index: 6
+index: 7
 description: Durable research findings preserved from the earlier SpecFlow graph operating system report.
 ---
 
@@ -92,3 +92,15 @@ The split direction keeps those lessons, but does not put all of them into one
 mandatory platform. The rendering repository should solve the high-value cases
 with focused checks. The governance repository can explore generalized tooling
 without making rendering work harder.
+
+## Design-system boundary
+
+Design-system metadata was one of the areas the monolithic plan wanted to put
+into a product graph. The durable lesson is narrower: design tokens and themes
+are product contract inputs, but they do not require a custom governance
+platform to start.
+
+The rendering project should keep the semantic control set stable and apply
+specific design languages through themes. Branded or design-specific modules are
+reserved for higher-level patterns where the design language defines structure,
+workflow, or interaction beyond styling.

@@ -22,11 +22,39 @@ The rendering project owns:
 - Skia viewer and host behavior;
 - Elmish integration;
 - controls and typed control front doors;
+- design-system primitives, theme models, and concrete themes;
+- optional design-specific kits where a design system introduces product
+  patterns beyond styling;
 - testing helpers that are part of the product contract;
 - runtime packages and package metadata;
 - product documentation;
 - templates and generated-product smoke tests, unless template cadence later
   justifies a separate repository.
+
+## Design and controls
+
+Controls and design live in the rendering project, but not in the same layer.
+The product should have one semantic control set and multiple theme or design
+system layers over it.
+
+Recommended internal split:
+
+| Layer | Owns |
+|---|---|
+| Rendering core | Scene, layout, input, drawing, and host-independent primitives. |
+| Controls | Semantic controls, behavior, state, focus, keyboard, pointer, value, and accessibility contracts. |
+| Design system | Token model, theme model, density, typography, radii, color roles, visual states, and component token slots. |
+| Themes | Concrete Ant Design, Fluent, Material, or product-specific theme values. |
+| Kits/patterns | Design-specific compositions when behavior or layout conventions exceed styling. |
+
+Specific design languages should not get duplicated controls by default. A
+`Button` remains `Button`; Ant Design, Fluent, and Material normally provide
+different themes for the same control. A design-specific module is justified
+only when it introduces a real pattern, such as Ant Design-style form layout,
+table filtering conventions, result pages, descriptions, statistics, or other
+opinionated compositions.
+
+See [Design and controls](design-and-controls.md) for the boundary rules.
 
 ## Workflow
 

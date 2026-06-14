@@ -2,7 +2,7 @@
 title: Governance project
 category: FS.GG
 categoryindex: 6
-index: 4
+index: 5
 description: Scope and adoption bar for a separate governance and rule-tooling project.
 ---
 
@@ -28,7 +28,7 @@ The governance project may own:
   custom platform.
 
 It should not own rendering product identity, package IDs, docs URLs, template
-profiles, or release decisions.
+profiles, design-system choices, controls, themes, or release decisions.
 
 ## First useful product
 

@@ -2,7 +2,7 @@
 title: Transition and boundaries
 category: FS.GG
 categoryindex: 6
-index: 5
+index: 6
 description: Transition guidance for moving from the current repository to split rendering and governance projects.
 ---
 

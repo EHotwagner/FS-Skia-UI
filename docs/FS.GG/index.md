@@ -38,6 +38,8 @@ The new direction is deliberately simpler:
   graph operating system is being replaced by a split-repository strategy.
 - [Rendering project](rendering-project.md) defines the runtime repository's
   scope, governance level, and release expectations.
+- [Design and controls](design-and-controls.md) defines where design-system
+  primitives, themes, controls, and design-specific kits live.
 - [Governance project](governance-project.md) defines the separate tooling
   experiment and its adoption bar.
 - [Transition and boundaries](transition-and-boundaries.md) explains how the old
