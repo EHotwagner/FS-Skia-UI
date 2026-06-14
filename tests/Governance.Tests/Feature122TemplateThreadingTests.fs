@@ -15,11 +15,13 @@ let tests =
         [ test "generated Program.fs threads the parsed window behavior into the live controls launch (SC-003)" {
               let program = read "template/base/src/Product/Program.fs"
 
-              // The flag-gated live launch routes through the window-behavior overload...
+              // The flag-gated live launch routes through the window-behavior overload, converting the
+              // parsed settings to a ViewerWindowBehaviorRequest via toViewerLaunchRequest (as the game
+              // profile does for runAppWithWindowBehavior)...
               expectContains
                   program
-                  "ControlsElmish.runInteractiveAppWithWindowBehavior viewerOptions windowBehaviorRequest interactiveHost"
-                  "the app profile threads windowBehaviorRequest into the live launch"
+                  "ControlsElmish.runInteractiveAppWithWindowBehavior viewerOptions (Product.WindowOptions.toViewerLaunchRequest windowBehavior) interactiveHost"
+                  "the app profile threads the parsed window behavior into the live launch"
 
               // ...gated by the same windowFlagSupplied predicate the game profile uses, so the no-flag
               // default windowed-fullscreen path is preserved (byte-identical).

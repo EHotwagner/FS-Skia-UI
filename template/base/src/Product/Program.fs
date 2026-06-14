@@ -158,7 +158,7 @@ let main args =
         // with no flag the default windowed-fullscreen path is preserved (byte-identical).
         let launchResult =
             if Product.WindowOptions.windowFlagSupplied args then
-                ControlsElmish.runInteractiveAppWithWindowBehavior viewerOptions windowBehaviorRequest interactiveHost
+                ControlsElmish.runInteractiveAppWithWindowBehavior viewerOptions (Product.WindowOptions.toViewerLaunchRequest windowBehavior) interactiveHost
             else
                 ControlsElmish.runInteractiveApp viewerOptions interactiveHost
         //#else
