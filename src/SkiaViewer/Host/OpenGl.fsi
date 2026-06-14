@@ -102,3 +102,8 @@ module GlHost =
     /// framebuffer size changed). Exposed for the idle-skip transition test (T016).
     val shouldPresent:
         prev: FS.Skia.UI.Scene.Scene option -> next: FS.Skia.UI.Scene.Scene -> sizeChanged: bool -> bool
+
+    /// Feature 121 (US1, FR-002): pure frame-pacing decision — advance (update + present) iff at least
+    /// `frameInterval` seconds elapsed since the last advance. Gates DoUpdate AND DoRender so the
+    /// `ViewerOptions.FrameRateCap` bounds render cadence. Exposed for the pacing test (T006).
+    val shouldAdvanceFrame: lastFrameTime: float -> now: float -> frameInterval: float -> bool

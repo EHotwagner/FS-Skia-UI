@@ -1149,6 +1149,9 @@ module internal RetainedRender =
 
     val internal clockActive: clock: AnimationClock -> bool
 
+    val internal advanceStateClocks:
+        delta: System.TimeSpan -> state: Map<RetainedId, RetainedUiState> -> Map<RetainedId, RetainedUiState>
+
     val internal updateClockForState: desired: VisualState -> priorOwn: FS.Skia.UI.Scene.Scene list -> carried: AnimationClock option -> AnimationClock option
 
     val internal sampleOnPaint: clock: AnimationClock -> ownScene: FS.Skia.UI.Scene.Scene list -> FS.Skia.UI.Scene.Scene list

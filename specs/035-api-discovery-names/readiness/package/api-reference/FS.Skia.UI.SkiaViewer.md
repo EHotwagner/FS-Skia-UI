@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 468
-xml-summary-count: 118
+symbol-count: 469
+xml-summary-count: 124
 source-fsi-paths:
 - src/SkiaViewer/SkiaViewer.fsi
 sampled-symbols:
@@ -46,7 +46,14 @@ type ViewerOptions =
       /// (Feature 120, FR-016: corrects stale feature-118 text that named `OffscreenReadback` as the
       /// default; the shipped default lives at `Viewer.defaultConfiguration`, which uses
       /// `DirectToSwapchain` — the docstring is brought into agreement with it.)
-      PresentMode: ViewerPresentMode }
+      PresentMode: ViewerPresentMode
+      /// Optional consumer frame-rate cap for the live persistent interactive loop (feature 121,
+      /// FR-001/FR-002). `None` keeps the default 60 FPS — the exact pre-feature-121 behaviour. `Some n`
+      /// (n > 0) bounds BOTH the update and the present cadence of the native event loop, so a host
+      /// without a blocking compositor does not free-run the present loop; `Some n` with n <= 0 is
+      /// rejected at startup validation. Ignored by the offscreen/evidence (`runBounded`) path, which
+      /// does not use the persistent event loop.
+      FrameRateCap: int option }
 
 /// Public contract type exposed by this FS.Skia.UI package.
 type ViewerLaunchMode =

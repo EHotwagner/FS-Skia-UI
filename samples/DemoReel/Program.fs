@@ -733,7 +733,8 @@ let viewerOptions title =
       // Feature 120 (FR-017): the live interactive window presents in the zero-readback direct mode (the
       // shipped default). The evidence/screenshot path uses `SceneEvidence.renderPng` (an offscreen
       // readback), so it is unaffected by this live present mode.
-      PresentMode = ViewerPresentMode.DirectToSwapchain }
+      PresentMode = ViewerPresentMode.DirectToSwapchain
+      FrameRateCap = None }
 
 let normalWindow =
     { Viewer.defaultWindowBehavior with

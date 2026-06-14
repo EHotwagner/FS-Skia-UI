@@ -203,6 +203,8 @@ module GlHost =
     val shouldPresent:
         prev: FS.Skia.UI.Scene.Scene option -> next: FS.Skia.UI.Scene.Scene -> sizeChanged: bool -> bool
 
+    val shouldAdvanceFrame: lastFrameTime: float -> now: float -> frameInterval: float -> bool
+
 namespace FS.Skia.UI.SkiaViewer.Host
 
 open System
@@ -290,7 +292,9 @@ type ViewerOptions =
     { Title: string
       InitialSize: Size
 
-      PresentMode: ViewerPresentMode }
+      PresentMode: ViewerPresentMode
+
+      FrameRateCap: int option }
 
 type ViewerLaunchMode =
     | InteractiveWindow

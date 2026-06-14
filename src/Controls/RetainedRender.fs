@@ -562,6 +562,17 @@ module internal RetainedRender =
             let e = clock.Elapsed + delta
             { clock with Elapsed = (if e > dur then dur else e) }
 
+    let advanceStateClocks (delta: System.TimeSpan) (state: Map<RetainedId, RetainedUiState>) : Map<RetainedId, RetainedUiState> =
+        // Feature 121 (US2, FR-004): only rebuild the per-identity map when at least one clock is active.
+        // An all-inactive state is returned reference-equal — an idle live tick allocates nothing (the
+        // prior `Map.map` allocated a fresh map every tick regardless). Active clocks advance exactly as
+        // `advance` (features 099/103 unchanged).
+        if state |> Map.exists (fun _ s -> s.Animation |> Option.exists clockActive) then
+            state
+            |> Map.map (fun _ s -> { s with Animation = s.Animation |> Option.map (advance delta) })
+        else
+            state
+
     let updateClockForState (desired: VisualState) (priorOwn: FS.Skia.UI.Scene.Scene list) (carried: AnimationClock option) : AnimationClock option =
         // Compare the desired (stamped) VisualState against the carried clock's Target (contract C2).
         let triggered =

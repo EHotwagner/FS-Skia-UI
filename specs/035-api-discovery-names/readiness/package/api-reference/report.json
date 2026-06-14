@@ -32,14 +32,14 @@
       "src/SkiaViewer/SkiaViewer.fsi"
     ],
     "ReferenceOutputPath": "/home/developer/projects/FS-Skia-UI/specs/035-api-discovery-names/readiness/package/api-reference/FS.Skia.UI.SkiaViewer.md",
-    "SymbolCount": 468,
+    "SymbolCount": 469,
     "SampledSymbols": [
       "type ViewerOptions =",
       "InitialSize: Size",
       "ViewerWindowPosition",
       "Coordinates of x: int * y: int"
     ],
-    "XmlSummaryCount": 118,
+    "XmlSummaryCount": 124,
     "UnsupportedSymbols": [],
     "OmittedSymbolReasons": [
       "none"

@@ -58,7 +58,7 @@ let renderWidgetToPng (width: int) (height: int) (outputPath: string) (w: Widget
           Timeout = TimeSpan.FromSeconds 30.0 }
 
     let options: ViewerOptions =
-        { Title = "controls-preview"; InitialSize = { Width = width; Height = height }; PresentMode = ViewerPresentMode.OffscreenReadback }
+        { Title = "controls-preview"; InitialSize = { Width = width; Height = height }; PresentMode = ViewerPresentMode.OffscreenReadback; FrameRateCap = None }
 
     Viewer.captureScreenshotEvidence request options (toScene w)
 

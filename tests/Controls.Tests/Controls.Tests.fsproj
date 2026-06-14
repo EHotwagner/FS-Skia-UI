@@ -67,6 +67,7 @@
     <Compile Include="Feature117CacheBoundTests.fs" />
     <Compile Include="Feature117LayoutInvalidatedTests.fs" />
     <Compile Include="Feature120FingerprintTests.fs" />
+    <Compile Include="Feature121IdleTickTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

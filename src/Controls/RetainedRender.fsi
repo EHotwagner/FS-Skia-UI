@@ -375,6 +375,12 @@ module internal RetainedRender =
     /// static render (FR-005), so only active clocks contribute a per-frame change.
     val internal clockActive: clock: AnimationClock -> bool
 
+    /// Feature 121 (US2, FR-004): advance every per-identity animation clock by `delta`; when NO clock
+    /// is active the state map is returned reference-equal (no allocation), so an idle live tick makes
+    /// no garbage. Active clocks advance exactly as `advance`. Exposed for the no-alloc test (T011).
+    val internal advanceStateClocks:
+        delta: System.TimeSpan -> state: Map<RetainedId, RetainedUiState> -> Map<RetainedId, RetainedUiState>
+
     /// Feature 099 (R4) / 103 (R6): the pure transition trigger (contract C2). Given the `desired`
     /// VisualState stamped by `ControlRuntime.applyRuntimeVisualState` (R1), the matched prior node's
     /// own-scene snapshot `priorOwn`, and the carried (already-advanced) clock, decide the frame's

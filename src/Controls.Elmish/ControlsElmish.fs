@@ -1219,15 +1219,16 @@ module ControlsElmish =
         // `host.Tick delta` so the consumer's own tick message is unaffected (no swallow, no
         // double-dispatch). When no identity has an active clock this is observably a pass-through.
         let wrappedTick (delta: TimeSpan) : 'msg option =
+            // Feature 121 (US2, FR-004): advance per-identity clocks only when at least one is active.
+            // `advanceStateClocks` returns the map reference-equal when nothing is animating, so we skip
+            // even the record copy — an idle live tick allocates nothing (the prior `Map.map` made a
+            // fresh map every tick). Active clocks advance exactly as before (features 099/103 unchanged).
             match retained.Value with
             | Some r ->
-                retained.Value <-
-                    Some
-                        { r with
-                            StateByIdentity =
-                                r.StateByIdentity
-                                |> Map.map (fun _ s ->
-                                    { s with Animation = s.Animation |> Option.map (RetainedRender.advance delta) }) }
+                let advanced = RetainedRender.advanceStateClocks delta r.StateByIdentity
+
+                if not (obj.ReferenceEquals(advanced, r.StateByIdentity)) then
+                    retained.Value <- Some { r with StateByIdentity = advanced }
             | None -> ()
 
             host.Tick delta

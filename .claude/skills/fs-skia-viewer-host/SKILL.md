@@ -38,7 +38,12 @@ let host : InteractiveAppHost<Model, Msg> =
       Tick = fun _ -> None
       Diagnostics = Viewer.defaultDiagnostics }
 
-ControlsElmish.runInteractiveApp { Title = "App"; InitialSize = { Width = 1024; Height = 768 } } host
+ControlsElmish.runInteractiveApp
+    { Title = "App"
+      InitialSize = { Width = 1024; Height = 768 }
+      PresentMode = ViewerPresentMode.DirectToSwapchain   // live default (feature 119)
+      FrameRateCap = None }                               // None = 60 FPS; Some n caps the loop (feature 121)
+    host
 ```
 
 ### Input surface
@@ -77,6 +82,44 @@ monitor work area and **blurs** it. Two fixes:
 1. Use the **size-aware `View: Size -> 'model -> Control<'msg>`** so content is laid out to the
    actual swapchain extent (sharp at any size) — the preferred path.
 2. Or pass exactly one flag — **`--window-startup normal`** — for a 1:1 normal window.
+
+## Present mode: live vs evidence — do not reuse the evidence options (feature 121)
+
+`ViewerOptions.PresentMode` picks the present mechanism; choose it by launch context:
+
+| Launch context | `PresentMode` | Why |
+|----------------|---------------|-----|
+| Persistent interactive window | `DirectToSwapchain` | zero-readback live present (feature 119); unchanged frames skip paint (feature 120) |
+| Evidence / screenshot capture | `OffscreenReadback` | small readback surface for deterministic pixel capture |
+
+**Do NOT reuse your evidence `viewerOptions` for the persistent interactive launch.** The
+evidence options set `OffscreenReadback` (640×480), which renders **off-screen** — a live window
+built from them shows a **blank** frame. Give the interactive launch its own `DirectToSwapchain`
+options (e.g. 1280×800). A generated scaffold that defaults the persistent launch to the evidence
+`viewerOptions` ships a blank window — the exact defect the ControlsShowcase4 feedback hit.
+
+## Loop pacing & the headless free-run environment limit (feature 121)
+
+`ViewerOptions.FrameRateCap : int option` bounds the live persistent loop:
+
+- `None` keeps the default **60 FPS** (the pre-121 behaviour).
+- `Some n` (n > 0) caps **both** the update and the present cadence at `n` FPS — the consumer
+  lever to keep the loop from free-running. `Some n` with `n <= 0` is rejected at startup.
+
+**Desktop-session prerequisites for a responsive window**: a compositor with vsync. On such a
+host the loop paces on present. On a **minimal/headless host with no compositor/vsync** (e.g. a
+bare GTK session) the loop has nothing to block on and **free-runs toward the cap** — this is an
+**environment limitation, not a product defect**. Lower the `FrameRateCap` to bound CPU there; a
+truly responsive interactive window still requires a real desktop session.
+
+## Already shipped — don't re-derive these (feature 121 reconciliation)
+
+- **In-app quit needs no new effect.** `update` returns `ViewerEffect list`; return
+  `[ ViewerEffect.CloseWindow ]` to request a graceful shutdown (it propagates to
+  `AppRequestedClose` + `Shutdown`). Wire a plain key to it via `MapKey` — no `kill` required.
+- **Unchanged frames already skip paint.** On `DirectToSwapchain`, a frame whose scene is
+  reference/structurally unchanged at an unchanged size does no clear/scene-walk/draw (feature
+  120). You do not need to add idle-skip yourself.
 
 ## Keyboard warm-up: no dropped keystrokes at focus (feature 086)
 

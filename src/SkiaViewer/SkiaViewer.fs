@@ -14,7 +14,8 @@ open Silk.NET.Windowing
 type ViewerOptions =
     { Title: string
       InitialSize: Size
-      PresentMode: ViewerPresentMode }
+      PresentMode: ViewerPresentMode
+      FrameRateCap: int option }
 
 type ViewerLaunchMode =
     | InteractiveWindow
@@ -828,6 +829,10 @@ module Viewer =
             Result.Error(makeFailure App ProductDefect Startup "Viewer title must not be empty." None)
         elif options.InitialSize.Width <= 0 || options.InitialSize.Height <= 0 then
             Result.Error(makeFailure Window ProductDefect Startup "Viewer initial output size must be positive." None)
+        elif (match options.FrameRateCap with
+              | Some cap -> cap <= 0
+              | None -> false) then
+            Result.Error(makeFailure Window ProductDefect Startup "Viewer frame-rate cap must be positive." None)
         else
             Result.Ok()
 
@@ -1231,7 +1236,8 @@ module Viewer =
         let configuration =
             { Host.Viewer.defaultConfiguration options.Title options.InitialSize with
                 ClearColor = Some Colors.black
-                TargetFrameRate = Some 60
+                // Feature 121 (US1, FR-001): honor the consumer FrameRateCap, defaulting to 60 when unset.
+                TargetFrameRate = (options.FrameRateCap |> Option.orElse (Some 60))
                 Diagnostics = { Verbose = false }
                 PresentMode = options.PresentMode
                 // Carry the requested startup state (fullscreen / maximized /
@@ -2905,4 +2911,4 @@ module GeneratedAppHost =
             | FrameCount _ -> { Width = 1; Height = 1 }
             | Duration _ -> { Width = 1; Height = 1 }
 
-        Viewer.runBounded request { Title = "Generated App"; InitialSize = size; PresentMode = ViewerPresentMode.OffscreenReadback } scene
+        Viewer.runBounded request { Title = "Generated App"; InitialSize = size; PresentMode = ViewerPresentMode.OffscreenReadback; FrameRateCap = None } scene

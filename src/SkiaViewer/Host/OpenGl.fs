@@ -258,6 +258,13 @@ module GlHost =
            | None -> true
            | Some p -> not (obj.ReferenceEquals(p, next) || p = next)
 
+    /// Feature 121 (US1, FR-002): the pure frame-pacing decision — advance (update + present) this
+    /// iteration iff at least `frameInterval` seconds have elapsed since the last advance. Gates BOTH
+    /// `DoUpdate` and `DoRender` so a `ViewerOptions.FrameRateCap` actually bounds render cadence, not
+    /// just update. Testable in isolation (T006).
+    let shouldAdvanceFrame (lastFrameTime: float) (now: float) (frameInterval: float) : bool =
+        now - lastFrameTime >= frameInterval
+
     let bind result next =
         match result with
         | Ok value -> next value
@@ -875,12 +882,17 @@ module GlHost =
                     else
                         let now = stopwatch.Elapsed.TotalSeconds
 
-                        if now - lastFrameTime >= frameInterval then
+                        // Feature 121 (US1, FR-002): gate BOTH update and present by the frame interval so
+                        // the FrameRateCap bounds render cadence (was: DoRender every poll iteration → the
+                        // free-run the ControlsShowcase4 feedback observed). Input (`DoEvents`, above) stays
+                        // responsive every iteration; only the paced update+present is held back. The
+                        // feature-120 paint-skip still applies inside DoRender when it does run.
+                        if shouldAdvanceFrame lastFrameTime now frameInterval then
                             lastFrameTime <- now
                             createdWindow.DoUpdate()
 
-                        if not shutdownRequested && not createdWindow.IsClosing then
-                            createdWindow.DoRender()
+                            if not shutdownRequested && not createdWindow.IsClosing then
+                                createdWindow.DoRender()
 
                         Threading.Thread.Sleep(1)
 

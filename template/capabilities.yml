@@ -117,6 +117,7 @@ capabilities:
     contracts:
       - src/Controls/Types.fsi
       - src/Controls/Control.fsi
+      - src/Controls/Pointer.fsi
       - src/Controls/Attributes.fsi
       - src/Controls/Theme.fsi
       - src/Controls/Accessibility.fsi

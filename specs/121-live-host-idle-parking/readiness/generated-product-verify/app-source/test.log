@@ -1,0 +1,18 @@
+
+## app/source generated Test
+$ bash ./fake.sh build -t Test
+  Determining projects to restore...
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/app-source/tests/Product.Tests/Product.Tests.fsproj (in 351 ms).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/app-source/src/Product/Product.fsproj (in 350 ms).
+/home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/app-source/src/Product/EvidenceCommands.fs(180,5): error FS0764: No assignment given for field 'FrameRateCap' of type 'FS.Skia.UI.SkiaViewer.ViewerOptions' [/home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/app-source/src/Product/Product.fsproj]
+/home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/app-source/src/Product/EvidenceCommands.fs(288,13): error FS0764: No assignment given for field 'FrameRateCap' of type 'FS.Skia.UI.SkiaViewer.ViewerOptions' [/home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/app-source/src/Product/Product.fsproj]
+System.Exception: Test failed with exit code 1; see readiness/logs/Test.txt
+   at Microsoft.FSharp.Core.PrintfModule.PrintFormatToStringThenFail@1447.Invoke(String message)
+   at FSI_0001.runProcess(String target, String fileName, String arguments) in /home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/app-source/build.fsx:line 204
+   at FSI_0001.runGeneratedTests() in /home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/app-source/build.fsx:line 207
+   at <StartupCode$FSI_0001>.$FSI_0001.main@() in /home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/app-source/build.fsx:line 239
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+Stopped due to error
+
+exit-code=1

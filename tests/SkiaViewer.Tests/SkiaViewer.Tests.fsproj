@@ -15,6 +15,7 @@
     <Compile Include="Feature118PresentModeTests.fs" />
     <Compile Include="Feature119OpenGlHostTests.fs" />
     <Compile Include="Feature120ReplayCacheTests.fs" />
+    <Compile Include="Feature121LiveHostPacingTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
