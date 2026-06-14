@@ -352,6 +352,12 @@ module EvidenceFormatSchema =
                     line (sprintf "### `%s`" s.FileName)
                     line ""
                     line (sprintf "- required tokens: %s" (String.concat ", " s.RequiredTokens))
+                    // Feature 122 (FR-008): these files are parsed as key/value (Scans.parseKeyValues),
+                    // so each required token MUST appear as `token=value` — a bold-prose token will not
+                    // match. The contract previously listed bare token names, which read as prose-OK and
+                    // cost the Spread3 consumer avoidable authoring churn.
+                    if List.contains s.FileName [ "interactive-visible-window.md"; "window-state-diagnostics.md"; "generated-validation.md" ] then
+                        line "- token form: each required token MUST appear as `token=value` (this file is parsed as key/value, not prose)"
                     match s.TableColumns with
                     | Some cols when not (List.isEmpty cols) ->
                         line (sprintf "- columns (in order): %s" (String.concat " | " cols))

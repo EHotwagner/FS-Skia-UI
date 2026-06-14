@@ -152,8 +152,15 @@ let main args =
         // Per-family governed default launch (feature 086, FR-004/005/006, D6):
         //#if (profile == "app")
         // CONTROLS family: a pointer-aware persistent host — a mouse click on a live control
-        // dispatches that control's bound message (via MapPointer over the renderTree bounds).
-        let launchResult = ControlsElmish.runInteractiveApp viewerOptions interactiveHost
+        // dispatches that control's bound message (via MapPointer over the renderTree bounds). A
+        // window flag (e.g. --window-startup normal) threads the parsed behavior into the ACTUAL live
+        // launch (feature 122, FR-005), so the scaffold-map remedy is effective instead of inert;
+        // with no flag the default windowed-fullscreen path is preserved (byte-identical).
+        let launchResult =
+            if Product.WindowOptions.windowFlagSupplied args then
+                ControlsElmish.runInteractiveAppWithWindowBehavior viewerOptions windowBehaviorRequest interactiveHost
+            else
+                ControlsElmish.runInteractiveApp viewerOptions interactiveHost
         //#else
         // GAME family: the keyboard-only persistent host is preserved (FR-006). A window flag
         // routes through runAppWithWindowBehavior; otherwise the durable runApp path stays

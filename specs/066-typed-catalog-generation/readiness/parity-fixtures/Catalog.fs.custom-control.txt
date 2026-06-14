@@ -1,1 +1,1 @@
-          definition "custom-control" "Custom Control" "custom" "CustomControl" "Product-owned wrapper for custom Skia content." [] common [ "onCustom" ] states "Custom"
+          definition "custom-control" "Custom Control" "custom" "CustomControl" "Product-owned wrapper; renderTree paints a labeled placeholder, not the custom Render/Draw content — build must-show geometry from primitive controls (Border/TextBlock/Stack)." [] common [ "onCustom" ] states "Custom"

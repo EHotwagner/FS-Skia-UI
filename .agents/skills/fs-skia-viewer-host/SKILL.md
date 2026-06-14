@@ -83,6 +83,29 @@ monitor work area and **blurs** it. Two fixes:
    actual swapchain extent (sharp at any size) — the preferred path.
 2. Or pass exactly one flag — **`--window-startup normal`** — for a 1:1 normal window.
 
+> These fix **blur**, not the black-frame blink below. The size-aware view does **not** address
+> interleaved-black, and naively filling a large extent with a full grid of controls is an
+> `O(cells)` ANR trap — keep the cell/row count bounded (virtualize) when you size to the extent.
+
+## Interleaved-black-frame blink — Wayland `DirectToSwapchain` (feature 122)
+
+**Symptom (pre-122).** On a Wayland windowed-fullscreen session with the default
+`DirectToSwapchain` present, a **static** scene could **blink** — fully-black frames interleaved
+with the painted frame — while offscreen/screenshot evidence stayed correct. Root cause: the
+feature-120 idle optimization skipped the buffer **swap** entirely on an unchanged scene, assuming
+double-buffering; a 3+ buffer compositor then rotated an **undrawn (black)** buffer into view.
+
+**Fix (feature 122, shipped).** The host now keeps every swapchain buffer populated: on an idle
+frame it **re-presents the cached last good frame** (a single image blit, no scene walk) for a
+bounded number of frames until all buffers are filled, then fully idles. Static content no longer
+interleaves black, and the idle CPU win is preserved. No consumer action is required on the current
+framework.
+
+**On older framework versions** (or to force a normal window regardless), pass
+**`--window-startup normal`** — feature 122 also made that flag actually apply to the live
+**controls** window (`runInteractiveAppWithWindowBehavior`), where it was previously inert (it only
+fed the options report). The earlier "size-aware view" advice does **not** fix the blink.
+
 ## Present mode: live vs evidence — do not reuse the evidence options (feature 121)
 
 `ViewerOptions.PresentMode` picks the present mechanism; choose it by launch context:

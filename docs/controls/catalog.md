@@ -131,5 +131,5 @@ narrative, which explains where controls are chosen, authored, and validated.
 
 | Control | Purpose |
 |---------|---------|
-| [Custom Control](custom-control.html) | Product-owned wrapper for custom Skia content. |
+| [Custom Control](custom-control.html) | Product-owned wrapper; renderTree paints a labeled placeholder, not the custom Render/Draw content — build must-show geometry from primitive controls (Border/TextBlock/Stack). |
 <!-- END GENERATED: catalog-docs/index -->

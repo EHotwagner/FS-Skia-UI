@@ -103,6 +103,27 @@ module GlHost =
     val shouldPresent:
         prev: FS.Skia.UI.Scene.Scene option -> next: FS.Skia.UI.Scene.Scene -> sizeChanged: bool -> bool
 
+    [<RequireQualifiedAccess>]
+    /// Feature 122 (FR-001/002): what the live DirectToSwapchain host does for one frame — paint a
+    /// fresh frame and present it, re-present the cached last good frame to fill a swapchain buffer, or
+    /// fully idle.
+    type PresentAction =
+        | PaintAndPresent
+        | RepresentLastGood
+        | SkipPresent
+
+    /// Feature 122 (FR-001/002): the pure present decision. `PaintAndPresent` when `shouldPresent`;
+    /// otherwise `RepresentLastGood` while `idleRepresentsRemaining > 0` (buffers may still be undrawn),
+    /// else `SkipPresent` (full idle). Keeping every swapchain buffer populated stops a multi-buffer
+    /// compositor (Wayland windowed-fullscreen) from rotating an undrawn black buffer into view.
+    /// Exposed for the present-plan transition test (T011).
+    val planPresent:
+        prev: FS.Skia.UI.Scene.Scene option ->
+        next: FS.Skia.UI.Scene.Scene ->
+        sizeChanged: bool ->
+        idleRepresentsRemaining: int ->
+            PresentAction
+
     /// Feature 121 (US1, FR-002): pure frame-pacing decision — advance (update + present) iff at least
     /// `frameInterval` seconds elapsed since the last advance. Gates DoUpdate AND DoRender so the
     /// `ViewerOptions.FrameRateCap` bounds render cadence. Exposed for the pacing test (T006).

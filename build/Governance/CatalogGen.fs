@@ -125,7 +125,7 @@ let catalogFacts : TypedCatalogFact list =
       fact "color-picker" "Color Picker" "selection" "ColorPicker" "ColorPicker" "Palette swatch color selection." [ "swatches" ] [ "onSelected" ] "List"
       // custom-control is bridge-typed (Widget.ofControl) — no Props schema, no fabricated
       // required attribute (FR-006/R3). The fact carries RequiredAttributes = [].
-      fact "custom-control" "Custom Control" "custom" "CustomControl" "CustomControl" "Product-owned wrapper for custom Skia content." [] [ "onCustom" ] "Custom" ]
+      fact "custom-control" "Custom Control" "custom" "CustomControl" "CustomControl" "Product-owned wrapper; renderTree paints a labeled placeholder, not the custom Render/Draw content — build must-show geometry from primitive controls (Border/TextBlock/Stack)." [] [ "onCustom" ] "Custom" ]
 
 // ---------------------------------------------------------------------------------------
 // Renderers. Each reproduces the exact on-disk row bytes from the shared constants the

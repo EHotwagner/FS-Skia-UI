@@ -30,6 +30,16 @@ unchanged across a model swap — do not rewrite them:
   asserts structural / evidence / discoverability invariants; never calls the
   product's `view`/`update`, so it **survives a scaffold-model swap**.
 
+## Adding new source files is fine (keep the six scanned files' relative order)
+
+You may add your own source files (e.g. a pure engine module) without breaking the
+governance gate. `GovernanceTests.fs` asserts only the **relative compile order** and
+presence of the six scanned scaffold files —
+`Model.fs → View.fs → LayoutEvidence.fs → WindowOptions.fs → EvidenceCommands.fs → Program.fs`.
+A new file inserted **before, between, or after** them is safe as long as those six keep
+that relative order in the `.fsproj`. (You do not need to read the governance test body to
+confirm this.)
+
 ## Durable — must re-point (keep the file + its scanned tokens, re-point model fields)
 
 These are **durable** — keep the file and every must-survive source-scan token it

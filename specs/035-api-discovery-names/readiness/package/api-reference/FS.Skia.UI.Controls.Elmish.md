@@ -5,8 +5,8 @@ package-version: local
 generated-from: curated-fsi
 assembly-reflection: false
 repository-source-authoring-fallback: false
-symbol-count: 156
-xml-summary-count: 322
+symbol-count: 160
+xml-summary-count: 328
 source-fsi-paths:
 - src/Controls.Elmish/ControlsElmish.fsi
 sampled-symbols:
@@ -525,6 +525,18 @@ module ControlsElmish =
     /// (FR-008).
     val runInteractiveApp:
         options: ViewerOptions -> host: InteractiveAppHost<'model, 'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
+
+    /// Feature 122 (FR-003/005): as `runInteractiveApp` with an explicit `ViewerWindowBehaviorRequest`
+    /// threaded into the live launch (startup-state / resize / maximize / position / backend), so a
+    /// generated app's parsed `--window-startup normal` actually applies to the controls window instead
+    /// of only the options report. Delegates to `Viewer.runInteractiveViewerWithWindowBehavior`;
+    /// `runInteractiveApp` stays the default windowed-fullscreen path, so existing consumers are
+    /// unaffected.
+    val runInteractiveAppWithWindowBehavior:
+        options: ViewerOptions ->
+        behavior: ViewerWindowBehaviorRequest ->
+        host: InteractiveAppHost<'model, 'msg> ->
+            Result<ViewerLaunchOutcome, ViewerRunFailure>
 
     /// Feature 108 (US3, FR-009/010): the pure, headless, deterministic frame driver. Folds an
     /// ordered `FrameInput` script over the host's pure `Update` + `RetainedRender.step`, advancing

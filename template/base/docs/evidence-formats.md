@@ -43,6 +43,7 @@ failure, without decompiling `FS.Skia.UI.Build.dll` or copying a sibling project
 ### `interactive-visible-window.md`
 
 - required tokens: status, mode, window-visible, accessible-window, first-frame-presented, self-closed-for-evidence
+- token form: each required token MUST appear as `token=value` (this file is parsed as key/value, not prose)
 - blocking: true
 
 ### `close-reason-separation.md`
@@ -54,6 +55,7 @@ failure, without decompiling `FS.Skia.UI.Build.dll` or copying a sibling project
 ### `window-state-diagnostics.md`
 
 - required tokens: diagnostic-class=environment-session, diagnostic-class=window-visibility, diagnostic-class=app-lifecycle, diagnostic-class=product-defect, native-handle, visible, focusable, renderable-surface, input-devices
+- token form: each required token MUST appear as `token=value` (this file is parsed as key/value, not prose)
 - ordering: diagnostic-class ∈ { environment-session, window-visibility, app-lifecycle, product-defect }
 - blocking: true
 
@@ -72,6 +74,7 @@ failure, without decompiling `FS.Skia.UI.Build.dll` or copying a sibling project
 ### `generated-validation.md`
 
 - required tokens: exact-package-match, generated-tests-ran, authoritative, failure-class
+- token form: each required token MUST appear as `token=value` (this file is parsed as key/value, not prose)
 - ordering: exact-package-match must be true with the generated tests actually run and authoritative
 - blocking: true
 

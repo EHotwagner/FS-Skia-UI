@@ -862,7 +862,7 @@ controls:
     category: custom
     module: CustomControl
     typedModule: CustomControl
-    purpose: Product-owned wrapper for custom Skia content.
+    purpose: Product-owned wrapper; renderTree paints a labeled placeholder, not the custom Render/Draw content — build must-show geometry from primitive controls (Border/TextBlock/Stack).
     requiredAttributes: []
     commonAttributes: [enabled, visible, width, height, padding, style, theme, accessibility]
     events: [onCustom]

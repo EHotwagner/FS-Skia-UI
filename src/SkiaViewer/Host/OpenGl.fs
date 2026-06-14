@@ -250,6 +250,19 @@ module GlHost =
     let mutable lastPresentedScene: Scene option = None
     let mutable skippedPresentCount = 0
 
+    // Feature 122 (FR-001/002): the most recent fully-painted frame, cached so an idle frame can
+    // re-present it onto a not-yet-filled swapchain buffer WITHOUT re-walking the scene. On a
+    // multi-buffer swapchain (e.g. Wayland windowed-fullscreen) an idle frame that skipped the buffer
+    // swap outright would otherwise rotate an undrawn (black) buffer into view — the interleaved-black
+    // blink the Spread3 consumer reported. The bounded re-present keeps every buffer populated.
+    let mutable lastGoodFrame: SKImage option = None
+    let mutable idleRepresentsRemaining = 0
+    let mutable representedCount = 0
+    // Swapchain buffers to keep populated after a change before fully idling: 3 covers typical
+    // triple-buffering on Wayland. Not a public knob — the framework fix removes the consumer-visible
+    // need (FR-004 deferred).
+    let [<Literal>] bufferFillDepth = 3
+
     /// Feature 120 (US2, FR-004/005/006): the pure present-or-skip decision — present iff this is the
     /// first frame, the scene changed, or the framebuffer size changed. Testable in isolation (T016).
     let shouldPresent (prev: Scene option) (next: Scene) (sizeChanged: bool) : bool =
@@ -257,6 +270,23 @@ module GlHost =
         || match prev with
            | None -> true
            | Some p -> not (obj.ReferenceEquals(p, next) || p = next)
+
+    [<RequireQualifiedAccess>]
+    /// Feature 122 (FR-001/002): what the live DirectToSwapchain host does for one frame.
+    type PresentAction =
+        | PaintAndPresent
+        | RepresentLastGood
+        | SkipPresent
+
+    /// Feature 122 (FR-001/002): the pure present decision. `PaintAndPresent` when the scene or
+    /// framebuffer size changed (`shouldPresent`); otherwise `RepresentLastGood` while buffers may
+    /// still be undrawn (`idleRepresentsRemaining > 0`); otherwise `SkipPresent` (full idle, the
+    /// feature-120/121 no-scene-work path). Keeping every swapchain buffer populated stops a
+    /// multi-buffer compositor from rotating an undrawn black buffer into view. Testable (T011).
+    let planPresent (prev: Scene option) (next: Scene) (sizeChanged: bool) (idleRepresentsRemaining: int) : PresentAction =
+        if shouldPresent prev next sizeChanged then PresentAction.PaintAndPresent
+        elif idleRepresentsRemaining > 0 then PresentAction.RepresentLastGood
+        else PresentAction.SkipPresent
 
     /// Feature 121 (US1, FR-002): the pure frame-pacing decision — advance (update + present) this
     /// iteration iff at least `frameInterval` seconds have elapsed since the last advance. Gates BOTH
@@ -434,12 +464,35 @@ module GlHost =
                 drawScene scene surface.Canvas
                 surface.Canvas.Flush()
                 paintSw.Stop()
+                // Feature 122 (FR-001): cache this fully-painted frame so idle frames can re-present it
+                // onto not-yet-filled swapchain buffers without re-walking the scene.
+                lastGoodFrame |> Option.iter (fun img -> img.Dispose())
+                lastGoodFrame <- Some(surface.Snapshot())
                 let composeSw = System.Diagnostics.Stopwatch.StartNew()
                 context.Flush()
                 window.SwapBuffers()
                 composeSw.Stop()
                 lastPaintDuration <- paintSw.Elapsed
                 lastComposeDuration <- composeSw.Elapsed
+
+                Ok
+                    { Width = framebuffer.Width
+                      Height = framebuffer.Height
+                      ColorType = SKColorType.Rgba8888
+                      Pixels = [||] })
+        with ex ->
+            Result.Error(Diagnostics.frameRenderFailed ex.Message)
+
+    /// Feature 122 (FR-001/002): re-present the cached last good frame onto the current swapchain
+    /// buffer — a single image blit + buffer swap, NO scene walk — so an idle frame still fills the
+    /// buffer it presents and a multi-buffer compositor never rotates an undrawn (black) buffer in.
+    let representLastGoodFrame configuration (window: IWindow) (context: GRContext) (framebuffer: FramebufferState) (image: SKImage) =
+        try
+            bind (ensureFramebufferSurface configuration window context framebuffer) (fun surface ->
+                surface.Canvas.DrawImage(image, 0f, 0f)
+                surface.Canvas.Flush()
+                context.Flush()
+                window.SwapBuffers()
 
                 Ok
                     { Width = framebuffer.Width
@@ -486,46 +539,62 @@ module GlHost =
     /// `OffscreenReadback` keeps the readback path for evidence/fallback. `report` carries
     /// live-only, non-golden present diagnostics (FR-005/FR-007).
     let renderFrame configuration (window: IWindow) (context: GRContext) (framebuffer: FramebufferState) (announced: bool ref) (report: RenderDiagnostic -> unit) scene =
-        // Feature 120 (US2, FR-004/005/006): idle-skip. On the double-buffered direct present, an
-        // unchanged scene at an unchanged framebuffer size performs NO clear, NO scene walk, and NO
-        // draw-call re-issue — the front buffer still holds the last presented (byte-identical) frame.
-        // Readback present always renders (its consumer needs fresh pixels).
+        // Feature 120/122 (US2 + FR-001/002): on the live DirectToSwapchain present, an unchanged scene
+        // performs NO scene walk. But rather than skipping the buffer swap outright (feature 120, which
+        // left an undrawn buffer to rotate in as black on a multi-buffer Wayland swapchain), the host
+        // re-presents the cached last good frame — a single image blit, NO scene walk — for a bounded
+        // number of idle frames until every buffer is populated, then fully idles (`SkipPresent`, the
+        // byte-identical feature-120/121 no-work path). Readback present always renders.
         let fbSize = window.FramebufferSize
         let sizeChanged = framebuffer.Width <> max 1 fbSize.X || framebuffer.Height <> max 1 fbSize.Y
 
-        let canIdleSkip =
+        let directLive =
             configuration.PresentMode = ViewerPresentMode.DirectToSwapchain
             && framebuffer.Surface.IsSome
-            && not (shouldPresent lastPresentedScene scene sizeChanged)
 
-        if canIdleSkip then
+        let action =
+            if directLive then
+                planPresent lastPresentedScene scene sizeChanged idleRepresentsRemaining
+            else
+                PresentAction.PaintAndPresent
+
+        let idleSnapshot () =
+            { Width = framebuffer.Width
+              Height = framebuffer.Height
+              ColorType = SKColorType.Rgba8888
+              Pixels = [||] }
+
+        match action, lastGoodFrame with
+        | PresentAction.SkipPresent, _ ->
             skippedPresentCount <- skippedPresentCount + 1
             lastPaintDuration <- System.TimeSpan.Zero
             lastComposeDuration <- System.TimeSpan.Zero
+            Ok(idleSnapshot ())
+        | PresentAction.RepresentLastGood, Some image ->
+            representedCount <- representedCount + 1
+            idleRepresentsRemaining <- idleRepresentsRemaining - 1
+            lastPaintDuration <- System.TimeSpan.Zero
+            lastComposeDuration <- System.TimeSpan.Zero
+            representLastGoodFrame configuration window context framebuffer image
+        | _ ->
+            // PaintAndPresent (or RepresentLastGood before any frame is cached → paint a real one).
+            lastPresentedScene <- Some scene
+            idleRepresentsRemaining <- bufferFillDepth - 1
 
-            Ok
-                { Width = framebuffer.Width
-                  Height = framebuffer.Height
-                  ColorType = SKColorType.Rgba8888
-                  Pixels = [||] }
-        else
+            match configuration.PresentMode with
+            | ViewerPresentMode.OffscreenReadback ->
+                renderFrameReadback configuration window context framebuffer scene
+            | ViewerPresentMode.DirectToSwapchain ->
+                match renderFrameDirect configuration window context framebuffer scene with
+                | Ok snapshot ->
+                    // FR-007: announce the live present mode once (Category = Framebuffer via the
+                    // Stage→Category mapping), non-golden.
+                    if not announced.Value then
+                        announced.Value <- true
+                        report (Diagnostics.create Info Framebuffer "present-mode=DirectToSwapchain readback=false (live frames render straight onto the default framebuffer)." None)
 
-        lastPresentedScene <- Some scene
-
-        match configuration.PresentMode with
-        | ViewerPresentMode.OffscreenReadback ->
-            renderFrameReadback configuration window context framebuffer scene
-        | ViewerPresentMode.DirectToSwapchain ->
-            match renderFrameDirect configuration window context framebuffer scene with
-            | Ok snapshot ->
-                // FR-007: announce the live present mode once (Category = Framebuffer via the
-                // Stage→Category mapping), non-golden.
-                if not announced.Value then
-                    announced.Value <- true
-                    report (Diagnostics.create Info Framebuffer "present-mode=DirectToSwapchain readback=false (live frames render straight onto the default framebuffer)." None)
-
-                Ok snapshot
-            | Result.Error diagnostic -> Result.Error diagnostic
+                    Ok snapshot
+                | Result.Error diagnostic -> Result.Error diagnostic
 
     let dispatchViewerEvent program dispatch event =
         program.EventMapper event
@@ -725,6 +794,11 @@ module GlHost =
         SceneRenderer.activeReplayCache <- Some replayCache
         lastPresentedScene <- None
         skippedPresentCount <- 0
+        // Feature 122 (FR-001): fresh present-buffer-fill state per run.
+        lastGoodFrame |> Option.iter (fun img -> img.Dispose())
+        lastGoodFrame <- None
+        idleRepresentsRemaining <- 0
+        representedCount <- 0
 
         let requestShutdown closeWindow =
             shutdownRequested <- true

@@ -10,7 +10,7 @@ description: Product-owned wrapper for custom Skia content.
 # Custom Control
 
 - **Category:** custom
-- **Purpose:** Product-owned wrapper for custom Skia content.
+- **Purpose:** Product-owned wrapper; renderTree paints a labeled placeholder, not the custom Render/Draw content — build must-show geometry from primitive controls (Border/TextBlock/Stack).
 - **API reference:** [FS.Skia.UI.Controls.CustomControl](../reference/fs-skia-ui-controls-customcontrol.html)
 
 [← Back to the controls catalog](catalog.html)

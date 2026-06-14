@@ -241,6 +241,12 @@ module ControlsElmish =
     val runInteractiveApp:
         options: ViewerOptions -> host: InteractiveAppHost<'model, 'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>
 
+    val runInteractiveAppWithWindowBehavior:
+        options: ViewerOptions ->
+        behavior: ViewerWindowBehaviorRequest ->
+        host: InteractiveAppHost<'model, 'msg> ->
+            Result<ViewerLaunchOutcome, ViewerRunFailure>
+
     module Perf =
 
         val runScript:

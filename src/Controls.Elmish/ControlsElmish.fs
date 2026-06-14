@@ -822,7 +822,15 @@ module ControlsElmish =
         | Space -> Some(InsertText " ")
         | _ -> None
 
-    let runInteractiveApp (options: ViewerOptions) (host: InteractiveAppHost<'model, 'msg>) =
+    // Feature 122 (FR-005): the shared interactive-host body, parameterized by the terminal viewer
+    // launcher so `runInteractiveApp` (default windowed-fullscreen) and
+    // `runInteractiveAppWithWindowBehavior` (explicit window behavior) reuse the EXACT same
+    // message→update→retained-step + clock/visual-state/pointer wiring — no parallel logic.
+    let runInteractiveAppWithLauncher
+        (launch: ViewerOptions -> InteractiveViewerHost<'model, 'msg> -> Result<ViewerLaunchOutcome, ViewerRunFailure>)
+        (options: ViewerOptions)
+        (host: InteractiveAppHost<'model, 'msg>)
+        =
         // Durable pointer coordination state (hover/press/4px-fold), threaded across samples.
         let pointerState = ref (Pointer.init ())
         // Feature 092 (E2): focus is now keyed by the STABLE `RetainedId` (was `ControlId`), and the
@@ -1242,7 +1250,25 @@ module ControlsElmish =
               Tick = wrappedTick
               Diagnostics = host.Diagnostics }
 
-        Viewer.runInteractiveViewer options viewerHost
+        launch options viewerHost
+
+    let runInteractiveApp (options: ViewerOptions) (host: InteractiveAppHost<'model, 'msg>) =
+        runInteractiveAppWithLauncher Viewer.runInteractiveViewer options host
+
+    /// Feature 122 (FR-003/005): as `runInteractiveApp` with an explicit window behavior threaded into
+    /// the live launch (startup-state / resize / maximize / position / backend), so a generated app's
+    /// `--window-startup normal` actually applies to the controls window instead of only the options
+    /// report. `runInteractiveApp` is unchanged (default windowed-fullscreen).
+    let runInteractiveAppWithWindowBehavior
+        (options: ViewerOptions)
+        (behavior: ViewerWindowBehaviorRequest)
+        (host: InteractiveAppHost<'model, 'msg>)
+        =
+        runInteractiveAppWithLauncher
+            (fun launchOptions viewerHost ->
+                Viewer.runInteractiveViewerWithWindowBehavior launchOptions behavior viewerHost)
+            options
+            host
 
     // Feature 108 (US3, FR-009/010): the pure, headless, deterministic frame driver. Nested in
     // `ControlsElmish` so it reuses the SAME message→update→retained-step + binding-resolution +

@@ -21,6 +21,18 @@ declarative attributes such as `TextBox.value`, `Button.onClick`,
 Persistent values stay in the product model; controls may keep only keyed
 transient interaction state through product-owned `ControlRuntime`.
 
+### `CustomControl` does NOT rasterize its content (feature 122)
+
+`Control.renderTree` (the production paint path the live host and every
+screenshot/preview use) paints a **labeled placeholder** for a `custom-control`
+— it does **not** invoke the `CustomControlDefinition` `Render`/`Draw`/`Layout`
+fields, so authored Skia geometry does not appear in the window or in evidence.
+`CustomControl` is a wrapper for product-owned **events/attributes**, not a
+draw seam. When geometry must show in the rasterized/screenshot path, build it
+from primitive controls (`Border` + `TextBlock` + `Stack`); reserve
+`CustomControl` for non-visual extension points. (A null/blank `Id` or a null
+effect string is guarded — `validate`/`create` return a diagnostic, never an NRE.)
+
 ## Generated Product Pattern
 
 Generated examples should keep product state and messages local:

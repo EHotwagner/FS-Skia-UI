@@ -1,7 +1,7 @@
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
 <!-- SPECKIT START -->
-specs/121-live-host-idle-parking/plan.md
+specs/122-spread3-consumer-feedback/plan.md
 <!-- SPECKIT END -->
 
 ## Run `Route` first; run only the gates it prints

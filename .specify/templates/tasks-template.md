@@ -168,7 +168,11 @@ should re-express ownership via `owns:` and drop any title rewording (or the
 The authoritative skill registry for `skillist` ids is built from readable
 `SKILL.md` files under `.agents/skills/*/SKILL.md`,
 `src/*/skill/SKILL.md`, and `template/fragments/*/skill/SKILL.md`. Declare the
-`name:` value from the skill file, not the directory name, when they differ.
+`name:` value from the skill file, not the directory name, when they differ. In a
+**generated product** the controls/widgets skill is exactly such a case: its directory
+is `fs-skia-ui-widgets` but its declared `name:` is the project-prefixed form (e.g.
+`<project>-widgets`), so a `skillist` id of `fs-skia-ui-widgets` dangles — read the
+`name:` from `fs-skia-ui-widgets/SKILL.md` and declare that resolved value.
 
 Advisory FS.Skia.UI capability hints are non-blocking: rendering or scene tasks
 usually need `fs-skia-scene`; viewer or window-host tasks usually need
