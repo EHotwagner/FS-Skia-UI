@@ -27,14 +27,19 @@ runtime.
 
 ## Existing repository role
 
-This repository can remain the bridge and extraction environment. It should not
-be polished into a perfect long-term host before the split. Its job is to help
-answer:
+This repository should become source inventory, provenance, and archive
+material. It should not be transformed into either destination repository. The
+rendering and governance repositories should be created first as fresh standard
+Spec Kit repositories, then selected material can be imported from here.
 
-- which runtime source paths move to the rendering project;
+Its job is to help answer:
+
+- which runtime source paths should be copied into the rendering project;
 - which tests and docs are still current;
 - which package and template identities are retained, renamed, or deprecated;
-- which governance experiments move to the governance project;
+- which governance experiments should be copied into the governance project;
+- which tests, generated fixtures, and checks justify their cost in the initial
+  rendering repository;
 - which historical specs and reports remain archive-only.
 
 ## Package and namespace identity

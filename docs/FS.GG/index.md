@@ -48,9 +48,12 @@ The new direction is deliberately simpler:
 - [Research notes](research-notes.md) preserves the durable research findings
   from the earlier report without keeping the old all-in-one plan as the active
   recommendation.
-- [Implementation plan](implementation-plan.md) is the single implementation
-  plan for the split. It is intentionally one page so the plan does not become
-  another fragmented operating system.
+- [Implementation plans](implementation-plan.md) coordinates the separate
+  rendering-first and governance-later plans.
+- [Rendering implementation plan](rendering-implementation-plan.md) starts from
+  a fresh standard Spec Kit repository and imports selected product slices.
+- [Governance implementation plan](governance-implementation-plan.md) starts
+  from its own fresh standard Spec Kit repository after rendering is usable.
 
 ## Operating rule
 

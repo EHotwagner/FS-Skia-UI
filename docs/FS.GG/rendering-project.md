@@ -70,10 +70,21 @@ narrow:
 - selected visual or scenario smoke checks;
 - release packaging checks.
 
+The initial repository version should be intentionally light. Tests and
+governance mechanisms are important, but they must be moved over because they
+protect a current product contract or a known failure mode, not because they
+exist in the old repository. Every imported check should have a short
+justification: what it protects, when it runs, who owns it, and what maintenance
+cost it adds.
+
 Do not introduce a custom feature graph as the source of truth for ordinary
 rendering work. `spec.md`, `plan.md`, and `tasks.md` may remain authored Spec
 Kit artifacts unless a future lightweight tool proves a better path without
 raising the cost of contribution.
+
+The repository should be created as a fresh standard Spec Kit repository before
+product code is imported. This keeps import decisions explicit and prevents old
+workflow state from becoming the new product workflow by accident.
 
 ## Governance boundary
 
@@ -113,7 +124,9 @@ Do not carry the following as active runtime-repository requirements:
 - graph-bound task completion as the only accepted source of task status;
 - generated `spec.md`, `plan.md`, or `tasks.md` as the initial workflow;
 - governance workspaces and FAKE concurrency policy as a prerequisite for
-  normal product changes.
+  normal product changes;
+- historical tests, evidence reports, generated fixtures, or governance checks
+  that do not have a current owner and product-risk justification.
 
 These ideas can be revisited later if the separate governance project proves a
 small, stable implementation.

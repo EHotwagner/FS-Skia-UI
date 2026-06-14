@@ -52,6 +52,10 @@ observe the rendering repository from the outside, validate it as a customer,
 or provide optional helpers, but it must not become the rendering project's
 foundation until it has proved itself.
 
+Implementation starts from fresh standard Spec Kit repositories. This repository
+is used as source inventory and provenance, not as the base that is transformed
+into either destination.
+
 ## Pros
 
 - Lower cognitive load for runtime contributors.
