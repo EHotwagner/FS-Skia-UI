@@ -2,18 +2,18 @@
 
 package-set: Pinned
 
-product-verdict: `ProductDefectFail`
+product-verdict: `ProductPass`
 - step `package-resolution`: passed=true classification=- package-set=Pinned
-- step `generated-verify`: passed=false classification=ProductDefect package-set=Pinned
-- step `bounded-smoke`: passed=false classification=ProductDefect package-set=Pinned
-- step `scene-evidence`: passed=false classification=ProductDefect package-set=Pinned
-- step `window-diagnostics`: passed=false classification=ProductDefect package-set=Pinned
-- step `window-options`: passed=false classification=ProductDefect package-set=Pinned
-- step `image-evidence`: passed=false classification=ProductDefect package-set=Pinned
-- step `persistent-launch`: passed=false classification=ProductDefect package-set=Pinned
+- step `generated-verify`: passed=true classification=- package-set=Pinned
+- step `bounded-smoke`: passed=true classification=- package-set=Pinned
+- step `scene-evidence`: passed=true classification=- package-set=Pinned
+- step `window-diagnostics`: passed=true classification=- package-set=Pinned
+- step `window-options`: passed=true classification=- package-set=Pinned
+- step `image-evidence`: passed=true classification=- package-set=Pinned
+- step `persistent-launch`: passed=true classification=- package-set=Pinned
 
-Category: `SemanticTestFailure`
-Elapsed: `00:00:07.1204877`
+Category: `Completed`
+Elapsed: `00:00:20.3008827`
 Command context: `./fake.sh build -t PackLocal && ./fake.sh build -t GeneratedProductCheck`
 Generated consumer root: `/home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/app-source`
 Local package feed: `/home/developer/.local/share/nuget-local`
@@ -39,15 +39,15 @@ Local package feed: `/home/developer/.local/share/nuget-local`
 - package-resolution: `validated`
 - exact-package-match: `True`
 - generated-test-execution: `validated`
-- generated-tests-ran: `False`
+- generated-tests-ran: `True`
 - default-interactive-launch: `False`
-- bounded-evidence-validation: `False`
-- close-reason-validation: `False`
-- window-diagnostics-validation: `False`
-- window-options-validation: `False`
-- image-evidence-validation: `False`
+- bounded-evidence-validation: `True`
+- close-reason-validation: `True`
+- window-diagnostics-validation: `True`
+- window-options-validation: `True`
+- image-evidence-validation: `True`
 - authoritative: `False`
-- failure-class: `missing-generated-test-execution`
+- failure-class: `interactive-launch-validation`
 
 ## Package Resolution
 
@@ -57,36 +57,49 @@ Local package feed: `/home/developer/.local/share/nuget-local`
 - restore-warning-count: `0`
 
 Requested packages:
-- requested FS.Skia.UI.Controls=0.1.127-preview.1
-- requested FS.Skia.UI.Controls.Elmish=0.1.127-preview.1
-- requested FS.Skia.UI.Elmish=0.1.127-preview.1
-- requested FS.Skia.UI.KeyboardInput=0.1.127-preview.1
-- requested FS.Skia.UI.Layout=0.1.127-preview.1
-- requested FS.Skia.UI.Scene=0.1.127-preview.1
-- requested FS.Skia.UI.SkiaViewer=0.1.127-preview.1
+- requested FS.Skia.UI.Controls=0.1.128-preview.1
+- requested FS.Skia.UI.Controls.Elmish=0.1.128-preview.1
+- requested FS.Skia.UI.Elmish=0.1.128-preview.1
+- requested FS.Skia.UI.KeyboardInput=0.1.128-preview.1
+- requested FS.Skia.UI.Layout=0.1.128-preview.1
+- requested FS.Skia.UI.Scene=0.1.128-preview.1
+- requested FS.Skia.UI.SkiaViewer=0.1.128-preview.1
 
 Resolved packages:
-- resolved FS.Skia.UI.Controls=0.1.127-preview.1
-- resolved FS.Skia.UI.Controls.Elmish=0.1.127-preview.1
-- resolved FS.Skia.UI.Elmish=0.1.127-preview.1
-- resolved FS.Skia.UI.KeyboardInput=0.1.127-preview.1
-- resolved FS.Skia.UI.Layout=0.1.127-preview.1
-- resolved FS.Skia.UI.Scene=0.1.127-preview.1
-- resolved FS.Skia.UI.SkiaViewer=0.1.127-preview.1
+- resolved FS.Skia.UI.Controls=0.1.128-preview.1
+- resolved FS.Skia.UI.Controls.Elmish=0.1.128-preview.1
+- resolved FS.Skia.UI.Elmish=0.1.128-preview.1
+- resolved FS.Skia.UI.KeyboardInput=0.1.128-preview.1
+- resolved FS.Skia.UI.Layout=0.1.128-preview.1
+- resolved FS.Skia.UI.Scene=0.1.128-preview.1
+- resolved FS.Skia.UI.SkiaViewer=0.1.128-preview.1
 
 Restore warnings:
 
 ## Generated Test Execution
 
 - generated-tests-exist: `True`
-- generated-tests-ran: `False`
-- generated-verify-ran: `False`
-- authoritative: `False`
-- failure-class: `missing-generated-test-execution`
+- generated-tests-ran: `True`
+- generated-verify-ran: `True`
+- authoritative: `True`
+- failure-class: `none`
 
 ## Diagnostics
 
 - feature-context: SPECKIT_FEATURE_DIR=/home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/app-source/specs/seed-087-generated-verify (FR-001 seeded resolvable feature)
 - generated consumer restore from local packages: ok
 - package resolution: exact-match=true
-- generated consumer Verify: failed: generated consumer Verify failed with exit code 1. See /home/developer/projects/FS-Skia-UI/specs/121-live-host-idle-parking/readiness/generated-consumer-validation/generated-verify.log
+- generated consumer Verify: ok
+- generated consumer bounded smoke: ok
+- bounded viewer smoke reached requested evidence
+- generated consumer scene evidence: ok
+- headless scene evidence captured
+- generated consumer window diagnostics: ok
+- window diagnostics validation captured
+- generated consumer window options: ok
+- window options validation captured
+- generated consumer image evidence: ok
+- image evidence validation captured
+- generated consumer persistent launch diagnostics: ok
+- persistent launch diagnostics captured separately from bounded evidence
+- supported-host persistent launch evidence normalized

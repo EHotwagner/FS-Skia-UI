@@ -2,14 +2,14 @@
 ## governed/source generated Test
 $ bash ./fake.sh build -t Test
   Determining projects to restore...
-  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/governed-source/src/Product/Product.fsproj (in 287 ms).
-  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/governed-source/tests/Product.Tests/Product.Tests.fsproj (in 289 ms).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/governed-source/src/Product/Product.fsproj (in 360 ms).
+  Restored /home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/governed-source/tests/Product.Tests/Product.Tests.fsproj (in 358 ms).
   Product -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/governed-source/src/Product/bin/Debug/net10.0/Product.dll
   Product.Tests -> /home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/governed-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll
 Test run for /home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/governed-source/tests/Product.Tests/bin/Debug/net10.0/Product.Tests.dll (.NETCoreApp,Version=v10.0)
 A total of 1 test files matched the specified pattern.
 
-Passed!  - Failed:     0, Passed:     2, Skipped:     0, Total:     2, Duration: 17 ms - Product.Tests.dll (net10.0)
+Passed!  - Failed:     0, Passed:     2, Skipped:     0, Total:     2, Duration: 15 ms - Product.Tests.dll (net10.0)
 Test completed for generated product
 
 exit-code=0
