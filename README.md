@@ -1,3 +1,5 @@
+[Archived for now. This is an exploratory repo and I explored. I do think the basic premises are sound and can bring real gains to agent based F# development processes. Spec based with task -> .fsi -> tests -> implementation is an easy win in my opinion. Why stop? It just got too heavy and should be split up. Dog-fooding governance mechanisms is no fun.]
+
 # FS.Skia.UI
 
 [![NuGet](https://img.shields.io/nuget/vpre/FS.Skia.UI.Scene?logo=nuget&label=nuget)](https://www.nuget.org/packages/FS.Skia.UI.Scene)
