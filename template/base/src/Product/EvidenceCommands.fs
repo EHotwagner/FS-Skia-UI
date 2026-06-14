@@ -238,9 +238,23 @@ let tick elapsed =
     else
         None
 
+// Interactive persistent-launch options: a real on-screen window via DirectToSwapchain
+// (feature 119/121). Program.fs uses THIS for runInteractiveApp / runApp. It must NOT be the
+// readback evidence options — reusing those (OffscreenReadback) for the live launch renders
+// off-screen and presents a blank window (the ControlsShowcase4 scaffold defect).
 let viewerOptions =
     { Title = "Generated Product"
-      InitialSize = { Width = 640; Height = 480 }; PresentMode = ViewerPresentMode.OffscreenReadback; FrameRateCap = None }
+      InitialSize = { Width = 1280; Height = 800 }
+      PresentMode = ViewerPresentMode.DirectToSwapchain
+      FrameRateCap = None }
+
+// Evidence/screenshot-capture options: a small OffscreenReadback surface for deterministic pixel
+// readback. Used only by the bounded evidence commands below — never for the persistent launch.
+let evidenceViewerOptions =
+    { Title = "Generated Product"
+      InitialSize = { Width = 640; Height = 480 }
+      PresentMode = ViewerPresentMode.OffscreenReadback
+      FrameRateCap = None }
 
 let appCommandName command =
     match command with
@@ -409,7 +423,7 @@ let launchEvidence evidencePath =
           RendererMode = "skia"
           EvidencePath = Some evidencePath }
 
-    match Viewer.runBounded request viewerOptions (view initialModel) with
+    match Viewer.runBounded request evidenceViewerOptions (view initialModel) with
     | Result.Ok evidence ->
         [ "status=ok"
           "mode=persistent-evidence"
@@ -450,7 +464,7 @@ let imageEvidence evidencePath =
           RendererMode = "skia"
           EvidencePath = Some evidencePath }
 
-    match Viewer.runAppEvidence request viewerOptions generatedHost with
+    match Viewer.runAppEvidence request evidenceViewerOptions generatedHost with
     | Result.Ok outcome ->
         if not (isPngFile evidencePath) then
             writeFallbackPngEvidence evidencePath
@@ -494,13 +508,13 @@ let screenshotEvidence evidencePath =
             { Command = "--screenshot-evidence"
               AppOrSample = "Generated Product"
               OutputPath = evidencePath
-              Width = viewerOptions.InitialSize.Width
-              Height = viewerOptions.InitialSize.Height
+              Width = evidenceViewerOptions.InitialSize.Width
+              Height = evidenceViewerOptions.InitialSize.Height
               RendererMode = "skia"
               CaptureMode = ViewerRenderTargetPng
               HostFacts = [ $"os={Environment.OSVersion.Platform}"; $"machine={Environment.MachineName}" ]
               Timeout = TimeSpan.FromSeconds 10.0 }
-            viewerOptions
+            evidenceViewerOptions
             (view initialModel)
 
     let reportStatus =
@@ -554,7 +568,7 @@ let visualEvidence command _commandLine format evidenceKind _evidenceKindLine fa
     let result =
         SceneEvidence.render
             { Scene = { Nodes = [ view initialModel ] }
-              OutputSize = viewerOptions.InitialSize
+              OutputSize = evidenceViewerOptions.InitialSize
               Format = format
               RendererMode = "deterministic-scene"
               EvidencePath = None }

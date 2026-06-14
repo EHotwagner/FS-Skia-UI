@@ -13,7 +13,7 @@ product-verdict: `ProductPass`
 - step `persistent-launch`: passed=true classification=- package-set=Pinned
 
 Category: `Completed`
-Elapsed: `00:00:20.3008827`
+Elapsed: `00:00:21.3218424`
 Command context: `./fake.sh build -t PackLocal && ./fake.sh build -t GeneratedProductCheck`
 Generated consumer root: `/home/developer/projects/FS-Skia-UI/artifacts/generated-products/121-live-host-idle-parking/app-source`
 Local package feed: `/home/developer/.local/share/nuget-local`

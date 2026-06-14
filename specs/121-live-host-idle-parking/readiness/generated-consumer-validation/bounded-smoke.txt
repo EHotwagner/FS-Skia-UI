@@ -1,7 +1,7 @@
 status=ok
 smoke=bounded-viewer
 frames-rendered=1
-elapsed-ms=467.55
+elapsed-ms=458.8371
 initial-output-size=320x200
 renderer-mode=vulkan
 diagnostic-mode=startup-focused

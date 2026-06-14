@@ -58,8 +58,30 @@ Your `update` and `View` stay pure; never perform host I/O inside them.
 ## Generated Product
 
 The app profile wires `Viewer.runApp viewerOptions generatedHost` as the default
-launch path. Use `Viewer.runAppEvidence` with the same host for bounded evidence
-runs.
+launch path. Use `Viewer.runAppEvidence` with the **evidence** options for bounded
+evidence runs.
+
+## Present mode: live vs evidence — never reuse the evidence options
+
+`ViewerOptions.PresentMode` picks the present mechanism; choose it by launch context:
+
+| Launch context | `PresentMode` | Why |
+|----------------|---------------|-----|
+| Persistent interactive window | `DirectToSwapchain` | zero-readback live present; unchanged frames skip paint |
+| Evidence / screenshot capture | `OffscreenReadback` | small readback surface for deterministic pixel capture |
+
+This product ships **two** option records (`EvidenceCommands.fs`): `viewerOptions`
+(`DirectToSwapchain`, the persistent launch) and `evidenceViewerOptions`
+(`OffscreenReadback`, the bounded evidence commands). **Do NOT** launch the
+persistent window from the evidence options — `OffscreenReadback` renders off-screen
+and shows a **blank** window. Keep the live launch on `viewerOptions`
+(`DirectToSwapchain`) and the readback evidence on `evidenceViewerOptions`.
+
+A consumer without a blocking compositor/vsync can bound the live loop with
+`ViewerOptions.FrameRateCap = Some n` (default `None` = 60); a headless host with no
+compositor free-runs toward the cap — an environment limitation, not a defect. To
+exit gracefully, return `[ ViewerEffect.CloseWindow ]` from your `update` (no extra
+host effect is needed).
 
 ## Persistent problems
 
